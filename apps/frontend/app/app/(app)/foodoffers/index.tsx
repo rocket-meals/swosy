@@ -7,7 +7,6 @@ import {
   RefreshControl,
   SafeAreaView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
@@ -66,6 +65,9 @@ import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
+
+import IconButton from '@/components/UI/IconButton';
+import Button from '@/components/UI/Button';
 
 export const SHEET_COMPONENTS = {
   canteen: CanteenSelectionSheet,
@@ -502,17 +504,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         <Text style={{ ...styles.noFoodOffer, color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
         <View style={styles.animationContainer}>{renderLottie}</View>
         {nextAvailableDate && (
-          <TouchableOpacity
-            onPress={() =>
-              dispatch({
-                type: SET_SELECTED_DATE,
-                payload: nextAvailableDate,
-              })
-            }
+          <Button
+            onPress={() => dispatch({ type: SET_SELECTED_DATE, payload: nextAvailableDate })}
             style={[styles.jumpButton, { backgroundColor: foods_area_color }]}
           >
             <Text style={[styles.jumpButtonText, { color: contrastColor }]}>{`${translate(TranslationKeys.show_offers_on)} ${translate(TranslationKeys[getWeekdayKey(nextAvailableDate)])}`}</Text>
-          </TouchableOpacity>
+          </Button>
         )}
       </View>
     );
@@ -534,9 +531,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
+                    <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
                       <Ionicons name="menu" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -546,18 +543,18 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                   </TooltipContent>
                 </Tooltip>
 
-                <TouchableOpacity onPress={() => openSheet('canteen')} activeOpacity={0.7}>
+                <Button onPress={() => openSheet('canteen')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
                   <Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}</Text>
-                </TouchableOpacity>
+                </Button>
               </View>
 
               <View style={{ ...styles.col2, gap: isWeb ? (screenWidth < 500 ? 6 : 10) : 5, flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }}>
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => openSheet('sort')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
+                    <IconButton {...triggerProps} onPress={() => openSheet('sort')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
                       <MaterialIcons name="sort" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -570,15 +567,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity
-                      {...triggerProps}
-                      onPress={() => {
-                        router.navigate('/price-group');
-                      }}
-                      style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}
-                    >
+                    <IconButton {...triggerProps} onPress={() => router.navigate('/price-group')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
                       <FontAwesome6 name="euro-sign" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -591,9 +582,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => router.navigate('/eating-habits')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
+                    <IconButton {...triggerProps} onPress={() => router.navigate('/eating-habits')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
                       <Ionicons name="bag-add" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -606,9 +597,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => openSheet('canteen')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
+                    <IconButton {...triggerProps} onPress={() => openSheet('canteen')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
                       <MaterialIcons name="restaurant-menu" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -625,9 +616,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => handleDateChange('prev')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
+                    <IconButton {...triggerProps} onPress={() => handleDateChange('prev')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
                       <Entypo name="chevron-left" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -640,9 +631,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => openSheet('calendar')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
+                    <IconButton {...triggerProps} onPress={() => openSheet('calendar')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
                       <MaterialIcons name="calendar-month" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -655,9 +646,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => handleDateChange('next')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
+                    <IconButton {...triggerProps} onPress={() => handleDateChange('next')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
                       <Entypo name="chevron-right" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -675,9 +666,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                   <Tooltip
                     placement="top"
                     trigger={triggerProps => (
-                      <TouchableOpacity {...triggerProps} onPress={() => openSheet('forecast', { forDate: selectedDate })} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
+                      <IconButton {...triggerProps} onPress={() => openSheet('forecast', { forDate: selectedDate })} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
                         <FontAwesome6 name="people-group" size={24} color={theme.header.text} />
-                      </TouchableOpacity>
+                      </IconButton>
                     )}
                   >
                     <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -691,9 +682,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 <Tooltip
                   placement="top"
                   trigger={triggerProps => (
-                    <TouchableOpacity {...triggerProps} onPress={() => openSheet('hours')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
+                    <IconButton {...triggerProps} onPress={() => openSheet('hours')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
                       <MaterialCommunityIcons name="clock-time-eight" size={24} color={theme.header.text} />
-                    </TouchableOpacity>
+                    </IconButton>
                   )}
                 >
                   <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

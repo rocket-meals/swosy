@@ -5,7 +5,6 @@ import {
 	RefreshControl,
 	SafeAreaView,
 	TextInput,
-	TouchableOpacity,
 	View,
 	Text,
 	StyleSheet,
@@ -37,6 +36,9 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
+
+import IconButton from '@/components/UI/IconButton';
+import Button from '@/components/UI/Button';
 
 const ITEM_HEIGHT = 140;
 
@@ -316,9 +318,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							<Tooltip
 								placement="top"
 								trigger={triggerProps => (
-									<TouchableOpacity {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={{ padding: 10 }}>
+									<IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={{ padding: 10 }}>
 										<Ionicons name="menu" size={24} color={theme.header.text} />
-									</TouchableOpacity>
+									</IconButton>
 								)}
 							>
 								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -335,9 +337,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							<Tooltip
 								placement="top"
 								trigger={triggerProps => (
-									<TouchableOpacity {...triggerProps} onPress={openSortSheet} style={{ padding: 10 }}>
+									 <IconButton {...triggerProps} onPress={openSortSheet} style={{ padding: 10 }}>
 										<MaterialIcons name="sort" size={24} color={theme.header.text} />
-									</TouchableOpacity>
+									</IconButton>
 								)}
 							>
 								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
