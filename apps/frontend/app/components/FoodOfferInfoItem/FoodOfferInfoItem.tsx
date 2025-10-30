@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Text } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { FoodOfferInfoItemProps } from './types';
@@ -11,32 +11,35 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 
 const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content }) => {
-	const { theme } = useTheme();
+  const { theme } = useTheme();
+  const { appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
 
-	const { language, serverInfo, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
+  const { containerStyle, imageContainerStyle, contentStyle } = useFoodCard();
+  const foods_area_color = appSettings?.foods_area_color || primaryColor;
 
-	const { containerStyle: cardContainerStyle, imageContainerStyle: cardImageContainerStyle, contentStyle: cardContentStyle } = useFoodCard();
+  const imageUri = useMemo(() => {
+    const imageId = typeof item.image === 'string' ? item.image : item.image?.id;
+    return item.image_remote_url || (imageId ? getImageUrl(imageId) : undefined);
+  }, [item.image, item.image_remote_url]);
 
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+  const handlePress = useCallback(() => {
+    if (item.link) CommonSystemActionHelper.openExternalURL(item.link, true);
+  }, [item.link]);
 
-	const imageId = typeof item.image === 'string' ? item.image : item.image?.id;
-	const imageUri = item.image_remote_url || (imageId ? getImageUrl(imageId) : undefined);
-
-	const openInBrowser = async (url: string) => {
-		CommonSystemActionHelper.openExternalURL(url, true);
-	};
-
-	const handlePress = () => {
-		if (item.link) {
-			openInBrowser(item.link);
-		}
-	};
-
-	return (
-		<CardWithText onPress={item.link ? handlePress : undefined} imageSource={imageUri ? { uri: imageUri } : undefined} borderColor={foods_area_color} containerStyle={cardContainerStyle} imageContainerStyle={cardImageContainerStyle} contentStyle={cardContentStyle}>
-			<Text style={[styles.text, { color: theme.screen.text }]}>{content}</Text>
-		</CardWithText>
-	);
+  return (
+    <CardWithText
+      onPress={item.link ? handlePress : undefined}
+      imageSource={imageUri ? { uri: imageUri } : undefined}
+      borderColor={foods_area_color}
+      containerStyle={containerStyle}
+      imageContainerStyle={imageContainerStyle}
+      contentStyle={contentStyle}
+    >
+      <Text style={[styles.text, { color: theme.screen.text }]} numberOfLines={3}>
+        {content}
+      </Text>
+    </CardWithText>
+  );
 });
 
 export default FoodOfferInfoItem;
