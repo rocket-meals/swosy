@@ -8,6 +8,12 @@ import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 
+const extractRawExpoToken = (token: string | null) => {
+	if (!token) return null;
+	const m = String(token).match(/\[(.+?)\]/);
+	return m ? m[1] : token;
+};
+
 async function savePushTokenToAPI(opts: { token: string | null; profile: DatabaseTypes.Profiles | any; dispatch: any }) {
 	const { token, profile, dispatch } = opts;
 	if (!token) {
@@ -18,8 +24,7 @@ async function savePushTokenToAPI(opts: { token: string | null; profile: Databas
 	}
 
 	try {
-		const rawTokenMatch = token.match(/\[(.+?)\]/);
-		const rawToken = rawTokenMatch ? rawTokenMatch[1] : token;
+		const rawToken = extractRawExpoToken(token);
 
 		const devices = Array.isArray(profile.devices) ? profile.devices : [];
 		if (devices.length === 0) {
@@ -35,15 +40,20 @@ async function savePushTokenToAPI(opts: { token: string | null; profile: Databas
 			pushToken: rawToken,
 		};
 
+		const updatedDevices = devices.map((d: any) =>
+			d.id === deviceToUpdate.id
+			? {
+				...d,
+				pushTokenObj: normalizedPushTokenObj,
+			}
+			: d
+		);
+
 		const payload: Partial<DatabaseTypes.Profiles> = {
 			id: profile.id,
-			devices: [
-				{
-					id: deviceToUpdate.id,
-					pushTokenObj: normalizedPushTokenObj,
-				} as any,
-			],
+			devices: updatedDevices as any,
 		};
+
 
 		const helper = new ProfileHelper();
 		const updated = (await helper.updateProfile(payload)) as DatabaseTypes.Profiles;
@@ -55,7 +65,9 @@ async function savePushTokenToAPI(opts: { token: string | null; profile: Databas
 			});
 		} else {
 		}
-	} catch (e) {}
+	} catch (e) {
+		console.error('Error in savePushTokenToAPI:', e);
+	}
 }
 
 const Index = () => {
@@ -63,19 +75,26 @@ const Index = () => {
 	const { loggedIn, profile } = useSelector((state: RootState) => state.authReducer);
 
 	useEffect(() => {
+		if (!loggedIn || !profile?.id) return;
+
+		let subscription: Notifications.Subscription | undefined;
+
 		(async () => {
+
 			const token = await registerForPushNotificationsAsync();
-			console.log('Expo Push Token:', token);
 
 			await savePushTokenToAPI({ token, profile, dispatch });
 
-			const subscription = Notifications.addNotificationReceivedListener(notification => {
-				console.log('Notification received:', notification);
+			subscription = Notifications.addNotificationReceivedListener(notification => {
 			});
-
-			return () => subscription.remove();
 		})();
-	}, [profile?.id]);
+
+		return () => {
+			if (subscription && typeof subscription.remove === 'function') {
+				subscription.remove();
+			}
+		};
+	}, [loggedIn, profile?.id]);
 
 	if (loggedIn) {
 		return <Redirect href="/(app)" />;
