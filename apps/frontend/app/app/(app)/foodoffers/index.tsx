@@ -108,7 +108,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(PopupEventHelper.getAll());
   const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
-  const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useSelector(
+  const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode, amountColumnsForcard } = useSelector(
     (state: RootState) => state.settings
   );
   const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector(
@@ -126,6 +126,20 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, Record<string, DatabaseTypes.Foodoffers[]>>>({});
   const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
   const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+
+  const numColumns = useMemo(() => {
+    if (amountColumnsForcard && amountColumnsForcard > 0) {
+      return amountColumnsForcard;
+    }
+
+    if (!isWeb) {
+      return 2;
+    }
+    if (screenWidth >= 1300) return 5;
+    if (screenWidth >= 1050) return 4;
+    if (screenWidth >= 800) return 3;
+    return 2;
+  }, [amountColumnsForcard, screenWidth]);
 
   const dayItems = useMemo(() => {
     const offers = selectedCanteenFoodOffers || [];
@@ -444,8 +458,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       const horizontalPadding = isWeb ? (screenWidth < 500 ? 5 : 20) : 5;
       const totalPadding = horizontalPadding * 2;
       const gapBetweenItems = 12;
+
       const availableWidth = Math.max(320, screenWidth - totalPadding);
-      const columnWidth = Math.floor((availableWidth - gapBetweenItems) / 2);
+      const columns = Math.max(1, numColumns || 1);
+      const totalGap = gapBetweenItems * (columns - 1);
+      const columnWidth = Math.floor((availableWidth - totalGap) / columns);
 
       return (
         <View style={{ width: columnWidth, marginHorizontal: 6, marginVertical: 6 }}>
@@ -460,12 +477,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               setSelectedFoodId={setSelectedFoodId}
             />
           ) : item.foodofferInfoItem ? (
-            <FoodOfferInfoItem key={item.foodofferInfoItem.id || `info-item-${index}`} item={item.foodofferInfoItem} content={(getInfoItemContent(item.foodofferInfoItem) || {}).content || ''} />
+            <FoodOfferInfoItem
+              key={item.foodofferInfoItem.id || `info-item-${index}`}
+              item={item.foodofferInfoItem}
+              content={(getInfoItemContent(item.foodofferInfoItem) || {}).content || ''}
+            />
           ) : null}
         </View>
       );
     },
-    [openManagementSheet, openSheet, selectedCanteen, setSelectedFoodId, getInfoItemContent, screenWidth]
+    [openManagementSheet, openSheet, selectedCanteen, setSelectedFoodId, getInfoItemContent, screenWidth, numColumns]
   );
 
   const keyExtractor = useCallback((item: DayItem, index: number) => {
@@ -517,7 +538,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   return (
     <>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
         <View style={{ flex: 1 }}>
           <View
             style={{
@@ -697,10 +718,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             </View>
           </View>
           <FlashList
+            key={numColumns}
             data={dayItems}
             renderItem={renderDayItem}
             keyExtractor={keyExtractor}
-            numColumns={2}
+            numColumns={numColumns}
             estimatedItemSize={220}
             contentContainerStyle={{
               paddingHorizontal: isWeb ? (screenWidth < 500 ? 5 : 20) : 5,
