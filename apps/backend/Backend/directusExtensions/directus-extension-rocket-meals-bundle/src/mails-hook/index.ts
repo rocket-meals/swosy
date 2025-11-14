@@ -5,6 +5,7 @@ import { EmailOptions, MailService as MailServiceType } from '@directus/api/dist
 import { DEFAULT_HTML_TEMPLATE } from '../helpers/html/HtmlGenerator';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MailHelper } from '../helpers/mail/MailHelper';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'food_feedback_report';
 
@@ -34,11 +35,7 @@ export type EmailDownloadLink = {
   url: string;
 };
 
-export default defineHook(async ({ schedule, action, filter }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, action, filter }, apiContext) => {
 
   async function sendMail(options: EmailOptions) {
     let { MailService } = apiContext.services;

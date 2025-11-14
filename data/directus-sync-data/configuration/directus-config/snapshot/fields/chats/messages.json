@@ -13,17 +13,11 @@
     "interface": "list-o2m",
     "note": null,
     "options": {
-      "fields": [
-        "profile.nickname",
-        "message",
-        "date_created"
-      ],
-      "layout": "table",
-      "sort": "date_created"
+      "enableLink": true
     },
     "readonly": false,
     "required": false,
-    "sort": 10,
+    "sort": 14,
     "special": [
       "o2m"
     ],

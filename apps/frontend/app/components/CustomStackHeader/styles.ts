@@ -13,11 +13,15 @@ export default StyleSheet.create({
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
-	col1: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 20,
-	},
+        col1: {
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 20,
+        },
+        col2: {
+                flexDirection: 'row',
+                alignItems: 'center',
+        },
 	heading: {
 		fontSize: 18,
 		fontFamily: 'Poppins_400Regular',

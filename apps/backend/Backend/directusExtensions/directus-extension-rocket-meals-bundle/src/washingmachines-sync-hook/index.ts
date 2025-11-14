@@ -11,7 +11,9 @@ import { RegisterFunctions } from '@directus/extensions';
 import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterface';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
-
+import {CronHelper, CronObject} from "repo-depkit-common";
+import {MyDefineHook} from "../helpers/MyDefineHook";
+const HOOK_NAME = 'washingmachines-sync-hook';
 function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions: RegisterFunctions) {
   const { filter } = registerFunctions;
   // Washingmachines Jobs Creation
@@ -107,7 +109,7 @@ class WashingmachinesWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default defineHook(async (registerFunctions: RegisterFunctions, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions: RegisterFunctions, apiContext) => {
   const { action, filter, schedule } = registerFunctions;
 
   registerWashingmachinesFilterUpdate(apiContext, registerFunctions);
@@ -136,6 +138,6 @@ export default defineHook(async (registerFunctions: RegisterFunctions, apiContex
     workflowRunInterface: new WashingmachinesWorkflow(usedParser),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,
-    cronOject: WorkflowScheduleHelper.EVERY_DAY_AT_17_59,
+    cronOject: CronHelper.EVERY_DAY_AT_17_59,
   });
 });

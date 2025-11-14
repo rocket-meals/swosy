@@ -14,15 +14,18 @@ import { RootState } from '@/redux/reducer';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 
 interface LabelsProps {
-	foodDetails: any;
-	offerId: string;
-	handleMenuSheet?: () => void;
-	color: string;
+        foodDetails: any;
+        offerId?: string;
+        handleMenuSheet?: () => void;
+        color: string;
 }
 
 const selectMarkings = (state: RootState) => state.food.markings;
 
-export const selectFoodOffer = (offerId: string) => createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers => getFoodOffer(foodOffers, offerId));
+export const selectFoodOffer = (offerId?: string) =>
+        createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
+                offerId ? getFoodOffer(foodOffers, offerId) : undefined
+        );
 
 const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
@@ -36,8 +39,12 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
 	};
 
-	const markings = useSelector(selectMarkings);
-	const foodOffer = useSelector(selectFoodOffer(offerId));
+        const markings = useSelector(selectMarkings);
+        const foodOfferSelector = useMemo(
+                () => (offerId ? selectFoodOffer(offerId) : () => undefined),
+                [offerId]
+        );
+        const foodOffer = useSelector(foodOfferSelector as (state: RootState) => DatabaseTypes.Foodoffers | undefined);
 
 	// State for marking groups
 	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);

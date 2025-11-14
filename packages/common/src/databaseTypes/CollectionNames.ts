@@ -39,6 +39,9 @@ export enum CollectionNames {
   WASHINGMACHINES = 'washingmachines',
   WASHINGMACHINES_JOBS = 'washingmachines_jobs',
   NEWS = 'news',
+  CHATS = 'chats',
+  CHAT_MESSAGES = 'chat_messages',
+  CHATS_PARTICIPANTS = 'chats_participants',
   LANGUAGES = 'languages',
   PROFILES = 'profiles',
   UTILIZATION_GROUPS = 'utilizations_groups',
@@ -59,4 +62,10 @@ export enum CollectionNames {
   FOODOFFER_CATEGORIES = 'foodoffers_categories',
   WORKFLOWS = 'workflows',
   WORKFLOWS_RUNS = 'workflows_runs',
+}
+
+export const CollectionFieldNames = {
+  [CollectionNames.FOODS]: {
+    IMAGE: 'image',
+  }
 }

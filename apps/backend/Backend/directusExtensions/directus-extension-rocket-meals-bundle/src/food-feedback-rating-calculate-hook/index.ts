@@ -2,15 +2,11 @@ import { defineHook } from '@directus/extensions-sdk';
 import { CollectionNames } from 'repo-depkit-common';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { FoodRatingCalculator } from './FoodRatingCalculator';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'food_feedback_rating_calculate';
 
-export default defineHook(async ({ action, filter }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, filter }, apiContext) => {
   const foodRatingCalculator = new FoodRatingCalculator(apiContext);
 
   const collection = CollectionNames.FOODS_FEEDBACKS;

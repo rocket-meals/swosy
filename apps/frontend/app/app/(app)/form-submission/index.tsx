@@ -69,6 +69,47 @@ const parseDropdownValues = (input: unknown): string[] => {
 	return [];
 };
 
+const isFormFieldEntity = (field: DatabaseTypes.FormFields | string | null | undefined): field is DatabaseTypes.FormFields => typeof field === 'object' && field !== null && 'id' in field;
+
+const extractFormFieldId = (field: DatabaseTypes.FormFields | string | null | undefined): string | undefined => {
+	if (!field) return undefined;
+	if (typeof field === 'string') return field;
+	if (isFormFieldEntity(field)) return field.id;
+
+	return undefined;
+};
+
+const normalizeExpectedValue = (value: unknown): string => {
+	if (value === null || value === undefined) return '';
+	if (typeof value === 'string') return value.trim().toLowerCase();
+	if (typeof value === 'boolean') return value ? 'true' : 'false';
+	if (Array.isArray(value)) {
+		return value.map(item => String(item).trim().toLowerCase()).join(',');
+	}
+
+	return String(value).trim().toLowerCase();
+};
+
+const normalizeCurrentValue = (value: unknown, customType?: string): string => {
+	if (value === null || value === undefined) return '';
+
+	if (customType === 'value_boolean') {
+		if (value === 1 || value === true) return 'true';
+		if (value === 0 || value === false) return 'false';
+
+		return 'null';
+	}
+
+	if (typeof value === 'string') return value.trim().toLowerCase();
+	if (typeof value === 'number') return String(value);
+	if (typeof value === 'boolean') return value ? 'true' : 'false';
+	if (Array.isArray(value)) {
+		return value.map(item => String(item).trim().toLowerCase()).join(',');
+	}
+
+	return String(value).trim().toLowerCase();
+};
+
 const Index = () => {
 	const toast = useToast();
 	const scrollViewRef = useRef(null);
@@ -86,7 +127,8 @@ const Index = () => {
 	const [formAnswers, setFormAnswers] = useState<DatabaseTypes.FormAnswers[]>([]);
 	const [loadingCollection, setLoadingCollection] = useState(false);
 	const [collectionData, setCollectionData] = useState<any>([]);
-	const [selectedState, setSelectedState] = useState('');
+	const [selectedState, setSelectedState] = useState('submitted');
+	const [currentState, setCurrentState] = useState<string | null>(null);
 	const { formSubmission } = useSelector((state: RootState) => state.form);
 	const { user } = useSelector((state: RootState) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
@@ -217,12 +259,23 @@ const Index = () => {
 		return result;
 	};
 
+	// Helfer: finde den nächsten Zustand in der filterOptions-Liste (fallback: 'submitted')
+	const getNextState = (current?: string | null | undefined) => {
+		if (!current) return 'submitted';
+		const idx = filterOptions.findIndex(opt => opt.id === current);
+		if (idx === -1) return 'submitted';
+		if (idx < filterOptions.length - 1) return filterOptions[idx + 1].id;
+		return filterOptions[idx].id; // letzter Zustand bleibt gleich
+	};
+
 	const fetchAllFormAnswers = async () => {
 		setLoading(true);
 		const formSubmissionPayload = await checkValidity();
 
 		if (formSubmissionPayload) {
-			setSelectedState(formSubmissionPayload?.state || 'draft');
+			// Merke den aktuellen Zustand und setze die Auswahl auf den nächsten Zustand
+			setCurrentState(formSubmissionPayload?.state || null);
+			setSelectedState(getNextState(formSubmissionPayload?.state));
 		}
 
 		const result = (await formAnswersHelper.fetchFormAnswers({
@@ -388,6 +441,54 @@ const Index = () => {
 			return value;
 		}
 	};
+
+	const getAnswerValue = useCallback(
+		(answer: DatabaseTypes.FormAnswers) => {
+			const key = String(answer?.id);
+			const formDataEntry = formData[key];
+
+			if (formDataEntry !== undefined) {
+				return formDataEntry.value;
+			}
+
+			const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
+
+			if (!formField) {
+				return undefined;
+			}
+
+			const fieldType = formField.field_type || '';
+			const [custom_type, ...idParts] = fieldType.split('-');
+			const custom_id = idParts.join('-');
+			const defaultValue = (answer as any)?.[custom_type];
+
+			if (custom_type === 'value_custom') {
+				return defaultValue ?? null;
+			}
+
+			if (custom_type === 'value_number') {
+				if (typeof defaultValue === 'number') {
+					return String(defaultValue).replace('.', ',');
+				}
+
+				return defaultValue ?? null;
+			}
+
+			if (custom_type === 'value_boolean') {
+				if (defaultValue === false) return 0;
+				if (defaultValue === true) return 1;
+
+				return null;
+			}
+
+			if (['date_hh_mm', 'date', 'hh_mm', 'timestamp'].includes(custom_id) && typeof defaultValue === 'string') {
+				return parseDateForEdit(custom_id, defaultValue);
+			}
+
+			return defaultValue ?? null;
+		},
+		[formData]
+	);
 
 	const getDirectusUploadId = async (value: any) => {
 		const response = await fetch(value.image);
@@ -625,7 +726,8 @@ const Index = () => {
 							</View>
 							{formAnswers &&
 								formAnswers.map((answer, index) => {
-									const fieldType = answer?.form_field?.field_type || '';
+									const formField = isFormFieldEntity(answer?.form_field) ? answer.form_field : null;
+									const fieldType = formField?.field_type || '';
 									const prefix = answer?.form_field?.value_prefix;
 									const suffix = answer?.form_field?.value_suffix;
 									const [custom_type, ...idParts] = fieldType.split('-');
@@ -633,7 +735,37 @@ const Index = () => {
 									const fieldId = String(answer?.id);
 									const dropdownValues = parseDropdownValues(answer?.form_field?.dropdown_values);
 									const description = answer?.form_field?.translations?.length > 0 ? getFromDescriptionTranslation(answer?.form_field?.translations, language) : '';
-									const showInForm = answer?.form_field?.is_visible_in_form || true;
+									const visibilityDependsOnFieldId = formField ? extractFormFieldId(formField.visibility_depends_on_referenced_field) : undefined;
+									const expectedVisibilityValue = formField?.visibility_depends_on_referenced_value_equals;
+									const normalizedExpectedValue = normalizeExpectedValue(expectedVisibilityValue);
+									const baseVisibility = formField?.is_visible_in_form ?? true;
+									const hasVisibilityDependency = Boolean(visibilityDependsOnFieldId && normalizedExpectedValue !== '');
+									let showInForm = baseVisibility;
+
+									if (showInForm && hasVisibilityDependency) {
+										const referencedAnswer = formAnswers.find(item => {
+											const referencedField = isFormFieldEntity(item?.form_field) ? item.form_field : null;
+											const referencedFieldId = extractFormFieldId(referencedField || item?.form_field);
+
+											return referencedFieldId === visibilityDependsOnFieldId;
+										});
+
+										if (referencedAnswer) {
+											const referencedField = isFormFieldEntity(referencedAnswer?.form_field) ? referencedAnswer.form_field : null;
+											const referencedFieldType = referencedField?.field_type || '';
+											const [referencedCustomType] = referencedFieldType.split('-');
+											const currentValue = getAnswerValue(referencedAnswer);
+											const normalizedCurrentValue = normalizeCurrentValue(currentValue, referencedCustomType);
+
+											showInForm = normalizedCurrentValue === normalizedExpectedValue;
+										} else {
+											showInForm = false;
+										}
+									}
+									if (!showInForm) {
+										return null;
+									}
+
 									const isDisabled = answer?.form_field?.is_disabled || false;
 									let IconComponent: any = null;
 									let iconName = '';
@@ -700,7 +832,7 @@ const Index = () => {
 											{custom_id === 'date' && showInForm && <DateInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'hh_mm' && showInForm && <TimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'timestamp' && showInForm && <PreciseTimestampInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{custom_id === 'checkbox' && showInForm && <TriStateCheckbox id={fieldId} value={formData[fieldId]?.value || 0} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
+											{custom_id === 'checkbox' && showInForm && <TriStateCheckbox id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
 											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
 											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
 											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
@@ -718,27 +850,31 @@ const Index = () => {
 					width: screenWidth > 768 ? '70%' : '90%',
 				}}
 			>
-				<View style={styles.pickerContainer}>
-					<TouchableOpacity
+			<View style={styles.pickerContainer}>
+				{/* Aktueller Zustand und Auswahl des nächsten Zustands */}
+				<Text style={{ ...styles.body, marginBottom: 6, color: theme.screen.text }}>
+					{`${translate(TranslationKeys.state_current)}: ${translate(currentState || formSubmission?.state || 'draft')}`}
+				</Text>
+				<TouchableOpacity
+					style={{
+						...styles.stateChangeButton,
+						backgroundColor: theme.screen.iconBg,
+					}}
+					onPress={openFilterSheet}
+				>
+					<View
 						style={{
-							...styles.stateChangeButton,
-							backgroundColor: theme.screen.iconBg,
+							marginLeft: -34,
+							flexDirection: 'row',
+							alignItems: 'center',
+							gap: 10,
 						}}
-						onPress={openFilterSheet}
 					>
-						<View
-							style={{
-								marginLeft: -34,
-								flexDirection: 'row',
-								alignItems: 'center',
-								gap: 10,
-							}}
-						>
-							<MaterialIcons name="edit" size={20} color={theme.screen.text} />
-							<Text style={{ ...styles.state, color: theme.screen.text }}>{translate(selectedState)}</Text>
-						</View>
-					</TouchableOpacity>
-				</View>
+						<MaterialIcons name="edit" size={20} color={theme.screen.text} />
+						<Text style={{ ...styles.state, color: theme.screen.text }}>{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}</Text>
+					</View>
+				</TouchableOpacity>
+			</View>
 				<TouchableOpacity style={{ ...styles.button, backgroundColor: primaryColor }} onPress={handleFormSubmission}>
 					{submissionLoading ? <ActivityIndicator size={22} color={theme.screen.text} /> : <Text style={{ ...styles.buttonLabel, color: theme.activeText }}>{translate(TranslationKeys.save)}</Text>}
 				</TouchableOpacity>

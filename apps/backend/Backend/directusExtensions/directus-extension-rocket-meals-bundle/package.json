@@ -35,6 +35,11 @@
       },
       {
         "type": "hook",
+        "name": "apple-secret-rotator",
+        "source": "src/apple-secret-rotator/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "admin-password-setup-from-env-hook",
         "source": "src/admin-password-setup-from-env/index.ts"
       },
@@ -47,6 +52,11 @@
         "type": "hook",
         "name": "auto-translation-hook",
         "source": "src/auto-translation-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "chat-conversation-state-hook",
+        "source": "src/chat-conversation-state-hook/index.ts"
       },
       {
         "type": "hook",
@@ -87,6 +97,11 @@
         "type": "hook",
         "name": "food-sync-hook",
         "source": "src/food-sync-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "food-image-ai-generation-hook",
+        "source": "src/food-image-ai-generation-hook/index.ts"
       },
       {
         "type": "hook",
@@ -167,6 +182,7 @@
     "build": "yarn run test && yarn run cleanTestArtifacts && yarn run buildWithoutTest",
     "test": "yarn typecheck && yarn buildWithoutTest && yarn testOnly",
     "testOnly": "jest",
+    "testDev": "jest -t 'dev'",
     "cleanTestArtifacts": "rimraf ./test-artifacts",
     "dev": "directus-extension build -w --no-minify",
     "link": "directus-extension link",

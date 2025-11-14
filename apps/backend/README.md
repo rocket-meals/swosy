@@ -28,14 +28,12 @@ Similar steps can be made for local testing
           - Eigene IP-Adresse:
             - Server IP eintragen
 - Debian 11
+  - Public SSH Key Bei Strato hinterlegen
+    - `cat ~/.ssh/id_rsa.pub`
   - Get Project from GitHub:
     - If you already have the project you can skip this
     - Install Git
       - `sudo apt install git`
-    - Generate and add SSH Key into your GitHub Account
-      - Generate SSH Key
-        - `[ -f ~/.ssh/id_rsa.pub ] || ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""; cat ~/.ssh/id_rsa.pub`
-      - Visit: https://github.com/settings/keys and add the SSH Key
     - Create a new GitHub Repo forked from "https://github.com/rocket-meals/rocket-meals"
       - Clone the Repo
         - `git clone <Your Rocket Meals Repo>`

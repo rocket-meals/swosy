@@ -37,17 +37,15 @@ Darstellung von Menüs, die sowohl für Betreiber als auch für Gäste von Vorte
 
 ### Voraussetzungen
 
-- Node.js (Version 14 oder höher)
+- Node.js (Version 18 oder höher) und Yarn
 - npm oder yarn
 - Expo CLI
-- Zugang zu einer PostgreSQL-Datenbank
+- Docker
 
 ### Installation
 
 ```bash
 git clone https://github.com/dein-benutzername/rocket-meals.git
 cd rocket-meals
-npm install
-# oder
 yarn install
 ```

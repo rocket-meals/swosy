@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start:docker-push": "tsx src/index.ts --docker-push",
-    "start:pull-from-test-system": "tsx src/index.ts --pull-from-test-system",
-    "start:push": "tsx src/index.ts --push",
-    "start:pull": "tsx src/index.ts --pull",
-    "start": "tsx src/index.ts"
+    "start:docker-manage": "tsx src/index.ts",
+    "sync:pull-from-test-system": "yarn sync --pull-from-test-system",
+    "sync:push-to-test-system": "yarn sync --push-to-test-system",
+    "sync:push": "yarn sync --push",
+    "sync:pull": "yarn sync --pull",
+    "sync": "tsx src/SyncDatabaseSchemaProgramm.ts"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^22.5.0",
+    "@types/node-cron": "^2.0.3",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "tsx": "^4.7.0",
@@ -29,6 +31,7 @@
     "dotenv": "^17.2.1",
     "form-data": "^4.0.0",
     "inquirer": "^9.2.21",
+    "node-cron": "^3.0.2",
     "node-fetch": "^2.7.0",
     "path": "^0.12.7",
     "repo-depkit-common": "workspace:*",

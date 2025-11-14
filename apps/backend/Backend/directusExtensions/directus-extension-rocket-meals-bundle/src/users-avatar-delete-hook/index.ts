@@ -2,15 +2,11 @@ import { defineHook } from '@directus/extensions-sdk';
 import { EventHelper } from '../helpers/EventHelper';
 import { AvatarHelper } from '../helpers/AvatarHelper';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'users_avatar_delete';
 
-export default defineHook(async ({ filter }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter }, apiContext) => {
   const { services, database, getSchema, env, logger } = apiContext;
 
   filter(

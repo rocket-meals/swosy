@@ -7,87 +7,14 @@ import { PrimaryKey, ScheduleHandler } from '@directus/types';
 import { WorkflowRunJobInterface, WorkflowRunLogger } from './WorkflowRunJobInterface';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
+import {CronHelper, CronObject} from "repo-depkit-common";
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'workflows_hook';
-
-export type CronObject = {
-  seconds: string | number;
-  minutes: string | number;
-  hours: string | number;
-  dayOfMonth: string | number;
-  month: string | number;
-  dayOfWeek: string | number;
-};
 
 export type ScheduleFromExtension = (cron: string, handler: ScheduleHandler) => void;
 
 export class WorkflowScheduleHelper {
-  static getCronString(cronObject: CronObject): string {
-    return cronObject.seconds + ' ' + cronObject.minutes + ' ' + cronObject.hours + ' ' + cronObject.dayOfMonth + ' ' + cronObject.month + ' ' + cronObject.dayOfWeek;
-  }
-
-  static EVERY_HOUR: CronObject = {
-    seconds: 0,
-    minutes: 0,
-    hours: '*',
-    dayOfMonth: '*',
-    month: '*',
-    dayOfWeek: '*',
-  };
-
-  static EVERY_MINUTE: CronObject = {
-    seconds: 0,
-    minutes: '*',
-    hours: '*',
-    dayOfMonth: '*',
-    month: '*',
-    dayOfWeek: '*',
-  };
-
-  static EVERY_5_MINUTES: CronObject = {
-    seconds: 0,
-    minutes: '*/5',
-    hours: '*',
-    dayOfMonth: '*',
-    month: '*',
-    dayOfWeek: '*',
-  };
-
-  static EVERY_MONTH_AT_1AM: CronObject = {
-    seconds: 0,
-    minutes: 0,
-    hours: 1,
-    dayOfMonth: 1,
-    month: '*',
-    dayOfWeek: '*',
-  };
-
-  static EVERY_15_MINUTES: CronObject = {
-    seconds: 0,
-    minutes: '*/15',
-    hours: '*',
-    dayOfMonth: '*',
-    month: '*',
-    dayOfWeek: '*',
-  };
-
-  static EVERY_DAY_AT_17_59: CronObject = {
-    seconds: 0,
-    minutes: 59,
-    hours: 17,
-    dayOfMonth: '*',
-    month: '*',
-    dayOfWeek: '*',
-  };
-
-  static EVERY_DAY_AT_4AM: CronObject = {
-    seconds: 0,
-    minutes: 0,
-    hours: 4,
-    dayOfMonth: '*',
-    month: '*',
-    dayOfWeek: '*',
-  };
 
   static async createWorkflowRunInstance(workflowId: string, myDatabaseHelper: MyDatabaseHelper): Promise<void> {
     await myDatabaseHelper.getWorkflowsRunsHelper().createOne({
@@ -107,7 +34,7 @@ export class WorkflowScheduleHelper {
   }
 
   static async registerScheduleToCreateWorkflowRuns(config: { workflowId: string; cronOject: CronObject; myDatabaseHelper: MyDatabaseHelper; schedule: ScheduleFromExtension }): Promise<void> {
-    let cronString = WorkflowScheduleHelper.getCronString(config.cronOject);
+    let cronString = CronHelper.getCronString(config.cronOject);
     config.schedule(cronString, async () => {
       try {
         let workflowId = config.workflowId;
@@ -355,12 +282,7 @@ async function handleActionOnUpdateOrCreateIfWorkflowRunShouldBeDeleted(payload:
   }
 }
 
-export default defineHook(async ({ action, init, filter, schedule }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, init, filter, schedule }, apiContext) => {
   init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
     let myDatabaseHelper = new MyDatabaseHelper(apiContext);
     // App started, resetting workflow parsing

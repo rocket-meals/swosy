@@ -2,9 +2,11 @@ services:
   prepare-data:
     image: debian:bookworm-slim
     volumes:
+      - ./preparePermission.sh:/preparePermission.sh
       - ./data:/data
-    working_dir: /data
-    entrypoint: ["/bin/sh", "-c", "chmod +x ./permissionDatabase.sh && ./permissionDatabase.sh"]
+      - .env:/.env
+    working_dir: /
+    entrypoint: ["/bin/sh", "-c", "chmod +x ./preparePermission.sh && ./preparePermission.sh"]
 
   traefik:
     env_file:

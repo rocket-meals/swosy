@@ -4,33 +4,54 @@
 
 - Fork the repo
 - Enable github actions
+  - Visit "Actions" tab in your forked repository
+  - Click "Enable workflows"
 - Add github secrets
   - EXPO_TOKEN: https://docs.expo.dev/distribution/security/
+    - https://expo.dev/accounts/baumgartner-software/settings/access-tokens
 - Create new Expo project:
   - https://expo.dev/accounts/baumgartner-software/projects
   - Update `app.json`
     - `name`
     - `slug`
-    - `projectId`
-- Update the server url
-  - You need to have the backend setup
-  - in /app/constants/ServerConfiguration.ts
-- Update `eas.json` for production
-  - Source of information:
-    - Submit to apple store: https://github.com/expo/fyi/blob/main/asc-app-id.md
-    - Configuration: https://docs.expo.dev/submit/eas-json/#ios-specific-options
-  - iOS: at `submit.production.ios`:
-    - Fields to update:
-      - `appleId`
-      - `ascAppId`
-      - `appleTeamId`
-- Make sure the folder `public` contains a `.nojekyll` file
-  (https://docs.expo.dev/distribution/publishing-websites/#github-pages Step 4)
-  - `Because Expo uses underscores in generated files, you need to disable jekyll by creating a .nojekyll file in the public directory.`
-  - `mkdir public && touch public/.nojekyll`
+    - `projectId` (At Overview copy "ID" field, looks short but is longer)
+- Update in apps/frontend/config.ts
+  - Create a new tenant configuration and set the new fields "name", "slug", "projectId"
+  - "<bundleIdAndroid>" can be configured freely, but should be unique
+  - "<bundleIdIOS>" will be created in the next step
+- iOS:
+  - Create new app
+    - Before creating the app, create a new bundle id in Apple Developer account
+      - https://developer.apple.com/account/resources/identifiers/bundleId/add/bundle
+      - Bundle ID: `de.baumgartner-software.<project-slug>`
+      - Enable
+        - "Sign in with Apple"
+        - "Push Notifications"
+        - "NFC"
+    - Return to create new app, reload page if needed
+    - Select the new bundle id
+      - Platform iOS
+      - Name: '<Project Name>'
+      - Bundle ID: `de.baumgartner-software.<project-slug>`
+      - Primary Language: German (or as needed)
+      - SKU: 'de.baumgartner-software.<project-slug>'
+      - User Access: Admins Only
+      - Create
+    - Copy "Bundle ID" to `config.ts` under the new tenant configuration `iosBundleId`
+    - !ONLY PER REPOSITORY! Copy "Apple ID" to `eas.json` only in the respective repository
+- Android / Google Play
+  - https://play.google.com/console/u/1/developers/7617423695463895237/create-new-app
+  - Create new app
+    - App name: '<Project Name>'
+    - Default language: German (or as needed)
+    - App or game: App
+    - Free or paid: Free
+    - Check "I accept the Developer Distribution Agreement" etc.
+    - Create app
 - Enable Github Pages
-  - Set the homepage in `package.json`: `"homepage"`: `"/rocket-meals"` to specify the sub-path
-  - After the first deployment, set the to be hosted by branch gh-pages
+  - Trigger a deployment by "Actions" -> "CI" workflow -> "Run workflow"
+  - After the first deployment, set to be hosted by branch gh-pages
+    - Select "Pages" deploy from branch `gh-pages`
 
 ## Update/Upgrade
 

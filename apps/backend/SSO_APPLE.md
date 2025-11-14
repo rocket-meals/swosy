@@ -8,37 +8,30 @@ https://sarunw.com/posts/sign-in-with-apple-4/
 - 1. Find your Apple Team ID --> Variable TEAM_ID
   - https://developer.apple.com/account/resources/identifiers/list
   - Top right corner, after your name like: "... - 6U99XXXXXX"
-- 2. Create a new App ID
-  - Visit Identifiers (https://developer.apple.com/account/resources/identifiers/list)
-  - Press on the "+" Button
-  - Select "App IDs"
-  - Fill in a name and a Bundle ID
-    - Bundle ID: "de.<PRODUCT>.sso"
-    - Description: "SSO"
-  - Activate "Sign in with Apple"
-  - Save and Register
-  - Click on "Configure" (Sign in with Apple)
-    - Select the primary App ID
-    - Save and Continue
-    - Register
+- 2. Create an App ID (Primary App ID) --> See README.md for creating App ID
+  - The App ID will be used as primary App ID in the next steps
 - 3. Create a Service ID (Configuration of the Return URL)
   - Visit Identifiers (https://developer.apple.com/account/resources/identifiers/list)
   - Press top right on the search icon and search for "Service IDs"
-  - Select one or create a new "Register an Service ID"
+  - Select one or create a new "Register a Service ID"
   - Select "Service IDs" and press the "Continue" Button
   - Fill in the following:
     - Description: "<PRODUCT> SSO Service"
-    - Identifier: "de.<PRODUCT>.service.sso"
+    - Identifier: "de.baumgartner-software.<PRODUCT>.sso"
   - The identifier of the service will be our "AUTH_APPLE_CLIENT_ID"
+    - Continue --> Register --> Done
+  - Select the created Service ID
+  - Scroll down to "Sign In with Apple"
   - Check "Sign in with Apple"
   - Click "Configure" (Sign in with Apple)
     - Select or create a primary App ID
-    - Enter Domains: "<PUBLIC_URL>"
-      - Replace <PUBLIC_URL> with your instance of your server
-      - Eg. "XXX.rocket-meals.de"
-    - Enter the return URLs: "https://<PUBLIC_URL>/rocket-meals/api/auth/login/apple/callback"
-      - Replace <PUBLIC_URL> with your instance of your server
-      - eg. "https://XXX.rocket-meals.de/rocket-meals/api/auth/login/apple/callback"
+    - Enter Domains:
+      - test.rocket-meals.de
+      - <project>.rocket-meals.de
+    - Enter the return URLs:
+      "https://test.rocket-meals.de/rocket-meals/api/auth/login/apple/callback"
+    - Enter the return URLs:
+      "https://<project>.rocket-meals.de/rocket-meals/api/auth/login/apple/callback"
       - Continue --> Save
 - Keys (https://developer.apple.com/account/resources/authkeys/list)
   - Create a new key

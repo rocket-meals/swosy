@@ -10,7 +10,9 @@ export type OptsCustomType = {
   disableEventEmit: boolean;
 };
 
-type TypeWithId<T> = T & { id: PrimaryKey };
+type AnyTypeWithId = { id: PrimaryKey };
+
+type TypeWithId<T> = T & AnyTypeWithId;
 
 export class ItemsServiceHelper<T> implements ItemsService<T> {
   protected apiContext: ApiContext;
@@ -155,6 +157,17 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     return queriedItems[0];
   }
 
+  static getPrimaryKeyFromItemOrString(itemOrString: string | AnyTypeWithId | null | undefined): PrimaryKey | undefined {
+    if (itemOrString === null || itemOrString === undefined) {
+      return undefined;
+    }
+    if (typeof itemOrString === 'string') {
+      return itemOrString;
+    } else {
+      return itemOrString.id;
+    }
+  }
+
   async findItems(
     search: Partial<T>,
     customOptions?: {
@@ -248,9 +261,15 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     return await this.readByQuery(queryWithTranslations, opts);
   }
 
-  async readOne(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T> {
+  async readOne(primary_key: PrimaryKey | TypeWithId<T>, query?: Query, opts?: QueryOptions): Promise<T> {
     let itemsService = await this.getItemsService();
-    return await itemsService.readOne(primary_key, query, opts);
+    let pk: PrimaryKey;
+    if (typeof primary_key === 'object') {
+      pk = primary_key.id;
+    } else {
+        pk = primary_key;
+    }
+    return await itemsService.readOne(pk, query, opts);
   }
 
   async readAllItems(): Promise<T[]> {

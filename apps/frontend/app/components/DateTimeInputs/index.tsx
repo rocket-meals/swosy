@@ -1,8 +1,12 @@
-import { Text, TextInput, View } from 'react-native';
-import React, { useRef } from 'react';
+import { Text, TextInput, View, TouchableOpacity } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
+import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
+import { useModal } from '@/components/GlobalModal/useModal';
+import { MaterialIcons } from '@expo/vector-icons';
+import { parse, format } from 'date-fns';
 
 const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
@@ -11,6 +15,13 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 	const isThirdDotManual = useRef(false);
 	const isFifthDotManual = useRef(false);
 	const isLastColonManual = useRef(false);
+
+	const { show, close } = useModal();
+	const [localValue, setLocalValue] = useState<string>(value || '');
+
+	useEffect(() => {
+		setLocalValue(value || '');
+	}, [value]);
 
 	const formatDateTimeInput = (text: string) => {
 		let cleanedText = text.replace(/[^0-9]/g, '');
@@ -53,7 +64,8 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 			} else {
 				isFifthDotManual.current = false;
 			}
-			if (text[14] === ':' && !isLastColonManual.current) {
+			// Der Doppelpunkt zwischen Stunde und Minute steht bei Index 13 (0-basiert)
+			if (text[13] === ':' && !isLastColonManual.current) {
 				isManualDot = true;
 				isLastColonManual.current = true;
 			} else {
@@ -73,9 +85,48 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 		}
 	};
 
+	const openCalendar = () => {
+		if (isDisabled) return;
+		// pass current local date as selectedDateProp so calendar highlights it
+		let sel = null;
+		if (localValue && /^\d{2}\.\d{2}\.\d{4}/.test(localValue)) {
+			try {
+				const parsed = parse(localValue, 'dd.MM.yyyy', new Date());
+				sel = parsed.toISOString().split('T')[0];
+			} catch (e) {
+				// ignore
+			}
+		}
+
+		show(
+			<CalendarSheet
+				selectedDateProp={sel || undefined}
+				onSelect={(dateString: string) => {
+					try {
+						const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
+						const formattedDate = format(parsed, 'dd.MM.yyyy');
+						// Preserve existing time (HH:MM) from localValue or value, fallback to '00:00'
+						const timeMatchLocal = (localValue || '').match(/(\d{2}:\d{2})$/);
+						const timeMatchValue = (value || '').match(/(\d{2}:\d{2})$/);
+						const timePart = timeMatchLocal?.[1] || timeMatchValue?.[1] || '00:00';
+						const formatted = `${formattedDate} ${timePart}`;
+						setLocalValue(formatted);
+						onChange(id, formatted, custom_type);
+						onError(id, '');
+					} catch (e) {
+						// ignore
+					}
+					close();
+				}}
+				closeSheet={() => close()}
+			/>
+		, { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
+		);
+	};
+
 	return (
 		<View style={styles.container}>
-			<View style={[styles.inputContainer]}>
+			<View style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center' }]}>
 				{prefix && (
 					<View
 						style={{
@@ -87,28 +138,45 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{prefix}</Text>
 					</View>
 				)}
+
+				{/* Editable TextInput */}
 				<TextInput
 					style={[
 						styles.input,
 						flag
 							? {
-									width: '100%',
-									borderRadius: 10,
-								}
-							: {
-									width: isWeb ? '90%' : '80%',
-								},
+								flex: 1,
+								borderRadius: 10,
+							}
+						: {
+							width: isWeb ? '90%' : '80%',
+						},
 						{ color: theme.screen.text },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
 					onChangeText={validateDateTime}
-					value={value}
+					value={localValue}
 					editable={!isDisabled}
 					placeholder="DD.MM.YYYY HH:MM"
 					autoCapitalize="none"
 					enterKeyHint="next"
 				/>
+
+				{/* Calendar open button on the right */}
+				<TouchableOpacity
+					style={{
+						marginLeft: 8,
+						padding: 8,
+						borderRadius: 6,
+						backgroundColor: theme.sheet?.sheetBg || theme.screen.iconBg,
+					}}
+					onPress={openCalendar}
+					disabled={isDisabled}
+				>
+					<MaterialIcons name="calendar-month" size={20} color={theme.screen.text} />
+				</TouchableOpacity>
+
 				{suffix && (
 					<View
 						style={{
@@ -128,53 +196,57 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 
 const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
-	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
-	const isThirdDotManual = useRef(false);
-	const isFifthDotManual = useRef(false);
 
-	const formatDateInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, '');
+	const [localValue, setLocalValue] = useState<string>(value || '');
+	useEffect(() => {
+		setLocalValue(value || '');
+	}, [value]);
 
-		if (cleanedText.length > 2) {
-			cleanedText = cleanedText.slice(0, 2) + '.' + cleanedText.slice(2);
+	const { show, close } = useModal();
+
+	const openCalendar = () => {
+		if (isDisabled) return;
+		// pass current local date as selectedDateProp so calendar highlights it
+		let sel = null;
+		if (localValue && /^\d{2}\.\d{2}\.\d{4}$/.test(localValue)) {
+			try {
+				const parsed = parse(localValue, 'dd.MM.yyyy', new Date());
+				sel = parsed.toISOString().split('T')[0];
+			} catch (e) {
+				// ignore
+			}
 		}
-		if (cleanedText.length > 5) {
-			cleanedText = cleanedText.slice(0, 5) + '.' + cleanedText.slice(5);
-		}
 
-		if (cleanedText.length > 10) {
-			cleanedText = cleanedText.slice(0, 10);
-		}
-
-		previousValue.current = cleanedText;
-
-		return cleanedText;
+		show(
+			<CalendarSheet
+				selectedDateProp={sel || undefined}
+				onSelect={(dateString: string) => {
+					try {
+						const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
+						const formatted = format(parsed, 'dd.MM.yyyy');
+						setLocalValue(formatted);
+						onChange(id, formatted, custom_type);
+						onError(id, '');
+					} catch (e) {
+						// ignore
+					}
+					close();
+				}}
+				closeSheet={() => close()}
+			/>
+		, { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
+		);
 	};
 
-	const validateDate = (text: string) => {
-		let isManualDot = false;
-		if (text.length > 0 && text.length <= 10) {
-			if (text[2] === '.' && !isThirdDotManual.current) {
-				isManualDot = true;
-				isThirdDotManual.current = true;
-			} else {
-				isThirdDotManual.current = false;
-			}
-			if (text[5] === '.' && !isFifthDotManual.current) {
-				isManualDot = true;
-				isFifthDotManual.current = true;
-			} else {
-				isFifthDotManual.current = false;
-			}
-		}
+	// New: allow text editing while keeping the calendar button to the right
+	const onLocalTextChange = (text: string) => {
+		setLocalValue(text);
+		onChange(id, text, custom_type);
 
-		const formattedText = isManualDot ? text : formatDateInput(text);
-
-		onChange(id, formattedText, custom_type);
-
+		// simple validation for date-only (DD.MM.YYYY)
 		const dateRegex = /^\d{2}\.\d{2}\.\d{4}$/;
-		if (!dateRegex.test(formattedText)) {
+		if (!dateRegex.test(text)) {
 			onError(id, 'Invalid date format (e.g., DD.MM.YYYY)');
 		} else {
 			onError(id, '');
@@ -183,7 +255,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 
 	return (
 		<View style={styles.container}>
-			<View style={[styles.inputContainer]}>
+			<View style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center' }]}>
 				{prefix && (
 					<View
 						style={{
@@ -195,28 +267,45 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{prefix}</Text>
 					</View>
 				)}
+
+				{/* Editable TextInput */}
 				<TextInput
 					style={[
 						styles.input,
 						flag
 							? {
-									width: '100%',
-									borderRadius: 10,
-								}
-							: {
-									width: isWeb ? '90%' : '80%',
-								},
+								flex: 1,
+								borderRadius: 10,
+							}
+						: {
+							width: isWeb ? '80%' : '70%',
+						},
 						{ color: theme.screen.text },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
-					onChangeText={validateDate}
-					value={value}
+					onChangeText={onLocalTextChange}
+					value={localValue}
 					editable={!isDisabled}
 					placeholder="DD.MM.YYYY"
 					autoCapitalize="none"
 					enterKeyHint="next"
 				/>
+
+				{/* Calendar open button on the right */}
+				<TouchableOpacity
+					style={{
+						marginLeft: 8,
+						padding: 8,
+						borderRadius: 6,
+						backgroundColor: theme.sheet?.sheetBg || theme.screen.iconBg,
+					}}
+					onPress={openCalendar}
+					disabled={isDisabled}
+				>
+					<MaterialIcons name="calendar-month" size={20} color={theme.screen.text} />
+				</TouchableOpacity>
+
 				{suffix && (
 					<View
 						style={{
@@ -366,7 +455,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 
 		// Ensure max length (`DD.MM.YYYY HH:MM:SS` = 19 characters)
 		if (cleanedText.length > 19) {
-			cleanedText = cleanedText.slice(0, 19);
+		 cleanedText = cleanedText.slice(0, 19);
 		}
 
 		previousValue.current = cleanedText;
@@ -388,13 +477,14 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 			} else {
 				isFifthDotManual.current = false;
 			}
-			if (text[14] === ':' && !isSecondLastColonManual.current) {
+			// Bei Timestamp (`DD.MM.YYYY HH:MM:SS`) stehen die Doppelpunkte bei Index 13 und 16 (0-basiert)
+			if (text[13] === ':' && !isSecondLastColonManual.current) {
 				isManualDot = true;
 				isSecondLastColonManual.current = true;
 			} else {
 				isSecondLastColonManual.current = false;
 			}
-			if (text[17] === ':' && !isLastColonManual.current) {
+			if (text[16] === ':' && !isLastColonManual.current) {
 				isManualDot = true;
 				isLastColonManual.current = true;
 			} else {

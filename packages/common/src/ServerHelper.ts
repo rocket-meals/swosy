@@ -14,4 +14,8 @@ export class ServerHelper {
   public static STUDI_FUTTER_SERVER_CONFIG: ServerConfig = {
     server_url: 'https://studi-futter.rocket-meals.de/rocket-meals/api',
   };
+
+  public static AACHEN_SERVER_CONFIG: ServerConfig = {
+    server_url: 'https://aachen.rocket-meals.de/rocket-meals/api',
+  };
 }

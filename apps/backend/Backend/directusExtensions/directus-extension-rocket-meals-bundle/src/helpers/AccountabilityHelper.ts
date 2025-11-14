@@ -12,4 +12,16 @@ export class AccountabilityHelper {
       return undefined;
     }
   }
+
+  public static isAdminAccountability(accountability?: Accountability | null): boolean {
+    if (!accountability) {
+      return false;
+    }
+
+    if (accountability.admin === true) {
+      return true;
+    }
+
+    return (accountability as { adminAccess?: boolean }).adminAccess === true;
+  }
 }

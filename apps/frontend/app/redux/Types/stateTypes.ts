@@ -138,5 +138,6 @@ export interface PopupEventsHashState {
 }
 
 export interface ChatsState {
-	chats: DatabaseTypes.Chats[];
+        chats: DatabaseTypes.Chats[];
+        readStatus: Record<string, string>;
 }

@@ -1,10 +1,10 @@
 ### Google SSO
 
 - Visit: https://console.cloud.google.com/apis/credentials
-- Create new Project
+- Select Project top left, then Create new Project
+- ## Anmelde Daten
 - OAuth Zustimmungsbildschirm
   - Externen Benutzern Zugriff auf die App gewähren
-    - Erstellen
   - Anwendungsname: `<Name des Projectes>`
   - Support E-Mail: `<E-Mail Adresse>`
   - Anwendungslogo: Auswählen
@@ -17,7 +17,7 @@
   - Kontaktdaten des Entwicklers
     - E-Mail: `<E-Mail Adresse>`
   - Weiter
-- Bereiche
+- Bereiche / Datenzugriff
   - Bereiche hinzufügen oder entfernen
     - ".../auth/userinfo.email Primäre E-Mail-Adresse Ihres Google-Kontos abrufen"
     - ".../auth/userinfo.profile Personenbezogene Daten aufrufen, einschließlich aller Daten"
@@ -33,6 +33,7 @@
     - Anwendungstyp: Webanwendung
     - Name: `<Name des Projectes>`
     - Authorisierte Weiterleitungs-URIs
+      - 'https://test.rocket-meals.de/rocket-meals/api/auth/login/google/callback'
       - `https://<SUBDOMAIN>.rocket-meals.de/rocket-meals/api/auth/login/google/callback`
       - `http://127.0.0.1/rocketmeals/api/auth/login/google/callback`
     - Erstellen

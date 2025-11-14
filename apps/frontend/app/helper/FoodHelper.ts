@@ -36,16 +36,30 @@ export async function loadMostLikedOrDislikedFoods(limit: number, offset: number
 }
 
 export async function loadBestRatedFoodsWithImage(limit: number, offset: number) {
-	const collectionHelper = new CollectionHelper<DatabaseTypes.Foods>('foods');
-	const query = {
-		limit,
-		offset,
-		sort: ['-rating_average'],
-		filter: {
-			_and: [{ image: { _nnull: true } }],
-		},
-		fields: ['id', 'image'],
-	};
+        const collectionHelper = new CollectionHelper<DatabaseTypes.Foods>('foods');
+        const query = {
+                limit,
+                offset,
+                sort: ['-rating_average'],
+                filter: {
+                        _and: [{ image: { _nnull: true } }],
+                },
+                fields: ['id', 'image'],
+        };
 
-	return await collectionHelper.readItems(query);
+        return await collectionHelper.readItems(query);
+}
+
+export async function loadFoodById(id: string) {
+        const collectionHelper = new CollectionHelper<DatabaseTypes.Foods>('foods');
+        const query: any = {
+                fields: ['*'],
+                deep: {
+                        translations: {
+                                fields: ['*'],
+                        },
+                },
+        };
+
+        return await collectionHelper.readItem(id, query);
 }

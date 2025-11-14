@@ -3,15 +3,11 @@ import { EventHelper } from '../helpers/EventHelper';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { CollectionNames } from 'repo-depkit-common';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'profile_create';
 
-export default defineHook(async ({ filter, schedule }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter, schedule }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   let users_service = myDatabaseHelper.getUsersHelper();

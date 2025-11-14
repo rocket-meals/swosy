@@ -82,6 +82,7 @@ export class FormHelper {
       is_required: false,
       is_visible_in_export: true,
       is_visible_in_form: true,
+      visibility_rule: '',
       sort: 0,
       status: 'published',
       translations: [],

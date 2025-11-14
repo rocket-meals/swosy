@@ -1,15 +1,11 @@
 import { defineHook } from '@directus/extensions-sdk';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { ActivityServiceCreator } from '../helpers/ItemsServiceCreator';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
 
-export default defineHook(async ({ schedule }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule }, apiContext) => {
   const isProduction = true;
 
   const cronFrequencyEveryDayAt4AM = '0 4 * * *';

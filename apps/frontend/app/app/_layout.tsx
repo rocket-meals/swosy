@@ -19,6 +19,7 @@ import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
+import { ModalProvider } from '@/components/GlobalModal/ModalProvider';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -93,7 +94,9 @@ export default function Layout() {
 										<ExpoUpdateChecker>
 											<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
 												<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
-													<Slot />
+													<ModalProvider>
+														<Slot />
+													</ModalProvider>
 												</SafeAreaView>
 											</KeyboardAvoidingView>
 										</ExpoUpdateChecker>

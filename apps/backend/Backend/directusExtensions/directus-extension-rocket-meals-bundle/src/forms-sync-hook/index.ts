@@ -11,6 +11,8 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { TranslationHelper } from '../helpers/TranslationHelper';
 import { FormHelper } from '../helpers/form/FormHelper';
 import { MyFileTypes } from '../helpers/FilesServiceHelper';
+import {MyDefineHook} from "../helpers/MyDefineHook";
+const HOOK_NAME = 'forms-sync-hook';
 
 function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext) {
   registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS + '.items.create', async (input, meta, eventContext) => {
@@ -427,7 +429,7 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
   }
 }
 
-export default defineHook(async (registerFunctions, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async (registerFunctions, apiContext) => {
   // Allow only drafts to be created
   registerHookToCreateFormAnswersForFormSubmission(registerFunctions, apiContext);
 

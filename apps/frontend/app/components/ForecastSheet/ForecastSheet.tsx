@@ -1,166 +1,150 @@
-import { ActivityIndicator, Dimensions, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
-import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
+import {AntDesign} from '@expo/vector-icons';
+import React, {useEffect, useState} from 'react';
+import {useTheme} from '@/hooks/useTheme';
+import {BottomSheetScrollView, BottomSheetView} from '@gorhom/bottom-sheet';
 import styles from './styles';
-import { isWeb } from '@/constants/Constants';
-import { ForecastSheetProps } from './types';
-import { BarChart } from 'react-native-chart-kit';
-import { format, parseISO } from 'date-fns';
-import { UtilizationEntryHelper } from '@/redux/actions/UtilizationEntries/UtilizationEntries';
+import {isWeb} from '@/constants/Constants';
+import {ForecastSheetProps} from './types';
+import {format, parseISO} from 'date-fns';
+import {UtilizationEntryHelper} from '@/redux/actions/UtilizationEntries/UtilizationEntries';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { useFocusEffect } from 'expo-router';
-import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
-import { DatabaseTypes } from 'repo-depkit-common';
+import {useLanguage} from '@/hooks/useLanguage';
+import {TranslationKeys} from '@/locales/keys';
+import {DatabaseTypes} from 'repo-depkit-common';
+import SettingsList from '@/components/SettingsList/SettingsList';
+
+type ForecastEntry = {
+        time: string;
+        percentage: number;
+        color: string;
+        value_real: number | null | undefined;
+        value_forecast_current: number | null | undefined;
+};
+
+const showDebugInformation = false;
 
 const ForecastSheet: React.FC<ForecastSheetProps> = ({ closeSheet, forDate }) => {
-	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const utilizationEntryHelper = new UtilizationEntryHelper();
-	const [loading, setLoading] = useState(false);
-	const selectedCanteen = useSelectedCanteen();
-	const scrollViewRef = useRef<ScrollView>(null);
-	const [chartData, setChartData] = useState<any>({
-		labels: [],
-		datasets: [{ data: [] }],
-	});
+        const { theme } = useTheme();
+        const { translate } = useLanguage();
+        const utilizationEntryHelper = new UtilizationEntryHelper();
+        const [loading, setLoading] = useState(false);
+        const selectedCanteen = useSelectedCanteen();
+        const [forecastEntries, setForecastEntries] = useState<ForecastEntry[]>([]);
+        const [currentUtilizationGroup, setCurrentUtilizationGroup] = useState<DatabaseTypes.UtilizationsGroups | null>(null);
 
-	const processData = (data: any) => {
-		const utilizationGroup = data[0]?.utilization_group;
-		const max = utilizationGroup?.threshold_until_max || utilizationGroup?.all_time_high || 100;
 
-		const thresholdUntilMedium = utilizationGroup?.threshold_until_medium || 65; // Default medium threshold
-		const thresholdUntilHigh = utilizationGroup?.threshold_until_high || 80; // Default high threshold
 
-		const intervals = [];
+        const processData = (
+                data: DatabaseTypes.UtilizationsEntries[],
+                utilizationGroup?: DatabaseTypes.UtilizationsGroups
+        ): ForecastEntry[] => {
+                const max =
+                        utilizationGroup?.threshold_until_max ??
+                        utilizationGroup?.all_time_high ??
+                        utilizationGroup?.threshold_until_high ??
+                        100;
+
+                const thresholdUntilMedium = utilizationGroup?.threshold_until_medium ?? 65; // Default medium threshold
+                const thresholdUntilHigh = utilizationGroup?.threshold_until_high ?? 80; // Default high threshold
+
+                const intervals = [];
 		for (let i = 0; i < 24; i++) {
 			intervals.push(`${i}:00`, `${i}:15`, `${i}:30`, `${i}:45`);
 		}
 
-		const chartData = intervals.map(label => {
-			const matchingData = data?.find((entry: any) => {
-				const start = format(parseISO(entry.date_start), 'H:mm');
-				return start === label;
-			});
+                const entries = intervals.map(label => {
+                        const matchingData = data?.find((entry: DatabaseTypes.UtilizationsEntries) => {
+                                if (!entry.date_start) {
+                                        return false;
+                                }
 
-			let percentage = 0;
-			if (matchingData) {
-				if (matchingData.value_real) {
-					percentage = (matchingData.value_real / max) * 100;
-				} else if (matchingData.value_forecast_current) {
-					percentage = (matchingData.value_forecast_current / max) * 100;
-				}
-			}
+                                const start = format(parseISO(entry.date_start), 'H:mm');
+                                return start === label;
+                        });
 
-			// Round to nearest 10 and enforce a minimum of 10 for any value > 0
-			if (percentage > 0) {
-				percentage = Math.max(10, Math.round(percentage / 10) * 10);
-			} else {
-				percentage = 0;
-			}
+                        let percentage = 0;
+                        if (matchingData) {
+                                if (matchingData.value_real) {
+                                        percentage = (matchingData.value_real / max) * 100;
+                                } else if (matchingData.value_forecast_current) {
+                                        percentage = (matchingData.value_forecast_current / max) * 100;
+                                }
+                        }
 
-			return percentage;
-		});
+                        // Round to nearest 10 and enforce a minimum of 10 for any value > 0
+                        if (percentage > 0) {
+                            percentage = Math.max(10, Math.round(percentage / 10) * 10);
+                        } else {
+                            percentage = 0;
+                        }
 
-		const colors = chartData.map(percentage => {
-			if (percentage > thresholdUntilHigh) return (opcaity = 1) => '#F5A13C'; // Orange for high values
-			if (percentage > thresholdUntilMedium) return (opacity = 1) => '#FFD500'; // Yellow for medium values
-			return (opacity = 1) => '#93c34b'; // Green for low values
-		});
+                        let color = '#93c34b';
+                        if (percentage > thresholdUntilHigh) {
+                                color = '#F5A13C';
+                        } else if (percentage > thresholdUntilMedium) {
+                                color = '#FFD500';
+                        }
 
-		return {
-			labels: intervals,
-			datasets: [
-				{
-					data: [...chartData],
-					colors: [...colors],
-					threshold_until_medium: thresholdUntilMedium,
-					threshold_until_high: thresholdUntilHigh,
-				},
-			],
-		};
-	};
+                        return {
+                                time: label,
+                                percentage:percentage,
+                                color: color,
+                                value_real: matchingData?.value_real,
+                                value_forecast_current: matchingData?.value_forecast_current,
+                        };
+                });
 
-	const getUtilization = async (forDate: string) => {
-		try {
-			setLoading(true);
+                return entries.filter(entry => entry.percentage > 0);
+        };
 
-			if (!selectedCanteen || !selectedCanteen.utilization_group) {
-				setLoading(false);
-				setChartData({ labels: [], datasets: [{ data: [] }] });
-				return;
-			}
+        const getUtilization = async (forDate: string) => {
+                try {
+                        setLoading(true);
 
-			const utilizationData = (await utilizationEntryHelper.fetchUtilizationEntries({}, selectedCanteen?.utilization_group, forDate)) as DatabaseTypes.UtilizationsEntries[];
-			if (utilizationData) {
-				const processedData = processData(utilizationData);
-				setChartData(processedData);
-				setLoading(false);
-			}
-		} catch (error) {
-			setLoading(false);
-			console.error('Error fetching utilization data:', error);
-		}
-	};
+                        const utlizationGroupId = selectedCanteen?.utilization_group as string | undefined;
 
-	useEffect(() => {
-		if (selectedCanteen) {
-			getUtilization(forDate);
-		}
-	}, [selectedCanteen, forDate]);
+                        if (!utlizationGroupId) {
+                                setForecastEntries([]);
+                            setCurrentUtilizationGroup(null);
+                                return;
+                        }
 
-	const chartConfig = {
-		backgroundGradientFrom: theme.sheet.sheetBg,
-		backgroundGradientFromOpacity: 1,
-		backgroundGradientTo: theme.sheet.sheetBg,
-		backgroundGradientToOpacity: 1,
-		color: () => theme.sheet.text,
-		strokeWidth: 2,
-		// barPercentage: 0.5,
-		useShadowColorFromDataset: false,
-		decimalPlaces: 0,
-		formatYLabel: (value: any) => `${value}%`,
-	};
 
-	useFocusEffect(
-		useCallback(() => {
-			if (chartData && chartData?.datasets[0]?.data?.length) {
-				const data = chartData.datasets[0].data;
-				const now = new Date();
-				const currentIndex = now.getHours() * 4 + Math.floor(now.getMinutes() / 15);
+                        const utilizationData = (await utilizationEntryHelper.fetchUtilizationEntries({}, utlizationGroupId, forDate)) as DatabaseTypes.UtilizationsEntries[];
+                        let utilizationGroup: DatabaseTypes.UtilizationsGroups | undefined;
 
-				let targetIndex = data.slice(currentIndex).findIndex((value: number) => value > 0);
+                        if (utilizationData && utilizationData.length > 0) {
+                            utilizationGroup = utilizationData[0]?.utilization_group as DatabaseTypes.UtilizationsGroups | undefined;
+                            const processedData = processData(utilizationData, utilizationGroup);
+                            setForecastEntries(processedData);
+                            setCurrentUtilizationGroup(utilizationGroup ?? null);
+                        } else {
+                                setForecastEntries([]);
+                                setCurrentUtilizationGroup(null);
+                        }
+                } catch (error) {
+                        setForecastEntries([]);
+                        console.error('Error fetching utilization data:', error);
+                } finally {
+                        setLoading(false);
+                }
+        };
 
-				if (targetIndex !== -1) {
-					targetIndex += currentIndex;
-				} else {
-					// No values after the current time, jump to two steps before the last value
-					for (let i = data.length - 1; i >= 0; i--) {
-						if (data[i] > 0) {
-							targetIndex = Math.max(0, i - 2);
-							break;
-						}
-					}
-				}
+        useEffect(() => {
+                if (selectedCanteen) {
+                        getUtilization(forDate);
+                }
+        }, [selectedCanteen, forDate]);
 
-				if (targetIndex !== -1 && targetIndex !== undefined) {
-					const offsetX = Math.max(0, targetIndex * 101 + 100);
-					if (Platform.OS === 'web') {
-						scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
-					} else {
-						setTimeout(() => {
-							scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
-						}, 300);
-					}
-				}
-			}
-		}, [chartData])
-	);
+        const title = translate(TranslationKeys.forecast);
+        let debugInformationInTitle = '';
+        if(showDebugInformation) {
+            debugInformationInTitle = `all_time_high ${currentUtilizationGroup?.all_time_high ?? 'N/A'}, threshold_until_max ${currentUtilizationGroup?.threshold_until_max ?? 'N/A'}`;
+        }
 
-	return (
-		<BottomSheetView style={{ ...styles.container, backgroundColor: theme.sheet.sheetBg }}>
+        return (
+                <BottomSheetView style={{ ...styles.container, backgroundColor: theme.sheet.sheetBg }}>
 			<View
 				style={{
 					...styles.header,
@@ -175,60 +159,80 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({ closeSheet, forDate }) =>
 				</TouchableOpacity>
 			</View>
 			<View style={styles.titleContainer}>
-				<Text
-					style={{
-						...styles.sheetHeading,
-						fontSize: isWeb ? 40 : 28,
-						color: theme.sheet.text,
-					}}
-				>
-					{translate(TranslationKeys.forecast)}
-				</Text>
+                <View>
+                    <Text
+                        style={{
+                            ...styles.sheetHeading,
+                            fontSize: isWeb ? 40 : 28,
+                            color: theme.sheet.text,
+                        }}
+                    >
+                        {title}
+                    </Text>
+                </View>
+                {showDebugInformation && (
+                    <View>
+                        <Text
+                            style={{
+                                color: theme.sheet.text,
+                            }}
+                        >
+                            {debugInformationInTitle}
+                        </Text>
+                    </View>
+                )}
 			</View>
-			<BottomSheetScrollView
-				ref={scrollViewRef}
-				horizontal
-				showsHorizontalScrollIndicator={true}
-				style={styles.forecastContainer}
-				nestedScrollEnabled
-				contentContainerStyle={{
-					paddingHorizontal: isWeb ? 20 : 10,
-					width: chartData ? Math.max(chartData.labels.length * 100, Dimensions.get('window').width) : Dimensions.get('window').width,
-					alignItems: 'center',
-					marginTop: chartData ? 40 : 0,
-				}}
-			>
-				{!loading && chartData ? (
-					<BarChart
-						style={{ ...styles.graphStyle, backgroundColor: theme.sheet.sheetBg }}
-						data={chartData}
-						width={Math.max(chartData.labels.length * 100, Dimensions.get('window').width)}
-						fromNumber={100}
-						height={400}
-						showBarTops={false}
-						chartConfig={{
-							formatTopBarValue: value => {
-								if (value > 0) {
-									return `${value}%`;
-								} else {
-									return '';
-								}
-							},
-							...chartConfig,
-							barPercentage: 1.5,
-						}}
-						// showValuesOnTopOfBars
-						withCustomBarColorFromData
-						flatColor
-					/>
-				) : (
-					<View style={{ width: '100%', height: 200, alignItems: 'center' }}>
-						<ActivityIndicator size={40} color={theme.screen.icon} />
-					</View>
-				)}
-			</BottomSheetScrollView>
-		</BottomSheetView>
-	);
+                        <BottomSheetScrollView
+                                style={styles.forecastContainer}
+                                contentContainerStyle={{
+                                        paddingHorizontal: 10,
+                                        paddingBottom: 40,
+                                        paddingTop: 20,
+                                }}
+                        >
+                                {loading ? (
+                                        <View style={styles.loadingContainer}>
+                                                <ActivityIndicator size={40} color={theme.screen.icon} />
+                                        </View>
+                                ) : forecastEntries.length > 0 ? (
+                                        forecastEntries.map((entry, index) => {
+                                                const isSingle = forecastEntries.length === 1;
+                                                const isFirst = index === 0;
+                                                const isLast = index === forecastEntries.length - 1;
+
+                                                const groupPosition = isSingle
+                                                        ? 'single'
+                                                        : isFirst
+                                                        ? 'top'
+                                                        : isLast
+                                                        ? 'bottom'
+                                                        : 'middle';
+
+                                                let valueToShow = entry.percentage+'%'
+                                                if(showDebugInformation) {
+                                                    valueToShow += " (" + (entry.value_real ?? entry.value_forecast_current) + ")";
+                                                }
+
+                                                return (
+                                                        <SettingsList
+                                                                key={`${entry.time}-${index}`}
+                                                                leftIcon={<View style={[styles.colorIndicator, { backgroundColor: entry.color }]} />}
+                                                                title={entry.time}
+                                                                value={valueToShow}
+                                                                showSeparator={!isLast}
+                                                                groupPosition={groupPosition}
+                                                                iconBackgroundColor={theme.sheet.sheetBg}
+                                                        />
+                                                );
+                                        })
+                                ) : (
+                                        <Text style={[styles.noDataText, { color: theme.sheet.text }]}>
+                                                {translate(TranslationKeys.no_data_found)}
+                                        </Text>
+                                )}
+                        </BottomSheetScrollView>
+                </BottomSheetView>
+        );
 };
 
 export default ForecastSheet;

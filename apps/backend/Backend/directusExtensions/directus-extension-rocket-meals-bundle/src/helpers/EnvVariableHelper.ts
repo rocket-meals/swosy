@@ -4,6 +4,7 @@ export enum SyncForCustomerEnum {
   TEST = 'Test',
   OSNABRUECK = 'Osnabrück',
   HANNOVER = 'Hannover',
+  AACHEN = 'Aachen',
 }
 
 export class EnvVariableHelper {
@@ -74,6 +75,10 @@ export class EnvVariableHelper {
 
   static getFoodImageSyncSwosyApiServerUrl() {
     return this.getEnvVariable('FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL');
+  }
+
+  static getOpenAiToken() {
+    return this.getEnvVariable('OPENAI_API_KEY');
   }
 
   static getMarkingSyncMode() {

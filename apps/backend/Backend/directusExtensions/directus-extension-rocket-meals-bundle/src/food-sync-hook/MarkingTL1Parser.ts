@@ -2,8 +2,7 @@ import { MarkingParserInterface, MarkingsTypeForParser } from './MarkingParserIn
 import { CSVExportParser } from './CSVExportParser';
 import { TranslationHelper, TranslationsFromParsingType } from '../helpers/TranslationHelper';
 import { SystemFileHelper } from '../helpers/SystemFileHelper';
-
-const FIELD_MARKING_TRANSLATION_NAME = 'name';
+import { MarkingTranslationFields } from './MarkingTranslationFields';
 
 export class MarkingTL1Parser implements MarkingParserInterface {
   private readonly path_to_tl1_export: string;
@@ -58,13 +57,13 @@ export class MarkingTL1Parser implements MarkingParserInterface {
       let nameDe = MarkingTL1Parser.getMarkingNameDe(name);
       if (nameDe) {
         translations[TranslationHelper.LANGUAGE_CODE_DE] = {
-          [FIELD_MARKING_TRANSLATION_NAME]: nameDe,
+          [MarkingTranslationFields.TRANSLATION_FIELD_NAME]: nameDe,
         };
       }
       let nameEn = MarkingTL1Parser.getMarkingNameEn(name);
       if (nameEn) {
         translations[TranslationHelper.LANGUAGE_CODE_EN] = {
-          [FIELD_MARKING_TRANSLATION_NAME]: nameEn,
+          [MarkingTranslationFields.TRANSLATION_FIELD_NAME]: nameEn,
         };
       }
     }

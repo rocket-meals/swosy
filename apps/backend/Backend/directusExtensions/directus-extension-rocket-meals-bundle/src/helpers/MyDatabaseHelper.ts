@@ -1,21 +1,24 @@
-import { ApiContext } from './ApiContext';
+import {ApiContext} from './ApiContext';
 
-import { CashregisterHelper } from './itemServiceHelpers/CashregisterHelper';
-import { ItemsServiceHelper } from './ItemsServiceHelper';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import {CashregisterHelper} from './itemServiceHelpers/CashregisterHelper';
+import {ItemsServiceHelper} from './ItemsServiceHelper';
+import {CollectionFieldNames, CollectionNames, DatabaseTypes} from 'repo-depkit-common';
 
-import { ServerServiceCreator } from './ItemsServiceCreator';
-import { AppSettingsHelper } from './itemServiceHelpers/AppSettingsHelper';
-import { AutoTranslationSettingsHelper } from './itemServiceHelpers/AutoTranslationSettingsHelper';
-import { WorkflowsRunHelper } from './itemServiceHelpers/WorkflowsRunHelper';
-import { FilesServiceHelper } from './FilesServiceHelper';
-import { EventContext, SchemaOverview } from '@directus/types';
-import { ShareServiceHelper } from './ShareServiceHelper';
-import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
-import { EnvVariableHelper } from './EnvVariableHelper';
+import {ServerServiceCreator} from './ItemsServiceCreator';
+import {AppSettingsHelper} from './itemServiceHelpers/AppSettingsHelper';
+import {AutoTranslationSettingsHelper} from './itemServiceHelpers/AutoTranslationSettingsHelper';
+import {WorkflowsRunHelper} from './itemServiceHelpers/WorkflowsRunHelper';
+import {FilesServiceHelper} from './FilesServiceHelper';
+import {EventContext, SchemaOverview} from '@directus/types';
+import {ShareServiceHelper} from './ShareServiceHelper';
+import {MyDatabaseHelperInterface} from './MyDatabaseHelperInterface';
+import {EnvVariableHelper} from './EnvVariableHelper';
 import ms from 'ms';
 import jwt from 'jsonwebtoken';
-import { NanoidHelper } from './NanoidHelper';
+import {NanoidHelper} from './NanoidHelper';
+import {DirectusFieldsServiceHelper} from "./DirectusFieldsServiceHelper";
+import {UserHelper} from "./UserHelper";
+import {DevicesServiceHelper} from "./DevicesServiceHelper";
 
 export type MyEventContext = EventContext;
 
@@ -208,7 +211,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
   }
 
   getDevicesHelper() {
-    return new ItemsServiceHelper<DatabaseTypes.Devices>(this, CollectionNames.DEVICES);
+    return new DevicesServiceHelper(this, CollectionNames.DEVICES);
   }
 
   getPushNotificationsHelper() {
@@ -244,7 +247,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
   }
 
   getUsersHelper() {
-    return new ItemsServiceHelper<DatabaseTypes.DirectusUsers>(this, CollectionNames.USERS);
+    return new UserHelper(this, CollectionNames.USERS);
   }
 
   getShareServiceHelper() {
@@ -294,5 +297,18 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
   getFilesHelper() {
     return new FilesServiceHelper(this);
+  }
+
+  getFieldsServiceHelper() {
+    return new DirectusFieldsServiceHelper(this);
+  }
+
+  async getFoodsImageFolderId(): Promise<string | undefined> {
+    console.log('MyDatabaseHelper.getFoodsImageFolderId - fieldsMeta:');
+    let fieldsServiceHelper = this.getFieldsServiceHelper();
+    const folder = await fieldsServiceHelper.getFolderIdForFileFieldInCollection(CollectionNames.FOODS, CollectionFieldNames[CollectionNames.FOODS].IMAGE);
+    console.log('MyDatabaseHelper.getFoodsImageFolderId - folder:');
+    console.log(folder);
+    return folder || undefined;
   }
 }

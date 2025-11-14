@@ -21,7 +21,7 @@ export default StyleSheet.create({
 	},
 	titleContainer: {
 		width: '100%',
-		flexDirection: 'row',
+		flexDirection: 'column',
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderTopRightRadius: 28,
@@ -48,11 +48,26 @@ export default StyleSheet.create({
 	sheetHeading: {
 		fontFamily: 'Poppins_700Bold',
 	},
-	forecastContainer: {
-		width: '100%',
-		minHeight: 400,
-	},
-	graphStyle: {
-		width: '100%',
-	},
+        forecastContainer: {
+                width: '100%',
+                minHeight: 400,
+        },
+        loadingContainer: {
+                width: '100%',
+                height: 200,
+                alignItems: 'center',
+                justifyContent: 'center',
+        },
+        colorIndicator: {
+                width: "100%",
+                height: "100%",
+                borderRadius: 4,
+        },
+        noDataText: {
+                width: '100%',
+                textAlign: 'center',
+                fontFamily: 'Poppins_500Medium',
+                fontSize: 16,
+                marginTop: 40,
+        },
 });

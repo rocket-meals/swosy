@@ -19,6 +19,10 @@
           "value": "value_string-string"
         },
         {
+          "text": "Dropdown",
+          "value": "value_string-dropdown"
+        },
+        {
           "text": "Multiline Text",
           "value": "value_string-multiline"
         },

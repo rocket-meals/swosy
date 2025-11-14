@@ -105,6 +105,11 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			return;
 		}
 
+		// remove field "chat" from foodFeedback if exists
+		if ('chat' in foodFeedback) {
+			delete foodFeedback.chat;
+		}
+
 		// Determine if feedback should be deleted
 		const shouldDelete = !foodFeedback.rating && !foodFeedback.comment && !foodFeedback.notify;
 
@@ -118,3 +123,4 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 		}
 	}
 }
+

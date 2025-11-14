@@ -20,6 +20,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
+import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -38,13 +39,14 @@ export const iconLibraries: Record<string, any> = {
 };
 
 interface MenuItemProps {
-	label: string;
-	iconName: string;
-	iconLibName: React.ComponentType<IconProps<any>>;
-	activeKey: string;
-	route?: string;
-	action?: () => void;
-	position: number;
+        label: string;
+        iconName: string;
+        iconLibName: React.ComponentType<IconProps<any>>;
+        activeKey: string;
+        route?: string;
+        action?: () => void;
+        position: number;
+        hasUnread?: boolean;
 }
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
@@ -55,9 +57,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	const router = useRouter();
 	const wikisHelper = new WikisHelper();
 	const activeIndex = state.index;
-	const { user, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
-	const { chats } = useSelector((state: RootState) => state.chats);
-	const { serverInfo, primaryColor: projectColor, language, appSettings, wikis, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+        const { user, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
+        const { chats } = useSelector((state: RootState) => state.chats);
+        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+        const { hasUnreadChats } = useChatUnreadStatus();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -177,7 +180,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		getWikis();
 	}, []);
 
-	const generateMenuItems = (): MenuItemProps[] => {
+        const generateMenuItems = (): MenuItemProps[] => {
 		let menuItems: MenuItemProps[] = [];
 
 		// Static menu items with positions
@@ -301,16 +304,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			menuItems = [...menuItems, ...wikiMenuItems];
 		}
 
-		if (chats && chats.length > 0) {
-			menuItems.push({
-				label: translate(TranslationKeys.chats),
-				iconName: 'chat',
-				iconLibName: MaterialCommunityIcons,
-				activeKey: 'chats',
-				route: 'chats',
-				position: 9999,
-			});
-		}
+                if (chats && chats.length > 0) {
+                        menuItems.push({
+                                label: translate(TranslationKeys.chats),
+                                iconName: 'chat',
+                                iconLibName: MaterialCommunityIcons,
+                                activeKey: 'chats',
+                                route: 'chats',
+                                position: 9999,
+                                hasUnread: hasUnreadChats,
+                        });
+                }
 
 		// Sort menu items by position (smallest first)
 		menuItems.sort((a, b) => a.position - b.position);
@@ -334,12 +338,33 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
 					</TouchableOpacity>
 					<View style={styles.menuContainer}>
-						{generateMenuItems().map((item, index) => (
-							<TouchableOpacity key={index} style={getMenuItemStyle(item.activeKey)} onPress={() => (item.route ? navigation.navigate(item.route) : item.action?.())}>
-								<item.iconLibName name={item.iconName} size={24} color={isActive(item.activeKey) ? getContrastColor(item.activeKey) : theme.inactiveIcon} />
-								<Text style={getMenuLabelStyle(item.activeKey)}>{item.label}</Text>
-							</TouchableOpacity>
-						))}
+                                                {generateMenuItems().map((item, index) => (
+                                                        <TouchableOpacity
+                                                                key={index}
+                                                                style={getMenuItemStyle(item.activeKey)}
+                                                                onPress={() => (item.route ? navigation.navigate(item.route) : item.action?.())}
+                                                        >
+                                                                <View style={styles.menuIconWrapper}>
+                                                                        <item.iconLibName
+                                                                                name={item.iconName}
+                                                                                size={24}
+                                                                                color={isActive(item.activeKey) ? getContrastColor(item.activeKey) : theme.inactiveIcon}
+                                                                        />
+                                                                        {item.hasUnread ? (
+                                                                                <View
+                                                                                        style={[
+                                                                                                styles.notificationDot,
+                                                                                                {
+                                                                                                        backgroundColor: theme.accent,
+                                                                                                        borderColor: theme.drawerBg,
+                                                                                                },
+                                                                                        ]}
+                                                                                />
+                                                                        ) : null}
+                                                                </View>
+                                                                <Text style={getMenuLabelStyle(item.activeKey)}>{item.label}</Text>
+                                                        </TouchableOpacity>
+                                                ))}
 						<View style={styles.divider} />
 						<TouchableOpacity style={getMenuItemStyle('settings/index')} onPress={() => navigation.navigate('settings/index')}>
 							<Ionicons name="settings-outline" size={28} color={isActive('settings/index') ? getContrastColor('settings/index') : theme.inactiveIcon} />

@@ -14,7 +14,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { AppScreens } from 'repo-depkit-common';
 
-const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
+const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const router = useRouter();
@@ -49,11 +49,13 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
 			router.navigate(`/${AppScreens.MANAGEMENT}`);
 		} else if (pathname.includes(`/${AppScreens.FORMS}`)) {
 			router.navigate(`/${AppScreens.FORM_CATEGORIES}`);
-		} else if (pathname.includes(`/${AppScreens.FORM_CATEGORIES}`)) {
-			router.navigate(`/${AppScreens.MANAGEMENT}`);
-		} else if (router.canGoBack()) {
-			router.back();
-		} else if (loggedIn) {
+                } else if (pathname.includes(`/${AppScreens.FORM_CATEGORIES}`)) {
+                        router.navigate(`/${AppScreens.MANAGEMENT}`);
+                } else if (pathname.includes('/chats/details')) {
+                        router.navigate('/chats');
+                } else if (router.canGoBack()) {
+                        router.back();
+                } else if (loggedIn) {
 			router.navigate(`/${AppScreens.FOOD_OFFERS}`);
 		} else {
 			router.navigate(`/${AppScreens.LOGIN}`);
@@ -78,8 +80,8 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
 				paddingHorizontal: isWeb ? 20 : 10,
 			}}
 		>
-			<View style={styles.row}>
-				<View style={styles.col1}>
+                        <View style={styles.row}>
+                                <View style={styles.col1}>
 					<Tooltip
 						placement="top"
 						trigger={triggerProps => (
@@ -96,10 +98,11 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
 					</Tooltip>
 
 					<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(label, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
-				</View>
-			</View>
-		</View>
-	);
+                                </View>
+                                {rightElement ? <View style={styles.col2}>{rightElement}</View> : null}
+                        </View>
+                </View>
+        );
 };
 
 export default CustomStackHeader;

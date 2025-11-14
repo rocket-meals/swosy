@@ -2,15 +2,11 @@ import { defineHook } from '@directus/extensions-sdk';
 import { CollectionNames } from 'repo-depkit-common';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'collections_dates_last_update';
 
-export default defineHook(async ({ action, init }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, init }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   const excludeCollections = [CollectionNames.COLLECTIONS_DATES_LAST_UPDATE];

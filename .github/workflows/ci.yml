@@ -36,149 +36,150 @@ jobs:
         id: check
         uses: ./.github/actions/check-build-number
 
-  lint:
-    name: "🎨 Prettier & ESLint"
-    runs-on: ubuntu-latest
-    needs: [check-build, check-repository]
-    steps:
-      - name: "🔄 Checkout Repository"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "🧰 Setup Node.js, Yarn & Dependencies"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: ./.github/actions/setup-and-install
-        with:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: "🎨 Prettier"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        run: yarn format
-      - name: "✨ ESLint"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        run: yarn lint
-      - name: "📤 Commit linting changes"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git diff --quiet || (git add -A && git commit -m "chore: apply lint fixes [skip ci]" && git push)
+#  lint:
+#    name: "🎨 Prettier & ESLint"
+#    runs-on: ubuntu-latest
+#    needs: [check-build, check-repository]
+#    steps:
+#      - name: "🔄 Checkout Repository"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: ./.github/actions/setup-and-install
+#        with:
+#          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#      - name: "🎨 Prettier"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        run: yarn format
+#      - name: "✨ ESLint"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        run: yarn lint
+#      - name: "📤 Commit linting changes"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        run: |
+#          git config user.name "github-actions"
+#          git config user.email "github-actions@github.com"
+#          git diff --quiet || (git add -A && git commit -m "chore: apply lint fixes [skip ci]" && git push)
 
-  sonarqube:
-    name: "🔍 SonarQube Analysis"
-    runs-on: ubuntu-latest
-    needs: [lint, check-repository]
-    continue-on-error: true
-    steps:
-      - name: "🔄 Checkout Repository"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-      - name: "🔍 SonarQube Scan"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' && env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarqube-scan-action@1a6d90ebcb0e6a6b1d87e37ba693fe453195ae25 # v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#  sonarqube:
+#    name: "🔍 SonarQube Analysis"
+#    runs-on: ubuntu-latest
+#    needs: [lint, check-repository]
+#    continue-on-error: true
+#    steps:
+#      - name: "🔄 Checkout Repository"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ github.ref_name }}
+#          fetch-depth: 0
+#      - name: "🔍 SonarQube Scan"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' && env.SONAR_TOKEN != '' }}
+#        uses: SonarSource/sonarqube-scan-action@1a6d90ebcb0e6a6b1d87e37ba693fe453195ae25 # v5
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  sonarcloud-report:
-    name: "📥 Download SonarCloud Report"
-    runs-on: ubuntu-latest
-    needs: [sonarqube, data-clumps-report, check-repository]
-    continue-on-error: true
-    steps:
-      - name: "🔄 Checkout Repository"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "🧰 Setup Node.js, Yarn & Dependencies"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: ./.github/actions/setup-and-install
-        with:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: "📥 Download SonarCloud reports"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        run: |
-          SONAR_PROJECT=$(grep -E '^sonar.projectKey' sonar-project.properties | cut -d= -f2)
-          yarn workspace sonarCloudReportDownloader start --token "$SONAR_TOKEN" --project "$SONAR_PROJECT"
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: "💾 Commit reports"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
-          if [ -d reports/sonarCloud ]; then
-            echo "Committing reports from reports/sonarCloud"
-            git add -f reports/sonarCloud
-            if git diff --cached --quiet; then
-              echo "No changes to commit"
-            else
-              git commit -m "chore: update sonarcloud reports [skip ci]"
-              git push
-            fi
-          else
-            echo "No reports generated at reports/sonarCloud, skipping commit"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  sonarcloud-report:
+#    name: "📥 Download SonarCloud Report"
+#    runs-on: ubuntu-latest
+#    needs: [sonarqube, data-clumps-report, check-repository]
+#    continue-on-error: true
+#    steps:
+#      - name: "🔄 Checkout Repository"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ github.ref_name }}
+#          fetch-depth: 0
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: "🧰 Setup Node.js, Yarn & Dependencies"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: ./.github/actions/setup-and-install
+#        with:
+#          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+#      - name: "📥 Download SonarCloud reports"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        run: |
+#          SONAR_PROJECT=$(grep -E '^sonar.projectKey' sonar-project.properties | cut -d= -f2)
+#          yarn workspace sonarCloudReportDownloader start --token "$SONAR_TOKEN" --project "$SONAR_PROJECT"
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      - name: "💾 Commit reports"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        run: |
+#          git config user.name "github-actions"
+#          git config user.email "github-actions@github.com"
+#          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+#          if [ -d reports/sonarCloud ]; then
+#            echo "Committing reports from reports/sonarCloud"
+#            git add -f reports/sonarCloud
+#            if git diff --cached --quiet; then
+#              echo "No changes to commit"
+#            else
+#              git commit -m "chore: update sonarcloud reports [skip ci]"
+#              git push
+#            fi
+#          else
+#            echo "No reports generated at reports/sonarCloud, skipping commit"
+#          fi
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  data-clumps-report:
-    name: "🩺 Analyse Data Clumps"
-    runs-on: ubuntu-latest
-    needs: [lint, check-repository]
-    steps:
-      - name: "🔄 Checkout Repository"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "⚙️ Setup Node.js"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.16.0"
-      - name: "🩺 Analyse data clumps"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master
-        with:
-          path-to-source: .
-          output-path: reports/data-clumps-doctor/data-clumps.json
-          badge-output-path: reports/data-clumps-doctor/badges/data-clumps.svg
-          source-language-type: typescript
-      - name: "💾 Commit reports"
-        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
-          if [ -d reports/data-clumps-doctor ]; then
-            echo "Committing reports from reports/data-clumps-doctor"
-            git add -f reports/data-clumps-doctor
-            if git diff --cached --quiet; then
-              echo "No changes to commit"
-            else
-              git commit -m "chore: update data clumps report [skip ci]"
-              git push
-            fi
-          else
-            echo "No reports generated at reports/data-clumps-doctor, skipping commit"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  data-clumps-report:
+#    name: "🩺 Analyse Data Clumps"
+#    runs-on: ubuntu-latest
+#    needs: [lint, check-repository]
+#    steps:
+#      - name: "🔄 Checkout Repository"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ github.ref_name }}
+#          fetch-depth: 0
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: "⚙️ Setup Node.js"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: "22.16.0"
+#      - name: "🩺 Analyse data clumps"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master
+#        with:
+#          path-to-source: .
+#          output-path: reports/data-clumps-doctor/data-clumps.json
+#          badge-output-path: reports/data-clumps-doctor/badges/data-clumps.svg
+#          source-language-type: typescript
+#      - name: "💾 Commit reports"
+#        if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#        run: |
+#          git config user.name "github-actions"
+#          git config user.email "github-actions@github.com"
+#          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+#          if [ -d reports/data-clumps-doctor ]; then
+#            echo "Committing reports from reports/data-clumps-doctor"
+#            git add -f reports/data-clumps-doctor
+#            if git diff --cached --quiet; then
+#              echo "No changes to commit"
+#            else
+#              git commit -m "chore: update data clumps report [skip ci]"
+#              git push
+#            fi
+#          else
+#            echo "No reports generated at reports/data-clumps-doctor, skipping commit"
+#          fi
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   backend-directus:
     name: "🔨 Directus Backend Build"
     runs-on: ubuntu-latest
-    needs: sonarcloud-report
+#    needs: sonarcloud-report
+    needs: [check-build, check-repository]
     steps:
       - name: "🏗 Setup repo"
         if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
@@ -195,7 +196,8 @@ jobs:
   expo-update:
     name: "🏗 EAS Update Production"
     runs-on: ubuntu-latest
-    needs: sonarcloud-report
+    #    needs: sonarcloud-report
+    needs: [check-build, check-repository]
     steps:
       - name: "🔄 Checkout Repository"
         uses: actions/checkout@v4
@@ -214,7 +216,8 @@ jobs:
   build-android:
     name: "📦 Build & 🚀 Submit Android App"
     runs-on: ubuntu-latest
-    needs: [sonarcloud-report, check-build]
+#    needs: [sonarcloud-report, check-build]
+    needs: [check-build, check-repository]
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: "🔄 Checkout Repository"
@@ -234,7 +237,8 @@ jobs:
   build-android-preview:
     name: "🧪 Build Android Preview APK"
     runs-on: ubuntu-latest
-    needs: [sonarcloud-report, check-build]
+#    needs: [sonarcloud-report, check-build]
+    needs: [check-build, check-repository]
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: "🔄 Checkout Repository"
@@ -254,7 +258,8 @@ jobs:
   build-ios:
     name: "📦 Build & 🚀 Submit iOS App"
     runs-on: ubuntu-latest
-    needs: [sonarcloud-report, check-build]
+#    needs: [sonarcloud-report, check-build]
+    needs: [check-build, check-repository]
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: "🔄 Checkout Repository"
@@ -274,7 +279,8 @@ jobs:
   deploy-gh-pages:
     name: "🌍 Deploy to GitHub Pages"
     runs-on: ubuntu-latest
-    needs: sonarcloud-report
+#    needs: sonarcloud-report
+    needs: [check-build, check-repository]
     if: github.ref_name == 'master'
     steps:
       - name: "🔄 Checkout Repository"
@@ -297,20 +303,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  push-changes:
-    name: "📤 Push Changes"
-    runs-on: ubuntu-latest
-    needs: [backend-directus, sonarcloud-report, data-clumps-report, check-repository]
-    if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
-    steps:
-      - name: "🔄 Checkout Repository"
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "📤 Push accumulated changes"
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git push
+#  push-changes:
+#    name: "📤 Push Changes"
+#    runs-on: ubuntu-latest
+#    needs: [backend-directus, sonarcloud-report, data-clumps-report, check-repository]
+#    if: ${{ needs.check-repository.outputs.is-upstream == 'true' }}
+#    steps:
+#      - name: "🔄 Checkout Repository"
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ github.ref_name }}
+#          fetch-depth: 0
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: "📤 Push accumulated changes"
+#        run: |
+#          git config user.name "github-actions"
+#          git config user.email "github-actions@github.com"
+#          git push

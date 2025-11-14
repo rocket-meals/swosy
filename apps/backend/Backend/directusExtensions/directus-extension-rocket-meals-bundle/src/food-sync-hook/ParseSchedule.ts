@@ -1,5 +1,5 @@
 import { CanteensTypeForParser, FoodofferDateType, FoodoffersTypeForParser, FoodParseFoodAttributesType, FoodParserInterface, FoodsInformationTypeForParser, FoodWithBasicData } from './FoodParserInterface';
-import { TranslationHelper } from '../helpers/TranslationHelper';
+import {LanguageCodes, TranslationHelper} from '../helpers/TranslationHelper';
 import { MarkingParserInterface, MarkingsTypeForParser } from './MarkingParserInterface';
 import { CollectionNames, DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import { ListHelper } from '../helpers/ListHelper';
@@ -9,6 +9,8 @@ import { HashHelper } from '../helpers/HashHelper';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowResultHash } from '../helpers/itemServiceHelpers/WorkflowsRunHelper';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
+import {MarkingTranslationFields} from "./MarkingTranslationFields";
+import {FoodsCategoryTranslationFields} from "./FoodsCategoryTranslationFields";
 
 const SCHEDULE_NAME = 'FoodParseSchedule';
 
@@ -202,11 +204,14 @@ export class ParseSchedule {
       let searchJSON = {
         external_identifier: categoryExternalIdentifier,
       };
-      let createJSON = {
+
+      let createJSON: Partial<DatabaseTypes.FoodsCategories> = {
         alias: categoryExternalIdentifier,
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
+
+      // TODO: Update translations for food categories here, similar to markings
     }
   }
 
@@ -240,6 +245,8 @@ export class ParseSchedule {
         external_identifier: categoryExternalIdentifier,
       };
       await this.context.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
+
+      // TODO: Update translations for foodoffer categories here, similar to markings
     }
   }
 

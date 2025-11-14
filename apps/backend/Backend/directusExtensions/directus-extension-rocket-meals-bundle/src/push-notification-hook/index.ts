@@ -1,20 +1,13 @@
-import { defineHook } from '@directus/extensions-sdk';
 import axios from 'axios';
-import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
-import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
-import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
+import {CollectionNames, DatabaseTypes} from 'repo-depkit-common';
+import {ItemsServiceHelper} from '../helpers/ItemsServiceHelper';
+import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'push_notification';
 
-export default defineHook(async ({ filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter }, apiContext) => {
   const collectionName = CollectionNames.PUSH_NOTIFICATIONS;
-
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
   // Trigger before the item is created or updated

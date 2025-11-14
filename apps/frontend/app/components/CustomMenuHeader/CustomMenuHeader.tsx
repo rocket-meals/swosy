@@ -12,14 +12,16 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
 const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { drawerPosition } = useSelector((state: RootState) => state.settings);
-	const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
+        const { drawerPosition } = useSelector((state: RootState) => state.settings);
+        const { hasUnreadChats } = useChatUnreadStatus();
+        const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
 
-	return (
+        return (
 		<View
 			style={{
 				...styles.header,
@@ -42,11 +44,28 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 					<Tooltip
 						placement="top"
 						trigger={triggerProps => (
-							<TouchableOpacity {...triggerProps} onPress={() => navigation.toggleDrawer()} style={{ padding: 10 }}>
-								<Ionicons name="menu" size={24} color={theme.header.text} />
-							</TouchableOpacity>
-						)}
-					>
+                                                        <TouchableOpacity
+                                                                {...triggerProps}
+                                                                onPress={() => navigation.toggleDrawer()}
+                                                                style={styles.menuButton}
+                                                        >
+                                                                <View style={styles.menuIconWrapper}>
+                                                                        <Ionicons name="menu" size={24} color={theme.header.text} />
+                                                                        {hasUnreadChats ? (
+                                                                                <View
+                                                                                        style={[
+                                                                                                styles.notificationDot,
+                                                                                                {
+                                                                                                        backgroundColor: theme.accent,
+                                                                                                        borderColor: theme.header.background,
+                                                                                                },
+                                                                                        ]}
+                                                                                />
+                                                                        ) : null}
+                                                                </View>
+                                                        </TouchableOpacity>
+                                                )}
+                                        >
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 							<TooltipText fontSize="$sm" color={theme.tooltip.text}>
 								{`${translate(TranslationKeys.open_drawer)}`}

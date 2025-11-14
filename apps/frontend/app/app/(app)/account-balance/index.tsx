@@ -7,7 +7,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDispatch, useSelector } from 'react-redux';
-import { formatPrice, showFormatedPrice } from '@/constants/HelperFunctions';
+import { formatPrice, showFormatedPrice, filterNullishProperties } from '@/constants/HelperFunctions';
 import { format } from 'date-fns';
 import useMyCardReader, { MyCardReaderInterface } from './MyCardReader';
 import { isWeb } from '@/constants/Constants';
@@ -28,6 +28,8 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
+import Server from '@/constants/ServerUrl';
+import { ServerAPI } from '@/redux/actions';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -68,6 +70,8 @@ const AccountBalanceScreen = () => {
 		]);
 	}, []);
 
+	console.log(profile)
+
 	useFocusEffect(
 		useCallback(() => {
 			if (profile?.credit_balance) {
@@ -100,14 +104,65 @@ const AccountBalanceScreen = () => {
 		const lastTransactionAsString = answer.lastTransaction;
 		const lastTransactionDefined = lastTransactionAsString !== null && lastTransactionAsString !== undefined;
 
+		const credit_balance = nextBalanceDefined ? parseFloat(nextBalanceAsString as string) : null;
+		const credit_balance_last_transaction = lastTransactionDefined ? parseFloat(lastTransactionAsString as string) : null;
+		const credit_balance_date_updated = answer.readTime ? answer.readTime.toISOString() : new Date().toISOString();
+
+		// dispatch({
+		// 	type: UPDATE_PROFILE,
+		// 	payload: {
+		// 		credit_balance: nextBalanceDefined ? parseFloat(nextBalanceAsString) : null,
+		// 		credit_balance_last_transaction: lastTransactionDefined ? parseFloat(lastTransactionAsString) : null,
+		// 		credit_balance_date_updated: answer?.readTime?.toISOString(),
+		// 	},
+		// });
+
 		dispatch({
 			type: UPDATE_PROFILE,
 			payload: {
-				credit_balance: nextBalanceDefined ? parseFloat(nextBalanceAsString) : null,
-				credit_balance_last_transaction: lastTransactionDefined ? parseFloat(lastTransactionAsString) : null,
-				credit_balance_date_updated: answer?.readTime?.toISOString(),
+				...profile,
+				credit_balance,
+				credit_balance_last_transaction,
+				credit_balance_date_updated,
 			},
 		});
+
+		try {
+			if (!profile || !(profile as any).id) {
+				console.warn('No profile id found, skipping balance persist');
+				return;
+			}
+
+			const token = await ServerAPI.getClient().getToken();
+			if (!token) {
+				console.warn('No token found, skipping balance persist');
+				return;
+			}
+
+			const body = filterNullishProperties({
+				credit_balance,
+				credit_balance_last_transaction,
+				credit_balance_date_updated,
+			});
+
+			const res = await fetch(`${Server.ServerUrl}/items/profiles/${(profile as any).id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(body),
+			});
+
+			if (!res.ok) {
+				const text = await res.text();
+				console.warn('Failed to persist credit balance', res.status, text);
+				addDebugError(text, 'Persist credit balance');
+			}
+		} catch (e: any) {
+			console.error('Error persisting credit balance', e);
+			addDebugError(e, 'Persist credit balance');
+		}
 	};
 
 	const showInstruction = () => {
@@ -254,6 +309,45 @@ const AccountBalanceScreen = () => {
 				<View style={styles.additionalInfoContainer}>{appSettings && appSettings?.balance_translations && <CustomMarkdown content={getTextFromTranslation(appSettings?.balance_translations, language) || ''} backgroundColor={balance_area_color} imageWidth={'100%'} imageHeight={400} />}</View>
 			</View>
 			<View style={styles.additionalInfoContainer}>
+				{/* Dev mode: Simulate NFC reads */}
+				{isDevMode && (
+					<View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 12 }}>
+						{[1, 5, 20].map(amount => (
+							<TouchableOpacity
+								key={`simulate-${amount}`}
+								style={{
+									paddingVertical: 8,
+									paddingHorizontal: 14,
+									borderRadius: 8,
+									borderWidth: 1,
+									borderColor: theme.screen.iconBg,
+									marginHorizontal: 6,
+								}}
+								onPress={async () => {
+									const mock: CardResponse = {
+										currentBalance: amount.toFixed(2),
+										currentBalanceRaw: null,
+										lastTransaction: undefined,
+										lastTransactionRaw: null,
+										chooseAppRaw: null,
+										tag: null,
+										readTime: new Date(),
+									};
+									try {
+										await callBack(mock);
+										toast(`Simulated NFC read: ${amount}€`, 'info');
+									} catch (e: any) {
+										console.error('Error in simulated read', e);
+										addDebugError(e, 'Simulated NFC Read');
+									}
+								}}
+							>
+								<Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
+							</TouchableOpacity>
+						))}
+					</View>
+				)}
+
 				{/* Debug Logs if isDevMode active*/}
 				{isDevMode && debugErrors.length > 0 && (
 					<View style={{ marginTop: 20 }}>

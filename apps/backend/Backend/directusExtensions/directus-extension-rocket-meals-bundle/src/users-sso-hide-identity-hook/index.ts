@@ -1,6 +1,8 @@
 import { defineHook } from '@directus/extensions-sdk';
 import { EventHelper } from '../helpers/EventHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
+import {MyDefineHook} from "../helpers/MyDefineHook";
+const SCHEDULE_NAME = 'users_sso_hide_identity_hook';
 
 function hasDifferentProviderThanDefault(partialUserInput: Partial<DatabaseTypes.DirectusUsers>) {
   const provider = partialUserInput.provider;
@@ -13,7 +15,7 @@ function hasDifferentProviderThanDefault(partialUserInput: Partial<DatabaseTypes
   }
 }
 
-export default defineHook(async ({ action, filter }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, filter }, apiContext) => {
   filter(EventHelper.USERS_CREATE_EVENT, async (input, meta, context) => {
     const partialUserInput = input as Partial<DatabaseTypes.DirectusUsers>;
     if (hasDifferentProviderThanDefault(partialUserInput)) {

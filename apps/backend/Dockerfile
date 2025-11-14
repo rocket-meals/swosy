@@ -20,10 +20,13 @@ RUN apk update && apk add --no-cache \
     udev \
     dbus \
     curl
+
+# openssl # Apple Token generation# Apple Token generation
+# xxd # Apple Token generation
+
 # Set environment variables for Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
 
 # Switch back to the 'node' user for safety
 USER node

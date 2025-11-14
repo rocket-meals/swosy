@@ -2,14 +2,11 @@ import { defineHook } from '@directus/extensions-sdk';
 import { ReportSchedule } from './ReportSchedule';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'food_feedback_report';
 
-export default defineHook(async ({ schedule, filter }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ schedule, filter }, apiContext) => {
 
   const collection = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
 

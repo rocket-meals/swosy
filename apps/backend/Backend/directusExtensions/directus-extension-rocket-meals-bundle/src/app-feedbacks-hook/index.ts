@@ -3,6 +3,7 @@ import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { CollectionNames, DateHelper } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { HtmlTemplatesEnum } from '../helpers/html/HtmlGenerator';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'activity_auto_cleanup';
 
@@ -30,12 +31,7 @@ type AppFeedbackMailTemplateVariablesType = {
   }[];
 };
 
-export default defineHook(async ({ schedule, action }, apiContext) => {
-  let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME, apiContext);
-  if (!allTablesExist) {
-    return;
-  }
-
+export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async ({ schedule, action }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 

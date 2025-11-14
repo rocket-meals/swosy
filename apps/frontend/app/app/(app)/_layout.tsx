@@ -8,7 +8,7 @@ import { Redirect, useGlobalSearchParams } from 'expo-router';
 import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { AppScreens, DatabaseTypes, sortBySortField, sortMarkingsByGroup } from 'repo-depkit-common';
-import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEENS, SET_CHATS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_NEWS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_NEWS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
 import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/FoodFeedbacksLabel';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { FoodFeedbackLabelEntryHelper } from '@/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries';
@@ -46,6 +46,7 @@ import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
+import { loadChatReadStatus } from '@/helper/chatReadStatus';
 
 export default function Layout() {
 	const { theme } = useTheme();
@@ -171,13 +172,16 @@ export default function Layout() {
 		}
 	};
 
-	const fetchChats = async () => {
-		try {
-			if (user?.profile) {
-				const result = (await chatsHelper.fetchChatsByProfile(user.profile)) as DatabaseTypes.Chats[];
-				if (result) {
-					dispatch({ type: SET_CHATS, payload: result });
-				}
+        const fetchChats = async () => {
+                try {
+                        const storedStatus = await loadChatReadStatus();
+                        dispatch({ type: SET_CHAT_READ_STATUS, payload: storedStatus });
+
+                        if (user?.profile) {
+                                const result = (await chatsHelper.fetchChatsByProfile(user.profile)) as DatabaseTypes.Chats[];
+                                if (result) {
+                                        dispatch({ type: SET_CHATS, payload: result });
+                                }
 			}
 		} catch (error) {
 			console.error('Error fetching chats:', error);

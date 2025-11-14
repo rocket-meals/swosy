@@ -3,6 +3,7 @@ import { TranslatorSettings } from './TranslatorSettings';
 import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { SchemaOverview } from '@directus/types';
+import {SchemaHelper} from "../helpers/SchemaHelper";
 
 export class DirectusCollectionTranslator {
   static FIELD_BE_SOURCE_FOR_TRANSLATION = 'be_source_for_translations';
@@ -366,7 +367,7 @@ export class DirectusCollectionTranslator {
     return value !== undefined && value !== null;
   }
 
-  static getValueFromPayloadOrDefaultValue(payloadItem: any, fieldName: string, schema: any, collectionName: string, translation_field: string) {
+  static getValueFromPayloadOrDefaultValue(payloadItem: any, fieldName: string, schema: SchemaOverview, collectionName: string, translation_field: string) {
     let translationCollectionSchema = DirectusCollectionTranslator.getTranslationCollectionSchema(schema, collectionName, translation_field);
 
     let valueInPayload = payloadItem?.[fieldName];
@@ -409,7 +410,7 @@ export class DirectusCollectionTranslator {
     return translatedItem;
   }
 
-  static getTranslationCollectionName(schema: any, collectionName: string, translation_field: string): string | null {
+  static getTranslationCollectionName(schema: SchemaOverview, collectionName: string, translation_field: string): string | null {
     //console.log("Get Translation Collection Name for collection: ", collectionName);
     //console.log("translation_field: ", translation_field);
 
@@ -468,11 +469,11 @@ export class DirectusCollectionTranslator {
     return null;
   }
 
-  static getSchemaForCollection(schema: any, collectionName: string) {
-    return schema?.collections?.[collectionName];
+  static getSchemaForCollection(schema: SchemaOverview, collectionName: string) {
+    return SchemaHelper.getSchemaForCollection(schema, collectionName);
   }
 
-  static getTranslationCollectionSchema(schema: any, collectionName: string, translation_field: string) {
+  static getTranslationCollectionSchema(schema: SchemaOverview, collectionName: string, translation_field: string) {
     let translationCollectionName = DirectusCollectionTranslator.getTranslationCollectionName(schema, collectionName, translation_field);
     if (!translationCollectionName) {
       return null;
@@ -487,7 +488,7 @@ export class DirectusCollectionTranslator {
    * Ignores the primary key field
    * Ignores fields that are relations
    */
-  static getFieldsToTranslate(schema: any, collectionName: string, translation_field: string) {
+  static getFieldsToTranslate(schema: SchemaOverview, collectionName: string, translation_field: string) {
     /**
      * Get Fields to Translate for collection:  news
      * translationCollectionName:  news_translations

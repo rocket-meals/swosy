@@ -9391,6 +9391,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-cron@npm:^2.0.3":
+  version: 2.0.8
+  resolution: "@types/node-cron@npm:2.0.8"
+  dependencies:
+    "@types/tz-offset": "npm:*"
+  checksum: 10c0/16147eca69a796c2fddc9bc4fdf3b90778524c41a5f1ab694a520ccbfe585ce5afcd3268650392f22d4dfd0daacd9d78477082f0cbfa273aa0e44a350b88730c
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:^2.6.13":
   version: 2.6.13
   resolution: "@types/node-fetch@npm:2.6.13"
@@ -9633,6 +9642,13 @@ __metadata:
   version: 4.0.5
   resolution: "@types/tough-cookie@npm:4.0.5"
   checksum: 10c0/68c6921721a3dcb40451543db2174a145ef915bc8bcbe7ad4e59194a0238e776e782b896c7a59f4b93ac6acefca9161fccb31d1ce3b3445cb6faa467297fb473
+  languageName: node
+  linkType: hard
+
+"@types/tz-offset@npm:*":
+  version: 0.0.3
+  resolution: "@types/tz-offset@npm:0.0.3"
+  checksum: 10c0/ea24ea49deaf093333a66ee1dd2fae92d4a0a938ba17d7236d7ff042cca7490131f99f98ac6e2fd9c5ec0b5506e5f05b0b4e8e6b99dcff99a588bc7af194a097
   languageName: node
   linkType: hard
 
@@ -10847,6 +10863,7 @@ __metadata:
     "@types/cookiejar": "npm:^2.1.5"
     "@types/jest": "npm:^29.5.12"
     "@types/node": "npm:^22.5.0"
+    "@types/node-cron": "npm:^2.0.3"
     "@types/node-fetch": "npm:^2.6.13"
     commander: "npm:^14.0.0"
     cookiejar: "npm:^2.1.4"
@@ -10856,6 +10873,7 @@ __metadata:
     form-data: "npm:^4.0.0"
     inquirer: "npm:^9.2.21"
     jest: "npm:^29.7.0"
+    node-cron: "npm:^3.0.2"
     node-fetch: "npm:^2.7.0"
     path: "npm:^0.12.7"
     repo-depkit-common: "workspace:*"
@@ -20283,6 +20301,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-cron@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "node-cron@npm:3.0.3"
+  dependencies:
+    uuid: "npm:8.3.2"
+  checksum: 10c0/e6e817c5bf28cca69f256ecc1a2cb737cf895cb0fe22f8ec58ce614cb74dcc22e93f495984a26ece51322473238ccc0ef53b4f373035697017b8c28bddacb9b9
+  languageName: node
+  linkType: hard
+
 "node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
@@ -23794,7 +23821,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "repo-depkit-common-backend@workspace:packages/common-backend"
   dependencies:
+    "@types/jest": "npm:^29.5.12"
+    "@types/jsonwebtoken": "npm:^9.0.9"
+    jest: "npm:^29.7.0"
+    jsonwebtoken: "npm:^9.0.2"
     path: "npm:^0.12.7"
+    ts-jest: "npm:^29.1.3"
     ts-morph: "npm:^26.0.0"
     typescript: "npm:*"
   languageName: unknown
@@ -27030,21 +27062,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+  version: 8.3.2
+  resolution: "uuid@npm:8.3.2"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/bcbb807a917d374a49f475fae2e87fdca7da5e5530820ef53f65ba1d12131bd81a92ecf259cc7ce317cbe0f289e7d79fdfebcef9bfa3087c8c8a2fa304c9be54
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^7.0.3":
   version: 7.0.3
   resolution: "uuid@npm:7.0.3"
   bin:
     uuid: dist/bin/uuid
   checksum: 10c0/2eee5723b0fcce8256f5bfd3112af6c453b5471db00af9c3533e3d5a6e57de83513f9a145a570890457bd7abf2c2aa05797291d950ac666e5a074895dc63168b
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
-  version: 8.3.2
-  resolution: "uuid@npm:8.3.2"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 10c0/bcbb807a917d374a49f475fae2e87fdca7da5e5530820ef53f65ba1d12131bd81a92ecf259cc7ce317cbe0f289e7d79fdfebcef9bfa3087c8c8a2fa304c9be54
   languageName: node
   linkType: hard
 

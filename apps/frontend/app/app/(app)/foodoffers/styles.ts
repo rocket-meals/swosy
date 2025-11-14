@@ -10,12 +10,12 @@ export default StyleSheet.create({
 		paddingVertical: 10,
 		gap: 10,
 	},
-	row: {
-		width: '100%',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-	},
+    row: {
+            width: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+    },
 	col1: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -25,10 +25,22 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-	heading: {
-		fontSize: 18,
-		fontFamily: 'Poppins_400Regular',
-	},
+    heading: {
+            fontSize: 18,
+            fontFamily: 'Poppins_400Regular',
+    },
+    menuIconWrapper: {
+            position: 'relative',
+    },
+    notificationDot: {
+            position: 'absolute',
+            top: -2,
+            right: -2,
+            width: 12,
+            height: 12,
+            borderRadius: 6,
+            borderWidth: 2,
+    },
 	container: {
 		flex: 1,
 	},

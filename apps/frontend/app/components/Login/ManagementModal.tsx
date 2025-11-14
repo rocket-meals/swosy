@@ -10,6 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
+import { EmailHelper } from 'repo-depkit-common';
 
 const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisible, handleLogin, loading }) => {
 	const { theme } = useTheme();
@@ -24,22 +25,22 @@ const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisib
 		isPasswordValid: false,
 	});
 
-	const handleEmailChange = (text: string) => {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		setFormState(prev => ({
-			...prev,
-			email: text,
-			isEmailValid: emailRegex.test(text),
-		}));
-	};
+        const handleEmailChange = (text: string) => {
+                const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(text);
+                setFormState(prev => ({
+                        ...prev,
+                        email: trimmedEmail,
+                        isEmailValid: isValid,
+                }));
+        };
 
-	const handlePasswordChange = (text: string) => {
-		setFormState(prev => ({
-			...prev,
-			password: text,
-			isPasswordValid: text.length >= 6, // Ensures password is at least 8 characters
-		}));
-	};
+        const handlePasswordChange = (text: string) => {
+                setFormState(prev => ({
+                        ...prev,
+                        password: text,
+                        isPasswordValid: text.length > 0,
+                }));
+        };
 
 	const isFormValid = formState.isEmailValid && formState.isPasswordValid;
 
@@ -156,8 +157,14 @@ const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisib
 						width: Dimensions.get('window').width < 500 ? '100%' : '80%',
 					}}
 					disabled={!isFormValid}
-					onPress={() => handleLogin(undefined, formState.email, formState.password)}
-				>
+                                        onPress={() =>
+                                                handleLogin(
+                                                        undefined,
+                                                        EmailHelper.sanitize(formState.email),
+                                                        formState.password
+                                                )
+                                        }
+                                >
 					{loading ? (
 						<ActivityIndicator size="large" color={theme.screen.text} />
 					) : (

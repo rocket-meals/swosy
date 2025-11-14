@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useMemo } from 'react';
-import { Dimensions, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import BottomSheet, { BottomSheetBackdrop, type BottomSheetBackdropProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
 import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
@@ -11,15 +11,13 @@ export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropCo
 	onClose?: () => void;
 }
 
-const MAX_HEIGHT = Dimensions.get('window').height * 0.8;
-
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, ...props }, ref) => {
 	const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} />, [onClose]);
 	const { theme } = useTheme();
-	const { selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	useSelector((state: RootState) => state.settings); // ensure theme subscription
 	const snapPoints = useMemo(() => ['80%'], []);
 
-	const headerBg = backgroundStyle?.backgroundColor || theme.sheet.sheetBg;
+	const headerBg = (backgroundStyle && (backgroundStyle as any).backgroundColor) || theme.sheet.sheetBg;
 	const handleColor = theme.sheet.closeBg;
 
 	const handleChange = useCallback(
@@ -27,13 +25,14 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 			if (index === -1) {
 				onClose?.();
 			}
-			onChange?.(index);
+			// @gorhom/bottom-sheet expects (index, position, type)
+			(onChange as any)?.(index);
 		},
 		[onClose, onChange]
 	);
 
 	return (
-		<BottomSheet ref={ref} snapPoints={snapPoints} enableDynamicSizing maxDynamicContentSize={MAX_HEIGHT} backdropComponent={renderBackdrop} backgroundStyle={backgroundStyle} handleComponent={null} onChange={handleChange} {...props}>
+		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={backgroundStyle} handleComponent={null} onChange={handleChange} {...props}>
 			<View style={[styles.header, { backgroundColor: headerBg }]}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />

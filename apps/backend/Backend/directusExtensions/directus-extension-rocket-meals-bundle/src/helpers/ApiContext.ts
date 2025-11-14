@@ -1,6 +1,6 @@
 import { ApiExtensionContext } from '@directus/extensions';
 import { ItemsService } from './ItemsServiceCreator';
-import { AssetsService, SharesService } from './MyServiceClassHelpers';
+import { AssetsService, SharesService, FieldsService } from './MyServiceClassHelpers';
 
 // https://github.com/directus/directus/blob/main/api/src/services/index.ts
 /**
@@ -37,6 +37,7 @@ type Services = {
   FilesService: any;
   ItemsService: any;
   PermissionsService: ItemsService<any>; // https://github.com/directus/directus/blob/main/api/src/services/permissions.ts
+  FieldsService: FieldsService,
   RelationsService: any;
   RolesService: any;
   ServerService: any;

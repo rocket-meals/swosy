@@ -25,6 +25,7 @@ export default StyleSheet.create({
 	},
 	prefix: {
 		height: 50,
+		paddingHorizontal: 10,
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderWidth: 1,
@@ -34,6 +35,7 @@ export default StyleSheet.create({
 	},
 	suffix: {
 		height: 50,
+		paddingHorizontal: 10,
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderWidth: 1,

@@ -9,6 +9,9 @@ import { SingleWorkflowRun } from '../workflows-runs-hook/WorkflowRunJobInterfac
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
+import {CronHelper, CronObject} from "repo-depkit-common";
+import {MyDefineHook} from "../helpers/MyDefineHook";
+const HOOK_NAME = 'housing-sync';
 
 class HousingSyncWorkflow extends SingleWorkflowRun {
   private readonly parserInterface: ApartmentParserInterface;
@@ -36,7 +39,7 @@ class HousingSyncWorkflow extends SingleWorkflowRun {
   }
 }
 
-export default defineHook(async ({ action, init, schedule }, apiContext) => {
+export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME,async ({ action, init, schedule }, apiContext) => {
   let usedParser: ApartmentParserInterface | null = null;
   switch (EnvVariableHelper.getSyncForCustomer()) {
     case SyncForCustomerEnum.TEST:
@@ -59,6 +62,6 @@ export default defineHook(async ({ action, init, schedule }, apiContext) => {
     workflowRunInterface: new HousingSyncWorkflow(usedParser),
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,
-    cronOject: WorkflowScheduleHelper.EVERY_DAY_AT_4AM,
+    cronOject: CronHelper.EVERY_DAY_AT_4AM,
   });
 });

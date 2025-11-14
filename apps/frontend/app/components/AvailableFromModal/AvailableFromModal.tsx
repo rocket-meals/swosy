@@ -26,4 +26,3 @@ const AvailableFromModal: React.FC<AvailableFromModalProps> = ({ visible, onClos
 };
 
 export default AvailableFromModal;
-export type { AvailableFromModalProps };

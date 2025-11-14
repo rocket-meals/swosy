@@ -16,7 +16,7 @@ import { SET_APP_SETTINGS, SET_WIKIS, UPDATE_MANAGEMENT, UPDATE_PRIVACY_POLICY_D
 import AttentionSheet from '@/components/Login/AttentionSheet';
 import useToast from '@/hooks/useToast';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, EmailHelper } from 'repo-depkit-common';
 import { format } from 'date-fns';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
@@ -87,16 +87,20 @@ export default function Login() {
 		attentionSheetRef?.current?.close();
 	};
 
-	const handleUserLogin = async (token?: string, email?: string, password?: string) => {
-		try {
-			// Authenticate based on token or credentials
-			setLoading(true);
-			if (token) {
-				await ServerAPI.authenticateWithAccessToken(token);
-			} else if (email && password) {
-				const result = await ServerAPI.authenticateWithEmailAndPassword(email, password);
-				if (!result) throw new Error('Invalid credentials');
-			}
+        const handleUserLogin = async (token?: string, email?: string, password?: string) => {
+                try {
+                        // Authenticate based on token or credentials
+                        setLoading(true);
+                        if (token) {
+                                await ServerAPI.authenticateWithAccessToken(token);
+                        } else if (email && password) {
+                                const trimmedEmail = EmailHelper.sanitize(email);
+                                const result = await ServerAPI.authenticateWithEmailAndPassword(
+                                        trimmedEmail,
+                                        password
+                                );
+                                if (!result) throw new Error('Invalid credentials');
+                        }
 
 			// Fetch and process user data
 			const user = await ServerAPI.getMe();

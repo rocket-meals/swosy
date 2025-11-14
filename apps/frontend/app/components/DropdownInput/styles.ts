@@ -71,6 +71,7 @@ export default StyleSheet.create({
 	},
 	sheetContent: {
 		paddingHorizontal: 20,
+		width: '100%',
 		paddingBottom: 24,
 	},
 	sheetHeading: {

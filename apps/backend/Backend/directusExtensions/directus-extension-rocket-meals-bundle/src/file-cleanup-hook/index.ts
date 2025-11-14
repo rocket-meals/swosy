@@ -8,6 +8,7 @@ import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEn
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { Query } from '@directus/types';
 import { ByteSizeHelper } from '../helpers/ByteSizeHelper';
+import {CronHelper, CronObject} from "repo-depkit-common";
 
 enum FileCleanupWorkflowConfigEnum {
   delete_unreferenced_files_when_older_than_ms = 'delete_unreferenced_files_when_older_than_ms',
@@ -286,6 +287,6 @@ export default defineHook(async (registerFunctions: RegisterFunctions, apiContex
     workflowRunInterface: new FileCleanupWorkflow(),
     myDatabaseHelper: myDatabaseHelper,
     schedule: registerFunctions.schedule,
-    cronOject: WorkflowScheduleHelper.EVERY_MONTH_AT_1AM,
+    cronOject: CronHelper.EVERY_MONTH_AT_1AM,
   });
 });

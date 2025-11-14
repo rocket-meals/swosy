@@ -20,7 +20,7 @@
         "alias",
         "field_type",
         "external_import_id",
-        "external_export_id"
+        "visibility_depends_on_referenced_field.alias"
       ],
       "layout": "table",
       "limit": 30,

@@ -7,6 +7,9 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
 RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bookworm stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 RUN apt-get update && apt-get install -y docker-ce-cli
 
+## Install openssl and xxd for Apple Token generation
+RUN apt-get install -y openssl xxd
+
 # Install yarn
 RUN corepack enable && corepack prepare yarn@stable --activate
 
@@ -26,9 +29,14 @@ COPY packages/common-backend/package.json ./packages/common-backend/
 # Install dependencies during build time - focused on backend-sync
 RUN yarn workspaces focus backend-sync
 
-# Copy the entire project for building
-# The files in "data" are ignored completely except for the directus-sync-data subdirectory
-COPY . .
+# Copy only the necessary source files to keep the build context small
+# Instead of `COPY . .` (which sends die komplette Repo), kopiere nur das, was für den build nötig ist.
+COPY apps/backend-sync ./apps/backend-sync
+COPY packages/common ./packages/common
+COPY packages/common-backend ./packages/common-backend
+COPY tsconfig.json ./tsconfig.json
+COPY yarn.lock ./yarn.lock
+COPY package.json ./package.json
 
 # Copy only the directus-sync-data subdirectory from data folder
 COPY data/directus-sync-data ./data/directus-sync-data
@@ -40,4 +48,4 @@ COPY data/directus-sync-data ./data/directus-sync-data
 WORKDIR /rocket-meals/apps/backend-sync
 
 # Start the application directly with tsx
-CMD ["yarn", "start:docker-push"]
+CMD ["yarn", "start:docker-manage"]

@@ -1,7 +1,7 @@
 import * as https from 'https';
 import fetch from 'node-fetch';
 
-export class FetchIngoreSelfSignedCertHelper {
+export class FetchIgnoreSelfSignedCertHelper {
   public static async fetch(url: string, options: any = {}): Promise<any> {
     // Prüfe das Protokoll der URL
     const isHttps = url.startsWith('https:');

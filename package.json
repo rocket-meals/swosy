@@ -8,6 +8,7 @@
     "test": "yarn && yarn app-backend-test",
     "app-backend-test": "yarn workspace directus-extension-rocket-meals-bundle test",
     "app-backend-build": "yarn workspace directus-extension-rocket-meals-bundle build",
+    "app-backend-build-without-test": "yarn workspace directus-extension-rocket-meals-bundle buildWithoutTest",
     "clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean-install": "yarn clean && yarn",
     "format": "prettier . --write",

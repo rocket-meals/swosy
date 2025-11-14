@@ -99,6 +99,7 @@ export type AppSettings = {
   foods_feedbacks_comments_type?: string | null;
   foods_feedbacks_custom_url?: string | null;
   foods_feedbacks_labels_type?: string | null;
+  foods_image_ai_generation_enabled?: boolean | null;
   foods_placeholder_image?: string | DirectusFiles | null;
   foods_placeholder_image_remote_url?: string | null;
   foods_placeholder_image_thumb_hash?: string | null;
@@ -446,10 +447,12 @@ export type ChatMessages = {
 
 export type Chats = {
   alias?: string | null;
+  conversation_state?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  foods_feedback?: string | FoodsFeedbacks | null;
+  food_feedbacks: any[] | FoodsFeedbacks[];
   id: string;
+  initial_message?: string | null;
   linked_entities: string;
   messages: any[] | ChatMessages[];
   participants: any[] | ChatsParticipants[];
@@ -991,6 +994,7 @@ export type Foodoffers = {
   date_updated?: string | null;
   food?: string | Foods | null;
   foodoffer_category?: string | FoodoffersCategories | null;
+  foodoffer_components: any[] | FoodoffersComponents[];
   id: string;
   markings: any[] | FoodoffersMarkings[];
   price_employee?: number | null;
@@ -1027,6 +1031,12 @@ export type FoodoffersCategoriesTranslations = {
   translation_settings: string;
 };
 
+export type FoodoffersComponents = {
+  component_foodoffers_id?: string | Foodoffers | null;
+  id: number;
+  parent_foodoffers_id?: string | Foodoffers | null;
+};
+
 export type FoodoffersInfoItems = {
   canteen?: string | Canteens | null;
   date_created?: string | null;
@@ -1061,6 +1071,7 @@ export type Foods = {
   food_category?: string | FoodsCategories | null;
   id: string;
   image?: string | DirectusFiles | null;
+  image_generated?: boolean | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   markings: any[] | FoodsMarkings[];
@@ -1178,6 +1189,7 @@ export type FoodsCategoriesTranslations = {
 
 export type FoodsFeedbacks = {
   canteen?: string | Canteens | null;
+  chat?: string | Chats | null;
   comment?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
@@ -1340,6 +1352,7 @@ export type FormFields = {
   background_color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  dropdown_values?: unknown | null;
   export_settings: string;
   external_export_field_name?: string | null;
   external_export_id?: string | null;
@@ -1366,6 +1379,9 @@ export type FormFields = {
   user_updated?: string | DirectusUsers | null;
   value_prefix?: string | null;
   value_suffix?: string | null;
+  visibility_depends_on_referenced_field?: string | FormFields | null;
+  visibility_depends_on_referenced_value_equals?: string | null;
+  visibility_rule: string;
 };
 
 export type FormFieldsTranslations = {
@@ -1888,6 +1904,7 @@ export type CustomDirectusTypes = {
   foodoffers: Foodoffers[];
   foodoffers_categories: FoodoffersCategories[];
   foodoffers_categories_translations: FoodoffersCategoriesTranslations[];
+  foodoffers_components: FoodoffersComponents[];
   foodoffers_info_items: FoodoffersInfoItems[];
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];

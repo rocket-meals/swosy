@@ -319,6 +319,16 @@
     "tr": "Buraya yaz...",
     "zh": "在这里输入..."
   },
+  "scroll_to_bottom": {
+    "de": "Zum Ende springen",
+    "en": "Scroll to bottom",
+    "ar": "التمرير إلى الأسفل",
+    "es": "Desplazarse al final",
+    "fr": "Aller en bas",
+    "ru": "Прокрутить вниз",
+    "tr": "En alta git",
+    "zh": "滚动到底部"
+  },
   "enter_custom_value": {
     "de": "Eigenen Wert eingeben",
     "en": "Enter custom value",
@@ -1469,6 +1479,36 @@
     "tr": "Destek",
     "zh": "支持"
   },
+  "ai_generated_badge_label": {
+    "de": "KI",
+    "en": "AI",
+    "ar": "ذكاء",
+    "es": "IA",
+    "fr": "IA",
+    "ru": "ИИ",
+    "tr": "YZ",
+    "zh": "AI"
+  },
+  "ai_generated_image": {
+    "de": "KI generiert",
+    "en": "AI generated",
+    "ar": "تم إنشاؤه بواسطة الذكاء الاصطناعي",
+    "es": "Generado por IA",
+    "fr": "Généré par l'IA",
+    "ru": "Сгенерировано ИИ",
+    "tr": "Yapay zeka tarafından oluşturuldu",
+    "zh": "由人工智能生成"
+  },
+  "ai_generated_image_hint": {
+    "de": "Dieses Bild wurde mithilfe künstlicher Intelligenz generiert.",
+    "en": "This image was generated with the help of artificial intelligence.",
+    "ar": "تم إنشاء هذه الصورة بمساعدة الذكاء الاصطناعي.",
+    "es": "Esta imagen fue generada con la ayuda de inteligencia artificial.",
+    "fr": "Cette image a été générée à l'aide de l'intelligence artificielle.",
+    "ru": "Это изображение создано с помощью искусственного интеллекта.",
+    "tr": "Bu görsel yapay zekânın yardımıyla oluşturuldu.",
+    "zh": "此图像由人工智能生成。"
+  },
   "price": {
     "de": "Preis",
     "en": "Price",
@@ -2613,6 +2653,66 @@
     "tr": "Sohbet",
     "zh": "聊天"
   },
+  "mark_all_chats_as_read": {
+    "de": "Alle Nachrichten als gelesen markieren",
+    "en": "Mark all messages as read",
+    "ar": "تمييز كل الرسائل كمقروءة",
+    "es": "Marcar todos los mensajes como leídos",
+    "fr": "Marquer tous les messages comme lus",
+    "ru": "Отметить все сообщения прочитанными",
+    "tr": "Tüm mesajları okundu olarak işaretle",
+    "zh": "将所有消息标记为已读"
+  },
+  "mark_all_chats_as_unread": {
+    "de": "Alle Nachrichten als ungelesen markieren",
+    "en": "Mark all messages as unread",
+    "ar": "وضع علامة على كل الرسائل كغير مقروءة",
+    "es": "Marcar todos los mensajes como no leídos",
+    "fr": "Marquer tous les messages comme non lus",
+    "ru": "Отметить все сообщения как непрочитанные",
+    "tr": "Tüm mesajları okunmadı olarak işaretle",
+    "zh": "将所有消息标记为未读"
+  },
+  "linked_elements": {
+    "de": "Verknüpfte Elemente",
+    "en": "Linked elements",
+    "ar": "العناصر المرتبطة",
+    "es": "Elementos vinculados",
+    "fr": "Éléments liés",
+    "ru": "Связанные элементы",
+    "tr": "Bağlantılı öğeler",
+    "zh": "关联元素"
+  },
+  "linked_elements_food_image": {
+    "de": "Speise",
+    "en": "Food",
+    "ar": "وجبة",
+    "es": "Plato",
+    "fr": "Plat",
+    "ru": "Блюдо",
+    "tr": "Yemek",
+    "zh": "菜品"
+  },
+  "linked_elements_rating": {
+    "de": "Bewertung",
+    "en": "Rating",
+    "ar": "التقييم",
+    "es": "Valoración",
+    "fr": "Note",
+    "ru": "Оценка",
+    "tr": "Değerlendirme",
+    "zh": "评分"
+  },
+  "linked_elements_comment": {
+    "de": "Kommentar",
+    "en": "Comment",
+    "ar": "تعليق",
+    "es": "Comentario",
+    "fr": "Commentaire",
+    "ru": "Комментарий",
+    "tr": "Yorum",
+    "zh": "评论"
+  },
   "rss_feed": {
     "de": "RSS Feed",
     "en": "RSS Feed",
@@ -3082,6 +3182,16 @@
     "ru": "Выбрать",
     "tr": "Seç",
     "zh": "选择"
+  },
+  "deselect": {
+    "de": "Abwählen",
+    "en": "Deselect",
+    "ar": "Deselect",
+    "es": "Deselect",
+    "fr": "Deselect",
+    "ru": "Deselect",
+    "tr": "Deselect",
+    "zh": "Deselect"
   },
   "upload": {
     "de": "Hochladen",

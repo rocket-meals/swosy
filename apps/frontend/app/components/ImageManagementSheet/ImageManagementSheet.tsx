@@ -160,9 +160,10 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			const file_id = resultFileUpload.id;
 
 			const collectionHelper = new CollectionHelper(fileName);
-			let resultImageLinked = await collectionHelper.updateItem(selectedFoodId, {
-				image: file_id,
-			});
+                        let resultImageLinked = await collectionHelper.updateItem(selectedFoodId, {
+                                image: file_id,
+                                image_generated: false,
+                        });
 			handleFetch();
 			setLoading({ ...loading, camera: false, image: false });
 			closeSheet();
@@ -176,10 +177,11 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 		try {
 			const collectionHelper = new CollectionHelper(fileName);
 			setLoading({ ...loading, delete: true });
-			let result = await collectionHelper.updateItem(selectedFoodId, {
-				image: null,
-				image_remote_url: null,
-			});
+                        let result = await collectionHelper.updateItem(selectedFoodId, {
+                                image: null,
+                                image_remote_url: null,
+                                image_generated: false,
+                        });
 			handleFetch();
 			closeSheet();
 			setLoading({ ...loading, delete: false });

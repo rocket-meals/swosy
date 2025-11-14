@@ -93,6 +93,12 @@ services:
 
       HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/housingContracts.csv
 
+      # Env File
+      HOST_ENV_FILE_PATH: "/directus/host.env" # Path to the host .env file - so that we can read variables from there
+
+      # OpenAI configuration
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+
       # Directus Database configuration
       KEY: "${DATABASE_KEY}"
       SECRET: "${DATABASE_SECRET}"
@@ -138,6 +144,10 @@ services:
       AUTH_APPLE_SCOPE: "name email" # We sadly only get the email and name on the first login - https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js/configuring_your_webpage_for_sign_in_with_apple
       AUTH_APPLE_IDENTIFIER_KEY: "sub" # The key in the response that identifies the user
       AUTH_APPLE_PARAMS: '{"response_mode":"form_post"}'
+      # Auto generate and refresh the client secret
+      AUTH_APPLE_HOOK_APPLE_TEAM_ID: "${AUTH_APPLE_HOOK_APPLE_TEAM_ID}"
+      AUTH_APPLE_HOOK_APPLE_KEY_ID: "${AUTH_APPLE_HOOK_APPLE_KEY_ID}"
+      AUTH_APPLE_HOOK_PRIVATE_KEY: "${AUTH_APPLE_HOOK_PRIVATE_KEY}"
 
       # Directus Auth configuration - Google predefined values
       AUTH_GOOGLE_DRIVER: "openid"
@@ -192,6 +202,10 @@ services:
     volumes:
       # Docker Socket für Container-Management
       - /var/run/docker.sock:/var/run/docker.sock
+      # Generate Apple SSO client secret
+      - ./genSSO_Apple.sh:/directus/sso/genSSO_Apple.sh
+      # Env File
+      - ./../../.env:/directus/host.env # Path to the host .env file - so that we can read variables from there
 
   rocket-meals-database-backup:
     build:

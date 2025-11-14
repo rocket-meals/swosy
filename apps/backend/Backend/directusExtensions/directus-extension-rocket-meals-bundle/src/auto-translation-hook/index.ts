@@ -9,6 +9,7 @@ import { ApiContext } from '../helpers/ApiContext';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { EventContext } from '@directus/types';
 import { CollectionNames } from 'repo-depkit-common';
+import {MyDefineHook} from "../helpers/MyDefineHook";
 
 export const scheduleNameAutoTranslation = 'auto-translation';
 
@@ -145,12 +146,7 @@ function registerCollectionAutoTranslation(filter: any, apiContext: ApiContext) 
   }
 }
 
-export default defineHook(async ({ filter, action, init, schedule }, apiContext) => {
-  let collectionFound = await DatabaseInitializedCheck.checkTablesExist(scheduleNameAutoTranslation, apiContext, [CollectionNames.AUTO_TRANSLATION_SETTINGS]);
-  if (!collectionFound) {
-    console.log('Collection ' + CollectionNames.AUTO_TRANSLATION_SETTINGS + ' not found. Skipping auto-translation initialization.');
-    return;
-  }
+export default MyDefineHook.defineHookWithAllTablesExisting(scheduleNameAutoTranslation, async ({ filter, action, init, schedule }, apiContext) => {
 
   action(EventHelper.SERVER_START_EVENT, async (meta, context) => {
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
