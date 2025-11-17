@@ -6,15 +6,37 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 
-const EmailInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const EmailInput = ({
+	id,
+	value,
+	onChange,
+	onError,
+	error,
+	isDisabled,
+	custom_type,
+	prefix,
+	suffix,
+}: {
+	id: string;
+	value: string;
+	onChange: (id: string, value: string, custom_type: string) => void;
+	onError: (id: string, error: string) => void;
+	error: string;
+	isDisabled: boolean;
+	custom_type: string;
+	prefix: string | null | undefined;
+	suffix: string | null | undefined;
+}) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const flag = !suffix && !prefix;
 
 	const validateEmail = (text: string) => {
-		onChange(id, text, custom_type);
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(text)) {
+		const cleaned = text.trim();
+		onChange(id, cleaned, custom_type);
+		if (!emailRegex.test(cleaned)) {
 			onError(id, 'Invalid email format');
 		} else {
 			onError(id, '');
@@ -40,12 +62,12 @@ const EmailInput = ({ id, value, onChange, onError, error, isDisabled, custom_ty
 						styles.input,
 						flag
 							? {
-									width: '100%',
-									borderRadius: 10,
-								}
+								width: '100%',
+								borderRadius: 10,
+							}
 							: {
-									width: isWeb ? '90%' : '80%',
-								},
+								width: isWeb ? '90%' : '80%',
+							},
 						{ color: theme.screen.text },
 					]}
 					cursorColor={theme.screen.text}

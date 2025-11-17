@@ -25,22 +25,22 @@ const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisib
 		isPasswordValid: false,
 	});
 
-        const handleEmailChange = (text: string) => {
-                const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(text);
-                setFormState(prev => ({
-                        ...prev,
-                        email: trimmedEmail,
-                        isEmailValid: isValid,
-                }));
-        };
+	const handleEmailChange = (text: string) => {
+		const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(text);
+		setFormState(prev => ({
+			...prev,
+			email: trimmedEmail,
+			isEmailValid: isValid,
+		}));
+	};
 
-        const handlePasswordChange = (text: string) => {
-                setFormState(prev => ({
-                        ...prev,
-                        password: text,
-                        isPasswordValid: text.length > 0,
-                }));
-        };
+	const handlePasswordChange = (text: string) => {
+		setFormState(prev => ({
+			...prev,
+			password: text,
+			isPasswordValid: text.length > 0,
+		}));
+	};
 
 	const isFormValid = formState.isEmailValid && formState.isPasswordValid;
 
@@ -73,8 +73,19 @@ const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisib
 
 	useEffect(() => {
 		const screenHeight = Dimensions.get('window').height;
-		setIsLargeScreen(screenHeight > 500); // Detect if screen height is greater than 500px
+		setIsLargeScreen(screenHeight > 500);
 	}, []);
+
+	const onSubmit = () => {
+		if (!isFormValid || loading) return;
+		const cleanEmail = EmailHelper.sanitize(formState.email);
+
+		handleLogin(
+			undefined,
+			cleanEmail,
+			formState.password
+		);
+	};
 
 	return (
 		<Modal isVisible={isVisible} style={styles.modalContainer} onClose={() => setIsVisible(false)}>
@@ -132,6 +143,9 @@ const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisib
 					onChangeText={handleEmailChange}
 					value={formState.email}
 					placeholder="You@swosy.com"
+					keyboardType="email-address"
+					autoCapitalize="none"
+					autoCorrect={false}
 				/>
 				<TextInput
 					style={{
@@ -157,14 +171,8 @@ const ManagementModal: React.FC<ManagementModalProps> = ({ isVisible, setIsVisib
 						width: Dimensions.get('window').width < 500 ? '100%' : '80%',
 					}}
 					disabled={!isFormValid}
-                                        onPress={() =>
-                                                handleLogin(
-                                                        undefined,
-                                                        EmailHelper.sanitize(formState.email),
-                                                        formState.password
-                                                )
-                                        }
-                                >
+					onPress={onSubmit}
+				>
 					{loading ? (
 						<ActivityIndicator size="large" color={theme.screen.text} />
 					) : (
