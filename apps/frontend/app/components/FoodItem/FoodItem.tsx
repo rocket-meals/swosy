@@ -174,9 +174,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
               imageSource={{
                 uri: imageUri as string,
               }}
-              containerStyle={containerStyle}
+              containerStyle={[containerStyle, {flex: 1}]}
               imageContainerStyle={imageContainerStyle}
-              contentStyle={contentStyle}
+              contentStyle={[contentStyle, {flex: 1, justifyContent: 'center'}]}
               borderColor={foods_area_color}
               imageChildren={
                 <>

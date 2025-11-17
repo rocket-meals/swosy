@@ -73,12 +73,15 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, openDistan
 					containerStyle={{
 						width: cardWidth,
 						backgroundColor: theme.card.background,
+						flex: 1
 					}}
 					imageContainerStyle={{
 						height: cardWidth,
 					}}
 					contentStyle={{
 						paddingHorizontal: 5,
+						flex: 1,
+						justifyContent: 'center'
 					}}
 					borderColor={campus_area_color}
 					imageChildren={

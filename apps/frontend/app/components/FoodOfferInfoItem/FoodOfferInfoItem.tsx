@@ -31,9 +31,9 @@ const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, conten
       onPress={item.link ? handlePress : undefined}
       imageSource={imageUri ? { uri: imageUri } : undefined}
       borderColor={foods_area_color}
-      containerStyle={containerStyle}
+      containerStyle={[containerStyle, {flex: 1}]}
       imageContainerStyle={imageContainerStyle}
-      contentStyle={contentStyle}
+      contentStyle={[contentStyle, {flex: 1, justifyContent: 'center'}]}
     >
       <Text style={[styles.text, { color: theme.screen.text }]} numberOfLines={3}>
         {content}

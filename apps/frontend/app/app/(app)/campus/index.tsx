@@ -59,10 +59,8 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>(null);
 	const [distanceAdded, setDistanceAdded] = useState(false);
 	const [selectedApartmentId, setSelectedApartementId] = useState<string>('');
-	const [screenWidth, setScreenWidth] = useState<number>(() => {
-		const w = Dimensions.get('window').width;
-		return Number.isFinite(w) && w > 0 ? w : 360;
-	});
+	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const [listWidth, setListWidth] = useState<number | null>(null);
 
 	const { drawerPosition, campusesSortBy, amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme } =
 		useSelector((state: RootState) => state.settings);
@@ -80,6 +78,28 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const closeImageManagementSheet = useCallback(() => imageManagementSheetRef.current?.close(), []);
 	const openDistanceSheet = useCallback(() => setDistanceModalVisible(true), []);
 	const closeDistanceSheet = useCallback(() => setDistanceModalVisible(false), []);
+
+	const MIN_CARD_WIDTH = 280;
+	const numColumns = useMemo(() => {
+		if (amountColumnsForcard && amountColumnsForcard > 0) {
+			return amountColumnsForcard;
+		}
+
+		if (!listWidth) return 2;
+
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
+	}, [amountColumnsForcard, listWidth]);
+
+	const itemGap = useMemo(() => {
+		if (screenWidth >= 1600) return 28;
+		if (screenWidth >= 1300) return 24;
+		if (screenWidth >= 1000) return 20;
+		if (screenWidth >= 700) return 16;
+		if (screenWidth >= 500) return 12;
+		if (screenWidth >= 300) return 10;
+		return 8;
+	}, [screenWidth]);
 
 	const ensureStableIds = useCallback((arr: DatabaseTypes.Buildings[] = []) => {
 		return arr.map((c, idx) => {
@@ -259,7 +279,13 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const renderItem = useCallback(
 		({ item }: { item: DatabaseTypes.Buildings }) => {
 			return (
-				<View style={itemWrapperStyle.container}>
+				<View
+					style={{
+						flex: 1,
+						paddingHorizontal: itemGap / 2,
+						marginVertical: itemGap / 3,
+					}}
+				>
 					<BuildingItem
 						campus={item}
 						setSelectedApartementId={setSelectedApartementId}
@@ -270,7 +296,13 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				</View>
 			);
 		},
-		[openImageManagementSheet, openDistanceSheet, setSelectedApartementId, settingsForItem]
+		[
+			openImageManagementSheet,
+			openDistanceSheet,
+			setSelectedApartementId,
+			settingsForItem,
+			itemGap,
+		]
 	);
 
 	const keyExtractor = useCallback((item: DatabaseTypes.Buildings, index: number) => (item.id ? String(item.id) : `campus-${index}`), []);
@@ -337,7 +369,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							<Tooltip
 								placement="top"
 								trigger={triggerProps => (
-									 <IconButton {...triggerProps} onPress={openSortSheet} style={{ padding: 10 }}>
+									<IconButton {...triggerProps} onPress={openSortSheet} style={{ padding: 10 }}>
 										<MaterialIcons name="sort" size={24} color={theme.header.text} />
 									</IconButton>
 								)}
@@ -352,26 +384,41 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 					</View>
 				</View>
 
-				<View style={{ ...styles.compusContainer, backgroundColor: theme.screen.background, flex: 1 }}>
-					<FlashList
-						data={visibleCampuses}
-						renderItem={renderItem}
-						numColumns={Math.max(1, settingsForItem.amountColumnsForcard === 0 ? Math.floor(screenWidth / 180) : settingsForItem.amountColumnsForcard)}
-						keyExtractor={keyExtractor}
-						estimatedItemSize={ITEM_HEIGHT}
-						contentContainerStyle={{ paddingHorizontal: 5, paddingBottom: 20 }}
-						ListHeaderComponent={ListHeaderComponent}
-						ListEmptyComponent={ListEmptyComponent}
-						refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-						initialNumToRender={12}
-						maxToRenderPerBatch={20}
-						windowSize={12}
-						removeClippedSubviews={false}
-						showsVerticalScrollIndicator={false}
-						onEndReachedThreshold={0.4}
-						updateCellsBatchingPeriod={50}
-					/>
+				<View style={{ flex: 1, alignItems: 'center' }}>
+					<View
+						style={{
+							width: '100%',
+							maxWidth: 1420,
+							flex: 1,
+						}}
+						onLayout={e => {
+							const w = e.nativeEvent.layout.width;
+							if (w && w !== listWidth) {
+								setListWidth(w);
+							}
+						}}
+					>
+						<FlashList
+							key={numColumns}
+							data={visibleCampuses}
+							renderItem={renderItem}
+							keyExtractor={keyExtractor}
+							numColumns={numColumns}
+							contentContainerStyle={{
+								paddingHorizontal: itemGap,
+								marginTop: 20,
+								paddingBottom: 10,
+							}}
+							ListHeaderComponent={ListHeaderComponent}
+							ListEmptyComponent={ListEmptyComponent}
+							refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+							removeClippedSubviews={false}
+							showsVerticalScrollIndicator={false}
+							onEndReachedThreshold={0.4}
+						/>
+					</View>
 				</View>
+
 
 				<BaseBottomSheet ref={sortSheetRef} index={-1} backgroundStyle={{ ...styles.sheetBackground }} enablePanDownToClose handleComponent={null} onClose={closeSortSheet}>
 					<BuildingSortSheet closeSheet={closeSortSheet} freeRooms={false} />

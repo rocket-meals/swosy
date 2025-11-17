@@ -107,6 +107,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(PopupEventHelper.getAll());
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
@@ -131,19 +132,27 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { hasUnreadChats } = useChatUnreadStatus();
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 
+	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
 		if (amountColumnsForcard && amountColumnsForcard > 0) {
 			return amountColumnsForcard;
 		}
 
-		if (!isWeb) {
-			return 2;
-		}
-		if (screenWidth >= 1300) return 5;
-		if (screenWidth >= 1050) return 4;
-		if (screenWidth >= 800) return 3;
-		return 2;
-	}, [amountColumnsForcard, screenWidth]);
+		if (!listWidth) return 2;
+
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
+	}, [amountColumnsForcard, listWidth]);
+
+	const itemGap = useMemo(() => {
+		if (screenWidth >= 1600) return 28;
+		if (screenWidth >= 1300) return 24;
+		if (screenWidth >= 1000) return 20;
+		if (screenWidth >= 700) return 16;
+		if (screenWidth >= 500) return 12;
+		if (screenWidth >= 300) return 10;
+		return 8;
+	}, [screenWidth]);
 
 	const dayItems = useMemo(() => {
 		const offers = selectedCanteenFoodOffers || [];
@@ -464,20 +473,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		},
 		[appElements, languageCode]
 	);
-
 	const renderDayItem = useCallback(
 		({ item, index }: { item: DayItem; index: number }) => {
-			const horizontalPadding = isWeb ? (screenWidth < 500 ? 5 : 20) : 5;
-			const totalPadding = horizontalPadding * 2;
-			const gapBetweenItems = 12;
-
-			const availableWidth = Math.max(320, screenWidth - totalPadding);
-			const columns = Math.max(1, numColumns || 1);
-			const totalGap = gapBetweenItems * (columns - 1);
-			const columnWidth = Math.floor((availableWidth - totalGap) / columns);
-
 			return (
-				<View style={{ width: columnWidth, marginHorizontal: 6, marginVertical: 6 }}>
+				<View
+					style={{
+						flex: 1,
+						marginHorizontal: itemGap / 2,
+						marginVertical: itemGap / 2,
+					}}
+				>
 					{item.foodoffer ? (
 						<FoodItem
 							canteen={selectedCanteen}
@@ -492,13 +497,22 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						<FoodOfferInfoItem
 							key={item.foodofferInfoItem.id || `info-item-${index}`}
 							item={item.foodofferInfoItem}
-							content={(getInfoItemContent(item.foodofferInfoItem) || {}).content || ''}
+							content={
+								(getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
+							}
 						/>
 					) : null}
 				</View>
 			);
 		},
-		[openManagementSheet, openSheet, selectedCanteen, setSelectedFoodId, getInfoItemContent, screenWidth, numColumns]
+		[
+			openManagementSheet,
+			openSheet,
+			selectedCanteen,
+			setSelectedFoodId,
+			getInfoItemContent,
+			itemGap,
+		]
 	);
 
 	const keyExtractor = useCallback((item: DayItem, index: number) => {
@@ -740,28 +754,39 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							</View>
 						</View>
 					</View>
-					<FlashList
-						key={numColumns}
-						data={dayItems}
-						renderItem={renderDayItem}
-						keyExtractor={keyExtractor}
-						numColumns={numColumns}
-						estimatedItemSize={220}
-						contentContainerStyle={{
-							paddingHorizontal: isWeb ? (screenWidth < 500 ? 5 : 20) : 5,
-							marginTop: 20,
-						}}
-						refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-						ListFooterComponent={ListFooterComponent}
-						ListEmptyComponent={ListEmptyComponent}
-						initialNumToRender={6}
-						maxToRenderPerBatch={8}
-						windowSize={5}
-						updateCellsBatchingPeriod={100}
-						showsVerticalScrollIndicator={false}
-						removeClippedSubviews={true}
-						onEndReachedThreshold={0.5}
-					/>
+					<View style={{ flex: 1, alignItems: 'center' }}>
+						<View
+							style={{
+								width: '100%',
+								maxWidth: 1420,
+								flex: 1,
+							}}
+							onLayout={e => {
+								const w = e.nativeEvent.layout.width;
+								if (w && w !== listWidth) {
+									setListWidth(w);
+								}
+							}}
+						>
+							<FlashList
+								key={numColumns}
+								data={dayItems}
+								renderItem={renderDayItem}
+								keyExtractor={keyExtractor}
+								numColumns={numColumns}
+								contentContainerStyle={{
+									paddingHorizontal: itemGap,
+									marginTop: 20,
+								}}
+								refreshControl={
+									<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+								}
+								ListFooterComponent={ListFooterComponent}
+								ListEmptyComponent={ListEmptyComponent}
+								showsVerticalScrollIndicator={false}
+							/>
+						</View>
+					</View>
 				</View>
 
 				{isActive &&
