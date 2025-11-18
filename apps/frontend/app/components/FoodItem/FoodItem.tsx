@@ -31,7 +31,7 @@ const selectPreviousFeedback = createSelector([selectFoodState, (_: RootState, f
 const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
 
 const FoodItem: React.FC<FoodItemProps> = memo(
-  ({ item, canteen, handleMenuSheet, handleImageSheet, setSelectedFoodId, handleEatingHabitsSheet }) => {
+  ({ item, canteen, handleMenuSheet, handleImageSheet, setSelectedFoodId, handleEatingHabitsSheet, cardWidth }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { theme } = useTheme();
@@ -174,9 +174,20 @@ const FoodItem: React.FC<FoodItemProps> = memo(
               imageSource={{
                 uri: imageUri as string,
               }}
-              containerStyle={[containerStyle, {flex: 1}]}
-              imageContainerStyle={imageContainerStyle}
-              contentStyle={[contentStyle, {flex: 1, justifyContent: 'center'}]}
+              containerStyle={[
+                  containerStyle,
+                  cardWidth
+                  ? { width: '100%' }
+                  : { flex: 1 },
+              ]}
+              imageContainerStyle={[
+                imageContainerStyle,
+                cardWidth ? { height: cardWidth } : null,
+              ]}
+              contentStyle={[
+                contentStyle,
+                { flex: 1, justifyContent: 'center' },
+              ]}
               borderColor={foods_area_color}
               imageChildren={
                 <>
@@ -235,7 +246,20 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 </>
               }
             >
-              <Text style={{ ...styles.foodName, color: theme.screen.text }}>{foodName}</Text>
+                <View
+                  style={{
+                    minHeight: 52,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text
+                    style={{ ...styles.foodName, color: theme.screen.text }}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {foodName}
+                  </Text>
+                </View>
             </CardWithText>
           )}
         >

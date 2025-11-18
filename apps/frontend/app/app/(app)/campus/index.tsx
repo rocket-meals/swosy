@@ -282,8 +282,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				<View
 					style={{
 						flex: 1,
-						paddingHorizontal: itemGap / 2,
-						marginVertical: itemGap / 3,
+						marginHorizontal: 10,
+						marginVertical: 10,
+						alignItems: 'center'
 					}}
 				>
 					<BuildingItem
@@ -405,9 +406,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
 							contentContainerStyle={{
-								paddingHorizontal: itemGap,
 								marginTop: 20,
-								paddingBottom: 10,
 							}}
 							ListHeaderComponent={ListHeaderComponent}
 							ListEmptyComponent={ListEmptyComponent}

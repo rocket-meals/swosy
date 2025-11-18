@@ -62,6 +62,11 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, openDistan
 		return { uri: defaultImage };
 	}, [campus, defaultImage]);
 
+	const cardSize =
+		amountColumnsForcard === 0
+		  ? CardDimensionHelper.getCardDimension(screenWidth)
+		  : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
+
 	return (
 		<Tooltip
 			placement="top"
@@ -71,12 +76,12 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, openDistan
 					onPress={() => handleNavigation(campus?.id)}
 					imageSource={imageSource}
 					containerStyle={{
-						width: cardWidth,
+						width: '100%',
 						backgroundColor: theme.card.background,
-						flex: 1
+						flex: 1,
 					}}
 					imageContainerStyle={{
-						height: cardWidth,
+						height: cardSize,
 					}}
 					contentStyle={{
 						paddingHorizontal: 5,

@@ -144,6 +144,17 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		return Math.max(2, cols);
 	}, [amountColumnsForcard, listWidth]);
 
+	const cardWidth = useMemo(() => {
+		if (!listWidth || !numColumns) return undefined;
+
+		const horizontalMargin = 10;
+		const totalMargin = horizontalMargin * 2 * numColumns;
+
+		const availableWidth = listWidth - totalMargin;
+		return availableWidth / numColumns;
+	}, [listWidth, numColumns]);
+
+
 	const itemGap = useMemo(() => {
 		if (screenWidth >= 1600) return 28;
 		if (screenWidth >= 1300) return 24;
@@ -478,9 +489,10 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			return (
 				<View
 					style={{
-						flex: 1,
-						marginHorizontal: itemGap / 2,
-						marginVertical: itemGap / 2,
+						width: cardWidth || '100%',
+						marginHorizontal: 10,
+						marginVertical: 10,
+						alignItems: 'center'
 					}}
 				>
 					{item.foodoffer ? (
@@ -492,6 +504,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							handleImageSheet={openManagementSheet}
 							handleEatingHabitsSheet={openSheet}
 							setSelectedFoodId={setSelectedFoodId}
+							cardWidth={cardWidth}
 						/>
 					) : item.foodofferInfoItem ? (
 						<FoodOfferInfoItem
@@ -500,6 +513,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							content={
 								(getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
 							}
+							cardWidth={cardWidth}
 						/>
 					) : null}
 				</View>
@@ -512,6 +526,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			setSelectedFoodId,
 			getInfoItemContent,
 			itemGap,
+			cardWidth
 		]
 	);
 
@@ -775,7 +790,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								keyExtractor={keyExtractor}
 								numColumns={numColumns}
 								contentContainerStyle={{
-									paddingHorizontal: itemGap,
 									marginTop: 20,
 								}}
 								refreshControl={

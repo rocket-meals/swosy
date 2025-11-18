@@ -46,6 +46,11 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, setSelectedApar
 		return () => subscription?.remove();
 	}, []);
 
+	const cardSize =
+    amountColumnsForcard === 0
+      ? CardDimensionHelper.getCardDimension(screenWidth)
+      : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
+
 	const getCardDimension = () => CardDimensionHelper.getCardDimension(screenWidth);
 
 	const getCardWidth = () => CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
@@ -71,16 +76,19 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, setSelectedApar
 						}
 						containerStyle={{
 							...styles.card,
-							width: amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard),
-							backgroundColor: theme.card.background,
+							width: '100%',
+              				backgroundColor: theme.card.background,
+							flex: 1,
 						}}
 						imageContainerStyle={{
 							...styles.imageContainer,
-							height: amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard),
+							height: cardSize,
 						}}
 						contentStyle={{
 							...styles.cardContent,
 							paddingHorizontal: 5,
+							flex: 1,
+							justifyContent: 'center'
 						}}
 						borderColor={housing_area_color}
 						imageChildren={

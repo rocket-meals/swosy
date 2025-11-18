@@ -9,8 +9,9 @@ import useFoodCard from '@/hooks/useFoodCard';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
+import { View } from 'react-native';
 
-const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content }) => {
+const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content, cardWidth }) => {
   const { theme } = useTheme();
   const { appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
 
@@ -31,13 +32,31 @@ const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, conten
       onPress={item.link ? handlePress : undefined}
       imageSource={imageUri ? { uri: imageUri } : undefined}
       borderColor={foods_area_color}
-      containerStyle={[containerStyle, {flex: 1}]}
-      imageContainerStyle={imageContainerStyle}
-      contentStyle={[contentStyle, {flex: 1, justifyContent: 'center'}]}
+      containerStyle={[
+        containerStyle,
+        cardWidth
+          ? { width: '100%' }
+          : { flex: 1 },
+      ]}
+      imageContainerStyle={[
+        imageContainerStyle,
+        cardWidth ? { height: cardWidth } : null,
+      ]}
+      contentStyle={[
+        contentStyle,
+        { flex: 1, justifyContent: 'center' },
+      ]}
     >
-      <Text style={[styles.text, { color: theme.screen.text }]} numberOfLines={3}>
-        {content}
-      </Text>
+      <View
+        style={{
+          minHeight: 52,
+          justifyContent: 'center',
+        }}
+      >
+        <Text style={[styles.text, { color: theme.screen.text }]} numberOfLines={3}>
+          {content}
+        </Text>
+      </View>
     </CardWithText>
   );
 });
