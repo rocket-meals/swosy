@@ -2133,6 +2133,36 @@
     "tr": "Dün",
     "zh": "昨天"
   },
+  "yes":{
+    "de": "Ja",
+    "en": "Yes",
+    "ar": "نعم",
+    "es": "Sí",
+    "fr": "Oui",
+    "ru": "Да",
+    "tr": "Evet",
+    "zh": "是"
+  },
+  "no": {
+    "de": "Nein",
+    "en": "No",
+    "ar": "لا",
+    "es": "No",
+    "fr": "Non",
+    "ru": "Нет",
+    "tr": "Hayır",
+    "zh": "不"
+  },
+  "undefined": {
+    "de": "Nicht definiert",
+    "en": "Undefined",
+    "ar": "غير معرف",
+    "es": "Indefinido",
+    "fr": "Indéfini",
+    "ru": "Неопределено",
+    "tr": "Tanımsız",
+    "zh": "未定义"
+  },
   "nutrition": {
     "de": "Durchschnittliche Nährwerte pro Portion",
     "en": "Average Nutritional Values per Portion",

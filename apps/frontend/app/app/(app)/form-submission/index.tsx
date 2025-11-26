@@ -80,7 +80,8 @@ const extractFormFieldId = (field: DatabaseTypes.FormFields | string | null | un
 };
 
 const normalizeExpectedValue = (value: unknown): string => {
-	if (value === null || value === undefined) return '';
+	// Treat undefined/null expected values as 'false' for visibility checks
+	if (value === null || value === undefined) return 'false';
 	if (typeof value === 'string') return value.trim().toLowerCase();
 	if (typeof value === 'boolean') return value ? 'true' : 'false';
 	if (Array.isArray(value)) {
@@ -91,13 +92,13 @@ const normalizeExpectedValue = (value: unknown): string => {
 };
 
 const normalizeCurrentValue = (value: unknown, customType?: string): string => {
-	if (value === null || value === undefined) return '';
+	// If value is null/undefined and not a boolean customType, keep empty string
+	if ((value === null || value === undefined) && customType !== 'value_boolean') return '';
 
 	if (customType === 'value_boolean') {
+		// Treat any non-true value as false (including null/undefined)
 		if (value === 1 || value === true) return 'true';
-		if (value === 0 || value === false) return 'false';
-
-		return 'null';
+		return 'false';
 	}
 
 	if (typeof value === 'string') return value.trim().toLowerCase();
@@ -133,7 +134,7 @@ const Index = () => {
 	const { user } = useSelector((state: RootState) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
-		[key: string]: { value: any; error: string; custom_type: string };
+		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const { language, drawerPosition, primaryColor } = useSelector((state: RootState) => state.settings);
@@ -176,7 +177,7 @@ const Index = () => {
 		});
 	}, [formData]);
 
-	const handleChange = (id: string, value: any, custom_type: string) => {
+	const handleChange = (id: string, value: any, custom_type?: string) => {
 		setFormData(prev => ({
 			...prev,
 			[id]: { ...prev[id], value, error: '', custom_type },
@@ -831,7 +832,7 @@ const Index = () => {
 											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE && showInForm && <DateInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM && showInForm && <TimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP && showInForm && <PreciseTimestampInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX && showInForm && <TriStateCheckbox id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
+											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX && showInForm && <TriStateCheckbox id={fieldId} onlyTwo={true} value={formData[fieldId]?.value} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
 											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_FILES && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
 											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
 											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
