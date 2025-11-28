@@ -23,7 +23,7 @@ const CardWithText: React.FC<Props> = ({
   imageContainerStyle,
   imageStyle,
   contentStyle,
-  topRadius = 18,
+  topRadius = 0,
   borderColor,
   imageChildren,
   children,
