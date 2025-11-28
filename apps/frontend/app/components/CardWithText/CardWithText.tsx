@@ -1,51 +1,134 @@
-import React, { memo } from 'react';
-import { TouchableOpacity, View, StyleSheet } from 'react-native';
+// CardWithText.tsx (responsive caption height)
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { TouchableOpacity, View, StyleSheet, ViewStyle, LayoutChangeEvent } from 'react-native';
 import { Image as ExpoImage, ImageProps as ExpoImageProps } from 'expo-image';
 import { CardWithTextProps } from './types';
 
 type AnyImageProps = ExpoImageProps & { [k: string]: any };
 
 const DEFAULT_IMAGE_PROPS: AnyImageProps = {
-	contentFit: 'cover',
-	cachePolicy: 'memory-disk',
-	transition: 250,
+  contentFit: 'cover',
+  cachePolicy: 'memory-disk',
+  transition: 250,
 };
 
-const CardWithText: React.FC<CardWithTextProps & { imageProps?: AnyImageProps }> = ({ imageSource, containerStyle, imageContainerStyle, imageStyle, contentStyle, topRadius = 18, borderColor, imageChildren, children, bottomContent, imageProps, ...rest }) => {
-	const contentBorder = borderColor ? { borderTopColor: borderColor, borderTopWidth: 3 } : undefined;
+type Props = CardWithTextProps & {
+  imageProps?: AnyImageProps;
+  imageContainerStyle?: ViewStyle | ViewStyle[];
+};
 
-	const forwardedImageProps: AnyImageProps = {
-		...DEFAULT_IMAGE_PROPS,
-		...(imageProps || {}),
-	};
+const CardWithText: React.FC<Props> = ({
+  imageSource,
+  containerStyle,
+  imageContainerStyle,
+  imageStyle,
+  contentStyle,
+  topRadius = 18,
+  borderColor,
+  imageChildren,
+  children,
+  bottomContent,
+  imageProps,
+  ...rest
+}) => {
+  const forwardedImageProps: AnyImageProps = {
+    ...DEFAULT_IMAGE_PROPS,
+    ...(imageProps || {}),
+  };
 
-	return (
-		<TouchableOpacity style={[styles.card, { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, containerStyle]} activeOpacity={0.9} {...rest}>
-			<View style={[styles.imageContainer, { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, imageContainerStyle]}>
-				{imageSource ? <ExpoImage {...forwardedImageProps} source={imageSource as any} style={[styles.image, { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, imageStyle]} /> : null}
-				{imageChildren}
-			</View>
+  const resolvedImageContainerStyle = Array.isArray(imageContainerStyle)
+    ? [styles.imageContainer, ...imageContainerStyle]
+    : [styles.imageContainer, imageContainerStyle];
 
-			<View style={[styles.cardContent, contentBorder, contentStyle]}>{bottomContent ?? children}</View>
-		</TouchableOpacity>
-	);
+  // state to store measured card width, used to dynamically determine caption height
+  const [cardWidth, setCardWidth] = useState<number | null>(null);
+
+  // compute min caption height based on measured width
+  const captionMinHeight = useMemo(() => {
+    if (!cardWidth) return 84; // fallback
+    // tune the multiplier to your design — 0.22 (22%) works well in screenshots
+    const computed = Math.round(cardWidth * 0.22);
+    return Math.max(64, Math.min(130, computed)); // clamp between 64 and 130 px
+  }, [cardWidth]);
+
+  const onLayoutCard = useCallback((e: LayoutChangeEvent) => {
+    const w = Math.round(e.nativeEvent.layout.width);
+    if (w && w !== cardWidth) {
+      setCardWidth(w);
+    }
+  }, [cardWidth]);
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={[styles.card, { borderRadius: 12 }, containerStyle]}
+      onLayout={onLayoutCard}
+      {...rest}
+    >
+      {/* square wrapper ensures a stable 1:1 image area */}
+      <View style={[styles.squareWrapper, { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }]}>
+        <View style={[{ borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, ...resolvedImageContainerStyle as any]}>
+          {imageSource ? (
+            <ExpoImage {...forwardedImageProps} source={imageSource as any} style={[styles.image, imageStyle]} />
+          ) : null}
+
+          {/* absolute divider glued to bottom of image area */}
+          {borderColor ? <View style={[styles.topDivider, { backgroundColor: borderColor }]} /> : null}
+
+          {imageChildren}
+        </View>
+      </View>
+
+      {/* bottom content sits below the square image area; keep a responsive min-height */}
+      <View
+        style={[
+          styles.cardContent,
+          { minHeight: captionMinHeight, paddingHorizontal: Math.round((cardWidth ?? 360) * 0.05) }, // padding scales with width
+          contentStyle,
+        ]}
+      >
+        {bottomContent ?? children}
+      </View>
+    </TouchableOpacity>
+  );
 };
 
 export default memo(CardWithText);
 
 const styles = StyleSheet.create({
-	card: {
-		overflow: 'hidden',
-		borderRadius: 12,
-	},
-	imageContainer: {
-		overflow: 'hidden',
-	},
-	image: {
-		width: '100%',
-		height: '100%',
-	},
-	cardContent: {
-		padding: 8,
-	},
+  card: {
+    overflow: 'hidden',
+  },
+  squareWrapper: {
+    width: '100%',
+    aspectRatio: 1,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  imageContainer: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  topDivider: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 3,
+    bottom: 0, // glued to bottom of 1:1 image area
+    zIndex: 5,
+  },
+  cardContent: {
+    // remove a hard fixed minHeight; we compute it dynamically
+    paddingTop: 12,
+    paddingBottom: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
 });

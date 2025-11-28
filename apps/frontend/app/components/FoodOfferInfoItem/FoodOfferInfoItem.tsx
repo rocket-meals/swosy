@@ -32,20 +32,17 @@ const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, conten
       onPress={item.link ? handlePress : undefined}
       imageSource={imageUri ? { uri: imageUri } : undefined}
       borderColor={foods_area_color}
-      containerStyle={[
-        containerStyle,
-        cardWidth
-          ? { width: '100%' }
-          : { flex: 1 },
-      ]}
-      imageContainerStyle={[
-        imageContainerStyle,
-        cardWidth ? { height: cardWidth } : null,
-      ]}
-      contentStyle={[
-        contentStyle,
-        { flex: 1, justifyContent: 'center' },
-      ]}
+              containerStyle={[
+                containerStyle,
+                cardWidth ? { width: '100%' } : { flex: 1 },
+              ]}
+              imageContainerStyle={[
+                imageContainerStyle,
+              ]}
+              contentStyle={[
+                contentStyle,
+                { flex: 1, justifyContent: 'center' },
+              ]}
     >
       <View
         style={{

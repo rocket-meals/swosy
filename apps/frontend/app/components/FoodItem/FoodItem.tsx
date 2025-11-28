@@ -78,9 +78,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       try {
         markingsData.slice(0, 5).forEach(m => {
           const img = m?.image_remote_url || getImageUrl(m?.image);
-          if (img) Image.prefetch(img).catch(() => {});
+          if (img) Image.prefetch(img).catch(() => { });
         });
-      } catch (e) {}
+      } catch (e) { }
     }, [markingsData]);
 
     const openInBrowser = useCallback(
@@ -175,14 +175,11 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 uri: imageUri as string,
               }}
               containerStyle={[
-                  containerStyle,
-                  cardWidth
-                  ? { width: '100%' }
-                  : { flex: 1 },
+                containerStyle,
+                cardWidth ? { width: '100%' } : { flex: 1 },
               ]}
               imageContainerStyle={[
                 imageContainerStyle,
-                cardWidth ? { height: cardWidth } : null,
               ]}
               contentStyle={[
                 contentStyle,
@@ -246,7 +243,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 </>
               }
             >
-                <View
+              <View
                   style={{
                     minHeight: 52,
                     justifyContent: 'center',
