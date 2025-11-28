@@ -19,7 +19,7 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 171;
+	return 172;
 }
 
 export function getMajorVersion() {
@@ -91,19 +91,6 @@ export const configMuenster: CustomerConfig = {
 	bundleIdAndroid:  undefined,
 	baseUrl: '/muenster',
 	server_url: ServerHelper.SERVER_CONFIG_MUENSTER.server_url,
-};
-
-export const aachenConfig: CustomerConfig = {
-	// apple app id: 6754844700
-	projectName: 'AachenMensa',
-	projectSlug: 'rocket-meals-aachen',
-	easUpdateId: '88b123c6-b8d8-4968-9ab5-86cd0c8b9657',
-	easProjectId: '88b123c6-b8d8-4968-9ab5-86cd0c8b9657',
-	appScheme: 'app-rocket-meals-aachen',
-	bundleIdIos: 'de.rocket-meals.aachen',
-	bundleIdAndroid: 'com.baumgartner_software.aachen',
-	baseUrl: '/aachpetito',
-	server_url: ServerHelper.AACHEN_SERVER_CONFIG.server_url,
 };
 
 export function getCustomerConfig(): CustomerConfig {
