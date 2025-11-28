@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Keyboard, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -48,7 +48,10 @@ const Settings = () => {
 	const [nickname, setNickname] = useState<string>('');
 	const nicknameSheetRef = useRef<BottomSheet>(null);
 	const openNicknameSheet = () => nicknameSheetRef?.current?.expand();
-	const closeNicknameSheet = () => nicknameSheetRef?.current?.close();
+	const closeNicknameSheet = () => {
+		Keyboard.dismiss();
+		nicknameSheetRef?.current?.close();
+	};
 	const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 	const drawerSheetRef = useRef<BottomSheet>(null);
 	const languageSheetRef = useRef<BottomSheet>(null);
@@ -126,8 +129,6 @@ const Settings = () => {
 		languageSheetRef?.current?.close();
 	};
 
-	// ColorScheme
-
 	const openColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.expand();
 	};
@@ -135,8 +136,6 @@ const Settings = () => {
 	const closeColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.close();
 	};
-
-	// Drawer Position
 
 	const openDrawerSheet = () => {
 		drawerSheetRef?.current?.expand();
@@ -146,8 +145,6 @@ const Settings = () => {
 		drawerSheetRef?.current?.close();
 	};
 
-	// Amount Column Card
-
 	const openAmountColumnModal = () => {
 		amountColumnSheetRef?.current?.expand();
 	};
@@ -156,8 +153,6 @@ const Settings = () => {
 		amountColumnSheetRef?.current?.close();
 	};
 
-	// first day of week
-
 	const openFirstDayModal = () => {
 		firstDaySheetRef?.current?.expand();
 	};
@@ -165,8 +160,6 @@ const Settings = () => {
 	const closeFirstDayModal = () => {
 		firstDaySheetRef?.current?.close();
 	};
-
-	// server selection
 	const openServerSheet = () => {
 		serverSheetRef?.current?.expand();
 	};
@@ -174,8 +167,6 @@ const Settings = () => {
 	const closeServerSheet = () => {
 		serverSheetRef?.current?.close();
 	};
-
-	// foodoffers next day time
 
 	const openFoodOffersTimeSheet = () => {
 		foodOffersTimeSheetRef?.current?.expand();
@@ -292,7 +283,7 @@ const Settings = () => {
 						{isRegisteredUser ? (
 							<>
 								<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.logout)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogout} groupPosition="middle" />
-								<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="deleteuser" size={24} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
+								<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
 							</>
 						) : (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sign_in)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogin} groupPosition="middle" />
@@ -448,7 +439,10 @@ const Settings = () => {
 						}}
 						enablePanDownToClose
 						handleComponent={null}
-						onClose={closeNicknameSheet}
+						onClose={() => {
+							Keyboard.dismiss();
+							closeNicknameSheet();
+						}}
 					>
 						<NicknameSheet
 							closeSheet={closeNicknameSheet}

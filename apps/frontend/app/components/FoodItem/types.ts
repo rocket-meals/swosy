@@ -10,4 +10,5 @@ export interface FoodItemProps {
 	handleEatingHabitsSheet: (sheet: keyof typeof SHEET_COMPONENTS) => void;
 	// setItemMarkings: React.Dispatch<React.SetStateAction<DatabaseTypes.FoodoffersMarkings[]>>;
 	setSelectedFoodId: React.Dispatch<React.SetStateAction<string>>;
+	cardWidth?: number; 
 }

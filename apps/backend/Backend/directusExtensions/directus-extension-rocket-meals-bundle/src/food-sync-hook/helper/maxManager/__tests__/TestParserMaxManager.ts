@@ -26,7 +26,7 @@ let markingParser: MarkingParserInterface;
 describe('dev', () => {
 
     beforeAll(async () => {
-        let foodAndMarkingParser = new MaxManagerConnector(configMaxManagerTestOnline);
+        let foodAndMarkingParser = new MaxManagerConnector(configMaxManagerTest);
         await foodAndMarkingParser.createNeededData();
 
         foodParser = foodAndMarkingParser;

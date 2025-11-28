@@ -48,7 +48,6 @@ export default StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
 		textAlign: 'center',
-		marginTop: 5,
 	},
 	priceButton: {
 		width: '100%',

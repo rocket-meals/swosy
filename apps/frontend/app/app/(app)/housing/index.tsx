@@ -1,5 +1,5 @@
-import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ApartmentSortOption, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -29,6 +29,9 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
+import { FlashList } from '@shopify/flash-list';
+
+const MIN_CARD_WIDTH = 280;
 
 const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	useSetPageTitle(TranslationKeys.housing);
@@ -39,19 +42,24 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const apartmentsHelper = new ApartmentsHelper();
 	const buildingsHelper = new BuildingsHelper();
 	const [query, setQuery] = useState<string>('');
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [isActive, setIsActive] = useState(false);
 	const sortSheetRef = useRef<BottomSheet>(null);
 	const imageManagementSheetRef = useRef<BottomSheet>(null);
+
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
 	const [apartmentsDispatched, setApartmentsDispatched] = useState(false);
-	const [refreshing, setRefreshing] = useState(false);
 	const [distanceAdded, setDistanceAdded] = useState(false);
+	const [hasLoaded, setHasLoaded] = useState(false);
+
+	const [refreshing, setRefreshing] = useState(false);
 	const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>();
 	const [selectedApartmentId, setSelectedApartementId] = useState<string>('');
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const [listWidth, setListWidth] = useState<number | null>(null);
+
 	const selectedCanteen = useSelectedCanteen();
-	const { drawerPosition, apartmentsSortBy, primaryColor: projectColor, appSettings, language } = useSelector((state: RootState) => state.settings);
+	const { drawerPosition, apartmentsSortBy, primaryColor: projectColor, appSettings, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
 	const { apartments, apartmentsLocal, unSortedApartments } = useSelector((state: RootState) => state.apartment);
 
 	const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : projectColor;
@@ -94,69 +102,52 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
 		setApartmentsDispatched(false);
-		fetchAllApartments();
-		setRefreshing(false);
+		fetchAllApartments().finally(() => {
+			setRefreshing(false);
+		});
 	}, []);
 
 	const fetchAllApartments = async () => {
 		setLoading(true);
 		try {
-			// Fetch all apartments
 			const apartmentData = (await apartmentsHelper.fetchApartments({})) as DatabaseTypes.Apartments[];
-			const apartments = apartmentData || [];
+			const list = apartmentData || [];
 
-			if (apartments && apartments?.length > 0) {
-				const apartmentWithBuilding = await Promise.all(
-					apartments.map(async apartment => {
-						const buildingData = (await buildingsHelper.fetchBuildingById(String(apartment?.building))) as DatabaseTypes.Buildings;
+			const apartmentWithBuilding = await Promise.all(
+				list.map(async apartment => {
+					const buildingData = (await buildingsHelper.fetchBuildingById(String(apartment?.building))) as DatabaseTypes.Buildings;
 
-						return {
-							...apartment,
-							...buildingData,
-						};
-					})
-				);
+					return {
+						...apartment,
+						...buildingData,
+					};
+				})
+			);
 
-				if (apartmentWithBuilding) {
-					dispatch({ type: SET_APARTMENTS, payload: apartmentWithBuilding });
-					setApartmentsDispatched(true);
-				}
-			}
+			const apartmentsDict = apartmentWithBuilding.reduce(
+				(acc, apt: any) => {
+					if (apt.id) {
+						acc[apt.id] = apt;
+					}
+					return acc;
+				},
+				{} as Record<string, any>
+			);
+
+			dispatch({ type: SET_APARTMENTS, payload: apartmentWithBuilding });
+			dispatch({ type: SET_UNSORTED_APARTMENTS, payload: apartmentWithBuilding });
+			dispatch({ type: SET_APARTMENTS_LOCAL, payload: apartmentWithBuilding });
+			dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
+
+			setApartmentsDispatched(true);
+			setHasLoaded(true);
 		} catch (error) {
 			console.error('Error fetching apartments or buildings:', error);
+			toast('Failed to load apartments', 'error');
 		} finally {
 			setLoading(false);
 		}
 	};
-
-	useEffect(() => {
-		if (apartments && selectedBuilding && apartmentsDispatched) {
-			setLoading(true);
-			const apartmentsWithDistance = addDistance(apartments);
-			if (apartmentsWithDistance) {
-				const apartmentsDict = apartmentsWithDistance.reduce(
-					(acc, apartment) => {
-						if (apartment.id) {
-							acc[apartment.id] = apartment;
-						}
-						return acc;
-					},
-					{} as Record<string, any>
-				);
-				dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
-				dispatch({
-					type: SET_APARTMENTS,
-					payload: apartmentsWithDistance,
-				});
-				dispatch({
-					type: SET_UNSORTED_APARTMENTS,
-					payload: apartmentsWithDistance,
-				});
-				setDistanceAdded(true);
-				setLoading(false);
-			}
-		}
-	}, [selectedBuilding, apartmentsDispatched]);
 
 	const addDistance = (apartments: DatabaseTypes.Apartments[]) => {
 		let campusWithDistance: Array<DatabaseTypes.Buildings> = [];
@@ -171,6 +162,41 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			return campusWithDistance;
 		}
 	};
+
+	useEffect(() => {
+		if (!apartmentsDispatched) return;
+
+		if (apartments && apartments.length > 0) {
+			let next = apartments;
+
+			if (selectedBuilding) {
+				const apartmentsWithDistance = addDistance(apartments);
+				if (apartmentsWithDistance && apartmentsWithDistance.length > 0) {
+					next = apartmentsWithDistance;
+				}
+			}
+
+			const apartmentsDict = next.reduce(
+				(acc, apartment: any) => {
+					if (apartment.id) {
+						acc[apartment.id] = apartment;
+					}
+					return acc;
+				},
+				{} as Record<string, any>
+			);
+
+			dispatch({ type: SET_APARTMENTS, payload: next });
+			dispatch({ type: SET_UNSORTED_APARTMENTS, payload: next });
+			dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
+
+			if (!distanceAdded && selectedBuilding) {
+				setDistanceAdded(true);
+			}
+		}
+
+		setLoading(false);
+	}, [apartmentsDispatched, selectedBuilding]);
 
 	const fetchSelectedBuilding = async () => {
 		if (selectedCanteen?.building) {
@@ -206,54 +232,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		fetchAllApartments();
 	}, []);
 
-	const updateSort = (id: ApartmentSortOption, apartments: DatabaseTypes.Apartments[]) => {
-		// Copy food offers to avoid mutation
-		setLoading(true);
-		let copiedApartments = [...apartments];
-
-		// Sorting logic based on option id
-		switch (id) {
-			case ApartmentSortOption.INTELLIGENT:
-				copiedApartments = sortApartmentsIntelligently(copiedApartments) || [];
-				break;
-			case ApartmentSortOption.ALPHABETICAL:
-				copiedApartments = sortApartmentsAlphabetically(copiedApartments) || [];
-				break;
-			case ApartmentSortOption.DISTANCE:
-				copiedApartments = sortApartmentsWithDistance(copiedApartments) || [];
-				break;
-			case ApartmentSortOption.FREE_ROOMS:
-				copiedApartments = sortApartmentsByAvailableDate(copiedApartments) || [];
-				break;
-			default:
-				copiedApartments = unSortedApartments || [];
-				break;
-		}
-
-		// Dispatch updated food offers and close the sheet
-		dispatch({
-			type: SET_APARTMENTS,
-			payload: copiedApartments,
-		});
-		dispatch({
-			type: SET_APARTMENTS_LOCAL,
-			payload: copiedApartments,
-		});
-		setLoading(false);
-	};
-
 	const sortApartmentsIntelligently = (apartments: any[]) => {
 		if (!apartments) return apartments;
 
 		return apartments.sort((a, b) => {
-			// Priority 1: DatabaseTypes.Apartments marked as free (no `available_from`)
 			const isFreeA = !a.available_from;
 			const isFreeB = !b.available_from;
 
-			if (isFreeA && !isFreeB) return -1; // Free apartments come first
-			if (!isFreeA && isFreeB) return 1; // Non-free apartments come later
+			if (isFreeA && !isFreeB) return -1;
+			if (!isFreeA && isFreeB) return 1;
 
-			// Priority 2: Sort by distance for non-free apartments
 			return a.distance - b.distance;
 		});
 	};
@@ -292,40 +280,161 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		});
 	};
 
+	const updateSort = (id: ApartmentSortOption, apartments: DatabaseTypes.Apartments[]) => {
+		setLoading(true);
+		let copiedApartments = [...apartments];
+
+		switch (id) {
+			case ApartmentSortOption.INTELLIGENT:
+				copiedApartments = sortApartmentsIntelligently(copiedApartments) || [];
+				break;
+			case ApartmentSortOption.ALPHABETICAL:
+				copiedApartments = sortApartmentsAlphabetically(copiedApartments) || [];
+				break;
+			case ApartmentSortOption.DISTANCE:
+				copiedApartments = sortApartmentsWithDistance(copiedApartments) || [];
+				break;
+			case ApartmentSortOption.FREE_ROOMS:
+				copiedApartments = sortApartmentsByAvailableDate(copiedApartments) || [];
+				break;
+			default:
+				copiedApartments = unSortedApartments || [];
+				break;
+		}
+
+		dispatch({
+			type: SET_APARTMENTS,
+			payload: copiedApartments,
+		});
+		dispatch({
+			type: SET_APARTMENTS_LOCAL,
+			payload: copiedApartments,
+		});
+		setLoading(false);
+	};
+
 	useEffect(() => {
 		if (apartments && distanceAdded) {
 			updateSort(apartmentsSortBy as ApartmentSortOption, apartments);
 		}
 	}, [apartmentsSortBy, distanceAdded]);
 
-	useEffect(() => {
-		const debounceTimer = setTimeout(() => {
-			if (query === '') {
-				dispatch({
-					type: SET_APARTMENTS,
-					payload: apartmentsLocal,
-				});
-			} else {
-				const filteredApartments = apartments?.filter(apartment => apartment?.alias?.toLowerCase()?.includes(query?.toLowerCase()));
-				dispatch({
-					type: SET_APARTMENTS,
-					payload: filteredApartments,
-				});
-			}
-		}, 500);
+	const visibleApartments = useMemo(() => {
+		const src = apartmentsLocal ?? apartments ?? [];
+		if (!query || query.trim() === '') return src;
 
-		return () => clearTimeout(debounceTimer);
-	}, [query]);
+		const q = query.toLowerCase().trim();
+		return src.filter((apartment: any) =>
+			(apartment?.alias ?? '').toLowerCase().includes(q)
+		);
+	}, [apartmentsLocal, apartments, query]);
 
 	useEffect(() => {
 		const handleResize = () => {
-			setScreenWidth(Dimensions.get('window').width);
+			const w = Dimensions.get('window').width;
+			setScreenWidth(Number.isFinite(w) && w > 0 ? w : 360);
 		};
 
+		handleResize();
 		const subscription = Dimensions.addEventListener('change', handleResize);
 
 		return () => subscription?.remove();
 	}, []);
+
+	const MIN_CARD_WIDTH = 280;
+	const numColumns = useMemo(() => {
+		if (amountColumnsForcard && amountColumnsForcard > 0) {
+			return amountColumnsForcard;
+		}
+
+		if (!listWidth) return 2;
+
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
+	}, [amountColumnsForcard, listWidth]);
+
+	const renderItem = useCallback(
+		({ item }: { item: any }) => (
+			<View
+				style={{
+					flex: 1,
+					marginHorizontal: 10,
+					marginVertical: 10,
+					alignItems: 'center',
+				}}
+			>
+				<ApartmentItem
+					apartment={item}
+					setSelectedApartementId={setSelectedApartementId}
+					openImageManagementSheet={openImageManagementSheet}
+					openDistanceSheet={openDistanceSheet}
+				/>
+			</View>
+		),
+		[openImageManagementSheet, openDistanceSheet]
+	);
+
+	const keyExtractor = useCallback(
+		(item: any, index: number) => (item.id ? String(item.id) : `apartment-${index}`),
+		[]
+	);
+
+	const ListHeaderComponent = useMemo(() => {
+		return (
+			<View style={{ width: '100%', alignItems: 'center' }}>
+				<View style={{ width: '100%', padding: screenWidth > 600 ? 20 : 5 }}>
+					{appSettings && appSettings?.housing_translations && (
+						<CustomMarkdown
+							content={getTextFromTranslation(appSettings?.housing_translations, language) || ''}
+							backgroundColor={housing_area_color}
+							imageWidth={'100%'}
+							imageHeight={400}
+						/>
+					)}
+				</View>
+
+				<View
+					style={[
+						styles.searchContainer,
+						{ paddingHorizontal: screenWidth > 600 ? 20 : 5, marginTop: 10, marginBottom: 10, width: '100%' },
+					]}
+				>
+					<TextInput
+						style={[styles.searchInput, { color: theme.screen.text }]}
+						cursorColor={theme.screen.text}
+						placeholderTextColor={theme.screen.placeholder}
+						onChangeText={setQuery}
+						value={query}
+						placeholder={translate(TranslationKeys.search_apartment_here)}
+					/>
+				</View>
+			</View>
+		);
+	}, [screenWidth, appSettings, language, housing_area_color, theme.screen.text, theme.screen.placeholder, query, translate]);
+
+	const ListEmptyComponent = useMemo(() => {
+		if (loading) {
+			return (
+				<View style={emptyStyles.container}>
+					<ActivityIndicator size={30} color={theme.screen.text} />
+				</View>
+			);
+		}
+
+		return (
+			<View style={emptyStyles.container}>
+				<Text
+					style={{
+						fontSize: 16,
+						fontFamily: 'Poppins_400Regular',
+						color: theme.screen.text,
+					}}
+				>
+					No Apartment Found
+				</Text>
+			</View>
+		);
+	}, [loading, theme.screen.text]);
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
@@ -388,63 +497,39 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						</View>
 					</View>
 				</View>
-				<ScrollView
-					style={{
-						...styles.compusContainer,
-						backgroundColor: theme.screen.background,
-					}}
-					contentContainerStyle={{
-						...styles.compusContentContainer,
-						paddingHorizontal: 5,
-					}}
-					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-				>
-					<View style={{ width: '100%', padding: screenWidth > 600 ? 20 : 5 }}>{appSettings && appSettings?.housing_translations && <CustomMarkdown content={getTextFromTranslation(appSettings?.housing_translations, language) || ''} backgroundColor={housing_area_color} imageWidth={'100%'} imageHeight={400} />}</View>
+				<View style={{ flex: 1, alignItems: 'center' }}>
 					<View
 						style={{
-							...styles.searchContainer,
-							width: screenWidth > 768 ? '60%' : '100%',
-							paddingHorizontal: screenWidth > 600 ? 20 : 5,
+							width: '100%',
+							maxWidth: 1420,
+							flex: 1,
+						}}
+						onLayout={e => {
+							const w = e.nativeEvent.layout.width;
+							if (w && w !== listWidth) {
+								setListWidth(w);
+							}
 						}}
 					>
-						<TextInput style={[styles.searchInput, { color: theme.screen.text }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setQuery} value={query} placeholder={translate(TranslationKeys.search_apartment_here)} />
+						<FlashList
+							key={numColumns}
+							data={visibleApartments}
+							renderItem={renderItem}
+							keyExtractor={keyExtractor}
+							numColumns={numColumns}
+							contentContainerStyle={{
+								paddingHorizontal: 5,
+								paddingBottom: 20,
+							}}
+							ListHeaderComponent={ListHeaderComponent}
+							ListEmptyComponent={ListEmptyComponent}
+							refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+							removeClippedSubviews={false}
+							showsVerticalScrollIndicator={false}
+							onEndReachedThreshold={0.4}
+						/>
 					</View>
-					<View style={{ ...styles.campusContainer, gap: 10 }}>
-						{loading ? (
-							<View
-								style={{
-									height: 200,
-									width: '100%',
-									justifyContent: 'center',
-									alignItems: 'center',
-								}}
-							>
-								<ActivityIndicator size={30} color={theme.screen.text} />
-							</View>
-						) : apartments && apartments?.length > 0 ? (
-							apartments?.map((apartment: any) => <ApartmentItem key={apartment.id} apartment={apartment} setSelectedApartementId={setSelectedApartementId} openImageManagementSheet={openImageManagementSheet} openDistanceSheet={openDistanceSheet} />)
-						) : (
-							<View
-								style={{
-									height: 200,
-									width: '100%',
-									justifyContent: 'center',
-									alignItems: 'center',
-								}}
-							>
-								<Text
-									style={{
-										fontSize: 16,
-										fontFamily: 'Poppins_400Regular',
-										color: theme.screen.text,
-									}}
-								>
-									No Apartment Found
-								</Text>
-							</View>
-						)}
-					</View>
-				</ScrollView>
+				</View>
 				{isActive && (
 					<BaseBottomSheet
 						ref={sortSheetRef}
@@ -494,3 +579,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 };
 
 export default Index;
+
+const emptyStyles = StyleSheet.create({
+	container: {
+		height: 200,
+		width: '100%',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+});

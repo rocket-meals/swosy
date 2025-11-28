@@ -98,7 +98,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                             }}
                             onPress={() => navigateMonth(direction === 'left' ? 'prev' : 'next')}
                         >
-                            <Entypo name={direction === 'left' ? 'chevron-left' : 'chevron-right'} size={24} color={contrastColor} />
+                            <AntDesign name={direction === 'left' ? 'arrowleft' : 'arrowright'} size={20} color={contrastColor} />
                         </TouchableOpacity>
                     )}
                     onMonthChange={(month: any) => {

@@ -1,16 +1,16 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
 	Dimensions,
+	Image,
 	Platform,
 	RefreshControl,
 	SafeAreaView,
-	ScrollView,
 	Text,
-	TouchableOpacity,
-	View
+	View,
 } from 'react-native';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {DatabaseTypes, FoodSortOption, sortBySortField} from 'repo-depkit-common';
+import { FlashList } from '@shopify/flash-list';
+import { DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import styles from './styles';
 import {useTheme} from '@/hooks/useTheme';
 import {DrawerContentComponentProps, DrawerNavigationProp} from '@react-navigation/drawer';
@@ -21,7 +21,7 @@ import {useFocusEffect, useNavigation, useRouter} from 'expo-router';
 import {useDispatch, useSelector} from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
-import {fetchFoodOffersByCanteen} from '@/redux/actions/FoodOffers/FoodOffers';
+import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
 	SET_BUSINESS_HOURS,
 	SET_CANTEEN_FEEDBACK_LABELS,
@@ -29,10 +29,10 @@ import {
 	SET_SELECTED_CANTEEN_FOOD_OFFERS,
 	SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
 	SET_SELECTED_DATE,
-	UPDATE_PROFILE
+	UPDATE_PROFILE,
 } from '@/redux/Types/types';
-import {Entypo, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
-import {RootDrawerParamList} from './types';
+import { Entypo, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { RootDrawerParamList } from './types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
@@ -68,21 +68,25 @@ import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
+import IconButton from '@/components/UI/IconButton';
+import Button from '@/components/UI/Button';
+
 export const SHEET_COMPONENTS = {
-        canteen: CanteenSelectionSheet,
-        sort: SortSheet,
-        hours: HourSheet,
-        calendar: CalendarSheet,
-        forecast: ForecastSheet,
-        imageManagement: ImageManagementSheet,
-        aiGeneratedInfo: AIGeneratedHintSheet,
-        eatingHabits: EatingHabitsSheet,
+	canteen: CanteenSelectionSheet,
+	sort: SortSheet,
+	hours: HourSheet,
+	calendar: CalendarSheet,
+	forecast: ForecastSheet,
+	imageManagement: ImageManagementSheet,
+	aiGeneratedInfo: AIGeneratedHintSheet,
+	eatingHabits: EatingHabitsSheet,
 };
 
 interface DayItem {
 	foodoffer: DatabaseTypes.Foodoffers | null;
 	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
+
 
 const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const dispatch = useDispatch();
@@ -103,12 +107,17 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(PopupEventHelper.getAll());
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
-    const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-    const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector((state: RootState) => state.food);
+	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode, amountColumnsForcard } = useSelector(
+		(state: RootState) => state.settings
+	);
+	const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector(
+		(state: RootState) => state.food
+	);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
@@ -119,13 +128,45 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	useFoodOffersDefaultDate();
 	const kioskMode = useKioskMode();
 	const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, Record<string, DatabaseTypes.Foodoffers[]>>>({});
-    const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-    const { hasUnreadChats } = useChatUnreadStatus();
+	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+	const { hasUnreadChats } = useChatUnreadStatus();
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+
+	const MIN_CARD_WIDTH = 280;
+	const numColumns = useMemo(() => {
+		if (amountColumnsForcard && amountColumnsForcard > 0) {
+			return amountColumnsForcard;
+		}
+
+		if (!listWidth) return 2;
+
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
+	}, [amountColumnsForcard, listWidth]);
+
+	const cardWidth = useMemo(() => {
+		if (!listWidth || !numColumns) return undefined;
+
+		const horizontalMargin = 10;
+		const totalMargin = horizontalMargin * 2 * numColumns;
+
+		const availableWidth = listWidth - totalMargin;
+		return availableWidth / numColumns;
+	}, [listWidth, numColumns]);
+
+
+	const itemGap = useMemo(() => {
+		if (screenWidth >= 1600) return 28;
+		if (screenWidth >= 1300) return 24;
+		if (screenWidth >= 1000) return 20;
+		if (screenWidth >= 700) return 16;
+		if (screenWidth >= 500) return 12;
+		if (screenWidth >= 300) return 10;
+		return 8;
+	}, [screenWidth]);
 
 	const dayItems = useMemo(() => {
 		const offers = selectedCanteenFoodOffers || [];
-
 		const hasOffers = offers.length > 0;
 
 		const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
@@ -141,34 +182,27 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		const startInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'start'));
 		const endInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'end'));
 
-		const start = startInfos.map(i => ({
-			foodoffer: null,
-			foodofferInfoItem: i,
-		}));
+		const start = startInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 		const main = offers.map(o => ({ foodoffer: o, foodofferInfoItem: null }));
 		const end = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 
 		return [...start, ...main, ...end] as DayItem[];
 	}, [selectedCanteenFoodOffers, foodOffersInfoItems, selectedCanteen]);
 
-	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 
 	useFocusEffect(
 		useCallback(() => {
 			setAmimationJson(replaceLottieColors(noFoodOffersFound, foods_area_color));
-			return () => {
-				setAmimationJson(null);
-			};
-		}, [])
+			return () => setAmimationJson(null);
+		}, [foods_area_color])
 	);
 
 	useFocusEffect(
 		useCallback(() => {
-			setAutoPlay(appSettings?.animations_auto_start); // Enable when entering
-
+			setAutoPlay(appSettings?.animations_auto_start);
 			return () => {
-				setAutoPlay(false); // Reset when leaving
+				setAutoPlay(false);
 				setAmimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
@@ -176,15 +210,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	useEffect(() => {
 		if (animationJson && autoPlay && animationRef.current) {
-			animationRef?.current?.play(); // Reset animation to ensure it starts fresh
+			animationRef.current.play();
 		}
 	}, [animationJson, autoPlay]);
 
 	const renderLottie = useMemo(() => {
-		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
-		}
-	}, [autoPlay, animationJson]);
+		if (!animationJson) return null;
+		return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
+	}, [animationJson, autoPlay]);
 
 	const setDefaultPriceGroupForAnonymousUser = () => {
 		dispatch({
@@ -192,64 +225,37 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			payload: { ...profile, price_group: 'student' },
 		});
 	};
-
 	useEffect(() => {
-		if (!user.id) {
-			setDefaultPriceGroupForAnonymousUser();
-		}
+		if (!user.id) setDefaultPriceGroupForAnonymousUser();
 	}, [user]);
 
 	useEffect(() => {
 		if (!appElements || !appSettings) return;
-
 		const getElement = (id: string) => {
 			const element = appElements?.find((el: any) => el.id === id);
 			if (!element || !element.translations) return null;
 			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
-
-			return {
-				content,
-				popup_button_text,
-				popup_content,
-			};
+			return { content, popup_button_text, popup_content };
 		};
-
 		const before = getElement(String(appSettings.foodoffers_list_before_element));
 		const after = getElement(String(appSettings.foodoffers_list_after_element));
-
 		setBeforeElement(before);
 		setAfterElement(after);
-	}, [appElements, appSettings]);
-
-	const getInfoItemContent = useCallback(
-		(item: DatabaseTypes.FoodoffersInfoItems) => {
-			const elementId = typeof item.name === 'string' ? item.name : item.name?.id;
-			const element = appElements?.find((el: any) => el.id === elementId);
-			if (!element || !element.translations) return { content: '' };
-			return getAppElementTranslation(element.translations, languageCode);
-		},
-		[appElements, languageCode]
-	);
+	}, [appElements, appSettings, languageCode]);
 
 	useFocusEffect(
 		useCallback(() => {
 			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
+			return () => setIsActive(false);
 		}, [])
 	);
 
 	useEffect(() => {
-		if (kioskMode) {
-			return;
-		}
+		if (kioskMode) return;
 		const nextEvent = popupEvents?.find((e: any) => !e.isOpen && !PopupEventHelper.isDismissed(e.id));
 		if (nextEvent) {
 			setCurrentPopupEvent(nextEvent);
-			setTimeout(() => {
-				openEventSheet();
-			}, 300);
+			setTimeout(() => openEventSheet(), 300);
 		} else {
 			setCurrentPopupEvent(null);
 		}
@@ -260,7 +266,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		setSheetProps(props);
 	}, []);
 
-	const openManagementSheet = (id: string) => {
+	const openManagementSheet = useCallback((id: string) => {
 		if (id) {
 			openSheet('imageManagement', {
 				selectedFoodId: id,
@@ -269,7 +275,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 				handleFetch: fetchFoods,
 			});
 		}
-	};
+	}, []);
 
 	const openEventSheet = () => {
 		if (kioskMode) return;
@@ -295,9 +301,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	useEffect(() => {
 		if (isActive && selectedSheet) {
-			setTimeout(() => {
-				bottomSheetRef.current?.expand();
-			}, 150);
+			setTimeout(() => bottomSheetRef.current?.expand(), 150);
 		}
 	}, [selectedSheet, isActive]);
 
@@ -318,7 +322,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			console.error('Error fetching business hours:', error);
 		}
 	};
-
 	useEffect(() => {
 		getBusinessHours();
 	}, []);
@@ -329,51 +332,28 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			await Notifications.requestPermissionsAsync();
 		}
 	};
-
 	useEffect(() => {
-		if (Platform.OS !== 'web') {
-			requestPermissions();
-		}
+		if (Platform.OS !== 'web') requestPermissions();
 	}, []);
 
 	const handleDateChange = (direction: 'prev' | 'next') => {
 		const currentDate = new Date(selectedDate);
-		if (direction === 'prev') {
-			currentDate.setDate(currentDate.getDate() - 1);
-		} else {
-			currentDate.setDate(currentDate.getDate() + 1);
-		}
-		dispatch({
-			type: SET_SELECTED_DATE,
-			payload: currentDate.toISOString().split('T')[0],
-		});
+		if (direction === 'prev') currentDate.setDate(currentDate.getDate() - 1);
+		else currentDate.setDate(currentDate.getDate() + 1);
+		dispatch({ type: SET_SELECTED_DATE, payload: currentDate.toISOString().split('T')[0] });
 	};
 
 	const getDayLabel = (date: string) => {
 		const currentDate = new Date();
 		const day = new Date(date);
-
-		// Set both dates to midnight to avoid time differences affecting comparison
 		currentDate.setHours(0, 0, 0, 0);
 		day.setHours(0, 0, 0, 0);
-
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'today';
-		}
-
-		// Check for yesterday
+		if (currentDate.toDateString() === day.toDateString()) return 'today';
 		currentDate.setDate(currentDate.getDate() - 1);
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'yesterday';
-		}
-
-		// Check for tomorrow
+		if (currentDate.toDateString() === day.toDateString()) return 'yesterday';
 		currentDate.setDate(currentDate.getDate() + 2);
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'tomorrow';
-		}
-
-		return format(day, 'dd.MM.yyyy'); // Return the date if it's not Today, Yesterday, or Tomorrow
+		if (currentDate.toDateString() === day.toDateString()) return 'tomorrow';
+		return format(day, 'dd.MM.yyyy');
 	};
 
 	const updateSort = (id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
@@ -384,20 +364,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			foodCategories,
 			foodOfferCategories,
 		});
-
-		dispatch({
-			type: SET_SELECTED_CANTEEN_FOOD_OFFERS,
-			payload: sortedOffers,
-		});
+		dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS, payload: sortedOffers });
 	};
 
 	useEffect(() => {
-		const handleResize = () => {
-			setScreenWidth(Dimensions.get('window').width);
-		};
-
+		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
 		const subscription = Dimensions.addEventListener('change', handleResize);
-
 		return () => subscription?.remove();
 	}, []);
 
@@ -408,50 +380,43 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		return '';
 	};
 
-	const fetchFoods = async () => {
+	const fetchFoods = async (forceFetch = false) => {
 		try {
 			setLoading(true);
 			const canteenId = selectedCanteen?.id as string;
-			let foodOffers = prefetchedFoodOffers[canteenId]?.[selectedDate];
+			if (!canteenId || !selectedDate) {
+				setLoading(false);
+				return;
+			}
 
-			if (!foodOffers) {
+			let foodOffers = prefetchedFoodOffers[canteenId]?.[selectedDate];
+			if (!foodOffers || forceFetch) {
 				const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
 				foodOffers = foodData?.data || [];
 			}
 
-			setPrefetchedFoodOffers(prev => ({
-				...prev,
-				[canteenId]: {
-					...(prev[canteenId] || {}),
-					[selectedDate]: foodOffers,
-				},
-			}));
+			setPrefetchedFoodOffers(prev => ({ ...prev, [canteenId]: { ...(prev[canteenId] || {}), [selectedDate]: foodOffers } }));
 
-			// Prefetch next two days
 			for (let i = 1; i <= 2; i++) {
 				const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
 				if (!prefetchedFoodOffers[canteenId]?.[date]) {
 					fetchFoodOffersByCanteen(canteenId, date)
 						.then(res => {
 							const offers = res?.data || [];
-							setPrefetchedFoodOffers(p => ({
-								...p,
-								[canteenId]: {
-									...(p[canteenId] || {}),
-									[date]: offers,
-								},
-							}));
+							setPrefetchedFoodOffers(p => ({ ...p, [canteenId]: { ...(p[canteenId] || {}), [date]: offers } }));
+							try {
+								offers.slice(0, 6).forEach((o: any) => {
+									const img = o?.food?.image_remote_url || o?.food?.image;
+									if (img) Image.prefetch(img).catch(() => { });
+								});
+							} catch (e) { }
 						})
 						.catch(e => console.error('Error prefetching Food Offers:', e));
 				}
 			}
 
 			updateSort(sortBy as FoodSortOption, foodOffers);
-
-			dispatch({
-				type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
-				payload: foodOffers,
-			});
+			dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
 			setLoading(false);
 		} catch (error) {
 			setLoading(false);
@@ -462,12 +427,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const fetchCanteenLabels = async () => {
 		try {
 			setFeedbackLabelsLoading(true);
-			// Fetch Canteen Feedback Labels
 			const canteenFeedbackLabels = (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as DatabaseTypes.CanteensFeedbacksLabels[];
-			dispatch({
-				type: SET_CANTEEN_FEEDBACK_LABELS,
-				payload: canteenFeedbackLabels,
-			});
+			dispatch({ type: SET_CANTEEN_FEEDBACK_LABELS, payload: canteenFeedbackLabels });
 		} catch (error) {
 			console.error('Error fetching Canteen Feedback Labels:', error);
 		} finally {
@@ -485,12 +446,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
-		fetchFoods();
-		fetchCanteenLabels();
-		setRefreshing(false);
-	}, []);
+		Promise.all([fetchFoods(true), fetchCanteenLabels()]).finally(() => setRefreshing(false));
+	}, [selectedCanteen, selectedDate]);
 
-	const memoizedCanteenFeedbackLabels = useMemo(() => canteenFeedbackLabels?.map((label: DatabaseTypes.CanteensFeedbacksLabels, index: number) => <CanteenFeedbackLabels key={label?.id || `feedback-label-${index}`} label={label} date={selectedDate} />), [canteenFeedbackLabels, selectedDate]);
+	const memoizedCanteenFeedbackLabels = useMemo(
+		() =>
+			canteenFeedbackLabels?.map((label: DatabaseTypes.CanteensFeedbacksLabels, index: number) => (
+				<CanteenFeedbackLabels key={label?.id || `feedback-label-${index}`} label={label} date={selectedDate} />
+			)),
+		[canteenFeedbackLabels, selectedDate]
+	);
 	const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
 	const nextAvailableDate = useMemo(() => {
@@ -498,9 +463,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		for (let i = 1; i <= 2; i++) {
 			const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
 			const offers = prefetchedFoodOffers[canteenId]?.[date];
-			if (offers && offers.length > 0) {
-				return date;
-			}
+			if (offers && offers.length > 0) return date;
 		}
 		return null;
 	}, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
@@ -512,9 +475,111 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
 
+	const getInfoItemContent = useCallback(
+		(item: DatabaseTypes.FoodoffersInfoItems) => {
+			const elementId = typeof item.name === 'string' ? item.name : item.name?.id;
+			const element = appElements?.find((el: any) => el.id === elementId);
+			if (!element || !element.translations) return { content: '' };
+			return getAppElementTranslation(element.translations, languageCode);
+		},
+		[appElements, languageCode]
+	);
+	const renderDayItem = useCallback(
+		({ item, index }: { item: DayItem; index: number }) => {
+			return (
+				<View
+					style={{
+						width: cardWidth || '100%',
+						marginHorizontal: 10,
+						marginVertical: 10,
+						alignItems: 'center'
+					}}
+				>
+					{item.foodoffer ? (
+						<FoodItem
+							canteen={selectedCanteen}
+							item={item.foodoffer}
+							key={item.foodoffer.id || `food-item-${index}`}
+							handleMenuSheet={openSheet}
+							handleImageSheet={openManagementSheet}
+							handleEatingHabitsSheet={openSheet}
+							setSelectedFoodId={setSelectedFoodId}
+							cardWidth={cardWidth}
+						/>
+					) : item.foodofferInfoItem ? (
+						<FoodOfferInfoItem
+							key={item.foodofferInfoItem.id || `info-item-${index}`}
+							item={item.foodofferInfoItem}
+							content={
+								(getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
+							}
+							cardWidth={cardWidth}
+						/>
+					) : null}
+				</View>
+			);
+		},
+		[
+			openManagementSheet,
+			openSheet,
+			selectedCanteen,
+			setSelectedFoodId,
+			getInfoItemContent,
+			itemGap,
+			cardWidth
+		]
+	);
+
+	const keyExtractor = useCallback((item: DayItem, index: number) => {
+		if (item.foodoffer && item.foodoffer.id) return `f-${item.foodoffer.id}`;
+		if (item.foodofferInfoItem && item.foodofferInfoItem.id) return `i-${item.foodofferInfoItem.id}`;
+		return `di-${index}`;
+	}, []);
+
+	const ListFooterComponent = useMemo(() => {
+		return (
+			<>
+				{afterElement && <View style={styles.elementContainer}>{afterElement && <CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>}
+				{!feedbackLabelsLoading && canteenFeedbackLabelsExist > 0 && (
+					<View style={styles.feebackContainer}>
+						<View>
+							<Text style={{ ...styles.foodLabels, color: theme.screen.text }}>{translate(TranslationKeys.feedback_labels)}</Text>
+						</View>
+						{memoizedCanteenFeedbackLabels}
+					</View>
+				)}
+				<View style={{ height: 40 }} />
+			</>
+		);
+	}, [afterElement, feedbackLabelsLoading, canteenFeedbackLabelsExist, memoizedCanteenFeedbackLabels, foods_area_color, theme.screen.text, translate]);
+
+	const ListEmptyComponent = useMemo(() => {
+		if (loading) {
+			return (
+				<View style={{ width: '100%', height: 400, justifyContent: 'center' }}>
+					<ActivityIndicator size={'large'} color={theme.screen.icon} />
+				</View>
+			);
+		}
+		return (
+			<View style={styles.noFoodContainer}>
+				<Text style={{ ...styles.noFoodOffer, color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
+				<View style={styles.animationContainer}>{renderLottie}</View>
+				{nextAvailableDate && (
+					<Button
+						onPress={() => dispatch({ type: SET_SELECTED_DATE, payload: nextAvailableDate })}
+						style={[styles.jumpButton, { backgroundColor: foods_area_color }]}
+					>
+						<Text style={[styles.jumpButtonText, { color: contrastColor }]}>{`${translate(TranslationKeys.show_offers_on)} ${translate(TranslationKeys[getWeekdayKey(nextAvailableDate)])}`}</Text>
+					</Button>
+				)}
+			</View>
+		);
+	}, [loading, theme.screen.icon, theme.screen.text, renderLottie, nextAvailableDate, foods_area_color, contrastColor, translate, getWeekdayKey]);
+
 	return (
 		<>
-			<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+			<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
 				<View style={{ flex: 1 }}>
 					<View
 						style={{
@@ -523,50 +588,27 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							paddingHorizontal: 10,
 						}}
 					>
-						<View
-							style={[
-								styles.row,
-								{
-									flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
-								},
-							]}
-						>
-							<View
-								style={[
-									styles.col1,
-									{
-										flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
-									},
-								]}
-							>
-								{/* Menu */}
-                                                            <Tooltip
-                                                                    placement="top"
-                                                                    trigger={triggerProps => (
-                                                                            <TouchableOpacity
-                                                                                    {...triggerProps}
-                                                                                    onPress={() => drawerNavigation.toggleDrawer()}
-                                                                                    style={{
-                                                                                            padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
-                                                                                    }}
-                                                                            >
-                                                                                    <View style={styles.menuIconWrapper}>
-                                                                                            <Ionicons name="menu" size={24} color={theme.header.text} />
-                                                                                            {hasUnreadChats ? (
-                                                                                                    <View
-                                                                                                            style={[
-                                                                                                                    styles.notificationDot,
-                                                                                                                    {
-                                                                                                                            backgroundColor: theme.accent,
-                                                                                                                            borderColor: theme.header.background,
-                                                                                                                    },
-                                                                                                            ]}
-                                                                                                    />
-                                                                                            ) : null}
-                                                                                    </View>
-                                                                            </TouchableOpacity>
-                                                                    )}
-                                                            >
+						<View style={[styles.row, { flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }]}>
+							<View style={[styles.col1, { flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }]}>
+								<Tooltip
+									placement="top"
+									trigger={triggerProps => (
+										<IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
+											<Ionicons name="menu" size={24} color={theme.header.text} />
+											{hasUnreadChats ? (
+												<View
+													style={[
+														styles.notificationDot,
+														{
+															backgroundColor: theme.accent,
+															borderColor: theme.header.background,
+														},
+													]}
+												/>
+											) : null}
+										</IconButton>
+									)}
+								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
 											{`${translate(TranslationKeys.open_drawer)}`}
@@ -574,31 +616,18 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								{/* Canteen Heading */}
-								<TouchableOpacity onPress={() => openSheet('canteen')} activeOpacity={0.7}>
+								<Button onPress={() => openSheet('canteen')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
 									<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}</Text>
-								</TouchableOpacity>
+								</Button>
 							</View>
-							<View
-								style={{
-									...styles.col2,
-									gap: isWeb ? (screenWidth < 500 ? 6 : 10) : 5,
-									flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
-								}}
-							>
-								{/* Sorting */}
+
+							<View style={{ ...styles.col2, gap: isWeb ? (screenWidth < 500 ? 6 : 10) : 5, flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }}>
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => openSheet('sort')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => openSheet('sort')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
 											<MaterialIcons name="sort" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -608,21 +637,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								{/* Price Group */}
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => {
-												router.navigate('/price-group');
-											}}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => router.navigate('/price-group')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
 											<FontAwesome6 name="euro-sign" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -632,22 +652,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								{/* Eating Habits */}
-
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => {
-												router.navigate('/eating-habits');
-											}}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => router.navigate('/eating-habits')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
 											<Ionicons name="bag-add" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -657,19 +667,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								{/* Change Canteen */}
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => openSheet('canteen')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => openSheet('canteen')} style={{ padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5 }}>
 											<MaterialIcons name="restaurant-menu" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -680,26 +683,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								</Tooltip>
 							</View>
 						</View>
+
 						<View style={styles.row}>
-							{/* Calendar */}
-							<View
-								style={{
-									...styles.col2,
-									gap: isWeb ? (screenWidth < 500 ? 15 : 10) : 10,
-								}}
-							>
+							<View style={{ ...styles.col2, gap: isWeb ? (screenWidth < 500 ? 15 : 10) : 10 }}>
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => handleDateChange('prev')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => handleDateChange('prev')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
 											<Entypo name="chevron-left" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -708,18 +700,13 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										</TooltipText>
 									</TooltipContent>
 								</Tooltip>
+
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => openSheet('calendar')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => openSheet('calendar')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
 											<MaterialIcons name="calendar-month" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -728,18 +715,13 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										</TooltipText>
 									</TooltipContent>
 								</Tooltip>
+
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => handleDateChange('next')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => handleDateChange('next')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
 											<Entypo name="chevron-right" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -751,21 +733,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? translate(getDayLabel(selectedDate)) : ''}</Text>
 							</View>
+
 							<View style={{ ...styles.col2, gap: 10 }}>
-								{/* ForeCast */}
 								{appSettings?.utilization_display_enabled && (
 									<Tooltip
 										placement="top"
 										trigger={triggerProps => (
-											<TouchableOpacity
-												{...triggerProps}
-												onPress={() => openSheet('forecast', { forDate: selectedDate })}
-												style={{
-													padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-												}}
-											>
+											<IconButton {...triggerProps} onPress={() => openSheet('forecast', { forDate: selectedDate })} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
 												<FontAwesome6 name="people-group" size={24} color={theme.header.text} />
-											</TouchableOpacity>
+											</IconButton>
 										)}
 									>
 										<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -775,20 +751,13 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										</TooltipContent>
 									</Tooltip>
 								)}
-								{/* Opening Hours */}
 
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => openSheet('hours')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-											}}
-										>
+										<IconButton {...triggerProps} onPress={() => openSheet('hours')} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
 											<MaterialCommunityIcons name="clock-time-eight" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -800,95 +769,55 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							</View>
 						</View>
 					</View>
-					<ScrollView
-						style={{
-							...styles.container,
-							backgroundColor: theme.screen.background,
-						}}
-						contentContainerStyle={{
-							...styles.contentContainer,
-							paddingHorizontal: isWeb ? (screenWidth < 500 ? 5 : 20) : 5,
-						}}
-						refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-					>
-						<View style={styles.elementContainer}>{beforeElement && <CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>
+					<View style={{ flex: 1, alignItems: 'center' }}>
 						<View
 							style={{
-								...styles.foodContainer,
-								gap: 10,
-								justifyContent: 'center',
+								width: '100%',
+								maxWidth: 1420,
+								flex: 1,
+							}}
+							onLayout={e => {
+								const w = e.nativeEvent.layout.width;
+								if (w && w !== listWidth) {
+									setListWidth(w);
+								}
 							}}
 						>
-							{loading ? (
-								<View
-									style={{
-										width: '100%',
-										height: 400,
-										justifyContent: 'center',
-									}}
-								>
-									<ActivityIndicator size={'large'} color={theme.screen.icon} />
-								</View>
-							) : dayItems && dayItems.length > 0 ? (
-								dayItems.map((dayItem: DayItem, index: number) => (dayItem.foodoffer ? <FoodItem canteen={selectedCanteen} item={dayItem.foodoffer} key={dayItem.foodoffer.id || `food-item-${index}`} handleMenuSheet={openSheet} handleImageSheet={openManagementSheet} handleEatingHabitsSheet={openSheet} setSelectedFoodId={setSelectedFoodId} /> : dayItem.foodofferInfoItem ? <FoodOfferInfoItem key={dayItem.foodofferInfoItem.id || `info-item-${index}`} item={dayItem.foodofferInfoItem} content={getInfoItemContent(dayItem.foodofferInfoItem).content || ''} /> : null))
-							) : (
-								<View style={styles.noFoodContainer}>
-									<Text style={{ ...styles.noFoodOffer, color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
-									<View style={styles.animationContainer}>{renderLottie}</View>
-									{nextAvailableDate && (
-										<TouchableOpacity
-											onPress={() =>
-												dispatch({
-													type: SET_SELECTED_DATE,
-													payload: nextAvailableDate,
-												})
-											}
-											style={[styles.jumpButton, { backgroundColor: foods_area_color }]}
-										>
-											<Text style={[styles.jumpButtonText, { color: contrastColor }]}>{`${translate(TranslationKeys.show_offers_on)} ${translate(TranslationKeys[getWeekdayKey(nextAvailableDate)])}`}</Text>
-										</TouchableOpacity>
-									)}
-								</View>
-							)}
+							<FlashList
+								key={numColumns}
+								data={dayItems}
+								renderItem={renderDayItem}
+								keyExtractor={keyExtractor}
+								numColumns={numColumns}
+								contentContainerStyle={{
+									marginTop: 20,
+								}}
+								refreshControl={
+									<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+								}
+								ListFooterComponent={ListFooterComponent}
+								ListEmptyComponent={ListEmptyComponent}
+								showsVerticalScrollIndicator={false}
+							/>
 						</View>
-						<View style={styles.elementContainer}>{afterElement && <CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>
-						{!feedbackLabelsLoading && canteenFeedbackLabelsExist > 0 && (
-							<View style={styles.feebackContainer}>
-								<View>
-									<Text
-										style={{
-											...styles.foodLabels,
-											color: theme.screen.text,
-										}}
-									>
-										{translate(TranslationKeys.feedback_labels)}
-									</Text>
-								</View>
-								{memoizedCanteenFeedbackLabels}
-							</View>
-						)}
-					</ScrollView>
+					</View>
 				</View>
+
 				{isActive &&
 					!kioskMode &&
 					(selectedSheet === 'menu' ? (
 						<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
 					) : (
 						<BaseBottomSheet
-							key={selectedSheet}
+							key={selectedSheet || 'sheet'}
 							ref={bottomSheetRef}
-							backgroundStyle={{
-								...styles.sheetBackground,
-								backgroundColor: theme.sheet.sheetBg,
-							}}
+							backgroundStyle={{ ...styles.sheetBackground, backgroundColor: theme.sheet.sheetBg }}
 							enablePanDownToClose={selectedSheet === 'forecast' ? false : true}
 							enableContentPanningGesture={selectedSheet === 'forecast' ? false : true}
 							enableHandlePanningGesture={selectedSheet === 'forecast' ? false : true}
 							enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
 							onChange={index => {
-								if (index === -1) {
-									closeSheet();
-								}
+								if (index === -1) closeSheet();
 							}}
 							onClose={closeSheet}
 							handleComponent={null}
@@ -903,17 +832,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						</BaseBottomSheet>
 					))}
 				{isActive && currentPopupEvent && (
-					<BaseBottomSheet
-						ref={eventSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose={false}
-						handleComponent={null}
-						onClose={closeEventSheetForSession}
-					>
+					<BaseBottomSheet ref={eventSheetRef} index={-1} backgroundStyle={{ ...styles.sheetBackground, backgroundColor: theme.sheet.sheetBg }} enablePanDownToClose={false} handleComponent={null} onClose={closeEventSheetForSession}>
 						<PopupEventSheet closeSheet={closeEventSheet} eventData={currentPopupEvent} />
 					</BaseBottomSheet>
 				)}

@@ -23,24 +23,34 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loadin
 		isPasswordValid: false,
 	});
 
-        const validateEmail = (email: string) => {
-                const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(email);
-                setFormState(prevState => ({
-                        ...prevState,
-                        email: trimmedEmail,
-                        isEmailValid: isValid,
-                }));
-        };
+	const validateEmail = (email: string) => {
+		const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(email);
+		setFormState(prevState => ({
+			...prevState,
+			email: trimmedEmail,
+			isEmailValid: isValid,
+		}));
+	};
 
-        const validatePassword = (password: string) => {
-                setFormState(prevState => ({
-                        ...prevState,
-                        password,
-                        isPasswordValid: password.length > 0,
-                }));
-        };
+	const validatePassword = (password: string) => {
+		setFormState(prevState => ({
+			...prevState,
+			password,
+			isPasswordValid: password.length > 0,
+		}));
+	};
 
 	const isFormValid = formState.isEmailValid && formState.isPasswordValid;
+
+	const onSubmit = () => {
+		if (!isFormValid || loading) return;
+		const cleanEmail = EmailHelper.sanitize(formState.email);
+		handleLogin(
+			undefined,
+			cleanEmail,
+			formState.password
+		);
+	};
 
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
@@ -60,6 +70,9 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loadin
 				onChangeText={validateEmail}
 				value={formState.email}
 				placeholder="You@swosy.com"
+				keyboardType="email-address"
+				autoCapitalize="none"
+				autoCorrect={false}
 			/>
 			<TextInput
 				style={{
@@ -82,14 +95,8 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loadin
 					backgroundColor: isFormValid ? primaryColor : theme.sheet.buttonDisabled,
 				}}
 				disabled={!isFormValid}
-                                onPress={() =>
-                                        handleLogin(
-                                                undefined,
-                                                EmailHelper.sanitize(formState.email),
-                                                formState.password
-                                        )
-                                }
-                        >
+				onPress={onSubmit}
+			>
 				{loading ? (
 					<ActivityIndicator size={'small'} color={theme.screen.text} />
 				) : (

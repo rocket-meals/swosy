@@ -19,15 +19,15 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 166;
+	return 171;
 }
 
 export function getMajorVersion() {
-	return 20;
+	return 21;
 }
 
 export function getVersionPatch() {
-	return 2;
+	return 0;
 }
 
 export function getVersionInternalForAppsettingsScreen() {
@@ -91,6 +91,19 @@ export const configMuenster: CustomerConfig = {
 	bundleIdAndroid:  undefined,
 	baseUrl: '/muenster',
 	server_url: ServerHelper.SERVER_CONFIG_MUENSTER.server_url,
+};
+
+export const aachenConfig: CustomerConfig = {
+	// apple app id: 6754844700
+	projectName: 'AachenMensa',
+	projectSlug: 'rocket-meals-aachen',
+	easUpdateId: '88b123c6-b8d8-4968-9ab5-86cd0c8b9657',
+	easProjectId: '88b123c6-b8d8-4968-9ab5-86cd0c8b9657',
+	appScheme: 'app-rocket-meals-aachen',
+	bundleIdIos: 'de.rocket-meals.aachen',
+	bundleIdAndroid: 'com.baumgartner_software.aachen',
+	baseUrl: '/aachpetito',
+	server_url: ServerHelper.AACHEN_SERVER_CONFIG.server_url,
 };
 
 export function getCustomerConfig(): CustomerConfig {
@@ -209,6 +222,7 @@ export function getFinalConfig(config?: any) {
 				'expo-secure-store',
 				'expo-location',
 				'expo-notifications',
+				'expo-web-browser',
 				['expo-document-picker', { iCloudContainerEnvironment: 'Production' }],
 				[
 					'expo-splash-screen',

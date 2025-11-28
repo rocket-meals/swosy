@@ -80,8 +80,7 @@ const extractFormFieldId = (field: DatabaseTypes.FormFields | string | null | un
 };
 
 const normalizeExpectedValue = (value: unknown): string => {
-	// Treat undefined/null expected values as 'false' for visibility checks
-	if (value === null || value === undefined) return 'false';
+	if (value === null || value === undefined) return '';
 	if (typeof value === 'string') return value.trim().toLowerCase();
 	if (typeof value === 'boolean') return value ? 'true' : 'false';
 	if (Array.isArray(value)) {
@@ -92,13 +91,13 @@ const normalizeExpectedValue = (value: unknown): string => {
 };
 
 const normalizeCurrentValue = (value: unknown, customType?: string): string => {
-	// If value is null/undefined and not a boolean customType, keep empty string
-	if ((value === null || value === undefined) && customType !== 'value_boolean') return '';
+	if (value === null || value === undefined) return '';
 
 	if (customType === 'value_boolean') {
-		// Treat any non-true value as false (including null/undefined)
 		if (value === 1 || value === true) return 'true';
-		return 'false';
+		if (value === 0 || value === false) return 'false';
+
+		return 'null';
 	}
 
 	if (typeof value === 'string') return value.trim().toLowerCase();
@@ -822,21 +821,21 @@ const Index = () => {
 													</Text>
 												</View>
 											)}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING && showInForm && <SingleLineInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DROPDOWN && showInForm && <DropdownInput id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} options={dropdownValues} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.MULTILINE_TEXT && showInForm && <MultiLineInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT && showInForm && <IBANInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.NUMBER && showInForm && <NumberInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_EMAIL && showInForm && <EmailInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM && showInForm && <DateWithTimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE && showInForm && <DateInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM && showInForm && <TimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP && showInForm && <PreciseTimestampInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX && showInForm && <TriStateCheckbox id={fieldId} onlyTwo={true} value={formData[fieldId]?.value} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_FILES && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
-											{fieldType === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
-											{FormHelperCommon.isFieldTypeCustomReference(fieldType) && showInForm && <CollectionSelection id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} loading={loadingCollection} data={collectionData} custom_type={custom_type} />}
+											{custom_id === 'string' && showInForm && <SingleLineInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'dropdown' && showInForm && <DropdownInput id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} options={dropdownValues} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'multiline' && showInForm && <MultiLineInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
+											{custom_id === 'bank_account_number' && showInForm && <IBANInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'number' && showInForm && <NumberInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'email' && showInForm && <EmailInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'date_hh_mm' && showInForm && <DateWithTimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'date' && showInForm && <DateInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'hh_mm' && showInForm && <TimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'timestamp' && showInForm && <PreciseTimestampInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'checkbox' && showInForm && <TriStateCheckbox id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
+											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
+											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
+											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
+											{custom_type === 'value_custom' && showInForm && <CollectionSelection id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} loading={loadingCollection} data={collectionData} custom_type={custom_type} />}
 										</View>
 									);
 								})}
