@@ -1,6 +1,7 @@
 import CardResponse from '@/helper/nfcCardReaderHelper/CardResponse';
-import { MyCardReaderInterface, MyCardReaderResponseSupport } from './MyCardReader';
+import { MyCardReaderResponseSupport } from './MyCardReader';
 import { isRunningInExpoGo } from 'expo';
+import {MyCardReaderInterface} from "@/app/(app)/account-balance/MyCardReaderInterface";
 
 const isExpoGo = isRunningInExpoGo();
 

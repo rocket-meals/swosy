@@ -1,8 +1,9 @@
 import { Platform } from 'react-native';
-import { MyCardReaderInterface, MyCardReaderResponseSupport } from './MyCardReader';
+import { MyCardReaderResponseSupport } from './MyCardReader';
 import { isRunningInExpoGo } from 'expo';
 import CardResponse from '@/helper/nfcCardReaderHelper/CardResponse';
 import CardReader from '@/helper/nfcCardReaderHelper/CardReader';
+import {MyCardReaderInterface} from "@/app/(app)/account-balance/MyCardReaderInterface";
 
 const isExpoGo = isRunningInExpoGo();
 
