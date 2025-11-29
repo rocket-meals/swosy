@@ -1,70 +1,70 @@
 {
   "report_version": "^0.1.102",
-  "report_timestamp": "2025-11-29T11:06:47.922Z",
+  "report_timestamp": "2025-11-29T14:23:23.989Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 35,
-          "average": 1.229086229086229,
-          "amountSavedValuesForKeys": 955,
-          "amountKeys": 9
+          "maximum": 9,
+          "average": 1.1700960219478738,
+          "amountSavedValuesForKeys": 853,
+          "amountKeys": 8
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 80,
-          "average": 2.5491329479768785,
-          "amountSavedValuesForKeys": 1323,
+          "average": 2.52037037037037,
+          "amountSavedValuesForKeys": 1361,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 35,
-          "average": 1.253280839895013,
-          "amountSavedValuesForKeys": 955,
-          "amountKeys": 9
+          "maximum": 9,
+          "average": 1.1946778711484594,
+          "amountSavedValuesForKeys": 853,
+          "amountKeys": 8
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 7797,
-        "detection_time_ms": 39,
+        "ast_generation_time_ms": 7403,
+        "detection_time_ms": 33,
         "machine_information": {
-          "os": "Linux",
-          "os_release": "6.12.13",
-          "os_platform": "linux",
+          "os": "Darwin",
+          "os_release": "22.5.0",
+          "os_platform": "darwin",
           "os_arch": "x64",
-          "os_uptime": 9293.2,
-          "os_memory_free": 17378693120,
-          "os_memory_total": 19253211136,
-          "os_cpu_cores": 3,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 0
+          "os_uptime": 189163,
+          "os_memory_free": 4401528832,
+          "os_memory_total": 34359738368,
+          "os_cpu_cores": 12,
+          "os_cpu_model": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
+          "os_cpu_speed": 2600
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 38,
-    "amount_files_with_data_clumps": 34,
-    "amount_methods_with_data_clumps": 44,
-    "fields_to_fields_data_clump": 18,
+    "amount_classes_or_interfaces_with_data_clumps": 26,
+    "amount_files_with_data_clumps": 23,
+    "amount_methods_with_data_clumps": 35,
+    "fields_to_fields_data_clump": 10,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 88,
-    "amount_data_clumps": 106
+    "parameters_to_parameters_data_clump": 76,
+    "amount_data_clumps": 86
   },
   "project_info": {
-    "project_url": "unknown_project_url",
+    "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "265426f6630cca05d2dc58fc37e4dba7c18213e1",
-    "project_commit_hash": "265426f6630cca05d2dc58fc37e4dba7c18213e1",
+    "project_version": "8093249fc5c55437fe9e6b1ecdd6af5021b061a6",
+    "project_commit_hash": "8093249fc5c55437fe9e6b1ecdd6af5021b061a6",
     "project_tag": null,
-    "project_commit_date": "1764414163",
+    "project_commit_date": "1764420079",
     "additional": {},
     "number_of_files": 298,
     "number_of_classes_or_interfaces": 378,
-    "number_of_methods": 1096,
-    "number_of_data_fields": 955,
-    "number_of_method_parameters": 1323
+    "number_of_methods": 1198,
+    "number_of_data_fields": 853,
+    "number_of_method_parameters": 1361
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -85,132 +85,6 @@
     }
   },
   "data_clumps": {
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate-textsource_languagedestination_language": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate-textsource_languagedestination_language",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts",
-      "from_class_or_interface_name": "DeepLTranslator",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator",
-      "from_method_name": "translate",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts",
-      "to_class_or_interface_name": "MyTranslatorInterface",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface",
-      "to_method_name": "translate",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/text": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/text",
-          "name": "text",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/text",
-            "name": "text",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/source_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/source_language",
-          "name": "source_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/source_language",
-            "name": "source_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/destination_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/destination_language",
-          "name": "destination_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/destination_language",
-            "name": "destination_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate-textsource_languagedestination_language": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate-textsource_languagedestination_language",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts",
-      "from_class_or_interface_name": "DeepLTranslator",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator",
-      "from_method_name": "translate",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts",
-      "to_class_or_interface_name": "Translator",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator",
-      "to_method_name": "translate",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/text": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/text",
-          "name": "text",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/text",
-            "name": "text",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/source_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/source_language",
-          "name": "source_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/source_language",
-            "name": "source_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/destination_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/destination_language",
-          "name": "destination_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/destination_language",
-            "name": "destination_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
     "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/replaceAll-packages/common/src/StringHelper.ts/class/StringHelper/method/replaceAll-strfindreplace": {
       "type": "data_clump",
       "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/replaceAll-packages/common/src/StringHelper.ts/class/StringHelper/method/replaceAll-strfindreplace",
@@ -2164,69 +2038,6 @@
         }
       }
     },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-textsource_languagedestination_language": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-textsource_languagedestination_language",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts",
-      "from_class_or_interface_name": "MyTranslatorInterface",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface",
-      "from_method_name": "translate",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts",
-      "to_class_or_interface_name": "DeepLTranslator",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator",
-      "to_method_name": "translate",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/text": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/text",
-          "name": "text",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/text",
-            "name": "text",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/source_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/source_language",
-          "name": "source_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/source_language",
-            "name": "source_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/destination_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate/parameter/destination_language",
-          "name": "destination_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/destination_language",
-            "name": "destination_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
     "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate-textsource_languagedestination_language": {
       "type": "data_clump",
       "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/MyTranslatorInterface.ts/interface/MyTranslatorInterface/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate-textsource_languagedestination_language",
@@ -2281,69 +2092,6 @@
           "modifiers": [],
           "to_variable": {
             "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/destination_language",
-            "name": "destination_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-textsource_languagedestination_language": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate-textsource_languagedestination_language",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts",
-      "from_class_or_interface_name": "Translator",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator",
-      "from_method_name": "translate",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts",
-      "to_class_or_interface_name": "DeepLTranslator",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator",
-      "to_method_name": "translate",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/text": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/text",
-          "name": "text",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/text",
-            "name": "text",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/source_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/source_language",
-          "name": "source_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/source_language",
-            "name": "source_language",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/destination_language": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/Translator.ts/class/Translator/method/translate/parameter/destination_language",
-          "name": "destination_language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts/class/DeepLTranslator/method/translate/parameter/destination_language",
             "name": "destination_language",
             "type": "string",
             "modifiers": [],
@@ -3514,225 +3262,6 @@
         }
       }
     },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne-streamdataprimaryKeyopts": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne-streamdataprimaryKeyopts",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",
-      "from_class_or_interface_name": "FilesServiceHelper",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper",
-      "from_method_name": "uploadOne",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",
-      "to_class_or_interface_name": "FilesService",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService",
-      "to_method_name": "uploadOne",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/stream": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/stream",
-          "name": "stream",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceSteamType",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/stream",
-            "name": "stream",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceSteamType",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/data": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/data",
-          "name": "data",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceFileStream",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/data",
-            "name": "data",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceFileStream",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/primaryKey": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/primaryKey",
-          "name": "primaryKey",
-          "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/primaryKey",
-            "name": "primaryKey",
-            "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/opts": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/opts",
-          "name": "opts",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/opts",
-            "name": "opts",
-            "type": "any",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne-streamdataprimaryKeyopts": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne-streamdataprimaryKeyopts",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",
-      "from_class_or_interface_name": "FilesService",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService",
-      "from_method_name": "uploadOne",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",
-      "to_class_or_interface_name": "FilesServiceHelper",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper",
-      "to_method_name": "uploadOne",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/stream": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/stream",
-          "name": "stream",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceSteamType",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/stream",
-            "name": "stream",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceSteamType",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/data": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/data",
-          "name": "data",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceFileStream",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/data",
-            "name": "data",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").FileServiceFileStream",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/primaryKey": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/primaryKey",
-          "name": "primaryKey",
-          "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/primaryKey",
-            "name": "primaryKey",
-            "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/opts": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/FilesService/method/uploadOne/parameter/opts",
-          "name": "opts",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts/class/FilesServiceHelper/method/uploadOne/parameter/opts",
-            "name": "opts",
-            "type": "any",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany-keysqueryopts": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany-keysqueryopts",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",
-      "from_class_or_interface_name": "ItemsService",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService",
-      "from_method_name": "readMany",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",
-      "to_class_or_interface_name": "ItemsServiceHelper",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper",
-      "to_method_name": "readMany",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/keys": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/keys",
-          "name": "keys",
-          "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/keys",
-            "name": "keys",
-            "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey[]",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/query": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/query",
-          "name": "query",
-          "type": "import(\"node_modules/@directus/types/dist/query\").Query",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/query",
-            "name": "query",
-            "type": "import(\"node_modules/@directus/types/dist/query\").Query",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/opts": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/opts",
-          "name": "opts",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").QueryOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/opts",
-            "name": "opts",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").QueryOptions",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
     "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/updateOne-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/updateOneWithoutHookTrigger-primary_keyupdateoptsCustom": {
       "type": "data_clump",
       "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/updateOne-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/updateOneWithoutHookTrigger-primary_keyupdateoptsCustom",
@@ -3852,69 +3381,6 @@
             "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/updateOne/parameter/optsCustom",
             "name": "optsCustom",
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper\").OptsCustomType",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany-keysqueryopts": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany-keysqueryopts",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",
-      "from_class_or_interface_name": "ItemsServiceHelper",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper",
-      "from_method_name": "readMany",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",
-      "to_class_or_interface_name": "ItemsService",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService",
-      "to_method_name": "readMany",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/keys": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/keys",
-          "name": "keys",
-          "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/keys",
-            "name": "keys",
-            "type": "import(\"node_modules/@directus/types/dist/items\").PrimaryKey[]",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/query": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/query",
-          "name": "query",
-          "type": "import(\"node_modules/@directus/types/dist/query\").Query",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/query",
-            "name": "query",
-            "type": "import(\"node_modules/@directus/types/dist/query\").Query",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/opts": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts/class/ItemsServiceHelper/method/readMany/parameter/opts",
-          "name": "opts",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").QueryOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts/interface/ItemsService/method/readMany/parameter/opts",
-            "name": "opts",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator\").QueryOptions",
             "modifiers": [],
             "position": {}
           },
@@ -5368,202 +4834,61 @@
         }
       }
     },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun-modifiableInputworkflowrunsalreadyRunningWorkflowruns": {
+    "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-tokenemailpassword": {
       "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun-modifiableInputworkflowrunsalreadyRunningWorkflowruns",
+      "key": "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-tokenemailpassword",
       "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts",
-      "from_class_or_interface_name": "SingleWorkflowRun",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun",
-      "from_method_name": "handleWorkflowRunsWantToRun",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts",
-      "to_class_or_interface_name": "WorkflowRunJobInterface",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface",
-      "to_method_name": "handleWorkflowRunsWantToRun",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun",
+      "from_file_path": "apps/frontend/app/components/Login/types.ts",
+      "from_class_or_interface_name": "ManagementModalProps",
+      "from_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps",
+      "from_method_name": "handleLogin",
+      "from_method_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin",
+      "to_file_path": "apps/frontend/app/components/Login/types.ts",
+      "to_class_or_interface_name": "SheetProps",
+      "to_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps",
+      "to_method_name": "handleLogin",
+      "to_method_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin",
       "data_clump_type": "parameters_to_parameters_data_clump",
       "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/modifiableInput": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/modifiableInput",
-          "name": "modifiableInput",
-          "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>",
+        "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/token": {
+          "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/token",
+          "name": "token",
+          "type": "string | undefined",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/modifiableInput",
-            "name": "modifiableInput",
-            "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>",
+            "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/token",
+            "name": "token",
+            "type": "string | undefined",
             "modifiers": [],
             "position": {}
           },
           "position": {}
         },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/workflowruns": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/workflowruns",
-          "name": "workflowruns",
-          "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/workflowruns",
-            "name": "workflowruns",
-            "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>[]",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/alreadyRunningWorkflowruns": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/alreadyRunningWorkflowruns",
-          "name": "alreadyRunningWorkflowruns",
-          "type": "import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/alreadyRunningWorkflowruns",
-            "name": "alreadyRunningWorkflowruns",
-            "type": "import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns[]",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun-modifiableInputworkflowrunsalreadyRunningWorkflowruns": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun-modifiableInputworkflowrunsalreadyRunningWorkflowruns",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts",
-      "from_class_or_interface_name": "WorkflowRunJobInterface",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface",
-      "from_method_name": "handleWorkflowRunsWantToRun",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts",
-      "to_class_or_interface_name": "SingleWorkflowRun",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun",
-      "to_method_name": "handleWorkflowRunsWantToRun",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/modifiableInput": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/modifiableInput",
-          "name": "modifiableInput",
-          "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/modifiableInput",
-            "name": "modifiableInput",
-            "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/workflowruns": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/workflowruns",
-          "name": "workflowruns",
-          "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/workflowruns",
-            "name": "workflowruns",
-            "type": "Partial<import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns>[]",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/alreadyRunningWorkflowruns": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/interface/WorkflowRunJobInterface/method/handleWorkflowRunsWantToRun/parameter/alreadyRunningWorkflowruns",
-          "name": "alreadyRunningWorkflowruns",
-          "type": "import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts/class/SingleWorkflowRun/method/handleWorkflowRunsWantToRun/parameter/alreadyRunningWorkflowruns",
-            "name": "alreadyRunningWorkflowruns",
-            "type": "import(\"packages/common/src/databaseTypes/types\").WorkflowsRuns[]",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts-apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard-apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard-callBackshowInstructionhideInstructionnfcInstruction": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts-apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard-apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard-callBackshowInstructionhideInstructionnfcInstruction",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts",
-      "from_class_or_interface_name": "MyNativeCardReader",
-      "from_class_or_interface_key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader",
-      "from_method_name": "readCard",
-      "from_method_key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard",
-      "to_file_path": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts",
-      "to_class_or_interface_name": "MyUnsupportedCardReader",
-      "to_class_or_interface_key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader",
-      "to_method_name": "readCard",
-      "to_method_key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/callBack": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/callBack",
-          "name": "callBack",
-          "type": "(answer: any) => Promise<void>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/callBack",
-            "name": "callBack",
-            "type": "(answer: any) => Promise<void>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/showInstruction": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/showInstruction",
-          "name": "showInstruction",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/showInstruction",
-            "name": "showInstruction",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/hideInstruction": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/hideInstruction",
-          "name": "hideInstruction",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/hideInstruction",
-            "name": "hideInstruction",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/nfcInstruction": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/nfcInstruction",
-          "name": "nfcInstruction",
+        "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/email": {
+          "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/email",
+          "name": "email",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/nfcInstruction",
-            "name": "nfcInstruction",
+            "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/email",
+            "name": "email",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/password": {
+          "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/password",
+          "name": "password",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/password",
+            "name": "password",
             "type": "string",
             "modifiers": [],
             "position": {}
@@ -5572,202 +4897,61 @@
         }
       }
     },
-    "parameters_to_parameters_data_clump-apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts-apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard-apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard-callBackshowInstructionhideInstructionnfcInstruction": {
+    "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-tokenemailpassword": {
       "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts-apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard-apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard-callBackshowInstructionhideInstructionnfcInstruction",
+      "key": "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-tokenemailpassword",
       "probability": 1,
-      "from_file_path": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts",
-      "from_class_or_interface_name": "MyUnsupportedCardReader",
-      "from_class_or_interface_key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader",
-      "from_method_name": "readCard",
-      "from_method_key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard",
-      "to_file_path": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts",
-      "to_class_or_interface_name": "MyNativeCardReader",
-      "to_class_or_interface_key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader",
-      "to_method_name": "readCard",
-      "to_method_key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard",
+      "from_file_path": "apps/frontend/app/components/Login/types.ts",
+      "from_class_or_interface_name": "SheetProps",
+      "from_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps",
+      "from_method_name": "handleLogin",
+      "from_method_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin",
+      "to_file_path": "apps/frontend/app/components/Login/types.ts",
+      "to_class_or_interface_name": "ManagementModalProps",
+      "to_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps",
+      "to_method_name": "handleLogin",
+      "to_method_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin",
       "data_clump_type": "parameters_to_parameters_data_clump",
       "data_clump_data": {
-        "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/callBack": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/callBack",
-          "name": "callBack",
-          "type": "(answer: any) => Promise<void>",
+        "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/token": {
+          "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/token",
+          "name": "token",
+          "type": "string | undefined",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/callBack",
-            "name": "callBack",
-            "type": "(answer: any) => Promise<void>",
+            "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/token",
+            "name": "token",
+            "type": "string | undefined",
             "modifiers": [],
             "position": {}
           },
           "position": {}
         },
-        "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/showInstruction": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/showInstruction",
-          "name": "showInstruction",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/showInstruction",
-            "name": "showInstruction",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/hideInstruction": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/hideInstruction",
-          "name": "hideInstruction",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/hideInstruction",
-            "name": "hideInstruction",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/nfcInstruction": {
-          "key": "apps/frontend/app/app/(app)/account-balance/MyUnsupportedCardReader.ts/class/MyUnsupportedCardReader/method/readCard/parameter/nfcInstruction",
-          "name": "nfcInstruction",
+        "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/email": {
+          "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/email",
+          "name": "email",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/app/(app)/account-balance/MyNativeCardReader.ts/class/MyNativeCardReader/method/readCard/parameter/nfcInstruction",
-            "name": "nfcInstruction",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts-apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry-apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry-profile_idlikecanteen_id": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts-apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry-apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry-profile_idlikecanteen_id",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts",
-      "from_class_or_interface_name": "CanteenFeedbackLabelEntryHelper",
-      "from_class_or_interface_key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper",
-      "from_method_name": "updateCanteenFeedbackLabelEntry",
-      "from_method_key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry",
-      "to_file_path": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts",
-      "to_class_or_interface_name": "FoodFeedbackLabelEntryHelper",
-      "to_class_or_interface_key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper",
-      "to_method_name": "updateFoodFeedbackLabelEntry",
-      "to_method_key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/profile_id": {
-          "key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/profile_id",
-          "name": "profile_id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/profile_id",
-            "name": "profile_id",
+            "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/email",
+            "name": "email",
             "type": "string",
             "modifiers": [],
             "position": {}
           },
           "position": {}
         },
-        "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/like": {
-          "key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/like",
-          "name": "like",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/like",
-            "name": "like",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/canteen_id": {
-          "key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/canteen_id",
-          "name": "canteen_id",
+        "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/password": {
+          "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/password",
+          "name": "password",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/canteen_id",
-            "name": "canteen_id",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts-apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry-apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry-profile_idlikecanteen_id": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts-apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry-apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry-profile_idlikecanteen_id",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts",
-      "from_class_or_interface_name": "FoodFeedbackLabelEntryHelper",
-      "from_class_or_interface_key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper",
-      "from_method_name": "updateFoodFeedbackLabelEntry",
-      "from_method_key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry",
-      "to_file_path": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts",
-      "to_class_or_interface_name": "CanteenFeedbackLabelEntryHelper",
-      "to_class_or_interface_key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper",
-      "to_method_name": "updateCanteenFeedbackLabelEntry",
-      "to_method_key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/profile_id": {
-          "key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/profile_id",
-          "name": "profile_id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/profile_id",
-            "name": "profile_id",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/like": {
-          "key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/like",
-          "name": "like",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/like",
-            "name": "like",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/canteen_id": {
-          "key": "apps/frontend/app/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries.ts/class/FoodFeedbackLabelEntryHelper/method/updateFoodFeedbackLabelEntry/parameter/canteen_id",
-          "name": "canteen_id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries.ts/class/CanteenFeedbackLabelEntryHelper/method/updateCanteenFeedbackLabelEntry/parameter/canteen_id",
-            "name": "canteen_id",
+            "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/password",
+            "name": "password",
             "type": "string",
             "modifiers": [],
             "position": {}
@@ -6119,135 +5303,9 @@
         }
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/components/ApartmentItem/types.ts-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet": {
+    "fields_to_fields_data_clump-apps/frontend/app/components/BaseModal/BaseModal.tsx-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-isVisibletitlechildren": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ApartmentItem/types.ts-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/ApartmentItem/types.ts",
-      "from_class_or_interface_name": "BuildingItemProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
-      "to_class_or_interface_name": "BuildingItemProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId": {
-          "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-          "name": "setSelectedApartementId",
-          "type": "React.Dispatch<React.SetStateAction<string>>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/setSelectedApartementId",
-            "name": "setSelectedApartementId",
-            "type": "React.Dispatch<React.SetStateAction<string>>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet": {
-          "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-          "name": "openImageManagementSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openImageManagementSheet",
-            "name": "openImageManagementSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet": {
-          "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-          "name": "openDistanceSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openDistanceSheet",
-            "name": "openDistanceSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/ApartmentItem/types.ts-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ApartmentItem/types.ts-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/ApartmentItem/types.ts",
-      "from_class_or_interface_name": "BuildingItemProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/BuildingItem/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps",
-      "to_class_or_interface_name": "BuildingItemProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId": {
-          "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-          "name": "setSelectedApartementId",
-          "type": "React.Dispatch<React.SetStateAction<string>>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-            "name": "setSelectedApartementId",
-            "type": "React.Dispatch<React.SetStateAction<string>>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet": {
-          "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-          "name": "openImageManagementSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-            "name": "openImageManagementSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet": {
-          "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-          "name": "openDistanceSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-            "name": "openDistanceSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/BaseModal/BaseModal.tsx-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-isVisibletitleonClosechildren": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BaseModal/BaseModal.tsx-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-isVisibletitleonClosechildren",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BaseModal/BaseModal.tsx-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-isVisibletitlechildren",
       "probability": 1,
       "from_file_path": "apps/frontend/app/components/BaseModal/BaseModal.tsx",
       "from_class_or_interface_name": "BaseModalProps",
@@ -6291,21 +5349,6 @@
           },
           "position": {}
         },
-        "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/onClose": {
-          "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/onClose",
-          "name": "onClose",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/onClose",
-            "name": "onClose",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
         "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/children": {
           "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/children",
           "name": "children",
@@ -6323,291 +5366,9 @@
         }
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/BuildingItem.tsx-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-campussetSelectedApartementIdopenImageManagementSheetopenDistanceSheet": {
+    "fields_to_fields_data_clump-apps/frontend/app/components/ModalSetting/ModalComponent.tsx-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-isVisibletitlechildren": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/BuildingItem.tsx-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-campussetSelectedApartementIdopenImageManagementSheetopenDistanceSheet",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx",
-      "from_class_or_interface_name": "BuildingItemPropsOptimized",
-      "from_class_or_interface_key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/BuildingItem/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps",
-      "to_class_or_interface_name": "BuildingItemPropsOptimized",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/campus": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/campus",
-          "name": "campus",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/campus",
-            "name": "campus",
-            "type": "any",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/setSelectedApartementId": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/setSelectedApartementId",
-          "name": "setSelectedApartementId",
-          "type": "React.Dispatch<React.SetStateAction<string>>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-            "name": "setSelectedApartementId",
-            "type": "React.Dispatch<React.SetStateAction<string>>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openImageManagementSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openImageManagementSheet",
-          "name": "openImageManagementSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-            "name": "openImageManagementSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openDistanceSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openDistanceSheet",
-          "name": "openDistanceSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-            "name": "openDistanceSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/BuildingItem.tsx-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/BuildingItem.tsx-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx",
-      "from_class_or_interface_name": "BuildingItemPropsOptimized",
-      "from_class_or_interface_key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/ApartmentItem/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps",
-      "to_class_or_interface_name": "BuildingItemPropsOptimized",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/setSelectedApartementId": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/setSelectedApartementId",
-          "name": "setSelectedApartementId",
-          "type": "React.Dispatch<React.SetStateAction<string>>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-            "name": "setSelectedApartementId",
-            "type": "React.Dispatch<React.SetStateAction<string>>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openImageManagementSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openImageManagementSheet",
-          "name": "openImageManagementSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-            "name": "openImageManagementSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openDistanceSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openDistanceSheet",
-          "name": "openDistanceSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-            "name": "openDistanceSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/types.ts-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-campussetSelectedApartementIdopenImageManagementSheetopenDistanceSheet": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/types.ts-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-campussetSelectedApartementIdopenImageManagementSheetopenDistanceSheet",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/BuildingItem/types.ts",
-      "from_class_or_interface_name": "BuildingItemProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
-      "to_class_or_interface_name": "BuildingItemProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/campus": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/campus",
-          "name": "campus",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/campus",
-            "name": "campus",
-            "type": "any",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-          "name": "setSelectedApartementId",
-          "type": "React.Dispatch<React.SetStateAction<string>>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/setSelectedApartementId",
-            "name": "setSelectedApartementId",
-            "type": "React.Dispatch<React.SetStateAction<string>>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-          "name": "openImageManagementSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openImageManagementSheet",
-            "name": "openImageManagementSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-          "name": "openDistanceSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/openDistanceSheet",
-            "name": "openDistanceSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/types.ts-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BuildingItem/types.ts-apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps-apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps-setSelectedApartementIdopenImageManagementSheetopenDistanceSheet",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/BuildingItem/types.ts",
-      "from_class_or_interface_name": "BuildingItemProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/ApartmentItem/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps",
-      "to_class_or_interface_name": "BuildingItemProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-          "name": "setSelectedApartementId",
-          "type": "React.Dispatch<React.SetStateAction<string>>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/setSelectedApartementId",
-            "name": "setSelectedApartementId",
-            "type": "React.Dispatch<React.SetStateAction<string>>",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-          "name": "openImageManagementSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openImageManagementSheet",
-            "name": "openImageManagementSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet": {
-          "key": "apps/frontend/app/components/BuildingItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-          "name": "openDistanceSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ApartmentItem/types.ts/interface/BuildingItemProps/memberField/openDistanceSheet",
-            "name": "openDistanceSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/ModalSetting/ModalComponent.tsx-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-isVisibletitleonClosechildren": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ModalSetting/ModalComponent.tsx-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-isVisibletitleonClosechildren",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ModalSetting/ModalComponent.tsx-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-isVisibletitlechildren",
       "probability": 1,
       "from_file_path": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx",
       "from_class_or_interface_name": "ModalComponentProps",
@@ -6651,21 +5412,6 @@
           },
           "position": {}
         },
-        "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/onClose": {
-          "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/onClose",
-          "name": "onClose",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/onClose",
-            "name": "onClose",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
         "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/children": {
           "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/children",
           "name": "children",
@@ -6676,132 +5422,6 @@
             "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/children",
             "name": "children",
             "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx-apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps-apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps-closeSheetselectedServeronSelect": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx-apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps-apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps-closeSheetselectedServeronSelect",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx",
-      "from_class_or_interface_name": "ServerSelectionSheetProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/ServerSelectionSheet/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps",
-      "to_class_or_interface_name": "ServerSelectionSheetProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/closeSheet": {
-          "key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/closeSheet",
-          "name": "closeSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/closeSheet",
-            "name": "closeSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/selectedServer": {
-          "key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/selectedServer",
-          "name": "selectedServer",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/selectedServer",
-            "name": "selectedServer",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/onSelect": {
-          "key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/onSelect",
-          "name": "onSelect",
-          "type": "(config: CustomerConfig) => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/onSelect",
-            "name": "onSelect",
-            "type": "(config: CustomerConfig) => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/ServerSelectionSheet/types.ts-apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps-apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps-closeSheetselectedServeronSelect": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ServerSelectionSheet/types.ts-apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps-apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps-closeSheetselectedServeronSelect",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/ServerSelectionSheet/types.ts",
-      "from_class_or_interface_name": "ServerSelectionSheetProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps",
-      "to_class_or_interface_name": "ServerSelectionSheetProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/closeSheet": {
-          "key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/closeSheet",
-          "name": "closeSheet",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/closeSheet",
-            "name": "closeSheet",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/selectedServer": {
-          "key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/selectedServer",
-          "name": "selectedServer",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/selectedServer",
-            "name": "selectedServer",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/onSelect": {
-          "key": "apps/frontend/app/components/ServerSelectionSheet/types.ts/interface/ServerSelectionSheetProps/memberField/onSelect",
-          "name": "onSelect",
-          "type": "(config: CustomerConfig) => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ServerSelectionSheet/ServerSelectionSheet.tsx/interface/ServerSelectionSheetProps/memberField/onSelect",
-            "name": "onSelect",
-            "type": "(config: CustomerConfig) => void",
             "modifiers": [],
             "position": {}
           },

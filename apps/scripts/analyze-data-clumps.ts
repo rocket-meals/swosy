@@ -99,7 +99,16 @@ async function main() {
     console.log("Preparing data clumps analysis...");
     ensureOutputPaths();
 
-    const repoDir = cloneDataClumpsDoctor(tempDir);
+    let repoDir: string | null = null;
+    let localRepoDir = "/Users/nilsbaumgartner/Documents/GitHub/data-clumps-doctor";
+
+    if( fs.existsSync(localRepoDir)) {
+      console.log("Using local data-clumps-doctor repo at "+localRepoDir);
+      repoDir = localRepoDir;
+    } else {
+      repoDir = cloneDataClumpsDoctor(tempDir);
+    }
+
     buildDataClumpsDoctor(repoDir);
     runAnalysis(repoDir);
 
