@@ -8,7 +8,7 @@ import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-i
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/types';
 import PermissionModal from '../PermissionModal/PermissionModal';
@@ -202,12 +202,12 @@ const FoodItem: React.FC<FoodItemProps> = memo(
 
                   <View style={styles.overlayActionsContainer}>
                     <TouchableOpacity style={styles.favContainer}>
-                      {previousFeedback?.rating === 5 ? (
+                      {RatingHelper.isMaxRating(previousFeedback?.rating) ? (
                         <TouchableOpacity onPress={() => updateRating(null)}>
                           <AntDesign name="star" size={20} color={foods_area_color} />
                         </TouchableOpacity>
                       ) : (
-                        <TouchableOpacity onPress={() => updateRating(5)}>
+                        <TouchableOpacity onPress={() => updateRating(RatingHelper.MAX_RATING)}>
                           <MaterialIcons name="star" size={20} color="white" />
                         </TouchableOpacity>
                       )}
