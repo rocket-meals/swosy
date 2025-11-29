@@ -29,9 +29,25 @@ export default StyleSheet.create({
                 justifyContent: 'center',
                 alignItems: 'center',
         },
-	categoriesContainer: {
-		gap: 5,
-		width: 35,
+        favContainer: {
+                width: 35,
+                height: 35,
+                borderRadius: 50,
+                backgroundColor: 'rgba(0,0,0,0.45)',
+                justifyContent: 'center',
+                alignItems: 'center',
+        },
+        favContainerWarn: {
+                width: 35,
+                height: 35,
+                borderRadius: 50,
+                backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                justifyContent: 'center',
+                alignItems: 'center',
+        },
+        categoriesContainer: {
+                gap: 5,
+                width: 35,
 		height: 80,
 		position: 'absolute',
 		top: 10,

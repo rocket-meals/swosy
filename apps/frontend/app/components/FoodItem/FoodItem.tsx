@@ -200,23 +200,25 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                     </TouchableOpacity>
                   )}
 
-                  <TouchableOpacity style={styles.favContainer}>
-                    {previousFeedback?.rating === 5 ? (
-                      <TouchableOpacity onPress={() => updateRating(null)}>
-                        <AntDesign name="star" size={20} color={foods_area_color} />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity onPress={() => updateRating(5)}>
-                        <MaterialIcons name="star" size={20} color="white" />
+                  <View style={styles.overlayActionsContainer}>
+                    <TouchableOpacity style={styles.favContainer}>
+                      {previousFeedback?.rating === 5 ? (
+                        <TouchableOpacity onPress={() => updateRating(null)}>
+                          <AntDesign name="star" size={20} color={foods_area_color} />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity onPress={() => updateRating(5)}>
+                          <MaterialIcons name="star" size={20} color="white" />
+                        </TouchableOpacity>
+                      )}
+                    </TouchableOpacity>
+
+                    {dislikedMarkings.length > 0 && (
+                      <TouchableOpacity style={styles.favContainerWarn} onPress={handleOpenSheet}>
+                        <MaterialIcons name="warning" size={20} color={foods_area_color} />
                       </TouchableOpacity>
                     )}
-                  </TouchableOpacity>
-
-                  {dislikedMarkings.length > 0 && (
-                    <TouchableOpacity style={styles.favContainerWarn} onPress={handleOpenSheet}>
-                      <MaterialIcons name="warning" size={20} color={foods_area_color} />
-                    </TouchableOpacity>
-                  )}
+                  </View>
 
                   <View style={styles.categoriesContainer}>
                     {markingsData?.map(mark =>
