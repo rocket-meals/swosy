@@ -15,3 +15,4 @@ export * from './src/CronHelper';
 export * from './src/EmailHelper';
 export * from './src/EventHelper';
 export * from './src/form/FormHelperCommon';
+export * from './src/RatingHelper';
