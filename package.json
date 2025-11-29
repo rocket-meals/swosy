@@ -12,7 +12,8 @@
     "clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean-install": "yarn clean && yarn",
     "format": "prettier . --write",
-    "lint": "eslint . --ext .js,.ts,.tsx --fix"
+    "lint": "eslint . --ext .js,.ts,.tsx --fix",
+    "analyze-data-clumps": "yarn workspace rocket-meals-scripts analyze:data-clumps"
   },
   "workspaces": [
     "apps/frontend/app",
