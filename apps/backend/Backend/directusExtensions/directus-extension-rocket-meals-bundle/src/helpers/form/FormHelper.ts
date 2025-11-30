@@ -27,7 +27,13 @@ type AddFormFieldParams = {
   suffix?: string;
   form_submission_id: string;
   index: number;
-}
+};
+
+export type FormGenerationParams = {
+  form: DatabaseTypes.Forms;
+  formExtractRelevantInformation: FormExtractRelevantInformation;
+  myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
+};
 
 export class FormHelper {
   private static readonly FORM_IMAGE_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_HD;
@@ -449,7 +455,8 @@ export class FormHelper {
     return pdfBuffer;
   }
 
-  public static async generateHtmlFromForm(form: DatabaseTypes.Forms, formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
+  public static async generateHtmlFromForm(params: FormGenerationParams): Promise<string> {
+    let { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
     let markdownContent = await this.generateMarkdownContentFromForm(form, formExtractRelevantInformation, myDatabaseHelperInterface);
     let template = DEFAULT_HTML_TEMPLATE;
     let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
@@ -457,8 +464,10 @@ export class FormHelper {
     return html;
   }
 
-  public static async generatePdfFromForm(form: DatabaseTypes.Forms, formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, requestOptions?: RequestOptions): Promise<Buffer> {
-    let html = await this.generateHtmlFromForm(form, formExtractRelevantInformation, myDatabaseHelperInterface);
+  public static async generatePdfFromForm(params: FormGenerationParams & { requestOptions?: RequestOptions }): Promise<Buffer> {
+    let { requestOptions, ...formGenerationParams } = params;
+    let { myDatabaseHelperInterface } = formGenerationParams;
+    let html = await this.generateHtmlFromForm(formGenerationParams);
     let pdfBuffer = await this.generatePdfFromHtml(html, myDatabaseHelperInterface, requestOptions);
     return pdfBuffer;
   }
