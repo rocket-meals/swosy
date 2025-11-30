@@ -5,6 +5,7 @@ import { TestArtifacts } from '../../TestArtifacts';
 import { HtmlTemplatesEnum } from '../../html/HtmlGenerator';
 import { PdfGeneratorForJest } from '../PdfGeneratorHelperForJest';
 import { PdfGeneratorHelper } from '../PdfGeneratorHelper';
+import {GeneratePdfFromHtmlProps} from "../HtmlPdfGeneratorInterface";
 
 const TIMEOUT = 60*1000;
 
@@ -17,7 +18,11 @@ describe('Pdf Generator Test', () => {
     let requestOptions = {
       mockImageResolution: true, // mock image resolution to avoid loading real images
     };
-    let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
+    let data: GeneratePdfFromHtmlProps = {
+      html,
+      requestOptions,
+    };
+    let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(data);
     expect(pdfBuffer).toBeTruthy();
     let savePath = TestArtifacts.saveTestArtifact(pdfBuffer, 'pdf/' + HtmlTemplatesEnum.BASE_GERMAN_MARKDOWN_CONTENT + '.pdf');
 

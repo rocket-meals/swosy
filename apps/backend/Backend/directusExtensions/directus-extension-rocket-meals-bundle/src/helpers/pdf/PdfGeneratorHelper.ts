@@ -5,7 +5,8 @@
 // html2pdf.js only works in the browser
 
 import { PuppeteerGenerator } from './PuppeteerGenerator';
-import { HtmlPdfGeneratorInterface, PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
+import { PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
+import {GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface} from "./HtmlPdfGeneratorInterface";
 
 export class PdfGeneratorHelper implements HtmlPdfGeneratorInterface {
   /** Returns the default PDF generation options */
@@ -25,19 +26,21 @@ export class PdfGeneratorHelper implements HtmlPdfGeneratorInterface {
 
   /** Generates a PDF from the provided HTML string */
   public static async generatePdfFromHtml(
-    html: string,
-    requestOptions: RequestOptions,
-    options?: PdfGeneratorOptions
+    data: GeneratePdfFromHtmlProps
   ): Promise<Buffer> {
-    options = { ...this.getDefaultPdfGeneratorOptions(), ...options };
-    return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(html, requestOptions, options);
+    const { html, requestOptions, options } = data;
+    let newOptions = { ...this.getDefaultPdfGeneratorOptions(), ...options };
+    let newData: GeneratePdfFromHtmlProps = {
+      html,
+      requestOptions,
+      options: newOptions,
+    };
+    return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(newData);
   }
 
   public async generatePdfFromHtml(
-    html: string,
-    requestOptions: RequestOptions,
-    options?: PdfGeneratorOptions
+    data: GeneratePdfFromHtmlProps
   ): Promise<Buffer> {
-    return await PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions, options);
+    return await PdfGeneratorHelper.generatePdfFromHtml(data);
   }
 }

@@ -1,4 +1,5 @@
-import { HtmlPdfGeneratorInterface, PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
+import { PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
+import {GeneratePdfFromHtmlProps, HtmlPdfGeneratorInterface} from "./HtmlPdfGeneratorInterface";
 import { default as puppeteerCore } from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 
@@ -25,10 +26,9 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
    */
 
   static async generatePdfFromHtmlPuppeteer(
-    html: string,
-    requestOptions: RequestOptions,
-    options?: PdfGeneratorOptions
+    data: GeneratePdfFromHtmlProps
   ): Promise<Buffer> {
+    const { html, requestOptions, options = {} } = data;
     let browser;
     let puppeteer = PuppeteerGenerator.getPuppeteerLib();
 
@@ -158,10 +158,8 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
   }
 
   public async generatePdfFromHtml(
-    html: string,
-    requestOptions: RequestOptions,
-    options?: PdfGeneratorOptions
+    data: GeneratePdfFromHtmlProps
   ): Promise<Buffer> {
-    return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(html, requestOptions, options);
+    return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(data);
   }
 }

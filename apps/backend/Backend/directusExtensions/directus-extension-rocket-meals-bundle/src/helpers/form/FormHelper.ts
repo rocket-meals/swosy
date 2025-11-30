@@ -9,6 +9,7 @@ import { TranslationBackendKeys, TranslationsBackend } from '../TranslationsBack
 import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
+import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
 
 type FormFieldExampleData = {
   value_string?: string | null;
@@ -452,7 +453,11 @@ export class FormHelper {
     //console.log("Generating PDF from HTML with length:", html.length);
     //console.log("Using request options:", requestOptions);
 
-    let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
+    let data: GeneratePdfFromHtmlProps = {
+      html: html,
+      requestOptions: requestOptions,
+    };
+    let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(data);
     return pdfBuffer;
   }
 

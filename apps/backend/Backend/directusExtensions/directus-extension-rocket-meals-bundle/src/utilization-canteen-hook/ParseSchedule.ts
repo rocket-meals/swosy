@@ -7,6 +7,12 @@ type Interval = {
   date_end: Date;
 };
 
+type UtiliztationContext = {
+  canteen: DatabaseTypes.Canteens;
+  cashregisters: DatabaseTypes.Cashregisters[];
+  utilization_group: DatabaseTypes.UtilizationsGroups;
+};
+
 export class ParseSchedule {
   private readonly context: WorkflowRunContext;
 
@@ -74,7 +80,13 @@ export class ParseSchedule {
       for (let date of dates) {
         await this.context.logger.appendLog('- Calculating forecast for date: ' + date.toISOString());
 
-        await this.updateUtilizationEntryForCanteenAtDate(canteen, utilization_group_for_canteen, cashregisters, date, intervalMinutes);
+        let utilizationContext: UtiliztationContext = {
+            canteen: canteen,
+            cashregisters: cashregisters,
+            utilization_group: utilization_group_for_canteen,
+        }
+
+        await this.updateUtilizationEntryForCanteenAtDate(utilizationContext, date, intervalMinutes);
       }
     } else {
       console.log('Houston we got a problem at calcForecastForCanteen');
@@ -170,13 +182,12 @@ export class ParseSchedule {
   }
 
   async updateUtilizationEntryForCanteenAtDate(
-    canteen: DatabaseTypes.Canteens,
-    utilization_group: DatabaseTypes.UtilizationsGroups,
-    cashregisters: DatabaseTypes.Cashregisters[],
+    utilizationContext: UtiliztationContext,
     date: Date,
     intervalMinutes: number,
   ) {
     let now = new Date();
+    const { canteen, cashregisters, utilization_group } = utilizationContext;
 
     let interval = await this.getInterval(intervalMinutes, date);
 
@@ -200,10 +211,13 @@ export class ParseSchedule {
         //console.log("isEntryInPast: "+isEntryInPast);
 
         if (!isEntryInPast) {
-          utilizationEntryCurrent.value_forecast_current = await this.predictUtilizationForInterval(
-            utilization_group,
-            cashregisters,
-            canteen,
+          let utilizationContext: UtiliztationContext = {
+            canteen: canteen,
+            cashregisters: cashregisters,
+            utilization_group: utilization_group,
+          };
+
+          utilizationEntryCurrent.value_forecast_current = await this.predictUtilizationForInterval(utilizationContext,
             interval_entry,
           );
         }
@@ -241,11 +255,10 @@ export class ParseSchedule {
    * @param date_end
    */
   async predictUtilizationForInterval(
-    utilization_group: DatabaseTypes.UtilizationsGroups,
-    cashregisters: DatabaseTypes.Cashregisters[],
-    canteen: DatabaseTypes.Canteens,
+    utilizationContext: UtiliztationContext,
     interval: Interval,
   ) {
+    let utilization_group = utilizationContext.utilization_group;
     // calc forecast - kept very simple
     let date_start_last_week = new Date(interval.date_start);
     date_start_last_week.setDate(interval.date_start.getDate() - 7);

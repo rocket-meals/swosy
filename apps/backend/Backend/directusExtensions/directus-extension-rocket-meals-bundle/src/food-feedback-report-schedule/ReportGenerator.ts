@@ -14,6 +14,11 @@ export class ReportStatusTrafficLightValues {
   static GREEN = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.GREEN_CIRCLE);
 }
 
+type Interval = {
+  start: Date;
+  end: Date;
+};
+
 // NA = Not Available
 const VALUE_NOT_AVAILABLE = 'N/A';
 
@@ -86,12 +91,21 @@ export type ReportType = {
   icon_star: string;
 };
 
-type ReportContext = {
+export type CommonReportContext = {
   reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules;
-  startDate: Date;
+  startDate: Date
   endDate: Date;
+}
+
+type CommonReportContextWithNullDates = {
+  reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules;
+  startDate: Date | null;
+  endDate: Date | null;
+}
+
+export type ReportContext = {
   canteenEntries: Record<string, DatabaseTypes.Canteens>;
-};
+} & CommonReportContext;
 
 export class ReportGenerator {
   private readonly myDatabaseHelper: MyDatabaseHelper;
@@ -138,13 +152,12 @@ export class ReportGenerator {
    * @param canteenEntries
    * @return {Promise<{report_feedback_period_days: *, foods: {}}>}
    */
-  async generateReportJSON(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, DatabaseTypes.Canteens>): Promise<ReportType> {
+  async generateReportJSON(reportContext: ReportContext): Promise<ReportType> {
+    const { reportSchedule, startDate, endDate, canteenEntries } = reportContext;
     let dateStartHumanReadable = DateHelper.getHumanReadableDate(startDate, true);
     let dateEndHumanReadable = DateHelper.getHumanReadableDate(endDate, true);
     const dateHumanReadable = '[' + dateStartHumanReadable + ' - ' + dateEndHumanReadable + ']';
     //console.log("Generate report for date: "+dateHumanReadable);
-
-    const reportContext: ReportContext = { reportSchedule, startDate, endDate, canteenEntries };
 
     let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
     const canteen_alias = canteen_alias_list.join(', ');
@@ -436,15 +449,20 @@ export class ReportGenerator {
       let comments_new: string[] = [];
 
       if (reportSchedule.show_food_comments_for_selected_period) {
-        comments_new = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, startDate, endDate);
+        comments_new = await this.getAllFoodFeedbacksWithCommentsForFood(reportContext, food_id);
       }
 
       if (reportSchedule.show_food_comments_for_all_time) {
-        comments = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, null, null);
+        let newReportContext: CommonReportContextWithNullDates = {
+          ...reportContext,
+          startDate: null,
+          endDate: null,
+        };
+        comments = await this.getAllFoodFeedbacksWithCommentsForFood(newReportContext, food_id);
       }
 
       let labels: ReportFoodEntryLabelType[] = [];
-      labels = await this.getReportFeedbackLabelsList(reportSchedule, food_id, dictFeedbackLabelsWithTranslation, startDate, endDate);
+      labels = await this.getReportFeedbackLabelsList(reportContext, food_id, dictFeedbackLabelsWithTranslation);
 
       let image_url = null;
       if (food?.image) {
@@ -503,7 +521,8 @@ export class ReportGenerator {
     return feedbackLabelWithTranslation?.alias || feedbackLabelWithTranslation.id;
   }
 
-  async getReportFeedbackLabelsList(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, food_id: string, dictFeedbackLabelsWithTranslation: Record<string, DatabaseTypes.FoodsFeedbacksLabels>, startDate: Date, endDate: Date): Promise<ReportFoodEntryLabelType[]> {
+  async getReportFeedbackLabelsList(reportContext: ReportContext, food_id: string, dictFeedbackLabelsWithTranslation: Record<string, DatabaseTypes.FoodsFeedbacksLabels>): Promise<ReportFoodEntryLabelType[]> {
+    const { startDate, endDate } = reportContext;
     const foodFeedbackLabelEntriesService = this.myDatabaseHelper.getFoodFeedbackLabelEntriesHelper();
 
     const filterLikes = {
@@ -606,7 +625,8 @@ export class ReportGenerator {
     ];
   }
 
-  async getAllFoodFeedbacksWithCommentsForFood(food_id: string, startDate: Date | null, endDate: Date | null) {
+  async getAllFoodFeedbacksWithCommentsForFood(reportContext: CommonReportContextWithNullDates, food_id: string) {
+    const { startDate, endDate } = reportContext;
     let itemService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
     const filter: Filter[] = [

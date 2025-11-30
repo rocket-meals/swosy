@@ -98,8 +98,11 @@ export class ParseSchedule {
         let isSameHash = currentMealOffersHash.isSame(previousMealOffersHash);
         if (noPreviousMealOffersHash || !isSameHash) {
           await this.context.logger.appendLog('Meal offers changed, start parsing');
-          await this.context.myDatabaseHelper.getWorkflowsRunsHelper().updateOneItemWithoutHookTrigger(this.context.workflowRun, {
-            result_hash: currentMealOffersHash.getHash(),
+          await this.context.myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger({
+            primary_key: this.context.workflowRun.id,
+            update: {
+                result_hash: currentMealOffersHash.getHash(),
+            }
           });
 
           await this.context.logger.appendLog('Meal offers changed, start parsing');

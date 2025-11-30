@@ -350,28 +350,24 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
 
           // set state to closed
           console.log('Set form submission state to closed');
-          await myDatabaseHelper.getFormsSubmissionsHelper().updateOneItemWithoutHookTrigger(
-            {
-              id: formSubmission.id,
-            },
-            {
+          await myDatabaseHelper.getFormsSubmissionsHelper().updateOneWithoutHookTrigger({
+            primary_key: formSubmission.id,
+            update: {
               state: FormSubmissionState.CLOSED,
-            }
-          );
+            },
+          });
         } catch (e: any) {
           console.error('Error while sending mail after form submission state syncing: ' + e.toString());
           console.error(e);
         }
         // set state to closed on error
         console.log('Set form submission state to closed on error');
-        await myDatabaseHelper.getFormsSubmissionsHelper().updateOneItemWithoutHookTrigger(
-          {
-            id: formSubmission.id,
-          },
-          {
-            state: FormSubmissionState.CLOSED,
-          }
-        );
+        await myDatabaseHelper.getFormsSubmissionsHelper().updateOneWithoutHookTrigger({
+            primary_key: formSubmission.id,
+            update: {
+                state: FormSubmissionState.CLOSED,
+            }
+        });
       }
     }
   });

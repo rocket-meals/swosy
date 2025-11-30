@@ -14,11 +14,3 @@ export type RequestOptions = {
   bearerToken?: string | null | undefined;
   mockImageResolution?: boolean; // if true, images are mocked with a placeholder image
 };
-
-export interface HtmlPdfGeneratorInterface {
-  generatePdfFromHtml(
-    html: string,
-    requestOptions: RequestOptions,
-    options?: PdfGeneratorOptions
-  ): Promise<Buffer>;
-}
