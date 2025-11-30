@@ -547,7 +547,7 @@ export class ParseSchedule {
         foodsDict[foodId] = foodWithTranslations;
       }
       index++;
-      myTimer.printElapsedTimeAndEstimatedTimeRemaining(index, amount);
+      myTimer.printElapsedTimeAndEstimatedTimeRemaining({ progress: index, total: amount });
     }
 
     myTimer.printElapsedTime();
@@ -621,7 +621,10 @@ export class ParseSchedule {
         await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
 
         amountCompleted++;
-        myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
+        myTimer.printElapsedTimeAndEstimatedTimeRemaining({
+          progress: amountCompleted,
+          total: foodsInformationForParserList.length,
+        });
       }
     }
 
@@ -810,7 +813,12 @@ export class ParseSchedule {
       await myFoodOffersService.createManyItems(batch, {
         disableEventEmit: disableEventEmit,
       });
-      myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches, null, 'Total amount of food offers: ' + foodoffersToCreate.length);
+      myTimer.printElapsedTimeAndEstimatedTimeRemaining({
+        progress: batchIndex,
+        total: amountOfBatches,
+        prefix: null,
+        suffix: 'Total amount of food offers: ' + foodoffersToCreate.length,
+      });
       batchIndex++;
     }
   }
