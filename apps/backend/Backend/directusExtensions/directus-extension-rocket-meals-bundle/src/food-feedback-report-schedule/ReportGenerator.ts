@@ -86,6 +86,13 @@ export type ReportType = {
   icon_star: string;
 };
 
+type ReportContext = {
+  reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules;
+  startDate: Date;
+  endDate: Date;
+  canteenEntries: Record<string, DatabaseTypes.Canteens>;
+};
+
 export class ReportGenerator {
   private readonly myDatabaseHelper: MyDatabaseHelper;
 
@@ -136,6 +143,8 @@ export class ReportGenerator {
     let dateEndHumanReadable = DateHelper.getHumanReadableDate(endDate, true);
     const dateHumanReadable = '[' + dateStartHumanReadable + ' - ' + dateEndHumanReadable + ']';
     //console.log("Generate report for date: "+dateHumanReadable);
+
+    const reportContext: ReportContext = { reportSchedule, startDate, endDate, canteenEntries };
 
     let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
     const canteen_alias = canteen_alias_list.join(', ');
@@ -200,8 +209,8 @@ export class ReportGenerator {
       icon_star: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.STAR, EmojiHelper.DivTextSize.SMALL),
     };
 
-    report.foods = await this.getReportForFoodFeedbacks(reportSchedule, startDate, endDate, canteenEntries, food_rating_average);
-    report.canteen_feedbacks = await this.getReportForCanteenFeedbacks(reportSchedule, startDate, endDate, canteenEntries);
+    report.foods = await this.getReportForFoodFeedbacks(reportContext, food_rating_average);
+    report.canteen_feedbacks = await this.getReportForCanteenFeedbacks(reportContext);
 
     return report;
   }
@@ -228,7 +237,8 @@ export class ReportGenerator {
     return ReportStatusTrafficLightValues.YELLOW;
   }
 
-  async getReportForCanteenFeedbacks(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, DatabaseTypes.Canteens>) {
+  async getReportForCanteenFeedbacks(reportContext: ReportContext) {
+    const { reportSchedule, startDate, endDate, canteenEntries } = reportContext;
     let canteens_feedbacks: ReportCanteenEntryType[] = [];
 
     let canteenFeedbackLabelsWithTranslations = await this.myDatabaseHelper.getCanteenFeedbackLabelsHelper().readByQuery({
@@ -382,7 +392,8 @@ export class ReportGenerator {
     };
   }
 
-  async getReportForFoodFeedbacks(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, DatabaseTypes.Canteens>, foodAverageRating: number | undefined) {
+  async getReportForFoodFeedbacks(reportContext: ReportContext, foodAverageRating: number | undefined) {
+    const { reportSchedule, startDate, endDate, canteenEntries } = reportContext;
     let foods: ReportFoodEntryType[] = [];
 
     let foodDict: { [key: string]: DatabaseTypes.Foods } = {};
