@@ -1,6 +1,12 @@
-import { FoodTL1Parser, RawFoodofferInformationType, RawTL1FoodofferType, Tl1AttributeType, TL1AttributeValueType } from '../FoodTL1Parser';
-import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
-import { FoodParseFoodAttributesType } from '../FoodParserInterface';
+import {
+  FoodTL1Parser,
+  RawFoodofferInformationType,
+  RawTL1FoodofferType,
+  Tl1AttributeType,
+  TL1AttributeValueType
+} from '../FoodTL1Parser';
+import {FoodTL1Parser_GetRawReportInterface} from '../FoodTL1Parser_GetRawReportInterface';
+import {FoodParseFoodAttributesType} from '../FoodParserInterface';
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
   static MENUEKENNZEICHEN_FIELD = 'MENUEKENNZEICHEN';

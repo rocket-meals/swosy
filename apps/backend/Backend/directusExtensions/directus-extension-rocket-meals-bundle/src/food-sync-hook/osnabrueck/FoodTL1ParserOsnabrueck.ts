@@ -3,10 +3,7 @@ import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawRepo
 import { FoodParseFoodAttributesType } from '../FoodParserInterface';
 
 export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
-  static DEFAULT_CO2_GRAMM_FIELD = 'EXTINFO_CO2_WERT';
-  static DEFAULT_CO2_SAVING_PERCENTAGE_FIELD = 'EXTINFO_CO2_EINSPARUNG';
   static DEFAULT_CO2_RATING_FIELD = 'EXTINFO_CO2_BEWERTUNG';
-  static CO2_BEWERTUNG_PREFIX_IDENTIFIER = 'CO2_RATING_';
 
   constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
     super(rawFoodofferReader);
@@ -54,7 +51,7 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
   static CO2RATING_A_VALUE = 'A';
 
   static getCO2RatingMarkingExternalIdentifier(co2_bewertung_string: string) {
-    return FoodTL1ParserOsnabrueck.CO2_BEWERTUNG_PREFIX_IDENTIFIER + co2_bewertung_string;
+    return "CO2_RATING_" + co2_bewertung_string;
   }
 
   static getKlimaTellerMarkingExternalIdentifier() {
@@ -66,12 +63,12 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
 
     const csvAttributes = [
       {
-        field_name: FoodTL1ParserOsnabrueck.DEFAULT_CO2_GRAMM_FIELD,
+        field_name: "EXTINFO_CO2_WERT",
         external_identifier: 'co2_g',
         value_type: TL1AttributeValueType.NUMBER,
       },
       {
-        field_name: FoodTL1ParserOsnabrueck.DEFAULT_CO2_SAVING_PERCENTAGE_FIELD,
+        field_name: "EXTINFO_CO2_EINSPARUNG",
         external_identifier: 'co2_saving_percentage',
         value_type: TL1AttributeValueType.NUMBER,
       },

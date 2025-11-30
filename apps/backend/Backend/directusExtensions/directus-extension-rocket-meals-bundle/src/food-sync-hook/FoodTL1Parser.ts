@@ -72,10 +72,6 @@ export class FoodTL1Parser implements FoodParserInterface {
 
   static DEFAULT_MENU_LINE_FIELD = 'FREI1';
 
-  static DEFAULT_CO2_GRAMM_FIELD = 'EXTINFO_CO2_WERT';
-  static DEFAULT_CO2_SAVING_PERCENTAGE_FIELD = 'EXTINFO_CO2_EINSPARUNG';
-  static DEFAULT_CO2_RATING_FIELD = 'EXTINFO_CO2_BEWERTUNG';
-
   static DEFAULT_ZSNUMMERN_FIELD = 'ZSNUMMERN';
 
   private rawFoodoffersJSONList: RawFoodofferInformationListType = [];
@@ -631,36 +627,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         },
       });
     }
-    return attributeValues;
-  }
-
-  static getFoodEnvironmentImpactAttributeValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
-    let attributeValues: FoodParseFoodAttributesType = [];
-
-    let co2_g = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_GRAMM_FIELD];
-    if (!!co2_g) {
-      attributeValues.push({
-        external_identifier: 'co2_g',
-        attribute_value: { number_value: parseFloat(co2_g) },
-      });
-    }
-
-    let co2_saving_percentage = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_SAVING_PERCENTAGE_FIELD];
-    if (!!co2_saving_percentage) {
-      attributeValues.push({
-        external_identifier: 'co2_saving_percentage',
-        attribute_value: { number_value: parseFloat(co2_saving_percentage) },
-      });
-    }
-
-    let co2_rating = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_RATING_FIELD];
-    if (!!co2_rating) {
-      attributeValues.push({
-        external_identifier: 'co2_rating',
-        attribute_value: { string_value: co2_rating },
-      });
-    }
-
     return attributeValues;
   }
 
