@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.102",
-  "report_timestamp": "2025-11-30T12:19:21.423Z",
+  "report_timestamp": "2025-11-30T21:47:16.325Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 8,
-          "average": 1.1556473829201102,
-          "amountSavedValuesForKeys": 839,
+          "average": 1.152143845089903,
+          "amountSavedValuesForKeys": 833,
           "amountKeys": 8
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 80,
-          "average": 2.509293680297398,
-          "amountSavedValuesForKeys": 1350,
+          "average": 2.5055970149253732,
+          "amountSavedValuesForKeys": 1343,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 9,
-          "average": 1.180028129395218,
-          "amountSavedValuesForKeys": 839,
+          "average": 1.176553672316384,
+          "amountSavedValuesForKeys": 833,
           "amountKeys": 9
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 7989,
-        "detection_time_ms": 34,
+        "ast_generation_time_ms": 10305,
+        "detection_time_ms": 43,
         "machine_information": {
           "os": "Darwin",
           "os_release": "22.5.0",
           "os_platform": "darwin",
           "os_arch": "x64",
-          "os_uptime": 268120,
-          "os_memory_free": 10248675328,
+          "os_uptime": 302195,
+          "os_memory_free": 1079099392,
           "os_memory_total": 34359738368,
           "os_cpu_cores": 12,
           "os_cpu_model": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
@@ -44,27 +44,27 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 17,
-    "amount_files_with_data_clumps": 15,
-    "amount_methods_with_data_clumps": 29,
+    "amount_classes_or_interfaces_with_data_clumps": 15,
+    "amount_files_with_data_clumps": 14,
+    "amount_methods_with_data_clumps": 27,
     "fields_to_fields_data_clump": 4,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 70,
-    "amount_data_clumps": 74
+    "parameters_to_parameters_data_clump": 68,
+    "amount_data_clumps": 72
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "b6393cefdc3d73916bb7965764c45931d288e24e",
-    "project_commit_hash": "b6393cefdc3d73916bb7965764c45931d288e24e",
+    "project_version": "85b3cc7db3212b5698ff0d75e0334bff62d659e5",
+    "project_commit_hash": "85b3cc7db3212b5698ff0d75e0334bff62d659e5",
     "project_tag": null,
-    "project_commit_date": "1764464110",
+    "project_commit_date": "1764505196",
     "additional": {},
-    "number_of_files": 298,
-    "number_of_classes_or_interfaces": 376,
-    "number_of_methods": 1196,
-    "number_of_data_fields": 839,
-    "number_of_method_parameters": 1350
+    "number_of_files": 297,
+    "number_of_classes_or_interfaces": 372,
+    "number_of_methods": 1188,
+    "number_of_data_fields": 833,
+    "number_of_method_parameters": 1343
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -4419,132 +4419,6 @@
             "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts/class/ParseSchedule/method/countCashRegistersTransactionsForInterval/parameter/date_end",
             "name": "date_end",
             "type": "Date",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-tokenemailpassword": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-tokenemailpassword",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/Login/types.ts",
-      "from_class_or_interface_name": "ManagementModalProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps",
-      "from_method_name": "handleLogin",
-      "from_method_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin",
-      "to_file_path": "apps/frontend/app/components/Login/types.ts",
-      "to_class_or_interface_name": "SheetProps",
-      "to_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps",
-      "to_method_name": "handleLogin",
-      "to_method_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/token": {
-          "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/token",
-          "name": "token",
-          "type": "string | undefined",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/token",
-            "name": "token",
-            "type": "string | undefined",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/email": {
-          "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/email",
-          "name": "email",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/email",
-            "name": "email",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/password": {
-          "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/password",
-          "name": "password",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/password",
-            "name": "password",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-tokenemailpassword": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/frontend/app/components/Login/types.ts-apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin-apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin-tokenemailpassword",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/Login/types.ts",
-      "from_class_or_interface_name": "SheetProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps",
-      "from_method_name": "handleLogin",
-      "from_method_key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin",
-      "to_file_path": "apps/frontend/app/components/Login/types.ts",
-      "to_class_or_interface_name": "ManagementModalProps",
-      "to_class_or_interface_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps",
-      "to_method_name": "handleLogin",
-      "to_method_key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/token": {
-          "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/token",
-          "name": "token",
-          "type": "string | undefined",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/token",
-            "name": "token",
-            "type": "string | undefined",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/email": {
-          "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/email",
-          "name": "email",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/email",
-            "name": "email",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/password": {
-          "key": "apps/frontend/app/components/Login/types.ts/interface/SheetProps/method/handleLogin/parameter/password",
-          "name": "password",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/Login/types.ts/interface/ManagementModalProps/method/handleLogin/parameter/password",
-            "name": "password",
-            "type": "string",
             "modifiers": [],
             "position": {}
           },
