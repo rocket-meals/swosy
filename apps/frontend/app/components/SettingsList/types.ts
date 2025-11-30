@@ -1,4 +1,6 @@
-export interface SettingsListProps {
+import {PropsWithChildren} from "react";
+
+type SettingsListPropsOwn = {
 	leftIcon: React.ReactNode;
 	/**
 	 * Title text for the row. "label" is kept for backwards
@@ -38,3 +40,5 @@ export interface SettingsListProps {
 	 */
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
 }
+
+export type SettingsListProps = PropsWithChildren<SettingsListPropsOwn>;

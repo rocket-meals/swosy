@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.102",
-  "report_timestamp": "2025-11-30T00:53:38.218Z",
+  "report_timestamp": "2025-11-30T12:19:21.423Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1.5,
-          "maximum": 9,
-          "average": 1.167123287671233,
-          "amountSavedValuesForKeys": 852,
+          "maximum": 8,
+          "average": 1.1556473829201102,
+          "amountSavedValuesForKeys": 839,
           "amountKeys": 8
         },
         "invertedParameterToMethods": {
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 9,
-          "average": 1.1916083916083917,
-          "amountSavedValuesForKeys": 852,
-          "amountKeys": 8
+          "average": 1.180028129395218,
+          "amountSavedValuesForKeys": 839,
+          "amountKeys": 9
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 9426,
-        "detection_time_ms": 38,
+        "ast_generation_time_ms": 7989,
+        "detection_time_ms": 34,
         "machine_information": {
           "os": "Darwin",
           "os_release": "22.5.0",
           "os_platform": "darwin",
           "os_arch": "x64",
-          "os_uptime": 226977,
-          "os_memory_free": 9784397824,
+          "os_uptime": 268120,
+          "os_memory_free": 10248675328,
           "os_memory_total": 34359738368,
           "os_cpu_cores": 12,
           "os_cpu_model": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
@@ -44,26 +44,26 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 21,
-    "amount_files_with_data_clumps": 19,
+    "amount_classes_or_interfaces_with_data_clumps": 17,
+    "amount_files_with_data_clumps": 15,
     "amount_methods_with_data_clumps": 29,
-    "fields_to_fields_data_clump": 8,
+    "fields_to_fields_data_clump": 4,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 70,
-    "amount_data_clumps": 78
+    "amount_data_clumps": 74
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c138320bb56fc6be66a9c841f67412ec25f9e92a",
-    "project_commit_hash": "c138320bb56fc6be66a9c841f67412ec25f9e92a",
+    "project_version": "b6393cefdc3d73916bb7965764c45931d288e24e",
+    "project_commit_hash": "b6393cefdc3d73916bb7965764c45931d288e24e",
     "project_tag": null,
-    "project_commit_date": "1764463876",
+    "project_commit_date": "1764464110",
     "additional": {},
-    "number_of_files": 300,
-    "number_of_classes_or_interfaces": 378,
-    "number_of_methods": 1199,
-    "number_of_data_fields": 852,
+    "number_of_files": 298,
+    "number_of_classes_or_interfaces": 376,
+    "number_of_methods": 1196,
+    "number_of_data_fields": 839,
     "number_of_method_parameters": 1350
   },
   "detector": {
@@ -4733,288 +4733,6 @@
           "to_variable": {
             "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/class/FoodTL1Parser/memberField/DEFAULT_CO2_RATING_FIELD",
             "name": "DEFAULT_CO2_RATING_FIELD",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/BaseModal/BaseModal.tsx-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-isVisibletitlechildren": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/BaseModal/BaseModal.tsx-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-isVisibletitlechildren",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/BaseModal/BaseModal.tsx",
-      "from_class_or_interface_name": "BaseModalProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps",
-      "to_class_or_interface_name": "BaseModalProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/isVisible": {
-          "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/isVisible",
-          "name": "isVisible",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/isVisible",
-            "name": "isVisible",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/title": {
-          "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/children": {
-          "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/children",
-          "name": "children",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/children",
-            "name": "children",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/ModalSetting/ModalComponent.tsx-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-isVisibletitlechildren": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ModalSetting/ModalComponent.tsx-apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps-apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps-isVisibletitlechildren",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx",
-      "from_class_or_interface_name": "ModalComponentProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/BaseModal/BaseModal.tsx",
-      "to_class_or_interface_key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps",
-      "to_class_or_interface_name": "ModalComponentProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/isVisible": {
-          "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/isVisible",
-          "name": "isVisible",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/isVisible",
-            "name": "isVisible",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/title": {
-          "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/children": {
-          "key": "apps/frontend/app/components/ModalSetting/ModalComponent.tsx/interface/ModalComponentProps/memberField/children",
-          "name": "children",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/BaseModal/BaseModal.tsx/interface/BaseModalProps/memberField/children",
-            "name": "children",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/SettingsList/types.ts-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-leftIconlabelvaluerightIcon": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/SettingsList/types.ts-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-leftIconlabelvaluerightIcon",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/SettingsList/types.ts",
-      "from_class_or_interface_name": "SettingsListProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/TimeTable/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps",
-      "to_class_or_interface_name": "SettingsListProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/leftIcon": {
-          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/leftIcon",
-          "name": "leftIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon",
-            "name": "leftIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/label": {
-          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/value": {
-          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/rightIcon": {
-          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/rightIcon",
-          "name": "rightIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
-            "name": "rightIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/frontend/app/components/TimeTable/types.ts-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps-leftIconlabelrightIconvalue": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/components/TimeTable/types.ts-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps-leftIconlabelrightIconvalue",
-      "probability": 1,
-      "from_file_path": "apps/frontend/app/components/TimeTable/types.ts",
-      "from_class_or_interface_name": "TimeTableListProps",
-      "from_class_or_interface_key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/frontend/app/components/SettingsList/types.ts",
-      "to_class_or_interface_key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps",
-      "to_class_or_interface_name": "TimeTableListProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon": {
-          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon",
-          "name": "leftIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/leftIcon",
-            "name": "leftIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label": {
-          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon": {
-          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
-          "name": "rightIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/rightIcon",
-            "name": "rightIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value": {
-          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListProps/memberField/value",
-            "name": "value",
             "type": "string",
             "modifiers": [],
             "position": {}
