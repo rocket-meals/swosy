@@ -1,4 +1,6 @@
 import { AccountHelper } from './AccountHelper';
+import { ApiContext } from './ApiContext';
+import { MyEventContext } from './MyDatabaseHelper';
 
 export class AvatarHelper {
   /**
@@ -6,8 +8,9 @@ export class AvatarHelper {
    * @param userId the userId
    * @returns {Promise<void>}
    */
-  static async deleteAvatarOfUser(services: any, database: any, schema: any, accountability: any, userId: string) {
-    const filesService = await AvatarHelper.getAdminFileServiceInstance(schema, accountability, services);
+  static async deleteAvatarOfUser(apiContext: ApiContext, eventContext: MyEventContext | undefined, userId: string) {
+    const database = eventContext?.database || apiContext.database;
+    const filesService = await AvatarHelper.getAdminFileServiceInstance(apiContext, eventContext);
     if (!userId) {
       throw new Error('deleteAvatarOfUser: No userId provided: ');
     }
@@ -29,10 +32,13 @@ export class AvatarHelper {
    * get a fileService with admin permission
    * @returns {*}
    */
-  static async getAdminFileServiceInstance(schema: any, accountability: any, services: any) {
+  static async getAdminFileServiceInstance(apiContext: ApiContext, eventContext?: MyEventContext) {
     // TODO: Replace with MyDatabaseHelper.getFilesHelper()
 
+    const { services } = apiContext;
     const { FilesService } = services;
+    const schema = eventContext?.schema || (await apiContext.getSchema());
+    const accountability = eventContext?.accountability || apiContext.accountability;
     const adminAccountAbility = AccountHelper.getAdminAccountability(accountability);
     return new FilesService({ schema, accountability: adminAccountAbility });
   }
