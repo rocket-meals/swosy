@@ -6,8 +6,9 @@ export class AvatarHelper {
    * @param userId the userId
    * @returns {Promise<void>}
    */
-  static async deleteAvatarOfUser(services: any, database: any, schema: any, accountability: any, userId: string) {
-    const filesService = await AvatarHelper.getAdminFileServiceInstance(schema, accountability, services);
+  static async deleteAvatarOfUser(apiContext: any, userId: string) {
+    const { services, database, schema, accountability } = apiContext;
+    const filesService = await AvatarHelper.getAdminFileServiceInstance(apiContext);
     if (!userId) {
       throw new Error('deleteAvatarOfUser: No userId provided: ');
     }
@@ -29,9 +30,10 @@ export class AvatarHelper {
    * get a fileService with admin permission
    * @returns {*}
    */
-  static async getAdminFileServiceInstance(schema: any, accountability: any, services: any) {
+  static async getAdminFileServiceInstance(apiContext: any) {
     // TODO: Replace with MyDatabaseHelper.getFilesHelper()
 
+    const { schema, accountability, services } = apiContext;
     const { FilesService } = services;
     const adminAccountAbility = AccountHelper.getAdminAccountability(accountability);
     return new FilesService({ schema, accountability: adminAccountAbility });

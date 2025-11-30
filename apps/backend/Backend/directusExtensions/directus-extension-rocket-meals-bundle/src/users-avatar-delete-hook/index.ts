@@ -7,16 +7,14 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 const SCHEDULE_NAME = 'users_avatar_delete';
 
 export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ filter }, apiContext) => {
-  const { services, database, getSchema, env, logger } = apiContext;
-
   filter(
     EventHelper.USERS_DELETE_EVENT,
     // @ts-ignore
-    async (payload: any, input, { database, schema, accountability }) => {
+    async (payload: any, input, eventContext) => {
       const usersIds = payload; //get the user ids
       for (const userId of usersIds) {
         // for all users which get deleted
-        await AvatarHelper.deleteAvatarOfUser(services, database, schema, accountability, userId); //delete avatar file
+        await AvatarHelper.deleteAvatarOfUser({ ...apiContext, ...eventContext }, userId); //delete avatar file
       }
 
       return payload;
