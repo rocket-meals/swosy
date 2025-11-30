@@ -1,8 +1,8 @@
-import { PdfGeneratorOptions, RequestOptions } from './PdfGeneratorHelper';
+import { HtmlPdfGeneratorInterface, PdfGeneratorOptions, RequestOptions } from './PdfGeneratorInterfaces';
 import { default as puppeteerCore } from 'puppeteer-core';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 
-export class PuppeteerGenerator {
+export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
   public static PuppeteerCore: any = puppeteerCore;
   public static PuppeteerForJest: any = undefined;
 
@@ -24,7 +24,11 @@ export class PuppeteerGenerator {
    * rocket-meals-directus-2         |     at async Promise.all (index 1)
    */
 
-  static async generatePdfFromHtmlPuppeteer(html: string, requestOptions: RequestOptions, options: PdfGeneratorOptions): Promise<Buffer> {
+  static async generatePdfFromHtmlPuppeteer(
+    html: string,
+    requestOptions: RequestOptions,
+    options?: PdfGeneratorOptions
+  ): Promise<Buffer> {
     let browser;
     let puppeteer = PuppeteerGenerator.getPuppeteerLib();
 
@@ -151,5 +155,13 @@ export class PuppeteerGenerator {
         await browser.close();
       }
     }
+  }
+
+  public async generatePdfFromHtml(
+    html: string,
+    requestOptions: RequestOptions,
+    options?: PdfGeneratorOptions
+  ): Promise<Buffer> {
+    return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(html, requestOptions, options);
   }
 }
