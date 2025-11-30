@@ -393,7 +393,11 @@ async function sendFormExtractMail(form: DatabaseTypes.Forms, formExtract: Datab
   let internalMyDatabaseHelper = myDatabaseHelper.cloneWithInternalServerMode();
   // we need the internal server mode to generate the pdf, as traefik does not route the request correctly
   // TODO: Fix traefik configuration or add server to extra_hosts in docker-compose
-  let pdfBuffer = await FormHelper.generatePdfFromForm(form, formExtractRelevantInformation, internalMyDatabaseHelper);
+  let pdfBuffer = await FormHelper.generatePdfFromForm({
+    form,
+    formExtractRelevantInformation,
+    myDatabaseHelperInterface: internalMyDatabaseHelper,
+  });
 
   console.log('recipient_emails: ');
   console.log(recipient_emails);
