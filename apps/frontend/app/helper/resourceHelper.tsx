@@ -140,12 +140,16 @@ export function getDirectusTranslation(params: any, translations: TranslationEnt
 		const translationEntry = dict[langCode];
 		if (!translationEntry) return null;
 
-		let translation = translationEntry[field];
-		if (params) {
-			Object.keys(params).forEach(key => {
-				translation = StringHelper.replaceAll(translation, `%${key}`, params[key]);
-			});
-		}
+                                let translation = translationEntry[field];
+                if (params) {
+                        Object.keys(params).forEach(key => {
+                                translation = StringHelper.replaceAllWithOptions({
+                                        str: translation,
+                                        find: `%${key}`,
+                                        replace: params[key],
+                                });
+                        });
+                }
 		return translation;
 	};
 
