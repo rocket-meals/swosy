@@ -81,7 +81,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { profile, user } = useSelector((state: RootState) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 		const kioskMode = useKioskMode();
-	const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, Record<string, DatabaseTypes.Foodoffers[]>>>({});
+        const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 
@@ -310,43 +310,46 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		return '';
 	};
 
-	const fetchFoods = async () => {
-		try {
-			setLoading(true);
-			const canteenId = selectedCanteen?.id as string;
-			let foodOffers = prefetchedFoodOffers[canteenId]?.[selectedDate];
+        const getCacheKey = (canteenId: string, date: string) => {
+                return `${canteenId}_${format(new Date(date), 'dd.MM.yyyy')}`;
+        };
 
-			if (!foodOffers) {
-				const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
-				foodOffers = foodData?.data || [];
-			}
+        const getCachedOffers = (canteenId: string, date: string) => {
+                return prefetchedFoodOffers[getCacheKey(canteenId, date)];
+        };
 
-			setPrefetchedFoodOffers(prev => ({
-				...prev,
-				[canteenId]: {
-					...(prev[canteenId] || {}),
-					[selectedDate]: foodOffers,
-				},
-			}));
+        const fetchFoods = async () => {
+                try {
+                        setLoading(true);
+                        const canteenId = selectedCanteen?.id as string;
+                        let foodOffers = getCachedOffers(canteenId, selectedDate);
+
+                        if (!foodOffers) {
+                                const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
+                                foodOffers = foodData?.data || [];
+                        }
+
+                        setPrefetchedFoodOffers(prev => ({
+                                ...prev,
+                                [getCacheKey(canteenId, selectedDate)]: foodOffers,
+                        }));
 
 			// Prefetch next two days
 			for (let i = 1; i <= 2; i++) {
-				const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
-				if (!prefetchedFoodOffers[canteenId]?.[date]) {
-					fetchFoodOffersByCanteen(canteenId, date)
-						.then(res => {
-							const offers = res?.data || [];
-							setPrefetchedFoodOffers(p => ({
-								...p,
-								[canteenId]: {
-									...(p[canteenId] || {}),
-									[date]: offers,
-								},
-							}));
-						})
-						.catch(e => console.error('Error prefetching Food Offers:', e));
-				}
-			}
+                                const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                                const cacheKey = getCacheKey(canteenId, date);
+                                if (!prefetchedFoodOffers[cacheKey]) {
+                                        fetchFoodOffersByCanteen(canteenId, date)
+                                                .then(res => {
+                                                        const offers = res?.data || [];
+                                                        setPrefetchedFoodOffers(p => ({
+                                                                ...p,
+                                                                [cacheKey]: offers,
+                                                        }));
+                                                })
+                                                .catch(e => console.error('Error prefetching Food Offers:', e));
+                                }
+                        }
 
 			updateSort(sortBy as FoodSortOption, foodOffers);
 
@@ -371,17 +374,17 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		setRefreshing(false);
 	}, []);
 
-	const nextAvailableDate = useMemo(() => {
-		const canteenId = selectedCanteen?.id as string;
-		for (let i = 1; i <= 2; i++) {
-			const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
-			const offers = prefetchedFoodOffers[canteenId]?.[date];
-			if (offers && offers.length > 0) {
-				return date;
-			}
-		}
-		return null;
-	}, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
+        const nextAvailableDate = useMemo(() => {
+                const canteenId = selectedCanteen?.id as string;
+                for (let i = 1; i <= 2; i++) {
+                        const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                        const offers = getCachedOffers(canteenId, date);
+                        if (offers && offers.length > 0) {
+                                return date;
+                        }
+                }
+                return null;
+        }, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
 
 	const getWeekdayKey = (date: string) => {
 		const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

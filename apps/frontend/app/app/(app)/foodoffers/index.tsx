@@ -49,7 +49,7 @@ import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFee
 import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
 import * as Notifications from 'expo-notifications';
 import {sortFoodOffers} from '@/helper/foodOfferSortHelper';
-import {addDays, format} from 'date-fns';
+import {addDays, format, parse} from 'date-fns';
 import {BusinessHoursHelper} from '@/redux/actions/BusinessHours/BusinessHours';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import {PopupEventHelper} from '@/helper/PopupEventHelper';
@@ -134,7 +134,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const selectedCanteen = useSelectedCanteen();
 	useFoodOffersDefaultDate();
 	const kioskMode = useKioskMode();
-	const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, Record<string, DatabaseTypes.Foodoffers[]>>>({});
+        const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const { hasUnreadChats } = useChatUnreadStatus();
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
@@ -209,12 +209,26 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 return [...start, ...main, ...end] as DayItem[];
         }, [selectedCanteenFoodOffers, foodOffersInfoItems, selectedCanteen]);
 
+        const getCacheKey = (canteenId: string, date: string) => {
+                return `${canteenId}_${format(new Date(date), 'dd.MM.yyyy')}`;
+        };
+
+        const getCachedOffers = (canteenId: string, date: string) => {
+                return prefetchedFoodOffers[getCacheKey(canteenId, date)];
+        };
+
         const cachedFoodOfferDates = useMemo(() => {
                 const canteenId = selectedCanteen?.id;
                 if (!canteenId) return [];
 
-                const dates = Object.keys(prefetchedFoodOffers[canteenId] || {});
-                return dates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+                const dates = Object.keys(prefetchedFoodOffers)
+                        .filter(key => key.startsWith(`${canteenId}_`))
+                        .map(key => key.replace(`${canteenId}_`, ''))
+                        .map(date => parse(date, 'dd.MM.yyyy', new Date()))
+                        .filter(date => !Number.isNaN(date.getTime()))
+                        .sort((a, b) => a.getTime() - b.getTime())
+                        .map(date => format(date, 'yyyy-MM-dd'));
+                return dates;
         }, [prefetchedFoodOffers, selectedCanteen]);
 
         const cachedFoodOfferDateLabels = useMemo(
@@ -405,30 +419,31 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const fetchFoods = async (forceFetch = false) => {
 		try {
 			setLoading(true);
-			const canteenId = selectedCanteen?.id as string;
-			if (!canteenId || !selectedDate) {
-				setLoading(false);
-				return;
-			}
+                        const canteenId = selectedCanteen?.id as string;
+                        if (!canteenId || !selectedDate) {
+                                setLoading(false);
+                                return;
+                        }
 
-			let foodOffers = prefetchedFoodOffers[canteenId]?.[selectedDate];
-			if (!foodOffers || forceFetch) {
-				const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
-				foodOffers = foodData?.data || [];
-			}
+                        let foodOffers = getCachedOffers(canteenId, selectedDate);
+                        if (!foodOffers || forceFetch) {
+                                const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
+                                foodOffers = foodData?.data || [];
+                        }
 
-			setPrefetchedFoodOffers(prev => ({ ...prev, [canteenId]: { ...(prev[canteenId] || {}), [selectedDate]: foodOffers } }));
+                        setPrefetchedFoodOffers(prev => ({ ...prev, [getCacheKey(canteenId, selectedDate)]: foodOffers }));
 
 			for (let i = 1; i <= 2; i++) {
-				const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
-				if (!prefetchedFoodOffers[canteenId]?.[date]) {
-					fetchFoodOffersByCanteen(canteenId, date)
-						.then(res => {
-							const offers = res?.data || [];
-							setPrefetchedFoodOffers(p => ({ ...p, [canteenId]: { ...(p[canteenId] || {}), [date]: offers } }));
-							try {
-								offers.slice(0, 6).forEach((o: any) => {
-									const img = o?.food?.image_remote_url || o?.food?.image;
+                                const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                                const cacheKey = getCacheKey(canteenId, date);
+                                if (!prefetchedFoodOffers[cacheKey]) {
+                                        fetchFoodOffersByCanteen(canteenId, date)
+                                                .then(res => {
+                                                        const offers = res?.data || [];
+                                                        setPrefetchedFoodOffers(p => ({ ...p, [cacheKey]: offers }));
+                                                        try {
+                                                                offers.slice(0, 6).forEach((o: any) => {
+                                                                        const img = o?.food?.image_remote_url || o?.food?.image;
 									if (img) Image.prefetch(img).catch(() => { });
 								});
 							} catch (e) { }
@@ -480,15 +495,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	);
 	const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
-	const nextAvailableDate = useMemo(() => {
-		const canteenId = selectedCanteen?.id as string;
-		for (let i = 1; i <= 2; i++) {
-			const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
-			const offers = prefetchedFoodOffers[canteenId]?.[date];
-			if (offers && offers.length > 0) return date;
-		}
-		return null;
-	}, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
+        const nextAvailableDate = useMemo(() => {
+                const canteenId = selectedCanteen?.id as string;
+                for (let i = 1; i <= 2; i++) {
+                        const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                        const offers = getCachedOffers(canteenId, date);
+                        if (offers && offers.length > 0) return date;
+                }
+                return null;
+        }, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
 
 	const getWeekdayKey = (date: string) => {
 		const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
