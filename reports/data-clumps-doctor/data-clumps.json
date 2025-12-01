@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.102",
-  "report_timestamp": "2025-11-30T23:50:56.574Z",
+  "report_timestamp": "2025-12-01T13:06:53.367Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 8,
-          "average": 1.1539657853810263,
-          "amountSavedValuesForKeys": 742,
-          "amountKeys": 8
+          "maximum": 88,
+          "average": 1.5926735921268453,
+          "amountSavedValuesForKeys": 2913,
+          "amountKeys": 25
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 80,
-          "average": 2.4132841328413286,
-          "amountSavedValuesForKeys": 1308,
+          "average": 2.4125230202578267,
+          "amountSavedValuesForKeys": 1310,
           "amountKeys": 19
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 9,
-          "average": 1.1815286624203822,
-          "amountSavedValuesForKeys": 742,
-          "amountKeys": 9
+          "maximum": 88,
+          "average": 1.60939226519337,
+          "amountSavedValuesForKeys": 2913,
+          "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 9105,
-        "detection_time_ms": 31,
+        "ast_generation_time_ms": 8173,
+        "detection_time_ms": 57,
         "machine_information": {
           "os": "Darwin",
           "os_release": "22.5.0",
           "os_platform": "darwin",
           "os_arch": "x64",
-          "os_uptime": 309614,
-          "os_memory_free": 2827554816,
+          "os_uptime": 12974,
+          "os_memory_free": 948617216,
           "os_memory_total": 34359738368,
           "os_cpu_cores": 12,
           "os_cpu_model": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
@@ -44,35 +44,38 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 4,
-    "amount_files_with_data_clumps": 4,
+    "amount_classes_or_interfaces_with_data_clumps": 31,
+    "amount_files_with_data_clumps": 24,
     "amount_methods_with_data_clumps": 11,
-    "fields_to_fields_data_clump": 0,
+    "fields_to_fields_data_clump": 38,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 38,
-    "amount_data_clumps": 38
+    "amount_data_clumps": 76
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "1120999af20e303c8bb6e0d7e72796db23ae60de",
-    "project_commit_hash": "1120999af20e303c8bb6e0d7e72796db23ae60de",
+    "project_version": "b712e74e4a3ae65076e77e207dad5c84ed635a43",
+    "project_commit_hash": "b712e74e4a3ae65076e77e207dad5c84ed635a43",
     "project_tag": null,
-    "project_commit_date": "1764544367",
+    "project_commit_date": "1764582160",
     "additional": {},
-    "number_of_files": 296,
-    "number_of_classes_or_interfaces": 354,
-    "number_of_methods": 1187,
-    "number_of_data_fields": 742,
-    "number_of_method_parameters": 1308
+    "number_of_files": 349,
+    "number_of_classes_or_interfaces": 713,
+    "number_of_methods": 1188,
+    "number_of_data_fields": 2913,
+    "number_of_method_parameters": 1310
   },
   "detector": {
     "name": "data-clumps-doctor",
     "url": "https://github.com/NilsBaumgartner1994/data-clumps-doctor",
-    "version": "0.1.101",
+    "version": "0.1.102",
     "options": {
       "fastDetection": true,
-      "ignorePaths": [],
+      "pathsExcludedFromParsing": [],
+      "pathsIgnoredInDetectionComparison": [
+        "**/databaseTypes/types.ts"
+      ],
       "similarityModifierOfVariablesWithUnknownType": 0,
       "minimumSimilarityForDataClumps": 0.5,
       "fieldsOfClassesWithUnknownHierarchyProbabilityModifier": 0,
@@ -2502,6 +2505,2790 @@
             "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts/class/TranslationHelper/method/updateItemTranslations/parameter/items_primary_field_in_translation_table",
             "name": "items_primary_field_in_translation_table",
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper\").TranslationRelationField<E>",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-teamIdclientIdkeyId": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-teamIdclientIdkeyId",
+      "probability": 1,
+      "from_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts",
+      "from_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig",
+      "from_class_or_interface_name": "AppleClientSecretConfig",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts",
+      "to_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams",
+      "to_class_or_interface_name": "AppleJWTParams",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/teamId": {
+          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/teamId",
+          "name": "teamId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/teamId",
+            "name": "teamId",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/clientId": {
+          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/clientId",
+          "name": "clientId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/clientId",
+            "name": "clientId",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/keyId": {
+          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/keyId",
+          "name": "keyId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/keyId",
+            "name": "keyId",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-teamIdclientIdkeyId": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-teamIdclientIdkeyId",
+      "probability": 1,
+      "from_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts",
+      "from_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams",
+      "from_class_or_interface_name": "AppleJWTParams",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts",
+      "to_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig",
+      "to_class_or_interface_name": "AppleClientSecretConfig",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/teamId": {
+          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/teamId",
+          "name": "teamId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/teamId",
+            "name": "teamId",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/clientId": {
+          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/clientId",
+          "name": "clientId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/clientId",
+            "name": "clientId",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/keyId": {
+          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/keyId",
+          "name": "keyId",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/keyId",
+            "name": "keyId",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType-amount_positive_newamount_negative_newamount_total_newamount_positiveamount_negativeamount_totalstatus_totalstatus_new": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType-amount_positive_newamount_negative_newamount_total_newamount_positiveamount_negativeamount_totalstatus_totalstatus_new",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType",
+      "from_class_or_interface_name": "ReportCanteenEntryLabelsType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType",
+      "to_class_or_interface_name": "ReportFoodEntryLabelType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_positive_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_positive_new",
+          "name": "amount_positive_new",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_positive_new",
+            "name": "amount_positive_new",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_negative_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_negative_new",
+          "name": "amount_negative_new",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_negative_new",
+            "name": "amount_negative_new",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_total_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_total_new",
+          "name": "amount_total_new",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_total_new",
+            "name": "amount_total_new",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_positive": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_positive",
+          "name": "amount_positive",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_positive",
+            "name": "amount_positive",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_negative": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_negative",
+          "name": "amount_negative",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_negative",
+            "name": "amount_negative",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_total": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_total",
+          "name": "amount_total",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_total",
+            "name": "amount_total",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/status_total": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/status_total",
+          "name": "status_total",
+          "type": "ReportStatusTrafficLightType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/status_total",
+            "name": "status_total",
+            "type": "ReportStatusTrafficLightType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/status_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/status_new",
+          "name": "status_new",
+          "type": "ReportStatusTrafficLightType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/status_new",
+            "name": "status_new",
+            "type": "ReportStatusTrafficLightType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType-amount_positive_newamount_negative_newamount_total_newamount_positiveamount_negativeamount_totalstatus_totalstatus_new": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType-amount_positive_newamount_negative_newamount_total_newamount_positiveamount_negativeamount_totalstatus_totalstatus_new",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType",
+      "from_class_or_interface_name": "ReportFoodEntryLabelType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType",
+      "to_class_or_interface_name": "ReportCanteenEntryLabelsType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_positive_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_positive_new",
+          "name": "amount_positive_new",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_positive_new",
+            "name": "amount_positive_new",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_negative_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_negative_new",
+          "name": "amount_negative_new",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_negative_new",
+            "name": "amount_negative_new",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_total_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_total_new",
+          "name": "amount_total_new",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_total_new",
+            "name": "amount_total_new",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_positive": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_positive",
+          "name": "amount_positive",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_positive",
+            "name": "amount_positive",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_negative": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_negative",
+          "name": "amount_negative",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_negative",
+            "name": "amount_negative",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_total": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/amount_total",
+          "name": "amount_total",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/amount_total",
+            "name": "amount_total",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/status_total": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/status_total",
+          "name": "status_total",
+          "type": "ReportStatusTrafficLightType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/status_total",
+            "name": "status_total",
+            "type": "ReportStatusTrafficLightType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/status_new": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType/memberField/status_new",
+          "name": "status_new",
+          "type": "ReportStatusTrafficLightType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType/memberField/status_new",
+            "name": "status_new",
+            "type": "ReportStatusTrafficLightType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/FoodofferDateType-yearmonthday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/FoodofferDateType-yearmonthday",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType",
+      "from_class_or_interface_name": "FoodofferDateType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/DateHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType",
+      "to_class_or_interface_name": "FoodofferDateType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/year": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/year",
+          "name": "year",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year",
+            "name": "year",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/month": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/month",
+          "name": "month",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month",
+            "name": "month",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/day": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/day",
+          "name": "day",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day",
+            "name": "day",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/MySimpleDate-yearmonthday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/MySimpleDate-yearmonthday",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType",
+      "from_class_or_interface_name": "FoodofferDateType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/DateHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/MySimpleDate",
+      "to_class_or_interface_name": "MySimpleDate",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/year": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/year",
+          "name": "year",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year",
+            "name": "year",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/month": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/month",
+          "name": "month",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month",
+            "name": "month",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/day": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/day",
+          "name": "day",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day",
+            "name": "day",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser-attribute_valuesmarking_external_identifierscategory_external_identifier": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser-attribute_valuesmarking_external_identifierscategory_external_identifier",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser",
+      "from_class_or_interface_name": "FoodoffersTypeForParser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser",
+      "to_class_or_interface_name": "FoodsInformationTypeForParser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/attribute_values": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/attribute_values",
+          "name": "attribute_values",
+          "type": "FoodParseFoodAttributesType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/attribute_values",
+            "name": "attribute_values",
+            "type": "FoodParseFoodAttributesType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/marking_external_identifiers": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/marking_external_identifiers",
+          "name": "marking_external_identifiers",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/marking_external_identifiers",
+            "name": "marking_external_identifiers",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/category_external_identifier": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/category_external_identifier",
+          "name": "category_external_identifier",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/category_external_identifier",
+            "name": "category_external_identifier",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType-datecanteen_external_identifierfood_id": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType-datecanteen_external_identifierfood_id",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser",
+      "from_class_or_interface_name": "FoodoffersTypeForParser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType",
+      "to_class_or_interface_name": "RawFoodofferInformationType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/date",
+          "name": "date",
+          "type": "FoodofferDateType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/date",
+            "name": "date",
+            "type": "FoodofferDateType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/canteen_external_identifier": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/canteen_external_identifier",
+          "name": "canteen_external_identifier",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/canteen_external_identifier",
+            "name": "canteen_external_identifier",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/food_id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/food_id",
+          "name": "food_id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/food_id",
+            "name": "food_id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-attribute_valuescategory_external_identifiermarking_external_identifiers": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-attribute_valuescategory_external_identifiermarking_external_identifiers",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser",
+      "from_class_or_interface_name": "FoodsInformationTypeForParser",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser",
+      "to_class_or_interface_name": "FoodoffersTypeForParser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/attribute_values": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/attribute_values",
+          "name": "attribute_values",
+          "type": "FoodParseFoodAttributesType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/attribute_values",
+            "name": "attribute_values",
+            "type": "FoodParseFoodAttributesType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/category_external_identifier": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/category_external_identifier",
+          "name": "category_external_identifier",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/category_external_identifier",
+            "name": "category_external_identifier",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/marking_external_identifiers": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodsInformationTypeForParser/memberField/marking_external_identifiers",
+          "name": "marking_external_identifiers",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/marking_external_identifiers",
+            "name": "marking_external_identifiers",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-food_iddatecanteen_external_identifier": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser-food_iddatecanteen_external_identifier",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType",
+      "from_class_or_interface_name": "RawFoodofferInformationType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser",
+      "to_class_or_interface_name": "FoodoffersTypeForParser",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/food_id": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/food_id",
+          "name": "food_id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/food_id",
+            "name": "food_id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/date",
+          "name": "date",
+          "type": "FoodofferDateType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/date",
+            "name": "date",
+            "type": "FoodofferDateType",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/canteen_external_identifier": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts/interface/RawFoodofferInformationType/memberField/canteen_external_identifier",
+          "name": "canteen_external_identifier",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/canteen_external_identifier",
+            "name": "canteen_external_identifier",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-widthheightquality": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-widthheightquality",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform",
+      "from_class_or_interface_name": "ImageTransform",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions",
+      "to_class_or_interface_name": "DirectusFileTransformOptions",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/width": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/width",
+          "name": "width",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/width",
+            "name": "width",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/height": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/height",
+          "name": "height",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/height",
+            "name": "height",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/quality": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/quality",
+          "name": "quality",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/quality",
+            "name": "quality",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-widthheightquality": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-widthheightquality",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions",
+      "from_class_or_interface_name": "DirectusFileTransformOptions",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform",
+      "to_class_or_interface_name": "ImageTransform",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/width": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/width",
+          "name": "width",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/width",
+            "name": "width",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/height": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/height",
+          "name": "height",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/height",
+            "name": "height",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/quality": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/quality",
+          "name": "quality",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/quality",
+            "name": "quality",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/course-timetable/types.ts-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/course-timetable/types.ts-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/app/(app)/course-timetable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes",
+      "from_class_or_interface_name": "EventTypes",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
+      "to_class_or_interface_name": "BaseCourseTimetableEvent",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
+          "name": "location",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
+            "name": "location",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/course-timetable/types.ts-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/course-timetable/types.ts-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/app/(app)/course-timetable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes",
+      "from_class_or_interface_name": "EventTypes",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes",
+      "to_class_or_interface_name": "EventTypes",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
+          "name": "location",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
+            "name": "location",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/startTime": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/startTime",
+          "name": "startTime",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/startTime",
+            "name": "startTime",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/endTime": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/endTime",
+          "name": "endTime",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/endTime",
+            "name": "endTime",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/day": {
+          "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/day",
+          "name": "day",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/day",
+            "name": "day",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/AmountColumn/AmountColumns.tsx-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-positionisSelectedonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/AmountColumn/AmountColumns.tsx-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-positionisSelectedonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps",
+      "from_class_or_interface_name": "AmountColumnsProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/Drawer/DrawerPosition.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps",
+      "to_class_or_interface_name": "DrawerPositionProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/position": {
+          "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/position",
+          "name": "position",
+          "type": "Position",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/position",
+            "name": "position",
+            "type": "Position",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/isSelected": {
+          "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/isSelected",
+          "name": "isSelected",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/isSelected",
+            "name": "isSelected",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/AmountColumn/AmountColumns.tsx-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-positionisSelectedonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/AmountColumn/AmountColumns.tsx-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-positionisSelectedonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps",
+      "from_class_or_interface_name": "AmountColumnsProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps",
+      "to_class_or_interface_name": "FirstDayOfWeekProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/position": {
+          "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/position",
+          "name": "position",
+          "type": "Position",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/position",
+            "name": "position",
+            "type": "Position",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/isSelected": {
+          "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/isSelected",
+          "name": "isSelected",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/isSelected",
+            "name": "isSelected",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/ColorScheme/ColorScheme.tsx-apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position-idnameicon": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/ColorScheme/ColorScheme.tsx-apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position-idnameicon",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme",
+      "from_class_or_interface_name": "Theme",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/Drawer/DrawerPosition.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position",
+      "to_class_or_interface_name": "Position",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/id": {
+          "key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/name": {
+          "key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/icon": {
+          "key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/icon",
+          "name": "icon",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/icon",
+            "name": "icon",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
+      "from_class_or_interface_name": "BaseCourseTimetableEvent",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/app/(app)/course-timetable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes",
+      "to_class_or_interface_name": "EventTypes",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
+          "name": "location",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
+            "name": "location",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
+      "from_class_or_interface_name": "BaseCourseTimetableEvent",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes",
+      "to_class_or_interface_name": "EventTypes",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
+          "name": "location",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
+            "name": "location",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes",
+      "from_class_or_interface_name": "EventTypes",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/app/(app)/course-timetable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes",
+      "to_class_or_interface_name": "EventTypes",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
+          "name": "location",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
+            "name": "location",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/startTime": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/startTime",
+          "name": "startTime",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/startTime",
+            "name": "startTime",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/endTime": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/endTime",
+          "name": "endTime",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/endTime",
+            "name": "endTime",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/day": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/day",
+          "name": "day",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/day",
+            "name": "day",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/CourseTimeTable/types.ts-apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes-apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes",
+      "from_class_or_interface_name": "EventTypes",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/CourseTimeTable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
+      "to_class_or_interface_name": "BaseCourseTimetableEvent",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
+          "name": "location",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
+            "name": "location",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color": {
+          "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
+          "name": "color",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
+            "name": "color",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/DrawerPosition.tsx-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-positionisSelectedonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/DrawerPosition.tsx-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-positionisSelectedonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/Drawer/DrawerPosition.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps",
+      "from_class_or_interface_name": "DrawerPositionProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps",
+      "to_class_or_interface_name": "AmountColumnsProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/position": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/position",
+          "name": "position",
+          "type": "Position",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/position",
+            "name": "position",
+            "type": "Position",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/isSelected": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/isSelected",
+          "name": "isSelected",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/isSelected",
+            "name": "isSelected",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/DrawerPosition.tsx-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-positionisSelectedonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/DrawerPosition.tsx-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-positionisSelectedonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/Drawer/DrawerPosition.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps",
+      "from_class_or_interface_name": "DrawerPositionProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps",
+      "to_class_or_interface_name": "FirstDayOfWeekProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/position": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/position",
+          "name": "position",
+          "type": "Position",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/position",
+            "name": "position",
+            "type": "Position",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/isSelected": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/isSelected",
+          "name": "isSelected",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/isSelected",
+            "name": "isSelected",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/DrawerPosition.tsx-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position-apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme-idnameicon": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/DrawerPosition.tsx-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position-apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme-idnameicon",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/Drawer/DrawerPosition.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position",
+      "from_class_or_interface_name": "Position",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme",
+      "to_class_or_interface_name": "Theme",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/id": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/name": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/name",
+          "name": "name",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/name",
+            "name": "name",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/icon": {
+          "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/Position/memberField/icon",
+          "name": "icon",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/ColorScheme/ColorScheme.tsx/interface/Theme/memberField/icon",
+            "name": "icon",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/DropdownInput.tsx-apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-errorisDisabledoptionsallowCustomValues": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/DropdownInput.tsx-apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-errorisDisabledoptionsallowCustomValues",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps",
+      "from_class_or_interface_name": "DropdownInputProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
+      "to_class_or_interface_name": "DropdownSheetProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error",
+          "name": "error",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
+            "name": "error",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled",
+          "name": "isDisabled",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
+            "name": "isDisabled",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/options": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/options",
+          "name": "options",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/options",
+            "name": "options",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/allowCustomValues": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/allowCustomValues",
+          "name": "allowCustomValues",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/allowCustomValues",
+            "name": "allowCustomValues",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-optionsallowCustomValuesisDisablederror": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-optionsallowCustomValuesisDisablederror",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
+      "from_class_or_interface_name": "DropdownSheetProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps",
+      "to_class_or_interface_name": "DropdownInputProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/options": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/options",
+          "name": "options",
+          "type": "string[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/options",
+            "name": "options",
+            "type": "string[]",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/allowCustomValues": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/allowCustomValues",
+          "name": "allowCustomValues",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/allowCustomValues",
+            "name": "allowCustomValues",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
+          "name": "isDisabled",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled",
+            "name": "isDisabled",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
+          "name": "error",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error",
+            "name": "error",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx-apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-titlevalueonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx-apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-titlevalueonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps",
+      "from_class_or_interface_name": "FeedbackItemProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/SettingsList/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
+      "to_class_or_interface_name": "SettingsListPropsOwn",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/title": {
+          "key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/value": {
+          "key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-positionisSelectedonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps-positionisSelectedonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps",
+      "from_class_or_interface_name": "FirstDayOfWeekProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps",
+      "to_class_or_interface_name": "AmountColumnsProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/position": {
+          "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/position",
+          "name": "position",
+          "type": "Position",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/position",
+            "name": "position",
+            "type": "Position",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/isSelected": {
+          "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/isSelected",
+          "name": "isSelected",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/isSelected",
+            "name": "isSelected",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/AmountColumn/AmountColumns.tsx/interface/AmountColumnsProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-positionisSelectedonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx-apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps-apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps-positionisSelectedonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps",
+      "from_class_or_interface_name": "FirstDayOfWeekProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/Drawer/DrawerPosition.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps",
+      "to_class_or_interface_name": "DrawerPositionProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/position": {
+          "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/position",
+          "name": "position",
+          "type": "Position",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/position",
+            "name": "position",
+            "type": "Position",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/isSelected": {
+          "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/isSelected",
+          "name": "isSelected",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/isSelected",
+            "name": "isSelected",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/onPress": {
+          "key": "apps/frontend/app/components/FirstDay/FirstDayOfWeek.tsx/interface/FirstDayOfWeekProps/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/DrawerPosition.tsx/interface/DrawerPositionProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/SettingsList/types.ts-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-leftIconlabelvaluerightIcon": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/SettingsList/types.ts-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-leftIconlabelvaluerightIcon",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/SettingsList/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
+      "from_class_or_interface_name": "SettingsListPropsOwn",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/TimeTable/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps",
+      "to_class_or_interface_name": "TimeTableListProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon",
+          "name": "leftIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon",
+            "name": "leftIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/rightIcon": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/rightIcon",
+          "name": "rightIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
+            "name": "rightIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/SettingsList/types.ts-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-titlevalueonPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/SettingsList/types.ts-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-titlevalueonPress",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/SettingsList/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
+      "from_class_or_interface_name": "SettingsListPropsOwn",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps",
+      "to_class_or_interface_name": "FeedbackItemProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/title": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress": {
+          "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/TimeTable/types.ts-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-leftIconlabelrightIconvalue": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/TimeTable/types.ts-apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps-apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-leftIconlabelrightIconvalue",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/TimeTable/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps",
+      "from_class_or_interface_name": "TimeTableListProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/SettingsList/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
+      "to_class_or_interface_name": "SettingsListPropsOwn",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon",
+          "name": "leftIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon",
+            "name": "leftIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
+          "name": "rightIcon",
+          "type": "React.ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/rightIcon",
+            "name": "rightIcon",
+            "type": "React.ReactNode",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value": {
+          "key": "apps/frontend/app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/redux/Types/stateTypes.ts-apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan-apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan-selectedCanteennextFoodIntervalrefreshInterval": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/redux/Types/stateTypes.ts-apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan-apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan-selectedCanteennextFoodIntervalrefreshInterval",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/redux/Types/stateTypes.ts",
+      "from_class_or_interface_key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan",
+      "from_class_or_interface_name": "DayPlan",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/redux/Types/stateTypes.ts",
+      "to_class_or_interface_key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan",
+      "to_class_or_interface_name": "FoodPlan",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/selectedCanteen": {
+          "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/selectedCanteen",
+          "name": "selectedCanteen",
+          "type": "DatabaseTypes.Canteens",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/selectedCanteen",
+            "name": "selectedCanteen",
+            "type": "DatabaseTypes.Canteens",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/nextFoodInterval": {
+          "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/nextFoodInterval",
+          "name": "nextFoodInterval",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/nextFoodInterval",
+            "name": "nextFoodInterval",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/refreshInterval": {
+          "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/refreshInterval",
+          "name": "refreshInterval",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/refreshInterval",
+            "name": "refreshInterval",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/redux/Types/stateTypes.ts-apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan-apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan-selectedCanteennextFoodIntervalrefreshInterval": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/redux/Types/stateTypes.ts-apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan-apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan-selectedCanteennextFoodIntervalrefreshInterval",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/redux/Types/stateTypes.ts",
+      "from_class_or_interface_key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan",
+      "from_class_or_interface_name": "FoodPlan",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/redux/Types/stateTypes.ts",
+      "to_class_or_interface_key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan",
+      "to_class_or_interface_name": "DayPlan",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/selectedCanteen": {
+          "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/selectedCanteen",
+          "name": "selectedCanteen",
+          "type": "DatabaseTypes.Canteens",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/selectedCanteen",
+            "name": "selectedCanteen",
+            "type": "DatabaseTypes.Canteens",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/nextFoodInterval": {
+          "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/nextFoodInterval",
+          "name": "nextFoodInterval",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/nextFoodInterval",
+            "name": "nextFoodInterval",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/refreshInterval": {
+          "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/FoodPlan/memberField/refreshInterval",
+          "name": "refreshInterval",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/redux/Types/stateTypes.ts/interface/DayPlan/memberField/refreshInterval",
+            "name": "refreshInterval",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/FoodofferDateType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-yearmonthday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/FoodofferDateType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-yearmonthday",
+      "probability": 1,
+      "from_file_path": "packages/common/src/DateHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType",
+      "from_class_or_interface_name": "FoodofferDateType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType",
+      "to_class_or_interface_name": "FoodofferDateType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year": {
+          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year",
+          "name": "year",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/year",
+            "name": "year",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month": {
+          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month",
+          "name": "month",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/month",
+            "name": "month",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day": {
+          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day",
+          "name": "day",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/day",
+            "name": "day",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/MySimpleDate-yearmonthday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/MySimpleDate-yearmonthday",
+      "probability": 1,
+      "from_file_path": "packages/common/src/DateHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType",
+      "from_class_or_interface_name": "FoodofferDateType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/DateHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/MySimpleDate",
+      "to_class_or_interface_name": "MySimpleDate",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year": {
+          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year",
+          "name": "year",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year",
+            "name": "year",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month": {
+          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month",
+          "name": "month",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month",
+            "name": "month",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day": {
+          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day",
+          "name": "day",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day",
+            "name": "day",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/MySimpleDate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-yearmonthday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/MySimpleDate-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType-yearmonthday",
+      "probability": 1,
+      "from_file_path": "packages/common/src/DateHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/MySimpleDate",
+      "from_class_or_interface_name": "MySimpleDate",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType",
+      "to_class_or_interface_name": "FoodofferDateType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year": {
+          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year",
+          "name": "year",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/year",
+            "name": "year",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month": {
+          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month",
+          "name": "month",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/month",
+            "name": "month",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day": {
+          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day",
+          "name": "day",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodofferDateType/memberField/day",
+            "name": "day",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        }
+      }
+    },
+    "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/MySimpleDate-packages/common/src/DateHelper.ts/interface/FoodofferDateType-yearmonthday": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/MySimpleDate-packages/common/src/DateHelper.ts/interface/FoodofferDateType-yearmonthday",
+      "probability": 1,
+      "from_file_path": "packages/common/src/DateHelper.ts",
+      "from_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/MySimpleDate",
+      "from_class_or_interface_name": "MySimpleDate",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common/src/DateHelper.ts",
+      "to_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType",
+      "to_class_or_interface_name": "FoodofferDateType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year": {
+          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year",
+          "name": "year",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year",
+            "name": "year",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month": {
+          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month",
+          "name": "month",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month",
+            "name": "month",
+            "type": "number",
+            "modifiers": [],
+            "position": {}
+          },
+          "position": {}
+        },
+        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day": {
+          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day",
+          "name": "day",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day",
+            "name": "day",
+            "type": "number",
             "modifiers": [],
             "position": {}
           },

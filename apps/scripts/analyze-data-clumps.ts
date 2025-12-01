@@ -40,8 +40,34 @@ function ensureOutputPaths() {
 
 function runAnalysis(repoDir: string) {
   const cliPath = path.join(repoDir, "build", "ignoreCoverage", "cli.js");
+
+  let cliOptions = {
+    "source_type": SOURCE_LANGUAGE_TYPE,
+    "commit_selection": "current",
+    "output": OUTPUT_PATH,
+    "path_to_project": REPO_ROOT,
+    "relative_path_to_source_folder_in_project": RELATIVE_SOURCE_PATH,
+    "detector_options_paths_ignored_in_detection_comparison": [
+        "**/databaseTypes/types.ts",
+        ]
+  };
+
+  let cliArgs = Object.entries(cliOptions).map(([key, value]) => {
+    if (Array.isArray(value)) {
+      return value.map(v => `--${key} "${v}"`).join(" ");
+    } else {
+      return `--${key} "${value}"`;
+    }
+  });
+
+  /**
   runCommand(
     `node "${cliPath}" --source_type "${SOURCE_LANGUAGE_TYPE}" --commit_selection current --output "${OUTPUT_PATH}" --path_to_project "${REPO_ROOT}" --relative_path_to_source_folder_in_project "${RELATIVE_SOURCE_PATH}"`
+  );
+  */
+
+  runCommand(
+      `node "${cliPath}" ${cliArgs.join(" ")}`
   );
 }
 

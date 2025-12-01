@@ -4,12 +4,6 @@ import MyNativeCardReader from './MyNativeCardReader';
 import MyUnsupportedCardReader from './MyUnsupportedCardReader';
 import {MyCardReaderInterface} from "@/app/(app)/account-balance/MyCardReaderInterface";
 
-export type MyCardReaderResponseSupport = {
-	result: boolean;
-	message?: string;
-	error?: any;
-};
-
 export default function useMyCardReader(): MyCardReaderInterface {
 	const isExpoGo = isRunningInExpoGo();
 
