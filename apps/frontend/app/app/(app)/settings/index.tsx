@@ -18,7 +18,7 @@ import { type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/c
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
-import { SET_AMOUNT_COLUMNS_FOR_CARDS, SET_DEBIT_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_AMOUNT_COLUMNS_FOR_CARDS, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -65,7 +65,7 @@ const Settings = () => {
 	const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
 	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debitMode } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode } = useSelector((state: RootState) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
@@ -189,10 +189,10 @@ const Settings = () => {
                 });
         };
 
-        const toggleDebitMode = () => {
+        const toggleDebugMode = () => {
                 dispatch({
-                        type: SET_DEBIT_MODE,
-                        payload: !debitMode,
+                        type: SET_DEBUG_MODE,
+                        payload: !debugMode,
                 });
         };
 
@@ -330,18 +330,18 @@ const Settings = () => {
                                                 <SettingsList
                                                         iconBgColor={primaryColor}
                                                         leftIcon={<MaterialCommunityIcons name="bank-transfer" size={24} color={theme.screen.icon} />}
-                                                        label={translate(TranslationKeys.debit_mode)}
-                                                        value={debitMode ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
+                                                        label={translate(TranslationKeys.debug_mode)}
+                                                        value={debugMode ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
                                                         rightElement={
                                                                 <Switch
-                                                                        value={debitMode}
-                                                                        onValueChange={toggleDebitMode}
+                                                                        value={debugMode}
+                                                                        onValueChange={toggleDebugMode}
                                                                         trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
                                                                         thumbColor={theme.screen.icon}
                                                                         ios_backgroundColor={theme.screen.iconBg}
                                                                 />
                                                         }
-                                                        handleFunction={toggleDebitMode}
+                                                        handleFunction={toggleDebugMode}
                                                         groupPosition="single"
                                                 />
                                         )}

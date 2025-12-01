@@ -14,7 +14,7 @@ export enum TranslationKeys {
 	loggingInPleaseWait = 'loggingInPleaseWait',
         developer = 'developer',
         developerModeActive = 'developerModeActive',
-        debit_mode = 'debit_mode',
+        debug_mode = 'debug_mode',
         foodoffers_next_day_time = 'foodoffers_next_day_time',
         foodoffers_next_day_time_description = 'foodoffers_next_day_time_description',
 	invalid_time_format = 'invalid_time_format',

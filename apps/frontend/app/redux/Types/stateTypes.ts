@@ -50,7 +50,7 @@ export type SettingsState = {
         amountColumnsForcard: number;
         useWebpForAssets: boolean;
         foodOffersNextDayThreshold: string | null;
-        debitMode: boolean;
+        debugMode: boolean;
 }
 
 export type FoodState = {
