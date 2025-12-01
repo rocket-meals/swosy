@@ -139,6 +139,16 @@
     "tr": "Geliştirici",
     "zh": "开发者"
   },
+  "debug_mode": {
+    "de": "Debug-Modus",
+    "en": "Debug mode",
+    "ar": "وضع التصحيح",
+    "es": "Modo de depuración",
+    "fr": "Mode débogage",
+    "ru": "Режим отладки",
+    "tr": "Hata ayıklama modu",
+    "zh": "调试模式"
+  },
   "developerModeActive": {
     "de": "Entwicklermodus aktiv",
     "en": "Developer Mode Active",
