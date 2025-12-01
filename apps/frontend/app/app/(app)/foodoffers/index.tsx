@@ -112,9 +112,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(PopupEventHelper.getAll());
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
-	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode, amountColumnsForcard } = useSelector(
-		(state: RootState) => state.settings
-	);
+        const {
+                sortBy,
+                language: languageCode,
+                drawerPosition,
+                appSettings,
+                primaryColor,
+                selectedTheme: mode,
+                amountColumnsForcard,
+                debugMode,
+        } = useSelector((state: RootState) => state.settings);
 	const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector(
 		(state: RootState) => state.food
 	);
@@ -165,9 +172,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		return 8;
 	}, [screenWidth]);
 
-	const dayItems = useMemo(() => {
-		const offers = selectedCanteenFoodOffers || [];
-		const hasOffers = offers.length > 0;
+        const dayItems = useMemo(() => {
+                const offers = selectedCanteenFoodOffers || [];
+                const hasOffers = offers.length > 0;
 
 		const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
 			if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
@@ -186,8 +193,21 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		const main = offers.map(o => ({ foodoffer: o, foodofferInfoItem: null }));
 		const end = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 
-		return [...start, ...main, ...end] as DayItem[];
-	}, [selectedCanteenFoodOffers, foodOffersInfoItems, selectedCanteen]);
+                return [...start, ...main, ...end] as DayItem[];
+        }, [selectedCanteenFoodOffers, foodOffersInfoItems, selectedCanteen]);
+
+        const cachedFoodOfferDates = useMemo(() => {
+                const canteenId = selectedCanteen?.id;
+                if (!canteenId) return [];
+
+                const dates = Object.keys(prefetchedFoodOffers[canteenId] || {});
+                return dates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        }, [prefetchedFoodOffers, selectedCanteen]);
+
+        const cachedFoodOfferDateLabels = useMemo(
+                () => cachedFoodOfferDates.map(date => `${getDayLabel(date)} (${date})`),
+                [cachedFoodOfferDates]
+        );
 
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 
@@ -536,22 +556,50 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		return `di-${index}`;
 	}, []);
 
-	const ListFooterComponent = useMemo(() => {
-		return (
-			<>
-				{afterElement && <View style={styles.elementContainer}>{afterElement && <CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>}
-				{!feedbackLabelsLoading && canteenFeedbackLabelsExist > 0 && (
+        const ListFooterComponent = useMemo(() => {
+                return (
+                        <>
+                                {afterElement && <View style={styles.elementContainer}>{afterElement && <CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>}
+                                {!feedbackLabelsLoading && canteenFeedbackLabelsExist > 0 && (
 					<View style={styles.feebackContainer}>
 						<View>
 							<Text style={{ ...styles.foodLabels, color: theme.screen.text }}>{translate(TranslationKeys.feedback_labels)}</Text>
-						</View>
-						{memoizedCanteenFeedbackLabels}
-					</View>
-				)}
-				<View style={{ height: 40 }} />
-			</>
-		);
-	}, [afterElement, feedbackLabelsLoading, canteenFeedbackLabelsExist, memoizedCanteenFeedbackLabels, foods_area_color, theme.screen.text, translate]);
+                                                </View>
+                                                {memoizedCanteenFeedbackLabels}
+                                        </View>
+                                )}
+                                {debugMode && (
+                                        <View
+                                                style={[
+                                                        styles.debugInfoContainer,
+                                                        { borderColor: theme.screen.icon, backgroundColor: theme.screen.background },
+                                                ]}
+                                        >
+                                                <Text style={{ ...styles.debugTitle, color: theme.screen.text }}>
+                                                        {translate(TranslationKeys.cached_foodoffers_days)}
+                                                </Text>
+                                                <Text style={{ ...styles.debugText, color: theme.screen.text }}>
+                                                        {cachedFoodOfferDateLabels.length
+                                                                ? cachedFoodOfferDateLabels.join(', ')
+                                                                : translate(TranslationKeys.cached_foodoffers_days_empty)}
+                                                </Text>
+                                        </View>
+                                )}
+                                <View style={{ height: 40 }} />
+                        </>
+                );
+        }, [
+                afterElement,
+                feedbackLabelsLoading,
+                canteenFeedbackLabelsExist,
+                memoizedCanteenFeedbackLabels,
+                foods_area_color,
+                theme.screen.text,
+                translate,
+                debugMode,
+                theme.screen.icon,
+                cachedFoodOfferDateLabels,
+        ]);
 
 	const ListEmptyComponent = useMemo(() => {
 		if (loading) {
