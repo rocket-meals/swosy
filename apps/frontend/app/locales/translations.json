@@ -139,6 +139,16 @@
     "tr": "Geliştirici",
     "zh": "开发者"
   },
+  "debit_mode": {
+    "de": "Debit-Modus",
+    "en": "Debit mode",
+    "ar": "وضع الخصم",
+    "es": "Modo de débito",
+    "fr": "Mode débit",
+    "ru": "Дебетовый режим",
+    "tr": "Borçlandırma modu",
+    "zh": "借记模式"
+  },
   "developerModeActive": {
     "de": "Entwicklermodus aktiv",
     "en": "Developer Mode Active",

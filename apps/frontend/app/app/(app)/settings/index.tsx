@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Keyboard, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Keyboard, SafeAreaView, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -18,7 +18,7 @@ import { type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/c
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
-import { SET_AMOUNT_COLUMNS_FOR_CARDS, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_AMOUNT_COLUMNS_FOR_CARDS, SET_DEBIT_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -65,7 +65,7 @@ const Settings = () => {
 	const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
 	const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
-	const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debitMode } = useSelector((state: RootState) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
@@ -182,12 +182,19 @@ const Settings = () => {
 		await performLogout(dispatch, router);
 	};
 
-	const toggleWebpForAssets = () => {
-		dispatch({
-			type: SET_USE_WEBP_FOR_ASSETS,
-			payload: !useWebpForAssets,
-		});
-	};
+        const toggleWebpForAssets = () => {
+                dispatch({
+                        type: SET_USE_WEBP_FOR_ASSETS,
+                        payload: !useWebpForAssets,
+                });
+        };
+
+        const toggleDebitMode = () => {
+                dispatch({
+                        type: SET_DEBIT_MODE,
+                        payload: !debitMode,
+                });
+        };
 
 	const handleCheckForUpdates = () => {
 		manualCheck();
@@ -315,14 +322,33 @@ const Settings = () => {
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
-						{/* Terms & Conditions */}
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate} handleFunction={() => {}} groupPosition="bottom" />
-					</View>
-					<TouchableOpacity
-						style={styles.footer}
-						onPress={() => {
-							if (isManagement) {
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
+                                                {/* Terms & Conditions */}
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate} handleFunction={() => {}} groupPosition="bottom" />
+                                        </View>
+                                        {isManagement && (
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<MaterialCommunityIcons name="bank-transfer" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.debit_mode)}
+                                                        value={debitMode ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
+                                                        rightElement={
+                                                                <Switch
+                                                                        value={debitMode}
+                                                                        onValueChange={toggleDebitMode}
+                                                                        trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
+                                                                        thumbColor={theme.screen.icon}
+                                                                        ios_backgroundColor={theme.screen.iconBg}
+                                                                />
+                                                        }
+                                                        handleFunction={toggleDebitMode}
+                                                        groupPosition="single"
+                                                />
+                                        )}
+                                        <TouchableOpacity
+                                                style={styles.footer}
+                                                onPress={() => {
+                                                        if (isManagement) {
 								dispatch({ type: UPDATE_DEVELOPER_MODE, payload: false });
 								dispatch({ type: UPDATE_MANAGEMENT, payload: false });
 							} else {

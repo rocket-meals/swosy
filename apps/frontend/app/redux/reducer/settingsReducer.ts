@@ -1,4 +1,4 @@
-import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_APARTMENTS_SORTING, SET_APP_SETTINGS, SET_CAMPUSES_SORTING, SET_COLOR, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SERVER_INFO, SET_SORTING, SET_USE_WEBP_FOR_ASSETS, SET_WARNING, SET_WIKIS, SET_WIKIS_PAGES } from '@/redux/Types/types';
+import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_APARTMENTS_SORTING, SET_APP_SETTINGS, SET_CAMPUSES_SORTING, SET_COLOR, SET_DEBIT_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SERVER_INFO, SET_SORTING, SET_USE_WEBP_FOR_ASSETS, SET_WARNING, SET_WIKIS, SET_WIKIS_PAGES } from '@/redux/Types/types';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 
 const initialState = {
@@ -15,10 +15,11 @@ const initialState = {
 	drawerPosition: 'left',
 	wikisPages: [],
 	wikis: [],
-	nickNameLocal: '',
-	amountColumnsForcard: 0,
-	useWebpForAssets: true,
-	foodOffersNextDayThreshold: null,
+        nickNameLocal: '',
+        amountColumnsForcard: 0,
+        useWebpForAssets: true,
+        foodOffersNextDayThreshold: null,
+        debitMode: false,
 };
 
 const settingReducer = (state = initialState, actions: any) => {
@@ -113,23 +114,29 @@ const settingReducer = (state = initialState, actions: any) => {
 				amountColumnsForcard: actions.payload,
 			};
 		}
-		case SET_USE_WEBP_FOR_ASSETS: {
-			return {
-				...state,
-				useWebpForAssets: actions.payload,
-			};
-		}
-		case SET_FOODOFFERS_NEXT_DAY_THRESHOLD: {
-			return {
-				...state,
-				foodOffersNextDayThreshold: actions.payload,
-			};
-		}
-		case CLEAR_SETTINGS: {
-			return {
-				...initialState,
-			};
-		}
+                case SET_USE_WEBP_FOR_ASSETS: {
+                        return {
+                                ...state,
+                                useWebpForAssets: actions.payload,
+                        };
+                }
+                case SET_FOODOFFERS_NEXT_DAY_THRESHOLD: {
+                        return {
+                                ...state,
+                                foodOffersNextDayThreshold: actions.payload,
+                        };
+                }
+                case SET_DEBIT_MODE: {
+                        return {
+                                ...state,
+                                debitMode: actions.payload,
+                        };
+                }
+                case CLEAR_SETTINGS: {
+                        return {
+                                ...initialState,
+                        };
+                }
 		default:
 			return state;
 	}

@@ -46,10 +46,11 @@ export type SettingsState = {
 	drawerPosition: 'left' | 'right' | 'system';
 	wikisPages: any[];
 	wikis: DatabaseTypes.Wikis[];
-	nickNameLocal: string;
-	amountColumnsForcard: number;
-	useWebpForAssets: boolean;
-	foodOffersNextDayThreshold: string | null;
+        nickNameLocal: string;
+        amountColumnsForcard: number;
+        useWebpForAssets: boolean;
+        foodOffersNextDayThreshold: string | null;
+        debitMode: boolean;
 }
 
 export type FoodState = {
