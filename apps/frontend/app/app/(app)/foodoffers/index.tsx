@@ -84,7 +84,7 @@ export const SHEET_COMPONENTS = {
 
 interface DayItem {
 	foodoffer: DatabaseTypes.Foodoffers | null;
-	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
+	foodofferInfoItem: DatabaseTypes.FoodoffersInfogetDayLabelItems | null;
 }
 
 
@@ -171,6 +171,19 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		if (screenWidth >= 300) return 10;
 		return 8;
 	}, [screenWidth]);
+
+	const getDayLabel = (date: string) => {
+		const currentDate = new Date();
+		const day = new Date(date);
+		currentDate.setHours(0, 0, 0, 0);
+		day.setHours(0, 0, 0, 0);
+		if (currentDate.toDateString() === day.toDateString()) return 'today';
+		currentDate.setDate(currentDate.getDate() - 1);
+		if (currentDate.toDateString() === day.toDateString()) return 'yesterday';
+		currentDate.setDate(currentDate.getDate() + 2);
+		if (currentDate.toDateString() === day.toDateString()) return 'tomorrow';
+		return format(day, 'dd.MM.yyyy');
+	};
 
         const dayItems = useMemo(() => {
                 const offers = selectedCanteenFoodOffers || [];
@@ -363,18 +376,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		dispatch({ type: SET_SELECTED_DATE, payload: currentDate.toISOString().split('T')[0] });
 	};
 
-	const getDayLabel = (date: string) => {
-		const currentDate = new Date();
-		const day = new Date(date);
-		currentDate.setHours(0, 0, 0, 0);
-		day.setHours(0, 0, 0, 0);
-		if (currentDate.toDateString() === day.toDateString()) return 'today';
-		currentDate.setDate(currentDate.getDate() - 1);
-		if (currentDate.toDateString() === day.toDateString()) return 'yesterday';
-		currentDate.setDate(currentDate.getDate() + 2);
-		if (currentDate.toDateString() === day.toDateString()) return 'tomorrow';
-		return format(day, 'dd.MM.yyyy');
-	};
+
 
 	const updateSort = (id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
 		const sortedOffers = sortFoodOffers(id, foodOffers, {
