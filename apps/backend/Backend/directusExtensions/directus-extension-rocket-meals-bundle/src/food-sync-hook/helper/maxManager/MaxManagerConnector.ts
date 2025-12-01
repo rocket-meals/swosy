@@ -427,7 +427,11 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                         // gehe durch alle span Elemente und nehme nur den Text
                         let mealName = mealNameElement.text().trim();
                         // remove " ," alle Leerzeigen + Komma irgendwo im Text
-                        mealName = StringHelper.replaceAll(mealName, " ,", "");
+                        mealName = StringHelper.replaceAllWithOptions({
+                          str: mealName,
+                          find: " ,",
+                          replace: "",
+                        });
 
 
                         // Preis
