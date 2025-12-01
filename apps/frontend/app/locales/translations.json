@@ -149,6 +149,26 @@
     "tr": "Hata ayıklama modu",
     "zh": "调试模式"
   },
+  "cached_foodoffers_days": {
+    "de": "Im Cache befindliche Foodoffers-Tage",
+    "en": "Cached food offers days",
+    "ar": "أيام عروض الطعام المخزنة مؤقتًا",
+    "es": "Días de ofertas de comida en caché",
+    "fr": "Jours d'offres alimentaires en cache",
+    "ru": "Дни предложений еды в кеше",
+    "tr": "Önbellekteki yemek teklifleri günleri",
+    "zh": "缓存的餐饮优惠日期"
+  },
+  "cached_foodoffers_days_empty": {
+    "de": "Keine Foodoffers im Cache",
+    "en": "No cached food offers",
+    "ar": "لا توجد عروض طعام مخزنة مؤقتًا",
+    "es": "No hay ofertas de comida en caché",
+    "fr": "Aucune offre alimentaire en cache",
+    "ru": "Нет предложений еды в кеше",
+    "tr": "Önbellekte yemek teklifi yok",
+    "zh": "没有缓存的餐饮优惠"
+  },
   "developerModeActive": {
     "de": "Entwicklermodus aktiv",
     "en": "Developer Mode Active",

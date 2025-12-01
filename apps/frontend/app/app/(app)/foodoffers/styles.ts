@@ -95,8 +95,24 @@ export default StyleSheet.create({
 		borderRadius: 8,
 		alignItems: 'center',
 	},
-	jumpButtonText: {
-		fontSize: 16,
-		fontFamily: 'Poppins_500Medium',
-	},
+        jumpButtonText: {
+                fontSize: 16,
+                fontFamily: 'Poppins_500Medium',
+        },
+        debugInfoContainer: {
+                width: '100%',
+                marginTop: 20,
+                padding: 12,
+                borderRadius: 12,
+                borderWidth: 1,
+                gap: 6,
+        },
+        debugTitle: {
+                fontSize: 16,
+                fontFamily: 'Poppins_700Bold',
+        },
+        debugText: {
+                fontSize: 14,
+                fontFamily: 'Poppins_400Regular',
+        },
 });
