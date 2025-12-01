@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.102",
-  "report_timestamp": "2025-12-01T13:06:53.367Z",
+  "report_timestamp": "2025-12-01T13:26:51.933Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 88,
-          "average": 1.5926735921268453,
-          "amountSavedValuesForKeys": 2913,
+          "average": 1.5900383141762453,
+          "amountSavedValuesForKeys": 2905,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 88,
-          "average": 1.60939226519337,
-          "amountSavedValuesForKeys": 2913,
+          "average": 1.6067477876106195,
+          "amountSavedValuesForKeys": 2905,
           "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 8173,
-        "detection_time_ms": 57,
+        "ast_generation_time_ms": 9593,
+        "detection_time_ms": 48,
         "machine_information": {
           "os": "Darwin",
           "os_release": "22.5.0",
           "os_platform": "darwin",
           "os_arch": "x64",
-          "os_uptime": 12974,
-          "os_memory_free": 948617216,
+          "os_uptime": 14172,
+          "os_memory_free": 2623569920,
           "os_memory_total": 34359738368,
           "os_cpu_cores": 12,
           "os_cpu_model": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
@@ -44,26 +44,26 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 31,
-    "amount_files_with_data_clumps": 24,
+    "amount_classes_or_interfaces_with_data_clumps": 27,
+    "amount_files_with_data_clumps": 20,
     "amount_methods_with_data_clumps": 11,
-    "fields_to_fields_data_clump": 38,
+    "fields_to_fields_data_clump": 34,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 38,
-    "amount_data_clumps": 76
+    "amount_data_clumps": 72
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "b712e74e4a3ae65076e77e207dad5c84ed635a43",
-    "project_commit_hash": "b712e74e4a3ae65076e77e207dad5c84ed635a43",
+    "project_version": "f30efdcc839f44ceec3f017fa972f22ec30ab8ab",
+    "project_commit_hash": "f30efdcc839f44ceec3f017fa972f22ec30ab8ab",
     "project_tag": null,
-    "project_commit_date": "1764582160",
+    "project_commit_date": "1764595474",
     "additional": {},
     "number_of_files": 349,
-    "number_of_classes_or_interfaces": 713,
+    "number_of_classes_or_interfaces": 711,
     "number_of_methods": 1188,
-    "number_of_data_fields": 2913,
+    "number_of_data_fields": 2905,
     "number_of_method_parameters": 1310
   },
   "detector": {
@@ -2512,132 +2512,6 @@
         }
       }
     },
-    "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-teamIdclientIdkeyId": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-teamIdclientIdkeyId",
-      "probability": 1,
-      "from_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts",
-      "from_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig",
-      "from_class_or_interface_name": "AppleClientSecretConfig",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts",
-      "to_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams",
-      "to_class_or_interface_name": "AppleJWTParams",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/teamId": {
-          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/teamId",
-          "name": "teamId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/teamId",
-            "name": "teamId",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/clientId": {
-          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/clientId",
-          "name": "clientId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/clientId",
-            "name": "clientId",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/keyId": {
-          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/keyId",
-          "name": "keyId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/keyId",
-            "name": "keyId",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-teamIdclientIdkeyId": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams-apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig-teamIdclientIdkeyId",
-      "probability": 1,
-      "from_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts",
-      "from_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams",
-      "from_class_or_interface_name": "AppleJWTParams",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts",
-      "to_class_or_interface_key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig",
-      "to_class_or_interface_name": "AppleClientSecretConfig",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/teamId": {
-          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/teamId",
-          "name": "teamId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/teamId",
-            "name": "teamId",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/clientId": {
-          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/clientId",
-          "name": "clientId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/clientId",
-            "name": "clientId",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/keyId": {
-          "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts/interface/AppleJWTParams/memberField/keyId",
-          "name": "keyId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts/interface/AppleClientSecretConfig/memberField/keyId",
-            "name": "keyId",
-            "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
     "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType-amount_positive_newamount_negative_newamount_total_newamount_positiveamount_negativeamount_totalstatus_totalstatus_new": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportCanteenEntryLabelsType-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/interface/ReportFoodEntryLabelType-amount_positive_newamount_negative_newamount_total_newamount_positiveamount_negativeamount_totalstatus_totalstatus_new",
@@ -3285,132 +3159,6 @@
             "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts/interface/FoodoffersTypeForParser/memberField/canteen_external_identifier",
             "name": "canteen_external_identifier",
             "type": "string",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-widthheightquality": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-widthheightquality",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform",
-      "from_class_or_interface_name": "ImageTransform",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions",
-      "to_class_or_interface_name": "DirectusFileTransformOptions",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/width": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/width",
-          "name": "width",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/width",
-            "name": "width",
-            "type": "number",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/height": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/height",
-          "name": "height",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/height",
-            "name": "height",
-            "type": "number",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/quality": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/quality",
-          "name": "quality",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/quality",
-            "name": "quality",
-            "type": "number",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        }
-      }
-    },
-    "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-widthheightquality": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform-widthheightquality",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions",
-      "from_class_or_interface_name": "DirectusFileTransformOptions",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform",
-      "to_class_or_interface_name": "ImageTransform",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/width": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/width",
-          "name": "width",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/width",
-            "name": "width",
-            "type": "number",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/height": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/height",
-          "name": "height",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/height",
-            "name": "height",
-            "type": "number",
-            "modifiers": [],
-            "position": {}
-          },
-          "position": {}
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/quality": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DirectusFilesAssetHelper.ts/interface/DirectusFileTransformOptions/memberField/quality",
-          "name": "quality",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/AssetHelperDirectusBackend.ts/interface/ImageTransform/memberField/quality",
-            "name": "quality",
-            "type": "number",
             "modifiers": [],
             "position": {}
           },
