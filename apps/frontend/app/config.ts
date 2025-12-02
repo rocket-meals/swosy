@@ -12,6 +12,10 @@ export type CustomerConfig = {
 	baseUrl: string;
 	server_url: string;
 	appleAppId?: string;
+	images: {
+		company_logo_source_path: string;
+		icon_logo_source_path: string;
+	}
 };
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getBuildNumber
@@ -53,6 +57,10 @@ export const devConfig: CustomerConfig = {
 	baseUrl: '/rocket-meals',
 	server_url: ServerHelper.TEST_SERVER_CONFIG.server_url,
 	appleAppId: '6483930801',
+	images: {
+		company_logo_source_path: 'assets/images/customers/rocket-meals/company.png',
+		icon_logo_source_path: 'assets/images/customers/rocket-meals/icon.png',
+	},
 };
 
 export const swosyConfig: CustomerConfig = {
@@ -66,6 +74,10 @@ export const swosyConfig: CustomerConfig = {
 	baseUrl: '/swosy',
 	server_url: ServerHelper.SWOSY_SERVER_CONFIG.server_url,
 	appleAppId: '6667117575',
+	images: {
+		company_logo_source_path: 'assets/images/customers/swosy/company.png',
+		icon_logo_source_path: 'assets/images/customers/swosy/icon.png',
+	}
 };
 
 export const studiFutterConfig: CustomerConfig = {
@@ -79,6 +91,10 @@ export const studiFutterConfig: CustomerConfig = {
 	baseUrl: '/studi-futter',
 	server_url: ServerHelper.STUDI_FUTTER_SERVER_CONFIG.server_url,
 	appleAppId: '1548108390',
+	images: {
+		company_logo_source_path: 'assets/images/customers/studi-futter/company.png',
+		icon_logo_source_path: 'assets/images/customers/studi-futter/icon.png',
+	}
 };
 
 export const configMuenster: CustomerConfig = {
@@ -91,6 +107,10 @@ export const configMuenster: CustomerConfig = {
 	bundleIdAndroid:  undefined,
 	baseUrl: '/muenster',
 	server_url: ServerHelper.SERVER_CONFIG_MUENSTER.server_url,
+	images: {
+		company_logo_source_path: 'assets/images/customers/rocket-meals/company.png',
+		icon_logo_source_path: 'assets/images/customers/rocket-meals/icon.png',
+	}
 };
 
 export function getCustomerConfig(): CustomerConfig {
