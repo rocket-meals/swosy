@@ -46,9 +46,9 @@ export default StyleSheet.create({
                 alignItems: 'center',
         },
         aiBadgeContainer: {
-                paddingHorizontal: 10,
-                paddingVertical: 6,
-                borderRadius: 12,
+                width: 35,
+                height: 35,
+                borderRadius: 50,
                 backgroundColor: 'rgba(0,0,0,0.6)',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -108,7 +108,8 @@ export default StyleSheet.create({
         aiGeneratedBadgeText: {
                 color: '#FFF',
                 fontSize: 12,
-                fontFamily: 'Poppins_600SemiBold',
+                fontFamily: 'Poppins_700Bold',
                 textTransform: 'uppercase',
+                textAlign: 'center',
         },
 });
