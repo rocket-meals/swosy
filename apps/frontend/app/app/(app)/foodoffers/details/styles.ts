@@ -8,17 +8,34 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		paddingBottom: 20,
 	},
-	header: {
-		width: '100%',
-		height: 60,
-		justifyContent: 'center',
-		gap: 20,
-	},
-	headerRow: {
-		width: '100%',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
+        header: {
+                width: '100%',
+                height: 60,
+                justifyContent: 'center',
+                gap: 20,
+        },
+        backButtonContainer: {
+                width: '100%',
+                alignItems: 'flex-start',
+                marginBottom: 10,
+        },
+        backButton: {
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 12,
+        },
+        backButtonText: {
+                fontFamily: 'Poppins_500Medium',
+                fontSize: 14,
+        },
+        headerRow: {
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
 	},
 	col1: {
 		flexDirection: 'row',

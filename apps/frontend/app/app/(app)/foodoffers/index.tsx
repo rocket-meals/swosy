@@ -17,7 +17,7 @@ import {DrawerContentComponentProps, DrawerNavigationProp} from '@react-navigati
 import {isWeb} from '@/constants/Constants';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
-import {useFocusEffect, useNavigation, useRouter} from 'expo-router';
+import {useFocusEffect, useLocalSearchParams, useNavigation, useRouter} from 'expo-router';
 import {useDispatch, useSelector} from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
@@ -89,11 +89,12 @@ interface DayItem {
 
 
 const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
-	const dispatch = useDispatch();
-	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const router = useRouter();
-	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
+        const dispatch = useDispatch();
+        const { theme } = useTheme();
+        const { translate } = useLanguage();
+        const router = useRouter();
+        const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
+        const { selectedDate: selectedDateParam } = useLocalSearchParams();
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const eventSheetRef = useRef<BottomSheet>(null);
 	const businessHoursHelper = new BusinessHoursHelper();
@@ -131,16 +132,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { profile, user } = useSelector((state: RootState) => state.authReducer);
 	const { appElements } = useSelector((state: RootState) => state.appElements);
 	const { selectedCanteenFoodOffers, canteenFeedbackLabels } = useSelector((state: RootState) => state.canteenReducer);
-	const selectedCanteen = useSelectedCanteen();
-	useFoodOffersDefaultDate();
-	const kioskMode = useKioskMode();
+        const selectedCanteen = useSelectedCanteen();
+        useFoodOffersDefaultDate();
+        const kioskMode = useKioskMode();
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+        const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const { hasUnreadChats } = useChatUnreadStatus();
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 
 	const MIN_CARD_WIDTH = 280;
-	const numColumns = useMemo(() => {
+        const numColumns = useMemo(() => {
 		if (amountColumnsForcard && amountColumnsForcard > 0) {
 			return amountColumnsForcard;
 		}
@@ -148,8 +149,26 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		if (!listWidth) return 2;
 
 		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
-		return Math.max(2, cols);
-	}, [amountColumnsForcard, listWidth]);
+                return Math.max(2, cols);
+        }, [amountColumnsForcard, listWidth]);
+
+        const normalizedSelectedDateParam = useMemo(() => {
+                const paramValue = Array.isArray(selectedDateParam) ? selectedDateParam[0] : selectedDateParam;
+
+                if (!paramValue || typeof paramValue !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(paramValue)) {
+                        return null;
+                }
+
+                const parsedDate = new Date(paramValue);
+
+                return Number.isNaN(parsedDate.getTime()) ? null : paramValue;
+        }, [selectedDateParam]);
+
+        useEffect(() => {
+                if (normalizedSelectedDateParam && normalizedSelectedDateParam !== selectedDate) {
+                        dispatch({ type: SET_SELECTED_DATE, payload: normalizedSelectedDateParam });
+                }
+        }, [dispatch, normalizedSelectedDateParam, selectedDate]);
 
 	const cardWidth = useMemo(() => {
 		if (!listWidth || !numColumns) return undefined;
