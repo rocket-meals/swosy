@@ -213,6 +213,17 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                       )}
                     </TouchableOpacity>
 
+                    {foodItem?.image_generated && (
+                      <TouchableOpacity
+                        style={styles.aiBadgeContainer}
+                        onPress={() => handleMenuSheet('aiGeneratedInfo')}
+                      >
+                        <Text style={styles.aiGeneratedBadgeText}>
+                          {translate(TranslationKeys.ai_generated_badge_label)}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
                     {dislikedMarkings.length > 0 && (
                       <TouchableOpacity style={styles.favContainerWarn} onPress={handleOpenSheet}>
                         <MaterialIcons name="warning" size={20} color={foods_area_color} />
