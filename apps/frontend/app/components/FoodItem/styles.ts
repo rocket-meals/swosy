@@ -45,6 +45,14 @@ export default StyleSheet.create({
                 justifyContent: 'center',
                 alignItems: 'center',
         },
+        aiBadgeContainer: {
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+                borderRadius: 12,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                justifyContent: 'center',
+                alignItems: 'center',
+        },
         categoriesContainer: {
                 gap: 5,
                 width: 35,
