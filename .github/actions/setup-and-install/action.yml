@@ -52,7 +52,11 @@ runs:
     - name: 🖼️ Generate customer icons
       shell: bash
       working-directory: ./apps/frontend
+      env:
+        NODE_PATH: ./app/node_modules
       run: |
+        set -euxo pipefail
+
         sudo apt-get update
         sudo apt-get install -y imagemagick
 
@@ -68,6 +72,7 @@ runs:
         console.log(config.images.icon_logo_source_path);
         EOF
         )
+        echo "ICON_PATH=${ICON_PATH}"
 
         COMPANY_PATH=$(node - <<'EOF'
         require('ts-node').register({
@@ -81,5 +86,6 @@ runs:
         console.log(config.images.company_logo_source_path);
         EOF
         )
+        echo "COMPANY_PATH=${COMPANY_PATH}"
 
         ./generateIcons.sh "./app/${ICON_PATH}" "./app/${COMPANY_PATH}" "./app/assets/images/"
