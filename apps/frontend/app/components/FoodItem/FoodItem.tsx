@@ -43,7 +43,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const foodItem = food as DatabaseTypes.Foods;
     const { language, serverInfo, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
     const { user, profile, isManagement } = useSelector((state: RootState) => state.authReducer);
-    const { selectedDate } = useSelector((state: RootState) => state.food);
 
     const previousFeedback = useSelector(state => selectPreviousFeedback(state as RootState, foodItem.id));
     const markings = useSelector(selectMarkings);
@@ -101,19 +100,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       [toast]
     );
 
-    const handleNavigation = useCallback(
-      (id: string, foodId: string) => {
-        const today = new Date().toISOString().split('T')[0];
-        const params: Record<string, string> = { id, foodId };
-
-        if (selectedDate && selectedDate !== today) {
-          params.selectedDate = selectedDate;
-        }
-
-        router.push({ pathname: '/(app)/foodoffers/details', params });
-      },
-      [selectedDate]
-    );
+    const handleNavigation = useCallback((id: string, foodId: string) => {
+      router.push({ pathname: '/(app)/foodoffers/details', params: { id, foodId } });
+    }, []);
 
     const handleOpenSheet = useCallback(() => {
       dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
