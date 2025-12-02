@@ -44,7 +44,7 @@ const selectPreviousFeedback = createSelector(
 export default function FoodDetailsScreen() {
         useSetPageTitle(TranslationKeys.food_details);
 
-        const { id, foodId, selectedDate: selectedDateParam } = useLocalSearchParams();
+        const { id, foodId } = useLocalSearchParams();
         const offerId = Array.isArray(id) ? id[0] : id;
         const initialFoodId = Array.isArray(foodId) ? foodId[0] : foodId;
 
@@ -59,25 +59,11 @@ export default function FoodDetailsScreen() {
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 	const { foodAttributeGroups } = useSelector((state: RootState) => state.foodAttributes);
-        const { foodCategories, foodOfferCategories, selectedDate } = useSelector((state: RootState) => state.food);
-        const [pushTokenObj, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
-        const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-        const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-        const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
-
-        const normalizedSelectedDateFromParams = useMemo(() => {
-                const value = Array.isArray(selectedDateParam) ? selectedDateParam[0] : selectedDateParam;
-
-                if (!value || typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-                        return undefined;
-                }
-
-                const parsedDate = new Date(value);
-
-                return Number.isNaN(parsedDate.getTime()) ? undefined : value;
-        }, [selectedDateParam]);
-
-        const effectiveSelectedDate = normalizedSelectedDateFromParams || selectedDate;
+	const { foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+	const [pushTokenObj, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
+	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
 
 	const [warning, setWarning] = useState(false);
 	const selectedCanteen = useSelectedCanteen();
@@ -395,10 +381,10 @@ export default function FoodDetailsScreen() {
 		}
 	}, []);
 
-        const updateNotification = async () => {
-                if (!user?.id) {
-                        setWarning(true);
-                        return;
+	const updateNotification = async () => {
+		if (!user?.id) {
+			setWarning(true);
+			return;
 		}
 		if (isSmartPhone()) {
 			const result = await NotificationHelper.getDeviceNotificationPermission();
@@ -430,23 +416,8 @@ export default function FoodDetailsScreen() {
 
 	const themeStyles = {
 		backgroundColor: foods_area_color,
-                borderColor: foods_area_color,
-        };
-
-        const handleNavigateBack = useCallback(() => {
-                const today = new Date().toISOString().split('T')[0];
-                const params =
-                        effectiveSelectedDate && effectiveSelectedDate !== today
-                                ? { selectedDate: effectiveSelectedDate }
-                                : undefined;
-
-                if (router.canGoBack()) {
-                        router.back();
-                        return;
-                }
-
-                router.navigate({ pathname: '/(app)/foodoffers', params });
-        }, [effectiveSelectedDate]);
+		borderColor: foods_area_color,
+	};
 
 	return (
 		<SafeAreaView
@@ -466,32 +437,18 @@ export default function FoodDetailsScreen() {
 					backgroundColor: theme.screen.background,
 				}}
 			>
-                                <View
-                                        style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                alignItems: 'center',
-                                        }}
-                                >
-                                        <View style={styles.backButtonContainer}>
-                                                <TouchableOpacity
-                                                        onPress={handleNavigateBack}
-                                                        style={{
-                                                                ...styles.backButton,
-                                                                backgroundColor: theme.screen.iconBg,
-                                                        }}
-                                                >
-                                                        <MaterialIcons name="arrow-back" size={20} color={theme.screen.text} />
-                                                        <Text style={{ ...styles.backButtonText, color: theme.screen.text }}>
-                                                                {translate(TranslationKeys.navigate_back)}
-                                                        </Text>
-                                                </TouchableOpacity>
-                                        </View>
-                                        {isWeb ? (
-                                                <>
-                                                        <View
-                                                                style={{
-                                                                        ...styles.featuredContainer,
+				<View
+					style={{
+						width: '100%',
+						height: '100%',
+						alignItems: 'center',
+					}}
+				>
+					{isWeb ? (
+						<>
+							<View
+								style={{
+									...styles.featuredContainer,
 									width: screenWidth > 1000 ? '80%' : '100%',
 									flexDirection: screenWidth > 1000 ? 'row' : 'column',
 								}}
