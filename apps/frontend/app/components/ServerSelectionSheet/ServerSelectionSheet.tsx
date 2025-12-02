@@ -1,13 +1,13 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { useTheme } from '@/hooks/useTheme';
-import { useLanguage } from '@/hooks/useLanguage';
-import { isWeb } from '@/constants/Constants';
+import {Text, View} from 'react-native';
+import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import {useTheme} from '@/hooks/useTheme';
+import {useLanguage} from '@/hooks/useLanguage';
+import {isWeb} from '@/constants/Constants';
 import styles from './styles';
 import ServerOption from '@/components/ServerOption/ServerOption';
-import { CustomerConfig, devConfig, configMuenster, studiFutterConfig, swosyConfig } from '@/config';
-import { TranslationKeys } from '@/locales/keys';
+import {CustomerConfig, getCustomerConfigurations} from '@/config';
+import {TranslationKeys} from '@/locales/keys';
 
 export interface ServerSelectionSheetProps {
 	closeSheet: () => void;
@@ -18,7 +18,7 @@ export interface ServerSelectionSheetProps {
 const ServerSelectionSheet: React.FC<ServerSelectionSheetProps> = ({ closeSheet, selectedServer, onSelect }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const servers: CustomerConfig[] = [devConfig, swosyConfig, studiFutterConfig, configMuenster];
+	const servers: CustomerConfig[] = getCustomerConfigurations();
 
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>

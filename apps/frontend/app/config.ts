@@ -1,5 +1,6 @@
 // This file can not have any imports. See app.config.ts as it will transpile this file to  JavaScript
 import { ServerHelper } from 'repo-depkit-common';
+import {ImageSourcePropType} from "react-native";
 
 export type CustomerConfig = {
 	projectName: string;
@@ -14,7 +15,9 @@ export type CustomerConfig = {
 	appleAppId?: string;
 	images: {
 		company_logo_source_path: string;
+		company_logo_source_get_for_react_native: () => ImageSourcePropType;
 		icon_logo_source_path: string;
+		icon_logo_source_get_for_react_native: () => ImageSourcePropType;
 	}
 };
 
@@ -46,6 +49,16 @@ export function getIosBuildNumber() {
 	return getBuildNumber().toString();
 }
 
+export function getAppIconInsideExpoLocalSaved(): ImageSourcePropType {
+	const customerConfig: CustomerConfig = getCustomerConfig();
+	return customerConfig.images.icon_logo_source_get_for_react_native();
+}
+
+export function getCompanyLogoLocalSaved(): ImageSourcePropType {
+	const customerConfig: CustomerConfig = getCustomerConfig();
+	return customerConfig.images.company_logo_source_get_for_react_native();
+}
+
 export const devConfig: CustomerConfig = {
 	projectName: 'Rocket Meals',
 	projectSlug: 'rocket-meals-dev',
@@ -59,7 +72,9 @@ export const devConfig: CustomerConfig = {
 	appleAppId: '6483930801',
 	images: {
 		company_logo_source_path: 'assets/images/customers/rocket-meals/company.png',
+		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/rocket-meals/company.png')},
 		icon_logo_source_path: 'assets/images/customers/rocket-meals/icon.png',
+		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/swosy/icon.png')},
 	},
 };
 
@@ -76,7 +91,9 @@ export const swosyConfig: CustomerConfig = {
 	appleAppId: '6667117575',
 	images: {
 		company_logo_source_path: 'assets/images/customers/swosy/company.png',
+		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/swosy/company.png')},
 		icon_logo_source_path: 'assets/images/customers/swosy/icon.png',
+		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/swosy/icon.png')},
 	}
 };
 
@@ -93,7 +110,9 @@ export const studiFutterConfig: CustomerConfig = {
 	appleAppId: '1548108390',
 	images: {
 		company_logo_source_path: 'assets/images/customers/studi-futter/company.png',
+		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/company.png')},
 		icon_logo_source_path: 'assets/images/customers/studi-futter/icon.png',
+		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/icon.png')},
 	}
 };
 
@@ -109,9 +128,20 @@ export const configMuenster: CustomerConfig = {
 	server_url: ServerHelper.SERVER_CONFIG_MUENSTER.server_url,
 	images: {
 		company_logo_source_path: 'assets/images/customers/rocket-meals/company.png',
+		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/rocket-meals/company.png')},
 		icon_logo_source_path: 'assets/images/customers/rocket-meals/icon.png',
+		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/rocket-meals/icon.png')},
 	}
 };
+
+export function getCustomerConfigurations(): CustomerConfig[] {
+	return [
+		devConfig,
+		swosyConfig,
+		studiFutterConfig,
+		configMuenster,
+	];
+}
 
 export function getCustomerConfig(): CustomerConfig {
 	return devConfig;

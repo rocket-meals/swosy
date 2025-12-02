@@ -1,25 +1,26 @@
-import { Animated, Dimensions, Easing, Image, ScrollView, Text, View } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {Animated, Dimensions, Easing, Image, ScrollView, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import styles from './styles';
-import { useTheme } from '@/hooks/useTheme';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { getImageUrl, showDayPlanPrice, showFormatedPrice } from '@/constants/HelperFunctions';
-import { getTextFromTranslation } from '@/helper/resourceHelper';
-import { myContrastColor } from '@/helper/ColorHelper';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useLocalSearchParams } from 'expo-router';
+import {useTheme} from '@/hooks/useTheme';
+import {useDispatch, useSelector} from 'react-redux';
+import {fetchFoodsByCanteen} from '@/redux/actions/FoodOffers/FoodOffers';
+import {getImageUrl, showDayPlanPrice, showFormatedPrice} from '@/constants/HelperFunctions';
+import {getTextFromTranslation} from '@/helper/resourceHelper';
+import {myContrastColor} from '@/helper/ColorHelper';
+import {useLanguage} from '@/hooks/useLanguage';
+import {useLocalSearchParams} from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import MarkingIcon from '@/components/MarkingIcon';
 import CompanyImage from '@/components/CompanyImage';
-import { TranslationKeys } from '@/locales/keys';
+import {TranslationKeys} from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
-import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
-import { DatabaseTypes } from 'repo-depkit-common';
-import { SET_FOOD_CATEGORIES, SET_FOOD_OFFERS_CATEGORIES } from '@/redux/Types/types';
-import { FoodOffersCategoriesHelper } from '@/redux/actions/FoodOffersCategories/FoodOffersCategories';
-import { PriceGroupKey } from '@/app/(app)/settings/types';
+import {RootState} from '@/redux/reducer';
+import {FoodCategoriesHelper} from '@/redux/actions/FoodCategories/FoodCategories';
+import {DatabaseTypes} from 'repo-depkit-common';
+import {SET_FOOD_CATEGORIES, SET_FOOD_OFFERS_CATEGORIES} from '@/redux/Types/types';
+import {FoodOffersCategoriesHelper} from '@/redux/actions/FoodOffersCategories/FoodOffersCategories';
+import {PriceGroupKey} from '@/app/(app)/settings/types';
+import {getAppIconInsideExpoLocalSaved} from "@/config";
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.big_screen);
@@ -535,7 +536,7 @@ const Index = () => {
 			{foods && foods?.length < 1 && (
 				<View style={styles.emptyContainer}>
 					<View style={{ flex: 1 }}>
-						<Image source={require('@/assets/images/icon.png')} resizeMode="cover" />
+						<Image source={getAppIconInsideExpoLocalSaved()} resizeMode="cover" />
 					</View>
 				</View>
 			)}
