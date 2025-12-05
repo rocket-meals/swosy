@@ -113,6 +113,17 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     return combined_marking_ids_as_string;
   }
 
+  /**
+   * Schmidt 05.12.2025 E-Mail
+   * CO2 Bewertung Kennzeichnungen sollen nicht zur Food Id Bildung beitragen
+   * @param markingExternalIdentifiers
+   */
+  private filterMarkingsNotImportantForFoodID(markingExternalIdentifiers: string[]): string[] {
+    return markingExternalIdentifiers.filter(marking => {
+      return !marking.startsWith(FoodTL1ParserHannover.CO2_BEWERTUNG_PREFIX_IDENTIFIER);
+    });
+  }
+
   static getHannoverFoodIdByRecipeIdsAndMarkings(recipe_ids: string[] | number[], marking_ids: string[]) {
     let sorted_recipe_ids = FoodTL1Parser.getSortedRecipeIdFromListOfRecipeIds(recipe_ids);
     let combined_marking_ids_as_string = FoodTL1ParserHannover.getCombinedSortedMarkingsExternalIdentifiersAsString(marking_ids);
@@ -139,7 +150,9 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     }
     let total_marking_external_identifier_list = this._getMarkingsExternalIdentifiersFromRawFoodoffer(firstRawTL1Foodoffer);
 
-    let food_id = FoodTL1ParserHannover.getHannoverFoodIdByRecipeIdsAndMarkings(recipe_ids, total_marking_external_identifier_list);
+    let filtered_marking_identifiers_for_food_id = this.filterMarkingsNotImportantForFoodID(total_marking_external_identifier_list);
+
+    let food_id = FoodTL1ParserHannover.getHannoverFoodIdByRecipeIdsAndMarkings(recipe_ids, filtered_marking_identifiers_for_food_id);
 
     return food_id;
   }
