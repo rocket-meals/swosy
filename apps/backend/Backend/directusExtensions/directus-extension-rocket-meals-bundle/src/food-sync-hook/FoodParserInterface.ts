@@ -1,6 +1,7 @@
 import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
 import {DatabaseTypes, DateHelper, LanguageCodes} from 'repo-depkit-common';
 import {MarkingsTypeForParser} from './MarkingParserInterface';
+import {HashHelper} from '../helpers/HashHelper';
 
 export type FoodParseFoodAttributeValueType = {
   external_identifier: string;
@@ -161,6 +162,19 @@ export class FoodParserHelper {
     }
     const foodsInformationList = Object.values(foodsInformationDict);
     return foodsInformationList
+  }
+
+  static getFoodofferIdFromFoodofferInformationForParser(foodofferInformationForParser: FoodoffersTypeForParser): string {
+    const normalizedMarkings = [...foodofferInformationForParser.marking_external_identifiers].sort();
+    const normalizedDate = DateHelper.foodofferDateTypeToString(foodofferInformationForParser.date);
+
+    const normalizedFoodofferInformationForParser = {
+      ...foodofferInformationForParser,
+      marking_external_identifiers: normalizedMarkings,
+      date: normalizedDate,
+    };
+
+    return HashHelper.hashFromObject(normalizedFoodofferInformationForParser);
   }
 }
 
