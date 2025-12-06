@@ -1,5 +1,5 @@
 import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
-import {DatabaseTypes, LanguageCodes} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, LanguageCodes} from 'repo-depkit-common';
 import {MarkingsTypeForParser} from './MarkingParserInterface';
 
 export type FoodParseFoodAttributeValueType = {
@@ -49,6 +49,77 @@ export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
 };
 
 export class FoodParserHelper {
+  static getFoodofferForParserInformation(foodoffer: DatabaseTypes.Foodoffers): FoodoffersTypeForParser | null {
+    const dateString = foodoffer.date;
+    if (!dateString) {
+      return null;
+    }
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+
+    const foodId = typeof foodoffer.food === 'object' ? foodoffer.food?.id : foodoffer.food;
+    if (!foodId) {
+      return null;
+    }
+
+    const canteenExternalIdentifier =
+      typeof foodoffer.canteen === 'object' ? foodoffer.canteen?.external_identifier : null;
+    if (!canteenExternalIdentifier) {
+      return null;
+    }
+
+    const categoryExternalIdentifier =
+      typeof foodoffer.foodoffer_category === 'object'
+        ? foodoffer.foodoffer_category?.external_identifier || null
+        : null;
+
+    const {id, user_created, user_updated, canteen, food, markings, date: _, environmental_impact, nutrition, prices, foodoffer_category, category, attribute_values, ...rest} = foodoffer;
+
+    const basicFoodofferData: FoodofferTypeWithBasicData = {
+      ...rest,
+      alias:
+        foodoffer.alias ?? (typeof foodoffer.food === 'object' && foodoffer.food ? foodoffer.food.alias ?? null : null),
+      foodoffer_components: foodoffer.foodoffer_components ?? [],
+    } as FoodofferTypeWithBasicData;
+
+    const attribute_values: FoodParseFoodAttributesType = [];
+    for (const attributeValue of (foodoffer.attribute_values as DatabaseTypes.FoodsAttributesValues[]) || []) {
+      const foodAttribute = attributeValue.food_attribute as DatabaseTypes.FoodsAttributes | null | undefined;
+      const externalIdentifier =
+        typeof foodAttribute === 'object' && foodAttribute ? foodAttribute.external_identifier || null : null;
+      if (!externalIdentifier) {
+        continue;
+      }
+
+      const {id, food_attribute, food_id, foodoffer_id, ...attributeValueWithoutRelations} = attributeValue;
+      attribute_values.push({
+        external_identifier: externalIdentifier,
+        attribute_value: attributeValueWithoutRelations,
+      });
+    }
+
+    const marking_external_identifiers: string[] = [];
+    for (const markingRelation of (foodoffer.markings as DatabaseTypes.FoodoffersMarkings[]) || []) {
+      const marking = markingRelation.markings_id as DatabaseTypes.Markings | null | undefined;
+      if (typeof marking === 'object' && marking?.external_identifier) {
+        marking_external_identifiers.push(marking.external_identifier);
+      }
+    }
+
+    return {
+      basicFoodofferData,
+      attribute_values,
+      marking_external_identifiers,
+      category_external_identifier: categoryExternalIdentifier,
+      date: DateHelper.getFoodofferDateTypeFromDate(date),
+      canteen_external_identifier: canteenExternalIdentifier,
+      food_id: foodId,
+    };
+  }
+
   static getFoodTypeForParserFromFoodofferTypeForParser(foodoffer: FoodoffersTypeForParser): FoodsInformationTypeForParser | null {
     const food_id = foodoffer.food_id;
     if (!food_id) {
