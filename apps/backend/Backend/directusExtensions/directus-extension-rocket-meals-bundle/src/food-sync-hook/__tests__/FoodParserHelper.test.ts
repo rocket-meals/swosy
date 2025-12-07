@@ -9,7 +9,6 @@ const baseFoodofferInformationForParser: FoodoffersTypeForParser = {
     price_employee: 4.5,
     price_guest: 6,
     price_student: 3.5,
-    prices: '{}',
     foodoffer_components: [],
   },
   attribute_values: [],
