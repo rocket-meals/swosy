@@ -76,7 +76,7 @@ export class FoodParserHelper {
         ? foodoffer.foodoffer_category?.external_identifier || null
         : null;
 
-    const {id, user_created, user_updated, canteen, food, markings, date: _, environmental_impact, nutrition, prices, foodoffer_category, category, attribute_values, ...rest} = foodoffer;
+    const {id, user_created, user_updated, canteen, food, markings, date: _, foodoffer_category, category, ...rest} = foodoffer;
 
     const basicFoodofferData: FoodofferTypeWithBasicData = {
       ...rest,
