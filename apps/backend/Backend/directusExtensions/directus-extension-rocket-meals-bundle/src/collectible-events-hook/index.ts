@@ -4,10 +4,16 @@ import { MyDefineHook } from '../helpers/MyDefineHook';
 
 const HOOK_NAME = 'collectible-events-hook';
 
-function normalizePayload(
-  payload: Partial<DatabaseTypes.CollectibleEvents> | Partial<DatabaseTypes.CollectibleEvents>[]
-) {
-  return Array.isArray(payload) ? payload : [payload];
+function normalizePayload(payload: unknown): Partial<DatabaseTypes.CollectibleEvents>[] {
+  if (Array.isArray(payload)) {
+    return payload.filter((item): item is Partial<DatabaseTypes.CollectibleEvents> => typeof item === 'object' && item !== null);
+  }
+
+  if (typeof payload === 'object' && payload !== null) {
+    return [payload as Partial<DatabaseTypes.CollectibleEvents>];
+  }
+
+  return [];
 }
 
 function calculateMaxPoints(eventData: Partial<DatabaseTypes.CollectibleEvents>): number {
@@ -21,6 +27,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
   const collectibleEventsHelper = myDatabaseHelper.getCollectibleEventsHelper();
 
   filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.create', async payload => {
+    const isArrayPayload = Array.isArray(payload);
     const payloadArray = normalizePayload(payload);
 
     const updatedPayload = payloadArray.map(item => {
@@ -31,10 +38,11 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       };
     });
 
-    return Array.isArray(payload) ? updatedPayload : updatedPayload[0];
+    return isArrayPayload ? updatedPayload : updatedPayload[0];
   });
 
   filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.update', async (payload, meta) => {
+    const isArrayPayload = Array.isArray(payload);
     const payloadArray = normalizePayload(payload);
     const itemIds = (Array.isArray(meta.keys)
       ? (meta.keys as (string | number | undefined)[])
@@ -67,6 +75,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       };
     });
 
-    return Array.isArray(payload) ? updatedPayload : updatedPayload[0];
+    return isArrayPayload ? updatedPayload : updatedPayload[0];
   });
 });
