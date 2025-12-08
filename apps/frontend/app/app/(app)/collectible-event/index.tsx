@@ -294,9 +294,9 @@ const CollectibleEventScreen = () => {
 
                                 {debugMode && sampleCollectibleKey ? (
                                         <View style={{ alignItems: 'center', marginTop: 16 }}>
-                                                <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} />
+                                                <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} isPreview />
                                                 <Text style={{ color: theme.inactiveText, marginTop: 8 }}>
-                                                        Debug Collectible Item Preview
+                                                        {translate(TranslationKeys.collectible_event_preview_label)}
                                                 </Text>
                                         </View>
                                 ) : null}
@@ -361,6 +361,10 @@ const CollectibleEventScreen = () => {
 
                                         <Text style={{ ...styles.info, color: theme.inactiveText, marginTop: 8 }}>
                                                 {collectedCount}/{maxCollectibleKeys || '∞'} {translate(TranslationKeys.collectible_event_collected)}
+                                        </Text>
+
+                                        <Text style={{ ...styles.notice, color: theme.inactiveText }}>
+                                                {translate(TranslationKeys.collectible_event_data_notice)}
                                         </Text>
                                 </View>
 

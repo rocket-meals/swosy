@@ -21,9 +21,10 @@ type CollectibleKey = (typeof COLLECTABLE_AT_FIELDS)[number];
 type CollectibleItemProps = {
         collectibleKey: CollectibleKey;
         hideOnCollect?: boolean;
+        isPreview?: boolean;
 };
 
-const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideOnCollect = true }) => {
+const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideOnCollect = true, isPreview }) => {
         const { theme } = useTheme();
         const toast = useToast();
         const { translate } = useLanguage();
@@ -114,9 +115,9 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideO
         return (
                 <TouchableOpacity
                         style={[styles.container, { borderColor: theme.screen.icon, backgroundColor: theme.screen.background }]}
-                        onPress={handleCollect}
-                        disabled={isSaving}
-                        activeOpacity={0.8}
+                        onPress={isPreview ? undefined : handleCollect}
+                        disabled={isSaving || isPreview}
+                        activeOpacity={isPreview ? 1 : 0.8}
                 >
                         <Image source={imageSource} resizeMode="contain" style={styles.image} />
                         {isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}

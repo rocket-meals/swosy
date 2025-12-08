@@ -1919,6 +1919,26 @@
     "tr": "toplandı",
     "zh": "已收集"
   },
+  "collectible_event_preview_label": {
+    "de": "Zu sammelnde Objekte",
+    "en": "Items to collect",
+    "ar": "عناصر لجمعها",
+    "es": "Objetos para coleccionar",
+    "fr": "Éléments à collecter",
+    "ru": "Предметы для сбора",
+    "tr": "Toplanacak öğeler",
+    "zh": "待收集的物品"
+  },
+  "collectible_event_data_notice": {
+    "de": "Die Angabe deiner Daten ist freiwillig. Es gelten die Teilnahmebedingungen.",
+    "en": "Providing your data is voluntary. The terms and conditions apply.",
+    "ar": "تقديم بياناتك اختياري. تنطبق الشروط والأحكام.",
+    "es": "Proporcionar tus datos es voluntario. Se aplican los términos y condiciones.",
+    "fr": "Fournir vos données est volontaire. Les conditions générales s'appliquent.",
+    "ru": "Предоставление данных добровольно. Применяются условия и положения.",
+    "tr": "Verilerinizi sağlamak isteğe bağlıdır. Şartlar ve koşullar geçerlidir.",
+    "zh": "提供您的数据是自愿的。适用条款和条件。"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",
