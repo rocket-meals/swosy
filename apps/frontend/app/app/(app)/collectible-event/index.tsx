@@ -286,7 +286,7 @@ const CollectibleEventScreen = () => {
                 const description = getDescriptionFromTranslation(activeCollectibleEvent.translations as any, language);
 
                 return (
-                        <View style={[styles.card, { backgroundColor: theme.background, borderColor: theme.screen.icon }]}>
+                        <View style={styles.section}>
                                 <Text style={{ ...styles.title, color: theme.screen.text }}>{title}</Text>
                                 {description ? (
                                         <Text style={{ ...styles.description, color: theme.inactiveText }}>{description}</Text>

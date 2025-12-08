@@ -7,9 +7,7 @@ const styles = StyleSheet.create({
         content: {
                 padding: 16,
         },
-        card: {
-                borderRadius: 12,
-                padding: 16,
+        section: {
                 marginBottom: 16,
         },
         title: {
