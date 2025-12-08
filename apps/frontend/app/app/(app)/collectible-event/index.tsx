@@ -19,6 +19,7 @@ import PermissionModal from '@/components/PermissionModal/PermissionModal';
 import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
+import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -481,6 +482,7 @@ const CollectibleEventScreen = () => {
 
         return (
                 <SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
+                        <CustomMenuHeader label={translate(TranslationKeys.collectible_event)} />
                         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                                 {renderContent()}
                         </ScrollView>
