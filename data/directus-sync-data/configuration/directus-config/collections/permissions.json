@@ -1003,6 +1003,123 @@
         }
       ]
     },
+    "collection": "collectible_event_participants",
+    "action": "create",
+    "permissions": null,
+    "fields": [
+      "id",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "profile",
+      "email",
+      "phone_number",
+      "points",
+      "collectible_event",
+      "sort",
+      "status"
+    ],
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "presets": null,
+    "_syncId": "189249af-e05d-4b38-962a-b3a947fa5a66"
+  },
+  {
+    "validation": null,
+    "collection": "collectible_event_participants",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "id": {
+              "_eq": "$CURRENT_USER.profile"
+            }
+          }
+        }
+      ]
+    },
+    "fields": null,
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "presets": null,
+    "_syncId": "a5352c4c-db04-40dc-acc2-df33914e123c"
+  },
+  {
+    "validation": null,
+    "collection": "collectible_event_participants",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "id": {
+              "_eq": "$CURRENT_USER.profile"
+            }
+          }
+        }
+      ]
+    },
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "profile",
+      "email",
+      "phone_number",
+      "points",
+      "collectible_event"
+    ],
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "presets": null,
+    "_syncId": "db1e2fc2-48e0-45bd-8b8e-9c82c524d708"
+  },
+  {
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "collection": "collectible_event_participants",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "id": {
+              "_eq": "$CURRENT_USER.profile"
+            }
+          }
+        }
+      ]
+    },
+    "fields": [
+      "email",
+      "phone_number",
+      "points",
+      "date_updated"
+    ],
+    "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "presets": null,
+    "_syncId": "c19742cf-825e-4911-a3b3-1403a7f8f7d4"
+  },
+  {
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
     "collection": "devices",
     "action": "create",
     "permissions": null,
@@ -2405,6 +2522,18 @@
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "presets": null,
     "_syncId": "3c663872-54e1-47c1-bacf-9bf8879b030d"
+  },
+  {
+    "validation": null,
+    "collection": "collectible_events",
+    "action": "read",
+    "permissions": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
+    "presets": null,
+    "_syncId": "69fb7a06-dfae-418f-b75c-7dddb3b28ebc"
   },
   {
     "validation": null,

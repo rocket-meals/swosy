@@ -485,6 +485,18 @@ export type CollectibleEventParticipants = {
 
 export type CollectibleEvents = {
   alias?: string | null;
+  collectable_at: string;
+  collectable_at_campus?: boolean | null;
+  collectable_at_canteen_selection?: boolean | null;
+  collectable_at_faq?: boolean | null;
+  collectable_at_foodoffer_details_markings?: boolean | null;
+  collectable_at_foodoffer_details_nutritions?: boolean | null;
+  collectable_at_foodoffers?: boolean | null;
+  collectable_at_foodoffers_details?: boolean | null;
+  collectable_at_housing?: boolean | null;
+  collectable_at_marking_details?: boolean | null;
+  collectable_at_price_group_selection?: boolean | null;
+  collectable_at_settings?: boolean | null;
   collectible_image?: string | DirectusFiles | null;
   collectible_settings: string;
   date_created?: string | null;
@@ -1826,7 +1838,7 @@ export type WorkflowsRuns = {
   input?: string | null;
   log?: string | null;
   output?: string | null;
-  result_hash?: string | null;
+  result_hash?: unknown | null;
   runtime_in_seconds?: number | null;
   sort?: number | null;
   state?: string | null;

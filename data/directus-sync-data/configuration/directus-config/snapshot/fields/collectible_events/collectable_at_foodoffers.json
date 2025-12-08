@@ -8,21 +8,21 @@
     "display": null,
     "display_options": null,
     "field": "collectable_at_foodoffers",
-    "group": null,
+    "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 17,
+    "sort": 1,
     "special": [
       "cast-boolean"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
     "name": "collectable_at_foodoffers",
