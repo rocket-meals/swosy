@@ -45,54 +45,6 @@
       }
     },
     "refresh_interval": null,
-    "_syncId": "b23408d1-a86a-4305-944f-c9da2d89e4e8"
-  },
-  {
-    "icon": "bookmark",
-    "layout": "tabular",
-    "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
-    "layout_options": null,
-    "bookmark": null,
-    "filter": null,
-    "color": null,
-    "collection": "apartments",
-    "search": null,
-    "layout_query": {
-      "tabular": {
-        "fields": [
-          "building",
-          "available_from",
-          "handicapped_accessible",
-          "family_friendly",
-          "singleflat"
-        ]
-      }
-    },
-    "refresh_interval": null,
-    "_syncId": "b2492aad-b3eb-4fd2-b1e8-a13587b9e3c2"
-  },
-  {
-    "icon": "bookmark",
-    "layout": "tabular",
-    "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
-    "layout_options": null,
-    "bookmark": null,
-    "filter": null,
-    "color": null,
-    "collection": "apartments",
-    "search": null,
-    "layout_query": {
-      "tabular": {
-        "fields": [
-          "building",
-          "available_from",
-          "handicapped_accessible",
-          "family_friendly",
-          "singleflat"
-        ]
-      }
-    },
-    "refresh_interval": null,
     "_syncId": "fcfa20ed-b8de-4d8b-abbc-34fad7845930"
   }
 ]

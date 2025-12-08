@@ -55,10 +55,6 @@ type Query {
   canteen_food_feedback_report_schedules_canteens_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules_canteens
   canteen_food_feedback_report_schedules_canteens_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_canteens_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_canteens_aggregated!]!
   canteen_food_feedback_report_schedules_canteens_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_schedules_canteens
-  collectible_events(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [collectible_events!]!
-  collectible_events_by_id(id: ID!, version: String): collectible_events
-  collectible_events_aggregated(groupBy: [String], filter: collectible_events_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [collectible_events_aggregated!]!
-  collectible_events_by_version(version: String!, id: ID!): version_collectible_events
   businesshours(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [businesshours!]!
   businesshours_by_id(id: ID!, version: String): businesshours
   businesshours_aggregated(groupBy: [String], filter: businesshours_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [businesshours_aggregated!]!
@@ -71,6 +67,10 @@ type Query {
   canteen_food_feedback_report_schedules_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules
   canteen_food_feedback_report_schedules_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_aggregated!]!
   canteen_food_feedback_report_schedules_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_schedules
+  collectible_events(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [collectible_events!]!
+  collectible_events_by_id(id: ID!, version: String): collectible_events
+  collectible_events_aggregated(groupBy: [String], filter: collectible_events_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [collectible_events_aggregated!]!
+  collectible_events_by_version(version: String!, id: ID!): version_collectible_events
   canteen_food_feedback_report_schedules_report_recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients!]!
   canteen_food_feedback_report_schedules_report_recipients_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules_report_recipients
   canteen_food_feedback_report_schedules_report_recipients_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_report_recipients_aggregated!]!
@@ -412,14 +412,14 @@ type Mutation {
   create_businesshours_groups_translations_item(data: create_businesshours_groups_translations_input!): businesshours_groups_translations
   create_canteen_food_feedback_report_schedules_canteens_items(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_canteens_input!]): [canteen_food_feedback_report_schedules_canteens!]!
   create_canteen_food_feedback_report_schedules_canteens_item(data: create_canteen_food_feedback_report_schedules_canteens_input!): canteen_food_feedback_report_schedules_canteens
-  create_collectible_events_items(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_collectible_events_input!]): [collectible_events!]!
-  create_collectible_events_item(data: create_collectible_events_input!): collectible_events
   create_businesshours_items(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_businesshours_input!]): [businesshours!]!
   create_businesshours_item(data: create_businesshours_input!): businesshours
   create_buildings_translations_items(filter: buildings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_buildings_translations_input!]): [buildings_translations!]!
   create_buildings_translations_item(data: create_buildings_translations_input!): buildings_translations
   create_canteen_food_feedback_report_schedules_items(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_input!]): [canteen_food_feedback_report_schedules!]!
   create_canteen_food_feedback_report_schedules_item(data: create_canteen_food_feedback_report_schedules_input!): canteen_food_feedback_report_schedules
+  create_collectible_events_items(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_collectible_events_input!]): [collectible_events!]!
+  create_collectible_events_item(data: create_collectible_events_input!): collectible_events
   create_canteen_food_feedback_report_schedules_report_recipients_items(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_report_recipients_input!]): [canteen_food_feedback_report_schedules_report_recipients!]!
   create_canteen_food_feedback_report_schedules_report_recipients_item(data: create_canteen_food_feedback_report_schedules_report_recipients_input!): canteen_food_feedback_report_schedules_report_recipients
   create_canteens_feedbacks_labels_translations_items(filter: canteens_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_feedbacks_labels_translations_input!]): [canteens_feedbacks_labels_translations!]!
@@ -617,9 +617,6 @@ type Mutation {
   update_canteen_food_feedback_report_schedules_canteens_items(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_canteens_input!): [canteen_food_feedback_report_schedules_canteens!]!
   update_canteen_food_feedback_report_schedules_canteens_batch(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_canteens_input!]): [canteen_food_feedback_report_schedules_canteens!]!
   update_canteen_food_feedback_report_schedules_canteens_item(id: ID!, data: update_canteen_food_feedback_report_schedules_canteens_input!): canteen_food_feedback_report_schedules_canteens
-  update_collectible_events_items(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_collectible_events_input!): [collectible_events!]!
-  update_collectible_events_batch(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_collectible_events_input!]): [collectible_events!]!
-  update_collectible_events_item(id: ID!, data: update_collectible_events_input!): collectible_events
   update_businesshours_items(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_businesshours_input!): [businesshours!]!
   update_businesshours_batch(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_businesshours_input!]): [businesshours!]!
   update_businesshours_item(id: ID!, data: update_businesshours_input!): businesshours
@@ -629,6 +626,9 @@ type Mutation {
   update_canteen_food_feedback_report_schedules_items(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_input!): [canteen_food_feedback_report_schedules!]!
   update_canteen_food_feedback_report_schedules_batch(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_input!]): [canteen_food_feedback_report_schedules!]!
   update_canteen_food_feedback_report_schedules_item(id: ID!, data: update_canteen_food_feedback_report_schedules_input!): canteen_food_feedback_report_schedules
+  update_collectible_events_items(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_collectible_events_input!): [collectible_events!]!
+  update_collectible_events_batch(filter: collectible_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_collectible_events_input!]): [collectible_events!]!
+  update_collectible_events_item(id: ID!, data: update_collectible_events_input!): collectible_events
   update_canteen_food_feedback_report_schedules_report_recipients_items(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_report_recipients_input!): [canteen_food_feedback_report_schedules_report_recipients!]!
   update_canteen_food_feedback_report_schedules_report_recipients_batch(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_report_recipients_input!]): [canteen_food_feedback_report_schedules_report_recipients!]!
   update_canteen_food_feedback_report_schedules_report_recipients_item(id: ID!, data: update_canteen_food_feedback_report_schedules_report_recipients_input!): canteen_food_feedback_report_schedules_report_recipients
@@ -889,14 +889,14 @@ type Mutation {
   delete_businesshours_groups_translations_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_schedules_canteens_items(ids: [ID]!): delete_many
   delete_canteen_food_feedback_report_schedules_canteens_item(id: ID!): delete_one
-  delete_collectible_events_items(ids: [ID]!): delete_many
-  delete_collectible_events_item(id: ID!): delete_one
   delete_businesshours_items(ids: [ID]!): delete_many
   delete_businesshours_item(id: ID!): delete_one
   delete_buildings_translations_items(ids: [ID]!): delete_many
   delete_buildings_translations_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_schedules_items(ids: [ID]!): delete_many
   delete_canteen_food_feedback_report_schedules_item(id: ID!): delete_one
+  delete_collectible_events_items(ids: [ID]!): delete_many
+  delete_collectible_events_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_schedules_report_recipients_items(ids: [ID]!): delete_many
   delete_canteen_food_feedback_report_schedules_report_recipients_item(id: ID!): delete_one
   delete_canteens_feedbacks_labels_translations_items(ids: [ID]!): delete_many
@@ -1071,10 +1071,10 @@ type Subscription {
   businesshours_groups_mutated(event: EventEnum): businesshours_groups_mutated
   businesshours_groups_translations_mutated(event: EventEnum): businesshours_groups_translations_mutated
   canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
-  collectible_events_mutated(event: EventEnum): collectible_events_mutated
   businesshours_mutated(event: EventEnum): businesshours_mutated
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
+  collectible_events_mutated(event: EventEnum): collectible_events_mutated
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   canteens_feedbacks_labels_translations_mutated(event: EventEnum): canteens_feedbacks_labels_translations_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
@@ -2944,6 +2944,7 @@ type collectible_events {
   monitor_display_number_of_collected_items: Boolean
   points_maximum: String
   status: String
+  collectable_at_foodoffers: Boolean
   alias: String
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_start: Date
@@ -2984,6 +2985,7 @@ type collectible_events_aggregated_count {
   monitor_display_number_of_collected_items: Int
   points_maximum: Int
   status: Int
+  collectable_at_foodoffers: Int
   alias: Int
   user_updated: Int
   date_start: Int
@@ -7247,6 +7249,7 @@ type version_collectible_events {
   monitor_display_number_of_collected_items: Boolean
   points_maximum: String
   status: String
+  collectable_at_foodoffers: Boolean
   alias: String
   user_updated: JSON
   date_start: Date
@@ -9486,6 +9489,7 @@ input collectible_events_filter {
   monitor_display_number_of_collected_items: boolean_filter_operators
   points_maximum: string_filter_operators
   status: string_filter_operators
+  collectable_at_foodoffers: boolean_filter_operators
   alias: string_filter_operators
   user_updated: directus_users_filter
   date_start: date_filter_operators
@@ -10065,6 +10069,7 @@ input create_collectible_events_input {
   monitor_display_number_of_collected_items: Boolean
   points_maximum: String
   status: String
+  collectable_at_foodoffers: Boolean
   alias: String
   user_updated: create_directus_users_input
   date_start: Date
@@ -13753,6 +13758,7 @@ input update_collectible_events_input {
   monitor_display_number_of_collected_items: Boolean
   points_maximum: String
   status: String
+  collectable_at_foodoffers: Boolean
   alias: String
   user_updated: update_directus_users_input
   date_start: Date
