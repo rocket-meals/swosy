@@ -17,3 +17,4 @@ export * from './src/EventHelper';
 export * from './src/form/FormHelperCommon';
 export * from './src/RatingHelper';
 export * from './src/LanguageCodes';
+export * from './src/CollectibleEvents';
