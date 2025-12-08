@@ -151,8 +151,8 @@ const CollectibleEventScreen = () => {
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
         const [visibleHints, setVisibleHints] = useState<Record<string, boolean>>({});
 
-        const showCollectibleHint = useCallback((key: string) => {
-                setVisibleHints(prev => ({ ...prev, [key]: true }));
+        const toggleCollectibleHint = useCallback((key: string) => {
+                setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
         }, []);
 
         const loadParticipation = useCallback(async () => {
@@ -418,17 +418,11 @@ const CollectibleEventScreen = () => {
                                                         {activeCollectibleKeys.map((key, index) => {
                                                                 const isCollected = Boolean(collectibleDict?.[key]);
                                                                 const isHintVisible = isCollected || visibleHints[key];
-                                                                const hintText = `${translate(TranslationKeys.collectible_event_hint_prefix)} ${key}`;
 
                                                                 const iconBgColor = isCollected ? '#2DBE62' : '#F7D21F';
                                                                 const labelText = isHintVisible
                                                                         ? key
                                                                         : translate(TranslationKeys.collectible_event_show_hint);
-                                                                const valueText = isCollected
-                                                                        ? undefined
-                                                                        : isHintVisible
-                                                                                ? hintText
-                                                                                : undefined;
 
                                                                 return (
                                                                         <SettingsList
@@ -442,11 +436,11 @@ const CollectibleEventScreen = () => {
                                                                                         />
                                                                                 }
                                                                                 label={labelText}
-                                                                                value={valueText}
+                                                                                value={undefined}
                                                                                 onPress={
-                                                                                        isCollected || isHintVisible
+                                                                                        isCollected
                                                                                                 ? undefined
-                                                                                                : () => showCollectibleHint(key)
+                                                                                                : () => toggleCollectibleHint(key)
                                                                                 }
                                                                                 groupPosition={
                                                                                         getGroupPosition(index, activeCollectibleKeys.length) as any
