@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { COLLECTABLE_AT_FIELDS, DatabaseTypes } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -13,6 +13,8 @@ import { getDescriptionFromTranslation, getTitleFromTranslation } from '@/helper
 import useToast from '@/hooks/useToast';
 import styles from './styles';
 import { CollectibleEventParticipantsHelper } from '@/redux/actions/CollectibleEvents/CollectibleEventParticipants';
+import CollectibleItem from '@/components/CollectibleItem';
+import useCollectibleDict from '@/hooks/useCollectibleDict';
 
 const CollectibleEventScreen = () => {
         useSetPageTitle(TranslationKeys.collectible_event);
@@ -21,10 +23,19 @@ const CollectibleEventScreen = () => {
         const toast = useToast();
         const { translate, language } = useLanguage();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
-        const { primaryColor } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, debugMode } = useSelector((state: RootState) => state.settings);
         const buttonColor = primaryColor || theme.primary;
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
+        const { collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
+
+        const sampleCollectibleKey = useMemo(
+                () =>
+                        activeCollectibleEvent
+                                ? COLLECTABLE_AT_FIELDS.find(key => (activeCollectibleEvent as any)?.[key])
+                                : undefined,
+                [activeCollectibleEvent]
+        );
 
         const [points, setPoints] = useState('');
         const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +74,15 @@ const CollectibleEventScreen = () => {
         useEffect(() => {
                 loadParticipation();
         }, [loadParticipation]);
+
+        useEffect(() => {
+                if (collectedCount > 0) {
+                        const newValue = String(collectedCount);
+                        if (newValue !== points) {
+                                setPoints(newValue);
+                        }
+                }
+        }, [collectedCount, points]);
 
         const handleSave = async () => {
                 if (!activeCollectibleEvent?.id) {
@@ -113,6 +133,15 @@ const CollectibleEventScreen = () => {
                                 <Text style={{ ...styles.title, color: theme.screen.text }}>{title}</Text>
                                 {description ? (
                                         <Text style={{ ...styles.description, color: theme.inactiveText }}>{description}</Text>
+                                ) : null}
+
+                                {debugMode && sampleCollectibleKey ? (
+                                        <View style={{ alignItems: 'center', marginTop: 16 }}>
+                                                <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} />
+                                                <Text style={{ color: theme.inactiveText, marginTop: 8 }}>
+                                                        Debug Collectible Item Preview
+                                                </Text>
+                                        </View>
                                 ) : null}
 
                                 <View style={{ marginTop: 16 }}>
