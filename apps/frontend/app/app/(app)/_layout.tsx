@@ -658,18 +658,30 @@ export default function Layout() {
 						title: translate(TranslationKeys.notification),
 					}}
 				/>
-				<Drawer.Screen
-					name="events/index"
-					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.events)} key={'events'} />,
-						title: translate(TranslationKeys.events),
-					}}
-				/>
-				<Drawer.Screen
-					name="support-FAQ/index"
-					options={{
-						title: translate(TranslationKeys.feedback_support_faq),
-						header: () => <CustomStackHeader label={translate(TranslationKeys.feedback_support_faq)} key={'Feedback Support Faq'} />,
+                                <Drawer.Screen
+                                        name="events/index"
+                                        options={{
+                                                header: () => <CustomStackHeader label={translate(TranslationKeys.events)} key={'events'} />,
+                                                title: translate(TranslationKeys.events),
+                                        }}
+                                />
+                                <Drawer.Screen
+                                        name="collectible-event/index"
+                                        options={{
+                                                header: () => (
+                                                        <CustomStackHeader
+                                                                label={translate(TranslationKeys.collectible_event)}
+                                                                key={'collectible_event'}
+                                                        />
+                                                ),
+                                                title: translate(TranslationKeys.collectible_event),
+                                        }}
+                                />
+                                <Drawer.Screen
+                                        name="support-FAQ/index"
+                                        options={{
+                                                title: translate(TranslationKeys.feedback_support_faq),
+                                                header: () => <CustomStackHeader label={translate(TranslationKeys.feedback_support_faq)} key={'Feedback Support Faq'} />,
 					}}
 				/>
 

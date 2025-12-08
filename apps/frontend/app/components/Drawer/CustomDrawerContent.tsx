@@ -21,6 +21,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
+import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -55,12 +56,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const router = useRouter();
-	const wikisHelper = new WikisHelper();
-	const activeIndex = state.index;
+        const wikisHelper = new WikisHelper();
+        const activeIndex = state.index;
         const { user, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const { chats } = useSelector((state: RootState) => state.chats);
         const { serverInfo, primaryColor: projectColor, language, appSettings, wikis, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
         const { hasUnreadChats } = useChatUnreadStatus();
+        const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -239,22 +241,34 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			});
 		}
 
-		if (appSettings?.course_timetable_enabled) {
-			menuItems.push({
-				label: translate(TranslationKeys.course_timetable),
-				iconName: 'calendar-clock-outline',
-				iconLibName: MaterialCommunityIcons,
-				activeKey: 'course-timetable/index',
-				route: 'course-timetable/index',
-				position: 7,
-			});
-		}
+                if (appSettings?.course_timetable_enabled) {
+                        menuItems.push({
+                                label: translate(TranslationKeys.course_timetable),
+                                iconName: 'calendar-clock-outline',
+                                iconLibName: MaterialCommunityIcons,
+                                activeKey: 'course-timetable/index',
+                                route: 'course-timetable/index',
+                                position: 7,
+                        });
+                }
 
-		if (isManagement) {
-			menuItems.push({
-				label: translate(TranslationKeys.role_management),
-				iconName: 'bag',
-				iconLibName: Ionicons,
+                if (hasActiveCollectibleEvent) {
+                        menuItems.push({
+                                label: translate(TranslationKeys.collectible_event),
+                                iconName: 'trophy-outline',
+                                iconLibName: MaterialCommunityIcons,
+                                activeKey: 'collectible-event/index',
+                                route: 'collectible-event/index',
+                                position: 7.2,
+                                hasUnread: true,
+                        });
+                }
+
+                if (isManagement) {
+                        menuItems.push({
+                                label: translate(TranslationKeys.role_management),
+                                iconName: 'bag',
+                                iconLibName: Ionicons,
 				activeKey: 'management/index',
 				route: 'management/index',
 				position: 9,
