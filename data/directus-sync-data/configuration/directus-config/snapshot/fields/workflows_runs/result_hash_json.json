@@ -1,31 +1,35 @@
 {
   "collection": "workflows_runs",
-  "field": "log",
-  "type": "text",
+  "field": "result_hash_json",
+  "type": "json",
   "meta": {
     "collection": "workflows_runs",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "log",
+    "field": "result_hash_json",
     "group": null,
     "hidden": false,
-    "interface": "input-rich-text-md",
+    "interface": "input-code",
     "note": null,
-    "options": null,
+    "options": {
+      "lineWrapping": true
+    },
     "readonly": false,
     "required": false,
-    "sort": 18,
-    "special": null,
+    "sort": 16,
+    "special": [
+      "cast-json"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "log",
+    "name": "result_hash_json",
     "table": "workflows_runs",
-    "data_type": "text",
+    "data_type": "json",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,
