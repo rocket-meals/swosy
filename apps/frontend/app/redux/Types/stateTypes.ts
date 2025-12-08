@@ -98,7 +98,8 @@ export type NewsState = {
 }
 
 export type CollectibleEventsState = {
-	collectibleEvents: DatabaseTypes.CollectibleEvents[];
+        collectibleEvents: DatabaseTypes.CollectibleEvents[];
+        collectibleEventsDict: Record<string, Record<string, boolean>>;
 };
 
 export type LastUpdatedState = {
