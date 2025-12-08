@@ -1939,6 +1939,46 @@
     "tr": "Verilerinizi sağlamak isteğe bağlıdır. Şartlar ve koşullar geçerlidir.",
     "zh": "提供您的数据是自愿的。适用条款和条件。"
   },
+  "collectible_event_progress_title": {
+    "de": "Collectibles im Event",
+    "en": "Collectibles in the event",
+    "ar": "Collectibles in the event",
+    "es": "Collectibles in the event",
+    "fr": "Collectibles in the event",
+    "ru": "Collectibles in the event",
+    "tr": "Collectibles in the event",
+    "zh": "Collectibles in the event"
+  },
+  "collectible_event_show_hint": {
+    "de": "Hinweis anzeigen lassen",
+    "en": "Show hint",
+    "ar": "Show hint",
+    "es": "Show hint",
+    "fr": "Show hint",
+    "ru": "Show hint",
+    "tr": "Show hint",
+    "zh": "Show hint"
+  },
+  "collectible_event_hint_prefix": {
+    "de": "Hinweis:",
+    "en": "Hint:",
+    "ar": "Hint:",
+    "es": "Hint:",
+    "fr": "Hint:",
+    "ru": "Hint:",
+    "tr": "Hint:",
+    "zh": "Hint:"
+  },
+  "collectible_event_found_label": {
+    "de": "Gefunden",
+    "en": "Found",
+    "ar": "Found",
+    "es": "Found",
+    "fr": "Found",
+    "ru": "Found",
+    "tr": "Found",
+    "zh": "Found"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",
