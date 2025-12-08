@@ -148,13 +148,11 @@ const CollectibleEventScreen = () => {
         const [isSaving, setIsSaving] = useState(false);
         const [isPermissionModalVisible, setIsPermissionModalVisible] = useState(false);
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
+        const [visibleHints, setVisibleHints] = useState<Record<string, boolean>>({});
 
-        const showCollectibleHint = useCallback(
-                (key: string) => {
-                        toast(`${translate(TranslationKeys.collectible_event_hint_prefix)} ${key}`);
-                },
-                [toast, translate]
-        );
+        const showCollectibleHint = useCallback((key: string) => {
+                setVisibleHints(prev => ({ ...prev, [key]: true }));
+        }, []);
 
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
@@ -194,6 +192,10 @@ const CollectibleEventScreen = () => {
         useEffect(() => {
                 loadParticipation();
         }, [loadParticipation]);
+
+        useEffect(() => {
+                setVisibleHints({});
+        }, [activeCollectibleEvent?.id]);
 
         useEffect(() => {
                 if (debugMode) return;
@@ -414,6 +416,8 @@ const CollectibleEventScreen = () => {
                                                 <View style={{ gap: 0 }}>
                                                         {activeCollectibleKeys.map((key, index) => {
                                                                 const isCollected = Boolean(collectibleDict?.[key]);
+                                                                const isHintVisible = isCollected || visibleHints[key];
+                                                                const hintText = `${translate(TranslationKeys.collectible_event_hint_prefix)} ${key}`;
 
                                                                 return (
                                                                         <SettingsList
@@ -430,15 +434,17 @@ const CollectibleEventScreen = () => {
                                                                                                 color={theme.screen.icon}
                                                                                         />
                                                                                 }
-                                                                                label={key}
+                                                                                label={
+                                                                                        isHintVisible
+                                                                                                ? key
+                                                                                                : translate(TranslationKeys.collectible_event_show_hint)
+                                                                                }
                                                                                 value={
                                                                                         isCollected
-                                                                                                ? translate(
-                                                                                                          TranslationKeys.collectible_event_found_label
-                                                                                                  )
-                                                                                                : translate(
-                                                                                                          TranslationKeys.collectible_event_show_hint
-                                                                                                  )
+                                                                                                ? translate(TranslationKeys.collectible_event_found_label)
+                                                                                                : isHintVisible
+                                                                                                        ? hintText
+                                                                                                        : translate(TranslationKeys.collectible_event_show_hint)
                                                                                 }
                                                                                 rightIcon={
                                                                                         isCollected ? (
@@ -450,7 +456,7 @@ const CollectibleEventScreen = () => {
                                                                                         ) : undefined
                                                                                 }
                                                                                 onPress={
-                                                                                        isCollected
+                                                                                        isCollected || isHintVisible
                                                                                                 ? undefined
                                                                                                 : () => showCollectibleHint(key)
                                                                                 }
