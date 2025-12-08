@@ -1,4 +1,4 @@
-import { DatabaseTypes } from './databaseTypes/types';
+import * as DatabaseTypes from './databaseTypes/types';
 
 export const COLLECTABLE_AT_FIELDS: (keyof DatabaseTypes.CollectibleEvents)[] = [
   'collectable_at_campus',
