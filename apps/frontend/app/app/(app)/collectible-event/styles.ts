@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
         card: {
                 borderRadius: 12,
                 padding: 16,
-                borderWidth: 1,
                 marginBottom: 16,
         },
         title: {
@@ -53,6 +52,11 @@ const styles = StyleSheet.create({
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginTop: 8,
+        },
+        notice: {
+                fontSize: 12,
+                lineHeight: 18,
+                marginTop: 12,
         },
 });
 
