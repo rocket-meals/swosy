@@ -668,13 +668,8 @@ export default function Layout() {
                                 <Drawer.Screen
                                         name="collectible-event/index"
                                         options={{
-                                                header: () => (
-                                                        <CustomStackHeader
-                                                                label={translate(TranslationKeys.collectible_event)}
-                                                                key={'collectible_event'}
-                                                        />
-                                                ),
                                                 title: translate(TranslationKeys.collectible_event),
+                                                headerShown: false,
                                         }}
                                 />
                                 <Drawer.Screen
