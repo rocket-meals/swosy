@@ -1829,6 +1829,86 @@
     "tr": "Etkinlik",
     "zh": "事件"
   },
+  "collectible_event": {
+    "de": "Collectible-Event",
+    "en": "Collectible Event",
+    "ar": "فعالية قابلة للتحصيل",
+    "es": "Evento coleccionable",
+    "fr": "Événement à collectionner",
+    "ru": "Коллекционное событие",
+    "tr": "Koleksiyon etkinliği",
+    "zh": "收集活动"
+  },
+  "collectible_event_points": {
+    "de": "Aktuelle Punkte",
+    "en": "Current points",
+    "ar": "النقاط الحالية",
+    "es": "Puntos actuales",
+    "fr": "Points actuels",
+    "ru": "Текущие баллы",
+    "tr": "Güncel puanlar",
+    "zh": "当前积分"
+  },
+  "collectible_event_no_active": {
+    "de": "Aktuell ist kein Collectible-Event aktiv.",
+    "en": "No collectible event is active right now.",
+    "ar": "لا توجد فعالية قابلة للتحصيل نشطة حاليًا.",
+    "es": "No hay ningún evento coleccionable activo en este momento.",
+    "fr": "Aucun événement à collectionner n'est actif pour le moment.",
+    "ru": "Сейчас нет активных коллекционных событий.",
+    "tr": "Şu anda etkin bir koleksiyon etkinliği yok.",
+    "zh": "目前没有正在进行的收集活动。"
+  },
+  "collectible_event_save_success": {
+    "de": "Punkte wurden gespeichert.",
+    "en": "Points were saved.",
+    "ar": "تم حفظ النقاط.",
+    "es": "Los puntos se guardaron.",
+    "fr": "Les points ont été enregistrés.",
+    "ru": "Баллы сохранены.",
+    "tr": "Puanlar kaydedildi.",
+    "zh": "积分已保存。"
+  },
+  "collectible_event_save_error": {
+    "de": "Punkte konnten nicht gespeichert werden.",
+    "en": "Points could not be saved.",
+    "ar": "تعذر حفظ النقاط.",
+    "es": "No se pudieron guardar los puntos.",
+    "fr": "Les points n'ont pas pu être enregistrés.",
+    "ru": "Не удалось сохранить баллы.",
+    "tr": "Puanlar kaydedilemedi.",
+    "zh": "无法保存积分。"
+  },
+  "collectible_event_load_error": {
+    "de": "Teilnahme konnte nicht geladen werden.",
+    "en": "Participation could not be loaded.",
+    "ar": "تعذر تحميل المشاركة.",
+    "es": "No se pudo cargar la participación.",
+    "fr": "La participation n'a pas pu être chargée.",
+    "ru": "Не удалось загрузить участие.",
+    "tr": "Katılım yüklenemedi.",
+    "zh": "无法加载参与信息。"
+  },
+  "collectible_event_loading_participation": {
+    "de": "Teilnahme wird geladen...",
+    "en": "Loading participation...",
+    "ar": "جارٍ تحميل المشاركة...",
+    "es": "Cargando participación...",
+    "fr": "Chargement de la participation...",
+    "ru": "Загрузка участия...",
+    "tr": "Katılım yükleniyor...",
+    "zh": "正在加载参与信息..."
+  },
+  "collectible_event_login_required": {
+    "de": "Bitte melde dich an, um Punkte zu speichern.",
+    "en": "Please sign in to save points.",
+    "ar": "يرجى تسجيل الدخول لحفظ النقاط.",
+    "es": "Inicia sesión para guardar puntos.",
+    "fr": "Connectez-vous pour enregistrer vos points.",
+    "ru": "Войдите, чтобы сохранять баллы.",
+    "tr": "Puan kaydetmek için lütfen giriş yapın.",
+    "zh": "请登录以保存积分。"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",
