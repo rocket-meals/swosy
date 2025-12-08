@@ -419,42 +419,29 @@ const CollectibleEventScreen = () => {
                                                                 const isHintVisible = isCollected || visibleHints[key];
                                                                 const hintText = `${translate(TranslationKeys.collectible_event_hint_prefix)} ${key}`;
 
+                                                                const iconBgColor = isCollected ? '#2DBE62' : '#F7D21F';
+                                                                const labelText = isHintVisible
+                                                                        ? key
+                                                                        : translate(TranslationKeys.collectible_event_show_hint);
+                                                                const valueText = isCollected
+                                                                        ? undefined
+                                                                        : isHintVisible
+                                                                                ? hintText
+                                                                                : undefined;
+
                                                                 return (
                                                                         <SettingsList
                                                                                 key={`progress-${key}`}
-                                                                                iconBgColor={buttonColor}
+                                                                                iconBgColor={iconBgColor}
                                                                                 leftIcon={
                                                                                         <MaterialCommunityIcons
-                                                                                                name={
-                                                                                                        isCollected
-                                                                                                                ? 'trophy-outline'
-                                                                                                                : 'lightbulb-on-outline'
-                                                                                                }
+                                                                                                name={isCollected ? 'check' : 'lightbulb-on-outline'}
                                                                                                 size={22}
                                                                                                 color={theme.screen.icon}
                                                                                         />
                                                                                 }
-                                                                                label={
-                                                                                        isHintVisible
-                                                                                                ? key
-                                                                                                : translate(TranslationKeys.collectible_event_show_hint)
-                                                                                }
-                                                                                value={
-                                                                                        isCollected
-                                                                                                ? translate(TranslationKeys.collectible_event_found_label)
-                                                                                                : isHintVisible
-                                                                                                        ? hintText
-                                                                                                        : translate(TranslationKeys.collectible_event_show_hint)
-                                                                                }
-                                                                                rightIcon={
-                                                                                        isCollected ? (
-                                                                                                <MaterialCommunityIcons
-                                                                                                        name="check"
-                                                                                                        size={22}
-                                                                                                        color={theme.screen.icon}
-                                                                                                />
-                                                                                        ) : undefined
-                                                                                }
+                                                                                label={labelText}
+                                                                                value={valueText}
                                                                                 onPress={
                                                                                         isCollected || isHintVisible
                                                                                                 ? undefined
