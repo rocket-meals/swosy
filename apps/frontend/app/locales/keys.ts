@@ -189,6 +189,7 @@ export enum TranslationKeys {
         collectible_event_load_error = 'collectible_event_load_error',
         collectible_event_loading_participation = 'collectible_event_loading_participation',
         collectible_event_login_required = 'collectible_event_login_required',
+        collectible_event_collected = 'collectible_event_collected',
         create = 'create',
         delete = 'delete',
         account_delete = 'account_delete',

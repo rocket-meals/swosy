@@ -10,7 +10,7 @@ import {
 	View,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
+import { CollectableAt, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import styles from './styles';
 import {useTheme} from '@/hooks/useTheme';
 import {DrawerContentComponentProps, DrawerNavigationProp} from '@react-navigation/drawer';
@@ -62,6 +62,7 @@ import {TranslationKeys} from '@/locales/keys';
 
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import {RootState} from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
@@ -602,6 +603,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                                 </Text>
                                         </View>
                                 )}
+                                <CollectibleSpot collectibleKey={CollectableAt.collectable_at_foodoffers} />
                                 <View style={{ height: 40 }} />
                         </>
                 );

@@ -10,6 +10,8 @@ import { DetailsProps } from './types';
 import AttributeItem from './AttributeItem';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { CollectableAt } from 'repo-depkit-common';
 
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 	const { translate } = useLanguage();
@@ -51,10 +53,11 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 						</View>
 					);
 				})
-			)}
-			<FoodLabelingInfo textStyle={styles.body1} backgroundColor={foods_area_color} />
-		</View>
-	);
+                        )}
+                        <FoodLabelingInfo textStyle={styles.body1} backgroundColor={foods_area_color} />
+                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_foodoffer_details_nutritions} />
+                </View>
+        );
 };
 
 export default Details;

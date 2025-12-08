@@ -6,12 +6,13 @@ import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
-import { DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
+import { CollectableAt, DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 interface LabelsProps {
         foodDetails: any;
@@ -80,13 +81,14 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
 
-			{foodMarkings?.map((marking: DatabaseTypes.Markings) => (
-				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
-			))}
+                        {foodMarkings?.map((marking: DatabaseTypes.Markings) => (
+                                <MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
+                        ))}
 
-			<FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
-		</View>
-	);
+                        <FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
+                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_foodoffer_details_markings} />
+                </View>
+        );
 };
 
 export default Labels;
