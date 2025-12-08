@@ -56,6 +56,22 @@ const styles = StyleSheet.create({
                 lineHeight: 18,
                 marginTop: 12,
         },
+        header: {
+                width: '100%',
+                height: 60,
+                justifyContent: 'center',
+                paddingHorizontal: 16,
+        },
+        row: {
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+        },
+        heading: {
+                fontSize: 18,
+                fontWeight: '700',
+        },
 });
 
 export default styles;

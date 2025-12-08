@@ -17,8 +17,11 @@ import CollectibleItem from '@/components/CollectibleItem';
 import useCollectibleDict from '@/hooks/useCollectibleDict';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
 import SettingsList from '@/components/SettingsList';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation } from 'expo-router';
+import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -111,11 +114,12 @@ const CollectibleEventScreen = () => {
         const toast = useToast();
         const { translate, language } = useLanguage();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
-        const { primaryColor, debugMode } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, debugMode, drawerPosition } = useSelector((state: RootState) => state.settings);
         const buttonColor = primaryColor || theme.primary;
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
         const { collectedCount, collectibleDict } = useCollectibleDict(activeCollectibleEvent?.id);
+        const drawerNavigation = useNavigation<DrawerNavigationProp<any>>();
 
         const activeCollectibleKeys = useMemo(
                 () =>
@@ -481,6 +485,39 @@ const CollectibleEventScreen = () => {
 
         return (
                 <SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
+                        <View style={{ ...styles.header, backgroundColor: theme.header.background }}>
+                                <View
+                                        style={[
+                                                styles.row,
+                                                {
+                                                        flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+                                                },
+                                        ]}
+                                >
+                                        <Tooltip
+                                                placement="top"
+                                                trigger={triggerProps => (
+                                                        <TouchableOpacity
+                                                                {...triggerProps}
+                                                                onPress={() => drawerNavigation.toggleDrawer()}
+                                                                style={{ padding: 10 }}
+                                                        >
+                                                                <Ionicons name="menu" size={24} color={theme.header.text} />
+                                                        </TouchableOpacity>
+                                                )}
+                                        >
+                                                <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+                                                        <TooltipText fontSize="$sm" color={theme.tooltip.text}>
+                                                                {translate(TranslationKeys.open_drawer)}
+                                                        </TooltipText>
+                                                </TooltipContent>
+                                        </Tooltip>
+
+                                        <Text style={{ ...styles.heading, color: theme.header.text }}>
+                                                {translate(TranslationKeys.collectible_event)}
+                                        </Text>
+                                </View>
+                        </View>
                         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                                 {renderContent()}
                         </ScrollView>
