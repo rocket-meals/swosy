@@ -115,7 +115,15 @@ const CollectibleEventScreen = () => {
         const buttonColor = primaryColor || theme.primary;
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
-        const { collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
+        const { collectedCount, collectibleDict } = useCollectibleDict(activeCollectibleEvent?.id);
+
+        const activeCollectibleKeys = useMemo(
+                () =>
+                        activeCollectibleEvent
+                                ? COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as any)?.[key])
+                                : [],
+                [activeCollectibleEvent]
+        );
 
         const sampleCollectibleKey = useMemo(
                 () =>
@@ -140,6 +148,13 @@ const CollectibleEventScreen = () => {
         const [isSaving, setIsSaving] = useState(false);
         const [isPermissionModalVisible, setIsPermissionModalVisible] = useState(false);
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
+
+        const showCollectibleHint = useCallback(
+                (key: string) => {
+                        toast(`${translate(TranslationKeys.collectible_event_hint_prefix)} ${key}`);
+                },
+                [toast, translate]
+        );
 
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
@@ -383,6 +398,71 @@ const CollectibleEventScreen = () => {
                                                         : translate(TranslationKeys.save)}
                                         </Text>
                                 </TouchableOpacity>
+
+                                {activeCollectibleKeys.length ? (
+                                        <View style={{ marginTop: 16 }}>
+                                                <Text
+                                                        style={{
+                                                                ...styles.label,
+                                                                color: theme.screen.text,
+                                                                marginBottom: 8,
+                                                        }}
+                                                >
+                                                        {translate(TranslationKeys.collectible_event_progress_title)}
+                                                </Text>
+
+                                                <View style={{ gap: 0 }}>
+                                                        {activeCollectibleKeys.map((key, index) => {
+                                                                const isCollected = Boolean(collectibleDict?.[key]);
+
+                                                                return (
+                                                                        <SettingsList
+                                                                                key={`progress-${key}`}
+                                                                                iconBgColor={buttonColor}
+                                                                                leftIcon={
+                                                                                        <MaterialCommunityIcons
+                                                                                                name={
+                                                                                                        isCollected
+                                                                                                                ? 'trophy-outline'
+                                                                                                                : 'lightbulb-on-outline'
+                                                                                                }
+                                                                                                size={22}
+                                                                                                color={theme.screen.icon}
+                                                                                        />
+                                                                                }
+                                                                                label={key}
+                                                                                value={
+                                                                                        isCollected
+                                                                                                ? translate(
+                                                                                                          TranslationKeys.collectible_event_found_label
+                                                                                                  )
+                                                                                                : translate(
+                                                                                                          TranslationKeys.collectible_event_show_hint
+                                                                                                  )
+                                                                                }
+                                                                                rightIcon={
+                                                                                        isCollected ? (
+                                                                                                <MaterialCommunityIcons
+                                                                                                        name="check"
+                                                                                                        size={22}
+                                                                                                        color={theme.screen.icon}
+                                                                                                />
+                                                                                        ) : undefined
+                                                                                }
+                                                                                onPress={
+                                                                                        isCollected
+                                                                                                ? undefined
+                                                                                                : () => showCollectibleHint(key)
+                                                                                }
+                                                                                groupPosition={
+                                                                                        getGroupPosition(index, activeCollectibleKeys.length) as any
+                                                                                }
+                                                                        />
+                                                                );
+                                                        })}
+                                                </View>
+                                        </View>
+                                ) : null}
 
                                         {debugMode ? (
                                                 <DebugSection
