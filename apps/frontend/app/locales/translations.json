@@ -3063,6 +3063,16 @@
     "tr": "E-posta",
     "zh": "电子邮件"
   },
+  "phone_number": {
+    "de": "Telefonnummer",
+    "en": "Phone number",
+    "ar": "رقم الهاتف",
+    "es": "Número de teléfono",
+    "fr": "Numéro de téléphone",
+    "ru": "Номер телефона",
+    "tr": "Telefon numarası",
+    "zh": "电话号码"
+  },
   "password": {
     "de": "Passwort",
     "en": "Password",

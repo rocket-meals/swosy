@@ -75,6 +75,11 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideO
 
                 setCollectibleKey(collectibleKey, true);
 
+                toast(
+                        `${translate(TranslationKeys.collectible_event_collected)} ${updatedCount}/${maxCollectibleKeys || '∞'}`,
+                        'success'
+                );
+
                 if (!loggedIn || !profile?.id) {
                         return;
                 }

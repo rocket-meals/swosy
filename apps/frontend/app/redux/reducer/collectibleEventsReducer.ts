@@ -1,4 +1,10 @@
-import { CLEAR_COLLECTIBLE_EVENTS, SET_COLLECTIBLE_EVENT_DICT, SET_COLLECTIBLE_EVENTS } from '../Types/types';
+import {
+        CLEAR_COLLECTIBLE_EVENTS,
+        RESET_ALL_COLLECTIBLE_EVENT_DICTS,
+        RESET_COLLECTIBLE_EVENT_DICT,
+        SET_COLLECTIBLE_EVENT_DICT,
+        SET_COLLECTIBLE_EVENTS,
+} from '../Types/types';
 
 const initialState = {
         collectibleEvents: [],
@@ -29,6 +35,27 @@ const collectibleEventsReducer = (state = initialState, actions: any) => {
                                                 [key]: value,
                                         },
                                 },
+                        };
+                }
+                case RESET_COLLECTIBLE_EVENT_DICT: {
+                        const { eventId } = actions.payload || {};
+
+                        if (!eventId) {
+                                return state;
+                        }
+
+                        const updatedDict = { ...state.collectibleEventsDict };
+                        delete updatedDict[eventId];
+
+                        return {
+                                ...state,
+                                collectibleEventsDict: updatedDict,
+                        };
+                }
+                case RESET_ALL_COLLECTIBLE_EVENT_DICTS: {
+                        return {
+                                ...state,
+                                collectibleEventsDict: {},
                         };
                 }
                 case CLEAR_COLLECTIBLE_EVENTS: {

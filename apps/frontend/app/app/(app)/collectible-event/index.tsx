@@ -8,17 +8,105 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getDescriptionFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
 import useToast from '@/hooks/useToast';
 import styles from './styles';
 import { CollectibleEventParticipantsHelper } from '@/redux/actions/CollectibleEvents/CollectibleEventParticipants';
 import CollectibleItem from '@/components/CollectibleItem';
 import useCollectibleDict from '@/hooks/useCollectibleDict';
+import PermissionModal from '@/components/PermissionModal/PermissionModal';
+import SettingsList from '@/components/SettingsList';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
+
+type DebugSectionProps = {
+        activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
+        theme: ReturnType<typeof useTheme>['theme'];
+        buttonColor: string;
+        resetCurrentCollectibles: () => void;
+        resetAllParticipations: () => void;
+};
+
+const getGroupPosition = (index: number, length: number) => {
+        if (length === 1) return 'single';
+        if (index === 0) return 'top';
+        if (index === length - 1) return 'bottom';
+        return 'middle';
+};
+
+const DebugSection: React.FC<DebugSectionProps> = ({
+        activeCollectibleEvent,
+        theme,
+        buttonColor,
+        resetCurrentCollectibles,
+        resetAllParticipations,
+}) => {
+        const activeKeys = COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as any)?.[key]);
+        const inactiveKeys = COLLECTABLE_AT_FIELDS.filter(key => !(activeCollectibleEvent as any)?.[key]);
+
+        return (
+                <View style={{ marginTop: 16 }}>
+                        <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
+                        <Text style={{ ...styles.info, color: theme.screen.text, marginBottom: 4 }}>
+                                Im Event auffindbar
+                        </Text>
+                        {activeKeys.map((key, index) => (
+                                <SettingsList
+                                        key={`active-${key}`}
+                                        iconBgColor={buttonColor}
+                                        leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
+                                        label={key}
+                                        groupPosition={getGroupPosition(index, activeKeys.length) as any}
+                                />
+                        ))}
+
+                        <Text style={{ ...styles.info, color: theme.screen.text, marginVertical: 4 }}>Ausgeschaltet</Text>
+                        {inactiveKeys.map((key, index) => (
+                                <SettingsList
+                                        key={`inactive-${key}`}
+                                        iconBgColor={theme.inactiveText}
+                                        leftIcon={<MaterialCommunityIcons name="close-circle-outline" size={22} color={theme.screen.icon} />}
+                                        label={key}
+                                        groupPosition={getGroupPosition(index, inactiveKeys.length) as any}
+                                />
+                        ))}
+
+                        <View style={{ marginTop: 12, gap: 8 }}>
+                                <TouchableOpacity
+                                        style={{
+                                                ...styles.button,
+                                                backgroundColor: buttonColor,
+                                                opacity: 0.9,
+                                        }}
+                                        onPress={resetCurrentCollectibles}
+                                >
+                                        <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                                Reset current event found collectible
+                                        </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                        style={{
+                                                ...styles.button,
+                                                backgroundColor: theme.warning,
+                                                opacity: 0.9,
+                                        }}
+                                        onPress={resetAllParticipations}
+                                >
+                                        <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                                Reset all event participations
+                                        </Text>
+                                </TouchableOpacity>
+                        </View>
+                </View>
+        );
+};
 
 const CollectibleEventScreen = () => {
         useSetPageTitle(TranslationKeys.collectible_event);
 
+        const dispatch = useDispatch();
         const { theme } = useTheme();
         const toast = useToast();
         const { translate, language } = useLanguage();
@@ -46,14 +134,19 @@ const CollectibleEventScreen = () => {
         );
 
         const [points, setPoints] = useState('');
+        const [email, setEmail] = useState('');
+        const [phoneNumber, setPhoneNumber] = useState('');
         const [isLoading, setIsLoading] = useState(false);
         const [isSaving, setIsSaving] = useState(false);
+        const [isPermissionModalVisible, setIsPermissionModalVisible] = useState(false);
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
 
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
                         setParticipation(null);
                         setPoints('');
+                        setEmail('');
+                        setPhoneNumber('');
                         return;
                 }
 
@@ -67,9 +160,13 @@ const CollectibleEventScreen = () => {
                         if (existing) {
                                 setParticipation(existing);
                                 setPoints(existing.points ? String(existing.points) : '');
+                                setEmail(existing.email ?? '');
+                                setPhoneNumber(existing.phone_number ?? '');
                         } else {
                                 setParticipation(null);
                                 setPoints('');
+                                setEmail('');
+                                setPhoneNumber('');
                         }
                 } catch (error) {
                         console.error('Error fetching collectible event participation:', error);
@@ -85,11 +182,9 @@ const CollectibleEventScreen = () => {
 
         useEffect(() => {
                 if (debugMode) return;
-                if (collectedCount > 0) {
-                        const newValue = String(collectedCount);
-                        if (newValue !== points) {
-                                setPoints(newValue);
-                        }
+                const newValue = String(collectedCount);
+                if (newValue !== points) {
+                        setPoints(newValue);
                 }
         }, [collectedCount, debugMode, points]);
 
@@ -100,14 +195,18 @@ const CollectibleEventScreen = () => {
                 }
 
                 if (!loggedIn || !profile?.id) {
-                        toast(translate(TranslationKeys.collectible_event_login_required), 'error');
+                        setIsPermissionModalVisible(true);
                         return;
                 }
+
+                const pointsToSave = debugMode ? points?.toString() ?? '' : String(collectedCount);
 
                 setIsSaving(true);
                 try {
                         const payload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                                points: points?.toString() ?? '',
+                                points: pointsToSave,
+                                email: email?.trim() || null,
+                                phone_number: phoneNumber?.trim() || null,
                                 profile: profile.id,
                                 collectible_event: activeCollectibleEvent.id,
                                 status: 'published',
@@ -118,7 +217,9 @@ const CollectibleEventScreen = () => {
                                 : await participantsHelper.createItem(payload);
 
                         setParticipation(updated as DatabaseTypes.CollectibleEventParticipants);
-                        setPoints((updated as DatabaseTypes.CollectibleEventParticipants)?.points || points);
+                        setPoints((updated as DatabaseTypes.CollectibleEventParticipants)?.points || pointsToSave);
+                        setEmail((updated as DatabaseTypes.CollectibleEventParticipants)?.email || email);
+                        setPhoneNumber((updated as DatabaseTypes.CollectibleEventParticipants)?.phone_number || phoneNumber);
                         toast(translate(TranslationKeys.collectible_event_save_success), 'success');
                 } catch (error) {
                         console.error('Error saving collectible event participation:', error);
@@ -127,6 +228,53 @@ const CollectibleEventScreen = () => {
                         setIsSaving(false);
                 }
         };
+
+        const resetCurrentCollectibles = useCallback(async () => {
+                if (!activeCollectibleEvent?.id) {
+                        return;
+                }
+
+                dispatch({ type: RESET_COLLECTIBLE_EVENT_DICT, payload: { eventId: activeCollectibleEvent.id } });
+                setPoints(debugMode ? '0' : String(collectedCount));
+                toast(translate(TranslationKeys.reset), 'success');
+
+                if (loggedIn && profile?.id) {
+                        try {
+                                const existing = await participantsHelper.fetchParticipationByProfileAndEvent(
+                                        profile.id,
+                                        activeCollectibleEvent.id,
+                                        { fields: ['id'] }
+                                );
+
+                                if (existing?.id) {
+                                        await participantsHelper.updateItem(existing.id, { points: '0' });
+                                        setParticipation(prev => (prev ? { ...prev, points: '0' } : prev));
+                                        toast(translate(TranslationKeys.reset), 'success');
+                                }
+                        } catch (error) {
+                                console.error('Error resetting collectible event participation:', error);
+                                toast(translate(TranslationKeys.collectible_event_save_error), 'error');
+                        }
+                }
+        }, [activeCollectibleEvent?.id, collectedCount, debugMode, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
+
+        const resetAllParticipations = useCallback(async () => {
+                dispatch({ type: RESET_ALL_COLLECTIBLE_EVENT_DICTS });
+                setParticipation(null);
+                setPoints('');
+                setEmail('');
+                setPhoneNumber('');
+
+                if (loggedIn && profile?.id) {
+                        try {
+                                await participantsHelper.deleteItems({ filter: { profile: { _eq: profile.id } } });
+                                toast(translate(TranslationKeys.reset), 'success');
+                        } catch (error) {
+                                console.error('Error clearing collectible event participations:', error);
+                                toast(translate(TranslationKeys.collectible_event_save_error), 'error');
+                        }
+                }
+        }, [dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
@@ -154,8 +302,30 @@ const CollectibleEventScreen = () => {
                                 ) : null}
 
                                 <View style={{ marginTop: 16 }}>
-                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
-                                                {translate(TranslationKeys.collectible_event_points)}
+                                        {debugMode ? (
+                                                <>
+                                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                                {translate(TranslationKeys.collectible_event_points)}
+                                                        </Text>
+                                                        <TextInput
+                                                                style={{
+                                                                        ...styles.input,
+                                                                        color: theme.screen.text,
+                                                                        backgroundColor: theme.drawerBg,
+                                                                        borderColor: theme.screen.icon,
+                                                                }}
+                                                                value={points}
+                                                                onChangeText={setPoints}
+                                                                placeholder={translate(TranslationKeys.enter_number)}
+                                                                placeholderTextColor={theme.screen.placeholder}
+                                                                keyboardType="numeric"
+                                                                inputMode="numeric"
+                                                        />
+                                                </>
+                                        ) : null}
+
+                                        <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
+                                                {translate(TranslationKeys.email)}
                                         </Text>
                                         <TextInput
                                                 style={{
@@ -164,13 +334,31 @@ const CollectibleEventScreen = () => {
                                                         backgroundColor: theme.drawerBg,
                                                         borderColor: theme.screen.icon,
                                                 }}
-                                                value={points}
-                                                onChangeText={setPoints}
-                                                placeholder={translate(TranslationKeys.enter_number)}
+                                                value={email}
+                                                onChangeText={setEmail}
+                                                placeholder={translate(TranslationKeys.email)}
                                                 placeholderTextColor={theme.screen.placeholder}
-                                                keyboardType="numeric"
-                                                inputMode="numeric"
+                                                keyboardType="email-address"
+                                                autoCapitalize="none"
                                         />
+
+                                        <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
+                                                {translate(TranslationKeys.phone_number)}
+                                        </Text>
+                                        <TextInput
+                                                style={{
+                                                        ...styles.input,
+                                                        color: theme.screen.text,
+                                                        backgroundColor: theme.drawerBg,
+                                                        borderColor: theme.screen.icon,
+                                                }}
+                                                value={phoneNumber}
+                                                onChangeText={setPhoneNumber}
+                                                placeholder={translate(TranslationKeys.phone_number)}
+                                                placeholderTextColor={theme.screen.placeholder}
+                                                keyboardType="phone-pad"
+                                        />
+
                                         <Text style={{ ...styles.info, color: theme.inactiveText, marginTop: 8 }}>
                                                 {collectedCount}/{maxCollectibleKeys || '∞'} {translate(TranslationKeys.collectible_event_collected)}
                                         </Text>
@@ -192,6 +380,16 @@ const CollectibleEventScreen = () => {
                                         </Text>
                                 </TouchableOpacity>
 
+                                        {debugMode ? (
+                                                <DebugSection
+                                                        activeCollectibleEvent={activeCollectibleEvent}
+                                                        buttonColor={buttonColor}
+                                                        resetAllParticipations={resetAllParticipations}
+                                                        resetCurrentCollectibles={resetCurrentCollectibles}
+                                                        theme={theme}
+                                                />
+                                        ) : null}
+
                                 {isLoading ? (
                                         <View style={[styles.inline, { justifyContent: 'flex-start' }]}>
                                                 <ActivityIndicator color={buttonColor} />
@@ -209,6 +407,10 @@ const CollectibleEventScreen = () => {
                         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                                 {renderContent()}
                         </ScrollView>
+                        <PermissionModal
+                                isVisible={isPermissionModalVisible}
+                                setIsVisible={setIsPermissionModalVisible}
+                        />
                 </SafeAreaView>
         );
 };
