@@ -10,7 +10,7 @@ import Details from '@/components/Details';
 import Labels from '@/components/Labels';
 import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal } from '@/constants/HelperFunctions';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { CollectableAt, DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -33,6 +33,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -762,12 +763,13 @@ export default function FoodDetailsScreen() {
 								paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
 							}}
 						>
-							{foodDetails?.id && renderContent(foodDetails)}
-						</View>
-					</View>
-					<PermissionModal isVisible={warning} setIsVisible={setWarning} />
-				</View>
-			</ScrollView>
+                                                        {foodDetails?.id && renderContent(foodDetails)}
+                                                </View>
+                                        </View>
+                                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_foodoffers_details} />
+                                        <PermissionModal isVisible={warning} setIsVisible={setWarning} />
+                                </View>
+                        </ScrollView>
 			{isActive && (
 				<BaseBottomSheet
 					ref={notificationSheetRef}

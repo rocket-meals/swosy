@@ -10,7 +10,7 @@ import {
 	StyleSheet,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CampusSortOption, DatabaseTypes } from 'repo-depkit-common';
+import { CampusSortOption, CollectableAt, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -39,6 +39,7 @@ import { RootState } from '@/redux/reducer';
 
 import IconButton from '@/components/UI/IconButton';
 import Button from '@/components/UI/Button';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 const ITEM_HEIGHT = 140;
 
@@ -405,12 +406,13 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
-							contentContainerStyle={{
-								marginTop: 20,
-							}}
-							ListHeaderComponent={ListHeaderComponent}
-							ListEmptyComponent={ListEmptyComponent}
-							refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                                                        contentContainerStyle={{
+                                                                marginTop: 20,
+                                                        }}
+                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectableAt.collectable_at_campus} />}
+                                                        ListHeaderComponent={ListHeaderComponent}
+                                                        ListEmptyComponent={ListEmptyComponent}
+                                                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 							removeClippedSubviews={false}
 							showsVerticalScrollIndicator={false}
 							onEndReachedThreshold={0.4}

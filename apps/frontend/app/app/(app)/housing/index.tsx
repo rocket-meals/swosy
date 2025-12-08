@@ -1,6 +1,6 @@
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ApartmentSortOption, DatabaseTypes } from 'repo-depkit-common';
+import { ApartmentSortOption, CollectableAt, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -30,6 +30,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
 import { FlashList } from '@shopify/flash-list';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 const MIN_CARD_WIDTH = 280;
 
@@ -517,13 +518,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
-							contentContainerStyle={{
-								paddingHorizontal: 5,
-								paddingBottom: 20,
-							}}
-							ListHeaderComponent={ListHeaderComponent}
-							ListEmptyComponent={ListEmptyComponent}
-							refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                                                        contentContainerStyle={{
+                                                                paddingHorizontal: 5,
+                                                                paddingBottom: 20,
+                                                        }}
+                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectableAt.collectable_at_housing} />}
+                                                        ListHeaderComponent={ListHeaderComponent}
+                                                        ListEmptyComponent={ListEmptyComponent}
+                                                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 							removeClippedSubviews={false}
 							showsVerticalScrollIndicator={false}
 							onEndReachedThreshold={0.4}

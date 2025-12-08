@@ -1,21 +1,24 @@
 import React, { forwardRef } from 'react';
 import type BottomSheet from '@gorhom/bottom-sheet';
+import { CollectableAt } from 'repo-depkit-common';
 import BaseBottomSheet from '../BaseBottomSheet';
 import MenuSheet from '../MenuSheet/MenuSheet';
 import { useTheme } from '@/hooks/useTheme';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 export interface MarkingBottomSheetProps {
 	onClose: () => void;
 }
 
 const MarkingBottomSheet = forwardRef<BottomSheet, MarkingBottomSheetProps>(({ onClose }, ref) => {
-	const { theme } = useTheme();
+        const { theme } = useTheme();
 
-	return (
-		<BaseBottomSheet ref={ref} index={-1} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} enablePanDownToClose handleComponent={null} onClose={onClose}>
-			<MenuSheet closeSheet={onClose} />
-		</BaseBottomSheet>
-	);
+        return (
+                <BaseBottomSheet ref={ref} index={-1} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} enablePanDownToClose handleComponent={null} onClose={onClose}>
+                        <MenuSheet closeSheet={onClose} />
+                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_marking_details} />
+                </BaseBottomSheet>
+        );
 });
 
 export default MarkingBottomSheet;

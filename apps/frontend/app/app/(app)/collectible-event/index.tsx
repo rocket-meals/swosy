@@ -37,6 +37,14 @@ const CollectibleEventScreen = () => {
                 [activeCollectibleEvent]
         );
 
+        const maxCollectibleKeys = useMemo(
+                () =>
+                        activeCollectibleEvent
+                                ? COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as any)?.[key]).length
+                                : 0,
+                [activeCollectibleEvent]
+        );
+
         const [points, setPoints] = useState('');
         const [isLoading, setIsLoading] = useState(false);
         const [isSaving, setIsSaving] = useState(false);
@@ -76,13 +84,14 @@ const CollectibleEventScreen = () => {
         }, [loadParticipation]);
 
         useEffect(() => {
+                if (debugMode) return;
                 if (collectedCount > 0) {
                         const newValue = String(collectedCount);
                         if (newValue !== points) {
                                 setPoints(newValue);
                         }
                 }
-        }, [collectedCount, points]);
+        }, [collectedCount, debugMode, points]);
 
         const handleSave = async () => {
                 if (!activeCollectibleEvent?.id) {
@@ -162,6 +171,9 @@ const CollectibleEventScreen = () => {
                                                 keyboardType="numeric"
                                                 inputMode="numeric"
                                         />
+                                        <Text style={{ ...styles.info, color: theme.inactiveText, marginTop: 8 }}>
+                                                {collectedCount}/{maxCollectibleKeys || '∞'} {translate(TranslationKeys.collectible_event_collected)}
+                                        </Text>
                                 </View>
 
                                 <TouchableOpacity

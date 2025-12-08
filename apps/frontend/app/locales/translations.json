@@ -1909,6 +1909,16 @@
     "tr": "Puan kaydetmek için lütfen giriş yapın.",
     "zh": "请登录以保存积分。"
   },
+  "collectible_event_collected": {
+    "de": "gesammelt",
+    "en": "collected",
+    "ar": "تم جمعها",
+    "es": "recogidos",
+    "fr": "collectés",
+    "ru": "собрано",
+    "tr": "toplandı",
+    "zh": "已收集"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",

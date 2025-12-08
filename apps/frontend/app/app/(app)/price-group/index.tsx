@@ -15,11 +15,12 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { CollectableAt, DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.price_group);
@@ -153,10 +154,11 @@ const Index = () => {
 							color={selectedOption === option.id ? '#000000' : undefined}
 						/>
 					</TouchableOpacity>
-				))}
-			</View>
-		</View>
-	);
+                                ))}
+                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_price_group_selection} />
+                        </View>
+                </View>
+        );
 };
 
 export default Index;

@@ -33,10 +33,11 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { CollectableAt, DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 const Settings = () => {
 	useSetPageTitle(TranslationKeys.settings);
@@ -373,9 +374,10 @@ const Settings = () => {
                                                         />
                                                 </>
                                         )}
-					<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />} label="Version" value={getVersionInternalForAppsettingsScreen().toString()} handleFunction={() => {}} />
-				</View>
-			</ScrollView>
+                                        <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />} label="Version" value={getVersionInternalForAppsettingsScreen().toString()} handleFunction={() => {}} />
+                                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_settings} />
+                                </View>
+                        </ScrollView>
 			{isActive && (
 				<>
 					<BaseBottomSheet
