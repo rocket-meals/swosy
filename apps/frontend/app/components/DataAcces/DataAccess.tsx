@@ -38,11 +38,12 @@ const parseMarkdown = (text: string, theme: any) => {
 const DataAccess = ({ onOpenBottomSheet }: any) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
-	const { canteens, buildings, selectedCanteenFoodOffers, canteenFoodOffers, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useSelector((state: RootState) => state.canteenReducer);
+        const { user, profile } = useSelector((state: RootState) => state.authReducer);
+        const { primaryColor } = useSelector((state: RootState) => state.settings);
+        const { collectibleEvents } = useSelector((state: RootState) => state.collectibleEvents ?? {});
+        const { canteens, buildings, selectedCanteenFoodOffers, canteenFoodOffers, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useSelector((state: RootState) => state.canteenReducer);
 
-	const { foodFeedbackLabels, ownFoodFeedbacks, ownfoodFeedbackLabelEntries, markings, selectedFoodMarkings, foodCategories, foodOfferCategories, markingDetails } = useSelector((state: RootState) => state.food);
+        const { foodFeedbackLabels, ownFoodFeedbacks, ownfoodFeedbackLabelEntries, markings, selectedFoodMarkings, foodCategories, foodOfferCategories, markingDetails } = useSelector((state: RootState) => state.food);
 
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 
@@ -84,10 +85,19 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 		},
 		{ label: 'Markings', value: markings },
 		{ label: 'Selected Food Markings', value: selectedFoodMarkings },
-		{ label: 'Food Categories', value: foodCategories },
-		{ label: 'FoodOffer Categories', value: foodOfferCategories },
-		{ label: 'MarkingDetails', value: markingDetails },
-	];
+                { label: 'Food Categories', value: foodCategories },
+                { label: 'FoodOffer Categories', value: foodOfferCategories },
+                { label: 'MarkingDetails', value: markingDetails },
+                { label: 'Collectible Events', value: collectibleEvents },
+                ...(profile?.collectible_event_participants
+                        ? [
+                                  {
+                                          label: 'Collectible Event Participations',
+                                          value: profile?.collectible_event_participants,
+                                  },
+                          ]
+                        : []),
+        ];
 
 	return (
 		<View style={{ ...styles.container, backgroundColor: theme.screen.background }}>
