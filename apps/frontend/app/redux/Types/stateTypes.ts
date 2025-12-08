@@ -97,6 +97,10 @@ export type NewsState = {
 	news: DatabaseTypes.News[];
 }
 
+export type CollectibleEventsState = {
+	collectibleEvents: DatabaseTypes.CollectibleEvents[];
+};
+
 export type LastUpdatedState = {
 	lastUpdatedMap: Record<string, string>;
 }
