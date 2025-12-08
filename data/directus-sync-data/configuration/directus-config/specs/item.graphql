@@ -3744,8 +3744,8 @@ type directus_versions {
   item: String!
   id: ID!
   collection: String!
-  name: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  name: String
 }
 
 type directus_versions_mutated {
@@ -4038,12 +4038,12 @@ type foodoffers_info_items {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
+  sort: Int
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   image_remote_url: String
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   link: String
-  sort: Int
 }
 
 type foodoffers_info_items_aggregated {
@@ -4068,12 +4068,12 @@ type foodoffers_info_items_aggregated_count {
   date_updated: Int
   user_updated: Int
   date_created: Int
+  sort: Int
   id: Int
   user_created: Int
   image_remote_url: Int
   image: Int
   link: Int
-  sort: Int
 }
 
 type foodoffers_info_items_aggregated_fields {
@@ -6080,9 +6080,9 @@ type popup_events {
   date_created: Date
   date_created_func: datetime_functions
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 
   """* Muss gesetzt sein"""
   date_start: Date!
@@ -6124,8 +6124,8 @@ type popup_events_aggregated_count {
   image: Int
   date_created: Int
   user_created: Int
-  user_updated: Int
   date_updated: Int
+  user_updated: Int
 
   """* Muss gesetzt sein"""
   date_start: Int
@@ -7400,12 +7400,12 @@ type version_foodoffers_info_items {
   date_updated: Date
   user_updated: JSON
   date_created: Date
+  sort: Int
   id: ID
   user_created: JSON
   image_remote_url: String
   image: JSON
   link: String
-  sort: Int
 }
 
 """"""
@@ -7987,8 +7987,8 @@ type version_popup_events {
   image: JSON
   date_created: Date
   user_created: JSON
-  user_updated: JSON
   date_updated: Date
+  user_updated: JSON
 
   """* Muss gesetzt sein"""
   date_start: Date
@@ -8247,7 +8247,6 @@ type version_workflows_runs {
   date_updated: Date
   user_updated: JSON
   date_created: Date
-  result_hash_json: JSON
   alias: String
   output: String
   user_created: JSON
@@ -8604,8 +8603,6 @@ type workflows_runs {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
-  result_hash_json: JSON
-  result_hash_json_func: count_functions
   alias: String
   output: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -8640,7 +8637,6 @@ type workflows_runs_aggregated_count {
   date_updated: Int
   user_updated: Int
   date_created: Int
-  result_hash_json: Int
   alias: Int
   output: Int
   user_created: Int
@@ -10302,12 +10298,12 @@ input create_foodoffers_info_items_input {
   date_updated: Date
   user_updated: create_directus_users_input
   date_created: Date
+  sort: Int
   id: ID
   user_created: create_directus_users_input
   image_remote_url: String
   image: create_directus_files_input
   link: String
-  sort: Int
 }
 
 input create_foodoffers_input {
@@ -10880,8 +10876,8 @@ input create_popup_events_input {
   image: create_directus_files_input
   date_created: Date
   user_created: create_directus_users_input
-  user_updated: create_directus_users_input
   date_updated: Date
+  user_updated: create_directus_users_input
 
   """* Muss gesetzt sein"""
   date_start: Date!
@@ -11117,7 +11113,6 @@ input create_workflows_runs_input {
   date_updated: Date
   user_updated: create_directus_users_input
   date_created: Date
-  result_hash_json: JSON
   alias: String
   output: String
   user_created: create_directus_users_input
@@ -11665,8 +11660,8 @@ input directus_versions_filter {
   item: string_filter_operators
   id: id_filter_operators
   collection: string_filter_operators
-  name: string_filter_operators
   user_created: directus_users_filter
+  name: string_filter_operators
   _and: [directus_versions_filter]
   _or: [directus_versions_filter]
 }
@@ -11792,12 +11787,12 @@ input foodoffers_info_items_filter {
   user_updated: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  sort: number_filter_operators
   id: id_filter_operators
   user_created: directus_users_filter
   image_remote_url: string_filter_operators
   image: directus_files_filter
   link: string_filter_operators
-  sort: number_filter_operators
   _and: [foodoffers_info_items_filter]
   _or: [foodoffers_info_items_filter]
 }
@@ -13013,9 +13008,9 @@ input popup_events_filter {
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   user_created: directus_users_filter
-  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   date_start: date_filter_operators
   date_start_func: datetime_function_filter_operators
   date_end: date_filter_operators
@@ -13991,12 +13986,12 @@ input update_foodoffers_info_items_input {
   date_updated: Date
   user_updated: update_directus_users_input
   date_created: Date
+  sort: Int
   id: ID
   user_created: update_directus_users_input
   image_remote_url: String
   image: update_directus_files_input
   link: String
-  sort: Int
 }
 
 input update_foodoffers_input {
@@ -14569,8 +14564,8 @@ input update_popup_events_input {
   image: update_directus_files_input
   date_created: Date
   user_created: update_directus_users_input
-  user_updated: update_directus_users_input
   date_updated: Date
+  user_updated: update_directus_users_input
 
   """* Muss gesetzt sein"""
   date_start: Date
@@ -14806,7 +14801,6 @@ input update_workflows_runs_input {
   date_updated: Date
   user_updated: update_directus_users_input
   date_created: Date
-  result_hash_json: JSON
   alias: String
   output: String
   user_created: update_directus_users_input
@@ -15097,8 +15091,6 @@ input workflows_runs_filter {
   user_updated: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  result_hash_json: string_filter_operators
-  result_hash_json_func: count_function_filter_operators
   alias: string_filter_operators
   output: string_filter_operators
   user_created: directus_users_filter
@@ -15126,8 +15118,6 @@ input workflows_runs_quantifier_filter {
   user_updated: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  result_hash_json: string_filter_operators
-  result_hash_json_func: count_function_filter_operators
   alias: string_filter_operators
   output: string_filter_operators
   user_created: directus_users_filter

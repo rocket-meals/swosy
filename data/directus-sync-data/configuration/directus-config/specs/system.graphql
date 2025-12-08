@@ -2501,8 +2501,8 @@ type directus_versions {
   item: String!
   id: ID!
   collection: String!
-  name: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  name: String
 }
 
 type directus_versions_aggregated {
@@ -2522,8 +2522,8 @@ type directus_versions_aggregated_count {
   item: Int
   id: Int
   collection: Int
-  name: Int
   user_created: Int
+  name: Int
 }
 
 type directus_versions_mutated {
@@ -2694,12 +2694,12 @@ type foodoffers_info_items {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
+  sort: Int
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   image_remote_url: String
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   link: String
-  sort: Int
 }
 
 type foodoffers_info_items_mutated {
@@ -3552,9 +3552,9 @@ type popup_events {
   date_created: Date
   date_created_func: datetime_functions
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 
   """* Muss gesetzt sein"""
   date_start: Date!
@@ -3985,8 +3985,6 @@ type workflows_runs {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
-  result_hash_json: JSON
-  result_hash_json_func: count_functions
   alias: String
   output: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -5359,8 +5357,8 @@ input create_directus_versions_input {
   item: String!
   id: ID
   collection: String!
-  name: String
   user_created: create_directus_users_input
+  name: String
 }
 
 input create_directus_webhooks_input {
@@ -6381,8 +6379,8 @@ input directus_versions_filter {
   item: string_filter_operators
   id: id_filter_operators
   collection: string_filter_operators
-  name: string_filter_operators
   user_created: directus_users_filter
+  name: string_filter_operators
   _and: [directus_versions_filter]
   _or: [directus_versions_filter]
 }
@@ -7678,9 +7676,9 @@ input popup_events_filter {
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   user_created: directus_users_filter
-  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   date_start: date_filter_operators
   date_start_func: datetime_function_filter_operators
   date_end: date_filter_operators
@@ -8357,8 +8355,8 @@ input update_directus_versions_input {
   item: String
   id: ID
   collection: String
-  name: String
   user_created: update_directus_users_input
+  name: String
 }
 
 input update_directus_webhooks_input {
@@ -9029,8 +9027,6 @@ input workflows_runs_filter {
   user_updated: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  result_hash_json: string_filter_operators
-  result_hash_json_func: count_function_filter_operators
   alias: string_filter_operators
   output: string_filter_operators
   user_created: directus_users_filter
@@ -9058,8 +9054,6 @@ input workflows_runs_quantifier_filter {
   user_updated: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  result_hash_json: string_filter_operators
-  result_hash_json_func: count_function_filter_operators
   alias: string_filter_operators
   output: string_filter_operators
   user_created: directus_users_filter

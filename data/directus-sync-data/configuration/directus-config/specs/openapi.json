@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "97906f03ab8d0665b0338019af38a83896674771"
+    "version": "3382ab46ba375018874102412a497123654d891b"
   },
   "servers": [
     {
@@ -46428,6 +46428,10 @@
             "type": "string",
             "format": "timestamp"
           },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
           "id": {
             "nullable": false,
             "type": "string",
@@ -46464,10 +46468,6 @@
           "link": {
             "nullable": true,
             "type": "string"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
           }
         },
         "x-collection": "foodoffers_info_items",
@@ -49607,11 +49607,6 @@
               }
             ]
           },
-          "name": {
-            "description": "Descriptive name of the Content Version.",
-            "example": "My Draft",
-            "type": "string"
-          },
           "user_created": {
             "description": "User that created the Content Version.",
             "example": "63716273-0f29-4648-8a2a-2af2948f6f78",
@@ -49623,6 +49618,11 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
+          },
+          "name": {
+            "description": "Descriptive name of the Content Version.",
+            "example": "My Draft",
+            "type": "string"
           }
         },
         "x-collection": "directus_versions"
@@ -53702,6 +53702,11 @@
               }
             ]
           },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "user_updated": {
             "nullable": true,
             "oneOf": [
@@ -53713,11 +53718,6 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
           },
           "date_start": {
             "nullable": false,
@@ -53827,9 +53827,6 @@
             "nullable": true,
             "type": "string",
             "format": "timestamp"
-          },
-          "result_hash_json": {
-            "nullable": true
           },
           "alias": {
             "nullable": true,
