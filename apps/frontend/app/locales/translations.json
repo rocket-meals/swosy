@@ -1979,6 +1979,16 @@
     "tr": "Found",
     "zh": "Found"
   },
+  "collectible_event_debug_spot": {
+    "de": "Debug-Collectible-Spot",
+    "en": "Debug collectible spot",
+    "ar": "Debug collectible spot",
+    "es": "Debug collectible spot",
+    "fr": "Debug collectible spot",
+    "ru": "Debug collectible spot",
+    "tr": "Debug collectible spot",
+    "zh": "Debug collectible spot"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",

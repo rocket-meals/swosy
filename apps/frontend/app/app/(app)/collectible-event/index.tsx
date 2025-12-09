@@ -155,6 +155,15 @@ const CollectibleEventScreen = () => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
         }, []);
 
+        const handleDebugCollectibleTouch = useCallback(() => {
+                setPoints(prev => {
+                        const currentValue = Number.parseInt(prev || '0', 10);
+                        const nextValue = Number.isNaN(currentValue) ? 1 : currentValue + 1;
+
+                        return String(nextValue);
+                });
+        }, []);
+
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
                         setParticipation(null);
@@ -477,9 +486,35 @@ const CollectibleEventScreen = () => {
         return (
                 <SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
                         <CustomMenuHeader label={translate(TranslationKeys.collectible_event)} />
-                        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-                                {renderContent()}
-                        </ScrollView>
+                        <View style={styles.container}>
+                                <ScrollView
+                                        style={styles.container}
+                                        contentContainerStyle={[
+                                                styles.content,
+                                                debugMode ? styles.contentWithBottomPadding : undefined,
+                                        ]}
+                                >
+                                        {renderContent()}
+                                </ScrollView>
+
+                                {debugMode ? (
+                                        <TouchableOpacity
+                                                style={[
+                                                        styles.debugCollectibleSpot,
+                                                        { backgroundColor: buttonColor, borderColor: theme.screen.icon },
+                                                ]}
+                                                onPress={handleDebugCollectibleTouch}
+                                                activeOpacity={0.85}
+                                        >
+                                                <Text style={[styles.debugCollectibleSpotText, { color: theme.dark }]}>
+                                                        {translate(TranslationKeys.collectible_event_debug_spot)}
+                                                </Text>
+                                                <Text style={[styles.debugCollectibleSpotSubtext, { color: theme.dark }]}>
+                                                        {translate(TranslationKeys.collectible_event_points)}: {points || '0'}
+                                                </Text>
+                                        </TouchableOpacity>
+                                ) : null}
+                        </View>
                         <PermissionModal
                                 isVisible={isPermissionModalVisible}
                                 setIsVisible={setIsPermissionModalVisible}
