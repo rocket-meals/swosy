@@ -15,6 +15,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { CollectibleAt } from 'repo-depkit-common';
 
 const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
 	const { theme } = useTheme();
@@ -137,11 +139,11 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
 
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
-			<View
-				style={{
-					...styles.sheetHeader,
-					paddingRight: isWeb ? 10 : 0,
-					paddingTop: isWeb ? 10 : 0,
+                                <View
+                                        style={{
+                                                ...styles.sheetHeader,
+                                                paddingRight: isWeb ? 10 : 0,
+                                                paddingTop: isWeb ? 10 : 0,
 				}}
 			>
 				<View />
@@ -150,13 +152,14 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
 						...styles.sheetHeading,
 						fontSize: isWeb ? 40 : 28,
 						color: theme.screen.text,
-					}}
-				>
-					{translate(TranslationKeys.sort)}
-				</Text>
-			</View>
-			<View style={styles.sortingListContainer}>
-				{sortingOptions.map((option, index) => (
+                                        }}
+                                >
+                                        {translate(TranslationKeys.sort)}
+                                </Text>
+                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers_sort} />
+                        </View>
+                        <View style={styles.sortingListContainer}>
+                                {sortingOptions.map((option, index) => (
 					<TouchableOpacity
 						key={option.id + index}
 						style={[

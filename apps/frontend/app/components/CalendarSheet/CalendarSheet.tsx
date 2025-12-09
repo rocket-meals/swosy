@@ -13,6 +13,8 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { SET_SELECTED_DATE } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { CollectibleAt } from 'repo-depkit-common';
 
 const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, selectedDateProp, updateGlobal }) => {
     const { theme } = useTheme();
@@ -125,6 +127,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                         textDayHeaderFontSize: 14,
                     }}
                 />
+                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers_select_date} />
             </View>
         </MyScrollViewModal>
     );
