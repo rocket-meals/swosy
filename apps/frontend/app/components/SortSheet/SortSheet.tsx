@@ -156,8 +156,8 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
                                 >
                                         {translate(TranslationKeys.sort)}
                                 </Text>
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         </View>
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         <View style={styles.sortingListContainer}>
                                 {sortingOptions.map((option, index) => (
 					<TouchableOpacity

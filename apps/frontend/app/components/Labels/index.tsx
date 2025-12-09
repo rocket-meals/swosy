@@ -80,13 +80,13 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 	return (
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
-
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
                         {foodMarkings?.map((marking: DatabaseTypes.Markings) => (
                                 <MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
                         ))}
 
                         <FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings_details} />
+
                 </View>
         );
 };

@@ -91,14 +91,6 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                 { label: 'FoodOffer Categories', value: foodOfferCategories },
                 { label: 'MarkingDetails', value: markingDetails },
                 { label: 'Collectible Events', value: collectibleEvents },
-                ...(profile?.collectible_event_participants
-                        ? [
-                                  {
-                                          label: 'Collectible Event Participations',
-                                          value: profile?.collectible_event_participants,
-                                  },
-                          ]
-                        : []),
         ];
 
 	return (
@@ -117,6 +109,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 				</View>
 				<SettingsGroupTitle>{translate(TranslationKeys.your_data_which_we_know_if_you_have_a_profile)}</SettingsGroupTitle>
 				{/* Info Items List */}
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_data_access} />
 				<View
 					style={{
 						width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
@@ -138,7 +131,6 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                                                 const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
                                                 return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
                                         })}
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_data_access} />
                                 </View>
                         </ScrollView>
                 </View>

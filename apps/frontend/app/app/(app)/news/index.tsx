@@ -75,6 +75,7 @@ const Index = () => {
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 			>
 				<View style={styles.newsListContainer}>
+					<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_news} />
 					{loading ? (
 						<View
 							style={{
@@ -94,7 +95,6 @@ const Index = () => {
                                                         }
                                                 })
                                         )}
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_news} />
                                 </View>
                         </ScrollView>
                 </SafeAreaView>
