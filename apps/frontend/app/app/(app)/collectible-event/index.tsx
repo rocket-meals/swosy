@@ -535,10 +535,13 @@ const CollectibleEventScreen = () => {
                                                         {activeCollectibleKeys.map((key, index) => {
                                                                 const isCollected = Boolean(collectibleDict?.[key]);
                                                                 const isHintVisible = isCollected || visibleHints[key];
+                                                                const formattedLabel = key
+                                                                        .replace(/^collectible_at_?/, '')
+                                                                        .replace(/_/g, ' ');
 
                                                                 const iconBgColor = isCollected ? '#2DBE62' : '#F7D21F';
                                                                 const labelText = isHintVisible
-                                                                        ? key
+                                                                        ? formattedLabel
                                                                         : translate(TranslationKeys.collectible_event_show_hint);
 
                                                                 return (
