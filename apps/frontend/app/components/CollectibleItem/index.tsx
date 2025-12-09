@@ -13,6 +13,7 @@ import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import MyImage from '../MyImage';
+import useRateAppModal from '@/hooks/useRateAppModal';
 
 type CollectibleKey = (typeof COLLECTABLE_AT_FIELDS)[number];
 
@@ -36,6 +37,8 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
         const { primaryColor: projectColor } = useSelector((state: RootState) => state.settings);
         const [isSaving, setIsSaving] = useState(false);
+
+        const { openRateAppModal } = useRateAppModal(projectColor || theme.primary);
 
         const { collectibleDict, setCollectibleKey, collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
@@ -76,6 +79,10 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         `${translate(TranslationKeys.collectible_event_collected)} ${updatedCount}/${maxCollectibleKeys || '∞'}`,
                         'success'
                 );
+
+                if (maxCollectibleKeys > 0 && updatedCount === maxCollectibleKeys) {
+                        openRateAppModal();
+                }
 
                 if (!loggedIn || !profile?.id) {
                         return;
