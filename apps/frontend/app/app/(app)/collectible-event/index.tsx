@@ -393,7 +393,8 @@ const CollectibleEventScreen = () => {
                         return <Text style={{ ...styles.info, color: theme.screen.text }}>{translate(TranslationKeys.collectible_event_no_active)}</Text>;
                 }
 
-                const translations = (activeCollectibleEvent?.translations || []) as any[];
+                const translations =
+                        (activeCollectibleEvent?.translations || []) as DatabaseTypes.CollectibleEventsTranslations[];
                 const title =
                         getDirectusTranslation(
                                 { languageCode: language },

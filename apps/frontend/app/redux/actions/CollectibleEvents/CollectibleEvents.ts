@@ -9,7 +9,7 @@ export class CollectibleEventsHelper extends CollectionHelper<DatabaseTypes.Coll
 
         async fetchCollectibleEvents(queryOverride: any = {}) {
                 const defaultQuery = {
-                        fields: ['*, translations.*'],
+                        fields: ['*', 'translations.*'],
                         sort: ['sort'],
                         limit: 200,
                 };
