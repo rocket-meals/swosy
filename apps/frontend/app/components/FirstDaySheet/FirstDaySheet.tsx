@@ -9,6 +9,8 @@ import { isWeb } from '@/constants/Constants';
 import styles from './styles';
 import { FirstDaySheetProps } from './types';
 import { TranslationKeys } from '@/locales/keys';
+import CollectibleSpot from '../CollectibleItem/CollectibleSpot';
+import { CollectibleAt } from 'repo-depkit-common';
 
 const FirstDaySheet: React.FC<FirstDaySheetProps> = ({ closeSheet, selectedDay, onSelect }) => {
 	const { theme } = useTheme();
@@ -47,6 +49,7 @@ const FirstDaySheet: React.FC<FirstDaySheetProps> = ({ closeSheet, selectedDay, 
 					/>
 				))}
 			</View>
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_first_day_of_week} />
 		</BottomSheetScrollView>
 	);
 };

@@ -11,6 +11,8 @@ import { drawers } from '@/constants/SettingData';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import CollectibleSpot from "@/components/CollectibleItem/CollectibleSpot";
+import { CollectibleAt } from 'repo-depkit-common';
 
 const DrawerPositionSheet: React.FC<DrawerPositionSheetProps> = ({ closeSheet, selectedPosition, onSelect }) => {
 	const { theme } = useTheme();
@@ -50,6 +52,7 @@ const DrawerPositionSheet: React.FC<DrawerPositionSheetProps> = ({ closeSheet, s
 					/>
 				))}
 			</View>
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_menuposition} />
 		</BottomSheetScrollView>
 	);
 };

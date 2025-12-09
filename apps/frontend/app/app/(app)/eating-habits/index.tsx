@@ -131,7 +131,7 @@ const Index = () => {
                                                         return <MarkingLabels key={marking?.id} markingId={marking?.id} handleMenuSheet={openMenuSheet} />;
                                                 })}
                                         </View>
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_markings} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
                                 </View>
                         </ScrollView>
                 </View>

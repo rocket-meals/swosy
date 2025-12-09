@@ -128,7 +128,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
                                 {translate(TranslationKeys.canteen)}
                         </Text>
                         <CanteenSelection onSelectCanteen={handleSelectCanteen} />
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_canteen_selection} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_canteen_selection} />
                 </BottomSheetScrollView>
         );
 };

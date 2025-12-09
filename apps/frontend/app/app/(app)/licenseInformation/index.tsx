@@ -191,7 +191,7 @@ const LicenseInformation = () => {
 							</View>
                                                 ))}
                                         </View>
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_license_information} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_license_information} />
                                 </View>
                         </ScrollView>
                 </View>

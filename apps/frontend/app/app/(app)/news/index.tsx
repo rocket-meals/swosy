@@ -94,7 +94,7 @@ const Index = () => {
                                                         }
                                                 })
                                         )}
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_news} />
+                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_news} />
                                 </View>
                         </ScrollView>
                 </SafeAreaView>

@@ -86,7 +86,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
                         ))}
 
                         <FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffer_details_markings} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings_details} />
                 </View>
         );
 };

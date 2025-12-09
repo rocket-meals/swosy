@@ -313,6 +313,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		const widthStyle = { width: screenWidth > 768 ? '60%' : '100%' };
 		return (
 			<View style={{ width: '100%', paddingHorizontal: 5, marginBottom: 10, alignItems: 'center' }}>
+
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_campus} />
+
 				<View style={[styles.searchContainer, widthStyle]}>
 					<TextInput
 						style={[styles.searchInput, { color: theme.screen.text }]}
@@ -409,7 +412,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
                                                         contentContainerStyle={{
                                                                 marginTop: 20,
                                                         }}
-                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectibleAt.collectable_at_campus} />}
                                                         ListHeaderComponent={ListHeaderComponent}
                                                         ListEmptyComponent={ListEmptyComponent}
                                                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

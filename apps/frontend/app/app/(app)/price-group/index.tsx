@@ -155,7 +155,7 @@ const Index = () => {
 						/>
 					</TouchableOpacity>
                                 ))}
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_price_group_selection} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_price_group_selection} />
                         </View>
                 </View>
         );

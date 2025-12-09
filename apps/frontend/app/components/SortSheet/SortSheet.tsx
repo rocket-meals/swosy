@@ -156,7 +156,7 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
                                 >
                                         {translate(TranslationKeys.sort)}
                                 </Text>
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers_sort} />
+                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         </View>
                         <View style={styles.sortingListContainer}>
                                 {sortingOptions.map((option, index) => (

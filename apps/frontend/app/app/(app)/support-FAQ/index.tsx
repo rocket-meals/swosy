@@ -142,7 +142,7 @@ const SupportFaq = () => {
                                                         groupPosition="bottom"
                                                 />
                                         </View>
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_faq} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_faq} />
                                 </View>
                         </ScrollView>
                 </View>

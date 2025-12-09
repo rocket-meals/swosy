@@ -127,7 +127,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                         textDayHeaderFontSize: 14,
                     }}
                 />
-                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers_select_date} />
+                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_select_date} />
             </View>
         </MyScrollViewModal>
     );

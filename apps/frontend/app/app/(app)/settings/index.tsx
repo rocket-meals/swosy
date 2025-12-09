@@ -311,15 +311,9 @@ const Settings = () => {
 					{/* color Scheme */}
 					<View style={{ gap: 0 }}>
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={selectedTheme === 'systematic' ? translate(TranslationKeys.color_scheme_system) : selectedTheme === 'dark' ? translate(TranslationKeys.color_scheme_dark) : translate(TranslationKeys.color_scheme_light)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" />
-                                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_settings_theme} />
-
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openDrawerSheet()} groupPosition="middle" />
-                                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_settings_menuposition} />
-
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openAmountColumnModal()} groupPosition="middle" />
-                                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_settings_amount_column} />
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openFirstDayModal()} groupPosition="bottom" />
-                                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_settings_first_day_of_week} />
                                         </View>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
 					<View style={{ gap: 0 }}>
@@ -379,7 +373,7 @@ const Settings = () => {
                                                 </>
                                         )}
                                         <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />} label="Version" value={getVersionInternalForAppsettingsScreen().toString()} handleFunction={() => {}} />
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_settings} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings} />
                                 </View>
                         </ScrollView>
 			{isActive && (

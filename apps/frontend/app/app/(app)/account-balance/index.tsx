@@ -414,7 +414,7 @@ const AccountBalanceScreen = () => {
 					</BottomSheetView>
 				</BaseBottomSheet>
                         )}
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_card_balance} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
                 </ScrollView>
         );
 };

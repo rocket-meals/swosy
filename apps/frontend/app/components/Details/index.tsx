@@ -55,7 +55,7 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 				})
                         )}
                         <FoodLabelingInfo textStyle={styles.body1} backgroundColor={foods_area_color} />
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffer_details_nutritions} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_nutritions} />
                 </View>
         );
 };

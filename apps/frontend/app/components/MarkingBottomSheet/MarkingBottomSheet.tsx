@@ -16,7 +16,7 @@ const MarkingBottomSheet = forwardRef<BottomSheet, MarkingBottomSheetProps>(({ o
         return (
                 <BaseBottomSheet ref={ref} index={-1} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} enablePanDownToClose handleComponent={null} onClose={onClose}>
                         <MenuSheet closeSheet={onClose} />
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_marking_details} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings_details} />
                 </BaseBottomSheet>
         );
 });

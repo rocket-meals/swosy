@@ -603,7 +603,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                                 </Text>
                                         </View>
                                 )}
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers} />
+                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
                                 <View style={{ height: 40 }} />
                         </>
                 );

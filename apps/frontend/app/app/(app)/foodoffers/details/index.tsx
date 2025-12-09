@@ -766,7 +766,7 @@ export default function FoodDetailsScreen() {
                                                         {foodDetails?.id && renderContent(foodDetails)}
                                                 </View>
                                         </View>
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers_details} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
                                         <PermissionModal isVisible={warning} setIsVisible={setWarning} />
                                 </View>
                         </ScrollView>

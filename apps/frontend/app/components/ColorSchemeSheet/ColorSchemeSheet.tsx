@@ -11,6 +11,8 @@ import { themes } from '@/constants/SettingData';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import CollectibleSpot from "@/components/CollectibleItem/CollectibleSpot";
+import { CollectibleAt } from 'repo-depkit-common';
 
 const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selectedTheme, onSelect }) => {
 	const { theme } = useTheme();
@@ -50,6 +52,7 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 					/>
 				))}
 			</View>
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_theme} />
 		</BottomSheetScrollView>
 	);
 };

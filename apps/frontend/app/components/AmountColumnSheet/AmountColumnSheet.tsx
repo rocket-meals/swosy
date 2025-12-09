@@ -9,6 +9,8 @@ import { isWeb } from '@/constants/Constants';
 import styles from './styles';
 import { AmountColumnSheetProps } from './types';
 import { TranslationKeys } from '@/locales/keys';
+import CollectibleSpot from "@/components/CollectibleItem/CollectibleSpot";
+import { CollectibleAt } from 'repo-depkit-common';
 
 const AmountColumnSheet: React.FC<AmountColumnSheetProps> = ({ closeSheet, selectedAmount, onSelect }) => {
 	const { theme } = useTheme();
@@ -47,6 +49,7 @@ const AmountColumnSheet: React.FC<AmountColumnSheetProps> = ({ closeSheet, selec
 					/>
 				))}
 			</View>
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_amount_column} />
 		</BottomSheetScrollView>
 	);
 };

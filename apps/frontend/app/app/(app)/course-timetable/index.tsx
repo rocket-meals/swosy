@@ -166,7 +166,7 @@ const TimetableScreen = () => {
                                         {link && <RedirectButton label={label} type="link" backgroundColor={course_timetable_area_color} color={contrastColor} onClick={() => handleOpenInBrowser(link)} />}
                                 </View>
                         )}
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_course_timetable} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_course_timetable} />
                         {isActive && (
                                 <BaseBottomSheet
                                         ref={bottomSheetRef}

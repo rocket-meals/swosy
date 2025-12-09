@@ -399,7 +399,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                                         <MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
                                                         <Text style={getMenuLabelStyle('faq-living/index')}>{translate(TranslationKeys.logout)}</Text>
                                                 </TouchableOpacity>
-                                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_drawer} />
+                                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
                                         </View>
                                 </View>
 

@@ -138,7 +138,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                                                 const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
                                                 return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
                                         })}
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_data_access} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_data_access} />
                                 </View>
                         </ScrollView>
                 </View>

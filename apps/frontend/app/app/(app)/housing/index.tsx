@@ -394,6 +394,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 					)}
 				</View>
 
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_housing} />
+
 				<View
 					style={[
 						styles.searchContainer,
@@ -522,7 +524,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                                                 paddingHorizontal: 5,
                                                                 paddingBottom: 20,
                                                         }}
-                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectibleAt.collectable_at_housing} />}
                                                         ListHeaderComponent={ListHeaderComponent}
                                                         ListEmptyComponent={ListEmptyComponent}
                                                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
