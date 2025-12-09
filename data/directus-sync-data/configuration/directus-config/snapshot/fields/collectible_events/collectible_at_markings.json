@@ -1,13 +1,13 @@
 {
   "collection": "collectible_events",
-  "field": "collectable_at_settings",
+  "field": "collectible_at_markings",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectable_at_settings",
+    "field": "collectible_at_markings",
     "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 5,
+    "sort": 11,
     "special": [
       "cast-boolean"
     ],
@@ -25,7 +25,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "collectable_at_settings",
+    "name": "collectible_at_markings",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,

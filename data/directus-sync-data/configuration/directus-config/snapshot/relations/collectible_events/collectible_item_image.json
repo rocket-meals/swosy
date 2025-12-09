@@ -1,11 +1,11 @@
 {
   "collection": "collectible_events",
-  "field": "collectible_image",
+  "field": "collectible_item_image",
   "related_collection": "directus_files",
   "meta": {
     "junction_field": null,
     "many_collection": "collectible_events",
-    "many_field": "collectible_image",
+    "many_field": "collectible_item_image",
     "one_allowed_collections": null,
     "one_collection": "directus_files",
     "one_collection_field": null,
@@ -15,10 +15,10 @@
   },
   "schema": {
     "table": "collectible_events",
-    "column": "collectible_image",
+    "column": "collectible_item_image",
     "foreign_key_table": "directus_files",
     "foreign_key_column": "id",
-    "constraint_name": "collectible_events_collectible_image_foreign",
+    "constraint_name": "collectible_events_collectible_item_image_foreign",
     "on_update": "NO ACTION",
     "on_delete": "SET NULL"
   }

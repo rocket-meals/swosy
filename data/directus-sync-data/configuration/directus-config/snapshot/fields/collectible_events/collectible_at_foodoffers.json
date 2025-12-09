@@ -1,13 +1,13 @@
 {
   "collection": "collectible_events",
-  "field": "collectable_at_campus",
+  "field": "collectible_at_foodoffers",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectable_at_campus",
+    "field": "collectible_at_foodoffers",
     "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 10,
+    "sort": 1,
     "special": [
       "cast-boolean"
     ],
@@ -25,7 +25,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "collectable_at_campus",
+    "name": "collectible_at_foodoffers",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,

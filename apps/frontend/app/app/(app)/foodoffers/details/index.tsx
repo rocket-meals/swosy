@@ -10,7 +10,7 @@ import Details from '@/components/Details';
 import Labels from '@/components/Labels';
 import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal } from '@/constants/HelperFunctions';
-import { CollectableAt, DatabaseTypes } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -766,7 +766,7 @@ export default function FoodDetailsScreen() {
                                                         {foodDetails?.id && renderContent(foodDetails)}
                                                 </View>
                                         </View>
-                                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_foodoffers_details} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_foodoffers_details} />
                                         <PermissionModal isVisible={warning} setIsVisible={setWarning} />
                                 </View>
                         </ScrollView>

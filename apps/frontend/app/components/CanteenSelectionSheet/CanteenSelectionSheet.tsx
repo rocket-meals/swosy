@@ -9,7 +9,7 @@ import { isWeb } from '@/constants/Constants';
 import { SET_BUILDINGS, SET_CANTEENS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
-import { CollectableAt, DatabaseTypes } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { TranslationKeys } from '@/locales/keys';
@@ -128,7 +128,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
                                 {translate(TranslationKeys.canteen)}
                         </Text>
                         <CanteenSelection onSelectCanteen={handleSelectCanteen} />
-                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_canteen_selection} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_canteen_selection} />
                 </BottomSheetScrollView>
         );
 };

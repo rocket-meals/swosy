@@ -1,31 +1,31 @@
 {
   "collection": "collectible_events",
-  "field": "collectable_at_foodoffers",
+  "field": "repeat_every_year",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectable_at_foodoffers",
-    "group": "collectable_at",
+    "field": "repeat_every_year",
+    "group": "date_settings",
     "hidden": false,
     "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 1,
+    "sort": 3,
     "special": [
       "cast-boolean"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "collectable_at_foodoffers",
+    "name": "repeat_every_year",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,

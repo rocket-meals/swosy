@@ -1,6 +1,6 @@
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ApartmentSortOption, CollectableAt, DatabaseTypes } from 'repo-depkit-common';
+import { ApartmentSortOption, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -522,7 +522,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                                                 paddingHorizontal: 5,
                                                                 paddingBottom: 20,
                                                         }}
-                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectableAt.collectable_at_housing} />}
+                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectibleAt.collectable_at_housing} />}
                                                         ListHeaderComponent={ListHeaderComponent}
                                                         ListEmptyComponent={ListEmptyComponent}
                                                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

@@ -15,7 +15,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { CollectableAt, DatabaseTypes } from 'repo-depkit-common';
+import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
@@ -155,7 +155,7 @@ const Index = () => {
 						/>
 					</TouchableOpacity>
                                 ))}
-                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_price_group_selection} />
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_price_group_selection} />
                         </View>
                 </View>
         );

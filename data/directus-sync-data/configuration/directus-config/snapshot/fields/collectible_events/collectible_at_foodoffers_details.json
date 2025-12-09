@@ -1,13 +1,13 @@
 {
   "collection": "collectible_events",
-  "field": "collectable_at_faq",
+  "field": "collectible_at_foodoffers_details",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectable_at_faq",
+    "field": "collectible_at_foodoffers_details",
     "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 5,
     "special": [
       "cast-boolean"
     ],
@@ -25,7 +25,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "collectable_at_faq",
+    "name": "collectible_at_foodoffers_details",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,

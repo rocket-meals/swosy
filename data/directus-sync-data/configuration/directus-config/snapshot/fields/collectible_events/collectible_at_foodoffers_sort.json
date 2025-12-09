@@ -1,13 +1,13 @@
 {
   "collection": "collectible_events",
-  "field": "collectable_at_foodoffer_details_nutritions",
+  "field": "collectible_at_foodoffers_sort",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectable_at_foodoffer_details_nutritions",
+    "field": "collectible_at_foodoffers_sort",
     "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
@@ -25,7 +25,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "collectable_at_foodoffer_details_nutritions",
+    "name": "collectible_at_foodoffers_sort",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,

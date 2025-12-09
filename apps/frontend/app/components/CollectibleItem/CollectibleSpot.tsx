@@ -1,11 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
-import { CollectableAt } from 'repo-depkit-common';
+import { CollectibleAt } from 'repo-depkit-common';
 
 import CollectibleItem from './index';
 
 type CollectibleSpotProps = {
-        collectibleKey: CollectableAt;
+        collectibleKey: CollectibleAt;
 };
 
 const CollectibleSpot: React.FC<CollectibleSpotProps> = ({ collectibleKey }) => {

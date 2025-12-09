@@ -12,7 +12,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectableAt } from 'repo-depkit-common';
+import { CollectibleAt } from 'repo-depkit-common';
 
 const SupportFaq = () => {
 	useSetPageTitle(TranslationKeys.feedback_support_faq);
@@ -142,7 +142,7 @@ const SupportFaq = () => {
                                                         groupPosition="bottom"
                                                 />
                                         </View>
-                                        <CollectibleSpot collectibleKey={CollectableAt.collectable_at_faq} />
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_faq} />
                                 </View>
                         </ScrollView>
                 </View>

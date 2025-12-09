@@ -10,7 +10,7 @@ import {
 	StyleSheet,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CampusSortOption, CollectableAt, DatabaseTypes } from 'repo-depkit-common';
+import { CampusSortOption, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -409,7 +409,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
                                                         contentContainerStyle={{
                                                                 marginTop: 20,
                                                         }}
-                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectableAt.collectable_at_campus} />}
+                                                        ListFooterComponent={<CollectibleSpot collectibleKey={CollectibleAt.collectable_at_campus} />}
                                                         ListHeaderComponent={ListHeaderComponent}
                                                         ListEmptyComponent={ListEmptyComponent}
                                                         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

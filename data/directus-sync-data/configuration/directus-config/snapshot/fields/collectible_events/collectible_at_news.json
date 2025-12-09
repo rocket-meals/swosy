@@ -1,13 +1,13 @@
 {
   "collection": "collectible_events",
-  "field": "collectable_at_canteen_selection",
+  "field": "collectible_at_news",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectable_at_canteen_selection",
+    "field": "collectible_at_news",
     "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 16,
     "special": [
       "cast-boolean"
     ],
@@ -25,7 +25,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "collectable_at_canteen_selection",
+    "name": "collectible_at_news",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,
