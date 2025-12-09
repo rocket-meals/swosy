@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { COLLECTABLE_AT_FIELDS, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import * as StoreReview from 'expo-store-review';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -19,10 +20,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import useMyModal from '@/hooks/useMyModal';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import MyMarkdown from '@/components/MyMarkdown';
 import { getDirectusTranslation } from '@/helper/resourceHelper';
+import { useModal } from '@/components/GlobalModal/useModal';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -141,6 +142,7 @@ const CollectibleEventScreen = () => {
         const [debugLogs, setDebugLogs] = useState<string[]>([]);
         const previousCollectedCountRef = useRef<number | null>(null);
         const previousEventIdRef = useRef<string | number | null>(null);
+        const hasShownReviewPromptRef = useRef<Record<string | number, boolean>>({});
 
         const appendDebugLog = useCallback((message: string, errorObject?: unknown) => {
                 const timestamp = new Date().toLocaleTimeString();
@@ -203,12 +205,12 @@ const CollectibleEventScreen = () => {
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
         const [visibleHints, setVisibleHints] = useState<Record<string, boolean>>({});
         const [pointsDraft, setPointsDraft] = useState('');
+        const [isPointsModalVisible, setIsPointsModalVisible] = useState(false);
 
-        const {
-                isVisible: isPointsModalVisible,
-                openModal: openPointsModal,
-                closeModal: closePointsModal,
-        } = useMyModal();
+        const { show: showModal, close: closeModal } = useModal();
+
+        const openPointsModal = useCallback(() => setIsPointsModalVisible(true), []);
+        const closePointsModal = useCallback(() => setIsPointsModalVisible(false), []);
 
         const toggleCollectibleHint = useCallback((key: string) => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
@@ -232,8 +234,22 @@ const CollectibleEventScreen = () => {
                         appendDebugLog(`Points increased from ${previousValue} to ${currentCount}`);
                 }
 
+                const maxCollectibles = activeCollectibleKeys.length;
+                const hasCollectedAll = maxCollectibles > 0 && currentCount === maxCollectibles;
+                const eventId = activeCollectibleEvent?.id;
+
+                if (
+                        hasCollectedAll &&
+                        currentCount > previousValue &&
+                        eventId &&
+                        !hasShownReviewPromptRef.current[eventId]
+                ) {
+                        hasShownReviewPromptRef.current = { ...hasShownReviewPromptRef.current, [eventId]: true };
+                        openRateAppModal();
+                }
+
                 previousCollectedCountRef.current = currentCount;
-        }, [appendDebugLog, collectedCount, debugMode]);
+        }, [activeCollectibleEvent?.id, activeCollectibleKeys.length, appendDebugLog, collectedCount, debugMode, openRateAppModal]);
 
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
@@ -387,6 +403,64 @@ const CollectibleEventScreen = () => {
                 setPoints(pointsDraft);
                 closePointsModal();
         }, [closePointsModal, pointsDraft]);
+
+        const handleRateApp = useCallback(async () => {
+                try {
+                        const isAvailable = await StoreReview.isAvailableAsync();
+                        if (isAvailable) {
+                                await StoreReview.requestReview();
+                        }
+                } catch (error) {
+                        console.log('Error requesting review', error);
+                } finally {
+                        closeModal();
+                }
+        }, [closeModal]);
+
+        const openRateAppModal = useCallback(() => {
+                showModal(
+                        <View style={{ padding: 24, gap: 12 }}>
+                                <Text
+                                        style={{
+                                                ...styles.title,
+                                                color: theme.screen.text,
+                                                textAlign: 'center',
+                                        }}
+                                >
+                                        {translate(TranslationKeys.collectible_event_congratulations_title)}
+                                </Text>
+
+                                <Text
+                                        style={{
+                                                ...styles.label,
+                                                color: theme.screen.text,
+                                                textAlign: 'center',
+                                        }}
+                                >
+                                        {translate(TranslationKeys.collectible_event_rate_app_prompt)}
+                                </Text>
+
+                                <TouchableOpacity
+                                        style={{ ...styles.button, backgroundColor: buttonColor }}
+                                        onPress={handleRateApp}
+                                >
+                                        <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                                {translate(TranslationKeys.rate_now)}
+                                        </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                        style={{ ...styles.button, backgroundColor: theme.drawerBg }}
+                                        onPress={closeModal}
+                                >
+                                        <Text style={{ ...styles.buttonText, color: theme.screen.text }}>
+                                                {translate(TranslationKeys.rate_later)}
+                                        </Text>
+                                </TouchableOpacity>
+                        </View>,
+                        { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
+                );
+        }, [buttonColor, closeModal, handleRateApp, showModal, theme.dark, theme.drawerBg, theme.screen.text, theme.sheet?.sheetBg, translate]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {

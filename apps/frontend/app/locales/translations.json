@@ -2039,6 +2039,26 @@
     "tr": "Koleksiyon objesi böyle görünüyor.",
     "zh": "收集物品看起来是这样的。"
   },
+  "collectible_event_congratulations_title": {
+    "de": "Glückwunsch!",
+    "en": "Congratulations!",
+    "ar": "تهانينا!",
+    "es": "¡Enhorabuena!",
+    "fr": "Félicitations !",
+    "ru": "Поздравляем!",
+    "tr": "Tebrikler!",
+    "zh": "恭喜！"
+  },
+  "collectible_event_rate_app_prompt": {
+    "de": "Möchtest du die App bewerten?",
+    "en": "Would you like to rate the app?",
+    "ar": "هل ترغب في تقييم التطبيق؟",
+    "es": "¿Te gustaría valorar la app?",
+    "fr": "Souhaitez-vous évaluer l'application ?",
+    "ru": "Хотите оценить приложение?",
+    "tr": "Uygulamayı değerlendirmek ister misin?",
+    "zh": "要为此应用评分吗？"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",
@@ -2845,13 +2865,33 @@
   },
   "rate_app": {
     "de": "App bewerten",
-    "en": "Rate App",
-    "ar": "Rate App",
-    "es": "Rate App",
-    "fr": "Rate App",
-    "ru": "Rate App",
-    "tr": "Rate App",
-    "zh": "Rate App"
+    "en": "Rate app",
+    "ar": "قيّم التطبيق",
+    "es": "Valorar la app",
+    "fr": "Noter l'application",
+    "ru": "Оценить приложение",
+    "tr": "Uygulamayı değerlendir",
+    "zh": "为应用评分"
+  },
+  "rate_now": {
+    "de": "Jetzt bewerten",
+    "en": "Rate now",
+    "ar": "قيّم الآن",
+    "es": "Valorar ahora",
+    "fr": "Noter maintenant",
+    "ru": "Оценить сейчас",
+    "tr": "Şimdi değerlendir",
+    "zh": "立即评分"
+  },
+  "rate_later": {
+    "de": "Später",
+    "en": "Later",
+    "ar": "لاحقًا",
+    "es": "Más tarde",
+    "fr": "Plus tard",
+    "ru": "Позже",
+    "tr": "Daha sonra",
+    "zh": "稍后"
   },
   "app_download": {
     "de": "App-Download",
