@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { DatabaseTypes, COLLECTABLE_AT_FIELDS } from 'repo-depkit-common';
 import { useSelector } from 'react-redux';
 
@@ -8,13 +8,11 @@ import useCollectibleDict from '@/hooks/useCollectibleDict';
 import { CollectibleEventParticipantsHelper } from '@/redux/actions/CollectibleEvents/CollectibleEventParticipants';
 import { RootState } from '@/redux/reducer';
 import styles from './styles';
-import { getHighResImageUrl } from '@/constants/HelperFunctions';
 import { useTheme } from '@/hooks/useTheme';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
-
-const appLogo = require('@/assets/logo/RocketMealsLogoWhite.png');
+import MyImage from '../MyImage';
 
 type CollectibleKey = (typeof COLLECTABLE_AT_FIELDS)[number];
 
@@ -47,18 +45,9 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideO
         const isCollected = Boolean(collectibleDict?.[collectibleKey]);
         const shouldHide = hideOnCollect && isCollected;
 
-        const collectibleImageRemoteUrl = (activeCollectibleEvent as any)?.collectible_image_remote_url;
-        const collectibleImage = (activeCollectibleEvent as any)?.collectible_image;
+        const collectibleImageRemoteUrl = (activeCollectibleEvent as any)?.collectible_item_image_remote_url;
 
-        const directusImageUrl = collectibleImage
-                ? getHighResImageUrl(String((collectibleImage as DatabaseTypes.DirectusFiles)?.id || collectibleImage))
-                : null;
-
-        const imageSource = collectibleImageRemoteUrl
-                ? { uri: collectibleImageRemoteUrl }
-                : directusImageUrl
-                        ? { uri: directusImageUrl }
-                        : appLogo;
+        const collectibleDirectusAssetId = (activeCollectibleEvent as any)?.collectible_item_image;
 
         if (!activeCollectibleEvent || !isCollectableHere || shouldHide) {
                 return null;
@@ -112,27 +101,32 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideO
                 }
         };
 
-        return (
-                <TouchableOpacity
-                        style={[styles.container, { borderColor: theme.screen.icon, backgroundColor: theme.screen.background }]}
-                        onPress={isPreview ? undefined : handleCollect}
-                        disabled={isSaving || isPreview}
-                        activeOpacity={isPreview ? 1 : 0.8}
-                >
-                        <Image source={imageSource} resizeMode="contain" style={styles.image} />
-                        {isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}
-                        {isSaving ? (
-                                <View style={styles.loadingOverlay}>
-                                        <ActivityIndicator color={theme.dark} />
-                                </View>
-                        ) : null}
-                        <View style={[styles.counter, { backgroundColor: theme.primary }]}>
-                                <Text style={[styles.counterText, { color: theme.dark }]}>
-                                        {collectedCount}/{maxCollectibleKeys || '∞'}
-                                </Text>
-                        </View>
-                </TouchableOpacity>
-        );
+	return (
+		<TouchableOpacity
+			style={[styles.container, { borderColor: theme.screen.icon, backgroundColor: theme.screen.background }]}
+			onPress={isPreview ? undefined : handleCollect}
+			disabled={isSaving || isPreview}
+			activeOpacity={isPreview ? 1 : 0.8}
+		>
+			<MyImage
+				remote_image_url={collectibleImageRemoteUrl}
+				directus_asset_id={collectibleDirectusAssetId}
+				resizeMode="contain"
+				style={styles.image}
+			/>
+			{isCollected ? <View style={[styles.collectedOverlay, { backgroundColor: theme.primary }]} /> : null}
+			{isSaving ? (
+				<View style={styles.loadingOverlay}>
+					<ActivityIndicator color={theme.dark} />
+				</View>
+			) : null}
+			<View style={[styles.counter, { backgroundColor: theme.primary }]}>
+				<Text style={[styles.counterText, { color: theme.dark }]}>
+					{collectedCount}/{maxCollectibleKeys || '∞'}
+				</Text>
+			</View>
+		</TouchableOpacity>
+	);
 };
 
 export default CollectibleItem;
