@@ -20,14 +20,21 @@ type CollectibleItemProps = {
         collectibleKey: CollectibleKey;
         hideOnCollect?: boolean;
         isPreview?: boolean;
+        hideCounter?: boolean;
 };
 
-const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideOnCollect = true, isPreview }) => {
+const CollectibleItem: React.FC<CollectibleItemProps> = ({
+        collectibleKey,
+        hideOnCollect = true,
+        isPreview,
+        hideCounter = false,
+}) => {
         const { theme } = useTheme();
         const toast = useToast();
         const { translate } = useLanguage();
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
+        const { primaryColor: projectColor } = useSelector((state: RootState) => state.settings);
         const [isSaving, setIsSaving] = useState(false);
 
         const { collectibleDict, setCollectibleKey, collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
@@ -101,13 +108,16 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideO
                 }
         };
 
-	return (
-		<TouchableOpacity
-			style={[styles.container, { borderColor: theme.screen.icon, backgroundColor: theme.screen.background }]}
-			onPress={isPreview ? undefined : handleCollect}
-			disabled={isSaving || isPreview}
-			activeOpacity={isPreview ? 1 : 0.8}
-		>
+        return (
+                <TouchableOpacity
+                        style={[
+                                styles.container,
+                                { borderColor: projectColor || theme.primary, backgroundColor: theme.screen.background },
+                        ]}
+                        onPress={isPreview ? undefined : handleCollect}
+                        disabled={isSaving || isPreview}
+                        activeOpacity={isPreview ? 1 : 0.8}
+                >
 			<MyImage
 				remote_image_url={collectibleImageRemoteUrl}
 				directus_asset_id={collectibleDirectusAssetId}
@@ -120,13 +130,15 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({ collectibleKey, hideO
 					<ActivityIndicator color={theme.dark} />
 				</View>
 			) : null}
-			<View style={[styles.counter, { backgroundColor: theme.primary }]}>
-				<Text style={[styles.counterText, { color: theme.dark }]}>
-					{collectedCount}/{maxCollectibleKeys || '∞'}
-				</Text>
-			</View>
-		</TouchableOpacity>
-	);
+                        {hideCounter ? null : (
+                                <View style={[styles.counter, { backgroundColor: theme.primary }]}>
+                                        <Text style={[styles.counterText, { color: theme.dark }]}>
+                                                {collectedCount}/{maxCollectibleKeys || '∞'}
+                                        </Text>
+                                </View>
+                        )}
+                </TouchableOpacity>
+        );
 };
 
 export default CollectibleItem;
