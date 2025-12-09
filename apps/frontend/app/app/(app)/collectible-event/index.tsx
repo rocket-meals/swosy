@@ -9,7 +9,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDirectusTranslation } from '@/helper/resourceHelper';
 import useToast from '@/hooks/useToast';
 import styles from './styles';
 import { CollectibleEventParticipantsHelper } from '@/redux/actions/CollectibleEvents/CollectibleEventParticipants';
@@ -131,7 +130,7 @@ const CollectibleEventScreen = () => {
         const dispatch = useDispatch();
         const { theme } = useTheme();
         const toast = useToast();
-        const { translate, language } = useLanguage();
+        const { translate } = useLanguage();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
         const { primaryColor, debugMode } = useSelector((state: RootState) => state.settings);
         const buttonColor = primaryColor || theme.primary;
@@ -393,20 +392,8 @@ const CollectibleEventScreen = () => {
                         return <Text style={{ ...styles.info, color: theme.screen.text }}>{translate(TranslationKeys.collectible_event_no_active)}</Text>;
                 }
 
-                const title = getDirectusTranslation(
-                        { languageCode: language },
-                        activeCollectibleEvent.translations as any,
-                        'title',
-                        false,
-                        activeCollectibleEvent.alias || ''
-                );
-                const description = getDirectusTranslation(
-                        { languageCode: language },
-                        activeCollectibleEvent.translations as any,
-                        'description',
-                        true,
-                        ''
-                );
+                const title = activeCollectibleEvent?.title || activeCollectibleEvent?.alias || '';
+                const description = activeCollectibleEvent?.description || '';
 
                 return (
                         <View style={styles.section}>
