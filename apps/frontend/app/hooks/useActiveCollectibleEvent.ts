@@ -4,7 +4,6 @@ import { DatabaseTypes } from 'repo-depkit-common';
 
 import { RootState } from '@/redux/reducer';
 
-
 export const isCollectibleEventActive = (
         event?: DatabaseTypes.CollectibleEvents,
         referenceDate: Date = new Date()
