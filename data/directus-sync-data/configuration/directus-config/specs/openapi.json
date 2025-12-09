@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "4ac07e71b7827e80fd97aeb946cd3cb9a3c4019a"
+    "version": "d3c831dfa50d3408201d410af507555644c562e3"
   },
   "servers": [
     {
@@ -48098,7 +48098,7 @@
             "type": "string"
           },
           "date_end": {
-            "nullable": true,
+            "nullable": false,
             "type": "string",
             "format": "timestamp"
           },
@@ -48142,7 +48142,7 @@
             "format": "timestamp"
           },
           "date_start": {
-            "nullable": true,
+            "nullable": false,
             "type": "string",
             "format": "timestamp"
           },
@@ -48202,7 +48202,9 @@
         },
         "x-collection": "collectible_events",
         "required": [
-          "id"
+          "date_end",
+          "id",
+          "date_start"
         ]
       },
       "ItemsCanteenFoodFeedbackReportSchedulesReportRecipients": {

@@ -1242,7 +1242,7 @@ type collectible_events {
   collectible_item_image_remote_url: String
   alias: String
   status: String
-  date_end: Date
+  date_end: Date!
   date_end_func: datetime_functions
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -1251,7 +1251,7 @@ type collectible_events {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  date_start: Date
+  date_start: Date!
   date_start_func: datetime_functions
   monitor_background_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   collectible_item_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files

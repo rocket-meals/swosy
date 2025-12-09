@@ -517,9 +517,9 @@ export type CollectibleEvents = {
   collectible_item_settings: string;
   collectible_settings: string;
   date_created?: string | null;
-  date_end?: string | null;
+  date_end: string;
   date_settings: string;
-  date_start?: string | null;
+  date_start: string;
   date_updated?: string | null;
   id: string;
   monitor_background_image?: string | DirectusFiles | null;
