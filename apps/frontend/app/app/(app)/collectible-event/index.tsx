@@ -9,7 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDescriptionFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
+import { getDirectusTranslation } from '@/helper/resourceHelper';
 import useToast from '@/hooks/useToast';
 import styles from './styles';
 import { CollectibleEventParticipantsHelper } from '@/redux/actions/CollectibleEvents/CollectibleEventParticipants';
@@ -391,13 +391,20 @@ const CollectibleEventScreen = () => {
                         return <Text style={{ ...styles.info, color: theme.screen.text }}>{translate(TranslationKeys.collectible_event_no_active)}</Text>;
                 }
 
-                const title =
-                        getTitleFromTranslation(activeCollectibleEvent.translations as any, language) ||
-                        activeCollectibleEvent.alias ||
-                        '';
-                const description =
-                        getDescriptionFromTranslation(activeCollectibleEvent.translations as any, language) ||
-                        '';
+                const title = getDirectusTranslation(
+                        { languageCode: language },
+                        activeCollectibleEvent.translations as any,
+                        'title',
+                        false,
+                        activeCollectibleEvent.alias || ''
+                );
+                const description = getDirectusTranslation(
+                        { languageCode: language },
+                        activeCollectibleEvent.translations as any,
+                        'description',
+                        true,
+                        ''
+                );
 
                 return (
                         <View style={styles.section}>
