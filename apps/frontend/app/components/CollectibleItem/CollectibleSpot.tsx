@@ -16,6 +16,7 @@ const CollectibleSpot: React.FC<CollectibleSpotProps> = ({ collectibleKey, isPre
                                 collectibleKey={collectibleKey}
                                 hideOnCollect={isPreview ? false : undefined}
                                 isPreview={isPreview}
+                                hideCounter
                         />
                 </View>
         );
