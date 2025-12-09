@@ -22,7 +22,7 @@ import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useMyModal from '@/hooks/useMyModal';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
-import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
+import MyMarkdown from '@/components/MyMarkdown';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -392,8 +392,12 @@ const CollectibleEventScreen = () => {
                 }
 
                 const title =
-                        getTitleFromTranslation(activeCollectibleEvent.translations as any, language) || activeCollectibleEvent.alias || '';
-                const description = getDescriptionFromTranslation(activeCollectibleEvent.translations as any, language);
+                        getTitleFromTranslation(activeCollectibleEvent.translations as any, language) ||
+                        activeCollectibleEvent.alias ||
+                        '';
+                const description =
+                        getDescriptionFromTranslation(activeCollectibleEvent.translations as any, language) ||
+                        '';
 
                 return (
                         <View style={styles.section}>
