@@ -124,8 +124,10 @@ class CollectibleEventsRepeatWorkflow extends SingleWorkflowRun {
       });
 
       if (overlappingEvents.length > 0) {
+        const overlappingEvent = overlappingEvents[0];
+
         await context.logger.appendLog(
-          `Skipping event ${event.id} due to overlap with current year event ${overlappingEvents[0].id}`
+          `Skipping event ${event.id} due to overlap with current year event ${overlappingEvent?.id}`
         );
         continue;
       }
