@@ -21,6 +21,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import useMyModal from '@/hooks/useMyModal';
+import ModalComponent from '@/components/ModalSetting/ModalComponent';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -140,9 +142,25 @@ const CollectibleEventScreen = () => {
         const previousCollectedCountRef = useRef<number | null>(null);
         const previousEventIdRef = useRef<string | number | null>(null);
 
-        const appendDebugLog = useCallback((message: string) => {
+        const appendDebugLog = useCallback((message: string, errorObject?: unknown) => {
                 const timestamp = new Date().toLocaleTimeString();
-                setDebugLogs(prev => [...prev, `${timestamp} - ${message}`]);
+                setDebugLogs(prevLogs => {
+                        const newLogs = [...prevLogs, `${timestamp} - ${message}`];
+
+                        if (errorObject) {
+                                let serializedError = '';
+
+                                try {
+                                        serializedError = JSON.stringify(errorObject, null, 2);
+                                } catch (err) {
+                                        serializedError = `Error serializing object: ${String(err)}`;
+                                }
+
+                                newLogs.push(`${timestamp} - ${serializedError}`);
+                        }
+
+                        return newLogs;
+                });
         }, []);
 
         const activeCollectibleKeys = useMemo(
@@ -182,6 +200,13 @@ const CollectibleEventScreen = () => {
         const [isPermissionModalVisible, setIsPermissionModalVisible] = useState(false);
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
         const [visibleHints, setVisibleHints] = useState<Record<string, boolean>>({});
+        const [pointsDraft, setPointsDraft] = useState('');
+
+        const {
+                isVisible: isPointsModalVisible,
+                openModal: openPointsModal,
+                closeModal: closePointsModal,
+        } = useMyModal();
 
         const toggleCollectibleHint = useCallback((key: string) => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
@@ -237,7 +262,7 @@ const CollectibleEventScreen = () => {
                         }
                 } catch (error) {
                         console.error('Error fetching collectible event participation:', error);
-                        appendDebugLog(`Failed to fetch participation: ${String(error)}`);
+                        appendDebugLog('Failed to fetch participation', error);
                         toast(translate(TranslationKeys.collectible_event_load_error), 'error');
                 } finally {
                         setIsLoading(false);
@@ -295,7 +320,7 @@ const CollectibleEventScreen = () => {
                         toast(translate(TranslationKeys.collectible_event_save_success), 'success');
                 } catch (error) {
                         console.error('Error saving collectible event participation:', error);
-                        appendDebugLog(`Failed to save participation: ${String(error)}`);
+                        appendDebugLog('Failed to save participation', error);
                         toast(translate(TranslationKeys.collectible_event_save_error), 'error');
                 } finally {
                         setIsSaving(false);
@@ -326,7 +351,7 @@ const CollectibleEventScreen = () => {
                                 }
                         } catch (error) {
                                 console.error('Error resetting collectible event participation:', error);
-                                appendDebugLog(`Failed to reset participation: ${String(error)}`);
+                                appendDebugLog('Failed to reset participation', error);
                                 toast(translate(TranslationKeys.collectible_event_save_error), 'error');
                         }
                 }
@@ -345,11 +370,21 @@ const CollectibleEventScreen = () => {
                                 toast(translate(TranslationKeys.reset), 'success');
                         } catch (error) {
                                 console.error('Error clearing collectible event participations:', error);
-                                appendDebugLog(`Failed to clear participations: ${String(error)}`);
+                                appendDebugLog('Failed to clear participations', error);
                                 toast(translate(TranslationKeys.collectible_event_save_error), 'error');
                         }
                 }
         }, [appendDebugLog, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
+
+        const openPointsEditModal = useCallback(() => {
+                setPointsDraft(points || String(collectedCount ?? 0));
+                openPointsModal();
+        }, [collectedCount, openPointsModal, points]);
+
+        const handleSavePoints = useCallback(() => {
+                setPoints(pointsDraft);
+                closePointsModal();
+        }, [closePointsModal, pointsDraft]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
@@ -381,24 +416,9 @@ const CollectibleEventScreen = () => {
                                                 <SettingsList
                                                         leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
                                                         label={translate(TranslationKeys.collectible_event_points)}
+                                                        value={String(collectedCount ?? 0)}
                                                         groupPosition="single"
                                                         showSeparator={false}
-                                                        rightElement={
-                                                                <TextInput
-                                                                        style={{
-                                                                                ...styles.settingsInput,
-                                                                                color: theme.screen.text,
-                                                                                backgroundColor: theme.drawerBg,
-                                                                                borderColor: theme.screen.icon,
-                                                                        }}
-                                                                        value={points}
-                                                                        onChangeText={setPoints}
-                                                                        placeholder={translate(TranslationKeys.enter_number)}
-                                                                        placeholderTextColor={theme.screen.placeholder}
-                                                                        keyboardType="numeric"
-                                                                        inputMode="numeric"
-                                                                />
-                                                        }
                                                 />
                                         </View>
                                 ) : null}
@@ -447,6 +467,18 @@ const CollectibleEventScreen = () => {
                                                 {translate(TranslationKeys.collectible_event_data_notice)}
                                         </Text>
                                 </View>
+
+                                {debugMode ? (
+                                        <View style={{ marginTop: 16 }}>
+                                                <SettingsList
+                                                        leftIcon={<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_event_points)}
+                                                        value={points || translate(TranslationKeys.enter_number)}
+                                                        groupPosition="single"
+                                                        onPress={openPointsEditModal}
+                                                />
+                                        </View>
+                                ) : null}
 
                                 <TouchableOpacity
                                         style={{
@@ -575,6 +607,34 @@ const CollectibleEventScreen = () => {
                                 isVisible={isPermissionModalVisible}
                                 setIsVisible={setIsPermissionModalVisible}
                         />
+
+                        <ModalComponent
+                                isVisible={isPointsModalVisible}
+                                onClose={closePointsModal}
+                                onSave={handleSavePoints}
+                                title={TranslationKeys.collectible_event_points}
+                                disableSave={!pointsDraft?.length}
+                        >
+                                <View style={{ gap: 12 }}>
+                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                {translate(TranslationKeys.collectible_event_points)}
+                                        </Text>
+                                        <TextInput
+                                                style={{
+                                                        ...styles.settingsInput,
+                                                        color: theme.screen.text,
+                                                        backgroundColor: theme.drawerBg,
+                                                        borderColor: theme.screen.icon,
+                                                }}
+                                                value={pointsDraft}
+                                                onChangeText={setPointsDraft}
+                                                placeholder={translate(TranslationKeys.enter_number)}
+                                                placeholderTextColor={theme.screen.placeholder}
+                                                keyboardType="numeric"
+                                                inputMode="numeric"
+                                        />
+                                </View>
+                        </ModalComponent>
                 </SafeAreaView>
         );
 };
