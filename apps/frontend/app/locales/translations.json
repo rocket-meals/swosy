@@ -1,4 +1,44 @@
 {
+  "EXPO_UPDATE_TEST": {
+    "de": "Expo Update Test",
+    "en": "Expo Update Test",
+    "ar": "اختبار تحديث Expo",
+    "es": "Prueba de actualización de Expo",
+    "fr": "Test de mise à jour Expo",
+    "ru": "Тест обновления Expo",
+    "tr": "Expo güncelleme testi",
+    "zh": "Expo 更新测试"
+  },
+  "EXPO_UPDATE_LOGS": {
+    "de": "Debug-Nachrichten",
+    "en": "Debug Messages",
+    "ar": "رسائل التصحيح",
+    "es": "Mensajes de depuración",
+    "fr": "Messages de débogage",
+    "ru": "Сообщения отладки",
+    "tr": "Hata ayıklama mesajları",
+    "zh": "调试信息"
+  },
+  "RELOAD_APP": {
+    "de": "App neu laden",
+    "en": "Reload App",
+    "ar": "إعادة تحميل التطبيق",
+    "es": "Recargar aplicación",
+    "fr": "Recharger l'application",
+    "ru": "Перезагрузить приложение",
+    "tr": "Uygulamayı yeniden yükle",
+    "zh": "重新加载应用"
+  },
+  "RUN_ALL_STEPS": {
+    "de": "Alle Schritte ausführen",
+    "en": "Run all steps",
+    "ar": "تشغيل جميع الخطوات",
+    "es": "Ejecutar todos los pasos",
+    "fr": "Exécuter toutes les étapes",
+    "ru": "Выполнить все шаги",
+    "tr": "Tüm adımları çalıştır",
+    "zh": "运行所有步骤"
+  },
   "CHECK_FOR_APP_UPDATES": {
     "de": "Nach App-Updates suchen",
     "en": "Check for App Updates",

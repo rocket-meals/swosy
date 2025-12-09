@@ -44,11 +44,23 @@ const Index = () => {
 						{translate(TranslationKeys.coordinates)}: {buildingPosition.lat}, {buildingPosition.lng}
 					</Text>
 				)}
-				<TouchableOpacity
-					style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
-					onPress={() =>
-						router.push({
-							pathname: '/leaflet-map',
+                                <TouchableOpacity
+                                        style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
+                                        onPress={() => router.push('/experimentell/expo-update-test')}
+                                >
+                                        <View style={styles.col}>
+                                                <MaterialCommunityIcons name="cloud-sync-outline" color={theme.screen.icon} size={24} />
+                                                <Text style={{ ...styles.body, color: theme.screen.text }}>
+                                                        {translate(TranslationKeys.EXPO_UPDATE_TEST)}
+                                                </Text>
+                                        </View>
+                                        <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                        style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
+                                        onPress={() =>
+                                                router.push({
+                                                        pathname: '/leaflet-map',
 							params: {
 								lat: String(buildingPosition?.lat ?? '52.275'),
 								lng: String(buildingPosition?.lng ?? '7.4584'),
