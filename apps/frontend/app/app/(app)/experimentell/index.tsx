@@ -124,17 +124,24 @@ const Index = () => {
 					</View>
 					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
 				</TouchableOpacity>
-				<TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/settings-list-check')}>
-					<View style={styles.col}>
-						<MaterialCommunityIcons name="format-list-text" color={theme.screen.icon} size={24} />
-						<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.settings_list_check)}</Text>
-					</View>
-					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-				</TouchableOpacity>
-				<TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/game-ideas')}>
-					<View style={styles.col}>
-						<MaterialCommunityIcons name="gamepad-variant" color={theme.screen.icon} size={24} />
-						<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.game_ideas)}</Text>
+                                <TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/settings-list-check')}>
+                                        <View style={styles.col}>
+                                                <MaterialCommunityIcons name="format-list-text" color={theme.screen.icon} size={24} />
+                                                <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.settings_list_check)}</Text>
+                                        </View>
+                                        <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/test-use-modal')}>
+                                        <View style={styles.col}>
+                                                <MaterialCommunityIcons name="test-tube" color={theme.screen.icon} size={24} />
+                                                <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.test_use_modal)}</Text>
+                                        </View>
+                                        <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/game-ideas')}>
+                                        <View style={styles.col}>
+                                                <MaterialCommunityIcons name="gamepad-variant" color={theme.screen.icon} size={24} />
+                                                <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.game_ideas)}</Text>
 					</View>
 					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
 				</TouchableOpacity>
