@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { COLLECTABLE_AT_FIELDS, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 
@@ -136,6 +136,14 @@ const CollectibleEventScreen = () => {
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
         const { collectedCount, collectibleDict } = useCollectibleDict(activeCollectibleEvent?.id);
+        const [debugLogs, setDebugLogs] = useState<string[]>([]);
+        const previousCollectedCountRef = useRef<number | null>(null);
+        const previousEventIdRef = useRef<string | number | null>(null);
+
+        const appendDebugLog = useCallback((message: string) => {
+                const timestamp = new Date().toLocaleTimeString();
+                setDebugLogs(prev => [...prev, `${timestamp} - ${message}`]);
+        }, []);
 
         const activeCollectibleKeys = useMemo(
                 () =>
@@ -179,6 +187,27 @@ const CollectibleEventScreen = () => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
         }, []);
 
+        useEffect(() => {
+                if (activeCollectibleEvent?.id === previousEventIdRef.current) {
+                        return;
+                }
+
+                previousEventIdRef.current = activeCollectibleEvent?.id ?? null;
+                previousCollectedCountRef.current = collectedCount ?? 0;
+                setDebugLogs([]);
+        }, [activeCollectibleEvent?.id, collectedCount]);
+
+        useEffect(() => {
+                const currentCount = collectedCount ?? 0;
+                const previousValue = previousCollectedCountRef.current ?? 0;
+
+                if (debugMode && currentCount > previousValue) {
+                        appendDebugLog(`Points increased from ${previousValue} to ${currentCount}`);
+                }
+
+                previousCollectedCountRef.current = currentCount;
+        }, [appendDebugLog, collectedCount, debugMode]);
+
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
                         setParticipation(null);
@@ -208,11 +237,12 @@ const CollectibleEventScreen = () => {
                         }
                 } catch (error) {
                         console.error('Error fetching collectible event participation:', error);
+                        appendDebugLog(`Failed to fetch participation: ${String(error)}`);
                         toast(translate(TranslationKeys.collectible_event_load_error), 'error');
                 } finally {
                         setIsLoading(false);
                 }
-        }, [activeCollectibleEvent?.id, participantsHelper, profile?.id, toast, translate]);
+        }, [activeCollectibleEvent?.id, appendDebugLog, participantsHelper, profile?.id, toast, translate]);
 
         useEffect(() => {
                 loadParticipation();
@@ -265,6 +295,7 @@ const CollectibleEventScreen = () => {
                         toast(translate(TranslationKeys.collectible_event_save_success), 'success');
                 } catch (error) {
                         console.error('Error saving collectible event participation:', error);
+                        appendDebugLog(`Failed to save participation: ${String(error)}`);
                         toast(translate(TranslationKeys.collectible_event_save_error), 'error');
                 } finally {
                         setIsSaving(false);
@@ -295,10 +326,11 @@ const CollectibleEventScreen = () => {
                                 }
                         } catch (error) {
                                 console.error('Error resetting collectible event participation:', error);
+                                appendDebugLog(`Failed to reset participation: ${String(error)}`);
                                 toast(translate(TranslationKeys.collectible_event_save_error), 'error');
                         }
                 }
-        }, [activeCollectibleEvent?.id, collectedCount, debugMode, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
+        }, [activeCollectibleEvent?.id, appendDebugLog, collectedCount, debugMode, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
 
         const resetAllParticipations = useCallback(async () => {
                 dispatch({ type: RESET_ALL_COLLECTIBLE_EVENT_DICTS });
@@ -313,10 +345,11 @@ const CollectibleEventScreen = () => {
                                 toast(translate(TranslationKeys.reset), 'success');
                         } catch (error) {
                                 console.error('Error clearing collectible event participations:', error);
+                                appendDebugLog(`Failed to clear participations: ${String(error)}`);
                                 toast(translate(TranslationKeys.collectible_event_save_error), 'error');
                         }
                 }
-        }, [dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
+        }, [appendDebugLog, dispatch, loggedIn, participantsHelper, profile?.id, toast, translate]);
 
         const renderContent = () => {
                 if (!activeCollectibleEvent) {
@@ -491,6 +524,31 @@ const CollectibleEventScreen = () => {
                                                         nextCollectibleKey={nextCollectibleKey}
                                                         debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}
                                                 />
+                                        ) : null}
+
+                                        {debugMode && debugLogs.length ? (
+                                                <View style={{ marginTop: 16 }}>
+                                                        <Text
+                                                                style={{
+                                                                        ...styles.label,
+                                                                        color: theme.screen.text,
+                                                                        marginBottom: 8,
+                                                                }}
+                                                        >
+                                                                Debug Logs
+                                                        </Text>
+                                                        <View style={{ gap: 6 }}>
+                                                                {debugLogs.map((log, index) => (
+                                                                        <Text
+                                                                                // eslint-disable-next-line react/no-array-index-key
+                                                                                key={`debug-log-${index}`}
+                                                                                style={{ color: theme.inactiveText }}
+                                                                        >
+                                                                                {log}
+                                                                        </Text>
+                                                                ))}
+                                                        </View>
+                                                </View>
                                         ) : null}
 
                                 {isLoading ? (
