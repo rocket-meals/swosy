@@ -2923,6 +2923,46 @@
     "tr": "Settings List Check",
     "zh": "Settings List Check"
   },
+  "test_use_modal": {
+    "de": "Test useModal",
+    "en": "Test useModal",
+    "ar": "Test useModal",
+    "es": "Test useModal",
+    "fr": "Test useModal",
+    "ru": "Test useModal",
+    "tr": "Test useModal",
+    "zh": "Test useModal"
+  },
+  "open_modal_example": {
+    "de": "Beispiel-Modal öffnen",
+    "en": "Open example modal",
+    "ar": "Open example modal",
+    "es": "Open example modal",
+    "fr": "Open example modal",
+    "ru": "Open example modal",
+    "tr": "Open example modal",
+    "zh": "Open example modal"
+  },
+  "modal_example_body": {
+    "de": "Dies ist ein Beispiel dafür, wie der useModal-Hook Inhalte anzeigen kann.",
+    "en": "This is an example of how the useModal hook can display content.",
+    "ar": "This is an example of how the useModal hook can display content.",
+    "es": "This is an example of how the useModal hook can display content.",
+    "fr": "This is an example of how the useModal hook can display content.",
+    "ru": "This is an example of how the useModal hook can display content.",
+    "tr": "This is an example of how the useModal hook can display content.",
+    "zh": "This is an example of how the useModal hook can display content."
+  },
+  "close_modal": {
+    "de": "Modal schließen",
+    "en": "Close modal",
+    "ar": "Close modal",
+    "es": "Close modal",
+    "fr": "Close modal",
+    "ru": "Close modal",
+    "tr": "Close modal",
+    "zh": "Close modal"
+  },
   "vertical_image_scroll": {
     "de": "Vertikaler Bildlauf",
     "en": "Vertical Image Scroll",
