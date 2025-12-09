@@ -100,6 +100,40 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                         </Text>
                                 </TouchableOpacity>
                         </View>
+
+                        {activeCollectibleEvent ? (
+                                <View style={{ marginTop: 12 }}>
+                                        <Text style={{ ...styles.info, color: theme.screen.text, marginBottom: 4 }}>
+                                                Event Details
+                                        </Text>
+                                        <SettingsList
+                                                key="event-id"
+                                                iconBgColor={theme.accent}
+                                                leftIcon={
+                                                        <MaterialCommunityIcons
+                                                                name="pound-box-outline"
+                                                                size={22}
+                                                                color={theme.screen.icon}
+                                                        />
+                                                }
+                                                label={`ID: ${activeCollectibleEvent.id}`}
+                                                groupPosition={getGroupPosition(0, 2) as any}
+                                        />
+                                        <SettingsList
+                                                key="event-alias"
+                                                iconBgColor={theme.accent}
+                                                leftIcon={
+                                                        <MaterialCommunityIcons
+                                                                name="label-outline"
+                                                                size={22}
+                                                                color={theme.screen.icon}
+                                                        />
+                                                }
+                                                label={`Alias: ${activeCollectibleEvent.alias || '-'}`}
+                                                groupPosition={getGroupPosition(1, 2) as any}
+                                        />
+                                </View>
+                        ) : null}
                 </View>
         );
 };
@@ -319,11 +353,11 @@ const CollectibleEventScreen = () => {
                                         </View>
                                 ) : null}
 
-                                <View style={{ marginTop: 16 }}>
-                                        {debugMode ? (
-                                                <>
-                                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
-                                                                {translate(TranslationKeys.collectible_event_points)}
+                        <View style={{ marginTop: 16 }}>
+                                {debugMode ? (
+                                        <>
+                                                <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                        {translate(TranslationKeys.collectible_event_points)}
                                                         </Text>
                                                         <TextInput
                                                                 style={{
