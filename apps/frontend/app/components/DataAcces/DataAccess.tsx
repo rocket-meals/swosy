@@ -10,6 +10,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { CollectibleAt } from 'repo-depkit-common';
 
 const parseMarkdown = (text: string, theme: any) => {
 	return text.split('\n').map((line, index) => {
@@ -129,17 +131,18 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 
 					{/* Device Data List */}
 					<SettingsGroupTitle>{translate(TranslationKeys.translation_all_on_device_saved_data)}</SettingsGroupTitle>
-					{dataDevice.map((data, index) => {
-						if (!data?.value) return null;
-						const last = index === dataDevice.length - 1;
-						const first = index === 0;
-						const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
-						return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
-					})}
-				</View>
-			</ScrollView>
-		</View>
-	);
+                                        {dataDevice.map((data, index) => {
+                                                if (!data?.value) return null;
+                                                const last = index === dataDevice.length - 1;
+                                                const first = index === 0;
+                                                const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
+                                                return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
+                                        })}
+                                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_data_access} />
+                                </View>
+                        </ScrollView>
+                </View>
+        );
 };
 
 export default DataAccess;

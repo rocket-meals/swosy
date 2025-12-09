@@ -30,6 +30,8 @@ import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
 import Server from '@/constants/ServerUrl';
 import { ServerAPI } from '@/redux/actions';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { CollectibleAt } from 'repo-depkit-common';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -411,9 +413,10 @@ const AccountBalanceScreen = () => {
 						</View>
 					</BottomSheetView>
 				</BaseBottomSheet>
-			)}
-		</ScrollView>
-	);
+                        )}
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_card_balance} />
+                </ScrollView>
+        );
 };
 
 export default AccountBalanceScreen;

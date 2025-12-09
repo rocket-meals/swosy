@@ -22,6 +22,8 @@ import { RootState } from '@/redux/reducer';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { CollectibleAt } from 'repo-depkit-common';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -351,7 +353,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						</View>
 						<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
 					</TouchableOpacity>
-					<View style={styles.menuContainer}>
+                                        <View style={styles.menuContainer}>
                                                 {generateMenuItems().map((item, index) => (
                                                         <TouchableOpacity
                                                                 key={index}
@@ -379,26 +381,27 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                                                 <Text style={getMenuLabelStyle(item.activeKey)}>{item.label}</Text>
                                                         </TouchableOpacity>
                                                 ))}
-						<View style={styles.divider} />
-						<TouchableOpacity style={getMenuItemStyle('settings/index')} onPress={() => navigation.navigate('settings/index')}>
+                                                <View style={styles.divider} />
+                                                <TouchableOpacity style={getMenuItemStyle('settings/index')} onPress={() => navigation.navigate('settings/index')}>
 							<Ionicons name="settings-outline" size={28} color={isActive('settings/index') ? getContrastColor('settings/index') : theme.inactiveIcon} />
 							<Text style={getMenuLabelStyle('settings/index')}>{translate(TranslationKeys.settings)}</Text>
 						</TouchableOpacity>
-						<TouchableOpacity
-							style={getMenuItemStyle('faq-living/index')}
-							onPress={() => {
-								if (user?.id) {
-									handleLogout();
+                                                <TouchableOpacity
+                                                        style={getMenuItemStyle('faq-living/index')}
+                                                        onPress={() => {
+                                                                if (user?.id) {
+                                                                        handleLogout();
 								} else {
 									performLogout(dispatch, router, true);
 								}
 							}}
 						>
-							<MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
-							<Text style={getMenuLabelStyle('faq-living/index')}>{translate(TranslationKeys.logout)}</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
+                                                        <MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
+                                                        <Text style={getMenuLabelStyle('faq-living/index')}>{translate(TranslationKeys.logout)}</Text>
+                                                </TouchableOpacity>
+                                                <CollectibleSpot collectibleKey={CollectibleAt.collectable_at_drawer} />
+                                        </View>
+                                </View>
 
 				<View style={styles.footer}>
 					{wikis &&
