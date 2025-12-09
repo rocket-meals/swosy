@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { COLLECTABLE_AT_FIELDS, DatabaseTypes } from 'repo-depkit-common';
+import { COLLECTABLE_AT_FIELDS, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -28,6 +28,8 @@ type DebugSectionProps = {
         buttonColor: string;
         resetCurrentCollectibles: () => void;
         resetAllParticipations: () => void;
+        nextCollectibleKey?: CollectibleAt;
+        debugSpotLabel: string;
 };
 
 const getGroupPosition = (index: number, length: number) => {
@@ -43,37 +45,12 @@ const DebugSection: React.FC<DebugSectionProps> = ({
         buttonColor,
         resetCurrentCollectibles,
         resetAllParticipations,
+        nextCollectibleKey,
+        debugSpotLabel,
 }) => {
-        const activeKeys = COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as any)?.[key]);
-        const inactiveKeys = COLLECTABLE_AT_FIELDS.filter(key => !(activeCollectibleEvent as any)?.[key]);
-
         return (
                 <View style={{ marginTop: 16 }}>
                         <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
-                        <Text style={{ ...styles.info, color: theme.screen.text, marginBottom: 4 }}>
-                                Im Event auffindbar
-                        </Text>
-                        {activeKeys.map((key, index) => (
-                                <SettingsList
-                                        key={`active-${key}`}
-                                        iconBgColor={buttonColor}
-                                        leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
-                                        label={key}
-                                        groupPosition={getGroupPosition(index, activeKeys.length) as any}
-                                />
-                        ))}
-
-                        <Text style={{ ...styles.info, color: theme.screen.text, marginVertical: 4 }}>Ausgeschaltet</Text>
-                        {inactiveKeys.map((key, index) => (
-                                <SettingsList
-                                        key={`inactive-${key}`}
-                                        iconBgColor={theme.inactiveText}
-                                        leftIcon={<MaterialCommunityIcons name="close-circle-outline" size={22} color={theme.screen.icon} />}
-                                        label={key}
-                                        groupPosition={getGroupPosition(index, inactiveKeys.length) as any}
-                                />
-                        ))}
-
                         <View style={{ marginTop: 12, gap: 8 }}>
                                 <TouchableOpacity
                                         style={{
@@ -101,6 +78,13 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                         </Text>
                                 </TouchableOpacity>
                         </View>
+
+                        {nextCollectibleKey ? (
+                                <View style={{ marginTop: 12, gap: 8 }}>
+                                        <Text style={{ ...styles.label, color: theme.screen.text }}>{debugSpotLabel}</Text>
+                                        <CollectibleSpot collectibleKey={nextCollectibleKey} />
+                                </View>
+                        ) : null}
 
                         {activeCollectibleEvent ? (
                                 <View style={{ marginTop: 12 }}>
@@ -383,15 +367,6 @@ const CollectibleEventScreen = () => {
                                                                 />
                                                         }
                                                 />
-
-                                                {nextCollectibleKey ? (
-                                                        <View style={{ gap: 8 }}>
-                                                                <Text style={{ ...styles.label, color: theme.screen.text }}>
-                                                                        {translate(TranslationKeys.collectible_event_debug_spot)}
-                                                                </Text>
-                                                                <CollectibleSpot collectibleKey={nextCollectibleKey} />
-                                                        </View>
-                                                ) : null}
                                         </View>
                                 ) : null}
 
@@ -513,6 +488,8 @@ const CollectibleEventScreen = () => {
                                                         resetAllParticipations={resetAllParticipations}
                                                         resetCurrentCollectibles={resetCurrentCollectibles}
                                                         theme={theme}
+                                                        nextCollectibleKey={nextCollectibleKey}
+                                                        debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}
                                                 />
                                         ) : null}
 
