@@ -11,7 +11,7 @@ const TestUseModalScreen = () => {
         useSetPageTitle(TranslationKeys.test_use_modal);
         const { theme } = useTheme();
         const { translate } = useLanguage();
-        const { show, close } = useModal();
+        const { show, close, debug } = useModal();
 
         const openExampleModal = () => {
                 show(
@@ -71,6 +71,12 @@ const TestUseModalScreen = () => {
                                                 {translate(TranslationKeys.open_modal_example)}
                                         </Text>
                                 </TouchableOpacity>
+                                <View style={[styles.debugCard, { backgroundColor: theme.screen.iconBg }]}>
+                                        <Text style={[styles.debugTitle, { color: theme.screen.text }]}>useModal debug</Text>
+                                        <Text selectable style={[styles.debugText, { color: theme.screen.text }]}>
+                                                {JSON.stringify(debug, null, 2)}
+                                        </Text>
+                                </View>
                         </View>
                 </ScrollView>
         );

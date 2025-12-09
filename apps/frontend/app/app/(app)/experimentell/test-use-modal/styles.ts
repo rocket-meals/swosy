@@ -54,4 +54,17 @@ export default StyleSheet.create({
                 fontFamily: 'Poppins_600SemiBold',
                 fontSize: 16,
         },
+        debugCard: {
+                padding: 16,
+                borderRadius: 10,
+                gap: 8,
+        },
+        debugTitle: {
+                fontFamily: 'Poppins_700Bold',
+                fontSize: 16,
+        },
+        debugText: {
+                fontFamily: 'Poppins_400Regular',
+                fontSize: 14,
+        },
 });
