@@ -10,9 +10,6 @@ const styles = StyleSheet.create({
         section: {
                 marginBottom: 16,
         },
-        contentWithBottomPadding: {
-                paddingBottom: 120,
-        },
         title: {
                 fontSize: 20,
                 fontWeight: '700',
@@ -59,29 +56,13 @@ const styles = StyleSheet.create({
                 lineHeight: 18,
                 marginTop: 12,
         },
-        debugCollectibleSpot: {
-                position: 'absolute',
-                bottom: 16,
-                left: 16,
-                right: 16,
-                borderRadius: 12,
+        settingsInput: {
+                minWidth: 100,
                 borderWidth: 1,
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                alignItems: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-        },
-        debugCollectibleSpotText: {
-                fontSize: 16,
-                fontWeight: '700',
-        },
-        debugCollectibleSpotSubtext: {
-                fontSize: 14,
-                marginTop: 4,
+                borderRadius: 10,
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                fontSize: 15,
         },
 });
 

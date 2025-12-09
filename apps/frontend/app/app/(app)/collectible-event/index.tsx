@@ -20,6 +20,7 @@ import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -168,6 +169,11 @@ const CollectibleEventScreen = () => {
                 [activeCollectibleEvent]
         );
 
+        const nextCollectibleKey = useMemo(
+                () => activeCollectibleKeys.find(key => !collectibleDict?.[key]),
+                [activeCollectibleKeys, collectibleDict]
+        );
+
         const maxCollectibleKeys = useMemo(
                 () =>
                         activeCollectibleEvent
@@ -187,15 +193,6 @@ const CollectibleEventScreen = () => {
 
         const toggleCollectibleHint = useCallback((key: string) => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
-        }, []);
-
-        const handleDebugCollectibleTouch = useCallback(() => {
-                setPoints(prev => {
-                        const currentValue = Number.parseInt(prev || '0', 10);
-                        const nextValue = Number.isNaN(currentValue) ? 1 : currentValue + 1;
-
-                        return String(nextValue);
-                });
         }, []);
 
         const loadParticipation = useCallback(async () => {
@@ -362,30 +359,44 @@ const CollectibleEventScreen = () => {
                                         </View>
                                 ) : null}
 
-                        <View style={{ marginTop: 16 }}>
                                 {debugMode ? (
-                                        <>
-                                                <Text style={{ ...styles.label, color: theme.screen.text }}>
-                                                        {translate(TranslationKeys.collectible_event_points)}
-                                                        </Text>
-                                                        <TextInput
-                                                                style={{
-                                                                        ...styles.input,
-                                                                        color: theme.screen.text,
-                                                                        backgroundColor: theme.drawerBg,
-                                                                        borderColor: theme.screen.icon,
-                                                                }}
-                                                                value={points}
-                                                                onChangeText={setPoints}
-                                                                placeholder={translate(TranslationKeys.enter_number)}
-                                                                placeholderTextColor={theme.screen.placeholder}
-                                                                keyboardType="numeric"
-                                                                inputMode="numeric"
-                                                        />
-                                                </>
-                                        ) : null}
+                                        <View style={{ marginTop: 16, gap: 12 }}>
+                                                <SettingsList
+                                                        leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_event_points)}
+                                                        groupPosition="single"
+                                                        showSeparator={false}
+                                                        rightElement={
+                                                                <TextInput
+                                                                        style={{
+                                                                                ...styles.settingsInput,
+                                                                                color: theme.screen.text,
+                                                                                backgroundColor: theme.drawerBg,
+                                                                                borderColor: theme.screen.icon,
+                                                                        }}
+                                                                        value={points}
+                                                                        onChangeText={setPoints}
+                                                                        placeholder={translate(TranslationKeys.enter_number)}
+                                                                        placeholderTextColor={theme.screen.placeholder}
+                                                                        keyboardType="numeric"
+                                                                        inputMode="numeric"
+                                                                />
+                                                        }
+                                                />
 
-                                        <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
+                                                {nextCollectibleKey ? (
+                                                        <View style={{ gap: 8 }}>
+                                                                <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                                        {translate(TranslationKeys.collectible_event_debug_spot)}
+                                                                </Text>
+                                                                <CollectibleSpot collectibleKey={nextCollectibleKey} />
+                                                        </View>
+                                                ) : null}
+                                        </View>
+                                ) : null}
+
+                                <View style={{ marginTop: 16 }}>
+                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
                                                 {translate(TranslationKeys.email)}
                                         </Text>
                                         <TextInput
@@ -521,33 +532,9 @@ const CollectibleEventScreen = () => {
                 <SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
                         <CustomMenuHeader label={translate(TranslationKeys.collectible_event)} />
                         <View style={styles.container}>
-                                <ScrollView
-                                        style={styles.container}
-                                        contentContainerStyle={[
-                                                styles.content,
-                                                debugMode ? styles.contentWithBottomPadding : undefined,
-                                        ]}
-                                >
+                                <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                                         {renderContent()}
                                 </ScrollView>
-
-                                {debugMode ? (
-                                        <TouchableOpacity
-                                                style={[
-                                                        styles.debugCollectibleSpot,
-                                                        { backgroundColor: buttonColor, borderColor: theme.screen.icon },
-                                                ]}
-                                                onPress={handleDebugCollectibleTouch}
-                                                activeOpacity={0.85}
-                                        >
-                                                <Text style={[styles.debugCollectibleSpotText, { color: theme.dark }]}>
-                                                        {translate(TranslationKeys.collectible_event_debug_spot)}
-                                                </Text>
-                                                <Text style={[styles.debugCollectibleSpotSubtext, { color: theme.dark }]}>
-                                                        {translate(TranslationKeys.collectible_event_points)}: {points || '0'}
-                                                </Text>
-                                        </TouchableOpacity>
-                                ) : null}
                         </View>
                         <PermissionModal
                                 isVisible={isPermissionModalVisible}
