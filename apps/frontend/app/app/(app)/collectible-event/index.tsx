@@ -22,6 +22,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useMyModal from '@/hooks/useMyModal';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import MyMarkdown from '@/components/MyMarkdown';
+import { getDirectusTranslation } from '@/helper/resourceHelper';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -130,7 +131,7 @@ const CollectibleEventScreen = () => {
         const dispatch = useDispatch();
         const { theme } = useTheme();
         const toast = useToast();
-        const { translate } = useLanguage();
+        const { translate, language } = useLanguage();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
         const { primaryColor, debugMode } = useSelector((state: RootState) => state.settings);
         const buttonColor = primaryColor || theme.primary;
@@ -392,8 +393,23 @@ const CollectibleEventScreen = () => {
                         return <Text style={{ ...styles.info, color: theme.screen.text }}>{translate(TranslationKeys.collectible_event_no_active)}</Text>;
                 }
 
-                const title = activeCollectibleEvent?.title || activeCollectibleEvent?.alias || '';
-                const description = activeCollectibleEvent?.description || '';
+                const translations = (activeCollectibleEvent?.translations || []) as any[];
+                const title =
+                        getDirectusTranslation(
+                                { languageCode: language },
+                                translations,
+                                'title',
+                                false,
+                                activeCollectibleEvent?.alias || ''
+                        ) || '';
+                const description =
+                        getDirectusTranslation(
+                                { languageCode: language },
+                                translations,
+                                'description',
+                                false,
+                                activeCollectibleEvent?.description || ''
+                        ) || '';
 
                 return (
                         <View style={styles.section}>
