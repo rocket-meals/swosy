@@ -471,7 +471,7 @@ const CollectibleEventScreen = () => {
                         (activeCollectibleEvent?.translations || []) as DatabaseTypes.CollectibleEventsTranslations[];
                 const title =
                         getDirectusTranslation(
-                                { languageCode: language },
+                                { languageCode: language || '' },
                                 translations,
                                 'title',
                                 false,
@@ -479,7 +479,7 @@ const CollectibleEventScreen = () => {
                         ) || '';
                 const description =
                         getDirectusTranslation(
-                                { languageCode: language },
+                                { languageCode: language || '' },
                                 translations,
                                 'description',
                                 false,
@@ -701,6 +701,23 @@ const CollectibleEventScreen = () => {
                         <View style={styles.container}>
                                 <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                                         {renderContent()}
+
+                                        {debugMode ? (
+                                                <View style={{ marginTop: 16 }}>
+                                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                                Active Collectible Event (debug)
+                                                        </Text>
+                                                        <Text
+                                                                style={{
+                                                                        marginTop: 8,
+                                                                        color: theme.inactiveText,
+                                                                        fontFamily: 'monospace',
+                                                                }}
+                                                        >
+                                                                {JSON.stringify(activeCollectibleEvent ?? null, null, 2)}
+                                                        </Text>
+                                                </View>
+                                        ) : null}
                                 </ScrollView>
                         </View>
                         <PermissionModal
