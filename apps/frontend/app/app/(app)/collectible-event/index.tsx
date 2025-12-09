@@ -163,9 +163,13 @@ const CollectibleEventScreen = () => {
         const dispatch = useDispatch();
         const { theme } = useTheme();
         const toast = useToast();
-        const { translate, language } = useLanguage();
+        const { translate } = useLanguage();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
-        const { primaryColor, debugMode } = useSelector((state: RootState) => state.settings);
+        const {
+                primaryColor,
+                debugMode,
+                language: languageForDirectusTranslation,
+        } = useSelector((state: RootState) => state.settings);
         const buttonColor = primaryColor || theme.primary;
         const { openRateAppModal } = useRateAppModal(buttonColor);
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
@@ -428,7 +432,7 @@ const CollectibleEventScreen = () => {
                         (activeCollectibleEvent?.translations || []) as DatabaseTypes.CollectibleEventsTranslations[];
                 const title =
                         getDirectusTranslation(
-                                { languageCode: language || '' },
+                                { languageCode: languageForDirectusTranslation || '' },
                                 translations,
                                 'title',
                                 false,
@@ -436,7 +440,7 @@ const CollectibleEventScreen = () => {
                         ) || '';
                 const description =
                         getDirectusTranslation(
-                                { languageCode: language || '' },
+                                { languageCode: languageForDirectusTranslation || '' },
                                 translations,
                                 'description',
                                 false,
@@ -612,7 +616,7 @@ const CollectibleEventScreen = () => {
                                                         theme={theme}
                                                         nextCollectibleKey={nextCollectibleKey}
                                                         debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}
-                                                        selectedLanguage={language}
+                                                        selectedLanguage={languageForDirectusTranslation}
                                                         onOpenRateModal={openRateAppModal}
                                                 />
                                         ) : null}
