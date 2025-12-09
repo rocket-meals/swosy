@@ -22,6 +22,7 @@ import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useMyModal from '@/hooks/useMyModal';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
+import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -398,7 +399,9 @@ const CollectibleEventScreen = () => {
                         <View style={styles.section}>
                                 <Text style={{ ...styles.title, color: theme.screen.text }}>{title}</Text>
                                 {description ? (
-                                        <Text style={{ ...styles.description, color: theme.inactiveText }}>{description}</Text>
+                                        <View style={{ marginTop: 4 }}>
+                                                <MyMarkdown content={description} textColor={theme.inactiveText} />
+                                        </View>
                                 ) : null}
 
                                 {sampleCollectibleKey ? (
