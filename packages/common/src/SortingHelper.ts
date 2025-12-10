@@ -15,14 +15,19 @@ export function getDirectusTranslation(params: any, translations: TranslationEnt
 
   const translationDict = translations.reduce(
     (acc, translation) => {
-      acc[translation.languages_code] = translation;
+      if (translation.languages_code) {
+        acc[translation.languages_code] = translation;
+      }
       return acc;
     },
     {} as { [key: string]: TranslationEntry }
   );
 
-  const getTranslation = (dict: { [key: string]: TranslationEntry }, langCode: string, params?: any) => {
-    const languageKey = langCode?.split('-')[0];
+  const getTranslation = (dict: { [key: string]: TranslationEntry }, langCode: string | null | undefined, params?: any) => {
+    if (!langCode) return null;
+    const languageKey = langCode.split('-')[0];
+    if (!languageKey) return null;
+
     const translationEntry = dict[langCode] || dict[languageKey];
     if (!translationEntry) return null;
 
