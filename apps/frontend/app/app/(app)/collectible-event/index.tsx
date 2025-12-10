@@ -338,7 +338,15 @@ const CollectibleEventScreen = () => {
                 } catch (error) {
                         console.error('Error saving collectible event participation:', error);
                         appendDebugLog(`Failed to save participation: ${String(error)}`);
-                        toast(translate(TranslationKeys.collectible_event_save_error), 'error');
+                        const errorDetails = (() => {
+                                try {
+                                        return JSON.stringify(error, null, 2);
+                                } catch (jsonError) {
+                                        console.error('Failed to stringify error:', jsonError);
+                                        return String(error);
+                                }
+                        })();
+                        toast(`${translate(TranslationKeys.collectible_event_save_error)}\n${errorDetails}`, 'error');
                 } finally {
                         setIsSaving(false);
                 }
