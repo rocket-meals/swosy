@@ -21,6 +21,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const [content, setContent] = useState<ReactNode | null>(null);
         const [backgroundStyle, setBackgroundStyle] = useState<any>(null);
         const sheetRef = useRef<any>(null);
+        const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
                 lastAction: null,
                 contentSet: false,
@@ -33,6 +34,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const open = (c: ReactNode, options?: { backgroundStyle?: any }) => {
                 setContent(c);
                 setBackgroundStyle(options?.backgroundStyle ?? null);
+                setIsVisible(true);
                 setDebug((prev) => ({
                         ...prev,
                         lastAction: 'open',
@@ -46,7 +48,10 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const close = () => {
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
-                setTimeout(() => setContent(null), 200);
+                setTimeout(() => {
+                        setContent(null);
+                        setIsVisible(false);
+                }, 200);
                 setDebug((prev) => ({
                         ...prev,
                         lastAction: 'close',
@@ -73,29 +78,28 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
                         {children}
-                        {content && (
-                                <View pointerEvents="box-none" style={styles.modalContainer}>
-                                        <BaseBottomSheet
-                                                ref={sheetRef}
-                                                index={0}
-                                                backgroundStyle={backgroundStyle}
-                                                enablePanDownToClose
-                                                onClose={() => {
-                                                        setContent(null);
-                                                        setBackgroundStyle(null);
-                                                        setDebug((prev) => ({
-                                                                ...prev,
-                                                                lastAction: 'close',
-                                                                contentSet: false,
-                                                                sheetRefReady: Boolean(sheetRef.current),
-                                                                closeInvocations: prev.closeInvocations + 1,
-                                                        }));
-                                                }}
-                                        >
-                                                {content}
-                                        </BaseBottomSheet>
-                                </View>
-                        )}
+                        <View pointerEvents="box-none" style={styles.modalContainer}>
+                                <BaseBottomSheet
+                                        ref={sheetRef}
+                                        index={isVisible ? 0 : -1}
+                                        backgroundStyle={backgroundStyle}
+                                        enablePanDownToClose
+                                        onClose={() => {
+                                                setContent(null);
+                                                setBackgroundStyle(null);
+                                                setIsVisible(false);
+                                                setDebug((prev) => ({
+                                                        ...prev,
+                                                        lastAction: 'close',
+                                                        contentSet: false,
+                                                        sheetRefReady: Boolean(sheetRef.current),
+                                                        closeInvocations: prev.closeInvocations + 1,
+                                                }));
+                                        }}
+                                >
+                                        {content}
+                                </BaseBottomSheet>
+                        </View>
                 </ModalContext.Provider>
         );
 };
