@@ -219,21 +219,35 @@ const CollectibleEventScreen = () => {
                                 parsedData = rawData as Record<string, boolean>;
                         }
 
+                        const existingData = collectibleDict || {};
                         const mergedData: Record<string, boolean> = { ...parsedData };
 
-                        Object.entries(collectibleDict || {}).forEach(([key, value]) => {
+                        Object.entries(existingData).forEach(([key, value]) => {
                                 if (value) {
                                         mergedData[key] = true;
                                 }
                         });
 
-                        dispatch({
-                                type: SET_COLLECTIBLE_EVENT_DICT_BULK,
-                                payload: { eventId: activeCollectibleEvent.id, data: mergedData },
-                        });
+                        const hasChanges = (() => {
+                                const allKeys = new Set([...Object.keys(existingData), ...Object.keys(mergedData)]);
+                                for (const key of allKeys) {
+                                        if (Boolean(existingData[key]) !== Boolean(mergedData[key])) {
+                                                return true;
+                                        }
+                                }
 
-                        if (Object.keys(parsedData || {}).length) {
-                                appendDebugLog('Applied collectible data from server');
+                                return false;
+                        })();
+
+                        if (hasChanges) {
+                                dispatch({
+                                        type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                                        payload: { eventId: activeCollectibleEvent.id, data: mergedData },
+                                });
+
+                                if (Object.keys(parsedData || {}).length) {
+                                        appendDebugLog('Applied collectible data from server');
+                                }
                         }
                 },
                 [activeCollectibleEvent?.id, appendDebugLog, collectibleDict, dispatch]
