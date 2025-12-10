@@ -3,6 +3,7 @@
   "name": "monorepo",
   "version": "1.0.0",
   "scripts": {
+    "frontend": "yarn app-frontend-start",
     "app-frontend-start": "yarn && yarn workspace rocket-meals-dev start",
     "app-frontend-gh-pages-deploy": "yarn && yarn workspace rocket-meals-dev deploy:gh:pages",
     "test": "yarn && yarn app-backend-test",

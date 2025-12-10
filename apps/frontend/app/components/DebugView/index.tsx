@@ -56,10 +56,6 @@ const DebugView: React.FC<DebugViewProps> = ({
                 <View
                         style={[
                                 styles.container,
-                                {
-                                        backgroundColor: theme.drawerBg,
-                                        borderColor: theme.screen.iconBg,
-                                },
                         ]}
                 >
                         <View style={styles.header}>

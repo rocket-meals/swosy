@@ -359,62 +359,57 @@ const AccountBalanceScreen = () => {
 					<Text style={{ ...styles.value, color: theme.header.text }}>{profile?.credit_balance_date_updated ? format(profile?.credit_balance_date_updated, 'dd.MM.yyyy HH:mm') : ''}</Text>
 				</View>
 				<View style={styles.additionalInfoContainer}>{appSettings && appSettings?.balance_translations && <CustomMarkdown content={getTextFromTranslation(appSettings?.balance_translations, language) || ''} backgroundColor={balance_area_color} imageWidth={'100%'} imageHeight={400} />}</View>
+				<DebugView
+					title={translate(TranslationKeys.debugErrors)}
+					logs={debugLogMessages}
+					actions={[
+						{
+							label: translate(TranslationKeys.showNfcInstruction),
+							icon: 'cellphone-nfc',
+							onPress: showInstruction,
+							borderColor: theme.screen.iconBg,
+							backgroundColor: theme.drawerBg,
+						},
+					]}
+				>
+					<View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
+						{[1, 5, 20].map(amount => (
+							<TouchableOpacity
+								key={`simulate-${amount}`}
+								style={{
+									paddingVertical: 8,
+									paddingHorizontal: 14,
+									borderRadius: 8,
+									borderWidth: 1,
+									borderColor: theme.screen.iconBg,
+									marginHorizontal: 6,
+									marginTop: 8,
+								}}
+								onPress={async () => {
+									const mock: CardResponse = {
+										currentBalance: amount.toFixed(2),
+										currentBalanceRaw: null,
+										lastTransaction: undefined,
+										lastTransactionRaw: null,
+										chooseAppRaw: null,
+										tag: null,
+										readTime: new Date(),
+									};
+									try {
+										await callBack(mock);
+										toast(`Simulated NFC read: ${amount}€`, 'info');
+									} catch (e: any) {
+										console.error('Error in simulated read', e);
+										addDebugError(e, 'Simulated NFC Read');
+									}
+								}}
+							>
+								<Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
+							</TouchableOpacity>
+						))}
+					</View>
+				</DebugView>
 			</View>
-			
-                        {isDevMode ? (
-                                <View style={styles.additionalInfoContainer}>
-                                        <DebugView
-                                                title={translate(TranslationKeys.debugErrors)}
-                                                logs={debugLogMessages}
-                                                actions={[
-                                                        {
-                                                                label: translate(TranslationKeys.showNfcInstruction),
-                                                                icon: 'cellphone-nfc',
-                                                                onPress: showInstruction,
-                                                                borderColor: theme.screen.iconBg,
-                                                                backgroundColor: theme.drawerBg,
-                                                        },
-                                                ]}
-                                        >
-                                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
-                                                        {[1, 5, 20].map(amount => (
-                                                                <TouchableOpacity
-                                                                        key={`simulate-${amount}`}
-                                                                        style={{
-                                                                                paddingVertical: 8,
-                                                                                paddingHorizontal: 14,
-                                                                                borderRadius: 8,
-                                                                                borderWidth: 1,
-                                                                                borderColor: theme.screen.iconBg,
-                                                                                marginHorizontal: 6,
-                                                                                marginTop: 8,
-                                                                        }}
-                                                                        onPress={async () => {
-                                                                                const mock: CardResponse = {
-                                                                                        currentBalance: amount.toFixed(2),
-                                                                                        currentBalanceRaw: null,
-                                                                                        lastTransaction: undefined,
-                                                                                        lastTransactionRaw: null,
-                                                                                        chooseAppRaw: null,
-                                                                                        tag: null,
-                                                                                        readTime: new Date(),
-                                                                                };
-                                                                                try {
-                                                                                        await callBack(mock);
-                                                                                        toast(`Simulated NFC read: ${amount}€`, 'info');
-                                                                                } catch (e: any) {
-                                                                                        console.error('Error in simulated read', e);
-                                                                                        addDebugError(e, 'Simulated NFC Read');
-                                                                                }
-                                                                        }}
-                                                                >
-                                                                        <Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
-                                                                </TouchableOpacity>
-                                                        ))}
-                                                </View>
-                                        </DebugView>
-                                </View>
-                        ) : null}
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
                 </ScrollView>
         );
