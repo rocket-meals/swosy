@@ -154,6 +154,8 @@ const CollectibleEventScreen = () => {
                 setDebugLogs(prev => [...prev, `${timestamp} - ${message}`]);
         }, []);
 
+        const shouldAskForContactDetails = Boolean((activeCollectibleEvent as any)?.ask_for_contact_details);
+
         const activeCollectibleKeys = useMemo(
             () =>
                 activeCollectibleEvent
@@ -382,66 +384,64 @@ const CollectibleEventScreen = () => {
                                     />
                             </View>
 
-                            <View style={{ marginTop: 16 }}>
-                                    <Text style={{ ...styles.label, color: theme.screen.text }}>
-                                            {translate(TranslationKeys.email)}
-                                    </Text>
-                                    <TextInput
-                                        style={{
-                                                ...styles.input,
-                                                color: theme.screen.text,
-                                                backgroundColor: theme.drawerBg,
-                                                borderColor: theme.screen.icon,
-                                        }}
-                                        value={email}
-                                        onChangeText={setEmail}
-                                        placeholder={translate(TranslationKeys.email)}
-                                        placeholderTextColor={theme.screen.placeholder}
-                                        keyboardType="email-address"
-                                        autoCapitalize="none"
-                                    />
+                            {shouldAskForContactDetails ? (
+                                <View style={{ marginTop: 16 }}>
+                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                {translate(TranslationKeys.email)}
+                                        </Text>
+                                        <TextInput
+                                            style={{
+                                                    ...styles.input,
+                                                    color: theme.screen.text,
+                                                    backgroundColor: theme.drawerBg,
+                                                    borderColor: theme.screen.icon,
+                                            }}
+                                            value={email}
+                                            onChangeText={setEmail}
+                                            placeholder={translate(TranslationKeys.email)}
+                                            placeholderTextColor={theme.screen.placeholder}
+                                            keyboardType="email-address"
+                                            autoCapitalize="none"
+                                        />
 
-                                    <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
-                                            {translate(TranslationKeys.phone_number)}
-                                    </Text>
-                                    <TextInput
-                                        style={{
-                                                ...styles.input,
-                                                color: theme.screen.text,
-                                                backgroundColor: theme.drawerBg,
-                                                borderColor: theme.screen.icon,
-                                        }}
-                                        value={phoneNumber}
-                                        onChangeText={setPhoneNumber}
-                                        placeholder={translate(TranslationKeys.phone_number)}
-                                        placeholderTextColor={theme.screen.placeholder}
-                                        keyboardType="phone-pad"
-                                    />
+                                        <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
+                                                {translate(TranslationKeys.phone_number)}
+                                        </Text>
+                                        <TextInput
+                                            style={{
+                                                    ...styles.input,
+                                                    color: theme.screen.text,
+                                                    backgroundColor: theme.drawerBg,
+                                                    borderColor: theme.screen.icon,
+                                            }}
+                                            value={phoneNumber}
+                                            onChangeText={setPhoneNumber}
+                                            placeholder={translate(TranslationKeys.phone_number)}
+                                            placeholderTextColor={theme.screen.placeholder}
+                                            keyboardType="phone-pad"
+                                        />
 
-                                    <Text style={{ ...styles.info, color: theme.inactiveText, marginTop: 8 }}>
-                                            {collectedCount}/{maxCollectibleKeys || '∞'} {translate(TranslationKeys.collectible_event_collected)}
-                                    </Text>
+                                        <Text style={{ ...styles.notice, color: theme.inactiveText }}>
+                                                {translate(TranslationKeys.collectible_event_data_notice)}
+                                        </Text>
 
-                                    <Text style={{ ...styles.notice, color: theme.inactiveText }}>
-                                            {translate(TranslationKeys.collectible_event_data_notice)}
-                                    </Text>
-                            </View>
-
-                            <TouchableOpacity
-                                style={{
-                                        ...styles.button,
-                                        backgroundColor: buttonColor,
-                                        opacity: isSaving ? 0.6 : 1,
-                                }}
-                                disabled={isSaving}
-                                onPress={handleSave}
-                            >
-                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                            {isSaving
-                                                ? translate(TranslationKeys.loading)
-                                                : translate(TranslationKeys.save)}
-                                    </Text>
-                            </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={{
+                                                    ...styles.button,
+                                                    backgroundColor: buttonColor,
+                                                    opacity: isSaving ? 0.6 : 1,
+                                            }}
+                                            disabled={isSaving}
+                                            onPress={handleSave}
+                                        >
+                                                <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                                        {isSaving
+                                                            ? translate(TranslationKeys.loading)
+                                                            : translate(TranslationKeys.save)}
+                                                </Text>
+                                        </TouchableOpacity>
+                                </View>
+                            ) : null}
 
                             {activeCollectibleKeys.length ? (
                                 <View style={{ marginTop: 16 }}>
