@@ -38,7 +38,6 @@ import { RootState } from '@/redux/reducer';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import DebugView from '@/components/DebugView';
 
 const Settings = () => {
 	useSetPageTitle(TranslationKeys.settings);
@@ -350,7 +349,7 @@ const Settings = () => {
 					</TouchableOpacity>
 					{isManagement && isDevMode && <Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>}
                                         {isManagement && isDevMode && (
-                                                <DebugView>
+                                                <View style={{ gap: 8 }}>
                                                         <View style={{ gap: 4 }}>
                                                                 <Text style={{ color: theme.screen.text }}>
                                                                         {`${translate(TranslationKeys.backend_server)}: ${
@@ -388,7 +387,7 @@ const Settings = () => {
                                                                         groupPosition="bottom"
                                                                 />
                                                         </View>
-                                                </DebugView>
+                                                </View>
                                         )}
                                         <SettingsList
                                                 iconBgColor={primaryColor}
