@@ -4,7 +4,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
-import { useActiveCollectibleEvent } from '@/hooks/useActiveCollectibleEvent';
+import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const CollectibleEventMonitor = () => {
