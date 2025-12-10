@@ -12,9 +12,6 @@ import { format } from 'date-fns';
 import useMyCardReader, { MyCardReaderInterface } from './MyCardReader';
 import { isWeb } from '@/constants/Constants';
 import CardResponse from '@/helper/nfcCardReaderHelper/CardResponse';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from 'expo-router';
 import useToast from '@/hooks/useToast';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
@@ -32,6 +29,7 @@ import Server from '@/constants/ServerUrl';
 import { ServerAPI } from '@/redux/actions';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -54,10 +52,10 @@ const AccountBalanceScreen = () => {
 	const [isActive, setIsActive] = useState(false);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
-	const nfcSheetRef = useRef<BottomSheet>(null);
-	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const [animationJson, setAmimationJson] = useState<any>(null);
-	const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
+        const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+        const [animationJson, setAmimationJson] = useState<any>(null);
+        const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
+        const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	// Helper function to add errors to debug list
 	const addDebugError = useCallback((error: any, source: string) => {
@@ -167,13 +165,47 @@ const AccountBalanceScreen = () => {
 		}
 	};
 
-	const showInstruction = () => {
-		nfcSheetRef.current?.expand();
-	};
+        const showInstruction = useCallback(() => {
+                if (!isActive) return;
 
-	const hideInstruction = () => {
-		nfcSheetRef?.current?.close();
-	};
+                showModal(
+                        {
+                                title: 'NFC',
+                                showsVerticalScrollIndicator: false,
+                                children: (
+                                        <View style={styles.sheetView}>
+                                                <Text
+                                                        style={{
+                                                                ...styles.nfcInstructionRead,
+                                                                color: theme.screen.text,
+                                                        }}
+                                                >
+                                                        {translate(TranslationKeys.nfcInstructionRead)}
+                                                </Text>
+                                                <View style={styles.nfcAnimationContainer}>
+                                                        <LottieView
+                                                                source={require('@/assets/gifs/nfc.json')}
+                                                                resizeMode="contain"
+                                                                style={styles.nfcAnimation}
+                                                                autoPlay
+                                                                loop
+                                                        />
+                                                </View>
+                                        </View>
+                                ),
+                        },
+                        {
+                                backgroundStyle: {
+                                        ...styles.sheetBackground,
+                                        backgroundColor: theme.sheet.sheetBg,
+                                },
+                        }
+                );
+        }, [isActive, showModal, theme.screen.text, theme.sheet.sheetBg, translate]);
+
+        const hideInstruction = useCallback(() => {
+                closeModal();
+        }, [closeModal]);
 
 	const onReadNfcPress = async () => {
 		await myCardReader.readCard(callBack, showInstruction, hideInstruction, translate(TranslationKeys.nfcInstructionRead));
@@ -191,11 +223,11 @@ const AccountBalanceScreen = () => {
 		};
 	}, []);
 
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
+        useFocusEffect(
+                useCallback(() => {
+                        setIsActive(true);
+                        return () => {
+                                setIsActive(false);
 			};
 		}, [])
 	);
@@ -236,11 +268,17 @@ const AccountBalanceScreen = () => {
 		}, [appSettings?.animations_auto_start])
 	);
 
-	useEffect(() => {
-		if (animationJson && autoPlay && animationRef.current) {
-			animationRef?.current?.play(); // Reset animation to ensure it starts fresh
-		}
-	}, [animationJson, autoPlay]);
+        useEffect(() => {
+                if (animationJson && autoPlay && animationRef.current) {
+                        animationRef?.current?.play(); // Reset animation to ensure it starts fresh
+                }
+        }, [animationJson, autoPlay]);
+
+        useEffect(() => {
+                if (!isActive) {
+                        hideInstruction();
+                }
+        }, [hideInstruction, isActive]);
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
@@ -362,58 +400,6 @@ const AccountBalanceScreen = () => {
 					</View>
 				)}
 			</View>
-			{isActive && (
-				<BaseBottomSheet
-					ref={nfcSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={hideInstruction}
-				>
-					<BottomSheetView>
-						<View
-							style={{
-								...styles.sheetHeader,
-							}}
-						>
-							<View />
-							<Text
-								style={{
-									...styles.sheetHeading,
-									fontSize: 28,
-									color: theme.sheet.text,
-								}}
-							>
-								NFC
-							</Text>
-						</View>
-						<View style={styles.sheetView}>
-							<Text
-								style={{
-									...styles.nfcInstructionRead,
-									color: theme.screen.text,
-								}}
-							>
-								{translate(TranslationKeys.nfcInstructionRead)}
-							</Text>
-							<View
-								style={{
-									width: 400,
-									height: 400,
-									justifyContent: 'center',
-									alignItems: 'center',
-								}}
-							>
-								<LottieView source={require('@/assets/gifs/nfc.json')} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay loop />
-							</View>
-						</View>
-					</BottomSheetView>
-				</BaseBottomSheet>
-                        )}
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
                 </ScrollView>
         );
