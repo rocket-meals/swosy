@@ -183,7 +183,6 @@ const CollectibleEventScreen = () => {
             [activeCollectibleEvent]
         );
 
-        const [points, setPoints] = useState('');
         const [email, setEmail] = useState('');
         const [phoneNumber, setPhoneNumber] = useState('');
         const [isLoading, setIsLoading] = useState(false);
@@ -220,7 +219,6 @@ const CollectibleEventScreen = () => {
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
                         setParticipation(null);
-                        setPoints('');
                         setEmail('');
                         setPhoneNumber('');
                         return;
@@ -235,12 +233,10 @@ const CollectibleEventScreen = () => {
                         );
                         if (existing) {
                                 setParticipation(existing);
-                                setPoints(existing.points ? String(existing.points) : '');
                                 setEmail(existing.email ?? '');
                                 setPhoneNumber(existing.phone_number ?? '');
                         } else {
                                 setParticipation(null);
-                                setPoints('');
                                 setEmail('');
                                 setPhoneNumber('');
                         }
@@ -260,13 +256,6 @@ const CollectibleEventScreen = () => {
         useEffect(() => {
                 setVisibleHints({});
         }, [activeCollectibleEvent?.id]);
-
-        useEffect(() => {
-                const newValue = String(collectedCount);
-                if (newValue !== points) {
-                        setPoints(newValue);
-                }
-        }, [collectedCount, points]);
 
         const handleSave = async () => {
                 if (!activeCollectibleEvent?.id) {
@@ -297,7 +286,6 @@ const CollectibleEventScreen = () => {
                             : await participantsHelper.createItem(payload);
 
                         setParticipation(updated as DatabaseTypes.CollectibleEventParticipants);
-                        setPoints((updated as DatabaseTypes.CollectibleEventParticipants)?.points || pointsToSave);
                         setEmail((updated as DatabaseTypes.CollectibleEventParticipants)?.email || email);
                         setPhoneNumber((updated as DatabaseTypes.CollectibleEventParticipants)?.phone_number || phoneNumber);
                         toast(translate(TranslationKeys.collectible_event_save_success), 'success');
@@ -316,7 +304,6 @@ const CollectibleEventScreen = () => {
                 }
 
                 dispatch({ type: RESET_COLLECTIBLE_EVENT_DICT, payload: { eventId: activeCollectibleEvent.id } });
-                setPoints('0');
                 toast(translate(TranslationKeys.reset), 'success');
 
                 if (loggedIn && profile?.id) {
@@ -343,7 +330,6 @@ const CollectibleEventScreen = () => {
         const resetAllParticipations = useCallback(async () => {
                 dispatch({ type: RESET_ALL_COLLECTIBLE_EVENT_DICTS });
                 setParticipation(null);
-                setPoints('');
                 setEmail('');
                 setPhoneNumber('');
 
@@ -382,32 +368,19 @@ const CollectibleEventScreen = () => {
                                     </Text>
                             </View>
 
-                            <DebugView>
-                                    <View style={{ marginTop: 16, gap: 12 }}>
-                                            <SettingsList
-                                                leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
-                                                label={translate(TranslationKeys.collectible_event_points)}
-                                                groupPosition="single"
-                                                showSeparator={false}
-                                                rightElement={
-                                                        <TextInput
-                                                            style={{
-                                                                    ...styles.settingsInput,
-                                                                    color: theme.screen.text,
-                                                                    backgroundColor: theme.drawerBg,
-                                                                    borderColor: theme.screen.icon,
-                                                            }}
-                                                            value={points}
-                                                            onChangeText={setPoints}
-                                                            placeholder={translate(TranslationKeys.enter_number)}
-                                                            placeholderTextColor={theme.screen.placeholder}
-                                                            keyboardType="numeric"
-                                                            inputMode="numeric"
-                                                        />
-                                                }
-                                            />
-                                    </View>
-                            </DebugView>
+                            <View style={{ marginTop: 16, gap: 12 }}>
+                                    <SettingsList
+                                        leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
+                                        label={translate(TranslationKeys.collectible_event_points)}
+                                        groupPosition="single"
+                                        showSeparator={false}
+                                        rightElement={
+                                                <Text style={{ color: theme.screen.text }}>
+                                                        {collectedCount}/{maxCollectibleKeys || '∞'}
+                                                </Text>
+                                        }
+                                    />
+                            </View>
 
                             <View style={{ marginTop: 16 }}>
                                     <Text style={{ ...styles.label, color: theme.screen.text }}>
