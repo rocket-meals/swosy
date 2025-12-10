@@ -18,7 +18,11 @@ import useCollectibleDict from '@/hooks/useCollectibleDict';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
 import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
+import {
+        RESET_ALL_COLLECTIBLE_EVENT_DICTS,
+        RESET_COLLECTIBLE_EVENT_DICT,
+        SET_COLLECTIBLE_EVENT_DICT_BULK,
+} from '@/redux/Types/types';
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
@@ -195,6 +199,44 @@ const CollectibleEventScreen = () => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
         }, []);
 
+        const applyServerCollectibleData = useCallback(
+                (rawData: unknown) => {
+                        if (!activeCollectibleEvent?.id) {
+                                return;
+                        }
+
+                        let parsedData: Record<string, boolean> = {};
+
+                        if (typeof rawData === 'string') {
+                                try {
+                                        parsedData = JSON.parse(rawData) || {};
+                                } catch (error) {
+                                        appendDebugLog(`Failed to parse collectible data: ${String(error)}`);
+                                }
+                        } else if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
+                                parsedData = rawData as Record<string, boolean>;
+                        }
+
+                        const mergedData: Record<string, boolean> = { ...parsedData };
+
+                        Object.entries(collectibleDict || {}).forEach(([key, value]) => {
+                                if (value) {
+                                        mergedData[key] = true;
+                                }
+                        });
+
+                        dispatch({
+                                type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                                payload: { eventId: activeCollectibleEvent.id, data: mergedData },
+                        });
+
+                        if (Object.keys(parsedData || {}).length) {
+                                appendDebugLog('Applied collectible data from server');
+                        }
+                },
+                [activeCollectibleEvent?.id, appendDebugLog, collectibleDict, dispatch]
+        );
+
         useEffect(() => {
                 if (activeCollectibleEvent?.id === previousEventIdRef.current) {
                         return;
@@ -235,6 +277,7 @@ const CollectibleEventScreen = () => {
                                 setParticipation(existing);
                                 setEmail(existing.email ?? '');
                                 setPhoneNumber(existing.phone_number ?? '');
+                                applyServerCollectibleData(existing.data);
                         } else {
                                 setParticipation(null);
                                 setEmail('');
@@ -247,7 +290,7 @@ const CollectibleEventScreen = () => {
                 } finally {
                         setIsLoading(false);
                 }
-        }, [activeCollectibleEvent?.id, appendDebugLog, participantsHelper, profile?.id, toast, translate]);
+        }, [activeCollectibleEvent?.id, appendDebugLog, applyServerCollectibleData, participantsHelper, profile?.id, toast, translate]);
 
         useEffect(() => {
                 loadParticipation();
@@ -276,6 +319,7 @@ const CollectibleEventScreen = () => {
                                 points: pointsToSave,
                                 email: email?.trim() || null,
                                 phone_number: phoneNumber?.trim() || null,
+                                data: collectibleDict,
                                 profile: profile.id,
                                 collectible_event: activeCollectibleEvent.id,
                                 status: 'published',
@@ -315,8 +359,8 @@ const CollectibleEventScreen = () => {
                                 );
 
                                 if (existing?.id) {
-                                        await participantsHelper.updateItem(existing.id, { points: '0' });
-                                        setParticipation(prev => (prev ? { ...prev, points: '0' } : prev));
+                                        await participantsHelper.updateItem(existing.id, { points: '0', data: {} });
+                                        setParticipation(prev => (prev ? { ...prev, points: '0', data: {} } : prev));
                                         toast(translate(TranslationKeys.reset), 'success');
                                 }
                         } catch (error) {
