@@ -22,19 +22,20 @@ export function getDirectusTranslation(params: any, translations: TranslationEnt
   );
 
   const getTranslation = (dict: { [key: string]: TranslationEntry }, langCode: string, params?: any) => {
-    const translationEntry = dict[langCode];
+    const languageKey = langCode?.split('-')[0];
+    const translationEntry = dict[langCode] || dict[languageKey];
     if (!translationEntry) return null;
 
-  let translation = translationEntry[field];
-  if (params) {
-    Object.keys(params).forEach(key => {
-      translation = StringHelper.replaceAllWithOptions({
-        str: translation,
-        find: `%${key}`,
-        replace: params[key],
+    let translation = translationEntry[field];
+    if (params) {
+      Object.keys(params).forEach(key => {
+        translation = StringHelper.replaceAllWithOptions({
+          str: translation,
+          find: `%${key}`,
+          replace: params[key],
+        });
       });
-    });
-  }
+    }
     return translation;
   };
 
