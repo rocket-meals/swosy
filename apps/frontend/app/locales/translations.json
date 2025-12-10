@@ -1880,7 +1880,7 @@
     "zh": "事件"
   },
   "collectible_event": {
-    "de": "Collectible-Event",
+    "de": "Sammel Event",
     "en": "Collectible Event",
     "ar": "فعالية قابلة للتحصيل",
     "es": "Evento coleccionable",
@@ -1990,14 +1990,14 @@
     "zh": "提供您的数据是自愿的。适用条款和条件。"
   },
   "collectible_event_progress_title": {
-    "de": "Collectibles im Event",
+    "de": "Sammelobjekte im Event",
     "en": "Collectibles in the event",
-    "ar": "Collectibles in the event",
-    "es": "Collectibles in the event",
-    "fr": "Collectibles in the event",
-    "ru": "Collectibles in the event",
-    "tr": "Collectibles in the event",
-    "zh": "Collectibles in the event"
+    "ar": "العناصر القابلة للجمع في الفعالية",
+    "es": "Objetos coleccionables en el evento",
+    "fr": "Objets à collectionner dans l'événement",
+    "ru": "Коллекционные предметы в событии",
+    "tr": "Etkinlikteki koleksiyon öğeleri",
+    "zh": "活动中的收集品"
   },
   "collectible_event_show_hint": {
     "de": "Hinweis anzeigen lassen",
