@@ -46,6 +46,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
 
         const close = () => {
+                if (!isVisible) return;
+
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
                 setTimeout(() => {
