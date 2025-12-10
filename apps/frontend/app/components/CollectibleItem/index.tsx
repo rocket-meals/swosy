@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { DatabaseTypes, COLLECTABLE_AT_FIELDS } from 'repo-depkit-common';
 import { useSelector } from 'react-redux';
@@ -41,8 +41,6 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         const { openRateAppModal } = useRateAppModal(projectColor || theme.primary);
 
         const { collectibleDict, setCollectibleKey, collectedCount } = useCollectibleDict(activeCollectibleEvent?.id);
-        const collectedCountRef = useRef(collectedCount);
-        const hasCompletedCollectionRef = useRef(false);
         const participantsHelper = useMemo(() => new CollectibleEventParticipantsHelper(), []);
 
         const maxCollectibleKeys = useMemo(
@@ -65,24 +63,6 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 return null;
         }
 
-        useEffect(() => {
-                if (!maxCollectibleKeys) return;
-
-                const hasCompletedCollection =
-                        collectedCount === maxCollectibleKeys && collectedCountRef.current < maxCollectibleKeys;
-
-                if (hasCompletedCollection && !hasCompletedCollectionRef.current) {
-                        hasCompletedCollectionRef.current = true;
-                        openRateAppModal();
-                }
-
-                if (collectedCount < maxCollectibleKeys) {
-                        hasCompletedCollectionRef.current = false;
-                }
-
-                collectedCountRef.current = collectedCount;
-        }, [collectedCount, maxCollectibleKeys, openRateAppModal]);
-
         const handleCollect = async () => {
                 if (!activeCollectibleEvent?.id || isCollected) {
                         return;
@@ -99,6 +79,10 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         `${translate(TranslationKeys.collectible_event_collected)} ${updatedCount}/${maxCollectibleKeys || '∞'}`,
                         'success'
                 );
+
+                if (maxCollectibleKeys > 0 && updatedCount === maxCollectibleKeys) {
+                        openRateAppModal();
+                }
 
                 if (!loggedIn || !profile?.id) {
                         return;
