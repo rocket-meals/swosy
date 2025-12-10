@@ -12,13 +12,15 @@ export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropCo
 }
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, ...props }, ref) => {
-	const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} />, [onClose]);
-	const { theme } = useTheme();
-	useSelector((state: RootState) => state.settings); // ensure theme subscription
-	const snapPoints = useMemo(() => ['80%'], []);
+        const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} />, [onClose]);
+        const { theme } = useTheme();
+        useSelector((state: RootState) => state.settings); // ensure theme subscription
+        const snapPoints = useMemo(() => ['80%'], []);
 
-	const headerBg = (backgroundStyle && (backgroundStyle as any).backgroundColor) || theme.sheet.sheetBg;
-	const handleColor = theme.sheet.closeBg;
+        const effectiveBackgroundStyle = useMemo(() => ({ backgroundColor: theme.sheet.sheetBg, ...backgroundStyle }), [backgroundStyle, theme.sheet.sheetBg]);
+
+        const headerBg = (effectiveBackgroundStyle as any).backgroundColor || theme.sheet.sheetBg;
+        const handleColor = theme.sheet.closeBg;
 
 	const handleChange = useCallback(
 		(index: number) => {
@@ -31,8 +33,8 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 		[onClose, onChange]
 	);
 
-	return (
-		<BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={backgroundStyle} handleComponent={null} onChange={handleChange} {...props}>
+        return (
+                <BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} {...props}>
 			<View style={[styles.header, { backgroundColor: headerBg }]}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
