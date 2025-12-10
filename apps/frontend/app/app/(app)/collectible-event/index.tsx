@@ -317,19 +317,23 @@ const CollectibleEventScreen = () => {
 
                 setIsSaving(true);
                 try {
-                        const payload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                                points: pointsToSave,
-                                email: email?.trim() || null,
-                                phone_number: phoneNumber?.trim() || null,
-                                data: collectibleDict,
-                                profile: profile.id,
-                                collectible_event: activeCollectibleEvent.id,
-                                status: 'published',
-                        };
+                const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
+                        points: pointsToSave,
+                        email: email?.trim() || null,
+                        phone_number: phoneNumber?.trim() || null,
+                        data: collectibleDict,
+                };
 
-                        const updated = participation?.id
-                            ? await participantsHelper.updateItem(participation.id, payload)
-                            : await participantsHelper.createItem(payload);
+                const createPayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
+                        ...updatePayload,
+                        profile: profile.id,
+                        collectible_event: activeCollectibleEvent.id,
+                        status: 'published',
+                };
+
+                const updated = participation?.id
+                    ? await participantsHelper.updateItem(participation.id, updatePayload)
+                    : await participantsHelper.createItem(createPayload);
 
                         setParticipation(updated as DatabaseTypes.CollectibleEventParticipants);
                         setEmail((updated as DatabaseTypes.CollectibleEventParticipants)?.email || email);

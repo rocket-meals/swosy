@@ -92,13 +92,17 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
 
                 setIsSaving(true);
                 try {
-                        const payload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                                points: String(updatedCount),
-                                data: updatedData,
-                                profile: profile.id,
-                                collectible_event: activeCollectibleEvent.id,
-                                status: 'published',
-                        };
+                const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
+                        points: String(updatedCount),
+                        data: updatedData,
+                };
+
+                const createPayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
+                        ...updatePayload,
+                        profile: profile.id,
+                        collectible_event: activeCollectibleEvent.id,
+                        status: 'published',
+                };
 
                         const existing = await participantsHelper.fetchParticipationByProfileAndEvent(
                                 profile.id,
@@ -106,9 +110,9 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                                 { fields: ['id'] }
                         );
                         if (existing?.id) {
-                                await participantsHelper.updateItem(existing.id, payload);
+                                await participantsHelper.updateItem(existing.id, updatePayload);
                         } else {
-                                await participantsHelper.createItem(payload);
+                                await participantsHelper.createItem(createPayload);
                         }
                 } catch (error) {
                         console.error('Error saving collectible event participation:', error);
