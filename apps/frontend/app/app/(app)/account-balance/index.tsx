@@ -57,6 +57,7 @@ const AccountBalanceScreen = () => {
         const [animationJson, setAmimationJson] = useState<any>(null);
         const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
         const { show: showModal, close: closeModal } = useMyScrollViewModal();
+        const closeInstructionRef = useRef(closeModal);
 
         const debugLogMessages = useMemo(
                 () =>
@@ -210,9 +211,13 @@ const AccountBalanceScreen = () => {
                 );
         }, [isActive, showModal, theme.screen.text, theme.sheet.sheetBg, translate]);
 
-        const hideInstruction = useCallback(() => {
-                closeModal();
+        useEffect(() => {
+                closeInstructionRef.current = closeModal;
         }, [closeModal]);
+
+        const hideInstruction = useCallback(() => {
+                closeInstructionRef.current();
+        }, []);
 
 	const onReadNfcPress = async () => {
 		await myCardReader.readCard(callBack, showInstruction, hideInstruction, translate(TranslationKeys.nfcInstructionRead));
@@ -283,9 +288,9 @@ const AccountBalanceScreen = () => {
 
         useEffect(() => {
                 if (!isActive) {
-                        hideInstruction();
+                        closeInstructionRef.current();
                 }
-        }, [hideInstruction, isActive]);
+        }, [isActive]);
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
