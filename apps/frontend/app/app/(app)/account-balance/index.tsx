@@ -389,17 +389,30 @@ const AccountBalanceScreen = () => {
 				)}
 
 				{/* Debug Logs if isDevMode active*/}
-				{isDevMode && debugErrors.length > 0 && (
-					<View style={{ marginTop: 20 }}>
-						<Text style={{ ...styles.label, color: theme.header.text }}>{translate(TranslationKeys.debugErrors)}:</Text>
-						{debugErrors.map((errorItem, index) => (
-							<View key={index} style={{ marginVertical: 4 }}>
+                                {isDevMode && debugErrors.length > 0 && (
+                                        <View style={{ marginTop: 20 }}>
+                                                <Text style={{ ...styles.label, color: theme.header.text }}>{translate(TranslationKeys.debugErrors)}:</Text>
+                                                {debugErrors.map((errorItem, index) => (
+                                                        <View key={index} style={{ marginVertical: 4 }}>
 								<Text style={{ ...styles.errorText, color: theme.header.text }}>{`${format(errorItem.timestamp, 'dd.MM.yyyy HH:mm:ss')} - ${errorItem.source}: ${errorItem.error}`}</Text>
-							</View>
-						))}
-					</View>
-				)}
-			</View>
+                                                        </View>
+                                                ))}
+                                        </View>
+                                )}
+                                {isDevMode && (
+                                        <View style={{ marginTop: 16 }}>
+                                                <TouchableOpacity
+                                                        style={{ ...styles.nfcButton, borderColor: theme.screen.iconBg }}
+                                                        onPress={showInstruction}
+                                                >
+                                                        <MaterialCommunityIcons name="cellphone-nfc" size={24} color={theme.screen.icon} />
+                                                        <Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>
+                                                                {translate(TranslationKeys.showNfcInstruction)}
+                                                        </Text>
+                                                </TouchableOpacity>
+                                        </View>
+                                )}
+                        </View>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
                 </ScrollView>
         );
