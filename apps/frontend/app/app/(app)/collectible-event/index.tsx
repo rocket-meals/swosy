@@ -21,7 +21,7 @@ import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import MyMarkdown from '@/components/MyMarkdown';
-import { getDirectusTranslation } from '@/helper/resourceHelper';
+import { getCollectibleEventTranslation } from '@/helper/resourceHelper';
 import useRateAppModal from '@/hooks/useRateAppModal';
 
 type DebugSectionProps = {
@@ -430,22 +430,13 @@ const CollectibleEventScreen = () => {
 
                 const translations =
                         (activeCollectibleEvent?.translations || []) as DatabaseTypes.CollectibleEventsTranslations[];
-                const title =
-                        getDirectusTranslation(
-                                { languageCode: languageForDirectusTranslation || '' },
-                                translations,
-                                'title',
-                                false,
-                                activeCollectibleEvent?.alias || ''
-                        ) || '';
-                const description =
-                        getDirectusTranslation(
-                                { languageCode: languageForDirectusTranslation || '' },
-                                translations,
-                                'description',
-                                false,
-                                activeCollectibleEvent?.description || ''
-                        ) || '';
+
+                const { title, description } = getCollectibleEventTranslation(
+                        translations,
+                        languageForDirectusTranslation || '',
+                        activeCollectibleEvent?.alias || '',
+                        activeCollectibleEvent?.description || ''
+                );
 
                 return (
                         <View style={styles.section}>
