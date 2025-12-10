@@ -40,6 +40,14 @@ const getGroupPosition = (index: number, length: number) => {
         return 'middle';
 };
 
+const formatCollectibleLabel = (key: string) =>
+        key
+                .replace(/^collectible_at_/, '')
+                .split('_')
+                .filter(Boolean)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+
 const DebugSection: React.FC<DebugSectionProps> = ({
                                                            activeCollectibleEvent,
                                                            theme,
@@ -481,7 +489,7 @@ const CollectibleEventScreen = () => {
 
                                                         const iconBgColor = isCollected ? '#2DBE62' : '#F7D21F';
                                                         const labelText = isHintVisible
-                                                            ? key
+                                                            ? formatCollectibleLabel(key)
                                                             : translate(TranslationKeys.collectible_event_show_hint);
 
                                                         return (
