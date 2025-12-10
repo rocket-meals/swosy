@@ -467,71 +467,31 @@ const CollectibleEventScreen = () => {
                                 ) : null}
 
                                         {debugMode ? (
-                                                <DebugView>
-                                                        {debugLogs?.length ? (
-                                                                <View style={{ gap: 4 }}>
-                                                                        {debugLogs.map((log, index) => (
-                                                                                // eslint-disable-next-line react/no-array-index-key
-                                                                                <Text key={`${log}-${index}`} style={{ color: theme.inactiveText }}>
-                                                                                        {log}
-                                                                                </Text>
-                                                                        ))}
-                                                                </View>
-                                                        ) : null}
-
-                                                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
-                                                                <TouchableOpacity
-                                                                        style={{
-                                                                                paddingVertical: 8,
-                                                                                paddingHorizontal: 12,
-                                                                                borderWidth: 1,
-                                                                                borderColor: theme.screen.iconBg,
-                                                                                backgroundColor: buttonColor,
-                                                                                marginRight: 8,
-                                                                                marginTop: 8,
-                                                                        }}
-                                                                        onPress={resetCurrentCollectibles}
-                                                                >
-                                                                        <Text style={{ color: theme.dark }}>
-                                                                                Reset current event found collectible
-                                                                        </Text>
-                                                                </TouchableOpacity>
-
-                                                                <TouchableOpacity
-                                                                        style={{
-                                                                                paddingVertical: 8,
-                                                                                paddingHorizontal: 12,
-                                                                                borderWidth: 1,
-                                                                                borderColor: theme.screen.iconBg,
-                                                                                backgroundColor: theme.warning,
-                                                                                marginRight: 8,
-                                                                                marginTop: 8,
-                                                                        }}
-                                                                        onPress={resetAllParticipations}
-                                                                >
-                                                                        <Text style={{ color: theme.dark }}>
-                                                                                Reset all event participations
-                                                                        </Text>
-                                                                </TouchableOpacity>
-
-                                                                <TouchableOpacity
-                                                                        style={{
-                                                                                paddingVertical: 8,
-                                                                                paddingHorizontal: 12,
-                                                                                borderWidth: 1,
-                                                                                borderColor: theme.screen.iconBg,
-                                                                                backgroundColor: theme.drawerBg,
-                                                                                marginRight: 8,
-                                                                                marginTop: 8,
-                                                                        }}
-                                                                        onPress={openRateAppModal}
-                                                                >
-                                                                        <Text style={{ color: theme.screen.text }}>
-                                                                                Open rate prompt modal
-                                                                        </Text>
-                                                                </TouchableOpacity>
-                                                        </View>
-
+                                                <DebugView
+                                                        title="Debug"
+                                                        logs={debugLogs}
+                                                        actions={[
+                                                                {
+                                                                        label: 'Reset current event found collectible',
+                                                                        onPress: resetCurrentCollectibles,
+                                                                        backgroundColor: buttonColor,
+                                                                        textColor: theme.dark,
+                                                                },
+                                                                {
+                                                                        label: 'Reset all event participations',
+                                                                        onPress: resetAllParticipations,
+                                                                        backgroundColor: theme.warning,
+                                                                        textColor: theme.dark,
+                                                                },
+                                                                {
+                                                                        label: 'Open rate prompt modal',
+                                                                        onPress: openRateAppModal,
+                                                                        backgroundColor: theme.drawerBg,
+                                                                        borderColor: theme.screen.iconBg,
+                                                                        textColor: theme.screen.text,
+                                                                },
+                                                        ]}
+                                                >
                                                         {nextCollectibleKey ? (
                                                                 <View style={{ marginTop: 12 }}>
                                                                         <Text style={{ ...styles.label, color: theme.screen.text }}>
