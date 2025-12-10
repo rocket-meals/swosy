@@ -1,7 +1,7 @@
 [
   {
-    "admin_access": true,
     "app_access": true,
+    "admin_access": true,
     "enforce_tfa": false,
     "ip_access": null,
     "description": "$t:admin_policy_description",
@@ -16,8 +16,8 @@
     "_syncId": "_sync_default_admin_policy"
   },
   {
-    "admin_access": false,
     "app_access": true,
+    "admin_access": false,
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
@@ -32,8 +32,8 @@
     "_syncId": "_sync_default_public_policy"
   },
   {
-    "admin_access": false,
     "app_access": true,
+    "admin_access": false,
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
@@ -48,8 +48,8 @@
     "_syncId": "5b24cdda-d563-485b-8bfe-5f0ab7afb482"
   },
   {
-    "admin_access": false,
     "app_access": false,
+    "admin_access": false,
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
@@ -68,8 +68,8 @@
     "_syncId": "abe3a726-f85c-4d70-a86c-15e7092e5da2"
   },
   {
-    "admin_access": false,
     "app_access": true,
+    "admin_access": false,
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
@@ -88,8 +88,8 @@
     "_syncId": "e836149f-70da-4884-8985-a622acd6221b"
   },
   {
-    "admin_access": false,
     "app_access": false,
+    "admin_access": false,
     "enforce_tfa": false,
     "ip_access": null,
     "description": null,
