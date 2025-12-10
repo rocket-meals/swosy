@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useModal } from '@/components/GlobalModal/useModal';
+import MyScrollViewModal from '@/components/MyScrollViewModal';
 import styles from './styles';
 
 const TestUseModalScreen = () => {
@@ -15,35 +16,46 @@ const TestUseModalScreen = () => {
 
         const openExampleModal = () => {
                 show(
-                        <View
-                                style={[
-                                        styles.modalContent,
-                                        {
-                                                backgroundColor: theme.sheet?.sheetBg || theme.screen.iconBg,
-                                                borderColor: theme.screen.iconBg,
-                                        },
-                                ]}
+                        <MyScrollViewModal
+                                title={translate(TranslationKeys.test_use_modal)}
+                                closeSheet={close}
+                                showsVerticalScrollIndicator={false}
                         >
-                                <Text style={[styles.modalTitle, { color: theme.screen.text }]}>
-                                        {translate(TranslationKeys.test_use_modal)}
-                                </Text>
-                                <Text style={[styles.modalBody, { color: theme.screen.text }]}>
-                                        {translate(TranslationKeys.modal_example_body)}
-                                </Text>
-                                <TouchableOpacity
+                                <View
                                         style={[
-                                                styles.modalButton,
+                                                styles.modalContent,
                                                 {
-                                                        backgroundColor: theme.button?.background || theme.screen.iconBg,
+                                                        backgroundColor: theme.sheet?.sheetBg || theme.screen.iconBg,
+                                                        borderColor: theme.screen.iconBg,
                                                 },
                                         ]}
-                                        onPress={close}
                                 >
-                                        <Text style={[styles.modalButtonText, { color: theme.button?.text || theme.screen.text }]}>
-                                                {translate(TranslationKeys.close_modal)}
+                                        <Text style={[styles.modalTitle, { color: theme.screen.text }]}>
+                                                {translate(TranslationKeys.test_use_modal)}
                                         </Text>
-                                </TouchableOpacity>
-                        </View>,
+                                        <Text style={[styles.modalBody, { color: theme.screen.text }]}>
+                                                {translate(TranslationKeys.modal_example_body)}
+                                        </Text>
+                                        <TouchableOpacity
+                                                style={[
+                                                        styles.modalButton,
+                                                        {
+                                                                backgroundColor: theme.button?.background || theme.screen.iconBg,
+                                                        },
+                                                ]}
+                                                onPress={close}
+                                        >
+                                                <Text
+                                                        style={[
+                                                                styles.modalButtonText,
+                                                                { color: theme.button?.text || theme.screen.text },
+                                                        ]}
+                                                >
+                                                        {translate(TranslationKeys.close_modal)}
+                                                </Text>
+                                        </TouchableOpacity>
+                                </View>
+                        </MyScrollViewModal>,
                         { backgroundStyle: { backgroundColor: theme.sheet?.backdrop || 'rgba(0,0,0,0.4)' } }
                 );
         };
