@@ -2002,47 +2002,47 @@
   "collectible_event_show_hint": {
     "de": "Hinweis anzeigen lassen",
     "en": "Show hint",
-    "ar": "Show hint",
-    "es": "Show hint",
-    "fr": "Show hint",
-    "ru": "Show hint",
-    "tr": "Show hint",
-    "zh": "Show hint"
+    "ar": "عرض التلميح",
+    "es": "Mostrar pista",
+    "fr": "Afficher l'indice",
+    "ru": "Показать подсказку",
+    "tr": "İpucunu göster",
+    "zh": "显示提示"
   },
   "collectible_event_hint_prefix": {
     "de": "Hinweis:",
     "en": "Hint:",
-    "ar": "Hint:",
-    "es": "Hint:",
-    "fr": "Hint:",
-    "ru": "Hint:",
-    "tr": "Hint:",
-    "zh": "Hint:"
+    "ar": "تلميح:",
+    "es": "Pista:",
+    "fr": "Indice :",
+    "ru": "Подсказка:",
+    "tr": "İpucu:",
+    "zh": "提示："
   },
   "collectible_event_found_label": {
     "de": "Gefunden",
     "en": "Found",
-    "ar": "Found",
-    "es": "Found",
-    "fr": "Found",
-    "ru": "Found",
-    "tr": "Found",
-    "zh": "Found"
+    "ar": "تم العثور عليه",
+    "es": "Encontrado",
+    "fr": "Trouvé",
+    "ru": "Найдено",
+    "tr": "Bulundu",
+    "zh": "已找到"
   },
   "collectible_event_debug_spot": {
     "de": "Debug-Collectible-Spot",
     "en": "Debug collectible spot",
-    "ar": "Debug collectible spot",
-    "es": "Debug collectible spot",
-    "fr": "Debug collectible spot",
-    "ru": "Debug collectible spot",
-    "tr": "Debug collectible spot",
-    "zh": "Debug collectible spot"
+    "ar": "موضع عنصر تجميعي للتصحيح",
+    "es": "Punto de coleccionable de depuración",
+    "fr": "Emplacement de collectible de débogage",
+    "ru": "Точка коллекционного предмета для отладки",
+    "tr": "Hata ayıklama koleksiyon noktası",
+    "zh": "调试收集点"
   },
   "collectible_event_collectible_preview_label": {
     "de": "So sieht das zu sammelnde Objekt aus.",
     "en": "This is what the collectible looks like.",
-    "ar": "This is what the collectible looks like.",
+    "ar": "هكذا يبدو العنصر القابل للتحصيل.",
     "es": "Así es como se ve el objeto coleccionable.",
     "fr": "Voici à quoi ressemble l'objet à collectionner.",
     "ru": "Так выглядит собираемый объект.",
