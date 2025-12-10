@@ -3,6 +3,7 @@ import {
         RESET_ALL_COLLECTIBLE_EVENT_DICTS,
         RESET_COLLECTIBLE_EVENT_DICT,
         SET_COLLECTIBLE_EVENT_DICT,
+        SET_COLLECTIBLE_EVENT_DICT_BULK,
         SET_COLLECTIBLE_EVENTS,
 } from '../Types/types';
 
@@ -34,6 +35,21 @@ const collectibleEventsReducer = (state = initialState, actions: any) => {
                                                 ...(state.collectibleEventsDict?.[eventId] || {}),
                                                 [key]: value,
                                         },
+                                },
+                        };
+                }
+                case SET_COLLECTIBLE_EVENT_DICT_BULK: {
+                        const { eventId, data } = actions.payload || {};
+
+                        if (!eventId) {
+                                return state;
+                        }
+
+                        return {
+                                ...state,
+                                collectibleEventsDict: {
+                                        ...state.collectibleEventsDict,
+                                        [eventId]: data || {},
                                 },
                         };
                 }

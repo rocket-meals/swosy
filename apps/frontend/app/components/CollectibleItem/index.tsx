@@ -68,10 +68,12 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                         return;
                 }
 
-                const updatedCount = Object.values({
+                const updatedData = {
                         ...collectibleDict,
                         [collectibleKey]: true,
-                }).filter(Boolean).length;
+                } as Record<string, boolean>;
+
+                const updatedCount = Object.values(updatedData).filter(Boolean).length;
 
                 setCollectibleKey(collectibleKey, true);
 
@@ -92,6 +94,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 try {
                         const payload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
                                 points: String(updatedCount),
+                                data: updatedData,
                                 profile: profile.id,
                                 collectible_event: activeCollectibleEvent.id,
                                 status: 'published',
