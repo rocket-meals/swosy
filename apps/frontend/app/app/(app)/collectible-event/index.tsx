@@ -18,7 +18,11 @@ import useCollectibleDict from '@/hooks/useCollectibleDict';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
 import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, RESET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
+import {
+        RESET_ALL_COLLECTIBLE_EVENT_DICTS,
+        RESET_COLLECTIBLE_EVENT_DICT,
+        SET_COLLECTIBLE_EVENT_DICT_BULK,
+} from '@/redux/Types/types';
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
@@ -39,6 +43,14 @@ const getGroupPosition = (index: number, length: number) => {
         if (index === length - 1) return 'bottom';
         return 'middle';
 };
+
+const formatCollectibleLabel = (key: string) =>
+        key
+                .replace(/^collectible_at_/, '')
+                .split('_')
+                .filter(Boolean)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
 
 const DebugSection: React.FC<DebugSectionProps> = ({
                                                            activeCollectibleEvent,
@@ -146,6 +158,8 @@ const CollectibleEventScreen = () => {
                 setDebugLogs(prev => [...prev, `${timestamp} - ${message}`]);
         }, []);
 
+        const shouldAskForContactDetails = Boolean((activeCollectibleEvent as any)?.ask_for_contact_details);
+
         const activeCollectibleKeys = useMemo(
             () =>
                 activeCollectibleEvent
@@ -175,7 +189,6 @@ const CollectibleEventScreen = () => {
             [activeCollectibleEvent]
         );
 
-        const [points, setPoints] = useState('');
         const [email, setEmail] = useState('');
         const [phoneNumber, setPhoneNumber] = useState('');
         const [isLoading, setIsLoading] = useState(false);
@@ -187,6 +200,44 @@ const CollectibleEventScreen = () => {
         const toggleCollectibleHint = useCallback((key: string) => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
         }, []);
+
+        const applyServerCollectibleData = useCallback(
+                (rawData: unknown) => {
+                        if (!activeCollectibleEvent?.id) {
+                                return;
+                        }
+
+                        let parsedData: Record<string, boolean> = {};
+
+                        if (typeof rawData === 'string') {
+                                try {
+                                        parsedData = JSON.parse(rawData) || {};
+                                } catch (error) {
+                                        appendDebugLog(`Failed to parse collectible data: ${String(error)}`);
+                                }
+                        } else if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
+                                parsedData = rawData as Record<string, boolean>;
+                        }
+
+                        const mergedData: Record<string, boolean> = { ...parsedData };
+
+                        Object.entries(collectibleDict || {}).forEach(([key, value]) => {
+                                if (value) {
+                                        mergedData[key] = true;
+                                }
+                        });
+
+                        dispatch({
+                                type: SET_COLLECTIBLE_EVENT_DICT_BULK,
+                                payload: { eventId: activeCollectibleEvent.id, data: mergedData },
+                        });
+
+                        if (Object.keys(parsedData || {}).length) {
+                                appendDebugLog('Applied collectible data from server');
+                        }
+                },
+                [activeCollectibleEvent?.id, appendDebugLog, collectibleDict, dispatch]
+        );
 
         useEffect(() => {
                 if (activeCollectibleEvent?.id === previousEventIdRef.current) {
@@ -212,7 +263,6 @@ const CollectibleEventScreen = () => {
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
                         setParticipation(null);
-                        setPoints('');
                         setEmail('');
                         setPhoneNumber('');
                         return;
@@ -227,12 +277,11 @@ const CollectibleEventScreen = () => {
                         );
                         if (existing) {
                                 setParticipation(existing);
-                                setPoints(existing.points ? String(existing.points) : '');
                                 setEmail(existing.email ?? '');
                                 setPhoneNumber(existing.phone_number ?? '');
+                                applyServerCollectibleData(existing.data);
                         } else {
                                 setParticipation(null);
-                                setPoints('');
                                 setEmail('');
                                 setPhoneNumber('');
                         }
@@ -243,7 +292,7 @@ const CollectibleEventScreen = () => {
                 } finally {
                         setIsLoading(false);
                 }
-        }, [activeCollectibleEvent?.id, appendDebugLog, participantsHelper, profile?.id, toast, translate]);
+        }, [activeCollectibleEvent?.id, appendDebugLog, applyServerCollectibleData, participantsHelper, profile?.id, toast, translate]);
 
         useEffect(() => {
                 loadParticipation();
@@ -252,13 +301,6 @@ const CollectibleEventScreen = () => {
         useEffect(() => {
                 setVisibleHints({});
         }, [activeCollectibleEvent?.id]);
-
-        useEffect(() => {
-                const newValue = String(collectedCount);
-                if (newValue !== points) {
-                        setPoints(newValue);
-                }
-        }, [collectedCount, points]);
 
         const handleSave = async () => {
                 if (!activeCollectibleEvent?.id) {
@@ -279,6 +321,7 @@ const CollectibleEventScreen = () => {
                                 points: pointsToSave,
                                 email: email?.trim() || null,
                                 phone_number: phoneNumber?.trim() || null,
+                                data: collectibleDict,
                                 profile: profile.id,
                                 collectible_event: activeCollectibleEvent.id,
                                 status: 'published',
@@ -289,7 +332,6 @@ const CollectibleEventScreen = () => {
                             : await participantsHelper.createItem(payload);
 
                         setParticipation(updated as DatabaseTypes.CollectibleEventParticipants);
-                        setPoints((updated as DatabaseTypes.CollectibleEventParticipants)?.points || pointsToSave);
                         setEmail((updated as DatabaseTypes.CollectibleEventParticipants)?.email || email);
                         setPhoneNumber((updated as DatabaseTypes.CollectibleEventParticipants)?.phone_number || phoneNumber);
                         toast(translate(TranslationKeys.collectible_event_save_success), 'success');
@@ -308,7 +350,6 @@ const CollectibleEventScreen = () => {
                 }
 
                 dispatch({ type: RESET_COLLECTIBLE_EVENT_DICT, payload: { eventId: activeCollectibleEvent.id } });
-                setPoints('0');
                 toast(translate(TranslationKeys.reset), 'success');
 
                 if (loggedIn && profile?.id) {
@@ -320,8 +361,8 @@ const CollectibleEventScreen = () => {
                                 );
 
                                 if (existing?.id) {
-                                        await participantsHelper.updateItem(existing.id, { points: '0' });
-                                        setParticipation(prev => (prev ? { ...prev, points: '0' } : prev));
+                                        await participantsHelper.updateItem(existing.id, { points: '0', data: {} });
+                                        setParticipation(prev => (prev ? { ...prev, points: '0', data: {} } : prev));
                                         toast(translate(TranslationKeys.reset), 'success');
                                 }
                         } catch (error) {
@@ -335,7 +376,6 @@ const CollectibleEventScreen = () => {
         const resetAllParticipations = useCallback(async () => {
                 dispatch({ type: RESET_ALL_COLLECTIBLE_EVENT_DICTS });
                 setParticipation(null);
-                setPoints('');
                 setEmail('');
                 setPhoneNumber('');
 
@@ -374,93 +414,78 @@ const CollectibleEventScreen = () => {
                                     </Text>
                             </View>
 
-                            <DebugView>
-                                    <View style={{ marginTop: 16, gap: 12 }}>
-                                            <SettingsList
-                                                leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
-                                                label={translate(TranslationKeys.collectible_event_points)}
-                                                groupPosition="single"
-                                                showSeparator={false}
-                                                rightElement={
-                                                        <TextInput
-                                                            style={{
-                                                                    ...styles.settingsInput,
-                                                                    color: theme.screen.text,
-                                                                    backgroundColor: theme.drawerBg,
-                                                                    borderColor: theme.screen.icon,
-                                                            }}
-                                                            value={points}
-                                                            onChangeText={setPoints}
-                                                            placeholder={translate(TranslationKeys.enter_number)}
-                                                            placeholderTextColor={theme.screen.placeholder}
-                                                            keyboardType="numeric"
-                                                            inputMode="numeric"
-                                                        />
-                                                }
-                                            />
-                                    </View>
-                            </DebugView>
-
-                            <View style={{ marginTop: 16 }}>
-                                    <Text style={{ ...styles.label, color: theme.screen.text }}>
-                                            {translate(TranslationKeys.email)}
-                                    </Text>
-                                    <TextInput
-                                        style={{
-                                                ...styles.input,
-                                                color: theme.screen.text,
-                                                backgroundColor: theme.drawerBg,
-                                                borderColor: theme.screen.icon,
-                                        }}
-                                        value={email}
-                                        onChangeText={setEmail}
-                                        placeholder={translate(TranslationKeys.email)}
-                                        placeholderTextColor={theme.screen.placeholder}
-                                        keyboardType="email-address"
-                                        autoCapitalize="none"
+                            <View style={{ marginTop: 16, gap: 12 }}>
+                                    <SettingsList
+                                        leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
+                                        label={translate(TranslationKeys.collectible_event_points)}
+                                        groupPosition="single"
+                                        showSeparator={false}
+                                        rightElement={
+                                                <Text style={{ color: theme.screen.text }}>
+                                                        {collectedCount}/{maxCollectibleKeys || '∞'}
+                                                </Text>
+                                        }
                                     />
-
-                                    <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
-                                            {translate(TranslationKeys.phone_number)}
-                                    </Text>
-                                    <TextInput
-                                        style={{
-                                                ...styles.input,
-                                                color: theme.screen.text,
-                                                backgroundColor: theme.drawerBg,
-                                                borderColor: theme.screen.icon,
-                                        }}
-                                        value={phoneNumber}
-                                        onChangeText={setPhoneNumber}
-                                        placeholder={translate(TranslationKeys.phone_number)}
-                                        placeholderTextColor={theme.screen.placeholder}
-                                        keyboardType="phone-pad"
-                                    />
-
-                                    <Text style={{ ...styles.info, color: theme.inactiveText, marginTop: 8 }}>
-                                            {collectedCount}/{maxCollectibleKeys || '∞'} {translate(TranslationKeys.collectible_event_collected)}
-                                    </Text>
-
-                                    <Text style={{ ...styles.notice, color: theme.inactiveText }}>
-                                            {translate(TranslationKeys.collectible_event_data_notice)}
-                                    </Text>
                             </View>
 
-                            <TouchableOpacity
-                                style={{
-                                        ...styles.button,
-                                        backgroundColor: buttonColor,
-                                        opacity: isSaving ? 0.6 : 1,
-                                }}
-                                disabled={isSaving}
-                                onPress={handleSave}
-                            >
-                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                            {isSaving
-                                                ? translate(TranslationKeys.loading)
-                                                : translate(TranslationKeys.save)}
-                                    </Text>
-                            </TouchableOpacity>
+                            {shouldAskForContactDetails ? (
+                                <View style={{ marginTop: 16 }}>
+                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                {translate(TranslationKeys.email)}
+                                        </Text>
+                                        <TextInput
+                                            style={{
+                                                    ...styles.input,
+                                                    color: theme.screen.text,
+                                                    backgroundColor: theme.drawerBg,
+                                                    borderColor: theme.screen.icon,
+                                            }}
+                                            value={email}
+                                            onChangeText={setEmail}
+                                            placeholder={translate(TranslationKeys.email)}
+                                            placeholderTextColor={theme.screen.placeholder}
+                                            keyboardType="email-address"
+                                            autoCapitalize="none"
+                                        />
+
+                                        <Text style={{ ...styles.label, color: theme.screen.text, marginTop: 12 }}>
+                                                {translate(TranslationKeys.phone_number)}
+                                        </Text>
+                                        <TextInput
+                                            style={{
+                                                    ...styles.input,
+                                                    color: theme.screen.text,
+                                                    backgroundColor: theme.drawerBg,
+                                                    borderColor: theme.screen.icon,
+                                            }}
+                                            value={phoneNumber}
+                                            onChangeText={setPhoneNumber}
+                                            placeholder={translate(TranslationKeys.phone_number)}
+                                            placeholderTextColor={theme.screen.placeholder}
+                                            keyboardType="phone-pad"
+                                        />
+
+                                        <Text style={{ ...styles.notice, color: theme.inactiveText }}>
+                                                {translate(TranslationKeys.collectible_event_data_notice)}
+                                        </Text>
+
+                                        <TouchableOpacity
+                                            style={{
+                                                    ...styles.button,
+                                                    backgroundColor: buttonColor,
+                                                    opacity: isSaving ? 0.6 : 1,
+                                            }}
+                                            disabled={isSaving}
+                                            onPress={handleSave}
+                                        >
+                                                <Text style={{ ...styles.buttonText, color: theme.dark }}>
+                                                        {isSaving
+                                                            ? translate(TranslationKeys.loading)
+                                                            : translate(TranslationKeys.save)}
+                                                </Text>
+                                        </TouchableOpacity>
+                                </View>
+                            ) : null}
 
                             {activeCollectibleKeys.length ? (
                                 <View style={{ marginTop: 16 }}>
@@ -481,7 +506,7 @@ const CollectibleEventScreen = () => {
 
                                                         const iconBgColor = isCollected ? '#2DBE62' : '#F7D21F';
                                                         const labelText = isHintVisible
-                                                            ? key
+                                                            ? formatCollectibleLabel(key)
                                                             : translate(TranslationKeys.collectible_event_show_hint);
 
                                                         return (

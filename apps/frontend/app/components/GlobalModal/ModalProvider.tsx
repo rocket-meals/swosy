@@ -31,11 +31,22 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 closeInvocations: 0,
         });
 
+        const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+        const clearCloseTimeout = () => {
+                if (closeTimeoutRef.current) {
+                        clearTimeout(closeTimeoutRef.current);
+                        closeTimeoutRef.current = null;
+                }
+        };
+
         const open = (c: ReactNode, options?: { backgroundStyle?: any }) => {
+                clearCloseTimeout();
+
                 setContent(c);
                 setBackgroundStyle(options?.backgroundStyle ?? null);
                 setIsVisible(true);
-                setDebug((prev) => ({
+                setDebug(prev => ({
                         ...prev,
                         lastAction: 'open',
                         contentSet: Boolean(c),
@@ -50,11 +61,13 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
-                setTimeout(() => {
+                clearCloseTimeout();
+                closeTimeoutRef.current = setTimeout(() => {
                         setContent(null);
                         setIsVisible(false);
+                        clearCloseTimeout();
                 }, 200);
-                setDebug((prev) => ({
+                setDebug(prev => ({
                         ...prev,
                         lastAction: 'close',
                         contentSet: false,
@@ -90,6 +103,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 }
         }, [isVisible]);
 
+        useEffect(() => () => clearCloseTimeout(), []);
+
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
                         {children}
@@ -100,10 +115,11 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                         backgroundStyle={backgroundStyle}
                                         enablePanDownToClose
                                         onClose={() => {
+                                                clearCloseTimeout();
                                                 setContent(null);
                                                 setBackgroundStyle(null);
                                                 setIsVisible(false);
-                                                setDebug((prev) => ({
+                                                setDebug(prev => ({
                                                         ...prev,
                                                         lastAction: 'close',
                                                         contentSet: false,

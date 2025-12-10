@@ -1880,7 +1880,7 @@
     "zh": "事件"
   },
   "collectible_event": {
-    "de": "Collectible-Event",
+    "de": "Sammel Event",
     "en": "Collectible Event",
     "ar": "فعالية قابلة للتحصيل",
     "es": "Evento coleccionable",
@@ -1990,59 +1990,59 @@
     "zh": "提供您的数据是自愿的。适用条款和条件。"
   },
   "collectible_event_progress_title": {
-    "de": "Collectibles im Event",
+    "de": "Sammelobjekte im Event",
     "en": "Collectibles in the event",
-    "ar": "Collectibles in the event",
-    "es": "Collectibles in the event",
-    "fr": "Collectibles in the event",
-    "ru": "Collectibles in the event",
-    "tr": "Collectibles in the event",
-    "zh": "Collectibles in the event"
+    "ar": "العناصر القابلة للجمع في الفعالية",
+    "es": "Objetos coleccionables en el evento",
+    "fr": "Objets à collectionner dans l'événement",
+    "ru": "Коллекционные предметы в событии",
+    "tr": "Etkinlikteki koleksiyon öğeleri",
+    "zh": "活动中的收集品"
   },
   "collectible_event_show_hint": {
     "de": "Hinweis anzeigen lassen",
     "en": "Show hint",
-    "ar": "Show hint",
-    "es": "Show hint",
-    "fr": "Show hint",
-    "ru": "Show hint",
-    "tr": "Show hint",
-    "zh": "Show hint"
+    "ar": "عرض التلميح",
+    "es": "Mostrar pista",
+    "fr": "Afficher l'indice",
+    "ru": "Показать подсказку",
+    "tr": "İpucunu göster",
+    "zh": "显示提示"
   },
   "collectible_event_hint_prefix": {
     "de": "Hinweis:",
     "en": "Hint:",
-    "ar": "Hint:",
-    "es": "Hint:",
-    "fr": "Hint:",
-    "ru": "Hint:",
-    "tr": "Hint:",
-    "zh": "Hint:"
+    "ar": "تلميح:",
+    "es": "Pista:",
+    "fr": "Indice :",
+    "ru": "Подсказка:",
+    "tr": "İpucu:",
+    "zh": "提示："
   },
   "collectible_event_found_label": {
     "de": "Gefunden",
     "en": "Found",
-    "ar": "Found",
-    "es": "Found",
-    "fr": "Found",
-    "ru": "Found",
-    "tr": "Found",
-    "zh": "Found"
+    "ar": "تم العثور عليه",
+    "es": "Encontrado",
+    "fr": "Trouvé",
+    "ru": "Найдено",
+    "tr": "Bulundu",
+    "zh": "已找到"
   },
   "collectible_event_debug_spot": {
     "de": "Debug-Collectible-Spot",
     "en": "Debug collectible spot",
-    "ar": "Debug collectible spot",
-    "es": "Debug collectible spot",
-    "fr": "Debug collectible spot",
-    "ru": "Debug collectible spot",
-    "tr": "Debug collectible spot",
-    "zh": "Debug collectible spot"
+    "ar": "موضع عنصر تجميعي للتصحيح",
+    "es": "Punto de coleccionable de depuración",
+    "fr": "Emplacement de collectible de débogage",
+    "ru": "Точка коллекционного предмета для отладки",
+    "tr": "Hata ayıklama koleksiyon noktası",
+    "zh": "调试收集点"
   },
   "collectible_event_collectible_preview_label": {
     "de": "So sieht das zu sammelnde Objekt aus.",
     "en": "This is what the collectible looks like.",
-    "ar": "This is what the collectible looks like.",
+    "ar": "هكذا يبدو العنصر القابل للتحصيل.",
     "es": "Así es como se ve el objeto coleccionable.",
     "fr": "Voici à quoi ressemble l'objet à collectionner.",
     "ru": "Так выглядит собираемый объект.",
@@ -3083,6 +3083,26 @@
     "tr": "RSS Beslemesi",
     "zh": "RSS 提要"
   },
+  "meal_guidance_system": {
+    "de": "Speise Leitsystem",
+    "en": "Meal guidance system",
+    "ar": "نظام توجيه الوجبات",
+    "es": "Sistema de guía de comidas",
+    "fr": "Système d'orientation des repas",
+    "ru": "Система навигации по блюдам",
+    "tr": "Yemek yönlendirme sistemi",
+    "zh": "餐品导航系统"
+  },
+  "forms": {
+    "de": "Formulare",
+    "en": "Forms",
+    "ar": "نماذج",
+    "es": "Formularios",
+    "fr": "Formulaires",
+    "ru": "Формы",
+    "tr": "Formlar",
+    "zh": "表单"
+  },
   "markings": {
     "de": "Kennzeichnungen",
     "en": "Labels",
@@ -3104,14 +3124,34 @@
     "zh": "类别"
   },
   "form_categories": {
-    "de": "Formkategorien",
-    "en": "Form Categories",
-    "ar": "فئات النموذج",
-    "es": "Categorías de formulario",
-    "fr": "Catégories de formulaire",
-    "ru": "Категории форм",
-    "tr": "Form Kategorileri",
-    "zh": "表单类别"
+    "de": "Formulare",
+    "en": "Forms",
+    "ar": "نماذج",
+    "es": "Formularios",
+    "fr": "Formulaires",
+    "ru": "Формы",
+    "tr": "Formlar",
+    "zh": "表单"
+  },
+  "event_monitors": {
+    "de": "Events Monitore",
+    "en": "Event monitors",
+    "ar": "شاشات الأحداث",
+    "es": "Monitores de eventos",
+    "fr": "Moniteurs d'événements",
+    "ru": "Экраны с событиями",
+    "tr": "Etkinlik monitörleri",
+    "zh": "事件监视器"
+  },
+  "collectible_event_monitor": {
+    "de": "Collectible Event Monitor",
+    "en": "Collectible event monitor",
+    "ar": "عرض حدث قابل للتجميع، شاشة",
+    "es": "Monitor de evento coleccionable",
+    "fr": "Moniteur d'événement collectionnable",
+    "ru": "Монитор коллекционного события",
+    "tr": "Koleksiyon etkinliği monitörü",
+    "zh": "收集活动监视"
   },
   "monitore": {
     "de": "Monitore",
