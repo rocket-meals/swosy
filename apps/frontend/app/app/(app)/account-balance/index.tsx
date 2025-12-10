@@ -363,19 +363,7 @@ const AccountBalanceScreen = () => {
 			
                         {isDevMode ? (
                                 <View style={styles.additionalInfoContainer}>
-                                        <DebugView
-                                                title={translate(TranslationKeys.debugErrors)}
-                                                logs={debugLogMessages}
-                                                actions={[
-                                                        {
-                                                                label: translate(TranslationKeys.showNfcInstruction),
-                                                                icon: 'cellphone-nfc',
-                                                                onPress: showInstruction,
-                                                                borderColor: theme.screen.iconBg,
-                                                                backgroundColor: theme.drawerBg,
-                                                        },
-                                                ]}
-                                        >
+                                        <DebugView>
                                                 <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
                                                         {[1, 5, 20].map(amount => (
                                                                 <TouchableOpacity
@@ -412,6 +400,16 @@ const AccountBalanceScreen = () => {
                                                                 </TouchableOpacity>
                                                         ))}
                                                 </View>
+                                                {debugLogMessages?.length ? (
+                                                        <View style={{ marginTop: 8 }}>
+                                                                {debugLogMessages.map((log, index) => (
+                                                                        // eslint-disable-next-line react/no-array-index-key
+                                                                        <Text key={`${log}-${index}`} style={{ color: theme.inactiveText }}>
+                                                                                {log}
+                                                                        </Text>
+                                                                ))}
+                                                        </View>
+                                                ) : null}
                                         </DebugView>
                                 </View>
                         ) : null}
