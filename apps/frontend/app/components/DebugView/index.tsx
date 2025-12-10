@@ -1,27 +1,33 @@
 import React, { ReactNode } from 'react';
 import { Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
+
+import { RootState } from '@/redux/reducer';
 
 import styles from './styles';
 
 interface DebugViewProps {
-        isVisible?: boolean;
-        children?: ReactNode;
+  children?: ReactNode;
 }
 
-export const DebugView: React.FC<DebugViewProps> = ({ isVisible = true, children }) => {
-        if (!isVisible) return null;
-        return <>{children}</>;
+const useIsDebugEnabled = () => useSelector((state: RootState) => state.settings.debugMode);
+
+export const DebugView: React.FC<DebugViewProps> = ({ children }) => {
+  const isDebug = useIsDebugEnabled();
+  if (!isDebug) return null;
+  return <>{children}</>;
 };
 
-const MyDebugView: React.FC<DebugViewProps> = ({ isVisible = true, children }) => {
-        if (!isVisible) return null;
+const MyDebugView: React.FC<DebugViewProps> = ({ children }) => {
+  const isDebug = useIsDebugEnabled();
+  if (!isDebug) return null;
 
-        return (
-                <View style={styles.container}>
-                        <Text style={styles.label}>Debug</Text>
-                        <View style={styles.content}>{children}</View>
-                </View>
-        );
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>Debug</Text>
+      <View style={styles.content}>{children}</View>
+    </View>
+  );
 };
 
 export default MyDebugView;
