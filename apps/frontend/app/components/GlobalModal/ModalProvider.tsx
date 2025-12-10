@@ -75,6 +75,19 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 return () => clearTimeout(t);
         }, [content]);
 
+        // Also react to visibility changes in case the content does not change (e.g., re-open same modal)
+        useEffect(() => {
+                if (isVisible) {
+                        sheetRef.current?.expand?.();
+                        setDebug((prev) => ({
+                                ...prev,
+                                sheetRefReady: Boolean(sheetRef.current),
+                        }));
+                } else {
+                        sheetRef.current?.close?.();
+                }
+        }, [isVisible]);
+
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
                         {children}
