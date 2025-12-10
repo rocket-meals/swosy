@@ -99,19 +99,15 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                         </Text>
                                                 </TouchableOpacity>
 
-                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <View style={{ gap: 12 }}>
                                                         <TouchableOpacity
                                                                 style={{
                                                                         ...styles.button,
-                                                                        flex: 1,
                                                                         marginTop: 0,
-                                                                        marginRight: 12,
                                                                         flexDirection: 'row',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
-                                                                        backgroundColor: theme.card.background,
-                                                                        borderWidth: 1,
-                                                                        borderColor: theme.screen.iconBg,
+                                                                        backgroundColor: rateButtonColor,
                                                                 }}
                                                                 onPress={() => {
                                                                         if (appSettings?.app_stores_url_to_google) {
@@ -125,10 +121,10 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                                 <Ionicons
                                                                         name="logo-google-playstore"
                                                                         size={20}
-                                                                        color={theme.screen.icon}
+                                                                        color={rateButtonTextColor}
                                                                         style={{ marginRight: 8 }}
                                                                 />
-                                                                <Text style={{ ...styles.buttonText, color: theme.screen.text }}>
+                                                                <Text style={{ ...styles.buttonText, color: rateButtonTextColor }}>
                                                                         Google Play Store
                                                                 </Text>
                                                         </TouchableOpacity>
@@ -136,14 +132,11 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                         <TouchableOpacity
                                                                 style={{
                                                                         ...styles.button,
-                                                                        flex: 1,
                                                                         marginTop: 0,
                                                                         flexDirection: 'row',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
-                                                                        backgroundColor: theme.card.background,
-                                                                        borderWidth: 1,
-                                                                        borderColor: theme.screen.iconBg,
+                                                                        backgroundColor: rateButtonColor,
                                                                 }}
                                                                 onPress={() => {
                                                                         if (appSettings?.app_stores_url_to_apple) {
@@ -157,10 +150,10 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                                 <Ionicons
                                                                         name="logo-apple"
                                                                         size={20}
-                                                                        color={theme.screen.icon}
+                                                                        color={rateButtonTextColor}
                                                                         style={{ marginRight: 8 }}
                                                                 />
-                                                                <Text style={{ ...styles.buttonText, color: theme.screen.text }}>
+                                                                <Text style={{ ...styles.buttonText, color: rateButtonTextColor }}>
                                                                         App Store
                                                                 </Text>
                                                         </TouchableOpacity>
@@ -178,10 +171,7 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                 rateButtonColor,
                 rateButtonTextColor,
                 show,
-                theme.card.background,
                 theme.drawerBg,
-                theme.screen.icon,
-                theme.screen.iconBg,
                 theme.screen.text,
                 theme.sheet?.sheetBg,
                 translate,
