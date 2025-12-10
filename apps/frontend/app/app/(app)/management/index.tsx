@@ -35,7 +35,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<MaterialCommunityIcons name="calendar" size={24} />}
                                                 label={translate(TranslationKeys.foodweekplan)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         dispatch({
                                                                 type: SET_WEEK_PLAN,
@@ -51,7 +51,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<MaterialCommunityIcons name="folder-image" size={24} />}
                                                 label={translate(TranslationKeys.foodBigScreen)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         dispatch({
                                                                 type: SET_DAY_PLAN,
@@ -73,7 +73,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<MaterialCommunityIcons name="view-list" size={24} />}
                                                 label={translate(TranslationKeys.monitorDayPlan)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         dispatch({
                                                                 type: SET_FOOD_PLAN,
@@ -91,7 +91,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<Ionicons name="bag-add" size={24} />}
                                                 label={translate(TranslationKeys.markings)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         router.navigate('/labels');
                                                 }}
@@ -104,7 +104,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<FontAwesome name="list-alt" size={22} />}
                                                 label={translate(TranslationKeys.form_categories)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         router.navigate('/form-categories');
                                                 }}
@@ -117,7 +117,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<MaterialCommunityIcons name="trophy" size={24} />}
                                                 label={translate(TranslationKeys.collectible_event_monitor)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         router.navigate('/collectible-event-monitor');
                                                 }}
@@ -130,7 +130,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<FontAwesome name="rss-square" size={22} />}
                                                 label={translate(TranslationKeys.rss_feed)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         router.navigate('/rss-feed-config');
                                                 }}
@@ -143,7 +143,7 @@ const Index = () => {
                                         <SettingsList
                                                 leftIcon={<MaterialCommunityIcons name="calendar" size={24} />}
                                                 label={translate(TranslationKeys.test_statistik)}
-                                                rightIcon={<Octicons name="chevron-right" size={24} />}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
                                                         router.navigate('/statistics');
                                                 }}
