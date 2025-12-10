@@ -56,7 +56,7 @@ const TestUseModalScreen = () => {
                                         </TouchableOpacity>
                                 </View>
                         </MyScrollViewModal>,
-                        { backgroundStyle: { backgroundColor: theme.sheet?.backdrop || 'rgba(0,0,0,0.4)' } }
+                        { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
                 );
         };
 
