@@ -23,139 +23,7 @@ import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import MyMarkdown from '@/components/MyMarkdown';
 import { getCollectibleEventTranslation } from '@/helper/resourceHelper';
 import useRateAppModal from '@/hooks/useRateAppModal';
-
-type DebugSectionProps = {
-        activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
-        theme: ReturnType<typeof useTheme>['theme'];
-        buttonColor: string;
-        resetCurrentCollectibles: () => void;
-        resetAllParticipations: () => void;
-        nextCollectibleKey?: CollectibleAt;
-        debugSpotLabel: string;
-        selectedLanguage?: string;
-        onOpenRateModal: () => void;
-};
-
-const getGroupPosition = (index: number, length: number) => {
-        if (length === 1) return 'single';
-        if (index === 0) return 'top';
-        if (index === length - 1) return 'bottom';
-        return 'middle';
-};
-
-const DebugSection: React.FC<DebugSectionProps> = ({
-        activeCollectibleEvent,
-        theme,
-        buttonColor,
-        resetCurrentCollectibles,
-        resetAllParticipations,
-        nextCollectibleKey,
-        debugSpotLabel,
-        selectedLanguage,
-        onOpenRateModal,
-}) => {
-        return (
-                <View style={{ marginTop: 16 }}>
-                        <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
-                        <View style={{ marginTop: 12, gap: 8 }}>
-                                <TouchableOpacity
-                                        style={{
-                                                ...styles.button,
-                                                backgroundColor: buttonColor,
-                                                opacity: 0.9,
-                                        }}
-                                        onPress={resetCurrentCollectibles}
-                                >
-                                        <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                                Reset current event found collectible
-                                        </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                        style={{
-                                                ...styles.button,
-                                                backgroundColor: theme.warning,
-                                                opacity: 0.9,
-                                        }}
-                                        onPress={resetAllParticipations}
-                                >
-                                        <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                                Reset all event participations
-                                        </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                        style={{
-                                                ...styles.button,
-                                                backgroundColor: theme.drawerBg,
-                                                borderWidth: 1,
-                                                borderColor: theme.screen.icon,
-                                        }}
-                                        onPress={onOpenRateModal}
-                                >
-                                        <Text style={{ ...styles.buttonText, color: theme.screen.text }}>
-                                                Open rate prompt modal
-                                        </Text>
-                                </TouchableOpacity>
-                        </View>
-
-                        {nextCollectibleKey ? (
-                                <View style={{ marginTop: 12, gap: 8 }}>
-                                        <Text style={{ ...styles.label, color: theme.screen.text }}>{debugSpotLabel}</Text>
-                                        <CollectibleSpot collectibleKey={nextCollectibleKey} />
-                                </View>
-                        ) : null}
-
-                        {activeCollectibleEvent ? (
-                                <View style={{ marginTop: 12 }}>
-                                        <Text style={{ ...styles.info, color: theme.screen.text, marginBottom: 4 }}>
-                                                Event Details
-                                        </Text>
-                                        <SettingsList
-                                                key="event-id"
-                                                iconBgColor={theme.accent}
-                                                leftIcon={
-                                                        <MaterialCommunityIcons
-                                                                name="pound-box-outline"
-                                                                size={22}
-                                                                color={theme.screen.icon}
-                                                        />
-                                                }
-                                                label={`ID: ${activeCollectibleEvent.id}`}
-                                                groupPosition={getGroupPosition(0, 3) as any}
-                                        />
-                                        <SettingsList
-                                                key="event-alias"
-                                                iconBgColor={theme.accent}
-                                                leftIcon={
-                                                        <MaterialCommunityIcons
-                                                                name="label-outline"
-                                                                size={22}
-                                                                color={theme.screen.icon}
-                                                        />
-                                                }
-                                                label={`Alias: ${activeCollectibleEvent.alias || '-'}`}
-                                                groupPosition={getGroupPosition(1, 3) as any}
-                                        />
-
-                                        <SettingsList
-                                                key="language"
-                                                iconBgColor={theme.accent}
-                                                leftIcon={
-                                                        <MaterialCommunityIcons
-                                                                name="translate"
-                                                                size={22}
-                                                                color={theme.screen.icon}
-                                                        />
-                                                }
-                                                label={`Selected language: ${selectedLanguage || '-'}`}
-                                                groupPosition={getGroupPosition(2, 3) as any}
-                                        />
-                                </View>
-                        ) : null}
-                </View>
-        );
-};
+import DebugView from '@/components/DebugView';
 
 const CollectibleEventScreen = () => {
         useSetPageTitle(TranslationKeys.collectible_event);
@@ -599,42 +467,70 @@ const CollectibleEventScreen = () => {
                                 ) : null}
 
                                         {debugMode ? (
-                                                <DebugSection
-                                                        activeCollectibleEvent={activeCollectibleEvent}
-                                                        buttonColor={buttonColor}
-                                                        resetAllParticipations={resetAllParticipations}
-                                                        resetCurrentCollectibles={resetCurrentCollectibles}
-                                                        theme={theme}
-                                                        nextCollectibleKey={nextCollectibleKey}
-                                                        debugSpotLabel={translate(TranslationKeys.collectible_event_debug_spot)}
-                                                        selectedLanguage={languageForDirectusTranslation}
-                                                        onOpenRateModal={openRateAppModal}
-                                                />
-                                        ) : null}
-
-                                        {debugMode && debugLogs.length ? (
-                                                <View style={{ marginTop: 16 }}>
-                                                        <Text
-                                                                style={{
-                                                                        ...styles.label,
-                                                                        color: theme.screen.text,
-                                                                        marginBottom: 8,
-                                                                }}
-                                                        >
-                                                                Debug Logs
-                                                        </Text>
-                                                        <View style={{ gap: 6 }}>
-                                                                {debugLogs.map((log, index) => (
-                                                                        <Text
-                                                                                // eslint-disable-next-line react/no-array-index-key
-                                                                                key={`debug-log-${index}`}
-                                                                                style={{ color: theme.inactiveText }}
-                                                                        >
-                                                                                {log}
+                                                <DebugView
+                                                        title="Debug"
+                                                        logs={debugLogs}
+                                                        actions={[
+                                                                {
+                                                                        label: 'Reset current event found collectible',
+                                                                        onPress: resetCurrentCollectibles,
+                                                                        backgroundColor: buttonColor,
+                                                                        textColor: theme.dark,
+                                                                },
+                                                                {
+                                                                        label: 'Reset all event participations',
+                                                                        onPress: resetAllParticipations,
+                                                                        backgroundColor: theme.warning,
+                                                                        textColor: theme.dark,
+                                                                },
+                                                                {
+                                                                        label: 'Open rate prompt modal',
+                                                                        onPress: openRateAppModal,
+                                                                        backgroundColor: theme.drawerBg,
+                                                                        borderColor: theme.screen.iconBg,
+                                                                        textColor: theme.screen.text,
+                                                                },
+                                                        ]}
+                                                >
+                                                        {nextCollectibleKey ? (
+                                                                <View style={{ marginTop: 12 }}>
+                                                                        <Text style={{ ...styles.label, color: theme.screen.text }}>
+                                                                                {translate(TranslationKeys.collectible_event_debug_spot)}
                                                                         </Text>
-                                                                ))}
-                                                        </View>
-                                                </View>
+                                                                        <CollectibleSpot collectibleKey={nextCollectibleKey} />
+                                                                </View>
+                                                        ) : null}
+
+                                                        {activeCollectibleEvent ? (
+                                                                <View style={{ marginTop: 12 }}>
+                                                                        <Text style={{ ...styles.info, color: theme.screen.text, marginBottom: 4 }}>
+                                                                                Event Details
+                                                                        </Text>
+                                                                        <SettingsList
+                                                                                key="event-id"
+                                                                                iconBgColor={theme.accent}
+                                                                                leftIcon={<MaterialCommunityIcons name="pound-box-outline" size={22} color={theme.screen.icon} />}
+                                                                                label={`ID: ${activeCollectibleEvent.id}`}
+                                                                                groupPosition={getGroupPosition(0, 3) as any}
+                                                                        />
+                                                                        <SettingsList
+                                                                                key="event-alias"
+                                                                                iconBgColor={theme.accent}
+                                                                                leftIcon={<MaterialCommunityIcons name="label-outline" size={22} color={theme.screen.icon} />}
+                                                                                label={`Alias: ${activeCollectibleEvent.alias || '-'}`}
+                                                                                groupPosition={getGroupPosition(1, 3) as any}
+                                                                        />
+
+                                                                        <SettingsList
+                                                                                key="language"
+                                                                                iconBgColor={theme.accent}
+                                                                                leftIcon={<MaterialCommunityIcons name="translate" size={22} color={theme.screen.icon} />}
+                                                                                label={`Selected language: ${languageForDirectusTranslation || '-'}`}
+                                                                                groupPosition={getGroupPosition(2, 3) as any}
+                                                                        />
+                                                                </View>
+                                                        ) : null}
+                                                </DebugView>
                                         ) : null}
 
                                 {isLoading ? (

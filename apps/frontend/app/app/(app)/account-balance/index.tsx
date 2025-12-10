@@ -30,6 +30,7 @@ import { ServerAPI } from '@/redux/actions';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import DebugView from '@/components/DebugView';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -50,12 +51,20 @@ const AccountBalanceScreen = () => {
 	const [isNfcSupported, setIsNfcSupported] = useState(false);
 	const [isNfcEnabled, setIsNfcEnabled] = useState(false);
 	const [isActive, setIsActive] = useState(false);
-	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
-	const animationRef = useRef<LottieView>(null);
+        const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
+        const animationRef = useRef<LottieView>(null);
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
         const [animationJson, setAmimationJson] = useState<any>(null);
         const [debugErrors, setDebugErrors] = useState<Array<{ timestamp: Date; error: string; source: string }>>([]);
         const { show: showModal, close: closeModal } = useMyScrollViewModal();
+
+        const debugLogMessages = useMemo(
+                () =>
+                        debugErrors.map(errorItem =>
+                                `${format(errorItem.timestamp, 'dd.MM.yyyy HH:mm:ss')} - ${errorItem.source}: ${errorItem.error}`
+                        ),
+                [debugErrors]
+        );
 
 	// Helper function to add errors to debug list
 	const addDebugError = useCallback((error: any, source: string) => {
@@ -70,9 +79,7 @@ const AccountBalanceScreen = () => {
 		]);
 	}, []);
 
-	console.log(profile)
-
-	useFocusEffect(
+        useFocusEffect(
 		useCallback(() => {
 			if (profile?.credit_balance) {
 				if (Number(profile?.credit_balance) >= BalanceStateLowerBound.CONFIDENT) {
@@ -348,71 +355,61 @@ const AccountBalanceScreen = () => {
 				</View>
 				<View style={styles.additionalInfoContainer}>{appSettings && appSettings?.balance_translations && <CustomMarkdown content={getTextFromTranslation(appSettings?.balance_translations, language) || ''} backgroundColor={balance_area_color} imageWidth={'100%'} imageHeight={400} />}</View>
 			</View>
-			<View style={styles.additionalInfoContainer}>
-				{/* Dev mode: Simulate NFC reads */}
-				{isDevMode && (
-					<View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 12 }}>
-						{[1, 5, 20].map(amount => (
-							<TouchableOpacity
-								key={`simulate-${amount}`}
-								style={{
-									paddingVertical: 8,
-									paddingHorizontal: 14,
-									borderRadius: 8,
-									borderWidth: 1,
-									borderColor: theme.screen.iconBg,
-									marginHorizontal: 6,
-								}}
-								onPress={async () => {
-									const mock: CardResponse = {
-										currentBalance: amount.toFixed(2),
-										currentBalanceRaw: null,
-										lastTransaction: undefined,
-										lastTransactionRaw: null,
-										chooseAppRaw: null,
-										tag: null,
-										readTime: new Date(),
-									};
-									try {
-										await callBack(mock);
-										toast(`Simulated NFC read: ${amount}€`, 'info');
-									} catch (e: any) {
-										console.error('Error in simulated read', e);
-										addDebugError(e, 'Simulated NFC Read');
-									}
-								}}
-							>
-								<Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
-							</TouchableOpacity>
-						))}
-					</View>
-				)}
-
-				{/* Debug Logs if isDevMode active*/}
-                                {isDevMode && debugErrors.length > 0 && (
-                                        <View style={{ marginTop: 20 }}>
-                                                <Text style={{ ...styles.label, color: theme.header.text }}>{translate(TranslationKeys.debugErrors)}:</Text>
-                                                {debugErrors.map((errorItem, index) => (
-                                                        <View key={index} style={{ marginVertical: 4 }}>
-								<Text style={{ ...styles.errorText, color: theme.header.text }}>{`${format(errorItem.timestamp, 'dd.MM.yyyy HH:mm:ss')} - ${errorItem.source}: ${errorItem.error}`}</Text>
-                                                        </View>
-                                                ))}
-                                        </View>
-                                )}
-                                {isDevMode && (
-                                        <View style={{ marginTop: 16 }}>
-                                                <TouchableOpacity
-                                                        style={{ ...styles.nfcButton, borderColor: theme.screen.iconBg }}
-                                                        onPress={showInstruction}
-                                                >
-                                                        <MaterialCommunityIcons name="cellphone-nfc" size={24} color={theme.screen.icon} />
-                                                        <Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>
-                                                                {translate(TranslationKeys.showNfcInstruction)}
-                                                        </Text>
-                                                </TouchableOpacity>
-                                        </View>
-                                )}
-                        </View>
+			
+                        {isDevMode ? (
+                                <View style={styles.additionalInfoContainer}>
+                                        <DebugView
+                                                title={translate(TranslationKeys.debugErrors)}
+                                                logs={debugLogMessages}
+                                                actions={[
+                                                        {
+                                                                label: translate(TranslationKeys.showNfcInstruction),
+                                                                icon: 'cellphone-nfc',
+                                                                onPress: showInstruction,
+                                                                borderColor: theme.screen.iconBg,
+                                                                backgroundColor: theme.drawerBg,
+                                                        },
+                                                ]}
+                                        >
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
+                                                        {[1, 5, 20].map(amount => (
+                                                                <TouchableOpacity
+                                                                        key={`simulate-${amount}`}
+                                                                        style={{
+                                                                                paddingVertical: 8,
+                                                                                paddingHorizontal: 14,
+                                                                                borderRadius: 8,
+                                                                                borderWidth: 1,
+                                                                                borderColor: theme.screen.iconBg,
+                                                                                marginHorizontal: 6,
+                                                                                marginTop: 8,
+                                                                        }}
+                                                                        onPress={async () => {
+                                                                                const mock: CardResponse = {
+                                                                                        currentBalance: amount.toFixed(2),
+                                                                                        currentBalanceRaw: null,
+                                                                                        lastTransaction: undefined,
+                                                                                        lastTransactionRaw: null,
+                                                                                        chooseAppRaw: null,
+                                                                                        tag: null,
+                                                                                        readTime: new Date(),
+                                                                                };
+                                                                                try {
+                                                                                        await callBack(mock);
+                                                                                        toast(`Simulated NFC read: ${amount}€`, 'info');
+                                                                                } catch (e: any) {
+                                                                                        console.error('Error in simulated read', e);
+                                                                                        addDebugError(e, 'Simulated NFC Read');
+                                                                                }
+                                                                        }}
+                                                                >
+                                                                        <Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
+                                                                </TouchableOpacity>
+                                                        ))}
+                                                </View>
+                                        </DebugView>
+                                </View>
+                        ) : null}
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_card_balance} />
                 </ScrollView>
         );
