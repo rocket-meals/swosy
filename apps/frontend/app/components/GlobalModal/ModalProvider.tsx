@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
 
 type ModalContextType = {
@@ -73,32 +74,41 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 <ModalContext.Provider value={{ open, close, debug }}>
                         {children}
                         {content && (
-                                <BaseBottomSheet
-                                        ref={sheetRef}
-                                        index={0}
-                                        backgroundStyle={backgroundStyle}
-                                        enablePanDownToClose
-                                        onClose={() => {
-                                                setContent(null);
-                                                setBackgroundStyle(null);
-                                                setDebug((prev) => ({
-                                                        ...prev,
-                                                        lastAction: 'close',
-                                                        contentSet: false,
-                                                        sheetRefReady: Boolean(sheetRef.current),
-                                                        closeInvocations: prev.closeInvocations + 1,
-                                                }));
-                                        }}
-                                >
-                                        {content}
-                                </BaseBottomSheet>
+                                <View pointerEvents="box-none" style={styles.modalContainer}>
+                                        <BaseBottomSheet
+                                                ref={sheetRef}
+                                                index={0}
+                                                backgroundStyle={backgroundStyle}
+                                                enablePanDownToClose
+                                                onClose={() => {
+                                                        setContent(null);
+                                                        setBackgroundStyle(null);
+                                                        setDebug((prev) => ({
+                                                                ...prev,
+                                                                lastAction: 'close',
+                                                                contentSet: false,
+                                                                sheetRefReady: Boolean(sheetRef.current),
+                                                                closeInvocations: prev.closeInvocations + 1,
+                                                        }));
+                                                }}
+                                        >
+                                                {content}
+                                        </BaseBottomSheet>
+                                </View>
                         )}
                 </ModalContext.Provider>
         );
 };
 
 export const useModalContext = () => {
-	const ctx = useContext(ModalContext);
-	if (!ctx) throw new Error('useModalContext must be used within a ModalProvider');
-	return ctx;
+        const ctx = useContext(ModalContext);
+        if (!ctx) throw new Error('useModalContext must be used within a ModalProvider');
+        return ctx;
 };
+
+const styles = StyleSheet.create({
+        modalContainer: {
+                ...StyleSheet.absoluteFillObject,
+                zIndex: 999,
+        },
+});
