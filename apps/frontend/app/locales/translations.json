@@ -1129,6 +1129,16 @@
     "tr": "Kartı okumak için cihazınızı karta tutun.",
     "zh": "将设备靠近卡片以读取。"
   },
+  "showNfcInstruction": {
+    "de": "NFC-Anleitung anzeigen",
+    "en": "Show NFC instruction",
+    "ar": "عرض تعليمات NFC",
+    "es": "Mostrar instrucción NFC",
+    "fr": "Afficher l'instruction NFC",
+    "ru": "Показать инструкцию NFC",
+    "tr": "NFC talimatını göster",
+    "zh": "显示 NFC 指南"
+  },
   "new": {
     "de": "Neu",
     "en": "New",
