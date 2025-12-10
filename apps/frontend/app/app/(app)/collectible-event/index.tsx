@@ -446,11 +446,7 @@ const CollectibleEventScreen = () => {
                                         label={translate(TranslationKeys.collectible_event_points)}
                                         groupPosition="single"
                                         showSeparator={false}
-                                        rightElement={
-                                                <Text style={{ color: theme.screen.text }}>
-                                                        {collectedCount}/{maxCollectibleKeys || '∞'}
-                                                </Text>
-                                        }
+                                        value={`${collectedCount}/${maxCollectibleKeys || '∞'}`}
                                     />
                             </View>
 
