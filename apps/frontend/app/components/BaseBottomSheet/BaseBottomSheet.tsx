@@ -8,10 +8,11 @@ import type { RootState } from '@/redux/reducer';
 import styles from './styles';
 
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
-	onClose?: () => void;
+        onClose?: () => void;
+        headerBackgroundColor?: string;
 }
 
-const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, ...props }, ref) => {
+const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, ...props }, ref) => {
         const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} />, [onClose]);
         const { theme } = useTheme();
         useSelector((state: RootState) => state.settings); // ensure theme subscription
@@ -19,7 +20,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 
         const effectiveBackgroundStyle = useMemo(() => ({ backgroundColor: theme.sheet.sheetBg, ...backgroundStyle }), [backgroundStyle, theme.sheet.sheetBg]);
 
-        const headerBg = (effectiveBackgroundStyle as any).backgroundColor || theme.sheet.sheetBg;
+        const headerBg = headerBackgroundColor || (effectiveBackgroundStyle as any).backgroundColor || theme.sheet.sheetBg;
         const handleColor = theme.sheet.closeBg;
 
 	const handleChange = useCallback(

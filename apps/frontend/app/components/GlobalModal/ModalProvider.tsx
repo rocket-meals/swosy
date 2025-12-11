@@ -2,8 +2,13 @@ import React, { createContext, useContext, useState, ReactNode, useRef, useEffec
 import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
 
+type ModalOptions = {
+        backgroundStyle?: any;
+        headerBackgroundColor?: string;
+};
+
 type ModalContextType = {
-        open: (content: ReactNode, options?: { backgroundStyle?: any }) => void;
+        open: (content: ReactNode, options?: ModalOptions) => void;
         close: () => void;
         debug: {
                 lastAction: 'open' | 'close' | null;
@@ -20,6 +25,7 @@ const ModalContext = createContext<ModalContextType | null>(null);
 export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const [content, setContent] = useState<ReactNode | null>(null);
         const [backgroundStyle, setBackgroundStyle] = useState<any>(null);
+        const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
         const sheetRef = useRef<any>(null);
         const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
@@ -40,11 +46,12 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 }
         };
 
-        const open = (c: ReactNode, options?: { backgroundStyle?: any }) => {
+        const open = (c: ReactNode, options?: ModalOptions) => {
                 clearCloseTimeout();
 
                 setContent(c);
                 setBackgroundStyle(options?.backgroundStyle ?? null);
+                setHeaderBackgroundColor(options?.headerBackgroundColor ?? undefined);
                 setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
@@ -61,6 +68,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
+                setHeaderBackgroundColor(undefined);
                 clearCloseTimeout();
                 closeTimeoutRef.current = setTimeout(() => {
                         setContent(null);
@@ -113,11 +121,13 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                         ref={sheetRef}
                                         index={isVisible ? 0 : -1}
                                         backgroundStyle={backgroundStyle}
+                                        headerBackgroundColor={headerBackgroundColor}
                                         enablePanDownToClose
                                         onClose={() => {
                                                 clearCloseTimeout();
                                                 setContent(null);
                                                 setBackgroundStyle(null);
+                                                setHeaderBackgroundColor(undefined);
                                                 setIsVisible(false);
                                                 setDebug(prev => ({
                                                         ...prev,

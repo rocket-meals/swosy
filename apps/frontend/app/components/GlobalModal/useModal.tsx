@@ -5,7 +5,7 @@ export const useModal = () => {
         const { open, close, debug } = useModalContext();
 
         const show = useCallback(
-                (content: ReactNode, options?: { backgroundStyle?: any }) => {
+                (content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
                         open(content, options);
                 },
                 [open]
