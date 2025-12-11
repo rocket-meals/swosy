@@ -42,7 +42,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const headerComponent = (
     <>
       {title && (
-        <View style={{ backgroundColor: theme.sheet.sheetBg, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 }}>
+        <View style={{ backgroundColor: theme.screen.background, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 }}>
           <Text style={{ fontSize: 18, fontWeight: '600', color: theme.sheet.text }}>{title}</Text>
         </View>
       )}
@@ -55,6 +55,8 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const contentStyle = { paddingBottom: 24 + insets.bottom + 80, paddingHorizontal: 20 };
   const scrollInsets = { bottom: insets.bottom + 80 };
 
+  const containerStyle = { backgroundColor: theme.screen.background };
+
   if (useFlatList && renderItem && keyExtractor) {
     return (
       <BottomSheetFlatList
@@ -63,6 +65,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
         renderItem={renderItem}
         ListHeaderComponent={headerComponent}
         ListFooterComponent={footerComponent}
+        style={containerStyle}
         contentContainerStyle={contentStyle}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
@@ -73,6 +76,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 
   return (
     <BottomSheetScrollView
+      style={containerStyle}
       contentContainerStyle={contentStyle}
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
       keyboardShouldPersistTaps={keyboardShouldPersistTaps}
