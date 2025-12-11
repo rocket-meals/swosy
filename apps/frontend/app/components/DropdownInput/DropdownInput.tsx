@@ -22,19 +22,21 @@ const ensureStringArray = (options: string[]): string[] => {
 };
 
 type DropdownInputProps = {
-	id: string;
-	value: string | null | undefined;
-	onChange: (id: string, value: string, custom_type: string) => void;
-	error?: string;
-	isDisabled: boolean;
-	custom_type: string;
-	options?: string[];
-	prefix?: string | null;
-	suffix?: string | null;
-	allowCustomValues?: boolean;
+        id: string;
+        value: string | null | undefined;
+        onChange: (id: string, value: string, custom_type: string) => void;
+        error?: string;
+        isDisabled: boolean;
+        custom_type: string;
+        options?: string[];
+        prefix?: string | null;
+        suffix?: string | null;
+        allowCustomValues?: boolean;
+        onOpenSheet?: () => void;
+        onCloseSheet?: () => void;
 };
 
-const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true }: DropdownInputProps) => {
+const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true, onOpenSheet, onCloseSheet }: DropdownInputProps) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor } = useSelector((state: RootState) => state.settings);
@@ -60,12 +62,14 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
         const { show, close } = useMyScrollViewModal();
 
 	const openSheet = useCallback(() => {
-		console.log('[DropdownInput] openSheet invoked, disabled=', isDisabled);
-		if (isDisabled) return;
-		console.log('[DropdownInput] showing DropdownSheet with value=', currentValue, ' options=', normalizedOptions);
+                console.log('[DropdownInput] openSheet invoked, disabled=', isDisabled);
+                if (isDisabled) return;
+                console.log('[DropdownInput] showing DropdownSheet with value=', currentValue, ' options=', normalizedOptions);
+                onOpenSheet?.();
                 show(
                         {
                                 title: translate(TranslationKeys.select),
+                                onClose: onCloseSheet,
                                 children: (
                                         <DropdownSheet
                                                 closeSheet={close}

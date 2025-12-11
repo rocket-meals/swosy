@@ -18,7 +18,7 @@ import { type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/c
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
-import { SET_AMOUNT_COLUMNS_FOR_CARDS, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -39,16 +39,22 @@ import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from '@/components/DebugView';
+import DropdownInput from '@/components/DropdownInput/DropdownInput';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useToast from '@/hooks/useToast';
+
+type CollectibleItemSize = 'small' | 'medium' | 'large';
 
 const Settings = () => {
-	useSetPageTitle(TranslationKeys.settings);
-	const { theme, setThemeMode } = useTheme();
-	const dispatch = useDispatch();
-	const canteenSheetRef = useRef<BottomSheet>(null);
-	const [isActive, setIsActive] = useState(false);
-	const { translate, setLanguageMode, language } = useLanguage();
-	const [nickname, setNickname] = useState<string>('');
-	const nicknameSheetRef = useRef<BottomSheet>(null);
+        useSetPageTitle(TranslationKeys.settings);
+        const { theme, setThemeMode } = useTheme();
+        const dispatch = useDispatch();
+        const toast = useToast();
+        const canteenSheetRef = useRef<BottomSheet>(null);
+        const [isActive, setIsActive] = useState(false);
+        const { translate, setLanguageMode, language } = useLanguage();
+        const [nickname, setNickname] = useState<string>('');
+        const nicknameSheetRef = useRef<BottomSheet>(null);
 	const openNicknameSheet = () => nicknameSheetRef?.current?.expand();
 	const closeNicknameSheet = () => {
 		Keyboard.dismiss();
@@ -56,27 +62,44 @@ const Settings = () => {
 	};
 	const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 	const drawerSheetRef = useRef<BottomSheet>(null);
-	const languageSheetRef = useRef<BottomSheet>(null);
-	const amountColumnSheetRef = useRef<BottomSheet>(null);
-	const firstDaySheetRef = useRef<BottomSheet>(null);
-	const colorSchemeSheetRef = useRef<BottomSheet>(null);
-	const serverSheetRef = useRef<BottomSheet>(null);
-	const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
-	const [disabled, setDisabled] = useState(false);
-	const { manualCheck } = useExpoUpdateChecker();
-	const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
-	const isRegisteredUser = UserHelper.isRegisteredUser(user);
+        const languageSheetRef = useRef<BottomSheet>(null);
+        const amountColumnSheetRef = useRef<BottomSheet>(null);
+        const firstDaySheetRef = useRef<BottomSheet>(null);
+        const colorSchemeSheetRef = useRef<BottomSheet>(null);
+        const serverSheetRef = useRef<BottomSheet>(null);
+        const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
+        const collectibleSettingsModalRef = useRef<() => void>(() => {});
+        const isOpeningNestedCollectibleModal = useRef(false);
+        const { show: showScrollViewModal } = useMyScrollViewModal();
+        const [disabled, setDisabled] = useState(false);
+        const { manualCheck } = useExpoUpdateChecker();
+        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
+        const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition } = useSelector((state: RootState) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 
 	const languageCode = language;
 
-	const languageName = Languages[languageCode as keyof typeof Languages];
+        const languageName = Languages[languageCode as keyof typeof Languages];
 
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+        const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+
+        const collectibleSizeOptions = useMemo(
+                () => [
+                        { value: 'small', label: translate(TranslationKeys.collectible_event_item_size_small) },
+                        { value: 'medium', label: translate(TranslationKeys.collectible_event_item_size_medium) },
+                        { value: 'large', label: translate(TranslationKeys.collectible_event_item_size_large) },
+                ],
+                [translate]
+        );
+
+        const collectibleSizeLabel = useMemo(
+                () => collectibleSizeOptions.find(option => option.value === collectibleItemSize)?.label || '',
+                [collectibleItemSize, collectibleSizeOptions]
+        );
 
 	const saveNickname = async () => {
 		if (isRegisteredUser) {
@@ -198,6 +221,29 @@ const Settings = () => {
                 });
         };
 
+        const handleResetCollectibles = useCallback(() => {
+                dispatch({ type: RESET_ALL_COLLECTIBLE_EVENT_DICTS });
+                toast(translate(TranslationKeys.reset), 'success');
+        }, [dispatch, toast, translate]);
+
+        const handleSelectCollectibleSize = useCallback(
+                (_id: string, value: string) => {
+                        const nextSize = (collectibleSizeOptions.find(option => option.label === value)?.value || collectibleItemSize || 'medium') as CollectibleItemSize;
+                        dispatch({
+                                type: SET_COLLECTIBLE_ITEM_SIZE,
+                                payload: nextSize,
+                        });
+                },
+                [collectibleItemSize, collectibleSizeOptions, dispatch]
+        );
+
+        const toggleCollectibleRandomPosition = useCallback(() => {
+                dispatch({
+                        type: SET_COLLECTIBLE_RANDOM_POSITION,
+                        payload: !collectibleRandomPosition,
+                });
+        }, [collectibleRandomPosition, dispatch]);
+
 	const handleCheckForUpdates = () => {
 		manualCheck();
 	};
@@ -220,9 +266,9 @@ const Settings = () => {
 		setThemeMode(theme);
 	};
 
-	const handleLogout = async () => {
-		await performLogout(dispatch, router);
-	};
+        const handleLogout = async () => {
+                await performLogout(dispatch, router);
+        };
 
 	const handleLogin = () => {
 		performLogout(dispatch, router, true);
@@ -240,17 +286,110 @@ const Settings = () => {
 		router.navigate('/(user)/delete-user');
 	};
 
-	const priceGroups: Record<PriceGroupKey, { label: string }> = {
-		[PriceGroupKey.student]: {
-			label: translate(TranslationKeys.price_group_student),
-		},
-		[PriceGroupKey.employee]: {
-			label: translate(TranslationKeys.price_group_employee),
-		},
-		[PriceGroupKey.guest]: {
-			label: translate(TranslationKeys.price_group_guest),
-		},
-	};
+        const priceGroups: Record<PriceGroupKey, { label: string }> = {
+                [PriceGroupKey.student]: {
+                        label: translate(TranslationKeys.price_group_student),
+                },
+                [PriceGroupKey.employee]: {
+                        label: translate(TranslationKeys.price_group_employee),
+                },
+                [PriceGroupKey.guest]: {
+                        label: translate(TranslationKeys.price_group_guest),
+                },
+        };
+
+        const openCollectibleSizeModal = useCallback(() => {
+                showScrollViewModal(
+                        {
+                                title: translate(TranslationKeys.collectible_event_item_size),
+                                onClose: () => {
+                                        if (isOpeningNestedCollectibleModal.current) {
+                                                isOpeningNestedCollectibleModal.current = false;
+                                                return;
+                                        }
+
+                                        setTimeout(() => collectibleSettingsModalRef.current?.(), 150);
+                                },
+                                children: (
+                                        <View style={{ gap: 16 }}>
+                                                <DropdownInput
+                                                        id="collectible_item_size"
+                                                        value={collectibleSizeLabel}
+                                                        onChange={handleSelectCollectibleSize}
+                                                        error={undefined}
+                                                        isDisabled={false}
+                                                        custom_type="collectible_item_size"
+                                                        options={collectibleSizeOptions.map(option => option.label)}
+                                                        allowCustomValues={false}
+                                                        onOpenSheet={() => {
+                                                                isOpeningNestedCollectibleModal.current = true;
+                                                        }}
+                                                        onCloseSheet={() => {
+                                                                isOpeningNestedCollectibleModal.current = false;
+                                                                setTimeout(() => collectibleSettingsModalRef.current?.(), 150);
+                                                        }}
+                                                />
+                                        </View>
+                                ),
+                        },
+                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                );
+        }, [collectibleSizeLabel, collectibleSizeOptions, handleSelectCollectibleSize, showScrollViewModal, theme.sheet.sheetBg, translate]);
+
+        const openCollectibleSettingsModal = useCallback(() => {
+                showScrollViewModal(
+                        {
+                                title: translate(TranslationKeys.collectible_event_settings),
+                                children: (
+                                        <View style={{ gap: 12 }}>
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<MaterialCommunityIcons name="backup-restore" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_event_reset_collected)}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={handleResetCollectibles}
+                                                        groupPosition="top"
+                                                />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<MaterialCommunityIcons name="image-size-select-large" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_event_item_size)}
+                                                        value={collectibleSizeLabel}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={openCollectibleSizeModal}
+                                                        groupPosition="middle"
+                                                />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<MaterialIcons name="my-location" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_event_random_position)}
+                                                        value={
+                                                                collectibleRandomPosition
+                                                                        ? translate(TranslationKeys.checked)
+                                                                        : translate(TranslationKeys.unchecked)
+                                                        }
+                                                        rightElement={
+                                                                <Switch
+                                                                        value={collectibleRandomPosition}
+                                                                        onValueChange={toggleCollectibleRandomPosition}
+                                                                        trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
+                                                                        thumbColor={theme.screen.icon}
+                                                                        ios_backgroundColor={theme.screen.iconBg}
+                                                                />
+                                                        }
+                                                        handleFunction={toggleCollectibleRandomPosition}
+                                                        groupPosition="bottom"
+                                                />
+                                        </View>
+                                ),
+                        },
+                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                );
+        }, [collectibleRandomPosition, collectibleSizeLabel, handleResetCollectibles, openCollectibleSizeModal, primaryColor, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, theme.sheet.sheetBg, translate, toggleCollectibleRandomPosition]);
+
+        useEffect(() => {
+                collectibleSettingsModalRef.current = openCollectibleSettingsModal;
+        }, [openCollectibleSettingsModal]);
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
@@ -319,9 +458,17 @@ const Settings = () => {
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
 					<View style={{ gap: 0 }}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_event_settings)}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={openCollectibleSettingsModal}
+                                                        groupPosition="middle"
+                                                />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" />
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
                                                 {/* Terms & Conditions */}
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate} handleFunction={() => {}} groupPosition="bottom" />

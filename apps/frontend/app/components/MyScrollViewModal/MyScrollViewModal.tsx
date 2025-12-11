@@ -18,6 +18,7 @@ export interface MyScrollViewModalProps {
   // Optional additional props
   showsVerticalScrollIndicator?: boolean;
   keyboardShouldPersistTaps?: 'always' | 'never' | 'handled';
+  onClose?: () => void;
 }
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
@@ -31,9 +32,12 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   ListFooterComponent,
   showsVerticalScrollIndicator = true,
   keyboardShouldPersistTaps = 'handled',
+  onClose,
 }) => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+
+  React.useEffect(() => () => onClose?.(), [onClose]);
 
   const headerComponent = (
     <>
