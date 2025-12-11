@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { DatabaseTypes, COLLECTABLE_AT_FIELDS } from 'repo-depkit-common';
 import { useSelector } from 'react-redux';
@@ -35,8 +35,11 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
         const { translate } = useLanguage();
         const { activeCollectibleEvent } = useActiveCollectibleEvent();
         const { profile, loggedIn } = useSelector((state: RootState) => state.authReducer);
-        const { primaryColor: projectColor } = useSelector((state: RootState) => state.settings);
+        const { primaryColor: projectColor, collectibleItemSize, collectibleRandomPosition } = useSelector(
+                (state: RootState) => state.settings
+        );
         const [isSaving, setIsSaving] = useState(false);
+        const [randomOffset, setRandomOffset] = useState({ x: 0, y: 0 });
 
         const { openRateAppModal } = useRateAppModal(projectColor || theme.primary);
 
@@ -50,6 +53,28 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                                 : 0,
                 [activeCollectibleEvent]
         );
+
+        const computedSize = useMemo(() => {
+                switch (collectibleItemSize) {
+                        case 'small':
+                                return 110;
+                        case 'large':
+                                return 180;
+                        default:
+                                return 140;
+                }
+        }, [collectibleItemSize]);
+
+        useEffect(() => {
+                if (collectibleRandomPosition && !isPreview) {
+                        setRandomOffset({
+                                x: Math.round(Math.random() * 60 - 30),
+                                y: Math.round(Math.random() * 60 - 30),
+                        });
+                } else {
+                        setRandomOffset({ x: 0, y: 0 });
+                }
+        }, [collectibleRandomPosition, isPreview]);
 
         const isCollectableHere = activeCollectibleEvent && (activeCollectibleEvent as any)[collectibleKey];
         const isCollected = Boolean(collectibleDict?.[collectibleKey]);
@@ -134,7 +159,15 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 <TouchableOpacity
                         style={[
                                 styles.container,
-                                { borderColor: projectColor || theme.primary, backgroundColor: theme.screen.background },
+                                {
+                                        borderColor: projectColor || theme.primary,
+                                        backgroundColor: theme.screen.background,
+                                        width: computedSize,
+                                        height: computedSize,
+                                },
+                                collectibleRandomPosition && !isPreview
+                                        ? { transform: [{ translateX: randomOffset.x }, { translateY: randomOffset.y }] }
+                                        : null,
                         ]}
                         onPress={isPreview ? undefined : handleCollect}
                         disabled={isSaving || isPreview}

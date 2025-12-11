@@ -2069,6 +2069,76 @@
     "tr": "Uygulamayı değerlendirmek ister misin?",
     "zh": "要为此应用评分吗？"
   },
+  "collectible_event_settings": {
+    "de": "Collectible-Event Einstellungen",
+    "en": "Collectible event settings",
+    "ar": "إعدادات الفعالية القابلة للتحصيل",
+    "es": "Configuración del evento coleccionable",
+    "fr": "Paramètres de l'événement à collectionner",
+    "ru": "Настройки коллекционного события",
+    "tr": "Koleksiyon etkinliği ayarları",
+    "zh": "收集活动设置"
+  },
+  "collectible_event_reset_collected": {
+    "de": "Alle gesammelten Objekte zurücksetzen",
+    "en": "Reset collected items",
+    "ar": "إعادة تعيين العناصر المجمعة",
+    "es": "Restablecer los objetos recogidos",
+    "fr": "Réinitialiser les objets collectés",
+    "ru": "Сбросить собранные предметы",
+    "tr": "Toplanan öğeleri sıfırla",
+    "zh": "重置已收集的物品"
+  },
+  "collectible_event_item_size": {
+    "de": "Größe der Collectibles",
+    "en": "Collectible size",
+    "ar": "حجم العنصر القابل للتحصيل",
+    "es": "Tamaño del coleccionable",
+    "fr": "Taille de l'objet à collectionner",
+    "ru": "Размер коллекционного предмета",
+    "tr": "Koleksiyon öğesi boyutu",
+    "zh": "收藏品大小"
+  },
+  "collectible_event_item_size_small": {
+    "de": "Klein",
+    "en": "Small",
+    "ar": "صغير",
+    "es": "Pequeño",
+    "fr": "Petit",
+    "ru": "Маленький",
+    "tr": "Küçük",
+    "zh": "小"
+  },
+  "collectible_event_item_size_medium": {
+    "de": "Mittel",
+    "en": "Medium",
+    "ar": "متوسط",
+    "es": "Mediano",
+    "fr": "Moyen",
+    "ru": "Средний",
+    "tr": "Orta",
+    "zh": "中等"
+  },
+  "collectible_event_item_size_large": {
+    "de": "Groß",
+    "en": "Large",
+    "ar": "كبير",
+    "es": "Grande",
+    "fr": "Grand",
+    "ru": "Большой",
+    "tr": "Büyük",
+    "zh": "大"
+  },
+  "collectible_event_random_position": {
+    "de": "Zufällige Positionierung",
+    "en": "Random positioning",
+    "ar": "تموضع عشوائي",
+    "es": "Posicionamiento aleatorio",
+    "fr": "Positionnement aléatoire",
+    "ru": "Случайное размещение",
+    "tr": "Rastgele konumlandırma",
+    "zh": "随机定位"
+  },
   "create": {
     "de": "Erstellen",
     "en": "Create",
