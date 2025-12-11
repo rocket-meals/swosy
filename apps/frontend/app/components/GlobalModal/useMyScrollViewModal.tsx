@@ -14,7 +14,7 @@ export const useMyScrollViewModal = () => {
 
                 const mergedOptions = {
                         ...options,
-                        backgroundStyle: { backgroundColor: theme.screen.background, ...options?.backgroundStyle },
+                        backgroundStyle: { backgroundColor: theme.sheet.sheetBg, ...options?.backgroundStyle },
                 };
 
                 showModal(
