@@ -32,11 +32,10 @@ export default StyleSheet.create({
 		justifyContent: 'center',
 		borderRadius: 12,
 	},
-	calendar: {
-		width: '100%',
-		height: '100%',
-		borderRadius: 12,
-	},
+        calendar: {
+                width: '100%',
+                borderRadius: 12,
+        },
 	customHeader: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
