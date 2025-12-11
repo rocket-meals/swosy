@@ -831,7 +831,17 @@ const Index = () => {
 											{custom_id === 'date' && showInForm && <DateInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'hh_mm' && showInForm && <TimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'timestamp' && showInForm && <PreciseTimestampInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{custom_id === 'checkbox' && showInForm && <TriStateCheckbox id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} isDisabled={isDisabled} custom_type={custom_type} />}
+                                                                                        {custom_id === 'checkbox' &&
+                                                                                                showInForm && (
+                                                                                                        <TriStateCheckbox
+                                                                                                                id={fieldId}
+                                                                                                                value={formData[fieldId]?.value}
+                                                                                                                onChange={handleChange}
+                                                                                                                isDisabled={isDisabled}
+                                                                                                                custom_type={custom_type}
+                                                                                                                onlyTwo
+                                                                                                        />
+                                                                                                )}
 											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
 											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
 											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
