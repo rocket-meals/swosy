@@ -91,14 +91,15 @@ const normalizeExpectedValue = (value: unknown): string => {
 };
 
 const normalizeCurrentValue = (value: unknown, customType?: string): string => {
-	if (value === null || value === undefined) return '';
+        if (customType === 'value_boolean') {
+                if (value === null || value === undefined) return 'false';
+                if (value === 1 || value === true) return 'true';
+                if (value === 0 || value === false) return 'false';
 
-	if (customType === 'value_boolean') {
-		if (value === 1 || value === true) return 'true';
-		if (value === 0 || value === false) return 'false';
+                return 'null';
+        }
 
-		return 'null';
-	}
+        if (value === null || value === undefined) return '';
 
 	if (typeof value === 'string') return value.trim().toLowerCase();
 	if (typeof value === 'number') return String(value);
