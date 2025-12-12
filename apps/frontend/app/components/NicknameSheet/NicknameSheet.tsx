@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,19 +10,11 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 
-const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue, onSave }) => {
-        const { theme } = useTheme();
-        const { translate } = useLanguage();
-        const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-        const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
-
-        const [value, setValue] = useState(initialValue);
-
-        useEffect(() => {
-                setValue(initialValue);
-        }, [initialValue]);
-
-        const disableSave = useMemo(() => value?.trim() === initialValue?.trim(), [initialValue, value]);
+const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, value, onChange, onSave, disableSave }) => {
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
 	const Content = (
 		<View
@@ -55,8 +47,8 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue,
 				placeholderTextColor={theme.sheet.placeholder}
 				cursorColor={theme.sheet.text}
 				selectionColor={primaryColor}
-                                value={value}
-                                onChangeText={setValue}
+				value={value}
+				onChangeText={onChange}
 			/>
 
 			<View style={styles.buttonContainer}>
@@ -73,13 +65,13 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue,
 					<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
 				</TouchableOpacity>
 
-                                <TouchableOpacity
-                                        onPress={() => {
-                                                Keyboard.dismiss();
-                                                onSave(value);
-                                        }}
-                                        disabled={disableSave}
-                                        style={{
+				<TouchableOpacity
+					onPress={() => {
+						Keyboard.dismiss();
+						onSave();
+					}}
+					disabled={disableSave}
+					style={{
 						...styles.saveButton,
 						backgroundColor: primaryColor,
 						opacity: disableSave ? 0.5 : 1,
