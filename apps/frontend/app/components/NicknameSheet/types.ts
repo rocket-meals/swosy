@@ -1,5 +1,7 @@
 export interface NicknameSheetProps {
-        closeSheet: () => void;
-        initialValue: string;
-        onSave: (value: string) => void;
+	closeSheet: () => void;
+	value: string;
+	onChange: (val: string) => void;
+	onSave: () => void;
+	disableSave?: boolean;
 }
