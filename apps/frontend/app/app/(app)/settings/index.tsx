@@ -54,13 +54,7 @@ const Settings = () => {
         const [isActive, setIsActive] = useState(false);
         const { translate, setLanguageMode, language } = useLanguage();
         const [nickname, setNickname] = useState<string>('');
-        const nicknameSheetRef = useRef<BottomSheet>(null);
-	const openNicknameSheet = () => nicknameSheetRef?.current?.expand();
-	const closeNicknameSheet = () => {
-		Keyboard.dismiss();
-		nicknameSheetRef?.current?.close();
-	};
-	const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+        const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 	const drawerSheetRef = useRef<BottomSheet>(null);
         const languageSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
@@ -70,8 +64,7 @@ const Settings = () => {
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
-        const { show: showScrollViewModal } = useMyScrollViewModal();
-        const [disabled, setDisabled] = useState(false);
+        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { manualCheck } = useExpoUpdateChecker();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
@@ -101,26 +94,43 @@ const Settings = () => {
                 [collectibleItemSize, collectibleSizeOptions]
         );
 
-	const saveNickname = async () => {
-		if (isRegisteredUser) {
-			const result = (await profileHelper.updateProfile({
-				...profile,
-				nickname: nickname?.trim(),
-			})) as DatabaseTypes.Profiles;
-			if (result) {
-				dispatch({
-					type: UPDATE_PROFILE,
-					payload: result,
-				});
-			}
-		} else {
-			dispatch({
-				type: SET_NICKNAME_LOCAL,
-				payload: nickname?.trim(),
-			});
-		}
-		closeNicknameSheet();
-	};
+        const originalNickname = useMemo(
+                () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
+                [nickNameLocal, profile?.id, profile?.nickname]
+        );
+
+        const closeNicknameModal = useCallback(() => {
+                Keyboard.dismiss();
+                closeScrollViewModal();
+        }, [closeScrollViewModal]);
+
+        const saveNickname = useCallback(
+                async (value: string) => {
+                        const trimmedNickname = value?.trim();
+                        setNickname(trimmedNickname);
+
+                        if (isRegisteredUser) {
+                                const result = (await profileHelper.updateProfile({
+                                        ...profile,
+                                        nickname: trimmedNickname,
+                                })) as DatabaseTypes.Profiles;
+                                if (result) {
+                                        dispatch({
+                                                type: UPDATE_PROFILE,
+                                                payload: result,
+                                        });
+                                }
+                        } else {
+                                dispatch({
+                                        type: SET_NICKNAME_LOCAL,
+                                        payload: trimmedNickname,
+                                });
+                        }
+
+                        closeNicknameModal();
+                },
+                [closeNicknameModal, dispatch, isRegisteredUser, profile, profileHelper]
+        );
 
 	useFocusEffect(
 		useCallback(() => {
@@ -142,13 +152,31 @@ const Settings = () => {
 		};
 	}, []);
 
-	useEffect(() => {
-		setSelectedLanguage(language);
-	}, [language]);
+        useEffect(() => {
+                setSelectedLanguage(language);
+        }, [language]);
 
-	const openLanguageModal = () => {
-		languageSheetRef?.current?.expand();
-	};
+        const openNicknameModal = useCallback(() => {
+                const nextNickname = originalNickname || '';
+                setNickname(nextNickname);
+
+                showScrollViewModal(
+                        {
+                                children: (
+                                        <NicknameSheet
+                                                closeSheet={closeNicknameModal}
+                                                initialValue={nextNickname}
+                                                onSave={saveNickname}
+                                        />
+                                ),
+                        },
+                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                );
+        }, [closeNicknameModal, originalNickname, saveNickname, showScrollViewModal, theme.sheet.sheetBg]);
+
+        const openLanguageModal = () => {
+                languageSheetRef?.current?.expand();
+        };
 
 	const closeLanguageModal = () => {
 		languageSheetRef?.current?.close();
@@ -414,20 +442,12 @@ const Settings = () => {
 						<SettingsList
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-							label={translate(TranslationKeys.nickname)}
-							value={profile?.id ? profile?.nickname : nickNameLocal}
-							rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
-							handleFunction={() => {
-								openNicknameSheet();
-								setNickname(profile?.id ? profile?.nickname : nickNameLocal);
-								if (profile?.nickname === nickname) {
-									setDisabled(true);
-								} else {
-									setDisabled(false);
-								}
-							}}
-							groupPosition="middle"
-						/>
+                                                        label={translate(TranslationKeys.nickname)}
+                                                        value={profile?.id ? profile?.nickname : nickNameLocal}
+                                                        rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={openNicknameModal}
+                                                        groupPosition="middle"
+                                                />
 						{isRegisteredUser ? (
 							<>
 								<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.logout)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogout} groupPosition="middle" />
@@ -610,35 +630,6 @@ const Settings = () => {
 									payload: day,
 								});
 							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={nicknameSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={() => {
-							Keyboard.dismiss();
-							closeNicknameSheet();
-						}}
-					>
-						<NicknameSheet
-							closeSheet={closeNicknameSheet}
-							value={nickname}
-							onChange={text => {
-								setNickname(text);
-								if (text === profile?.nickname) {
-									setDisabled(true);
-								} else {
-									setDisabled(false);
-								}
-							}}
-							onSave={saveNickname}
-							disableSave={disabled}
 						/>
 					</BaseBottomSheet>
 					<BaseBottomSheet

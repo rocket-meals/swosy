@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,11 +10,19 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 
-const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, value, onChange, onSave, disableSave }) => {
-	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue, onSave }) => {
+        const { theme } = useTheme();
+        const { translate } = useLanguage();
+        const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+        const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+
+        const [value, setValue] = useState(initialValue);
+
+        useEffect(() => {
+                setValue(initialValue);
+        }, [initialValue]);
+
+        const disableSave = useMemo(() => value?.trim() === initialValue?.trim(), [initialValue, value]);
 
 	const Content = (
 		<View
@@ -47,8 +55,8 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, value, onChan
 				placeholderTextColor={theme.sheet.placeholder}
 				cursorColor={theme.sheet.text}
 				selectionColor={primaryColor}
-				value={value}
-				onChangeText={onChange}
+                                value={value}
+                                onChangeText={setValue}
 			/>
 
 			<View style={styles.buttonContainer}>
@@ -65,13 +73,13 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, value, onChan
 					<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
 				</TouchableOpacity>
 
-				<TouchableOpacity
-					onPress={() => {
-						Keyboard.dismiss();
-						onSave();
-					}}
-					disabled={disableSave}
-					style={{
+                                <TouchableOpacity
+                                        onPress={() => {
+                                                Keyboard.dismiss();
+                                                onSave(value);
+                                        }}
+                                        disabled={disableSave}
+                                        style={{
 						...styles.saveButton,
 						backgroundColor: primaryColor,
 						opacity: disableSave ? 0.5 : 1,
