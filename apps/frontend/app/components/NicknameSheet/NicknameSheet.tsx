@@ -34,10 +34,11 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ initialValue, onSave }) =
                         <TextInput
                                 style={{
                                         ...styles.sheetInput,
-					color: theme.sheet.text,
-					backgroundColor: theme.sheet.inputBg,
-					borderColor: theme.sheet.inputBorder,
-				}}
+                                        color: theme.sheet.text,
+                                        backgroundColor: theme.sheet.inputBg,
+                                        borderColor: theme.sheet.inputBorder,
+                                }}
+                                autoFocus
                                 placeholder={translate(TranslationKeys.nickname)}
                                 placeholderTextColor={theme.sheet.placeholder}
                                 cursorColor={theme.sheet.text}
