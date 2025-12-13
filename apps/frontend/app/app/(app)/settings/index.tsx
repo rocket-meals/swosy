@@ -362,7 +362,7 @@ const Settings = () => {
                         {
                                 title: translate(TranslationKeys.collectible_event_settings),
                                 children: (
-                                        <View style={{ gap: 12 }}>
+                                        <View style={{ gap: 0 }}>
                                                 <SettingsList
                                                         iconBgColor={primaryColor}
                                                         leftIcon={<MaterialCommunityIcons name="backup-restore" size={24} color={theme.screen.icon} />}
