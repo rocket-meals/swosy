@@ -158,15 +158,14 @@ const Settings = () => {
                                 onClose: closeNicknameSheet,
                                 children: (
                                         <NicknameSheet
-                                                closeSheet={closeNicknameSheet}
                                                 initialValue={currentNickname}
                                                 onSave={saveNickname}
                                         />
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                        { backgroundStyle: { backgroundColor: 'transparent' } }
                 );
-        }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, theme.sheet.sheetBg, translate]);
+        }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
         const openLanguageModal = () => {
                 languageSheetRef?.current?.expand();

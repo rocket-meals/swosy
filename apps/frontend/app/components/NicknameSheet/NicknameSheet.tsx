@@ -9,7 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 
-const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue, onSave }) => {
+const NicknameSheet: React.FC<NicknameSheetProps> = ({ initialValue, onSave }) => {
         const { theme } = useTheme();
         const { translate } = useLanguage();
         const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
@@ -29,9 +29,8 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue,
                 <View
                         style={{
                                 ...styles.sheetView,
-				backgroundColor: theme.sheet.sheetBg,
-			}}
-		>
+                        }}
+                >
                         <TextInput
                                 style={{
                                         ...styles.sheetInput,
@@ -48,19 +47,6 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({ closeSheet, initialValue,
                         />
 
                         <View style={styles.buttonContainer}>
-				<TouchableOpacity
-					onPress={() => {
-						Keyboard.dismiss();
-						closeSheet();
-					}}
-					style={{
-						...styles.cancelButton,
-						borderColor: primaryColor,
-					}}
-				>
-					<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
-				</TouchableOpacity>
-
                                 <TouchableOpacity
                                         onPress={() => {
                                                 Keyboard.dismiss();
