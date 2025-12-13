@@ -24,7 +24,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import LanguageSheet from '@/components/LanguageSheet/LanguageSheet';
 import AmountColumnSheet from '@/components/AmountColumnSheet/AmountColumnSheet';
 import FirstDaySheet from '@/components/FirstDaySheet/FirstDaySheet';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -42,6 +41,9 @@ import DebugView from '@/components/DebugView';
 import DropdownInput from '@/components/DropdownInput/DropdownInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
+import languageStyles from '@/components/LanguageSheet/styles';
+import { languages } from '@/constants/SettingData';
+import { myContrastColor } from '@/helper/ColorHelper';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -55,7 +57,6 @@ const Settings = () => {
         const { translate, setLanguageMode, language } = useLanguage();
         const [selectedLanguage, setSelectedLanguage] = useState<string>('');
         const drawerSheetRef = useRef<BottomSheet>(null);
-        const languageSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
         const colorSchemeSheetRef = useRef<BottomSheet>(null);
@@ -77,9 +78,14 @@ const Settings = () => {
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 
-	const languageCode = language;
+        const languageCode = language;
 
         const languageName = Languages[languageCode as keyof typeof Languages];
+
+        const contrastColor = useMemo(
+                () => myContrastColor(primaryColor, theme, selectedTheme === 'dark'),
+                [primaryColor, selectedTheme, theme]
+        );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
@@ -147,9 +153,18 @@ const Settings = () => {
 		};
 	}, []);
 
-	useEffect(() => {
-		setSelectedLanguage(language);
-	}, [language]);
+        useEffect(() => {
+                setSelectedLanguage(language);
+        }, [language]);
+
+        const changeLanguage = useCallback(
+                (language: { label?: string; flag?: string; value: any }) => {
+                        setSelectedLanguage(language.value);
+                        setLanguageMode(language.value);
+                        closeScrollViewModal();
+                },
+                [closeScrollViewModal, setLanguageMode]
+        );
 
         const openNicknameSheet = useCallback(() => {
                 showScrollViewModal(
@@ -167,13 +182,61 @@ const Settings = () => {
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
-        const openLanguageModal = () => {
-                languageSheetRef?.current?.expand();
-        };
-
-	const closeLanguageModal = () => {
-		languageSheetRef?.current?.close();
-	};
+        const openLanguageModal = useCallback(() => {
+                showScrollViewModal(
+                        {
+                                title: translate(TranslationKeys.language),
+                                children: (
+                                        <View style={languageStyles.optionsContainer}>
+                                                {languages.map((languageOption, index) => (
+                                                        <TouchableOpacity
+                                                                key={`${languageOption.value}-${index}`}
+                                                                style={[
+                                                                        languageStyles.languageRow,
+                                                                        {
+                                                                                paddingHorizontal: isWeb ? 20 : 10,
+                                                                                backgroundColor:
+                                                                                        selectedLanguage === languageOption.value
+                                                                                                ? primaryColor
+                                                                                                : theme.screen.iconBg,
+                                                                        },
+                                                                ]}
+                                                                onPress={() => changeLanguage(languageOption)}
+                                                        >
+                                                                <MyImage source={languageOption.flag} style={languageStyles.flagIcon} />
+                                                                <Text
+                                                                        style={{
+                                                                                ...languageStyles.languageText,
+                                                                                color:
+                                                                                        selectedLanguage === languageOption.value
+                                                                                                ? contrastColor
+                                                                                                : theme.screen.text,
+                                                                        }}
+                                                                >
+                                                                        {languageOption.label}
+                                                                </Text>
+                                                                <MaterialCommunityIcons
+                                                                        name={
+                                                                                selectedLanguage === languageOption.value
+                                                                                        ? 'checkbox-marked'
+                                                                                        : 'checkbox-blank'
+                                                                        }
+                                                                        size={24}
+                                                                        color={
+                                                                                selectedLanguage === languageOption.value
+                                                                                        ? contrastColor
+                                                                                        : theme.screen.icon
+                                                                        }
+                                                                        style={languageStyles.radioButton}
+                                                                />
+                                                        </TouchableOpacity>
+                                                ))}
+                                        </View>
+                                ),
+                        },
+                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                );
+        }, [changeLanguage, contrastColor, isWeb, primaryColor, selectedLanguage, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, theme.sheet.sheetBg, translate]);
 
 	const openColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.expand();
@@ -265,15 +328,9 @@ const Settings = () => {
                 });
         }, [collectibleRandomPosition, dispatch]);
 
-	const handleCheckForUpdates = () => {
-		manualCheck();
-	};
-
-	const changeLanguage = (language: { label?: string; flag?: string; value: any }) => {
-		setSelectedLanguage(language.value);
-		setLanguageMode(language.value);
-		closeLanguageModal();
-	};
+        const handleCheckForUpdates = () => {
+                manualCheck();
+        };
 
 	const handleDrawerPosition = (position: string) => {
 		dispatch({
@@ -551,38 +608,19 @@ const Settings = () => {
                         </ScrollView>
 			{isActive && (
 				<>
-					<BaseBottomSheet
-						ref={canteenSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeCanteenSheet}
-					>
-						<CanteenSelectionSheet closeSheet={closeCanteenSheet} />
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={languageSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeLanguageModal}
-					>
-						<LanguageSheet
-							closeSheet={closeLanguageModal}
-							selectedLanguage={selectedLanguage}
-							onSelect={value => {
-								changeLanguage({ value } as any);
-							}}
-						/>
-					</BaseBottomSheet>
+                                        <BaseBottomSheet
+                                                ref={canteenSheetRef}
+                                                index={-1}
+                                                backgroundStyle={{
+                                                        ...styles.sheetBackground,
+                                                        backgroundColor: theme.sheet.sheetBg,
+                                                }}
+                                                enablePanDownToClose
+                                                handleComponent={null}
+                                                onClose={closeCanteenSheet}
+                                        >
+                                                <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
+                                        </BaseBottomSheet>
 					<BaseBottomSheet
 						ref={amountColumnSheetRef}
 						index={-1}
