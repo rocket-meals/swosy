@@ -9,7 +9,7 @@ import { isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import NicknameSheet from '@/components/NicknameSheet/NicknameSheet';
+import SettingsListNickname from '@/components/SettingsListNickname';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import ServerSelectionSheet from '@/components/ServerSelectionSheet/ServerSelectionSheet';
@@ -157,7 +157,7 @@ const Settings = () => {
                                 title: translate(TranslationKeys.nickname),
                                 onClose: closeNicknameSheet,
                                 children: (
-                                        <NicknameSheet
+                                        <SettingsListNickname
                                                 initialValue={currentNickname}
                                                 onSave={saveNickname}
                                         />
