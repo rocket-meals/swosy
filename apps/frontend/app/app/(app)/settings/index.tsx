@@ -9,7 +9,7 @@ import { isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import NicknameSheet from '@/components/NicknameSheet/NicknameSheet';
+import SettingsListNickname from '@/components/SettingsListNickname';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import ServerSelectionSheet from '@/components/ServerSelectionSheet/ServerSelectionSheet';
@@ -24,7 +24,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import LanguageSheet from '@/components/LanguageSheet/LanguageSheet';
 import AmountColumnSheet from '@/components/AmountColumnSheet/AmountColumnSheet';
 import FirstDaySheet from '@/components/FirstDaySheet/FirstDaySheet';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
@@ -42,6 +41,9 @@ import DebugView from '@/components/DebugView';
 import DropdownInput from '@/components/DropdownInput/DropdownInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
+import languageStyles from '@/components/LanguageSheet/styles';
+import { languages } from '@/constants/SettingData';
+import { myContrastColor } from '@/helper/ColorHelper';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -53,16 +55,8 @@ const Settings = () => {
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
         const { translate, setLanguageMode, language } = useLanguage();
-        const [nickname, setNickname] = useState<string>('');
-        const nicknameSheetRef = useRef<BottomSheet>(null);
-	const openNicknameSheet = () => nicknameSheetRef?.current?.expand();
-	const closeNicknameSheet = () => {
-		Keyboard.dismiss();
-		nicknameSheetRef?.current?.close();
-	};
-	const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-	const drawerSheetRef = useRef<BottomSheet>(null);
-        const languageSheetRef = useRef<BottomSheet>(null);
+        const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+        const drawerSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
         const colorSchemeSheetRef = useRef<BottomSheet>(null);
@@ -70,20 +64,28 @@ const Settings = () => {
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
-        const { show: showScrollViewModal } = useMyScrollViewModal();
-        const [disabled, setDisabled] = useState(false);
+        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { manualCheck } = useExpoUpdateChecker();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition } = useSelector((state: RootState) => state.settings);
+        const currentNickname = useMemo(
+                () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
+                [nickNameLocal, profile?.id, profile?.nickname]
+        );
 	const selectedCanteen = useSelectedCanteen();
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 
-	const languageCode = language;
+        const languageCode = language;
 
         const languageName = Languages[languageCode as keyof typeof Languages];
+
+        const contrastColor = useMemo(
+                () => myContrastColor(primaryColor, theme, selectedTheme === 'dark'),
+                [primaryColor, selectedTheme, theme]
+        );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
@@ -101,26 +103,35 @@ const Settings = () => {
                 [collectibleItemSize, collectibleSizeOptions]
         );
 
-	const saveNickname = async () => {
-		if (isRegisteredUser) {
-			const result = (await profileHelper.updateProfile({
-				...profile,
-				nickname: nickname?.trim(),
-			})) as DatabaseTypes.Profiles;
-			if (result) {
-				dispatch({
-					type: UPDATE_PROFILE,
-					payload: result,
-				});
-			}
-		} else {
-			dispatch({
-				type: SET_NICKNAME_LOCAL,
-				payload: nickname?.trim(),
-			});
-		}
-		closeNicknameSheet();
-	};
+        const closeNicknameSheet = useCallback(() => {
+                Keyboard.dismiss();
+                closeScrollViewModal();
+        }, [closeScrollViewModal]);
+
+        const saveNickname = useCallback(
+                async (value: string) => {
+                        const nextNickname = value?.trim?.() ?? '';
+                        if (isRegisteredUser) {
+                                const result = (await profileHelper.updateProfile({
+                                        ...profile,
+                                        nickname: nextNickname,
+                                })) as DatabaseTypes.Profiles;
+                                if (result) {
+                                        dispatch({
+                                                type: UPDATE_PROFILE,
+                                                payload: result,
+                                        });
+                                }
+                        } else {
+                                dispatch({
+                                        type: SET_NICKNAME_LOCAL,
+                                        payload: nextNickname,
+                                });
+                        }
+                        closeNicknameSheet();
+                },
+                [closeNicknameSheet, dispatch, isRegisteredUser, profile, profileHelper]
+        );
 
 	useFocusEffect(
 		useCallback(() => {
@@ -142,17 +153,90 @@ const Settings = () => {
 		};
 	}, []);
 
-	useEffect(() => {
-		setSelectedLanguage(language);
-	}, [language]);
+        useEffect(() => {
+                setSelectedLanguage(language);
+        }, [language]);
 
-	const openLanguageModal = () => {
-		languageSheetRef?.current?.expand();
-	};
+        const changeLanguage = useCallback(
+                (language: { label?: string; flag?: string; value: any }) => {
+                        setSelectedLanguage(language.value);
+                        setLanguageMode(language.value);
+                        closeScrollViewModal();
+                },
+                [closeScrollViewModal, setLanguageMode]
+        );
 
-	const closeLanguageModal = () => {
-		languageSheetRef?.current?.close();
-	};
+        const openNicknameSheet = useCallback(() => {
+                showScrollViewModal(
+                        {
+                                title: translate(TranslationKeys.nickname),
+                                onClose: closeNicknameSheet,
+                                children: (
+                                        <SettingsListNickname
+                                                initialValue={currentNickname}
+                                                onSave={saveNickname}
+                                        />
+                                ),
+                        },
+                        { backgroundStyle: { backgroundColor: 'transparent' } }
+                );
+        }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
+
+        const openLanguageModal = useCallback(() => {
+                showScrollViewModal(
+                        {
+                                title: translate(TranslationKeys.language),
+                                children: (
+                                        <View style={languageStyles.optionsContainer}>
+                                                {languages.map((languageOption, index) => (
+                                                        <TouchableOpacity
+                                                                key={`${languageOption.value}-${index}`}
+                                                                style={[
+                                                                        languageStyles.languageRow,
+                                                                        {
+                                                                                paddingHorizontal: isWeb ? 20 : 10,
+                                                                                backgroundColor:
+                                                                                        selectedLanguage === languageOption.value
+                                                                                                ? primaryColor
+                                                                                                : theme.screen.iconBg,
+                                                                        },
+                                                                ]}
+                                                                onPress={() => changeLanguage(languageOption)}
+                                                        >
+                                                                <MyImage source={languageOption.flag} style={languageStyles.flagIcon} />
+                                                                <Text
+                                                                        style={{
+                                                                                ...languageStyles.languageText,
+                                                                                color:
+                                                                                        selectedLanguage === languageOption.value
+                                                                                                ? contrastColor
+                                                                                                : theme.screen.text,
+                                                                        }}
+                                                                >
+                                                                        {languageOption.label}
+                                                                </Text>
+                                                                <MaterialCommunityIcons
+                                                                        name={
+                                                                                selectedLanguage === languageOption.value
+                                                                                        ? 'checkbox-marked'
+                                                                                        : 'checkbox-blank'
+                                                                        }
+                                                                        size={24}
+                                                                        color={
+                                                                                selectedLanguage === languageOption.value
+                                                                                        ? contrastColor
+                                                                                        : theme.screen.icon
+                                                                        }
+                                                                        style={languageStyles.radioButton}
+                                                                />
+                                                        </TouchableOpacity>
+                                                ))}
+                                        </View>
+                                ),
+                        },
+                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                );
+        }, [changeLanguage, contrastColor, isWeb, primaryColor, selectedLanguage, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, theme.sheet.sheetBg, translate]);
 
 	const openColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.expand();
@@ -244,15 +328,9 @@ const Settings = () => {
                 });
         }, [collectibleRandomPosition, dispatch]);
 
-	const handleCheckForUpdates = () => {
-		manualCheck();
-	};
-
-	const changeLanguage = (language: { label?: string; flag?: string; value: any }) => {
-		setSelectedLanguage(language.value);
-		setLanguageMode(language.value);
-		closeLanguageModal();
-	};
+        const handleCheckForUpdates = () => {
+                manualCheck();
+        };
 
 	const handleDrawerPosition = (position: string) => {
 		dispatch({
@@ -341,7 +419,7 @@ const Settings = () => {
                         {
                                 title: translate(TranslationKeys.collectible_event_settings),
                                 children: (
-                                        <View style={{ gap: 12 }}>
+                                        <View style={{ gap: 0 }}>
                                                 <SettingsList
                                                         iconBgColor={primaryColor}
                                                         leftIcon={<MaterialCommunityIcons name="backup-restore" size={24} color={theme.screen.icon} />}
@@ -414,20 +492,14 @@ const Settings = () => {
 						<SettingsList
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-							label={translate(TranslationKeys.nickname)}
-							value={profile?.id ? profile?.nickname : nickNameLocal}
-							rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
-							handleFunction={() => {
-								openNicknameSheet();
-								setNickname(profile?.id ? profile?.nickname : nickNameLocal);
-								if (profile?.nickname === nickname) {
-									setDisabled(true);
-								} else {
-									setDisabled(false);
-								}
-							}}
-							groupPosition="middle"
-						/>
+                                                        label={translate(TranslationKeys.nickname)}
+                                                        value={profile?.id ? profile?.nickname : nickNameLocal}
+                                                        rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={() => {
+                                                                openNicknameSheet();
+                                                        }}
+                                                        groupPosition="middle"
+                                                />
 						{isRegisteredUser ? (
 							<>
 								<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.logout)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogout} groupPosition="middle" />
@@ -536,38 +608,19 @@ const Settings = () => {
                         </ScrollView>
 			{isActive && (
 				<>
-					<BaseBottomSheet
-						ref={canteenSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeCanteenSheet}
-					>
-						<CanteenSelectionSheet closeSheet={closeCanteenSheet} />
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={languageSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeLanguageModal}
-					>
-						<LanguageSheet
-							closeSheet={closeLanguageModal}
-							selectedLanguage={selectedLanguage}
-							onSelect={value => {
-								changeLanguage({ value } as any);
-							}}
-						/>
-					</BaseBottomSheet>
+                                        <BaseBottomSheet
+                                                ref={canteenSheetRef}
+                                                index={-1}
+                                                backgroundStyle={{
+                                                        ...styles.sheetBackground,
+                                                        backgroundColor: theme.sheet.sheetBg,
+                                                }}
+                                                enablePanDownToClose
+                                                handleComponent={null}
+                                                onClose={closeCanteenSheet}
+                                        >
+                                                <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
+                                        </BaseBottomSheet>
 					<BaseBottomSheet
 						ref={amountColumnSheetRef}
 						index={-1}
@@ -610,35 +663,6 @@ const Settings = () => {
 									payload: day,
 								});
 							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={nicknameSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={() => {
-							Keyboard.dismiss();
-							closeNicknameSheet();
-						}}
-					>
-						<NicknameSheet
-							closeSheet={closeNicknameSheet}
-							value={nickname}
-							onChange={text => {
-								setNickname(text);
-								if (text === profile?.nickname) {
-									setDisabled(true);
-								} else {
-									setDisabled(false);
-								}
-							}}
-							onSave={saveNickname}
-							disableSave={disabled}
 						/>
 					</BaseBottomSheet>
 					<BaseBottomSheet
