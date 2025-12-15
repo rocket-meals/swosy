@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "abe8393f3309c642d5b550e74801743bf80f897a"
+    "version": "9aabad17a43c97615c8c6756efbcdd4de3916837"
   },
   "servers": [
     {
@@ -49613,18 +49613,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "image": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Files"
-              }
-            ]
-          },
           "chat": {
             "nullable": true,
             "oneOf": [
@@ -49679,6 +49667,18 @@
             ]
           },
           "attachment": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Files"
+              }
+            ]
+          },
+          "image": {
             "nullable": true,
             "oneOf": [
               {
@@ -50083,11 +50083,6 @@
             "type": "string",
             "example": "Directus"
           },
-          "storage_default_folder": {
-            "description": "Default folder to place files",
-            "type": "string",
-            "format": "uuid"
-          },
           "public_favicon": {
             "nullable": true,
             "description": "$t:field_options.directus_settings.project_favicon_note",
@@ -50144,6 +50139,11 @@
             },
             "example": null,
             "nullable": true
+          },
+          "storage_default_folder": {
+            "description": "Default folder to place files",
+            "type": "string",
+            "format": "uuid"
           }
         },
         "x-collection": "directus_settings"
@@ -52546,17 +52546,17 @@
             "nullable": false,
             "type": "string"
           },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "value_date": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
           "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -52813,7 +52813,7 @@
             "nullable": false,
             "type": "integer"
           },
-          "restricted_markings_id": {
+          "restricted_by_markings_id": {
             "nullable": true,
             "oneOf": [
               {
@@ -52825,7 +52825,7 @@
               }
             ]
           },
-          "restricted_by_markings_id": {
+          "restricted_markings_id": {
             "nullable": true,
             "oneOf": [
               {
@@ -54193,7 +54193,12 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_created": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -54205,12 +54210,7 @@
               }
             ]
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_updated": {
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -54366,12 +54366,12 @@
             "nullable": true,
             "type": "string"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
