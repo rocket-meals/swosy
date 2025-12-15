@@ -2951,12 +2951,12 @@ type collectible_events {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -2965,12 +2965,12 @@ type collectible_events {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -2986,8 +2986,8 @@ type collectible_events {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  collectible_item_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   id: ID!
+  collectible_item_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   monitor_background_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -3019,12 +3019,12 @@ type collectible_events_aggregated_count {
   collectible_at_license_information: Int
   collectible_at_markings: Int
   collectible_at_markings_details: Int
-  collectible_at_settings_menuposition: Int
-  collectible_at_foodoffers_details: Int
-  collectible_at_settings_first_day_of_week: Int
-  ask_for_contact_details: Int
   collectible_at_settings_theme: Int
+  collectible_at_foodoffers_details: Int
+  collectible_at_settings_menuposition: Int
+  ask_for_contact_details: Int
   repeat_every_year: Int
+  collectible_at_notification: Int
   collectible_at_campus: Int
   collectible_at_canteen_selection: Int
   collectible_at_card_balance: Int
@@ -3033,12 +3033,12 @@ type collectible_events_aggregated_count {
   collectible_at_drawer: Int
   collectible_at_faq: Int
   collectible_at_foodoffers: Int
-  collectible_at_noticiation: Int
   collectible_at_price_group_selection: Int
+  collectible_at_settings: Int
   monitor_display_number_of_collected_items: Int
   monitor_display_number_of_participants: Int
-  collectible_at_settings: Int
   collectible_at_settings_amount_column: Int
+  collectible_at_settings_first_day_of_week: Int
   collectible_at_news: Int
   points_minimum: Int
   sort: Int
@@ -3050,8 +3050,8 @@ type collectible_events_aggregated_count {
   date_start: Int
   date_updated: Int
   date_created: Int
-  collectible_item_image: Int
   id: Int
+  collectible_item_image: Int
   monitor_background_image: Int
   user_updated: Int
   user_created: Int
@@ -4102,9 +4102,9 @@ type foodoffers_info_items {
   name(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type foodoffers_info_items_aggregated {
@@ -4132,9 +4132,9 @@ type foodoffers_info_items_aggregated_count {
   name: Int
   image: Int
   canteen: Int
-  user_created: Int
-  user_updated: Int
   id: Int
+  user_updated: Int
+  user_created: Int
 }
 
 type foodoffers_info_items_aggregated_fields {
@@ -7313,12 +7313,12 @@ type version_collectible_events {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -7327,12 +7327,12 @@ type version_collectible_events {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -7344,8 +7344,8 @@ type version_collectible_events {
   date_start: Date
   date_updated: Date
   date_created: Date
-  collectible_item_image: JSON
   id: ID
+  collectible_item_image: JSON
   monitor_background_image: JSON
   user_updated: JSON
   user_created: JSON
@@ -7493,9 +7493,9 @@ type version_foodoffers_info_items {
   name: JSON
   image: JSON
   canteen: JSON
-  user_created: JSON
-  user_updated: JSON
   id: ID
+  user_updated: JSON
+  user_created: JSON
 }
 
 """"""
@@ -9585,12 +9585,12 @@ input collectible_events_filter {
   collectible_at_license_information: boolean_filter_operators
   collectible_at_markings: boolean_filter_operators
   collectible_at_markings_details: boolean_filter_operators
-  collectible_at_settings_menuposition: boolean_filter_operators
-  collectible_at_foodoffers_details: boolean_filter_operators
-  collectible_at_settings_first_day_of_week: boolean_filter_operators
-  ask_for_contact_details: boolean_filter_operators
   collectible_at_settings_theme: boolean_filter_operators
+  collectible_at_foodoffers_details: boolean_filter_operators
+  collectible_at_settings_menuposition: boolean_filter_operators
+  ask_for_contact_details: boolean_filter_operators
   repeat_every_year: boolean_filter_operators
+  collectible_at_notification: boolean_filter_operators
   collectible_at_campus: boolean_filter_operators
   collectible_at_canteen_selection: boolean_filter_operators
   collectible_at_card_balance: boolean_filter_operators
@@ -9599,12 +9599,12 @@ input collectible_events_filter {
   collectible_at_drawer: boolean_filter_operators
   collectible_at_faq: boolean_filter_operators
   collectible_at_foodoffers: boolean_filter_operators
-  collectible_at_noticiation: boolean_filter_operators
   collectible_at_price_group_selection: boolean_filter_operators
+  collectible_at_settings: boolean_filter_operators
   monitor_display_number_of_collected_items: boolean_filter_operators
   monitor_display_number_of_participants: boolean_filter_operators
-  collectible_at_settings: boolean_filter_operators
   collectible_at_settings_amount_column: boolean_filter_operators
+  collectible_at_settings_first_day_of_week: boolean_filter_operators
   collectible_at_news: boolean_filter_operators
   points_minimum: number_filter_operators
   sort: number_filter_operators
@@ -9620,8 +9620,8 @@ input collectible_events_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  collectible_item_image: directus_files_filter
   id: id_filter_operators
+  collectible_item_image: directus_files_filter
   monitor_background_image: directus_files_filter
   user_updated: directus_users_filter
   user_created: directus_users_filter
@@ -10193,12 +10193,12 @@ input create_collectible_events_input {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -10207,12 +10207,12 @@ input create_collectible_events_input {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -10224,8 +10224,8 @@ input create_collectible_events_input {
   date_start: Date!
   date_updated: Date
   date_created: Date
-  collectible_item_image: create_directus_files_input
   id: ID
+  collectible_item_image: create_directus_files_input
   monitor_background_image: create_directus_files_input
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
@@ -10453,9 +10453,9 @@ input create_foodoffers_info_items_input {
   name: create_app_elements_input
   image: create_directus_files_input
   canteen: create_canteens_input
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
   id: ID
+  user_updated: create_directus_users_input
+  user_created: create_directus_users_input
 }
 
 input create_foodoffers_input {
@@ -11942,9 +11942,9 @@ input foodoffers_info_items_filter {
   name: app_elements_filter
   image: directus_files_filter
   canteen: canteens_filter
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
   id: id_filter_operators
+  user_updated: directus_users_filter
+  user_created: directus_users_filter
   _and: [foodoffers_info_items_filter]
   _or: [foodoffers_info_items_filter]
 }
@@ -13910,12 +13910,12 @@ input update_collectible_events_input {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -13924,12 +13924,12 @@ input update_collectible_events_input {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -13941,8 +13941,8 @@ input update_collectible_events_input {
   date_start: Date
   date_updated: Date
   date_created: Date
-  collectible_item_image: update_directus_files_input
   id: ID
+  collectible_item_image: update_directus_files_input
   monitor_background_image: update_directus_files_input
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
@@ -14170,9 +14170,9 @@ input update_foodoffers_info_items_input {
   name: update_app_elements_input
   image: update_directus_files_input
   canteen: update_canteens_input
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
   id: ID
+  user_updated: update_directus_users_input
+  user_created: update_directus_users_input
 }
 
 input update_foodoffers_input {
