@@ -469,6 +469,7 @@ const CollectibleEventScreen = () => {
                                         }
                                         label={translate(TranslationKeys.collectible_event_start_date)}
                                         value={startDateLabel}
+                                        showSeparator={false}
                                         groupPosition="middle"
                                     />
                                     <SettingsList
