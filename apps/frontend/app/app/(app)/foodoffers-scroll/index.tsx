@@ -82,7 +82,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { openActiveModal } = usePopupEventModal();
+	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -174,7 +174,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	useEffect(() => {
 		openActiveModal();
-	}, [openActiveModal]);
+	}, [activePopupEvent, openActiveModal]);
 
 	useEffect(() => {
 		if (isActive && selectedSheet) {

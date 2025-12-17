@@ -77,9 +77,9 @@ const usePopupEventModal = () => {
 			},
 			{ backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
 		);
-	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModal, theme.sheet.sheetBg]);
+		}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModal, theme.sheet.sheetBg]);
 
-	return { openActiveModal };
-};
+		return { openActiveModal, activePopupEvent: currentPopupEvent, popupEvents };
+	};
 
 export default usePopupEventModal;
