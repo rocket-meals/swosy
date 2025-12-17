@@ -30,8 +30,6 @@ import * as Notifications from 'expo-notifications';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import { addDays, format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
-import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
-import { PopupEventHelper } from '@/helper/PopupEventHelper';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
 import LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
@@ -43,6 +41,7 @@ import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import usePopupEventModal from '@/hooks/usePopupEventModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
@@ -70,11 +69,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
-	const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(PopupEventHelper.getAll());
-	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
 	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
@@ -85,7 +82,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-        const popupEventShownIdRef = useRef<string | null>(null);
+	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -144,18 +141,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}, [])
 	);
 
-	useEffect(() => {
-		if (kioskMode) {
-			return;
-		}
-		const nextEvent = popupEvents?.find((e: any) => !e.isOpen && !PopupEventHelper.isDismissed(e.id));
-		if (nextEvent) {
-			setCurrentPopupEvent(nextEvent);
-		} else {
-			setCurrentPopupEvent(null);
-		}
-	}, [popupEvents, kioskMode, sessionDismissed]);
-
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                         if (sheet === 'sort') {
@@ -187,45 +172,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 	};
 
-	const closeEventSheet = useCallback(() => {
-		closeScrollViewModal();
-		setTimeout(() => {
-			if (!currentPopupEvent) return;
-			const updatedEvents = popupEvents.map((e: any) => (e.id === currentPopupEvent.id ? { ...e, isOpen: true } : e));
-			dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
-			popupEventShownIdRef.current = null;
-			setCurrentPopupEvent(null);
-		}, 200);
-	}, [closeScrollViewModal, currentPopupEvent, dispatch, popupEvents]);
-
-	const closeEventSheetForSession = useCallback(() => {
-		closeScrollViewModal();
-		if (currentPopupEvent?.id) {
-			PopupEventHelper.dismiss(currentPopupEvent.id);
-			setSessionDismissed(PopupEventHelper.getAll());
-		}
-		popupEventShownIdRef.current = null;
-		setCurrentPopupEvent(null);
-	}, [closeScrollViewModal, currentPopupEvent]);
-
 	useEffect(() => {
-		if (!currentPopupEvent) {
-			popupEventShownIdRef.current = null;
-			return;
-		}
-
-		const eventId = String(currentPopupEvent.id ?? '');
-		if (popupEventShownIdRef.current === eventId) return;
-		popupEventShownIdRef.current = eventId;
-
-		showScrollViewModal(
-			{
-				onClose: closeEventSheetForSession,
-				children: <PopupEventSheet closeSheet={closeEventSheet} eventData={currentPopupEvent} />,
-			},
-			{ backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
-		);
-	}, [closeEventSheet, closeEventSheetForSession, currentPopupEvent, showScrollViewModal, theme.sheet.sheetBg]);
+		openActiveModal();
+	}, [activePopupEvent, openActiveModal]);
 
 	useEffect(() => {
 		if (isActive && selectedSheet) {

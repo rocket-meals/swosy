@@ -15,7 +15,7 @@ import RedirectButton from '../RedirectButton';
 import ProjectButton from '../ProjectButton';
 import { RootState } from '@/redux/reducer';
 
-const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData }) => {
+const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
 	const { theme } = useTheme();
 	const { primaryColor, language, appSettings, serverInfo, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
@@ -223,7 +223,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, eventData
 					alignItems: 'center',
 				}}
 			>
-				{closeSheet && <ProjectButton text="Schließen und nicht erneut anzeigen" onPress={closeSheet} />}
+				{closeSheet && <ProjectButton text="Schließen und nicht erneut anzeigen" onPress={dismissSheet || closeSheet} />}
 			</View>
 			<View
 				style={{
