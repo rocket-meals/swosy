@@ -120,7 +120,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 amountColumnsForcard,
                 debugMode,
         } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector(
+	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector(
 		(state: RootState) => state.food
 	);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
@@ -137,7 +137,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const { hasUnreadChats } = useChatUnreadStatus();
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-	const { openActiveModal } = usePopupEventModal({ popupEvents, kioskMode });
+	const { openActiveModal } = usePopupEventModal();
 
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
@@ -342,7 +342,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	useEffect(() => {
 		openActiveModal();
-	}, [openActiveModal, popupEvents]);
+	}, [openActiveModal]);
 
 	useEffect(() => {
 		if (isActive && selectedSheet) {

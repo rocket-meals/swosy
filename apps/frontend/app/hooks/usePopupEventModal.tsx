@@ -3,21 +3,19 @@ import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
 import { PopupEventHelper } from '@/helper/PopupEventHelper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
+import useKioskMode from '@/hooks/useKioskMode';
+import { RootState } from '@/redux/reducer';
 
-type UsePopupEventModalProps = {
-	popupEvents?: any[];
-	kioskMode?: boolean;
-};
-
-const usePopupEventModal = ({ popupEvents = [], kioskMode = false }: UsePopupEventModalProps) => {
+const usePopupEventModal = () => {
 	const dispatch = useDispatch();
 	const { theme } = useTheme();
+	const kioskMode = useKioskMode();
+	const { popupEvents } = useSelector((state: RootState) => state.food);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const popupEventShownIdRef = useRef<string | null>(null);
 	const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
-	const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(PopupEventHelper.getAll());
 
 	const markEventAsOpen = useCallback(
 		(event: any) => {
@@ -47,7 +45,6 @@ const usePopupEventModal = ({ popupEvents = [], kioskMode = false }: UsePopupEve
 			closeScrollViewModal();
 			if (targetEvent?.id) {
 				PopupEventHelper.dismiss(targetEvent.id);
-				setSessionDismissed(PopupEventHelper.getAll());
 			}
 			popupEventShownIdRef.current = null;
 			setCurrentPopupEvent(null);
@@ -80,7 +77,7 @@ const usePopupEventModal = ({ popupEvents = [], kioskMode = false }: UsePopupEve
 			},
 			{ backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
 		);
-	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, sessionDismissed, showScrollViewModal, theme.sheet.sheetBg]);
+	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModal, theme.sheet.sheetBg]);
 
 	return { openActiveModal };
 };

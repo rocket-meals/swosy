@@ -71,7 +71,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
 
 	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, popupEvents, selectedDate, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
@@ -82,7 +82,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { openActiveModal } = usePopupEventModal({ popupEvents, kioskMode });
+	const { openActiveModal } = usePopupEventModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -174,7 +174,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	useEffect(() => {
 		openActiveModal();
-	}, [openActiveModal, popupEvents]);
+	}, [openActiveModal]);
 
 	useEffect(() => {
 		if (isActive && selectedSheet) {
