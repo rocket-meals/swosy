@@ -135,6 +135,10 @@ describe('FoodTL1ParserHannover Test', () => {
     expect(foodOfferJson.length).toBeGreaterThan(0);
 
     const firstFoodOffer = foodOfferJson[0];
+    expect(!!firstFoodOffer).toBe(true);
+    if (!firstFoodOffer) {
+      return;
+    }
     const expectedMarkingExternalIdentifiers = ['26', '99', FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER];
     const expectedFoodId = generateFoodId([801346], ['26', '99']);
     expect(firstFoodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
