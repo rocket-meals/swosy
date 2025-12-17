@@ -460,7 +460,6 @@ const CollectibleEventScreen = () => {
                                         leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
                                         label={translate(TranslationKeys.collectible_event_points)}
                                         groupPosition="top"
-                                        showSeparator={false}
                                         value={`${collectedCount}/${maxCollectibleKeys || '∞'}`}
                                     />
                                     <SettingsList
@@ -469,7 +468,6 @@ const CollectibleEventScreen = () => {
                                         }
                                         label={translate(TranslationKeys.collectible_event_start_date)}
                                         value={startDateLabel}
-                                        showSeparator={false}
                                         groupPosition="middle"
                                     />
                                     <SettingsList
