@@ -214,7 +214,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 	};
 
 	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+		<BottomSheetScrollView style={styles.sheetView} contentContainerStyle={styles.contentContainer}>
 			<View
 				style={{
 					...styles.sheetHeaderClose,
