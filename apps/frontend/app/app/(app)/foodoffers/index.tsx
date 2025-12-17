@@ -944,11 +944,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							)}
 						</BaseBottomSheet>
 					))}
-				{isActive && currentPopupEvent && (
-					<BaseBottomSheet ref={eventSheetRef} index={-1} backgroundStyle={{ ...styles.sheetBackground, backgroundColor: theme.sheet.sheetBg }} enablePanDownToClose={false} handleComponent={null} onClose={closeEventSheetForSession}>
-						<PopupEventSheet closeSheet={closeEventSheet} eventData={currentPopupEvent} />
-					</BaseBottomSheet>
-				)}
 			</SafeAreaView>
 		</>
 	);
