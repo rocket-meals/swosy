@@ -62,7 +62,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const router = useRouter();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 	const bottomSheetRef = useRef<BottomSheet>(null);
-	const eventSheetRef = useRef<BottomSheet>(null);
 	const businessHoursHelper = new BusinessHoursHelper();
 	const [loading, setLoading] = useState(false);
 	const [isActive, setIsActive] = useState(false);
@@ -86,6 +85,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+        const popupEventShownIdRef = useRef<string | null>(null);
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -151,9 +151,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		const nextEvent = popupEvents?.find((e: any) => !e.isOpen && !PopupEventHelper.isDismissed(e.id));
 		if (nextEvent) {
 			setCurrentPopupEvent(nextEvent);
-			setTimeout(() => {
-				openEventSheet();
-			}, 300);
 		} else {
 			setCurrentPopupEvent(null);
 		}
@@ -190,27 +187,45 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 	};
 
-	const openEventSheet = () => {
-		if (kioskMode) return;
-		eventSheetRef?.current?.expand();
-	};
-
-	const closeEventSheet = () => {
-		eventSheetRef?.current?.close();
+	const closeEventSheet = useCallback(() => {
+		closeScrollViewModal();
 		setTimeout(() => {
 			if (!currentPopupEvent) return;
 			const updatedEvents = popupEvents.map((e: any) => (e.id === currentPopupEvent.id ? { ...e, isOpen: true } : e));
 			dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
+			popupEventShownIdRef.current = null;
 			setCurrentPopupEvent(null);
-		}, 500);
-	};
+		}, 200);
+	}, [closeScrollViewModal, currentPopupEvent, dispatch, popupEvents]);
 
-	const closeEventSheetForSession = () => {
-		eventSheetRef?.current?.close();
-		PopupEventHelper.dismiss(currentPopupEvent?.id);
-		setSessionDismissed(PopupEventHelper.getAll());
+	const closeEventSheetForSession = useCallback(() => {
+		closeScrollViewModal();
+		if (currentPopupEvent?.id) {
+			PopupEventHelper.dismiss(currentPopupEvent.id);
+			setSessionDismissed(PopupEventHelper.getAll());
+		}
+		popupEventShownIdRef.current = null;
 		setCurrentPopupEvent(null);
-	};
+	}, [closeScrollViewModal, currentPopupEvent]);
+
+	useEffect(() => {
+		if (!currentPopupEvent) {
+			popupEventShownIdRef.current = null;
+			return;
+		}
+
+		const eventId = String(currentPopupEvent.id ?? '');
+		if (popupEventShownIdRef.current === eventId) return;
+		popupEventShownIdRef.current = eventId;
+
+		showScrollViewModal(
+			{
+				onClose: closeEventSheetForSession,
+				children: <PopupEventSheet closeSheet={closeEventSheet} eventData={currentPopupEvent} />,
+			},
+			{ backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+		);
+	}, [closeEventSheet, closeEventSheetForSession, currentPopupEvent, showScrollViewModal, theme.sheet.sheetBg]);
 
 	useEffect(() => {
 		if (isActive && selectedSheet) {
@@ -722,21 +737,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						</BaseBottomSheet>
 					))}
 
-				{isActive && currentPopupEvent && (
-					<BaseBottomSheet
-						ref={eventSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose={false}
-						handleComponent={null}
-						onClose={closeEventSheetForSession}
-					>
-						<PopupEventSheet closeSheet={closeEventSheet} eventData={currentPopupEvent} />
-					</BaseBottomSheet>
-				)}
 			</SafeAreaView>
 		</>
 	);
