@@ -448,14 +448,28 @@ const CollectibleEventScreen = () => {
                                 <Text style={{ ...styles.description, color: theme.inactiveText }}>{description}</Text>
                             ) : null}
 
+                            <View style={{ alignItems: 'center', marginTop: 16 }}>
+                                    <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} isPreview />
+                                    <Text style={{ color: theme.inactiveText, marginTop: 8 }}>
+                                            {translate(TranslationKeys.collectible_event_preview_label)}
+                                    </Text>
+                            </View>
+
                             <View style={{ marginTop: 16, gap: 0 }}>
+                                    <SettingsList
+                                        leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
+                                        label={translate(TranslationKeys.collectible_event_points)}
+                                        groupPosition="top"
+                                        showSeparator={false}
+                                        value={`${collectedCount}/${maxCollectibleKeys || '∞'}`}
+                                    />
                                     <SettingsList
                                         leftIcon={
                                                 <MaterialCommunityIcons name="calendar-start" size={22} color={theme.screen.icon} />
                                         }
                                         label={translate(TranslationKeys.collectible_event_start_date)}
                                         value={startDateLabel}
-                                        groupPosition="top"
+                                        groupPosition="middle"
                                     />
                                     <SettingsList
                                         leftIcon={
@@ -464,23 +478,6 @@ const CollectibleEventScreen = () => {
                                         label={translate(TranslationKeys.collectible_event_end_date)}
                                         value={endDateLabel}
                                         groupPosition="bottom"
-                                    />
-                            </View>
-
-                            <View style={{ alignItems: 'center', marginTop: 16 }}>
-                                    <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} isPreview />
-                                    <Text style={{ color: theme.inactiveText, marginTop: 8 }}>
-                                            {translate(TranslationKeys.collectible_event_preview_label)}
-                                    </Text>
-                            </View>
-
-                            <View style={{ marginTop: 16, gap: 12 }}>
-                                    <SettingsList
-                                        leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
-                                        label={translate(TranslationKeys.collectible_event_points)}
-                                        groupPosition="single"
-                                        showSeparator={false}
-                                        value={`${collectedCount}/${maxCollectibleKeys || '∞'}`}
                                     />
                             </View>
 
