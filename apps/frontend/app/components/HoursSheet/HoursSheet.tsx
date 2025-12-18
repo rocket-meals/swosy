@@ -402,12 +402,11 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
                         return (
                                 <SettingsList
                                         key={hoursDataKey}
-                                        leftIcon={<View />}
                                         title={label}
                                         value={timeText}
                                         showSeparator={!isLast}
                                         groupPosition={groupPosition}
-                                        iconBackgroundColor={theme.sheet.sheetBg}
+                                        noIconIndent
                                 />
                         );
                 });
