@@ -15,6 +15,7 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
 const getSortedBusinessHoursGroups = (groups: { id: string; sort?: number | null }[]) => {
 	return [...groups].sort((a, b) => {
@@ -461,20 +462,12 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 								.filter(group => hours[group.id])
 								.map(group => {
 									const { name, entries } = hours[group.id];
-									return (
-										<View key={group.id} style={{ marginBottom: 20 }}>
-											<Text
-												style={{
-													...styles.hoursHeading,
-													color: theme.sheet.text,
-													fontSize: isWeb ? (ScreenWidth <= 500 ? 18 : 24) : 24,
-												}}
-											>
-												{name}
-											</Text>
-											{renderHours(group.id, entries)}
-										</View>
-									);
+                                                                        return (
+                                                                                <View key={group.id} style={{ marginBottom: 20 }}>
+                                                                                        <SettingsGroupTitle>{name}</SettingsGroupTitle>
+                                                                                        {renderHours(group.id, entries)}
+                                                                                </View>
+                                                                        );
 								})}
 						</View>
 					) : (
