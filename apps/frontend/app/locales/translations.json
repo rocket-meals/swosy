@@ -2803,6 +2803,16 @@
     "tr": "Gerçekten çıkış yapmak istiyor musun?",
     "zh": "您确定要注销吗？"
   },
+  "logout_flow_modal_description": {
+    "de": "Du wirst zum Anmeldebildschirm geleitet. Wenn du ein Konto hast, wirst du abgemeldet.",
+    "en": "You will be taken to the login screen. If you have an account, you will be logged out.",
+    "ar": "سيتم نقلك إلى شاشة تسجيل الدخول. إذا كان لديك حساب، سيتم تسجيل خروجك.",
+    "es": "Se te llevará a la pantalla de inicio de sesión. Si tienes una cuenta, se cerrará tu sesión.",
+    "fr": "Vous serez redirigé vers l'écran de connexion. Si vous avez un compte, vous serez déconnecté.",
+    "ru": "Вы будете перенаправлены на экран входа. Если у вас есть аккаунт, вы будете разлогинены.",
+    "tr": "Giriş ekranına yönlendirileceksiniz. Bir hesabınız varsa oturumunuz kapatılacak.",
+    "zh": "您将被带到登录界面。如果您有账户，将会退出登录。"
+  },
   "register": {
     "de": "Registrieren",
     "en": "Register",

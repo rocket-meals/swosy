@@ -279,6 +279,7 @@ export enum TranslationKeys {
         if_you_want_to_login_with_this_account_please_press = 'if_you_want_to_login_with_this_account_please_press',
         logout = 'logout',
         are_you_sure_to_logout = 'are_you_sure_to_logout',
+        logout_flow_modal_description = 'logout_flow_modal_description',
         register = 'register',
         sign_in = 'sign_in',
         accountbalance = 'accountbalance',

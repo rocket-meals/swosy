@@ -7,12 +7,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useLogout from './useLogout';
+import useLogoutButtonTranslation from './useLogoutButtonTranslation';
 
 const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
         const logout = useLogout();
         const { translate } = useLanguage();
         const { theme } = useTheme();
+        const { buttonLabel, modalDescription } = useLogoutButtonTranslation();
 
         const openConfirmLogoutModal = useCallback(
                 (asGuest: boolean = false) => {
@@ -32,10 +34,10 @@ const useConfirmLogoutModal = () => {
                                                                         color: theme.screen.text,
                                                                 }}
                                                         >
-                                                                {translate(TranslationKeys.logout)}
+                                                                {buttonLabel}
                                                         </Text>
                                                         <Text style={{ color: theme.screen.text }}>
-                                                                {translate(TranslationKeys.are_you_sure_to_logout)}
+                                                                {modalDescription}
                                                         </Text>
                                                         <ProjectButton
                                                                 text={translate(TranslationKeys.confirm)}
@@ -53,7 +55,7 @@ const useConfirmLogoutModal = () => {
                                 { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
                         );
                 },
-                [close, logout, show, theme.screen.text, theme.sheet.sheetBg, translate]
+                [buttonLabel, close, logout, modalDescription, show, theme.screen.text, theme.sheet.sheetBg, translate]
         );
 
         return { openConfirmLogoutModal, closeConfirmLogoutModal: close };
