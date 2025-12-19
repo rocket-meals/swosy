@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
-import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
@@ -44,6 +43,8 @@ import useToast from '@/hooks/useToast';
 import languageStyles from '@/components/LanguageSheet/styles';
 import { languages } from '@/constants/SettingData';
 import { myContrastColor } from '@/helper/ColorHelper';
+import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
+import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -65,9 +66,11 @@ const Settings = () => {
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+        const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { manualCheck } = useExpoUpdateChecker();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
+        const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
@@ -344,13 +347,11 @@ const Settings = () => {
 		setThemeMode(theme);
 	};
 
-        const handleLogout = async () => {
-                await performLogout(dispatch, router);
-        };
+        const handleLogout = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 
-	const handleLogin = () => {
-		performLogout(dispatch, router, true);
-	};
+        const handleLogin = useCallback(() => openConfirmLogoutModal(true), [openConfirmLogoutModal]);
+
+        const logoutButtonHandler = useMemo(() => (isRegisteredUser ? handleLogout : handleLogin), [handleLogin, handleLogout, isRegisteredUser]);
 
 	const openCanteenSheet = () => {
 		canteenSheetRef?.current?.expand();
@@ -500,14 +501,10 @@ const Settings = () => {
                                                         }}
                                                         groupPosition="middle"
                                                 />
-						{isRegisteredUser ? (
-							<>
-								<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.logout)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogout} groupPosition="middle" />
-								<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
-							</>
-						) : (
-							<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sign_in)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogin} groupPosition="middle" />
-						)}
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="middle" />
+                                                {isRegisteredUser ? (
+                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
+                                                ) : null}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="bottom" />
 					</View>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
@@ -529,9 +526,17 @@ const Settings = () => {
                                         </View>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
 					<View style={{ gap: 0 }}>
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.collectible_events)}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={() => router.navigate('/collectible-events')}
+                                                        groupPosition="middle"
+                                                />
                                                 <SettingsList
                                                         iconBgColor={primaryColor}
                                                         leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
