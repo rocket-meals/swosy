@@ -19,7 +19,6 @@ export const useUtilizationModal = () => {
                                         onClose: closeScrollViewModal,
                                         children: (
                                                 <ForecastSheet
-                                                        closeSheet={closeScrollViewModal}
                                                         forDate={forDate}
                                                         canteen={canteen}
                                                 />
