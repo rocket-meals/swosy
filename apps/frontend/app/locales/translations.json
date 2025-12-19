@@ -2793,6 +2793,16 @@
     "tr": "Çıkış Yap",
     "zh": "登出"
   },
+  "are_you_sure_to_logout": {
+    "de": "Möchtest du dich wirklich abmelden?",
+    "en": "Do you really want to log out?",
+    "ar": "هل تريد حقًا تسجيل الخروج؟",
+    "es": "¿Realmente quieres cerrar sesión?",
+    "fr": "Voulez-vous vraiment vous déconnecter ?",
+    "ru": "Вы действительно хотите выйти?",
+    "tr": "Gerçekten çıkış yapmak istiyor musun?",
+    "zh": "您确定要注销吗？"
+  },
   "register": {
     "de": "Registrieren",
     "en": "Register",
