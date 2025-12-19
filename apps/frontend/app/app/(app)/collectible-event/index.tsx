@@ -137,7 +137,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
 };
 
 const CollectibleEventScreen = () => {
-        useSetPageTitle(TranslationKeys.collectible_event);
+        useSetPageTitle(TranslationKeys.collectible_event_active);
 
         const dispatch = useDispatch();
         const { theme } = useTheme();
@@ -637,7 +637,7 @@ const CollectibleEventScreen = () => {
 
         return (
             <SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
-                    <CustomMenuHeader label={translate(TranslationKeys.collectible_event)} />
+                    <CustomMenuHeader label={translate(TranslationKeys.collectible_event_active)} />
                     <View style={styles.container}>
                             <ScrollView style={styles.container} contentContainerStyle={styles.content}>
                                     {renderContent()}

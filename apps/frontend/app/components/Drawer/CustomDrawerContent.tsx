@@ -256,7 +256,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 
                 if (hasActiveCollectibleEvent) {
                         menuItems.push({
-                                label: translate(TranslationKeys.collectible_event),
+                                label: translate(TranslationKeys.collectible_event_active),
                                 iconName: 'trophy-outline',
                                 iconLibName: MaterialCommunityIcons,
                                 activeKey: 'collectible-event/index',
