@@ -38,7 +38,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const dispatch = useDispatch();
     const { theme } = useTheme();
     const { translate } = useLanguage();
-    const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+    const { show: showScrollViewModal } = useMyScrollViewModal();
 
     const [warning, setWarning] = useState(false);
 
@@ -223,8 +223,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                         showScrollViewModal(
                           {
                             title: translate(TranslationKeys.ai_generated_image),
-                            onClose: closeScrollViewModal,
-                            children: <AIGeneratedHintSheet closeSheet={closeScrollViewModal} />,
+                            children: <AIGeneratedHintSheet />,
                           },
                           {
                             backgroundStyle: { backgroundColor: theme.sheet.sheetBg },
