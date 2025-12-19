@@ -24,6 +24,7 @@ import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
+import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -66,6 +67,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
+        const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -388,7 +390,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                                         onPress={() => openConfirmLogoutModal(!user?.id)}
                                                 >
                                                         <MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
-                                                        <Text style={getMenuLabelStyle('faq-living/index')}>{translate(TranslationKeys.logout)}</Text>
+                                                        <Text style={getMenuLabelStyle('faq-living/index')}>{logoutButtonLabel}</Text>
                                                 </TouchableOpacity>
                                                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
                                         </View>
