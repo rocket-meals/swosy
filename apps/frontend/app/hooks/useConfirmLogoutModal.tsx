@@ -17,8 +17,8 @@ const useConfirmLogoutModal = () => {
         const openConfirmLogoutModal = useCallback(
                 (asGuest: boolean = false) => {
                         const handleLogout = async () => {
-                                await logout(asGuest);
                                 close();
+                                await logout(asGuest);
                         };
 
                         show(
