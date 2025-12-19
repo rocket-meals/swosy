@@ -16,8 +16,8 @@ const MenuSheet: React.FC<MenuSheetProps> = ({ closeSheet }) => {
 	const { markingDetails } = useSelector((state: RootState) => state.food);
 	const { language } = useSelector((state: RootState) => state.settings);
 	const description = getDescriptionFromTranslation(markingDetails?.translations, language);
-	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+        return (
+                <BottomSheetScrollView style={styles.sheetView} contentContainerStyle={styles.contentContainer}>
 			<View
 				style={{
 					...styles.sheetHeader,
