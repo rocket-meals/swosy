@@ -197,6 +197,16 @@ const CollectibleEventScreen = () => {
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
         const [visibleHints, setVisibleHints] = useState<Record<string, boolean>>({});
 
+        const serverCollectedCount = useMemo(
+            () => Number(participation?.points ?? 0) || 0,
+            [participation?.points]
+        );
+
+        const displayedCollectedCount = useMemo(
+            () => Math.max(collectedCount ?? 0, serverCollectedCount),
+            [collectedCount, serverCollectedCount]
+        );
+
         const formatEventDate = useCallback((dateString?: string | null) => {
                 if (!dateString || !DateHelper.isValidDateString(dateString)) {
                         return '-';
@@ -272,12 +282,12 @@ const CollectibleEventScreen = () => {
                 }
 
                 previousEventIdRef.current = activeCollectibleEvent?.id ?? null;
-                previousCollectedCountRef.current = collectedCount ?? 0;
+                previousCollectedCountRef.current = displayedCollectedCount ?? 0;
                 setDebugLogs([]);
-        }, [activeCollectibleEvent?.id, collectedCount]);
+        }, [activeCollectibleEvent?.id, displayedCollectedCount]);
 
         useEffect(() => {
-                const currentCount = collectedCount ?? 0;
+                const currentCount = displayedCollectedCount ?? 0;
                 const previousValue = previousCollectedCountRef.current ?? 0;
 
                 if (currentCount > previousValue) {
@@ -285,7 +295,7 @@ const CollectibleEventScreen = () => {
                 }
 
                 previousCollectedCountRef.current = currentCount;
-        }, [appendDebugLog, collectedCount]);
+        }, [appendDebugLog, displayedCollectedCount]);
 
         const loadParticipation = useCallback(async () => {
                 if (!activeCollectibleEvent?.id || !profile?.id) {
@@ -340,7 +350,7 @@ const CollectibleEventScreen = () => {
                         return;
                 }
 
-                const pointsToSave = String(collectedCount);
+                const pointsToSave = String(displayedCollectedCount);
 
                 setIsSaving(true);
                 try {
@@ -460,7 +470,7 @@ const CollectibleEventScreen = () => {
                                         leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
                                         label={translate(TranslationKeys.collectible_event_points)}
                                         groupPosition="top"
-                                        value={`${collectedCount}/${maxCollectibleKeys || '∞'}`}
+                                        value={`${displayedCollectedCount}/${maxCollectibleKeys || '∞'}`}
                                     />
                                     <SettingsList
                                         leftIcon={
