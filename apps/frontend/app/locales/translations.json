@@ -1879,6 +1879,26 @@
     "tr": "Etkinlik",
     "zh": "事件"
   },
+  "collectible_events": {
+    "de": "Sammel Events",
+    "en": "Collectible Events",
+    "ar": "فعاليات قابلة للتحصيل",
+    "es": "Eventos coleccionables",
+    "fr": "Événements à collectionner",
+    "ru": "Коллекционные события",
+    "tr": "Koleksiyon etkinlikleri",
+    "zh": "收集活动"
+  },
+  "collectible_event_active": {
+    "de": "Aktives Sammel Event",
+    "en": "Collectible Event Active",
+    "ar": "فعالية قابلة للتحصيل نشطة",
+    "es": "Evento coleccionable activo",
+    "fr": "Événement à collectionner actif",
+    "ru": "Активное коллекционное событие",
+    "tr": "Aktif koleksiyon etkinliği",
+    "zh": "正在进行的收集活动"
+  },
   "collectible_event": {
     "de": "Sammel Event",
     "en": "Collectible Event",
