@@ -311,18 +311,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                 return;
                         }
 
-                        if (sheet === 'aiGeneratedInfo') {
-                                showScrollViewModal(
-                                        {
-                                                title: translate(TranslationKeys.ai_generated_image),
-                                                onClose: closeScrollViewModal,
-                                                children: <AIGeneratedHintSheet closeSheet={closeScrollViewModal} />,
-                                        },
-                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
-                                );
-                                return;
-                        }
-
                         setSelectedSheet(sheet);
                         setSheetProps(props);
                 },
