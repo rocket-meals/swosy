@@ -44,6 +44,7 @@ import useToast from '@/hooks/useToast';
 import languageStyles from '@/components/LanguageSheet/styles';
 import { languages } from '@/constants/SettingData';
 import { myContrastColor } from '@/helper/ColorHelper';
+import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -65,6 +66,7 @@ const Settings = () => {
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+        const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { manualCheck } = useExpoUpdateChecker();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
@@ -344,9 +346,7 @@ const Settings = () => {
 		setThemeMode(theme);
 	};
 
-        const handleLogout = async () => {
-                await performLogout(dispatch, router);
-        };
+        const handleLogout = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 
 	const handleLogin = () => {
 		performLogout(dispatch, router, true);
