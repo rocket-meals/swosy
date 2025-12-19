@@ -8,7 +8,6 @@ import {isWeb} from '@/constants/Constants';
 import {ForecastSheetProps} from './types';
 import {format, parseISO} from 'date-fns';
 import {UtilizationEntryHelper} from '@/redux/actions/UtilizationEntries/UtilizationEntries';
-import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import {useLanguage} from '@/hooks/useLanguage';
 import {TranslationKeys} from '@/locales/keys';
 import {DatabaseTypes} from 'repo-depkit-common';
@@ -24,12 +23,11 @@ type ForecastEntry = {
 
 const showDebugInformation = false;
 
-const ForecastSheet: React.FC<ForecastSheetProps> = ({ closeSheet, forDate }) => {
+const ForecastSheet: React.FC<ForecastSheetProps> = ({ closeSheet, forDate, canteen }) => {
         const { theme } = useTheme();
         const { translate } = useLanguage();
         const utilizationEntryHelper = new UtilizationEntryHelper();
         const [loading, setLoading] = useState(false);
-        const selectedCanteen = useSelectedCanteen();
         const [forecastEntries, setForecastEntries] = useState<ForecastEntry[]>([]);
         const [currentUtilizationGroup, setCurrentUtilizationGroup] = useState<DatabaseTypes.UtilizationsGroups | null>(null);
 
@@ -102,7 +100,7 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({ closeSheet, forDate }) =>
                 try {
                         setLoading(true);
 
-                        const utlizationGroupId = selectedCanteen?.utilization_group as string | undefined;
+                        const utlizationGroupId = canteen?.utilization_group as string | undefined;
 
                         if (!utlizationGroupId) {
                                 setForecastEntries([]);
@@ -132,10 +130,14 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({ closeSheet, forDate }) =>
         };
 
         useEffect(() => {
-                if (selectedCanteen) {
+                if (canteen) {
                         getUtilization(forDate);
+                } else {
+                        setForecastEntries([]);
+                        setCurrentUtilizationGroup(null);
+                        setLoading(false);
                 }
-        }, [selectedCanteen, forDate]);
+        }, [canteen, forDate]);
 
         const title = translate(TranslationKeys.forecast);
         let debugInformationInTitle = '';
