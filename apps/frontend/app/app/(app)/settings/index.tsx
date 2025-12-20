@@ -18,6 +18,7 @@ import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getV
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
+import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
 import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -73,7 +74,7 @@ const Settings = () => {
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition, selectedCustomer } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -92,6 +93,8 @@ const Settings = () => {
         );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+
+        const customerServerUrl = useCustomerServerUrl();
 
         const collectibleSizeOptions = useMemo(
                 () => [
@@ -585,7 +588,7 @@ const Settings = () => {
 					>
 						<Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>
 						<View style={{ gap: 0 }}>
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={serverInfo?.info?.project?.project_name} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
+                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomer} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />} label="Use WebP images" value={useWebpForAssets ? 'WebP' : 'Default'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={toggleWebpForAssets} groupPosition="middle" />
 							<SettingsList
@@ -749,7 +752,7 @@ const Settings = () => {
 						handleComponent={null}
 						onClose={closeServerSheet}
 					>
-						<ServerSelectionSheet closeSheet={closeServerSheet} selectedServer={ServerAPI.getServerUrl()} onSelect={handleSelectServer} />
+                                                <ServerSelectionSheet closeSheet={closeServerSheet} selectedServer={customerServerUrl} onSelect={handleSelectServer} />
 					</BaseBottomSheet>
 				</>
 			)}
