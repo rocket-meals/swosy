@@ -6,7 +6,7 @@ import {useLanguage} from '@/hooks/useLanguage';
 import {isWeb} from '@/constants/Constants';
 import styles from './styles';
 import ServerOption from '@/components/ServerOption/ServerOption';
-import {CustomerConfig, getCustomerConfigurations} from '@/config';
+import {CustomerConfig, getCustomerConfigurations, getCustomerEnumForConfig} from '@/config';
 import {TranslationKeys} from '@/locales/keys';
 
 export interface ServerSelectionSheetProps {
@@ -16,9 +16,11 @@ export interface ServerSelectionSheetProps {
 }
 
 const ServerSelectionSheet: React.FC<ServerSelectionSheetProps> = ({ closeSheet, selectedServer, onSelect }) => {
-	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const servers: CustomerConfig[] = getCustomerConfigurations();
+        const { theme } = useTheme();
+        const { translate } = useLanguage();
+        const servers: CustomerConfig[] = getCustomerConfigurations();
+
+        const getDisplayName = (config: CustomerConfig) => config.projectName || getCustomerEnumForConfig(config) || '';
 
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
@@ -37,19 +39,20 @@ const ServerSelectionSheet: React.FC<ServerSelectionSheetProps> = ({ closeSheet,
 						color: theme.sheet.text,
 					}}
 				>
-					{translate(TranslationKeys.backend_server)}
-				</Text>
-			</View>
-			<View style={styles.optionsContainer}>
-				{servers.map(srv => (
-					<ServerOption
-						key={srv.projectSlug}
-						server={srv}
-						isSelected={selectedServer === srv.server_url}
-						onPress={() => {
-							onSelect(srv);
-							closeSheet();
-						}}
+                                {translate(TranslationKeys.backend_server)}
+                        </Text>
+                </View>
+                <View style={styles.optionsContainer}>
+                        {servers.map(srv => (
+                                <ServerOption
+                                        key={srv.projectSlug}
+                                        server={srv}
+                                        label={getDisplayName(srv)}
+                                        isSelected={selectedServer === srv.server_url}
+                                        onPress={() => {
+                                                onSelect(srv);
+                                                closeSheet();
+                                        }}
 					/>
 				))}
 			</View>
