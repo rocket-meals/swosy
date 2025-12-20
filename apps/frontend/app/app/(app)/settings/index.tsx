@@ -12,7 +12,6 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
-import ServerSelectionSheet from '@/components/ServerSelectionSheet/ServerSelectionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,6 +47,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
+import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -64,7 +64,6 @@ const Settings = () => {
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
         const colorSchemeSheetRef = useRef<BottomSheet>(null);
-        const serverSheetRef = useRef<BottomSheet>(null);
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -84,6 +83,7 @@ const Settings = () => {
         const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
         const profileHelper = useMemo(() => new ProfileHelper(), []);
         const customerConfig = useCustomerConfig();
+        const { openCustomerConfigModal } = useCustomerConfigModal();
 
         const languageCode = language;
 
@@ -283,33 +283,35 @@ const Settings = () => {
 	const closeFirstDayModal = () => {
 		firstDaySheetRef?.current?.close();
 	};
-	const openServerSheet = () => {
-		serverSheetRef?.current?.expand();
-	};
-
-	const closeServerSheet = () => {
-		serverSheetRef?.current?.close();
-	};
-
-	const openFoodOffersTimeSheet = () => {
-		foodOffersTimeSheetRef?.current?.expand();
-	};
-
-	const closeFoodOffersTimeSheet = () => {
-		foodOffersTimeSheetRef?.current?.close();
-	};
-
-        const handleSelectServer = async (config: CustomerConfig) => {
-                ServerAPI.updateServerUrl(config.server_url);
-                await AsyncStorage.setItem('server_url_custom', config.server_url);
-                const selectedCustomer = getCustomerEnumForConfig(config) ?? ConfigCustomerEnum.TEST;
-                dispatch({
-                        type: SET_SELECTED_CUSTOMER,
-                        payload: selectedCustomer,
-                });
-                await AsyncStorage.setItem('selected_customer_enum', selectedCustomer);
-                await performLogout(dispatch, router);
+        const openFoodOffersTimeSheet = () => {
+                foodOffersTimeSheetRef?.current?.expand();
         };
+
+        const closeFoodOffersTimeSheet = () => {
+                foodOffersTimeSheetRef?.current?.close();
+        };
+
+        const handleSelectServer = useCallback(
+                async (config: CustomerConfig) => {
+                        ServerAPI.updateServerUrl(config.server_url);
+                        await AsyncStorage.setItem('server_url_custom', config.server_url);
+                        const selectedCustomer = getCustomerEnumForConfig(config) ?? ConfigCustomerEnum.TEST;
+                        dispatch({
+                                type: SET_SELECTED_CUSTOMER,
+                                payload: selectedCustomer,
+                        });
+                        await AsyncStorage.setItem('selected_customer_enum', selectedCustomer);
+                        await performLogout(dispatch, router);
+                },
+                [dispatch, router]
+        );
+
+        const openServerSheet = useCallback(() => {
+                openCustomerConfigModal({
+                        selectedServer: customerServerUrl,
+                        onSelect: handleSelectServer,
+                });
+        }, [customerServerUrl, handleSelectServer, openCustomerConfigModal]);
 
         const toggleWebpForAssets = () => {
                 dispatch({
@@ -725,11 +727,11 @@ const Settings = () => {
 							}}
 						/>
 					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={foodOffersTimeSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
+                                        <BaseBottomSheet
+                                                ref={foodOffersTimeSheetRef}
+                                                index={-1}
+                                                backgroundStyle={{
+                                                        ...styles.sheetBackground,
 							backgroundColor: theme.sheet.sheetBg,
 						}}
 						enablePanDownToClose
@@ -739,32 +741,19 @@ const Settings = () => {
 						<FoodOffersNextDayTimeSheet
 							closeSheet={closeFoodOffersTimeSheet}
 							initialValue={foodOffersNextDayThreshold}
-							onSave={value => {
-								dispatch({
-									type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
-									payload: value,
-								});
+                                                                onSave={value => {
+                                                                        dispatch({
+                                                                                type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
+                                                                                payload: value,
+                                                                        });
 								closeFoodOffersTimeSheet();
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={serverSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeServerSheet}
-					>
-                                                <ServerSelectionSheet closeSheet={closeServerSheet} selectedServer={customerServerUrl} onSelect={handleSelectServer} />
-					</BaseBottomSheet>
-				</>
-			)}
-		</SafeAreaView>
-	);
+                                                        }}
+                                                />
+                                        </BaseBottomSheet>
+                                </>
+                        )}
+                </SafeAreaView>
+        );
 };
 
 export default Settings;
