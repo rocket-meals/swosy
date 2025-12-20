@@ -47,6 +47,7 @@ import { languages } from '@/constants/SettingData';
 import { myContrastColor } from '@/helper/ColorHelper';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -79,9 +80,10 @@ const Settings = () => {
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
         );
-	const selectedCanteen = useSelectedCanteen();
-	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
+        const selectedCanteen = useSelectedCanteen();
+        const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+        const profileHelper = useMemo(() => new ProfileHelper(), []);
+        const customerConfig = useCustomerConfig();
 
         const languageCode = language;
 
@@ -90,6 +92,11 @@ const Settings = () => {
         const contrastColor = useMemo(
                 () => myContrastColor(primaryColor, theme, selectedTheme === 'dark'),
                 [primaryColor, selectedTheme, theme]
+        );
+
+        const selectedCustomerDisplayName = useMemo(
+                () => customerConfig.projectName || selectedCustomer || '',
+                [customerConfig.projectName, selectedCustomer]
         );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
@@ -588,7 +595,7 @@ const Settings = () => {
 					>
 						<Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>
 						<View style={{ gap: 0 }}>
-                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomer} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
+                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />} label="Use WebP images" value={useWebpForAssets ? 'WebP' : 'Default'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={toggleWebpForAssets} groupPosition="middle" />
 							<SettingsList
