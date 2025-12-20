@@ -14,11 +14,11 @@ import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import ServerSelectionSheet from '@/components/ServerSelectionSheet/ServerSelectionSheet';
 import { router, useFocusEffect } from 'expo-router';
-import { type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
+import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -289,11 +289,17 @@ const Settings = () => {
 		foodOffersTimeSheetRef?.current?.close();
 	};
 
-	const handleSelectServer = async (config: CustomerConfig) => {
-		ServerAPI.updateServerUrl(config.server_url);
-		await AsyncStorage.setItem('server_url_custom', config.server_url);
-		await performLogout(dispatch, router);
-	};
+        const handleSelectServer = async (config: CustomerConfig) => {
+                ServerAPI.updateServerUrl(config.server_url);
+                await AsyncStorage.setItem('server_url_custom', config.server_url);
+                const selectedCustomer = getCustomerEnumForConfig(config) ?? ConfigCustomerEnum.TEST;
+                dispatch({
+                        type: SET_SELECTED_CUSTOMER,
+                        payload: selectedCustomer,
+                });
+                await AsyncStorage.setItem('selected_customer_enum', selectedCustomer);
+                await performLogout(dispatch, router);
+        };
 
         const toggleWebpForAssets = () => {
                 dispatch({
