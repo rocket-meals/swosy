@@ -12,6 +12,7 @@ import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
+import MyImage from '@/components/MyImage';
 
 const LanguageSheet: React.FC<LanguageSheetProps> = ({ closeSheet, selectedLanguage, onSelect }) => {
         const { theme } = useTheme();
@@ -54,7 +55,8 @@ const LanguageSheet: React.FC<LanguageSheetProps> = ({ closeSheet, selectedLangu
                                                 <SettingsList
                                                         key={language.value}
                                                         label={language.label}
-                                                        noIconIndent
+                                                        iconBgColor="transparent"
+                                                        leftIcon={<MyImage source={language.flag} style={styles.flagIcon} />}
                                                         groupPosition={groupPosition}
                                                         showSeparator={index !== languages.length - 1}
                                                         rightIcon={
