@@ -58,7 +58,6 @@ const Settings = () => {
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
         const { translate, setLanguageMode, language } = useLanguage();
-        const [selectedLanguage, setSelectedLanguage] = useState<string>('');
         const drawerSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
@@ -161,13 +160,8 @@ const Settings = () => {
 		};
 	}, []);
 
-        useEffect(() => {
-                setSelectedLanguage(language);
-        }, [language]);
-
         const changeLanguage = useCallback(
                 (language: { label?: string; value: any }) => {
-                        setSelectedLanguage(language.value);
                         setLanguageMode(language.value);
                         closeScrollViewModal();
                 },
@@ -190,47 +184,54 @@ const Settings = () => {
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
+        const LanguageOption = ({ languageOption, index }: { languageOption: (typeof languages)[number]; index: number }) => {
+                const { language: currentLanguage } = useLanguage();
+                const { theme: currentTheme } = useTheme();
+
+                const isSelected = currentLanguage === languageOption.value;
+                const groupPosition =
+                        languages.length === 1
+                                ? 'single'
+                                : index === 0
+                                        ? 'top'
+                                        : index === languages.length - 1
+                                                ? 'bottom'
+                                                : 'middle';
+
+                return (
+                        <SettingsList
+                                key={`${languageOption.value}-${index}`}
+                                label={languageOption.label}
+                                showSeparator={index !== languages.length - 1}
+                                groupPosition={groupPosition}
+                                noIconIndent
+                                rightIcon={
+                                        <MaterialCommunityIcons
+                                                name={isSelected ? 'circle' : 'circle-outline'}
+                                                size={24}
+                                                color={isSelected ? primaryColor : currentTheme.screen.icon}
+                                        />
+                                }
+                                handleFunction={() => changeLanguage(languageOption)}
+                        />
+                );
+        };
+
         const openLanguageModal = useCallback(() => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.language),
                                 children: (
                                         <View style={languageStyles.optionsContainer}>
-                                                {languages.map((languageOption, index) => {
-                                                        const isSelected = selectedLanguage === languageOption.value;
-                                                        const groupPosition =
-                                                                languages.length === 1
-                                                                        ? 'single'
-                                                                        : index === 0
-                                                                                ? 'top'
-                                                                                : index === languages.length - 1
-                                                                                        ? 'bottom'
-                                                                                        : 'middle';
-
-                                                        return (
-                                                                <SettingsList
-                                                                        key={`${languageOption.value}-${index}`}
-                                                                        label={languageOption.label}
-                                                                        showSeparator={index !== languages.length - 1}
-                                                                        groupPosition={groupPosition}
-                                                                        noIconIndent
-                                                                        rightIcon={
-                                                                                <MaterialCommunityIcons
-                                                                                        name={isSelected ? 'circle' : 'circle-outline'}
-                                                                                        size={24}
-                                                                                        color={isSelected ? primaryColor : theme.screen.icon}
-                                                                                />
-                                                                        }
-                                                                        handleFunction={() => changeLanguage(languageOption)}
-                                                                />
-                                                        );
-                                                })}
+                                                {languages.map((languageOption, index) => (
+                                                        <LanguageOption languageOption={languageOption} index={index} />
+                                                ))}
                                         </View>
                                 ),
                         },
                         { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
                 );
-        }, [changeLanguage, primaryColor, selectedLanguage, showScrollViewModal, theme.screen.icon, theme.sheet.sheetBg, translate]);
+        }, [changeLanguage, primaryColor, showScrollViewModal, theme.sheet.sheetBg, translate]);
 
 	const openColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.expand();
