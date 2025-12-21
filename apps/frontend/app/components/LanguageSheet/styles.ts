@@ -33,12 +33,4 @@ export default StyleSheet.create({
                 height: 20,
                 marginLeft: 4,
         },
-        selectionIndicator: {
-                width: 28,
-                height: 28,
-                borderRadius: 14,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: 1.5,
-        },
 });
