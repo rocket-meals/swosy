@@ -202,6 +202,8 @@ const Settings = () => {
                         <SettingsList
                                 key={`${languageOption.value}-${index}`}
                                 label={languageOption.label}
+                                leftIcon={<View style={[languageStyles.flagIcon, { backgroundColor: 'red' }]} />}
+                                iconBgColor="transparent"
                                 showSeparator={index !== languages.length - 1}
                                 groupPosition={groupPosition}
                                 noIconIndent
@@ -224,7 +226,11 @@ const Settings = () => {
                                 children: (
                                         <View style={languageStyles.optionsContainer}>
                                                 {languages.map((languageOption, index) => (
-                                                        <LanguageOption languageOption={languageOption} index={index} />
+                                                        <LanguageOption
+                                                                key={`${languageOption.value}-${index}`}
+                                                                languageOption={languageOption}
+                                                                index={index}
+                                                        />
                                                 ))}
                                         </View>
                                 ),
