@@ -8,12 +8,15 @@ import { isWeb } from '@/constants/Constants';
 import styles from './styles';
 import { LanguageSheetProps } from './types';
 import { TranslationKeys } from '@/locales/keys';
-import MyImage from '@/components/MyImage';
-import SettingsListRadio from '@/components/SettingsListRadio';
+import SettingsList from '@/components/SettingsList';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
 
 const LanguageSheet: React.FC<LanguageSheetProps> = ({ closeSheet, selectedLanguage, onSelect }) => {
         const { theme } = useTheme();
         const { translate } = useLanguage();
+        const { primaryColor } = useSelector((state: RootState) => state.settings);
 
         return (
                 <BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
@@ -48,18 +51,23 @@ const LanguageSheet: React.FC<LanguageSheetProps> = ({ closeSheet, selectedLangu
                                                                         : 'middle';
 
                                         return (
-                                                <SettingsListRadio
+                                                <SettingsList
                                                         key={language.value}
-                                                        leftIcon={<MyImage source={language.flag} style={styles.flagIcon} />}
                                                         label={language.label}
-                                                        selected={isSelected}
-                                                        onPress={() => {
+                                                        noIconIndent
+                                                        groupPosition={groupPosition}
+                                                        showSeparator={index !== languages.length - 1}
+                                                        rightIcon={
+                                                                <MaterialCommunityIcons
+                                                                        name={isSelected ? 'circle' : 'circle-outline'}
+                                                                        size={24}
+                                                                        color={isSelected ? primaryColor : theme.screen.icon}
+                                                                />
+                                                        }
+                                                        handleFunction={() => {
                                                                 onSelect(language.value);
                                                                 closeSheet();
                                                         }}
-                                                        showSeparator={index !== languages.length - 1}
-                                                        groupPosition={groupPosition}
-                                                        iconBackgroundColor="transparent"
                                                 />
                                         );
                                 })}
