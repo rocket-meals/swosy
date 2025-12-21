@@ -23,31 +23,22 @@ export default StyleSheet.create({
 	sheetHeading: {
 		fontFamily: 'Poppins_700Bold',
 	},
-	optionsContainer: {
-		width: '100%',
-		paddingHorizontal: 10,
-		marginTop: 20,
-	},
-	languageRow: {
-		marginTop: 10,
-		width: '100%',
-		height: 50,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		borderRadius: 12,
-	},
-	flagIcon: {
-		width: 35.2,
-		height: 22,
-		marginRight: 10,
-	},
-	languageText: {
-		flex: 1,
-		fontSize: 18,
-		fontFamily: 'Poppins_400Regular',
-	},
-	radioButton: {
-		marginLeft: 10,
-	},
+        optionsContainer: {
+                width: '100%',
+                paddingHorizontal: 10,
+                marginTop: 20,
+        },
+        flagIcon: {
+                width: 32,
+                height: 20,
+                marginLeft: 4,
+        },
+        selectionIndicator: {
+                width: 28,
+                height: 28,
+                borderRadius: 14,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1.5,
+        },
 });
