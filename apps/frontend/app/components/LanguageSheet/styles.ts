@@ -31,6 +31,5 @@ export default StyleSheet.create({
         flagIcon: {
                 width: 32,
                 height: 20,
-                marginLeft: 4,
         },
 });
