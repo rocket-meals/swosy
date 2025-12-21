@@ -28,4 +28,8 @@ export default StyleSheet.create({
                 paddingHorizontal: 10,
                 marginTop: 20,
         },
+        flagIcon: {
+                width: 35.2,
+                height: 22,
+        },
 });
