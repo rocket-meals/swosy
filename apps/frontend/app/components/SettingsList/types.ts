@@ -6,9 +6,9 @@ type SettingsListPropsOwn = {
 	 * Title text for the row. "label" is kept for backwards
 	 * compatibility with the old `SettingList` component.
 	 */
-        title?: string;
-        label?: string;
-        value?: React.ReactNode;
+	title?: string;
+	label?: string;
+	value?: string;
 	/**
 	 * Element rendered on the right side. "rightIcon" is kept for
 	 * backwards compatibility with the old `SettingList` component.
