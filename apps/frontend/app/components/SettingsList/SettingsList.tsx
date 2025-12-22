@@ -10,7 +10,7 @@ const padding = 0; // px used for additional padding and border radius
 const borderRadius = 10;
 const basePaddingVertical = 10;
 
-const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
+const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false, children }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme } = useSelector((state: RootState) => state.settings);
 
@@ -57,19 +57,26 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, val
                                         <View style={iconWrapperStyles}>{React.isValidElement(leftIcon) ? React.cloneElement(leftIcon, { color: iconColor }) : leftIcon}</View>
                                 ) : null}
                                 {shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
-                                <View style={styles.textWrapper}>
-                                        <View style={styles.titleContainer}>
-                                                <Text style={[styles.title, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
-                                                        {title || label}
-                                                </Text>
-					</View>
-					{value ? (
-						<View style={styles.valueContainer}>
-							<Text style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
-								{value}
-							</Text>
-						</View>
-					) : null}
+                                <View style={styles.contentWrapper}>
+                                        <View style={styles.textWrapper}>
+                                                <View style={styles.titleContainer}>
+                                                        <Text style={[styles.title, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
+                                                                {title || label}
+                                                        </Text>
+                                                </View>
+                                                {value ? (
+                                                        <View style={styles.valueContainer}>
+                                                                {React.isValidElement(value) ? (
+                                                                        value
+                                                                ) : (
+                                                                        <Text style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
+                                                                                {value}
+                                                                        </Text>
+                                                                )}
+                                                        </View>
+                                                ) : null}
+                                        </View>
+                                        {children ? <View style={styles.childrenWrapper}>{children}</View> : null}
                                 </View>
                                 {rightElement || rightIcon ? <View style={styles.rightWrapper}>{rightElement || rightIcon}</View> : null}
                         </Container>
@@ -111,21 +118,28 @@ const styles = StyleSheet.create({
         textWrapper: {
                 flexDirection: 'row',
                 flexWrap: 'wrap',
-		alignItems: 'center', // statt flex-start, damit beide Container mittig sind
-		columnGap: 3,
-		flex: 1,
-	},
-	titleContainer: {
-		flexShrink: 1,
-		flexGrow: 1,
-		minWidth: 0,
-	},
+                alignItems: 'center', // statt flex-start, damit beide Container mittig sind
+                columnGap: 3,
+                flex: 1,
+        },
+        contentWrapper: {
+                flex: 1,
+                rowGap: 6,
+        },
+        titleContainer: {
+                flexShrink: 1,
+                flexGrow: 1,
+                minWidth: 0,
+        },
 	valueContainer: {
 		flexShrink: 1,
 		flexGrow: 1,
 		justifyContent: 'center', // sorgt für vertikale Zentrierung
-		alignItems: 'flex-end', // sorgt für horizontale Ausrichtung nach rechts
-	},
+                alignItems: 'flex-end', // sorgt für horizontale Ausrichtung nach rechts
+        },
+        childrenWrapper: {
+                width: '100%',
+        },
 	value: {
 		fontSize: 13,
 		textAlign: 'right', // Text rechtsbündig
