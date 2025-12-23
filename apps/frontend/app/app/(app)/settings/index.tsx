@@ -202,7 +202,11 @@ const Settings = () => {
                         <SettingsList
                                 key={`${languageOption.value}-${index}`}
                                 label={languageOption.label}
-                                leftIcon={<View style={[languageStyles.flagIcon, { backgroundColor: 'red' }]} />}
+                                leftIcon={
+                                        <View style={languageStyles.flagWrapper}>
+                                                <Text style={languageStyles.flagText}>{languageOption.emoji}</Text>
+                                        </View>
+                                }
                                 iconBgColor="transparent"
                                 showSeparator={index !== languages.length - 1}
                                 groupPosition={groupPosition}
