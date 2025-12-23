@@ -49,26 +49,12 @@ const useAppForegroundUpdateCheckModal = () => {
                 });
         }, [show, theme.screen.text]);
 
-        const showNoUpdateNotice = useCallback(() => {
-                show({
-                        children: (
-                                <View style={{ padding: 24 }}>
-                                        <Text style={{ color: theme.screen.text, textAlign: 'center' }}>
-                                                Kein Update verfügbar.
-                                        </Text>
-                                </View>
-                        ),
-                });
-        }, [show, theme.screen.text]);
-
         const handleAppForeground = useCallback(async () => {
                 const updateAvailable = await checkForUpdate();
                 if (updateAvailable) {
                         showUpdateNotice();
-                } else {
-                        showNoUpdateNotice();
                 }
-        }, [checkForUpdate, showNoUpdateNotice, showUpdateNotice]);
+        }, [checkForUpdate, showUpdateNotice]);
 
         useEffect(() => {
                 const subscription = AppState.addEventListener('change', nextState => {
