@@ -41,8 +41,7 @@ import DebugView from '@/components/DebugView';
 import DropdownInput from '@/components/DropdownInput/DropdownInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
-import languageStyles from '@/components/LanguageSheet/styles';
-import { languages } from '@/constants/SettingData';
+import { useLanguageModal } from '@/hooks/useLanguageModal';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
@@ -57,7 +56,7 @@ const Settings = () => {
         const toast = useToast();
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
-        const { translate, setLanguageMode, language } = useLanguage();
+        const { translate, language } = useLanguage();
         const drawerSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
@@ -71,6 +70,7 @@ const Settings = () => {
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
+        const { openLanguageModal } = useLanguageModal();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition, selectedCustomer } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
@@ -160,14 +160,6 @@ const Settings = () => {
 		};
 	}, []);
 
-        const changeLanguage = useCallback(
-                (language: { label?: string; value: any }) => {
-                        setLanguageMode(language.value);
-                        closeScrollViewModal();
-                },
-                [closeScrollViewModal, setLanguageMode]
-        );
-
         const openNicknameSheet = useCallback(() => {
                 showScrollViewModal(
                         {
@@ -184,68 +176,9 @@ const Settings = () => {
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
-        const LanguageOption = ({ languageOption, index }: { languageOption: (typeof languages)[number]; index: number }) => {
-                const { language: currentLanguage } = useLanguage();
-                const { theme: currentTheme } = useTheme();
-
-                const isSelected = currentLanguage === languageOption.value;
-                const groupPosition =
-                        languages.length === 1
-                                ? 'single'
-                                : index === 0
-                                        ? 'top'
-                                        : index === languages.length - 1
-                                                ? 'bottom'
-                                                : 'middle';
-
-                return (
-                        <SettingsList
-                                key={`${languageOption.value}-${index}`}
-                                label={languageOption.label}
-                                leftIcon={
-                                        <View style={languageStyles.flagWrapper}>
-                                                <Text style={languageStyles.flagText}>{languageOption.emoji}</Text>
-                                        </View>
-                                }
-                                iconBgColor="transparent"
-                                showSeparator={index !== languages.length - 1}
-                                groupPosition={groupPosition}
-                                noIconIndent
-                                rightIcon={
-                                        <MaterialCommunityIcons
-                                                name={isSelected ? 'circle' : 'circle-outline'}
-                                                size={24}
-                                                color={isSelected ? primaryColor : currentTheme.screen.icon}
-                                        />
-                                }
-                                handleFunction={() => changeLanguage(languageOption)}
-                        />
-                );
+        const openColorSchemeSheet = () => {
+                colorSchemeSheetRef?.current?.expand();
         };
-
-        const openLanguageModal = useCallback(() => {
-                showScrollViewModal(
-                        {
-                                title: translate(TranslationKeys.language),
-                                children: (
-                                        <View style={languageStyles.optionsContainer}>
-                                                {languages.map((languageOption, index) => (
-                                                        <LanguageOption
-                                                                key={`${languageOption.value}-${index}`}
-                                                                languageOption={languageOption}
-                                                                index={index}
-                                                        />
-                                                ))}
-                                        </View>
-                                ),
-                        },
-                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
-                );
-        }, [changeLanguage, primaryColor, showScrollViewModal, theme.sheet.sheetBg, translate]);
-
-	const openColorSchemeSheet = () => {
-		colorSchemeSheetRef?.current?.expand();
-	};
 
 	const closeColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.close();
