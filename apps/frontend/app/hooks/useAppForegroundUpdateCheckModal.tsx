@@ -17,13 +17,18 @@ const useAppForegroundUpdateCheckModal = () => {
         const { theme } = useTheme();
 
         const showStatusModal = useCallback(
-                (options: {
-                        title: string;
-                        message: string;
-                        loading?: boolean;
-                        primaryAction?: { label: string; onPress: () => void };
-                        allowClose?: boolean;
-                }) => {
+                (
+                        options: {
+                                title: string;
+                                message: string;
+                                loading?: boolean;
+                                primaryAction?: { label: string; onPress: () => void };
+                                allowClose?: boolean;
+                        },
+                        { force }: { force?: boolean } = {}
+                ) => {
+                        if (!debugMode && !force) return;
+
                         const { title, message, loading, primaryAction, allowClose } = options;
 
                         const buttonBaseStyle = {
@@ -72,7 +77,7 @@ const useAppForegroundUpdateCheckModal = () => {
                                 ),
                         });
                 },
-                [close, show, theme.screen.background, theme.screen.text, theme.sheet.text]
+                [close, debugMode, show, theme.screen.background, theme.screen.text, theme.sheet.text]
         );
 
         const handleDownloadUpdate = useCallback(async () => {
@@ -80,7 +85,7 @@ const useAppForegroundUpdateCheckModal = () => {
                         title: 'Update wird geladen',
                         message: 'Update wird heruntergeladen ...',
                         loading: true,
-                });
+                }, { force: true });
 
                 try {
                         await Updates.fetchUpdateAsync();
@@ -89,14 +94,14 @@ const useAppForegroundUpdateCheckModal = () => {
                                 message: 'Das Update wurde geladen. Bitte App neu starten.',
                                 primaryAction: { label: 'App neu starten', onPress: () => void Updates.reloadAsync() },
                                 allowClose: true,
-                        });
+                        }, { force: true });
                 } catch (error) {
                         console.error('Error while fetching Expo updates', error);
                         showStatusModal({
                                 title: 'Update-Download fehlgeschlagen',
                                 message: 'Das Update konnte nicht heruntergeladen werden.',
                                 allowClose: true,
-                        });
+                        }, { force: true });
                 }
         }, [showStatusModal]);
 
@@ -104,10 +109,6 @@ const useAppForegroundUpdateCheckModal = () => {
                 const expoUpdateCheckEnabled =
                         appSettings?.experimental_expo_update_check ||
                         appSettings?.experimentell_expo_update_check;
-
-                if (!debugMode) {
-                        return false;
-                }
 
                 showStatusModal({ title: 'Update-Check', message: 'Suche nach Update ...', loading: true });
 
@@ -144,7 +145,7 @@ const useAppForegroundUpdateCheckModal = () => {
                                         message: 'Ein neues Update ist verfügbar.',
                                         primaryAction: { label: 'Update downloaden', onPress: handleDownloadUpdate },
                                         allowClose: true,
-                                });
+                                }, { force: true });
                         } else {
                                 showStatusModal({
                                         title: 'Kein Update gefunden',
@@ -165,7 +166,6 @@ const useAppForegroundUpdateCheckModal = () => {
         }, [
                 appSettings?.experimental_expo_update_check,
                 appSettings?.experimentell_expo_update_check,
-                debugMode,
                 handleDownloadUpdate,
                 isSmartPhone,
                 showStatusModal,
@@ -177,7 +177,7 @@ const useAppForegroundUpdateCheckModal = () => {
 
         useEffect(() => {
                 const subscription = AppState.addEventListener('change', nextState => {
-                        if (appState.current.match(/inactive|background/) && nextState === 'active' && debugMode) {
+                        if (appState.current.match(/inactive|background/) && nextState === 'active') {
                                 void handleAppForeground();
                         }
                         appState.current = nextState;
