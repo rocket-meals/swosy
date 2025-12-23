@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -75,7 +75,7 @@ const Settings = () => {
         const { openLanguageModal } = useLanguageModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -272,6 +272,13 @@ const Settings = () => {
                 dispatch({
                         type: SET_DEBUG_MODE,
                         payload: !debugMode,
+                });
+        };
+
+        const toggleSimulateExpoUpdate = () => {
+                dispatch({
+                        type: SET_SIMULATE_EXPO_UPDATE_AVAILABLE,
+                        payload: !simulateExpoUpdateAvailable,
                 });
         };
 
@@ -564,6 +571,23 @@ const Settings = () => {
 									/>
 								}
 								handleFunction={toggleDebugMode}
+								groupPosition="middle"
+							/>
+							<SettingsList
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="update" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.simulate_expo_update_available)}
+								value={simulateExpoUpdateAvailable ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
+								rightElement={
+									<Switch
+										value={simulateExpoUpdateAvailable}
+										onValueChange={toggleSimulateExpoUpdate}
+										trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
+										thumbColor={theme.screen.icon}
+										ios_backgroundColor={theme.screen.iconBg}
+									/>
+								}
+								handleFunction={toggleSimulateExpoUpdate}
 								groupPosition="bottom"
 							/>
 						</View>
