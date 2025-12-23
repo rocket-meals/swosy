@@ -87,7 +87,7 @@ const LoginHeader = () => {
 		closeLanguageModal();
 	};
 
-	const changeLanguage = (language: { label?: string; flag?: any; value: any }) => {
+        const changeLanguage = (language: { label?: string; emoji?: string; value: any }) => {
 		setSelectedLanguage(language.value);
 		setLanguageMode(language.value);
 		closeLanguageModal();
@@ -140,10 +140,10 @@ const LoginHeader = () => {
 								changeLanguage(language);
 							}}
 						>
-							<MyImage source={language.flag} style={styles.flagIcon} />
-							<Text
-								style={{
-									...styles.languageText,
+                                                        <Text style={styles.languageEmoji}>{language.emoji}</Text>
+                                                        <Text
+                                                                style={{
+                                                                        ...styles.languageText,
 									color: selectedLanguage === language.value ? theme.activeText : theme.screen.text,
 								}}
 							>
