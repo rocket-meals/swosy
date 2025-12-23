@@ -68,9 +68,9 @@ import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
 import IconButton from '@/components/UI/IconButton';
 import Button from '@/components/UI/Button';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
+import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
@@ -134,10 +134,10 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const { hasUnreadChats } = useChatUnreadStatus();
-        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openUtilizationModal } = useUtilizationModal();
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { openActiveModal, activePopupEvent } = usePopupEventModal();
+        const { openFoodofferSortingModal } = useFoodofferSortingModal();
 
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
@@ -297,25 +297,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}, [])
 	);
 
-        const openSheet = useCallback(
-                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-                        if (sheet === 'sort') {
-                                showScrollViewModal(
-                                        {
-                                                title: translate(TranslationKeys.sort),
-                                                onClose: closeScrollViewModal,
-                                                children: <SortSheet closeSheet={closeScrollViewModal} />,
-                                        },
-                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
-                                );
-                                return;
-                        }
+        const openSheet = useCallback((sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+                if (sheet === 'sort') {
+                        openFoodofferSortingModal();
+                        return;
+                }
 
-                        setSelectedSheet(sheet);
-                        setSheetProps(props);
-                },
-                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
-        );
+                setSelectedSheet(sheet);
+                setSheetProps(props);
+        }, [openFoodofferSortingModal]);
 
         const openManagementSheet = useCallback((id: string) => {
                 if (id) {
