@@ -23,6 +23,12 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
         const showIconWrapper = hasIcon && !noIconIndent;
         const shouldReserveIconSpace = !hasIcon && !noIconIndent;
 
+        const renderedLeftIcon = React.isValidElement(leftIcon)
+                ? noIconIndent
+                        ? leftIcon
+                        : React.cloneElement(leftIcon, { color: iconColor })
+                : leftIcon;
+
         const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: theme.screen.iconBg } as ViewStyle];
         const iconWrapperStyles: ViewStyle[] = [styles.iconWrapper, { backgroundColor: iconBg }];
 
@@ -57,8 +63,10 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
                                         leftIconComponent ? (
                                                 leftIconComponent
                                         ) : (
-                                                <View style={iconWrapperStyles}>{React.isValidElement(leftIcon) ? React.cloneElement(leftIcon, { color: iconColor }) : leftIcon}</View>
+                                                <View style={iconWrapperStyles}>{renderedLeftIcon}</View>
                                         )
+                                ) : hasIcon ? (
+                                        leftIconComponent ? leftIconComponent : renderedLeftIcon
                                 ) : null}
                                 {shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
                                 <View style={styles.textWrapper}>
