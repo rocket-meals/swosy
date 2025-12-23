@@ -71,6 +71,7 @@ import Button from '@/components/UI/Button';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
+import useAppForegroundScrollViewModal from '@/hooks/useAppForegroundScrollViewModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
@@ -99,11 +100,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 	const [loading, setLoading] = useState(false);
 	const [isActive, setIsActive] = useState(false);
-	const [refreshing, setRefreshing] = useState(false);
-	const [beforeElement, setBeforeElement] = useState<any>(null);
-	const [afterElement, setAfterElement] = useState<any>(null);
-	const [selectedFoodId, setSelectedFoodId] = useState('');
-	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
+        const [refreshing, setRefreshing] = useState(false);
+        const [beforeElement, setBeforeElement] = useState<any>(null);
+        const [afterElement, setAfterElement] = useState<any>(null);
+        const [selectedFoodId, setSelectedFoodId] = useState('');
+        const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [listWidth, setListWidth] = useState<number | null>(null);
@@ -138,6 +139,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { openActiveModal, activePopupEvent } = usePopupEventModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
+        useAppForegroundScrollViewModal();
 
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
