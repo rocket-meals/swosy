@@ -4,7 +4,11 @@ import { AppState, AppStateStatus, Text, View } from 'react-native';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
 
-const useAppForegroundScrollViewModal = () => {
+interface UseAppForegroundScrollViewModalOptions {
+        autoRegister?: boolean;
+}
+
+const useAppForegroundScrollViewModal = ({ autoRegister = true }: UseAppForegroundScrollViewModalOptions = {}) => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
         const { show } = useMyScrollViewModal();
         const { theme } = useTheme();
@@ -22,6 +26,8 @@ const useAppForegroundScrollViewModal = () => {
         }, [show, theme.screen.text]);
 
         useEffect(() => {
+                if (!autoRegister) return;
+
                 const subscription = AppState.addEventListener('change', nextState => {
                         if (appState.current.match(/inactive|background/) && nextState === 'active') {
                                 handleAppForeground();
@@ -32,7 +38,9 @@ const useAppForegroundScrollViewModal = () => {
                 return () => {
                         subscription.remove();
                 };
-        }, [handleAppForeground]);
+        }, [autoRegister, handleAppForeground]);
+
+        return handleAppForeground;
 };
 
 export default useAppForegroundScrollViewModal;

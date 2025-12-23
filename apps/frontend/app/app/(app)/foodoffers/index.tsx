@@ -71,7 +71,7 @@ import Button from '@/components/UI/Button';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
-import useAppForegroundScrollViewModal from '@/hooks/useAppForegroundScrollViewModal';
+import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
@@ -139,7 +139,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { openActiveModal, activePopupEvent } = usePopupEventModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
-        useAppForegroundScrollViewModal();
+        useAppForegroundUpdateCheckModal();
 
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
