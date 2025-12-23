@@ -4,7 +4,6 @@ import * as Updates from 'expo-updates';
 import { useSelector } from 'react-redux';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import useAppForegroundScrollViewModal from '@/hooks/useAppForegroundScrollViewModal';
 import usePlatformHelper from '@/helper/platformHelper';
 import { RootState } from '@/redux/reducer';
 import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
@@ -14,7 +13,6 @@ const useAppForegroundUpdateCheckModal = () => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
         const { appSettings } = useSelector((state: RootState) => state.settings);
         const { isSmartPhone } = usePlatformHelper();
-        const handleAppForegroundModal = useAppForegroundScrollViewModal({ autoRegister: false });
         const { show } = useMyScrollViewModal();
         const { theme } = useTheme();
 
@@ -51,14 +49,26 @@ const useAppForegroundUpdateCheckModal = () => {
                 });
         }, [show, theme.screen.text]);
 
+        const showNoUpdateNotice = useCallback(() => {
+                show({
+                        children: (
+                                <View style={{ padding: 24 }}>
+                                        <Text style={{ color: theme.screen.text, textAlign: 'center' }}>
+                                                Kein Update verfügbar.
+                                        </Text>
+                                </View>
+                        ),
+                });
+        }, [show, theme.screen.text]);
+
         const handleAppForeground = useCallback(async () => {
                 const updateAvailable = await checkForUpdate();
                 if (updateAvailable) {
                         showUpdateNotice();
+                } else {
+                        showNoUpdateNotice();
                 }
-
-                handleAppForegroundModal();
-        }, [checkForUpdate, handleAppForegroundModal, showUpdateNotice]);
+        }, [checkForUpdate, showNoUpdateNotice, showUpdateNotice]);
 
         useEffect(() => {
                 const subscription = AppState.addEventListener('change', nextState => {
