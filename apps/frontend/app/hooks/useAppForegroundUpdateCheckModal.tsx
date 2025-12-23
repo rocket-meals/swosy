@@ -1,17 +1,16 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { ActivityIndicator, AppState, AppStateStatus, Text, TouchableOpacity, View } from 'react-native';
 import * as Updates from 'expo-updates';
-import { useSelector } from 'react-redux';
+import useDebugMode from '@/hooks/useDebugMode';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import usePlatformHelper from '@/helper/platformHelper';
-import { RootState } from '@/redux/reducer';
 import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
 import { useTheme } from '@/hooks/useTheme';
 
 const useAppForegroundUpdateCheckModal = () => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
-        const { appSettings, debugMode } = useSelector((state: RootState) => state.settings);
+        const debugMode = useDebugMode();
         const { isSmartPhone } = usePlatformHelper();
         const { show, close } = useMyScrollViewModal();
         const { theme } = useTheme();
@@ -106,21 +105,10 @@ const useAppForegroundUpdateCheckModal = () => {
         }, [showStatusModal]);
 
         const checkForUpdate = useCallback(async () => {
-                const expoUpdateCheckEnabled =
-                        appSettings?.experimental_expo_update_check ||
-                        appSettings?.experimentell_expo_update_check;
-
                 showStatusModal({ title: 'Update-Check', message: 'Suche nach Update ...', loading: true });
 
-                if (!expoUpdateCheckEnabled) {
-                        showStatusModal({
-                                title: 'Update-Check',
-                                message: 'Update-Check ist deaktiviert.',
-                                allowClose: true,
-                        });
-                        return false;
-                }
                 if (!isSmartPhone()) {
+                        console.info('Update-Check blockiert: nur auf Smartphones verfügbar.');
                         showStatusModal({
                                 title: 'Update-Check',
                                 message: 'Update-Check ist nur auf Smartphones verfügbar.',
@@ -129,6 +117,7 @@ const useAppForegroundUpdateCheckModal = () => {
                         return false;
                 }
                 if (isInExpoGo()) {
+                        console.info('Update-Check blockiert: Expo Go wird nicht unterstützt.');
                         showStatusModal({
                                 title: 'Update-Check',
                                 message: 'Expo Go wird nicht unterstützt.',
@@ -164,8 +153,6 @@ const useAppForegroundUpdateCheckModal = () => {
                         return false;
                 }
         }, [
-                appSettings?.experimental_expo_update_check,
-                appSettings?.experimentell_expo_update_check,
                 handleDownloadUpdate,
                 isSmartPhone,
                 showStatusModal,
