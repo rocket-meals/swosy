@@ -11,7 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 const useAppForegroundUpdateCheckModal = () => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
-        const { appSettings } = useSelector((state: RootState) => state.settings);
+        const { appSettings, debugMode } = useSelector((state: RootState) => state.settings);
         const { isSmartPhone } = usePlatformHelper();
         const { show, close } = useMyScrollViewModal();
         const { theme } = useTheme();
@@ -105,6 +105,10 @@ const useAppForegroundUpdateCheckModal = () => {
                         appSettings?.experimental_expo_update_check ||
                         appSettings?.experimentell_expo_update_check;
 
+                if (!debugMode) {
+                        return false;
+                }
+
                 showStatusModal({ title: 'Update-Check', message: 'Suche nach Update ...', loading: true });
 
                 if (!expoUpdateCheckEnabled) {
@@ -161,6 +165,7 @@ const useAppForegroundUpdateCheckModal = () => {
         }, [
                 appSettings?.experimental_expo_update_check,
                 appSettings?.experimentell_expo_update_check,
+                debugMode,
                 handleDownloadUpdate,
                 isSmartPhone,
                 showStatusModal,
@@ -172,7 +177,7 @@ const useAppForegroundUpdateCheckModal = () => {
 
         useEffect(() => {
                 const subscription = AppState.addEventListener('change', nextState => {
-                        if (appState.current.match(/inactive|background/) && nextState === 'active') {
+                        if (appState.current.match(/inactive|background/) && nextState === 'active' && debugMode) {
                                 void handleAppForeground();
                         }
                         appState.current = nextState;
