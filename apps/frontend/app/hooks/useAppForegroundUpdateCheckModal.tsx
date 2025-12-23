@@ -7,6 +7,9 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import usePlatformHelper from '@/helper/platformHelper';
 import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
 import { useTheme } from '@/hooks/useTheme';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
+import { SET_SIMULATE_EXPO_UPDATE_AVAILABLE } from '@/redux/Types/types';
 
 const useAppForegroundUpdateCheckModal = () => {
         const appState = useRef<AppStateStatus>(AppState.currentState);
@@ -14,6 +17,8 @@ const useAppForegroundUpdateCheckModal = () => {
         const { isSmartPhone } = usePlatformHelper();
         const { show, close } = useMyScrollViewModal();
         const { theme } = useTheme();
+        const dispatch = useDispatch();
+        const { simulateExpoUpdateAvailable } = useSelector((state: RootState) => state.settings);
 
         const showStatusModal = useCallback(
                 (
@@ -107,6 +112,17 @@ const useAppForegroundUpdateCheckModal = () => {
         const checkForUpdate = useCallback(async () => {
                 showStatusModal({ title: 'Update-Check', message: 'Suche nach Update ...', loading: true });
 
+                if (simulateExpoUpdateAvailable) {
+                        dispatch({ type: SET_SIMULATE_EXPO_UPDATE_AVAILABLE, payload: false });
+                        showStatusModal({
+                                title: 'Update gefunden',
+                                message: 'Ein neues Update ist verfügbar.',
+                                primaryAction: { label: 'Update downloaden', onPress: handleDownloadUpdate },
+                                allowClose: true,
+                        }, { force: true });
+                        return true;
+                }
+
                 if (!isSmartPhone()) {
                         console.info('Update-Check blockiert: nur auf Smartphones verfügbar.');
                         showStatusModal({
@@ -153,8 +169,10 @@ const useAppForegroundUpdateCheckModal = () => {
                         return false;
                 }
         }, [
+                dispatch,
                 handleDownloadUpdate,
                 isSmartPhone,
+                simulateExpoUpdateAvailable,
                 showStatusModal,
         ]);
 
