@@ -85,27 +85,36 @@ const useAppForegroundUpdateCheckModal = () => {
         );
 
         const handleDownloadUpdate = useCallback(async () => {
-                showStatusModal({
-                        title: 'Update wird geladen',
-                        message: 'Update wird heruntergeladen ...',
-                        loading: true,
-                }, { force: true });
+                showStatusModal(
+                        {
+                                title: 'Update wird geladen',
+                                message: 'Update wird heruntergeladen ...',
+                                loading: true,
+                        },
+                        { force: true }
+                );
 
                 try {
                         await Updates.fetchUpdateAsync();
-                        showStatusModal({
-                                title: 'Update geladen',
-                                message: 'Das Update wurde geladen. Bitte App neu starten.',
-                                primaryAction: { label: 'App neu starten', onPress: () => void Updates.reloadAsync() },
-                                allowClose: true,
-                        }, { force: true });
+                        showStatusModal(
+                                {
+                                        title: 'Update bereit',
+                                        message: 'App wird neu gestartet ...',
+                                        loading: true,
+                                },
+                                { force: true }
+                        );
+                        await Updates.reloadAsync();
                 } catch (error) {
                         console.error('Error while fetching Expo updates', error);
-                        showStatusModal({
-                                title: 'Update-Download fehlgeschlagen',
-                                message: 'Das Update konnte nicht heruntergeladen werden.',
-                                allowClose: true,
-                        }, { force: true });
+                        showStatusModal(
+                                {
+                                        title: 'Update-Download fehlgeschlagen',
+                                        message: 'Das Update konnte nicht heruntergeladen werden.',
+                                        allowClose: true,
+                                },
+                                { force: true }
+                        );
                 }
         }, [showStatusModal]);
 
@@ -114,12 +123,14 @@ const useAppForegroundUpdateCheckModal = () => {
 
                 if (simulateExpoUpdateAvailable) {
                         dispatch({ type: SET_SIMULATE_EXPO_UPDATE_AVAILABLE, payload: false });
-                        showStatusModal({
-                                title: 'Update gefunden',
-                                message: 'Ein neues Update ist verfügbar.',
-                                primaryAction: { label: 'Update downloaden', onPress: handleDownloadUpdate },
-                                allowClose: true,
-                        }, { force: true });
+                        showStatusModal(
+                                {
+                                        title: 'Update gefunden',
+                                        message: 'Ein neues Update ist verfügbar.',
+                                        primaryAction: { label: 'Herunterladen und aktualisieren', onPress: handleDownloadUpdate },
+                                },
+                                { force: true }
+                        );
                         return true;
                 }
 
@@ -145,12 +156,14 @@ const useAppForegroundUpdateCheckModal = () => {
                 try {
                         const update = await Updates.checkForUpdateAsync();
                         if (update.isAvailable) {
-                                showStatusModal({
-                                        title: 'Update gefunden',
-                                        message: 'Ein neues Update ist verfügbar.',
-                                        primaryAction: { label: 'Update downloaden', onPress: handleDownloadUpdate },
-                                        allowClose: true,
-                                }, { force: true });
+                                showStatusModal(
+                                        {
+                                                title: 'Update gefunden',
+                                                message: 'Ein neues Update ist verfügbar.',
+                                                primaryAction: { label: 'Herunterladen und aktualisieren', onPress: handleDownloadUpdate },
+                                        },
+                                        { force: true }
+                                );
                         } else {
                                 showStatusModal({
                                         title: 'Kein Update gefunden',
