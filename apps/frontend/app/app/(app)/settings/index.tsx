@@ -10,7 +10,6 @@ import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListNickname from '@/components/SettingsListNickname';
-import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,8 +22,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import AmountColumnSheet from '@/components/AmountColumnSheet/AmountColumnSheet';
-import FirstDaySheet from '@/components/FirstDaySheet/FirstDaySheet';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
 import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -48,6 +45,9 @@ import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
 import { FoodSortOption } from 'repo-depkit-common';
+import useDrawerPositionModal from '@/hooks/useDrawerPositionModal';
+import useAmountColumnModal from '@/hooks/useAmountColumnModal';
+import useFirstDayModal from '@/hooks/useFirstDayModal';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -59,9 +59,6 @@ const Settings = () => {
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
         const { translate, language } = useLanguage();
-        const drawerSheetRef = useRef<BottomSheet>(null);
-        const amountColumnSheetRef = useRef<BottomSheet>(null);
-        const firstDaySheetRef = useRef<BottomSheet>(null);
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -74,6 +71,9 @@ const Settings = () => {
         const { openLanguageModal } = useLanguageModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
         const { openThemeSettingsModal } = useThemeSettingsModal();
+        const { openDrawerPositionModal } = useDrawerPositionModal();
+        const { openAmountColumnModal } = useAmountColumnModal();
+        const { openFirstDayModal } = useFirstDayModal();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
@@ -207,29 +207,6 @@ const Settings = () => {
                 });
         }, [handleTheme, openThemeSettingsModal, selectedTheme]);
 
-	const openDrawerSheet = () => {
-		drawerSheetRef?.current?.expand();
-	};
-
-	const closeDrawerSheet = () => {
-		drawerSheetRef?.current?.close();
-	};
-
-	const openAmountColumnModal = () => {
-		amountColumnSheetRef?.current?.expand();
-	};
-
-	const closeAmountColumnModal = () => {
-		amountColumnSheetRef?.current?.close();
-	};
-
-	const openFirstDayModal = () => {
-		firstDaySheetRef?.current?.expand();
-	};
-
-	const closeFirstDayModal = () => {
-		firstDaySheetRef?.current?.close();
-	};
         const openFoodOffersTimeSheet = () => {
                 foodOffersTimeSheetRef?.current?.expand();
         };
@@ -313,7 +290,6 @@ const Settings = () => {
 			type: SET_DRAWER_POSITION,
 			payload: position,
 		});
-		closeDrawerSheet();
 	};
 
 	const handleTheme = (theme: any) => {
@@ -494,9 +470,58 @@ const Settings = () => {
 					{/* color Scheme */}
 					<View style={{ gap: 0 }}>
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={selectedTheme === 'systematic' ? translate(TranslationKeys.color_scheme_system) : selectedTheme === 'dark' ? translate(TranslationKeys.color_scheme_dark) : translate(TranslationKeys.color_scheme_light)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openDrawerSheet()} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openAmountColumnModal()} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openFirstDayModal()} groupPosition="bottom" />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.drawer_config_position)}
+                                                        value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={() =>
+                                                                openDrawerPositionModal({
+                                                                        selectedPosition: drawerPosition,
+                                                                        onSelect: handleDrawerPosition,
+                                                                })
+                                                        }
+                                                        groupPosition="middle"
+                                                />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.amount_columns_for_cards)}
+                                                        value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={() =>
+                                                                openAmountColumnModal({
+                                                                        selectedAmount: amountColumnsForcard,
+                                                                        onSelect: val => {
+                                                                                dispatch({
+                                                                                        type: SET_AMOUNT_COLUMNS_FOR_CARDS,
+                                                                                        payload: val,
+                                                                                });
+                                                                        },
+                                                                })
+                                                        }
+                                                        groupPosition="middle"
+                                                />
+                                                <SettingsList
+                                                        iconBgColor={primaryColor}
+                                                        leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />}
+                                                        label={translate(TranslationKeys.first_day_of_week)}
+                                                        value={translate(firstDayOfTheWeek?.name)}
+                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                        handleFunction={() =>
+                                                                openFirstDayModal({
+                                                                        selectedDay: firstDayOfTheWeek?.name ?? '',
+                                                                        onSelect: day => {
+                                                                                dispatch({
+                                                                                        type: SET_FIRST_DAY_OF_THE_WEEK,
+                                                                                        payload: day,
+                                                                                });
+                                                                        },
+                                                                })
+                                                        }
+                                                        groupPosition="bottom"
+                                                />
                                         </View>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
 					<View style={{ gap: 0 }}>
@@ -617,69 +642,6 @@ const Settings = () => {
                                         >
                                                 <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
                                         </BaseBottomSheet>
-					<BaseBottomSheet
-						ref={amountColumnSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeAmountColumnModal}
-					>
-						<AmountColumnSheet
-							closeSheet={closeAmountColumnModal}
-							selectedAmount={amountColumnsForcard}
-							onSelect={val => {
-								dispatch({
-									type: SET_AMOUNT_COLUMNS_FOR_CARDS,
-									payload: val,
-								});
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={firstDaySheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeFirstDayModal}
-					>
-						<FirstDaySheet
-							closeSheet={closeFirstDayModal}
-							selectedDay={firstDayOfTheWeek?.name}
-							onSelect={day => {
-								dispatch({
-									type: SET_FIRST_DAY_OF_THE_WEEK,
-									payload: day,
-								});
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={drawerSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeDrawerSheet}
-					>
-						<DrawerPositionSheet
-							closeSheet={closeDrawerSheet}
-							selectedPosition={drawerPosition}
-							onSelect={position => {
-								handleDrawerPosition(position);
-							}}
-						/>
-					</BaseBottomSheet>
                                         <BaseBottomSheet
                                                 ref={foodOffersTimeSheetRef}
                                                 index={-1}
