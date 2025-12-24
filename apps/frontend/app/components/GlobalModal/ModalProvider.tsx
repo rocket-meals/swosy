@@ -7,6 +7,8 @@ type ModalOptions = {
         backgroundStyle?: any; // styling passed to the BottomSheet background
         headerBackgroundColor?: string;
         overlayStyle?: any; // styling for the fullscreen overlay behind the sheet (e.g. rgba dim)
+        useThemeBackground?: boolean;
+        useThemeHeaderBackground?: boolean;
 };
 
 type ModalContextType = {
@@ -30,6 +32,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // overlay shown over the app (should usually be semi-transparent) - separate from sheet background
         const [overlayStyle, setOverlayStyle] = useState<any>(null);
         const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
+        const [useThemeBackground, setUseThemeBackground] = useState(false);
+        const [useThemeHeaderBackground, setUseThemeHeaderBackground] = useState(false);
         const sheetRef = useRef<any>(null);
 
         const { theme } = useTheme();
@@ -64,6 +68,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 const resolvedHeaderBackgroundColor =
                         options?.headerBackgroundColor ?? resolvedBackgroundStyle?.backgroundColor ?? undefined;
                 setHeaderBackgroundColor(resolvedHeaderBackgroundColor);
+                setUseThemeBackground(Boolean(options?.useThemeBackground));
+                setUseThemeHeaderBackground(Boolean(options?.useThemeHeaderBackground));
                 setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
@@ -82,6 +88,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 setBackgroundStyle(null);
                 setOverlayStyle(null);
                 setHeaderBackgroundColor(undefined);
+                setUseThemeBackground(false);
+                setUseThemeHeaderBackground(false);
                 clearCloseTimeout();
                 closeTimeoutRef.current = setTimeout(() => {
                         setContent(null);
@@ -136,6 +144,19 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 const cancel = ensureExpand();
                 return () => cancel();
         }, [content]);
+
+        useEffect(() => {
+                if (!isVisible) return;
+                if (useThemeBackground) {
+                        setBackgroundStyle((prev: any) => ({
+                                ...(prev ?? {}),
+                                backgroundColor: theme.screen.background,
+                        }));
+                }
+                if (useThemeHeaderBackground) {
+                        setHeaderBackgroundColor(theme.screen.background);
+                }
+        }, [isVisible, theme.screen.background, useThemeBackground, useThemeHeaderBackground]);
 
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
