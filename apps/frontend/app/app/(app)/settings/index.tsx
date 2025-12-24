@@ -383,9 +383,9 @@ const Settings = () => {
                                         </View>
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                        {}
                 );
-        }, [collectibleSizeLabel, collectibleSizeOptions, handleSelectCollectibleSize, showScrollViewModal, theme.sheet.sheetBg, translate]);
+        }, [collectibleSizeLabel, collectibleSizeOptions, handleSelectCollectibleSize, showScrollViewModal, translate]);
 
         const openCollectibleSettingsModal = useCallback(() => {
                 showScrollViewModal(
@@ -434,9 +434,9 @@ const Settings = () => {
                                         </View>
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                        {}
                 );
-        }, [collectibleRandomPosition, collectibleSizeLabel, handleResetCollectibles, openCollectibleSizeModal, primaryColor, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, theme.sheet.sheetBg, translate, toggleCollectibleRandomPosition]);
+        }, [collectibleRandomPosition, collectibleSizeLabel, handleResetCollectibles, openCollectibleSizeModal, primaryColor, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, translate, toggleCollectibleRandomPosition]);
 
         useEffect(() => {
                 collectibleSettingsModalRef.current = openCollectibleSettingsModal;
