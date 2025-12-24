@@ -18,11 +18,12 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
         useSelector((state: RootState) => state.settings); // ensure theme subscription
         const snapPoints = useMemo(() => ['80%'], []);
 
-        const resolvedBackgroundColor = headerBackgroundColor ?? (backgroundStyle as any)?.backgroundColor ?? theme.screen.background;
+        const resolvedBackgroundColor = (backgroundStyle as any)?.backgroundColor ?? theme.screen.background;
         const effectiveBackgroundStyle = useMemo(
                 () => ({ ...(backgroundStyle ?? {}), backgroundColor: resolvedBackgroundColor }),
                 [backgroundStyle, resolvedBackgroundColor],
         );
+        const headerBackground = headerBackgroundColor ?? theme.screen.background;
 
         const handleColor = theme.sheet.closeBg;
 
@@ -39,7 +40,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 
         return (
                 <BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} {...props}>
-			<View style={[styles.header, { backgroundColor: resolvedBackgroundColor }]}>
+			<View style={[styles.header, { backgroundColor: headerBackground }]}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
 				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose}>
