@@ -1,61 +1,56 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { days } from '@/constants/SettingData';
+import FirstDayOfWeek from '@/components/FirstDay/FirstDayOfWeek';
+import { isWeb } from '@/constants/Constants';
 import styles from './styles';
 import { FirstDaySheetProps } from './types';
 import { TranslationKeys } from '@/locales/keys';
 import CollectibleSpot from '../CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
-import SettingsList from '@/components/SettingsList';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
 
 const FirstDaySheet: React.FC<FirstDaySheetProps> = ({ closeSheet, selectedDay, onSelect }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
 
 	return (
-		<View style={styles.sheetView}>
+		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+			<View
+				style={{
+					...styles.sheetHeader,
+					paddingRight: isWeb ? 10 : 0,
+					paddingTop: isWeb ? 10 : 0,
+				}}
+			>
+				<View />
+				<Text
+					style={{
+						...styles.sheetHeading,
+						fontSize: isWeb ? 40 : 28,
+						color: theme.sheet.text,
+					}}
+				>
+					{translate(TranslationKeys.first_day_of_week)}
+				</Text>
+			</View>
 			<View style={styles.optionsContainer}>
-				{days.map((firstDay, index) => {
-					const isSelected = selectedDay === firstDay.name;
-					const groupPosition =
-						days.length === 1
-							? 'single'
-							: index === 0
-								? 'top'
-								: index === days.length - 1
-									? 'bottom'
-									: 'middle';
-
-					return (
-						<SettingsList
-							key={firstDay.id}
-							label={translate(firstDay.name)}
-							groupPosition={groupPosition}
-							showSeparator={index !== days.length - 1}
-							noIconIndent
-							rightIcon={
-								<MaterialCommunityIcons
-									name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-									size={24}
-									color={isSelected ? primaryColor : theme.screen.icon}
-								/>
-							}
-							handleFunction={() => {
-								onSelect({ id: firstDay.id, name: firstDay.name });
-								closeSheet();
-							}}
-						/>
-					);
-				})}
+				{days.map(firstDay => (
+					<FirstDayOfWeek
+						key={firstDay.id}
+						position={firstDay}
+						isSelected={selectedDay === firstDay.name}
+						onPress={() => {
+							onSelect({ id: firstDay.id, name: firstDay.name });
+							closeSheet();
+						}}
+					/>
+				))}
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_first_day_of_week} />
-		</View>
+		</BottomSheetScrollView>
 	);
 };
 

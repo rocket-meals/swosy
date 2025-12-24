@@ -6,10 +6,8 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		// Rounded header corners are controlled elsewhere; this style is not responsible for them.
-		// Keep these commented to avoid implying they affect the header radius.
-		// borderTopRightRadius: 28,
-		// borderTopLeftRadius: 28,
+//		borderTopRightRadius: 28,
+//		borderTopLeftRadius: 28,
 		padding: 10,
 	},
 	closeButton: {
