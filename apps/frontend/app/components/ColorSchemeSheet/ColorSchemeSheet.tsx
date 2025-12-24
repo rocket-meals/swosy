@@ -2,26 +2,57 @@ import React from 'react';
 import { View } from 'react-native';
 import styles from './styles';
 import { ColorSchemeSheetProps } from './types';
-import ColorScheme from '@/components/ColorScheme/ColorScheme';
 import { themes } from '@/constants/SettingData';
 import CollectibleSpot from "@/components/CollectibleItem/CollectibleSpot";
 import { CollectibleAt } from 'repo-depkit-common';
+import SettingsList from '@/components/SettingsList';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTheme } from '@/hooks/useTheme';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
 
 const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selectedTheme, onSelect }) => {
+	const { translate } = useLanguage();
+	const { theme } = useTheme();
+	const { primaryColor } = useSelector((state: RootState) => state.settings);
+
 	return (
 		<View style={styles.sheetView}>
 			<View style={styles.optionsContainer}>
-				{themes.map(th => (
-					<ColorScheme
-						key={th.id}
-						theme={th}
-						isSelected={selectedTheme === th.id}
-						onPress={() => {
-							onSelect(th.id);
-							closeSheet();
-						}}
-					/>
-				))}
+				{themes.map((themeOption, index) => {
+					const isSelected = selectedTheme === themeOption.id;
+					const groupPosition =
+						themes.length === 1
+							? 'single'
+							: index === 0
+								? 'top'
+								: index === themes.length - 1
+									? 'bottom'
+									: 'middle';
+
+					return (
+						<SettingsList
+							key={themeOption.id}
+							label={translate(themeOption.name)}
+							leftIcon={<MaterialCommunityIcons name={themeOption.icon as any} size={24} />}
+							iconBgColor={primaryColor}
+							groupPosition={groupPosition}
+							showSeparator={index !== themes.length - 1}
+							rightIcon={
+								<MaterialCommunityIcons
+									name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
+									size={24}
+									color={isSelected ? primaryColor : theme.screen.icon}
+								/>
+							}
+							handleFunction={() => {
+								onSelect(themeOption.id);
+								closeSheet();
+							}}
+						/>
+					);
+				})}
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_theme} />
 		</View>
