@@ -46,7 +46,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
       ? theme.sheet.sheetBg
       : backgroundColorSource === 'screen'
         ? theme.screen.background
-        : backgroundColor ?? theme.screen.background;
+        : backgroundColor ?? theme.sheet.sheetBg;
 
   React.useEffect(() => () => onClose?.(), [onClose]);
 
