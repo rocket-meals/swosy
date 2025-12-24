@@ -14,17 +14,22 @@ export const useMyScrollViewModal = () => {
         const show = (modalProps: MyScrollViewModalConfig, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
                 const { children, backgroundColor, ...restProps } = modalProps;
 
-                const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
-                const backgroundStyle = { backgroundColor: resolvedBackgroundColor, ...options?.backgroundStyle };
+                const themeDrivenBackground = backgroundColor == null && options?.backgroundStyle?.backgroundColor == null;
+                const resolvedBackgroundColor =
+                        options?.backgroundStyle?.backgroundColor ?? backgroundColor ?? theme.screen.background;
+                const backgroundStyle = { ...options?.backgroundStyle, backgroundColor: resolvedBackgroundColor };
+                const modalBackgroundColor = themeDrivenBackground ? undefined : resolvedBackgroundColor;
 
                 const mergedOptions = {
                         ...options,
                         backgroundStyle,
                         headerBackgroundColor: resolvedBackgroundColor,
+                        useThemeBackground: themeDrivenBackground,
+                        useThemeHeaderBackground: themeDrivenBackground,
                 };
 
                 showModal(
-                        <MyScrollViewModal closeSheet={close} backgroundColor={resolvedBackgroundColor} {...restProps}>
+                        <MyScrollViewModal closeSheet={close} backgroundColor={modalBackgroundColor} {...restProps}>
                                 {children}
                         </MyScrollViewModal>,
                         mergedOptions,
