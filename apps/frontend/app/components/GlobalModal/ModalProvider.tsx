@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
-import {useTheme} from "@/hooks/useTheme";
+import { useTheme } from '@/hooks/useTheme';
 
-type ModalOptions = {
-        backgroundStyle?: any; // styling passed to the BottomSheet background
-        headerBackgroundColor?: string;
+export type ModalOptions = {
+        backgroundStyle?: any | ((theme: any) => any); // styling passed to the BottomSheet background
+        headerBackgroundColor?: string | ((theme: any) => string | undefined);
         overlayStyle?: any; // styling for the fullscreen overlay behind the sheet (e.g. rgba dim)
 };
 
@@ -26,14 +26,20 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const [content, setContent] = useState<ReactNode | null>(null);
-        const [backgroundStyle, setBackgroundStyle] = useState<any>(null);
+        const [backgroundStyle, setBackgroundStyle] = useState<ModalOptions['backgroundStyle']>(null);
         // overlay shown over the app (should usually be semi-transparent) - separate from sheet background
-        const [overlayStyle, setOverlayStyle] = useState<any>(null);
-        const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
+        const [overlayStyle, setOverlayStyle] = useState<ModalOptions['overlayStyle']>(null);
+        const [headerBackgroundColor, setHeaderBackgroundColor] = useState<ModalOptions['headerBackgroundColor']>(undefined);
         const sheetRef = useRef<any>(null);
 
         const { theme } = useTheme();
-        let screenBackgroundColor = headerBackgroundColor || theme.screen.background;
+        const resolvedHeaderBackgroundColor =
+                typeof headerBackgroundColor === 'function' ? headerBackgroundColor(theme) : headerBackgroundColor;
+        const screenBackgroundColor = resolvedHeaderBackgroundColor || theme.screen.background;
+        const resolvedBackgroundStyle =
+                typeof backgroundStyle === 'function'
+                        ? backgroundStyle(theme)
+                        : backgroundStyle ?? { backgroundColor: theme.screen.background };
 
         const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
@@ -58,12 +64,9 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 clearCloseTimeout();
 
                 setContent(c);
-                const resolvedBackgroundStyle = options?.backgroundStyle ?? null;
-                setBackgroundStyle(resolvedBackgroundStyle);
+                setBackgroundStyle(options?.backgroundStyle ?? null);
                 setOverlayStyle(options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' });
-                const resolvedHeaderBackgroundColor =
-                        options?.headerBackgroundColor ?? resolvedBackgroundStyle?.backgroundColor ?? undefined;
-                setHeaderBackgroundColor(resolvedHeaderBackgroundColor);
+                setHeaderBackgroundColor(options?.headerBackgroundColor);
                 setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
@@ -152,7 +155,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                                  enablePanDownToClose
                                                  onClose={close}
                                                  headerBackgroundColor={screenBackgroundColor}
-                                                 backgroundStyle={backgroundStyle}
+                                                 backgroundStyle={resolvedBackgroundStyle}
                                          >
                                                  {content}
                                          </BaseBottomSheet>

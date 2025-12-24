@@ -18,13 +18,12 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
         useSelector((state: RootState) => state.settings); // ensure theme subscription
         const snapPoints = useMemo(() => ['80%'], []);
 
-        //const effectiveBackgroundStyle = useMemo(() => ({ backgroundColor: theme.sheet.sheetBg, ...backgroundStyle }), [backgroundStyle, theme.sheet.sheetBg]);
+        const effectiveBackgroundStyle = useMemo(
+                () => ({ backgroundColor: theme.screen.background, ...backgroundStyle }),
+                [backgroundStyle, theme.screen.background]
+        );
 
-		const usedHeaderBg = headerBackgroundColor || theme.screen.background;
-
-		const effectiveBackgroundStyle = {backgroundColor: usedHeaderBg};
-        //const headerBg = headerBackgroundColor || (effectiveBackgroundStyle as any).backgroundColor || theme.sheet.sheetBg;
-
+        const headerBackground = headerBackgroundColor ?? theme.screen.background;
         const handleColor = theme.sheet.closeBg;
 
 	const handleChange = useCallback(
@@ -38,9 +37,9 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose
 		[onClose, onChange]
 	);
 
-        return (
+		return (
                 <BottomSheet ref={ref} snapPoints={snapPoints} backdropComponent={renderBackdrop} backgroundStyle={effectiveBackgroundStyle} handleComponent={null} onChange={handleChange} {...props}>
-			<View style={[styles.header]}>
+			<View style={[styles.header, { backgroundColor: headerBackground }]}>
 				<View style={styles.placeholder} />
 				<View style={[styles.handle, { backgroundColor: handleColor }]} />
 				<TouchableOpacity style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]} onPress={onClose}>
