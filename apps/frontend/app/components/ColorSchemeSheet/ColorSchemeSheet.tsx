@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import styles from './styles';
 import { ColorSchemeSheetProps } from './types';
 import { themes } from '@/constants/SettingData';
@@ -56,6 +56,10 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 				})}
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_theme} />
+			<View style={styles.debugContainer}>
+				<Text style={[styles.debugLabel, { color: theme.screen.text }]}>theme.screen.background: {theme.screen.background}</Text>
+				<View style={[styles.debugSwatch, { backgroundColor: theme.screen.background }]} />
+			</View>
 		</View>
 	);
 };

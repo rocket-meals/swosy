@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 
 type ThemeSettingsModalOptions = {
@@ -14,7 +13,6 @@ type ThemeSettingsModalOptions = {
 export const useThemeSettingsModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { translate } = useLanguage();
-        const { theme } = useTheme();
 
         const openThemeSettingsModal = useCallback(
                 ({ selectedTheme, onSelect }: ThemeSettingsModalOptions) => {
@@ -29,11 +27,10 @@ export const useThemeSettingsModal = () => {
                                                         onSelect={onSelect}
                                                 />
                                         ),
-                                },
-                                { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                }
                         );
                 },
-                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
+                [closeScrollViewModal, showScrollViewModal, translate]
         );
 
         return { openThemeSettingsModal };
