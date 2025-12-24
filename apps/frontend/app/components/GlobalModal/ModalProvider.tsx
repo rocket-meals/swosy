@@ -3,12 +3,16 @@ import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
 import {useTheme} from "@/hooks/useTheme";
 
-type ModalOptions = {
+export type ThemeBackgroundSource = 'screen' | 'sheet';
+
+export type ModalOptions = {
         backgroundStyle?: any; // styling passed to the BottomSheet background
         headerBackgroundColor?: string;
         overlayStyle?: any; // styling for the fullscreen overlay behind the sheet (e.g. rgba dim)
         useThemeBackground?: boolean;
         useThemeHeaderBackground?: boolean;
+        themeBackgroundSource?: ThemeBackgroundSource;
+        themeHeaderBackgroundSource?: ThemeBackgroundSource;
 };
 
 type ModalContextType = {
@@ -34,6 +38,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
         const [useThemeBackground, setUseThemeBackground] = useState(false);
         const [useThemeHeaderBackground, setUseThemeHeaderBackground] = useState(false);
+        const [themeBackgroundSource, setThemeBackgroundSource] = useState<ThemeBackgroundSource | null>(null);
+        const [themeHeaderBackgroundSource, setThemeHeaderBackgroundSource] = useState<ThemeBackgroundSource | null>(null);
         const sheetRef = useRef<any>(null);
 
         const { theme } = useTheme();
@@ -70,6 +76,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 setHeaderBackgroundColor(resolvedHeaderBackgroundColor);
                 setUseThemeBackground(Boolean(options?.useThemeBackground));
                 setUseThemeHeaderBackground(Boolean(options?.useThemeHeaderBackground));
+                setThemeBackgroundSource(options?.themeBackgroundSource ?? null);
+                setThemeHeaderBackgroundSource(options?.themeHeaderBackgroundSource ?? null);
                 setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
@@ -90,6 +98,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 setHeaderBackgroundColor(undefined);
                 setUseThemeBackground(false);
                 setUseThemeHeaderBackground(false);
+                setThemeBackgroundSource(null);
+                setThemeHeaderBackgroundSource(null);
                 clearCloseTimeout();
                 closeTimeoutRef.current = setTimeout(() => {
                         setContent(null);
@@ -147,16 +157,27 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
         useEffect(() => {
                 if (!isVisible) return;
-                if (useThemeBackground) {
+                const resolveThemeBackground = (source: ThemeBackgroundSource | null) =>
+                        source === 'sheet' ? theme.sheet.sheetBg : theme.screen.background;
+
+                if (useThemeBackground || themeBackgroundSource) {
                         setBackgroundStyle((prev: any) => ({
                                 ...(prev ?? {}),
-                                backgroundColor: theme.screen.background,
+                                backgroundColor: resolveThemeBackground(themeBackgroundSource),
                         }));
                 }
-                if (useThemeHeaderBackground) {
-                        setHeaderBackgroundColor(theme.screen.background);
+                if (useThemeHeaderBackground || themeHeaderBackgroundSource) {
+                        setHeaderBackgroundColor(resolveThemeBackground(themeHeaderBackgroundSource));
                 }
-        }, [isVisible, theme.screen.background, useThemeBackground, useThemeHeaderBackground]);
+        }, [
+                isVisible,
+                theme.screen.background,
+                theme.sheet.sheetBg,
+                useThemeBackground,
+                useThemeHeaderBackground,
+                themeBackgroundSource,
+                themeHeaderBackgroundSource,
+        ]);
 
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
