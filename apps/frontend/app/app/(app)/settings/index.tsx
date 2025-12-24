@@ -10,7 +10,6 @@ import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListNickname from '@/components/SettingsListNickname';
-import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
@@ -47,6 +46,7 @@ import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
 import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
+import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
 import { FoodSortOption } from 'repo-depkit-common';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
@@ -62,7 +62,6 @@ const Settings = () => {
         const drawerSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
-        const colorSchemeSheetRef = useRef<BottomSheet>(null);
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -74,6 +73,7 @@ const Settings = () => {
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
         const { openLanguageModal } = useLanguageModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
+        const { openThemeSettingsModal } = useThemeSettingsModal();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
@@ -200,13 +200,12 @@ const Settings = () => {
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
-        const openColorSchemeSheet = () => {
-                colorSchemeSheetRef?.current?.expand();
-        };
-
-	const closeColorSchemeSheet = () => {
-		colorSchemeSheetRef?.current?.close();
-	};
+        const openColorSchemeSheet = useCallback(() => {
+                openThemeSettingsModal({
+                        selectedTheme,
+                        onSelect: handleTheme,
+                });
+        }, [handleTheme, openThemeSettingsModal, selectedTheme]);
 
 	const openDrawerSheet = () => {
 		drawerSheetRef?.current?.expand();
@@ -659,25 +658,6 @@ const Settings = () => {
 									type: SET_FIRST_DAY_OF_THE_WEEK,
 									payload: day,
 								});
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={colorSchemeSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeColorSchemeSheet}
-					>
-						<ColorSchemeSheet
-							closeSheet={closeColorSchemeSheet}
-							selectedTheme={selectedTheme}
-							onSelect={theme => {
-								handleTheme(theme);
 							}}
 						/>
 					</BaseBottomSheet>
