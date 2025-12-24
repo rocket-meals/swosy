@@ -39,7 +39,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
+  const resolvedBackgroundColor = backgroundColor ?? theme.sheet.sheetBg ?? theme.screen.background;
 
   React.useEffect(() => () => onClose?.(), [onClose]);
 
@@ -96,4 +96,3 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 };
 
 export default MyScrollViewModal;
-
