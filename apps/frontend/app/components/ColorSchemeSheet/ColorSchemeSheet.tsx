@@ -15,13 +15,14 @@ import { RootState } from '@/redux/reducer';
 const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selectedTheme, onSelect }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme: selectedThemeFromStore } = useSelector((state: RootState) => state.settings);
+	const activeSelectedTheme = selectedThemeFromStore ?? selectedTheme;
 
 	return (
 		<View style={styles.sheetView}>
 			<View style={styles.optionsContainer}>
 				{themes.map((themeOption, index) => {
-					const isSelected = selectedTheme === themeOption.id;
+					const isSelected = activeSelectedTheme === themeOption.id;
 					const groupPosition =
 						themes.length === 1
 							? 'single'
