@@ -96,4 +96,3 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 };
 
 export default MyScrollViewModal;
-
