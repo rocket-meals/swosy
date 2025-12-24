@@ -195,8 +195,7 @@ const Settings = () => {
                                                 onSave={saveNickname}
                                         />
                                 ),
-                        },
-                        { backgroundStyle: { backgroundColor: 'transparent' } }
+                        }
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
