@@ -1,11 +1,11 @@
 import { ReactNode, useCallback } from 'react';
-import { type ModalOptions, useModalContext } from './ModalProvider';
+import { useModalContext } from './ModalProvider';
 
 export const useModal = () => {
         const { open, close, debug } = useModalContext();
 
         const show = useCallback(
-                (content: ReactNode, options?: ModalOptions) => {
+                (content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
                         open(content, options);
                 },
                 [open]
@@ -17,3 +17,4 @@ export const useModal = () => {
 
         return { show, close: closeModal, debug };
 };
+
