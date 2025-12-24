@@ -8,6 +8,7 @@ export interface MyScrollViewModalProps {
   title?: string;
   closeSheet?: () => void;
   backgroundColor?: string;
+  backgroundColorSource?: 'screen' | 'sheet';
   children?: ReactNode;
   // For FlatList mode
   useFlatList?: boolean;
@@ -27,6 +28,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   children,
   useFlatList = false,
   backgroundColor,
+  backgroundColorSource,
   data = [],
   renderItem,
   keyExtractor,
@@ -39,7 +41,12 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
+  const resolvedBackgroundColor =
+    backgroundColorSource === 'sheet'
+      ? theme.sheet.sheetBg
+      : backgroundColorSource === 'screen'
+        ? theme.screen.background
+        : backgroundColor ?? theme.screen.background;
 
   React.useEffect(() => () => onClose?.(), [onClose]);
 
@@ -96,4 +103,3 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 };
 
 export default MyScrollViewModal;
-
