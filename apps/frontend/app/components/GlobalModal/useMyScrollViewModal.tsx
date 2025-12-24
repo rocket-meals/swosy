@@ -17,7 +17,7 @@ export const useMyScrollViewModal = () => {
 
                 let themeBackgroundSource: ThemeBackgroundSource | undefined;
                 if (backgroundColor == null && options?.backgroundStyle?.backgroundColor == null) {
-                        themeBackgroundSource = 'screen';
+                        themeBackgroundSource = 'sheet';
                 } else if (options?.backgroundStyle?.backgroundColor === theme.sheet.sheetBg || backgroundColor === theme.sheet.sheetBg) {
                         themeBackgroundSource = 'sheet';
                 } else if (

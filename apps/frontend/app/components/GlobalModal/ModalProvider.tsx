@@ -43,7 +43,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const sheetRef = useRef<any>(null);
 
         const { theme } = useTheme();
-        let screenBackgroundColor = headerBackgroundColor || theme.screen.background;
+        let screenBackgroundColor = headerBackgroundColor || theme.sheet.sheetBg;
 
         const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
