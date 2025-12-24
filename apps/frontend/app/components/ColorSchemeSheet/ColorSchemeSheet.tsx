@@ -11,6 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
+import DebugView from '@/components/DebugView';
 
 const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selectedTheme, onSelect }) => {
 	const { translate } = useLanguage();
@@ -56,10 +57,14 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 				})}
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_theme} />
-			<View style={styles.debugContainer}>
-				<Text style={[styles.debugLabel, { color: theme.screen.text }]}>theme.screen.background: {theme.screen.background}</Text>
-				<View style={[styles.debugSwatch, { backgroundColor: theme.screen.background }]} />
-			</View>
+			<DebugView title="Theme" isVisible>
+				<View style={styles.debugContainer}>
+					<Text style={[styles.debugLabel, { color: theme.screen.text }]}>
+						theme.screen.background: {theme.screen.background}
+					</Text>
+					<View style={[styles.debugSwatch, { backgroundColor: theme.screen.background }]} />
+				</View>
+			</DebugView>
 		</View>
 	);
 };
