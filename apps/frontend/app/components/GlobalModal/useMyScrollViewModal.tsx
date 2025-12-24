@@ -14,7 +14,7 @@ export const useMyScrollViewModal = () => {
                         ? { backgroundColor: resolvedBackgroundColor, ...options?.backgroundStyle }
                         : options?.backgroundStyle;
 
-                const headerBackgroundColor = options?.headerBackgroundColor ?? resolvedBackgroundColor;
+                const headerBackgroundColor = options?.headerBackgroundColor;
 
                 const mergedOptions = {
                         ...options,
