@@ -3,16 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
 import {useTheme} from "@/hooks/useTheme";
 
-export type ThemeBackgroundSource = 'screen' | 'sheet';
-
-export type ModalOptions = {
+type ModalOptions = {
         backgroundStyle?: any; // styling passed to the BottomSheet background
         headerBackgroundColor?: string;
         overlayStyle?: any; // styling for the fullscreen overlay behind the sheet (e.g. rgba dim)
-        useThemeBackground?: boolean;
-        useThemeHeaderBackground?: boolean;
-        themeBackgroundSource?: ThemeBackgroundSource;
-        themeHeaderBackgroundSource?: ThemeBackgroundSource;
 };
 
 type ModalContextType = {
@@ -36,14 +30,10 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // overlay shown over the app (should usually be semi-transparent) - separate from sheet background
         const [overlayStyle, setOverlayStyle] = useState<any>(null);
         const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
-        const [useThemeBackground, setUseThemeBackground] = useState(false);
-        const [useThemeHeaderBackground, setUseThemeHeaderBackground] = useState(false);
-        const [themeBackgroundSource, setThemeBackgroundSource] = useState<ThemeBackgroundSource | null>(null);
-        const [themeHeaderBackgroundSource, setThemeHeaderBackgroundSource] = useState<ThemeBackgroundSource | null>(null);
         const sheetRef = useRef<any>(null);
 
         const { theme } = useTheme();
-        let screenBackgroundColor = headerBackgroundColor || theme.sheet.sheetBg;
+        let screenBackgroundColor = headerBackgroundColor || theme.screen.background;
 
         const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
@@ -74,10 +64,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 const resolvedHeaderBackgroundColor =
                         options?.headerBackgroundColor ?? resolvedBackgroundStyle?.backgroundColor ?? undefined;
                 setHeaderBackgroundColor(resolvedHeaderBackgroundColor);
-                setUseThemeBackground(Boolean(options?.useThemeBackground));
-                setUseThemeHeaderBackground(Boolean(options?.useThemeHeaderBackground));
-                setThemeBackgroundSource(options?.themeBackgroundSource ?? null);
-                setThemeHeaderBackgroundSource(options?.themeHeaderBackgroundSource ?? null);
                 setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
@@ -96,10 +82,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 setBackgroundStyle(null);
                 setOverlayStyle(null);
                 setHeaderBackgroundColor(undefined);
-                setUseThemeBackground(false);
-                setUseThemeHeaderBackground(false);
-                setThemeBackgroundSource(null);
-                setThemeHeaderBackgroundSource(null);
                 clearCloseTimeout();
                 closeTimeoutRef.current = setTimeout(() => {
                         setContent(null);
@@ -154,30 +136,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 const cancel = ensureExpand();
                 return () => cancel();
         }, [content]);
-
-        useEffect(() => {
-                if (!isVisible) return;
-                const resolveThemeBackground = (source: ThemeBackgroundSource | null) =>
-                        source === 'sheet' ? theme.sheet.sheetBg : theme.screen.background;
-
-                if (useThemeBackground || themeBackgroundSource) {
-                        setBackgroundStyle((prev: any) => ({
-                                ...(prev ?? {}),
-                                backgroundColor: resolveThemeBackground(themeBackgroundSource),
-                        }));
-                }
-                if (useThemeHeaderBackground || themeHeaderBackgroundSource) {
-                        setHeaderBackgroundColor(resolveThemeBackground(themeHeaderBackgroundSource));
-                }
-        }, [
-                isVisible,
-                theme.screen.background,
-                theme.sheet.sheetBg,
-                useThemeBackground,
-                useThemeHeaderBackground,
-                themeBackgroundSource,
-                themeHeaderBackgroundSource,
-        ]);
 
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
