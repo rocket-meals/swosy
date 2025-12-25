@@ -21,6 +21,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisib
 	const dispatch = useDispatch();
 
 	const handleLogout = () => {
+		setIsVisible(false);
 		performLogout(dispatch, router);
 	};
 
