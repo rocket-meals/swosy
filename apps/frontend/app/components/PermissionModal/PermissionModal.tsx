@@ -3,14 +3,15 @@ import React, { useCallback } from 'react';
 import BaseModal from '@/components/BaseModal';
 import { styles } from './styles';
 import { PermissionModalProps } from './types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
+import { performLogout } from '@/helper/logoutHelper';
 import { RootState } from '@/redux/reducer';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import useLogout from '@/hooks/useLogout';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisible }) => {
 	const { theme } = useTheme();
@@ -18,7 +19,8 @@ const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisib
 	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const { close: closeScrollViewModal } = useMyScrollViewModal();
-	const logout = useLogout();
+	const dispatch = useDispatch();
+	const router = useRouter();
 
 	const handleClose = useCallback(() => {
 		closeScrollViewModal();
@@ -27,8 +29,8 @@ const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisib
 
 	const handleLogout = useCallback(async () => {
 		handleClose();
-		await logout();
-	}, [handleClose, logout]);
+		await performLogout(dispatch, router);
+	}, [dispatch, handleClose, router]);
 
 	return (
 		<BaseModal isVisible={isVisible} title={translate(TranslationKeys.access_limited)} onClose={handleClose}>

@@ -290,7 +290,7 @@ const Settings = () => {
 
         const handleLogout = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 
-        const handleLogin = useCallback(() => openConfirmLogoutModal(true), [openConfirmLogoutModal]);
+        const handleLogin = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 
         const logoutButtonHandler = useMemo(() => (isRegisteredUser ? handleLogout : handleLogin), [handleLogin, handleLogout, isRegisteredUser]);
 
