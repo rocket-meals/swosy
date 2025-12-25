@@ -1,36 +1,34 @@
 import { Dimensions, Text, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import BaseModal from '@/components/BaseModal';
 import { styles } from './styles';
 import { PermissionModalProps } from './types';
-import { useRouter } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { RootState } from '@/redux/reducer';
-import { performLogout } from '@/helper/logoutHelper';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useLogout from '@/hooks/useLogout';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisible }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
-	const router = useRouter();
-	const dispatch = useDispatch();
 	const { close: closeScrollViewModal } = useMyScrollViewModal();
+	const logout = useLogout();
 
-	const handleClose = () => {
+	const handleClose = useCallback(() => {
 		closeScrollViewModal();
 		setIsVisible(false);
-	};
+	}, [closeScrollViewModal, setIsVisible]);
 
-	const handleLogout = () => {
+	const handleLogout = useCallback(async () => {
 		handleClose();
-		performLogout(dispatch, router);
-	};
+		await logout();
+	}, [handleClose, logout]);
 
 	return (
 		<BaseModal isVisible={isVisible} title={translate(TranslationKeys.access_limited)} onClose={handleClose}>
