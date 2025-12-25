@@ -11,6 +11,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { RootState } from '@/redux/reducer';
 import { performLogout } from '@/helper/logoutHelper';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisible }) => {
 	const { theme } = useTheme();
@@ -19,14 +20,20 @@ const PermissionModal: React.FC<PermissionModalProps> = ({ isVisible, setIsVisib
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const router = useRouter();
 	const dispatch = useDispatch();
+	const { close: closeScrollViewModal } = useMyScrollViewModal();
+
+	const handleClose = () => {
+		closeScrollViewModal();
+		setIsVisible(false);
+	};
 
 	const handleLogout = () => {
-		setIsVisible(false);
+		handleClose();
 		performLogout(dispatch, router);
 	};
 
 	return (
-		<BaseModal isVisible={isVisible} title={translate(TranslationKeys.access_limited)} onClose={() => setIsVisible(false)}>
+		<BaseModal isVisible={isVisible} title={translate(TranslationKeys.access_limited)} onClose={handleClose}>
 			<Text
 				style={{
 					...styles.modalSubHeading,
