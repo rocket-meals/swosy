@@ -35,7 +35,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const { theme } = useTheme();
         let screenBackgroundColor = headerBackgroundColor || theme.screen.background;
 
-        const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
                 lastAction: null,
                 contentSet: false,
@@ -64,7 +63,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 const resolvedHeaderBackgroundColor =
                         options?.headerBackgroundColor ?? resolvedBackgroundStyle?.backgroundColor ?? undefined;
                 setHeaderBackgroundColor(resolvedHeaderBackgroundColor);
-                setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
                         lastAction: 'open',
@@ -76,7 +74,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
 
         const close = () => {
-                if (!isVisible) return;
+                if (!content) return;
 
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
@@ -85,7 +83,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 clearCloseTimeout();
                 closeTimeoutRef.current = setTimeout(() => {
                         setContent(null);
-                        setIsVisible(false);
                         clearCloseTimeout();
                 }, 200);
                 setDebug(prev => ({
