@@ -26,6 +26,7 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const [content, setContent] = useState<ReactNode | null>(null);
+        const contentRef = useRef<ReactNode | null>(null);
         const [backgroundStyle, setBackgroundStyle] = useState<any>(null);
         // overlay shown over the app (should usually be semi-transparent) - separate from sheet background
         const [overlayStyle, setOverlayStyle] = useState<any>(null);
@@ -56,6 +57,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const open = (c: ReactNode, options?: ModalOptions) => {
                 clearCloseTimeout();
 
+                contentRef.current = c;
                 setContent(c);
                 const resolvedBackgroundStyle = options?.backgroundStyle ?? null;
                 setBackgroundStyle(resolvedBackgroundStyle);
@@ -74,8 +76,9 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
 
         const close = () => {
-                if (!content) return;
+                if (!contentRef.current) return;
 
+                contentRef.current = null;
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
                 setOverlayStyle(null);
