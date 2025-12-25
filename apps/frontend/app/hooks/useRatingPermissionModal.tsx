@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'expo-router';
 
@@ -19,7 +19,6 @@ const useRatingPermissionModal = () => {
 
 	const openRatingPermissionModal = useCallback(() => {
 		const handleLogin = () => {
-			close();
 			void performLogout(dispatch, router);
 		};
 
@@ -33,14 +32,12 @@ const useRatingPermissionModal = () => {
 					</Text>
 					<ProjectButton
 						text={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}
-						onPress={handleLogin}
+						onPress={() => {
+							close();
+							handleLogin();
+						}}
 						style={{ marginVertical: 0 }}
 					/>
-					<TouchableOpacity onPress={close} style={{ alignSelf: 'center', paddingVertical: 6 }}>
-						<Text style={{ color: theme.sheet.text }}>
-							{translate(TranslationKeys.continue_without_rating)}
-						</Text>
-					</TouchableOpacity>
 				</View>
 			),
 		});
