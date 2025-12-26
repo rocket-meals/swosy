@@ -126,7 +126,7 @@ const SupportFaq = () => {
 							value="Baumgartner Software UG"
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
-								openInBrowser('https://baumgartner-software.de/homepage/');
+								openInBrowser('https://baumgartner-software.de');
 							}}
 							groupPosition="middle"
 						/>
