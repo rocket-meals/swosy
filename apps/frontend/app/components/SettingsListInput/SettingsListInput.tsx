@@ -17,6 +17,10 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
         disableSave = false,
         autoFocus = true,
         keyboardType,
+        multiline = false,
+        numberOfLines,
+        textAlignVertical,
+        inputStyle,
 }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
@@ -34,6 +38,7 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
                                         color: theme.sheet.text,
                                         backgroundColor: theme.sheet.inputBg,
                                         borderColor: theme.sheet.inputBorder,
+                                        ...(inputStyle ?? {}),
                                 }}
                                 autoFocus={autoFocus}
                                 placeholder={placeholder}
@@ -43,6 +48,9 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
                                 value={value}
                                 onChangeText={onChangeText}
                                 keyboardType={keyboardType}
+                                multiline={multiline}
+                                numberOfLines={numberOfLines}
+                                textAlignVertical={textAlignVertical}
                         />
 
                         <View style={styles.buttonContainer}>
