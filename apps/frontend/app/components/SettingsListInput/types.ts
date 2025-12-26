@@ -13,5 +13,4 @@ export interface SettingsListInputProps {
         numberOfLines?: number;
         textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
         inputStyle?: object;
-        submitOnDone?: boolean;
 }
