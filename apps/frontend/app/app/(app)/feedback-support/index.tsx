@@ -338,7 +338,7 @@ const FeedbackScreen = () => {
 								leftIcon={getFeedbackIcon(item.icon)}
 								label={translate(item.title as any)}
 								value={excerpt(String(inputValues[item.key] ?? ''), windowWidth > 850 ? 50 : 20)}
-								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
 								handleFunction={() => {
 									openFeedbackSheet({
 										key: item.key,
@@ -507,6 +507,7 @@ const FeedbackScreen = () => {
 								iconBgColor={primaryColor}
 								label={translate(item.title as any)}
 								value={excerpt(String(item.key === 'device_brand' ? (inputValues[item.key] ? inputValues[item.key] : translate(TranslationKeys.unknown)) : inputValues[item.key] || ''), windowWidth > 850 ? 50 : 20)}
+								rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
 								handleFunction={() => {
 									openFeedbackSheet({
 										key: item.key,
