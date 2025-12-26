@@ -23,12 +23,12 @@ const useRatingPermissionModal = () => {
 		};
 
 		show({
-			title: translate(TranslationKeys.rating_requires_account_title),
+			title: translate(TranslationKeys.access_limited),
 			onClose: close,
 			children: (
 				<View style={{ gap: 12 }}>
 					<Text style={{ color: theme.sheet.text }}>
-						{translate(TranslationKeys.rating_requires_account_description)}
+						{translate(TranslationKeys.limited_access_description)}
 					</Text>
 					<ProjectButton
 						text={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}

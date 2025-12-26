@@ -34,7 +34,6 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
-import PermissionModal from '@/components/PermissionModal/PermissionModal';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -70,7 +69,6 @@ export default function FoodDetailsScreen() {
 	const selectedCanteen = useSelectedCanteen();
 	const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
 	const [foodDetails, setFoodDetails] = useState<any>(null);
-        const [isNotificationPermissionVisible, setIsNotificationPermissionVisible] = useState(false);
         const { openRatingPermissionModal } = useRatingPermissionModal();
 
 	const [activeTab, setActiveTab] = useState('feedbacks');
@@ -389,7 +387,7 @@ export default function FoodDetailsScreen() {
 
 	const updateNotification = async () => {
 		if (!user?.id) {
-			setIsNotificationPermissionVisible(true);
+			openRatingPermissionModal();
 			return;
 		}
 		if (isSmartPhone()) {
@@ -772,7 +770,6 @@ export default function FoodDetailsScreen() {
                                 </View>
                         </View>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
-                        <PermissionModal isVisible={isNotificationPermissionVisible} setIsVisible={setIsNotificationPermissionVisible} />
                 </View>
         </ScrollView>
 			{isActive && (
