@@ -168,6 +168,13 @@ const FeedbackScreen = () => {
 				})),
 		[]
 	);
+	const deviceSettingsItems = useMemo(() => {
+		const numericDeviceKeys = new Set(['display_height', 'display_width', 'display_fontscale', 'display_pixelratio', 'display_scale']);
+		return deviceData.map(item => ({
+			...item,
+			keyboardType: numericDeviceKeys.has(item.key) ? 'numeric' : undefined,
+		}));
+	}, []);
 
 	const getFeedbackIcon = useCallback(
 		(iconName: string) => {
@@ -494,10 +501,22 @@ const FeedbackScreen = () => {
 								</View>
 							</View>
 						)}
-						{deviceData.map((item, index) => (
-							<TouchableOpacity key={index}>
-								<FeedbackItem key={index} title={item.title} value={item?.key === 'device_brand' ? (inputValues[item.key] ? inputValues[item.key] : translate(TranslationKeys.unknown)) : inputValues[item.key] || ''} theme={theme} windowWidth={windowWidth} />
-							</TouchableOpacity>
+						{deviceSettingsItems.map((item, index) => (
+							<SettingsList
+								key={item.key}
+								iconBgColor={primaryColor}
+								label={translate(item.title as any)}
+								value={excerpt(String(item.key === 'device_brand' ? (inputValues[item.key] ? inputValues[item.key] : translate(TranslationKeys.unknown)) : inputValues[item.key] || ''), windowWidth > 850 ? 50 : 20)}
+								handleFunction={() => {
+									openFeedbackSheet({
+										key: item.key,
+										title: item.title,
+										keyboardType: item.keyboardType,
+									});
+								}}
+								groupPosition={index === 0 ? 'top' : index === deviceSettingsItems.length - 1 ? 'bottom' : 'middle'}
+								noIconIndent
+							/>
 						))}
 
 						{errorJson && <Text style={{ color: 'red', marginVertical: 10 }}>{errorJson}</Text>}
