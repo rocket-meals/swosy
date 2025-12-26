@@ -51,6 +51,14 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
                                 multiline={multiline}
                                 numberOfLines={numberOfLines}
                                 textAlignVertical={textAlignVertical}
+                                blurOnSubmit={!multiline}
+                                returnKeyType={multiline ? 'default' : 'done'}
+                                onSubmitEditing={() => {
+                                        if (!multiline && !disableSave) {
+                                                Keyboard.dismiss();
+                                                onSave();
+                                        }
+                                }}
                         />
 
                         <View style={styles.buttonContainer}>
