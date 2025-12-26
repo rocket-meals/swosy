@@ -23,6 +23,7 @@ type ModalTextInputSheetProps = {
 	inputStyle?: object;
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
+	allowSubmitWhenDisabled?: boolean;
 };
 
 const defaultCheckTextInput: CheckTextInput = value => ({
@@ -42,6 +43,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	inputStyle,
 	autoFocus,
 	checkTextInput,
+	allowSubmitWhenDisabled,
 }) => {
 	const [value, setValue] = useState(initialValue ?? '');
 
@@ -81,6 +83,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 			keyboardType={keyboardType}
 			inputStyle={inputStyle}
 			autoFocus={autoFocus}
+			allowSubmitWhenDisabled={allowSubmitWhenDisabled}
 		/>
 	);
 };
@@ -98,6 +101,7 @@ type OpenModalTextInputOptions = {
 	inputStyle?: object;
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
+	allowSubmitWhenDisabled?: boolean;
 };
 
 const useModalTextInput = () => {
@@ -122,6 +126,7 @@ const useModalTextInput = () => {
 			inputStyle,
 			autoFocus,
 			checkTextInput,
+			allowSubmitWhenDisabled,
 		}: OpenModalTextInputOptions) => {
 			show({
 				title,
@@ -142,6 +147,7 @@ const useModalTextInput = () => {
 						inputStyle={inputStyle}
 						autoFocus={autoFocus}
 						checkTextInput={checkTextInput}
+						allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}
 					/>
 				),
 			});
