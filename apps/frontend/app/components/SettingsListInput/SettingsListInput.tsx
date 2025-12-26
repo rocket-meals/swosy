@@ -21,6 +21,7 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
         numberOfLines,
         textAlignVertical,
         inputStyle,
+        submitOnDone = true,
 }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
@@ -51,6 +52,14 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
                                 multiline={multiline}
                                 numberOfLines={numberOfLines}
                                 textAlignVertical={textAlignVertical}
+                                returnKeyType={submitOnDone && !multiline ? 'done' : undefined}
+                                blurOnSubmit={submitOnDone && !multiline}
+                                onSubmitEditing={() => {
+                                        if (submitOnDone && !multiline && !disableSave) {
+                                                Keyboard.dismiss();
+                                                onSave();
+                                        }
+                                }}
                         />
 
                         <View style={styles.buttonContainer}>
