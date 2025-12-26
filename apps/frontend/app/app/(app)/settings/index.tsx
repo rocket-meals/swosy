@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, SafeAreaView, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Keyboard, SafeAreaView, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -9,7 +9,7 @@ import { isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import useModalTextInput, { checkTextInput } from '@/hooks/useModalTextInput';
+import SettingsListNickname from '@/components/SettingsListNickname';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,7 +62,7 @@ const Settings = () => {
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
-        const { show: showScrollViewModal } = useMyScrollViewModal();
+        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { manualCheck } = useExpoUpdateChecker();
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
@@ -74,7 +74,6 @@ const Settings = () => {
         const { openMenuPositionModal } = useMenuPositionModal();
         const { openCardColumnsModal } = useCardColumnsModal();
         const { openFirstDayOfWeekModal } = useFirstDayOfWeekModal();
-        const { openModal: openTextInputModal } = useModalTextInput();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
@@ -135,6 +134,11 @@ const Settings = () => {
                 [sortBy, sortingOptionLabels, translate]
         );
 
+        const closeNicknameSheet = useCallback(() => {
+                Keyboard.dismiss();
+                closeScrollViewModal();
+        }, [closeScrollViewModal]);
+
         const saveNickname = useCallback(
                 async (value: string) => {
                         const nextNickname = value?.trim?.() ?? '';
@@ -155,8 +159,9 @@ const Settings = () => {
                                         payload: nextNickname,
                                 });
                         }
+                        closeNicknameSheet();
                 },
-                [dispatch, isRegisteredUser, profile, profileHelper]
+                [closeNicknameSheet, dispatch, isRegisteredUser, profile, profileHelper]
         );
 
 	useFocusEffect(
@@ -180,14 +185,19 @@ const Settings = () => {
 	}, []);
 
         const openNicknameSheet = useCallback(() => {
-                openTextInputModal({
-                        title: translate(TranslationKeys.nickname),
-                        initialValue: currentNickname,
-                        placeholder: translate(TranslationKeys.nickname),
-                        onSave: saveNickname,
-                        validate: value => checkTextInput(value, { sanitize: text => text.trim() }),
-                });
-        }, [currentNickname, openTextInputModal, saveNickname, translate]);
+                showScrollViewModal(
+                        {
+                                title: translate(TranslationKeys.nickname),
+                                onClose: closeNicknameSheet,
+                                children: (
+                                        <SettingsListNickname
+                                                initialValue={currentNickname}
+                                                onSave={saveNickname}
+                                        />
+                                ),
+                        }
+                );
+        }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
         const openColorSchemeSheet = useCallback(() => {
                 openThemeSettingsModal({
