@@ -94,11 +94,11 @@ const ModalTextInputContent: React.FC<ModalTextInputContentProps> = ({
 
         return (
                 <SettingsListInput
-                        placeholder={placeholder ?? ''}
+                        placeholder={placeholder != null ? placeholder : ''}
                         value={value}
                         onChangeText={setValue}
                         onSave={handleSave}
-                        saveLabel={saveLabel ?? ''}
+                        saveLabel={saveLabel != null ? saveLabel : ''}
                         disableSave={disableSave}
                         multiline={multiline}
                         numberOfLines={numberOfLines}
@@ -127,8 +127,12 @@ const useModalTextInput = () => {
                                 children: (
                                         <ModalTextInputContent
                                                 initialValue={config.initialValue}
-                                                placeholder={config.placeholder ?? config.title}
-                                                saveLabel={config.saveLabel ?? translate(TranslationKeys.save)}
+                                                placeholder={config.placeholder != null ? config.placeholder : config.title}
+                                                saveLabel={
+                                                        config.saveLabel != null
+                                                                ? config.saveLabel
+                                                                : translate(TranslationKeys.save)
+                                                }
                                                 onSave={config.onSave}
                                                 keyboardType={config.keyboardType}
                                                 multiline={config.multiline}
