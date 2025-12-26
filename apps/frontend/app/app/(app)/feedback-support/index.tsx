@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Dimensions, Keyboard, KeyboardTypeOptions, PixelRatio, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, KeyboardTypeOptions, PixelRatio, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import FeedbackItem from '../../../components/FeedbackSupport/FeedbackSupport';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { deviceData, feedbackData } from '../../../constants/FeedbackSupportData';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSelector } from 'react-redux';
 import * as DeviceInfo from 'expo-device';
@@ -16,48 +15,12 @@ import { FontAwesome5, MaterialIcons, Octicons } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, EmailHelper } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
-import SettingsListInput from '@/components/SettingsListInput';
 import { excerpt } from '@/constants/HelperFunctions';
-
-type FeedbackFieldSheetProps = {
-	initialValue: string;
-	placeholder: string;
-	saveLabel: string;
-	onSave: (value: string) => void;
-	multiline?: boolean;
-	keyboardType?: KeyboardTypeOptions;
-};
-
-const FeedbackFieldSheet: React.FC<FeedbackFieldSheetProps> = ({ initialValue, placeholder, saveLabel, onSave, multiline = false, keyboardType }) => {
-	const [value, setValue] = useState(initialValue ?? '');
-	const disableSave = useMemo(() => value === initialValue, [initialValue, value]);
-
-	useEffect(() => {
-		setValue(initialValue ?? '');
-	}, [initialValue]);
-
-	const handleSave = useCallback(() => onSave(value), [onSave, value]);
-
-	return (
-		<SettingsListInput
-			placeholder={placeholder}
-			value={value}
-			onChangeText={setValue}
-			onSave={handleSave}
-			saveLabel={saveLabel}
-			disableSave={disableSave}
-			multiline={multiline}
-			numberOfLines={multiline ? 4 : 1}
-			textAlignVertical={multiline ? 'top' : 'center'}
-			keyboardType={keyboardType}
-			inputStyle={multiline ? { height: 150 } : undefined}
-		/>
-	);
-};
+import useModalTextInput, { checkTextInput } from '@/hooks/useModalTextInput';
 
 const FeedbackScreen = () => {
 	useSetPageTitle(TranslationKeys.feedback_and_support);
@@ -76,7 +39,7 @@ const FeedbackScreen = () => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [errorJson, setErrorJson] = useState<string | null>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { openModal: openTextInputModal } = useModalTextInput();
 
 	useFocusEffect(
 		useCallback(() => {
@@ -152,11 +115,6 @@ const FeedbackScreen = () => {
 		setErrorJson(null);
 	};
 
-	const closeFeedbackSheet = useCallback(() => {
-		Keyboard.dismiss();
-		closeScrollViewModal();
-	}, [closeScrollViewModal]);
-
 	const feedbackSettingsItems = useMemo(
 		() =>
 			feedbackData
@@ -209,28 +167,35 @@ const FeedbackScreen = () => {
 			multiline?: boolean;
 			keyboardType?: KeyboardTypeOptions;
 		}) => {
-			showScrollViewModal({
+			const isEmailField = key === 'contact_email';
+			openTextInputModal({
 				title: translate(title as any),
-				onClose: closeFeedbackSheet,
-				children: (
-					<FeedbackFieldSheet
-						placeholder={translate(title as any)}
-						initialValue={String(inputValues[key] ?? '')}
-						saveLabel={translate(TranslationKeys.save)}
-						onSave={value => {
-							setInputValues(prevState => ({
-								...prevState,
-								[key]: value,
-							}));
-							closeFeedbackSheet();
-						}}
-						multiline={multiline}
-						keyboardType={keyboardType}
-					/>
-				),
+				initialValue: String(inputValues[key] ?? ''),
+				placeholder: translate(title as any),
+				onSave: value => {
+					setInputValues(prevState => ({
+						...prevState,
+						[key]: value,
+					}));
+				},
+				multiline,
+				keyboardType,
+				numberOfLines: multiline ? 4 : 1,
+				textAlignVertical: multiline ? 'top' : 'center',
+				inputStyle: multiline ? { height: 150 } : undefined,
+				validate: isEmailField
+					? value => {
+							const trimmed = value.trim();
+							if (trimmed.length === 0) {
+								return { isValid: true, value: '' };
+							}
+							const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(trimmed);
+							return { isValid, value: trimmedEmail };
+					  }
+					: value => checkTextInput(value),
 			});
 		},
-		[closeFeedbackSheet, inputValues, showScrollViewModal, translate]
+		[inputValues, openTextInputModal, translate]
 	);
 
 	const handleCreateAppFeedback = async () => {
