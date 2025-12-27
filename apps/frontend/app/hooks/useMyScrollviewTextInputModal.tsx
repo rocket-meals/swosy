@@ -35,7 +35,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	numberOfLines,
 	textAlignVertical,
 	inputStyle,
-	autoFocus,
+	autoFocus = true,
 	checkTextInput,
 	allowSubmitWhenDisabled,
 }) => {

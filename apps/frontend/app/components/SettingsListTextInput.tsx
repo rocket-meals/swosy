@@ -151,7 +151,7 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	numberOfLines,
 	textAlignVertical,
 	inputStyle,
-	autoFocus,
+	autoFocus = true,
 	checkTextInput,
 	allowSubmitWhenDisabled,
 	rightElement,
