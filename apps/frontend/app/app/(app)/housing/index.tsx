@@ -217,7 +217,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		(apartment: DatabaseTypes.Apartments) => {
 			if (!apartment?.id) return;
 			openDirectusImageEditModal({
-				item: apartment,
+				itemId: apartment?.building,
 				imageField: 'image',
 				collection: 'buildings',
 				onUpdated: () => {
