@@ -3,7 +3,6 @@ export interface CalendarSheetProps {
 	onSelect?: (dateString: string) => void;
 	selectedDateProp?: string;
 	updateGlobal?: boolean;
-	buttonColor?: string;
 }
 
 export type Direction = 'left' | 'right';

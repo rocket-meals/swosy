@@ -4,7 +4,6 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { CalendarSheetProps, Direction } from './types';
 import MyScrollViewModal from '@/components/MyScrollViewModal';
-import ProjectButton from '@/components/ProjectButton';
 import { isWeb } from '@/constants/Constants';
 import { Entypo } from '@expo/vector-icons';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
@@ -18,7 +17,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { format, isValid, parse } from 'date-fns';
 
-const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, selectedDateProp, updateGlobal, buttonColor }) => {
+const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, selectedDateProp, updateGlobal }) => {
     const { theme } = useTheme();
     const { translate } = useLanguage();
     const dispatch = useDispatch();
@@ -29,7 +28,6 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
     const { selectedDate } = useSelector((state: RootState) => state.food);
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
     const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-    const actionColor = buttonColor ?? foods_area_color;
 
     const weekStartMap: Record<string, number> = {
         monday: 1,
@@ -134,11 +132,6 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                     inputMode="numeric"
                 />
                 {manualError ? <Text style={[styles.manualErrorText, { color: theme.sheet.inputBorderInvalid }]}>{manualError}</Text> : null}
-                <ProjectButton
-                    text={translate(TranslationKeys.done)}
-                    onPress={handleManualSubmit}
-                    backgroundColor={actionColor}
-                />
             </View>
             <View
                 style={{
