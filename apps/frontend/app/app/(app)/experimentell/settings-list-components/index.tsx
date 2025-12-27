@@ -76,7 +76,6 @@ const SettingsListComponents = () => {
 						isValid: value.trim().length > 0,
 						value: value.trim(),
 					})}
-					autoFocus={false}
 					groupPosition="single"
 				/>
 
