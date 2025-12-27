@@ -41,6 +41,14 @@ const SettingsListComponents = () => {
 					value="Beispielwert"
 					groupPosition="single"
 				/>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList Check</Text>
+				<SettingsList
+					iconBgColor={primaryColor}
+					leftIcon={<MaterialCommunityIcons name="format-list-text" size={24} color={theme.screen.icon} />}
+					title="Dies ist ein extrem langer Titel, der in dieser Zeile nicht vollständig angezeigt werden kann."
+					value="Auch dieser sehr lange Wert sollte ordentlich umgebrochen werden, damit alles lesbar bleibt."
+					groupPosition="single"
+				/>
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListEditable</Text>
 				<SettingsListEditable
