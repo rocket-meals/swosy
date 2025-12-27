@@ -19,6 +19,7 @@ import { DatabaseTypes, EmailHelper } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
+import SettingsListEditable from '@/components/SettingsListEditable';
 import useModalTextInput from '@/hooks/useModalTextInput';
 import { excerpt } from '@/constants/HelperFunctions';
 
@@ -298,13 +299,12 @@ const FeedbackScreen = () => {
 							{translate(TranslationKeys.your_request)}
 						</Text>
 						{feedbackSettingsItems.map((item, index) => (
-							<SettingsList
+							<SettingsListEditable
 								key={item.key}
 								iconBgColor={primaryColor}
 								leftIcon={getFeedbackIcon(item.icon)}
 								label={translate(item.title as any)}
 								value={excerpt(String(inputValues[item.key] ?? ''), windowWidth > 850 ? 50 : 20)}
-								rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
 								handleFunction={() => {
 									openFeedbackSheet({
 										key: item.key,
