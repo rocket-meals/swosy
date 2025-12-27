@@ -539,6 +539,16 @@
     "tr": "Onayla",
     "zh": "确认"
   },
+  "done": {
+    "de": "Fertig",
+    "en": "Done",
+    "ar": "تم",
+    "es": "Hecho",
+    "fr": "Terminé",
+    "ru": "Готово",
+    "tr": "Bitti",
+    "zh": "完成"
+  },
   "are_you_sure_to_delete_your_account": {
     "de": "Sind Sie sicher, dass Sie Ihren Account löschen möchten?",
     "en": "Are you sure to delete your account?",
