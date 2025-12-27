@@ -128,6 +128,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                     }}
                     onSubmitEditing={handleManualSubmit}
                     returnKeyType="done"
+                    returnKeyLabel={translate(TranslationKeys.done)}
                     keyboardType="number-pad"
                     inputMode="numeric"
                 />
