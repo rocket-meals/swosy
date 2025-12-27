@@ -9,7 +9,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import SettingsListDate from '@/components/SettingsListDate';
-import SettingsListInput from '@/components/SettingsListInput';
+import SettingsListTextInput from '@/components/SettingsListTextInput';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import styles from './styles';
 
@@ -65,15 +65,19 @@ const SettingsListComponents = () => {
 					groupPosition="single"
 				/>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListInput</Text>
-				<SettingsListInput
-					placeholder="Eingabe"
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListTextInput</Text>
+				<SettingsListTextInput
+					label="Eingabe"
 					value={inputValue}
-					onChangeText={setInputValue}
-					onSave={() => setInputValue(inputValue.trim())}
+					placeholder="Eingabe"
 					saveLabel="Speichern"
-					disableSave={inputValue.trim().length === 0}
+					onSave={value => setInputValue(value.trim())}
+					checkTextInput={value => ({
+						isValid: value.trim().length > 0,
+						value: value.trim(),
+					})}
 					autoFocus={false}
+					groupPosition="single"
 				/>
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListNickname</Text>

@@ -20,7 +20,7 @@ import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
-import useModalTextInput from '@/hooks/useModalTextInput';
+import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { excerpt } from '@/constants/HelperFunctions';
 
 const FeedbackScreen = () => {
@@ -40,7 +40,7 @@ const FeedbackScreen = () => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [errorJson, setErrorJson] = useState<string | null>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const { openModalTextInput } = useModalTextInput();
+	const { openTextInputModal } = useMyScrollviewTextInputModal();
 
 	useFocusEffect(
 		useCallback(() => {
@@ -169,7 +169,7 @@ const FeedbackScreen = () => {
 			keyboardType?: KeyboardTypeOptions;
 		}) => {
 			const isEmailField = key === 'contact_email';
-			openModalTextInput({
+			openTextInputModal({
 				title: translate(title as any),
 				placeholder: translate(title as any),
 				initialValue: String(inputValues[key] ?? ''),
@@ -197,7 +197,7 @@ const FeedbackScreen = () => {
 					: value => ({ isValid: true, value }),
 			});
 		},
-		[inputValues, openModalTextInput, translate]
+		[inputValues, openTextInputModal, translate]
 	);
 
 	const handleCreateAppFeedback = async () => {

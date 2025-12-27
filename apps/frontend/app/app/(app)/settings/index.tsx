@@ -10,7 +10,7 @@ import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import useModalTextInput from '@/hooks/useModalTextInput';
+import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -86,7 +86,7 @@ const Settings = () => {
         const profileHelper = useMemo(() => new ProfileHelper(), []);
         const customerConfig = useCustomerConfig();
         const { openCustomerConfigModal } = useCustomerConfigModal();
-        const { openModalTextInput } = useModalTextInput();
+        const { openTextInputModal } = useMyScrollviewTextInputModal();
 
         const languageCode = language;
 
@@ -181,7 +181,7 @@ const Settings = () => {
 	}, []);
 
         const openNicknameSheet = useCallback(() => {
-                openModalTextInput({
+                openTextInputModal({
                         title: translate(TranslationKeys.nickname),
                         placeholder: translate(TranslationKeys.nickname),
                         initialValue: currentNickname,
@@ -192,7 +192,7 @@ const Settings = () => {
                                 value: value.trim(),
                         }),
                 });
-        }, [currentNickname, openModalTextInput, saveNickname, translate]);
+        }, [currentNickname, openTextInputModal, saveNickname, translate]);
 
         const openColorSchemeSheet = useCallback(() => {
                 openThemeSettingsModal({

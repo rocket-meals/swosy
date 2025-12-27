@@ -3114,14 +3114,14 @@
     "zh": "Close modal"
   },
   "modal_text_input_label": {
-    "de": "useModalTextInput Test",
-    "en": "useModalTextInput test",
-    "ar": "useModalTextInput test",
-    "es": "useModalTextInput test",
-    "fr": "useModalTextInput test",
-    "ru": "useModalTextInput test",
-    "tr": "useModalTextInput test",
-    "zh": "useModalTextInput test"
+    "de": "useMyScrollviewTextInputModal Test",
+    "en": "useMyScrollviewTextInputModal test",
+    "ar": "useMyScrollviewTextInputModal test",
+    "es": "useMyScrollviewTextInputModal test",
+    "fr": "useMyScrollviewTextInputModal test",
+    "ru": "useMyScrollviewTextInputModal test",
+    "tr": "useMyScrollviewTextInputModal test",
+    "zh": "useMyScrollviewTextInputModal test"
   },
   "modal_text_input_placeholder": {
     "de": "Text eingeben",
