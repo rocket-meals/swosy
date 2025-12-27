@@ -348,7 +348,6 @@ const useMyScrollviewDirectusImageEditModal = () => {
 			if (!item) return;
 			show({
 				title: title ?? `${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`,
-				onClose: closeModal,
 				children: (
 					<DirectusImageEditModalContent
 						item={item}
