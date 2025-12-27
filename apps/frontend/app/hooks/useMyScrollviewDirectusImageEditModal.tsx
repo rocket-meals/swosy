@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, Text, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,9 +16,11 @@ import { ServerAPI } from '@/redux/actions';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 
 type DirectusImageEditModalOptions = {
-	item: Record<string, any> | null | undefined;
+	item?: Record<string, any> | null;
+	itemId?: string | number | null;
 	imageField: string;
 	collection: string;
 	onUpdated?: () => void;
@@ -26,7 +28,8 @@ type DirectusImageEditModalOptions = {
 };
 
 type DirectusImageEditModalContentProps = {
-	item: Record<string, any>;
+	item?: Record<string, any> | null;
+	itemId: string;
 	imageField: string;
 	collection: string;
 	onUpdated?: () => void;
@@ -35,19 +38,51 @@ type DirectusImageEditModalContentProps = {
 
 const MAX_IMAGE_DIMENSION = 6000;
 
-const useFoodFolder = (collection: string) => {
+const useCollectionFolder = (collection: string) => {
 	const { foodCollection } = useSelector((state: RootState) => state.food);
+	const [collectionFolder, setCollectionFolder] = useState('');
 
-	if (collection !== 'foods') return '';
+	useEffect(() => {
+		let isMounted = true;
+		const loadFolder = async () => {
+			if (collection === 'foods') {
+				const id = foodCollection?.meta?.options?.folder;
+				if (isMounted) {
+					setCollectionFolder(id || '');
+				}
+				return;
+			}
 
-	const id = foodCollection?.meta?.options?.folder;
-	return id || '';
+			try {
+				const fieldResponse: any = await fetchSpecificField(collection);
+				const imageField = fieldResponse?.image;
+				const id = imageField?.meta?.options?.folder;
+				if (isMounted) {
+					setCollectionFolder(id || '');
+				}
+			} catch (error) {
+				console.error('Error fetching collection image field:', error);
+				if (isMounted) {
+					setCollectionFolder('');
+				}
+			}
+		};
+
+		loadFolder();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [collection, foodCollection]);
+
+	return collectionFolder;
 };
 
 const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps> = ({
 	item,
 	imageField,
 	collection,
+	itemId,
 	onUpdated,
 	onClose,
 }) => {
@@ -56,7 +91,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 	const { show: showScrollViewModal } = useMyScrollViewModal();
 	const [loading, setLoading] = useState({ camera: false, image: false, delete: false });
 	const [isDelete, setIsDelete] = useState(false);
-	const storage = useFoodFolder(collection);
+	const storage = useCollectionFolder(collection);
 
 	const imageRemoteUrlField = 'image_remote_url';
 	const imageGeneratedField = 'image_generated';
@@ -65,7 +100,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 		(payload: Record<string, any>) => {
 			const basePayload = { ...payload };
 
-			if (Object.prototype.hasOwnProperty.call(item, imageGeneratedField)) {
+			if (item && Object.prototype.hasOwnProperty.call(item, imageGeneratedField)) {
 				basePayload[imageGeneratedField] = false;
 			}
 			return basePayload;
@@ -75,7 +110,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 
 	const handleImagePick = useCallback(
 		async (useCamera: boolean) => {
-			if (!item?.id) return;
+			if (!itemId) return;
 			if (loading.camera || loading.image || loading.delete) return;
 			try {
 				const permissionResponse = useCamera
@@ -138,7 +173,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				setLoading(prev => ({ ...prev, camera: useCamera, image: !useCamera }));
 
 				const formData = new FormData();
-				const fileName = `${collection}_${item.id}`;
+				const fileName = `${collection}_${itemId}`;
 
 				if (Platform.OS === 'web') {
 					const blob: Blob = await new Promise((resolve, reject) => {
@@ -182,7 +217,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				const fileId = resultFileUpload.id;
 
 				const collectionHelper = new CollectionHelper(collection);
-				await collectionHelper.updateItem(String(item.id), buildUpdatePayload({ [imageField]: fileId }));
+				await collectionHelper.updateItem(String(itemId), buildUpdatePayload({ [imageField]: fileId }));
 
 				onUpdated?.();
 				onClose();
@@ -210,7 +245,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 			buildUpdatePayload,
 			collection,
 			imageField,
-			item?.id,
+			itemId,
 			loading,
 			onClose,
 			onUpdated,
@@ -222,7 +257,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 	);
 
 	const handleDeleteImage = useCallback(async () => {
-		if (!item?.id) return;
+		if (!itemId) return;
 		if (loading.camera || loading.image || loading.delete) return;
 		try {
 			setLoading(prev => ({ ...prev, delete: true }));
@@ -231,11 +266,11 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				[imageField]: null,
 			};
 
-			if (Object.prototype.hasOwnProperty.call(item, imageRemoteUrlField)) {
+			if (item && Object.prototype.hasOwnProperty.call(item, imageRemoteUrlField)) {
 				payload[imageRemoteUrlField] = null;
 			}
 
-			await collectionHelper.updateItem(String(item.id), buildUpdatePayload(payload));
+			await collectionHelper.updateItem(String(itemId), buildUpdatePayload(payload));
 			onUpdated?.();
 			onClose();
 		} catch (error) {
@@ -243,7 +278,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 		} finally {
 			setLoading(prev => ({ ...prev, delete: false }));
 		}
-	}, [buildUpdatePayload, collection, imageField, item, loading, onClose, onUpdated]);
+	}, [buildUpdatePayload, collection, imageField, item, itemId, loading, onClose, onUpdated]);
 
 	const actionItems = useMemo(() => {
 		if (isDelete) {
@@ -344,13 +379,15 @@ const useMyScrollviewDirectusImageEditModal = () => {
 	}, [close]);
 
 	const openDirectusImageEditModal = useCallback(
-		({ item, imageField, collection, onUpdated, title }: DirectusImageEditModalOptions) => {
-			if (!item) return;
+		({ item, itemId, imageField, collection, onUpdated, title }: DirectusImageEditModalOptions) => {
+			const resolvedItemId = itemId ?? item?.id;
+			if (!resolvedItemId) return;
 			show({
 				title: title ?? `${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`,
 				children: (
 					<DirectusImageEditModalContent
 						item={item}
+						itemId={String(resolvedItemId)}
 						imageField={imageField}
 						collection={collection}
 						onUpdated={onUpdated}
