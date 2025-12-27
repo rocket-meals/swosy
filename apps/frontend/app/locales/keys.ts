@@ -53,7 +53,6 @@ export enum TranslationKeys {
 	without_account = 'without_account',
 	reset = 'reset',
 	confirm = 'confirm',
-	done = 'done',
 	are_you_sure_to_delete_your_account = 'are_you_sure_to_delete_your_account',
 	account_deletion_info = 'account_deletion_info',
 	dataAccess = 'dataAccess',
