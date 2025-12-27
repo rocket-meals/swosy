@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -119,9 +119,9 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		(food: DatabaseTypes.Foods) => {
 			if (!food?.id) return;
 			openDirectusImageEditModal({
-				item: food,
-				imageField: 'image',
-				collection: 'foods',
+				itemId: food.id,
+				field: 'image',
+				collection: CollectionNames.FOODS,
 				onUpdated: init,
 			});
 		},

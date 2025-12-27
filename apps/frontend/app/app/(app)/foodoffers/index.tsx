@@ -10,7 +10,7 @@ import {
 	View,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CollectibleAt, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import styles from './styles';
 import {useTheme} from '@/hooks/useTheme';
 import {DrawerContentComponentProps, DrawerNavigationProp} from '@react-navigation/drawer';
@@ -431,9 +431,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		(food: DatabaseTypes.Foods) => {
 			if (!food?.id) return;
 			openDirectusImageEditModal({
-				item: food,
-				imageField: 'image',
-				collection: 'foods',
+				itemId: food.id,
+				field: 'image',
+				collection: CollectionNames.FOODS,
 				onUpdated: fetchFoods,
 			});
 		},
