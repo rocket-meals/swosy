@@ -1,6 +1,6 @@
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ApartmentSortOption, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import { ApartmentSortOption, CollectibleAt, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -216,10 +216,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const openImageManagementModal = useCallback(
 		(apartment: DatabaseTypes.Apartments) => {
 			if (!apartment?.id) return;
+			const buildingId = typeof apartment.building === 'object' ? apartment.building?.id : apartment.building;
+			if (!buildingId) return;
 			openDirectusImageEditModal({
-				itemId: apartment?.building,
-				imageField: 'image',
-				collection: 'buildings',
+				itemId: buildingId,
+				field: 'image',
+				collection: CollectionNames.BUILDINGS,
 				onUpdated: () => {
 					setApartmentsDispatched(false);
 					fetchAllApartments();
