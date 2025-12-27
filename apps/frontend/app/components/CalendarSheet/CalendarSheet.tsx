@@ -46,6 +46,21 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
         setCurrentMonth(newMonth);
     };
 
+    const formatManualInput = (value: string) => {
+        const digitsOnly = value.replace(/\D/g, '').slice(0, 8);
+        const day = digitsOnly.slice(0, 2);
+        const month = digitsOnly.slice(2, 4);
+        const year = digitsOnly.slice(4, 8);
+        let formatted = day;
+        if (month.length > 0) {
+            formatted = `${formatted}.${month}`;
+        }
+        if (year.length > 0) {
+            formatted = `${formatted}.${year}`;
+        }
+        return formatted;
+    };
+
     const parseManualDate = (value: string) => {
         const trimmed = value.trim();
         if (/^\d{2}\.\d{2}\.\d{4}$/.test(trimmed)) {
@@ -108,11 +123,13 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                     placeholder="DD.MM.YYYY"
                     value={manualDate}
                     onChangeText={text => {
-                        setManualDate(text);
+                        setManualDate(formatManualInput(text));
                         if (manualError) setManualError('');
                     }}
                     onSubmitEditing={handleManualSubmit}
                     returnKeyType="done"
+                    keyboardType="number-pad"
+                    inputMode="numeric"
                 />
                 {manualError ? <Text style={[styles.manualErrorText, { color: theme.sheet.inputBorderInvalid }]}>{manualError}</Text> : null}
             </View>
