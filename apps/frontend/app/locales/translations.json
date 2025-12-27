@@ -2309,6 +2309,16 @@
     "tr": "Gönder",
     "zh": "提交"
   },
+  "done": {
+    "de": "Fertig",
+    "en": "Done",
+    "ar": "تم",
+    "es": "Listo",
+    "fr": "Terminé",
+    "ru": "Готово",
+    "tr": "Tamam",
+    "zh": "完成"
+  },
   "warning": {
     "de": "Warnung",
     "en": "Warning",

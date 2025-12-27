@@ -229,6 +229,7 @@ export enum TranslationKeys {
 	color = 'color',
 	cancel = 'cancel',
 	submit = 'submit',
+	done = 'done',
 	warning = 'warning',
 	for_example = 'for_example',
 	courseTimetableDescriptionEmpty = 'courseTimetableDescriptionEmpty',
