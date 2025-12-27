@@ -1,3 +1,4 @@
+// Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
