@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Text, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -53,6 +53,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const { show: showScrollViewModal } = useMyScrollViewModal();
 	const [loading, setLoading] = useState({ camera: false, image: false, delete: false });
 	const [isDelete, setIsDelete] = useState(false);
 	const storage = useFoodFolder(collection);
@@ -186,12 +187,38 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				onUpdated?.();
 				onClose();
 			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				const errorDetails = JSON.stringify(error ?? null, null, 2);
+
+				showScrollViewModal({
+					title: translate(TranslationKeys.error),
+					children: (
+						<View style={{ gap: 12 }}>
+							<Text style={{ color: theme.screen.text }}>
+								Fehler beim Hochladen: {errorMessage}
+							</Text>
+							<Text style={{ color: theme.screen.text, fontFamily: 'monospace' }}>{errorDetails}</Text>
+						</View>
+					),
+				});
 				console.error('Error selecting image:', error);
 			} finally {
 				setLoading({ camera: false, image: false, delete: false });
 			}
 		},
-		[buildUpdatePayload, collection, imageField, item?.id, loading, onClose, onUpdated, storage]
+		[
+			buildUpdatePayload,
+			collection,
+			imageField,
+			item?.id,
+			loading,
+			onClose,
+			onUpdated,
+			showScrollViewModal,
+			storage,
+			theme.screen.text,
+			translate,
+		]
 	);
 
 	const handleDeleteImage = useCallback(async () => {
