@@ -1,3 +1,4 @@
+// Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import SettingsListInput from '@/components/SettingsListInput';

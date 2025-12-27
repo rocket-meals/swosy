@@ -1,3 +1,4 @@
+// Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React from 'react';
 import { Text, View } from 'react-native';
 import { parse, format } from 'date-fns';
