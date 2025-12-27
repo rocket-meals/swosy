@@ -6,5 +6,6 @@ export interface ProjectButtonProps {
 	onPress?: () => void;
 	iconLeft?: ReactNode;
 	iconRight?: ReactNode;
+	backgroundColor?: string;
 	style?: StyleProp<ViewStyle>;
 }
