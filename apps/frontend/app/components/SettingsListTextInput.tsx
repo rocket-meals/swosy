@@ -115,7 +115,6 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 				<ProjectButton
 					text={saveLabel}
 					onPress={handlePressSave}
-					style={[styles.saveButton, disableSave && styles.saveButtonDisabled]}
 				/>
 			</View>
 		</View>
@@ -259,11 +258,5 @@ const styles = StyleSheet.create({
 		width: '100%',
 		marginTop: 8,
 		alignItems: 'stretch',
-	},
-	saveButton: {
-		marginVertical: 0,
-	},
-	saveButtonDisabled: {
-		opacity: 0.5,
 	},
 });
