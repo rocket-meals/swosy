@@ -221,7 +221,6 @@ const styles = StyleSheet.create({
 	sheetView: {
 		width: '100%',
 		padding: 10,
-		paddingBottom: 20,
 		alignItems: 'stretch',
 	},
 	keyboardAvoidingView: {
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		marginTop: 12,
 		fontFamily: 'Poppins_400Regular',
-		fontSize: 16,
+		fontSize: 14,
 	},
 	buttonContainer: {
 		width: '100%',
