@@ -221,7 +221,6 @@ const styles = StyleSheet.create({
 	sheetView: {
 		width: '100%',
 		padding: 10,
-		paddingBottom: 20,
 		alignItems: 'stretch',
 	},
 	keyboardAvoidingView: {
