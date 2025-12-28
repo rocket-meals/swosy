@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		marginTop: 12,
 		fontFamily: 'Poppins_400Regular',
-		fontSize: 16,
+		fontSize: 14,
 	},
 	buttonContainer: {
 		width: '100%',
