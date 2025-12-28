@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
 	},
 	buttonContainer: {
 		width: '100%',
-		marginTop: 8,
+		marginTop: 4,
 		alignItems: 'stretch',
 	},
 });
