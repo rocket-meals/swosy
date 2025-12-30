@@ -35,7 +35,7 @@ const useCustomerConfigModal = () => {
                                 title: translate(TranslationKeys.backend_server),
                                 onClose: close,
                                 children: (
-                                        <View style={{ gap: 12, width: '100%' }}>
+                                        <View style={{ width: '100%' }}>
                                                 {servers.map((srv, index) => {
                                                         const isSelected = selectedServer === srv.server_url;
                                                         const groupPosition =
