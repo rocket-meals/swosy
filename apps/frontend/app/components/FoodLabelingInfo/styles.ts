@@ -6,6 +6,5 @@ export default StyleSheet.create({
 		fontFamily: 'Poppins_400Regular',
 		fontStyle: 'italic',
 		marginTop: 20,
-		textAlign: 'justify',
 	},
 });
