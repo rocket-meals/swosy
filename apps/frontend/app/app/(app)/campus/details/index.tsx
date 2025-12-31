@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
-import Information from '@/components/Information';
+import LocationInformation from '@/components/LocationInformation/LocationInformation';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
@@ -97,7 +97,7 @@ const Details = () => {
   }, [campusDetails, openLinkCoordinateModal, translate]);
 
   const renderContent = useMemo(() => {
-    if (activeTab === 'information') return <Information campusDetails={campusDetails} />;
+    if (activeTab === 'information') return <LocationInformation campusDetails={campusDetails} />;
     if (activeTab === 'description') return <BuildingDescription campusDetails={campusDetails} />;
     return null;
   }, [activeTab, campusDetails]);
