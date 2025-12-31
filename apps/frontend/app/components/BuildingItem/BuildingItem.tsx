@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useCallback } from 'react';
-import { Linking, Platform, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
@@ -10,6 +10,7 @@ import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
@@ -32,6 +33,7 @@ export interface BuildingItemPropsOptimized {
 const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImage, openDistanceSheet, settings }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const { openLinkCoordinateModal } = useLinkCoordinateModal();
 
 	const { amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme: mode, screenWidth, isManagement = false } = settings;
 
@@ -55,18 +57,11 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 			return;
 		}
 		const [longitude, latitude] = coordinates;
-		const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-
-		if (Platform.OS === 'web') {
-			window.open(googleMapsUrl, '_blank');
-		} else {
-			const mapsUrl = Platform.OS === 'ios' ? `maps://?q=${latitude},${longitude}` : `geo:${latitude},${longitude}?q=${latitude},${longitude}`;
-			Linking.openURL(mapsUrl).catch(err => {
-				console.error('Error opening navigation:', err);
-				Linking.openURL(googleMapsUrl).catch(() => {});
-			});
-		}
-	}, [campus]);
+		openLinkCoordinateModal({
+			latlon: { latitude, longitude },
+			title: translate(TranslationKeys.open_navitation_to_location),
+		});
+	}, [campus, openLinkCoordinateModal, translate]);
 
 	const cardWidth = useMemo(() => {
 		return amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
