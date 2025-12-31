@@ -72,7 +72,6 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 											key={attribute?.id ?? `${item?.id}-${index}`}
 											attr={attribute}
 											groupPosition={groupPosition}
-											showSeparator={index !== attributeItems.length - 1}
 										/>
 									);
 								})}
