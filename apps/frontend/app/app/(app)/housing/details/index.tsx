@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
-import Information from '@/components/Information';
+import LocationInformation from '@/components/LocationInformation/LocationInformation';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
@@ -81,7 +81,7 @@ const Details = () => {
 	const renderContent = () => {
 		switch (activeTab) {
 			case 'information':
-				return <Information campusDetails={apartmentDetails} />;
+				return <LocationInformation campusDetails={apartmentDetails} />;
 			case 'description':
 				return <BuildingDescription campusDetails={apartmentDetails} />;
 			case 'washing-machine':
