@@ -11,7 +11,7 @@ import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
-import { isWeb } from '@/constants/Constants';
+import { isWeb, settingsListSectionGap } from '@/constants/Constants';
 import { ServerAPI } from '@/redux/actions';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -323,6 +323,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 			icon: <MaterialCommunityIcons name="close" size={24} />,
 			groupPosition: 'single',
 			showSeparator: false,
+			isCancel: true,
 			onPress: () => {
 				if (isDelete) {
 					setIsDelete(false);
@@ -383,16 +384,17 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 		<View style={{ width: '100%' }}>
 			{actionItems.map((item, index) => {
 				return (
-					<SettingsList
-						key={item.key}
-						label={item.label}
-						leftIcon={item.icon}
-						groupPosition={item.groupPosition}
-						showSeparator={item.showSeparator}
-						rightElement={item.rightElement}
-						rightIcon={item.rightIcon}
-						handleFunction={item.onPress}
-					/>
+					<View key={item.key} style={item.isCancel && index > 0 ? { marginTop: settingsListSectionGap } : undefined}>
+						<SettingsList
+							label={item.label}
+							leftIcon={item.icon}
+							groupPosition={item.groupPosition}
+							showSeparator={item.showSeparator}
+							rightElement={item.rightElement}
+							rightIcon={item.rightIcon}
+							handleFunction={item.onPress}
+						/>
+					</View>
 				);
 			})}
 		</View>
