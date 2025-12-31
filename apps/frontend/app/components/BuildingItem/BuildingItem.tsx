@@ -1,11 +1,10 @@
 import React, { memo, useMemo, useCallback } from 'react';
-import { Dimensions, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Linking, Platform, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useTheme } from '@/hooks/useTheme';
 import { myContrastColor } from '@/helper/ColorHelper';
-import styles from './styles';
 import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -49,6 +48,26 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 		[]
 	);
 
+	const handleOpenNavigation = useCallback(() => {
+		const coordinates = campus?.coordinates?.coordinates;
+		if (!coordinates || coordinates.length !== 2) {
+			console.error('Invalid coordinates');
+			return;
+		}
+		const [longitude, latitude] = coordinates;
+		const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+		if (Platform.OS === 'web') {
+			window.open(googleMapsUrl, '_blank');
+		} else {
+			const mapsUrl = Platform.OS === 'ios' ? `maps://?q=${latitude},${longitude}` : `geo:${latitude},${longitude}?q=${latitude},${longitude}`;
+			Linking.openURL(mapsUrl).catch(err => {
+				console.error('Error opening navigation:', err);
+				Linking.openURL(googleMapsUrl).catch(() => {});
+			});
+		}
+	}, [campus]);
+
 	const cardWidth = useMemo(() => {
 		return amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 	}, [amountColumnsForcard, screenWidth]);
@@ -88,31 +107,55 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 					}}
 					borderColor={campus_area_color}
 					imageChildren={
-						<View style={styles.imageActionContainer}>
-							{isManagement ? (
-								<TouchableOpacity
-									style={styles.editImageButton}
-									onPress={() => {
-										onEditImage?.(campus);
-									}}
-								>
-									<View />
-								</TouchableOpacity>
-							) : (
-								<View />
-							)}
-
-							<TouchableOpacity
-								style={{
-									...styles.directionButton,
-									backgroundColor: campus_area_color,
-								}}
-								onPress={openDistanceSheet}
+						<>
+							<Tooltip
+								placement="top"
+								trigger={triggerProps => (
+									<TouchableOpacity
+										{...triggerProps}
+										style={[
+											styles.navigationButton,
+											{ backgroundColor: campus_area_color },
+										]}
+										onPress={handleOpenNavigation}
+									>
+										<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
+									</TouchableOpacity>
+								)}
 							>
-								<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
-								<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
-							</TouchableOpacity>
-						</View>
+								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+										{`${translate(TranslationKeys.open_navitation_to_location)}`}
+									</TooltipText>
+								</TooltipContent>
+							</Tooltip>
+
+							<View style={styles.imageActionContainer}>
+								{isManagement ? (
+									<TouchableOpacity
+										style={styles.editImageButton}
+										onPress={() => {
+											onEditImage?.(campus);
+										}}
+									>
+										<View />
+									</TouchableOpacity>
+								) : (
+									<View />
+								)}
+
+								<TouchableOpacity
+									style={{
+										...styles.directionButton,
+										backgroundColor: campus_area_color,
+									}}
+									onPress={openDistanceSheet}
+								>
+									<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
+									<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
+								</TouchableOpacity>
+							</View>
+						</>
 					}
 				>
 					<Text style={{ ...styles.campusName, color: theme.screen.text }}>{isWeb ? excerpt(campus?.alias, 70) : excerpt(campus?.alias, 40)}</Text>
@@ -147,7 +190,63 @@ function areEqual(prev: BuildingItemPropsOptimized, next: BuildingItemPropsOptim
 
 export default memo(BuildingItem, areEqual);
 
-const localStyles = StyleSheet.create({
+const styles = StyleSheet.create({
+	overlay: {
+		width: '100%',
+		height: '100%',
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		backgroundColor: 'rgba(0,0,0,0.2)',
+		borderTopRightRadius: 18,
+		borderTopLeftRadius: 18,
+	},
+	imageActionContainer: {
+		width: '100%',
+		position: 'absolute',
+		bottom: 0,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+	},
+	editImageButton: {
+		width: 35,
+		height: 35,
+		borderRadius: 50,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	navigationButton: {
+		position: 'absolute',
+		top: 10,
+		right: 10,
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	directionButton: {
+		borderRadius: 8,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		gap: 10,
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+	},
+	distance: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+	},
+	campusName: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+		textAlign: 'center',
+		marginBottom: 5,
+	},
+	dummy: {},
 	placeholder: {
 		width: 1,
 		height: 1,
