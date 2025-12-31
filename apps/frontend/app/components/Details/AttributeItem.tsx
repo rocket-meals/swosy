@@ -14,10 +14,9 @@ type GroupPosition = 'top' | 'middle' | 'bottom' | 'single';
 interface AttributeItemProps {
 	attr: any;
 	groupPosition: GroupPosition;
-	showSeparator?: boolean;
 }
 
-const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition, showSeparator }) => {
+const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition }) => {
 	const { theme } = useTheme();
 	const { language, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 
@@ -71,7 +70,6 @@ const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition, show
 			rightIcon={AttributeIcon ? <AttributeIcon name={attributeIconName} size={20} color={attributeIconColor} /> : undefined}
 			iconBgColor={backgroundColor}
 			groupPosition={groupPosition}
-			showSeparator={showSeparator}
 		/>
 	);
 };
