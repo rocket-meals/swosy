@@ -157,7 +157,6 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 								label={item.leftText}
 								value={item.rightText}
 								groupPosition={groupPosition}
-								showSeparator={false}
 							/>
 						);
 					})}
