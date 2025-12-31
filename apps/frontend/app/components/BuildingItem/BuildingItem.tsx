@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useCallback } from 'react';
-import { Dimensions, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Linking, Platform, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
@@ -49,6 +49,26 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 		[]
 	);
 
+	const handleOpenNavigation = useCallback(() => {
+		const coordinates = campus?.coordinates?.coordinates;
+		if (!coordinates || coordinates.length !== 2) {
+			console.error('Invalid coordinates');
+			return;
+		}
+		const [longitude, latitude] = coordinates;
+		const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+		if (Platform.OS === 'web') {
+			window.open(googleMapsUrl, '_blank');
+		} else {
+			const mapsUrl = Platform.OS === 'ios' ? `maps://?q=${latitude},${longitude}` : `geo:${latitude},${longitude}?q=${latitude},${longitude}`;
+			Linking.openURL(mapsUrl).catch(err => {
+				console.error('Error opening navigation:', err);
+				Linking.openURL(googleMapsUrl).catch(() => {});
+			});
+		}
+	}, [campus]);
+
 	const cardWidth = useMemo(() => {
 		return amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 	}, [amountColumnsForcard, screenWidth]);
@@ -88,31 +108,55 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 					}}
 					borderColor={campus_area_color}
 					imageChildren={
-						<View style={styles.imageActionContainer}>
-							{isManagement ? (
-								<TouchableOpacity
-									style={styles.editImageButton}
-									onPress={() => {
-										onEditImage?.(campus);
-									}}
-								>
-									<View />
-								</TouchableOpacity>
-							) : (
-								<View />
-							)}
-
-							<TouchableOpacity
-								style={{
-									...styles.directionButton,
-									backgroundColor: campus_area_color,
-								}}
-								onPress={openDistanceSheet}
+						<>
+							<Tooltip
+								placement="top"
+								trigger={triggerProps => (
+									<TouchableOpacity
+										{...triggerProps}
+										style={[
+											styles.navigationButton,
+											{ backgroundColor: campus_area_color },
+										]}
+										onPress={handleOpenNavigation}
+									>
+										<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
+									</TouchableOpacity>
+								)}
 							>
-								<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
-								<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
-							</TouchableOpacity>
-						</View>
+								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+										{`${translate(TranslationKeys.open_navitation_to_location)}`}
+									</TooltipText>
+								</TooltipContent>
+							</Tooltip>
+
+							<View style={styles.imageActionContainer}>
+								{isManagement ? (
+									<TouchableOpacity
+										style={styles.editImageButton}
+										onPress={() => {
+											onEditImage?.(campus);
+										}}
+									>
+										<View />
+									</TouchableOpacity>
+								) : (
+									<View />
+								)}
+
+								<TouchableOpacity
+									style={{
+										...styles.directionButton,
+										backgroundColor: campus_area_color,
+									}}
+									onPress={openDistanceSheet}
+								>
+									<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
+									<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
+								</TouchableOpacity>
+							</View>
+						</>
 					}
 				>
 					<Text style={{ ...styles.campusName, color: theme.screen.text }}>{isWeb ? excerpt(campus?.alias, 70) : excerpt(campus?.alias, 40)}</Text>

@@ -27,6 +27,16 @@ export default StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	navigationButton: {
+		position: 'absolute',
+		top: 10,
+		right: 10,
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
 	directionButton: {
 		borderRadius: 8,
 		flexDirection: 'row',
