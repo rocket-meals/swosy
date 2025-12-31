@@ -59,7 +59,6 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 		const [longitude, latitude] = coordinates;
 		openLinkCoordinateModal({
 			latlon: { latitude, longitude },
-			title: translate(TranslationKeys.open_navitation_to_location),
 		});
 	}, [campus, openLinkCoordinateModal, translate]);
 

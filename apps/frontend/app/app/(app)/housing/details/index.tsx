@@ -75,7 +75,6 @@ const Details = () => {
 		const [longitude, latitude] = coordinates;
 		openLinkCoordinateModal({
 			latlon: { latitude, longitude },
-			title: translate(TranslationKeys.location),
 		});
 	};
 

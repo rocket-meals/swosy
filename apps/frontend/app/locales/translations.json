@@ -1429,6 +1429,16 @@
     "tr": "Koordinatlar",
     "zh": "坐标"
   },
+  "location_information": {
+    "de": "Information zum Standort",
+    "en": "Location information",
+    "ar": "معلومات الموقع",
+    "es": "Información de la ubicación",
+    "fr": "Informations sur le lieu",
+    "ru": "Информация о местоположении",
+    "tr": "Konum bilgisi",
+    "zh": "位置信息"
+  },
   "copy_url": {
     "de": "URL kopieren",
     "en": "Copy URL",
@@ -2250,7 +2260,7 @@
     "zh": "删除账户"
   },
   "location": {
-    "de": "Ort",
+    "de": "Standort",
     "en": "Location",
     "ar": "موقع",
     "es": "Ubicación",

@@ -138,6 +138,7 @@ export enum TranslationKeys {
 	use_current_position_for_distance = 'use_current_position_for_distance',
 	distance = 'distance',
 	coordinates = 'coordinates',
+	location_information = 'location_information',
 	copy_url = 'copy_url',
 	copy = 'copy',
 	copied = 'copied',

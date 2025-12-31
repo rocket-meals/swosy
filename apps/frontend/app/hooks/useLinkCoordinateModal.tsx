@@ -17,7 +17,6 @@ export type LinkCoordinate = {
 };
 
 type OpenLinkCoordinateModalOptions = {
-	title?: string;
 	latlon: LinkCoordinate;
 };
 
@@ -32,7 +31,7 @@ const useLinkCoordinateModal = () => {
 	}, [close]);
 
 	const openLinkCoordinateModal = useCallback(
-		({ title, latlon }: OpenLinkCoordinateModalOptions) => {
+		({ latlon }: OpenLinkCoordinateModalOptions) => {
 			if (!latlon || !Number.isFinite(latlon.latitude) || !Number.isFinite(latlon.longitude)) {
 				console.error('Invalid coordinates');
 				return;
@@ -79,7 +78,7 @@ const useLinkCoordinateModal = () => {
 			];
 
 			show({
-				title: title ?? translate(TranslationKeys.coordinates),
+				title: translate(TranslationKeys.location_information),
 				onClose: closeModal,
 				children: (
 					<View style={{ gap: 12 }}>
