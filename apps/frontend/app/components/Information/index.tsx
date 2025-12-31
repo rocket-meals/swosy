@@ -40,7 +40,6 @@ const Information: React.FC<any> = ({ campusDetails }) => {
 		const [longitude, latitude] = coordinates;
 		openLinkCoordinateModal({
 			latlon: { latitude, longitude },
-			title: translate(TranslationKeys.location),
 		});
 	};
 
