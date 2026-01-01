@@ -143,19 +143,11 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 								<View style={styles.distanceActions}>
 									<TouchableOpacity
 										style={{
-											...styles.infoButton,
-											backgroundColor: campus_area_color,
-										}}
-										onPress={openDistanceInformationModal}
-									>
-										<MaterialCommunityIcons name="information-outline" size={18} color={contrastColor} />
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={{
 											...styles.directionButton,
 											backgroundColor: campus_area_color,
 										}}
-										onPress={openDistanceSheet}
+										onPress={openDistanceInformationModal}
+										onLongPress={openDistanceSheet}
 									>
 										<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
 										<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
@@ -247,12 +239,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
-	},
-	infoButton: {
-		borderRadius: 8,
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 6,
 	},
 	distance: {
 		fontSize: 16,
