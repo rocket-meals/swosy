@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
+import useMyScrollviewModalDistanceInformation from '@/hooks/useMyScrollviewModalDistanceInformation';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
@@ -34,6 +35,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
+	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
 
 	const { amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme: mode, screenWidth, isManagement = false } = settings;
 
@@ -138,16 +140,27 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 									<View />
 								)}
 
-								<TouchableOpacity
-									style={{
-										...styles.directionButton,
-										backgroundColor: campus_area_color,
-									}}
-									onPress={openDistanceSheet}
-								>
-									<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
-									<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
-								</TouchableOpacity>
+								<View style={styles.distanceActions}>
+									<TouchableOpacity
+										style={{
+											...styles.infoButton,
+											backgroundColor: campus_area_color,
+										}}
+										onPress={openDistanceInformationModal}
+									>
+										<MaterialCommunityIcons name="information-outline" size={18} color={contrastColor} />
+									</TouchableOpacity>
+									<TouchableOpacity
+										style={{
+											...styles.directionButton,
+											backgroundColor: campus_area_color,
+										}}
+										onPress={openDistanceSheet}
+									>
+										<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
+										<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
+									</TouchableOpacity>
+								</View>
 							</View>
 						</>
 					}
@@ -229,6 +242,17 @@ const styles = StyleSheet.create({
 		gap: 10,
 		paddingVertical: 5,
 		paddingHorizontal: 10,
+	},
+	distanceActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	infoButton: {
+		borderRadius: 8,
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 6,
 	},
 	distance: {
 		fontSize: 16,
