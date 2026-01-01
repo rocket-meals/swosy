@@ -58,12 +58,6 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		gap: 8,
 	},
-	infoButton: {
-		borderRadius: 8,
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 6,
-	},
 	freeBadge: {
 		position: 'absolute',
 		top: 5,

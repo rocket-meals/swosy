@@ -135,19 +135,11 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, onEditImage, op
 									<View style={styles.distanceActions}>
 										<TouchableOpacity
 											style={{
-												...styles.infoButton,
-												backgroundColor: housing_area_color,
-											}}
-											onPress={openDistanceInformationModal}
-										>
-											<MaterialCommunityIcons name="information-outline" size={18} color={contrastColor} />
-										</TouchableOpacity>
-										<TouchableOpacity
-											style={{
 												...styles.directionButton,
 												backgroundColor: housing_area_color,
 											}}
-											onPress={openDistanceSheet}
+											onPress={openDistanceInformationModal}
+											onLongPress={openDistanceSheet}
 										>
 											<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
 											<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(apartment?.distance)}</Text>
