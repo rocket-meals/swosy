@@ -53,6 +53,17 @@ export default StyleSheet.create({
 		paddingVertical: 5,
 		paddingHorizontal: 10,
 	},
+	distanceActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	infoButton: {
+		borderRadius: 8,
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 6,
+	},
 	freeBadge: {
 		position: 'absolute',
 		top: 5,
