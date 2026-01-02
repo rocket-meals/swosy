@@ -9,13 +9,14 @@ import { SettingsListProps } from '@/components/SettingsList/types';
 
 type SettingsListSelectOptionSingleProps = {
 	label: string;
-	leftIcon: React.ReactNode;
+	leftIcon?: React.ReactNode;
 	iconBgColor?: string;
 	selectionColor?: string;
 	isSelected: boolean;
 	onPress: () => void;
 	groupPosition?: SettingsListProps['groupPosition'];
 	showSeparator?: boolean;
+	noIconIndent?: boolean;
 };
 
 const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSingleProps> = ({
@@ -27,6 +28,7 @@ const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSinglePro
 	onPress,
 	groupPosition,
 	showSeparator = true,
+	noIconIndent = false,
 }) => {
 	const { theme } = useTheme();
 	const resolvedSelectionColor = selectionColor ?? iconBgColor;
@@ -38,6 +40,7 @@ const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSinglePro
 			iconBgColor={iconBgColor}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
+			noIconIndent={noIconIndent}
 			rightIcon={
 				<MaterialCommunityIcons
 					name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}

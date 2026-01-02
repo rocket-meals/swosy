@@ -18,9 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import SettingsList from '@/components/SettingsList';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SORTING } from '@/redux/Types/types';
@@ -38,7 +37,6 @@ const styles = StyleSheet.create({
 });
 
 export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
-        const { theme } = useTheme();
         const { translate } = useLanguage();
 
         const dispatch = useDispatch();
@@ -163,36 +161,15 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
                 <View style={{ width: '100%', gap: 12 }}>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         <View style={styles.sortingListContainer}>
-                                {sortingOptions.map((option, index) => {
-                                        const isSelected = selectedOption === option.id;
-                                        const groupPosition =
-                                                sortingOptions.length === 1
-                                                        ? 'single'
-                                                        : index === 0
-                                                                ? 'top'
-                                                                : index === sortingOptions.length - 1
-                                                                        ? 'bottom'
-                                                                        : 'middle';
-
-                                        return (
-                                                <SettingsList
-                                                        key={option.id}
-                                                        label={translate(option.label)}
-                                                        leftIcon={option.icon}
-                                                        iconBgColor={foods_area_color}
-                                                        groupPosition={groupPosition}
-                                                        showSeparator={index !== sortingOptions.length - 1}
-                                                        rightIcon={
-                                                                <MaterialCommunityIcons
-                                                                        name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-                                                                        size={24}
-                                                                        color={isSelected ? foods_area_color : theme.screen.icon}
-                                                                />
-                                                        }
-                                                        handleFunction={() => updateSort(option)}
-                                                />
-                                        );
-                                })}
+                                <SettingsListSelectOption
+                                        options={sortingOptions.map((option) => ({
+                                                ...option,
+                                                label: translate(option.label),
+                                        }))}
+                                        selectedOption={selectedOption}
+                                        onSelect={updateSort}
+                                        iconBgColor={foods_area_color}
+                                />
                         </View>
                 </View>
         );

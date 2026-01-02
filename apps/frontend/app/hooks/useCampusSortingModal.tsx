@@ -7,7 +7,7 @@ import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import SettingsListSelectOption from '@/components/SettingsListSelectOption';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { RootState } from '@/redux/reducer';
 import { SET_CAMPUSES_SORTING } from '@/redux/Types/types';
 

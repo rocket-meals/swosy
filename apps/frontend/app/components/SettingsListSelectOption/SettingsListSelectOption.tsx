@@ -1,12 +1,12 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React from 'react';
 
-import SettingsListSelectOptionSingle from '@/components/SettingsListSelectOptionSingle';
+import SettingsListSelectOptionSingle from '@/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle';
 
 type SettingsListSelectOptionItem<T> = {
 	id: T;
 	label: string;
-	icon: React.ReactNode;
+	icon?: React.ReactNode;
 };
 
 type SettingsListSelectOptionProps<T extends string | number> = {
@@ -15,6 +15,7 @@ type SettingsListSelectOptionProps<T extends string | number> = {
 	onSelect: (option: SettingsListSelectOptionItem<T>) => void;
 	iconBgColor?: string;
 	selectionColor?: string;
+	noIconIndent?: boolean;
 };
 
 const SettingsListSelectOption = <T extends string | number>({
@@ -23,6 +24,7 @@ const SettingsListSelectOption = <T extends string | number>({
 	onSelect,
 	iconBgColor,
 	selectionColor,
+	noIconIndent = false,
 }: SettingsListSelectOptionProps<T>) => {
 	return (
 		<>
@@ -46,6 +48,7 @@ const SettingsListSelectOption = <T extends string | number>({
 						isSelected={selectedOption === option.id}
 						groupPosition={groupPosition}
 						showSeparator={index !== options.length - 1}
+						noIconIndent={noIconIndent}
 						onPress={() => onSelect(option)}
 					/>
 				);
