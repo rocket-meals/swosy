@@ -416,11 +416,6 @@ const Settings = () => {
                                                         iconBgColor={primaryColor}
                                                         leftIcon={<MaterialIcons name="my-location" size={24} color={theme.screen.icon} />}
                                                         label={translate(TranslationKeys.collectible_event_random_position)}
-                                                        value={
-                                                                collectibleRandomPosition
-                                                                        ? translate(TranslationKeys.checked)
-                                                                        : translate(TranslationKeys.unchecked)
-                                                        }
                                                         isEnabled={collectibleRandomPosition}
                                                         onToggle={toggleCollectibleRandomPosition}
                                                         groupPosition="bottom"
@@ -578,12 +573,18 @@ const Settings = () => {
 						<View style={{ gap: 0 }}>
                                                         <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />} label="Use WebP images" value={useWebpForAssets ? 'WebP' : 'Default'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={toggleWebpForAssets} groupPosition="middle" />
+							<SettingsListBoolean
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />}
+								label="Use WebP images"
+								isEnabled={useWebpForAssets}
+								onToggle={toggleWebpForAssets}
+								groupPosition="middle"
+							/>
 							<SettingsListBoolean
 								iconBgColor={primaryColor}
 								leftIcon={<MaterialCommunityIcons name="bank-transfer" size={24} color={theme.screen.icon} />}
 								label={translate(TranslationKeys.debug_mode)}
-								value={debugMode ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
 								isEnabled={debugMode}
 								onToggle={toggleDebugMode}
 								groupPosition="middle"
@@ -592,7 +593,6 @@ const Settings = () => {
 								iconBgColor={primaryColor}
 								leftIcon={<MaterialCommunityIcons name="update" size={24} color={theme.screen.icon} />}
 								label={translate(TranslationKeys.simulate_expo_update_available)}
-								value={simulateExpoUpdateAvailable ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
 								isEnabled={simulateExpoUpdateAvailable}
 								onToggle={toggleSimulateExpoUpdate}
 								groupPosition="bottom"
