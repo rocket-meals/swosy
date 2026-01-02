@@ -36,7 +36,7 @@ import { RootDrawerParamList } from './types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import SortSheet from '@/components/SortSheet/SortSheet';
+import { SortSheet } from '@/hooks/useFoodofferSortingModal';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import {excerpt} from '@/constants/HelperFunctions';
