@@ -12,19 +12,29 @@ type SettingsListBooleanPropsOwn = {
         isEnabled: boolean;
         onToggle: () => void;
         disabled?: boolean;
+        valueActive?: string;
+        valueInactive?: string;
 };
 
 export type SettingsListBooleanProps = PropsWithChildren<
-        Omit<SettingsListProps, 'rightElement' | 'rightIcon' | 'onPress' | 'handleFunction'> & SettingsListBooleanPropsOwn
+        Omit<SettingsListProps, 'rightElement' | 'rightIcon' | 'onPress' | 'handleFunction' | 'value'> & SettingsListBooleanPropsOwn
 >;
 
-const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({ isEnabled, onToggle, disabled = false, ...props }) => {
+const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
+        isEnabled,
+        onToggle,
+        disabled = false,
+        valueActive = 'Aktiv',
+        valueInactive = 'Inaktiv',
+        ...props
+}) => {
         const { theme } = useTheme();
         const { primaryColor } = useSelector((state: RootState) => state.settings);
 
         return (
                 <SettingsList
                         {...props}
+                        value={isEnabled ? valueActive : valueInactive}
                         rightElement={
                                 <Switch
                                         value={isEnabled}

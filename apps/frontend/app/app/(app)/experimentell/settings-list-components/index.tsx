@@ -81,7 +81,6 @@ const SettingsListComponents = () => {
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="toggle-switch-outline" size={24} color={theme.screen.icon} />}
 					label="Boolean Setting"
-					value={boolValue ? 'Aktiv' : 'Inaktiv'}
 					isEnabled={boolValue}
 					onToggle={() => setBoolValue(current => !current)}
 					groupPosition="single"
