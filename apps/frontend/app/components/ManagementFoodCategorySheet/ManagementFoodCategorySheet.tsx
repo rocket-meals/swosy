@@ -1,7 +1,6 @@
 import { Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { ManagementFoodCategorySheetProps } from './types';
-import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,7 +11,7 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { RootState } from '@/redux/reducer';
 import { DatabaseTypes } from 'repo-depkit-common';
 
-const ManagementFoodCategorySheet: React.FC<ManagementFoodCategorySheetProps> = ({ closeSheet, selectedFoodCategory }) => {
+export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheetProps> = ({ closeSheet, selectedFoodCategory }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const [isCustom, setIsCustom] = useState(false);
@@ -82,7 +81,7 @@ const ManagementFoodCategorySheet: React.FC<ManagementFoodCategorySheetProps> = 
 	}, []);
 
 	return (
-		<BottomSheetView
+		<View
 			style={{
 				...styles.sheetView,
 				backgroundColor: theme.sheet.sheetBg,
@@ -142,7 +141,7 @@ const ManagementFoodCategorySheet: React.FC<ManagementFoodCategorySheetProps> = 
 					</View>
 				</View>
 			) : (
-				<BottomSheetScrollView>
+				<View>
 					{list &&
 						list?.map((item: any) => (
 							<TouchableOpacity
@@ -189,10 +188,12 @@ const ManagementFoodCategorySheet: React.FC<ManagementFoodCategorySheetProps> = 
 						{/* Radio Button */}
 						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
 					</TouchableOpacity>
-				</BottomSheetScrollView>
+				</View>
 			)}
-		</BottomSheetView>
+		</View>
 	);
 };
+
+const ManagementFoodCategorySheet: React.FC<ManagementFoodCategorySheetProps> = props => <ManagementFoodCategoryContent {...props} />;
 
 export default ManagementFoodCategorySheet;

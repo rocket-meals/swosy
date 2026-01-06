@@ -9,7 +9,7 @@ import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import ManagementCanteensSheet from '@/components/ManagementCanteensSheet/ManagementCanteensSheet';
 import { SET_DAY_PLAN } from '@/redux/Types/types';
-import ManagementFoodCategorySheet from '@/components/ManagementFoodCategorySheet/ManagementFoodCategorySheet';
+import { ManagementFoodCategoryContent } from '@/components/ManagementFoodCategorySheet/ManagementFoodCategorySheet';
 import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -80,7 +80,7 @@ const Index = () => {
 		(key: string, label: string) => {
 			showScrollViewModal({
 				onClose: closeScrollViewModal,
-				children: <ManagementFoodCategorySheet closeSheet={closeScrollViewModal} selectedFoodCategory={{ key, label }} />,
+				children: <ManagementFoodCategoryContent closeSheet={closeScrollViewModal} selectedFoodCategory={{ key, label }} />,
 			});
 		},
 		[closeScrollViewModal, showScrollViewModal]
@@ -200,6 +200,8 @@ const Index = () => {
 						onToggle={toggleMenuNameSwitch}
 						groupPosition="middle"
 					/>
+				</View>
+				<View style={styles.settingsListGroup}>
 					<SettingsList
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="monitor" size={24} color={theme.screen.icon} />}
@@ -225,7 +227,7 @@ const Index = () => {
 									}
 								: undefined
 						}
-						groupPosition="bottom"
+						groupPosition="single"
 					/>
 				</View>
 			</ScrollView>

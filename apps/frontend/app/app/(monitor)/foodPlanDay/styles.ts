@@ -13,6 +13,11 @@ export default StyleSheet.create({
 		width: '100%',
 		gap: 0,
 	},
+	settingsListGroup: {
+		width: '100%',
+		gap: 0,
+		marginTop: 20,
+	},
 	sheetBackground: {
 		borderTopRightRadius: 30,
 		borderTopLeftRadius: 30,
