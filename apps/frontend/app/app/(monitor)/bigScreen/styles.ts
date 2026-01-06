@@ -18,7 +18,7 @@ export default StyleSheet.create({
 	cardMarkingsContainer: {
 		position: 'absolute',
 		left: 16,
-		bottom: 16,
+		top: 16,
 		flexDirection: 'row',
 		gap: 8,
 		flexWrap: 'wrap',

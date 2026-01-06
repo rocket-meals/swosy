@@ -70,7 +70,7 @@ const Index = () => {
 		[params?.showMarkingsOnCard]
 	);
 
-	const cardMarkingSize = useMemo(() => (screenWidth > 1200 ? 50 : screenWidth > 900 ? 40 : 30), [screenWidth]);
+	const cardMarkingSize = useMemo(() => (screenWidth > 1200 ? 100 : screenWidth > 900 ? 80 : 60), [screenWidth]);
 	const cardMarkings = useMemo(
 		() => currentMarking.filter(mark => mark?.show_on_card),
 		[currentMarking]
