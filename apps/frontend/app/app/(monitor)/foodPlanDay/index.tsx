@@ -148,7 +148,6 @@ const Index = () => {
 						value={dayPlan?.nextFoodInterval != null ? String(dayPlan.nextFoodInterval) : ''}
 						modalTitle="Next Food Interval"
 						placeholder="0"
-						saveLabel="save"
 						keyboardType="number-pad"
 						checkTextInput={numericCheckTextInput}
 						onSave={value => {
@@ -166,7 +165,6 @@ const Index = () => {
 						value={dayPlan?.refreshInterval != null ? String(dayPlan.refreshInterval) : ''}
 						modalTitle="Refresh Food Offers Interval"
 						placeholder="0"
-						saveLabel="save"
 						keyboardType="number-pad"
 						checkTextInput={numericCheckTextInput}
 						onSave={value => {
