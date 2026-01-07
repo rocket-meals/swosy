@@ -5,11 +5,12 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { isWeb } from '@/constants/Constants';
 import { SET_DAY_PLAN } from '@/redux/Types/types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { RootState } from '@/redux/reducer';
 import { DatabaseTypes } from 'repo-depkit-common';
+import SettingsList from '@/components/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 
 export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheetProps> = ({ closeSheet, selectedFoodCategory }) => {
 	const { theme } = useTheme();
@@ -67,6 +68,14 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 		setIsCustom(false);
 		setValue('');
 		closeSheet();
+	};
+
+	const totalItems = list.length + 1;
+	const getGroupPosition = (index: number) => {
+		if (totalItems === 1) return 'single';
+		if (index === 0) return 'top';
+		if (index === totalItems - 1) return 'bottom';
+		return 'middle';
 	};
 
 	useEffect(() => {
@@ -141,53 +150,31 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 					</View>
 				</View>
 			) : (
-				<View>
-					{list &&
-						list?.map((item: any) => (
-							<TouchableOpacity
-								style={{
-									...styles.row,
-									paddingHorizontal: isWeb ? 20 : 10,
-									backgroundColor: currentSelectedId === item?.id ? primaryColor : theme.screen.iconBg,
-								}}
+				<View style={{ gap: 0 }}>
+					{list.map((item: any, index: number) => {
+						const isSelected = currentSelectedId === item?.id;
+						const label = item?.translations?.length > 0 ? getTextFromTranslation(item?.translations, language) : item?.alias;
+						return (
+							<SettingsList
 								key={item?.id}
-								onPress={() => handleSelect(item)}
-							>
-								{/* Theme Text */}
-								<Text
-									style={{
-										...styles.text,
-										color: currentSelectedId === item?.id ? theme.activeText : theme.header.text,
-									}}
-								>
-									{item?.translations?.length > 0 ? getTextFromTranslation(item?.translations, language) : item?.alias}
-								</Text>
-
-								{/* Radio Button */}
-								<MaterialCommunityIcons name={currentSelectedId === item?.id ? 'checkbox-marked' : 'checkbox-blank'} size={24} color="#ffffff" style={styles.radioButton} />
-							</TouchableOpacity>
-						))}
-					<TouchableOpacity
-						style={{
-							...styles.row,
-							paddingHorizontal: isWeb ? 20 : 10,
-							backgroundColor: theme.screen.iconBg,
-						}}
-						onPress={() => setIsCustom(true)}
-					>
-						{/* Theme Text */}
-						<Text
-							style={{
-								...styles.text,
-								color: theme.header.text,
-							}}
-						>
-							Custom
-						</Text>
-
-						{/* Radio Button */}
-						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
-					</TouchableOpacity>
+								label={label}
+								noIconIndent
+								iconBgColor={isSelected ? primaryColor : 'transparent'}
+								rightIcon={<MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank'} size={24} color={isSelected ? theme.activeText : theme.screen.icon} />}
+								handleFunction={() => handleSelect(item)}
+								groupPosition={getGroupPosition(index)}
+							/>
+						);
+					})}
+					<SettingsListBoolean
+						label="Custom"
+						noIconIndent
+						isEnabled={isCustom}
+						onToggle={() => setIsCustom(true)}
+						valueActive=""
+						valueInactive=""
+						groupPosition={getGroupPosition(totalItems - 1)}
+					/>
 				</View>
 			)}
 		</View>
