@@ -50,7 +50,6 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 				payload: { [payloadKey]: { id: item.id, alias: alias } },
 			});
 		}
-		closeSheet();
 	};
 
 	const handleSaveCustom = () => {
@@ -150,32 +149,44 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 					</View>
 				</View>
 			) : (
-				<View style={{ gap: 0 }}>
-					{list.map((item: any, index: number) => {
-						const isSelected = currentSelectedId === item?.id;
-						const label = item?.translations?.length > 0 ? getTextFromTranslation(item?.translations, language) : item?.alias;
-						return (
-							<SettingsList
-								key={item?.id}
-								label={label}
-								noIconIndent
-								iconBgColor={isSelected ? primaryColor : 'transparent'}
-								rightIcon={<MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank'} size={24} color={isSelected ? theme.activeText : theme.screen.icon} />}
-								handleFunction={() => handleSelect(item)}
-								groupPosition={getGroupPosition(index)}
-							/>
-						);
-					})}
-					<SettingsListBoolean
-						label="Custom"
-						noIconIndent
-						isEnabled={isCustom}
-						onToggle={() => setIsCustom(true)}
-						valueActive=""
-						valueInactive=""
-						groupPosition={getGroupPosition(totalItems - 1)}
-					/>
-				</View>
+				<>
+					<View style={{ gap: 0 }}>
+						{list.map((item: any, index: number) => {
+							const isSelected = currentSelectedId === item?.id;
+							const label = item?.translations?.length > 0 ? getTextFromTranslation(item?.translations, language) : item?.alias;
+							return (
+								<SettingsListBoolean
+									key={item?.id}
+									label={label}
+									noIconIndent
+									isEnabled={isSelected}
+									onToggle={() => handleSelect(item)}
+									valueActive=""
+									valueInactive=""
+									groupPosition={getGroupPosition(index)}
+								/>
+							);
+						})}
+						<SettingsListBoolean
+							label="Custom"
+							noIconIndent
+							isEnabled={isCustom}
+							onToggle={() => setIsCustom(true)}
+							valueActive=""
+							valueInactive=""
+							groupPosition={getGroupPosition(totalItems - 1)}
+						/>
+					</View>
+					<View style={{ gap: 0, marginTop: 20 }}>
+						<SettingsList
+							label="Fertig"
+							noIconIndent
+							rightIcon={<MaterialCommunityIcons name="check" size={22} color={theme.screen.icon} />}
+							handleFunction={closeSheet}
+							groupPosition="single"
+						/>
+					</View>
+				</>
 			)}
 		</View>
 	);
