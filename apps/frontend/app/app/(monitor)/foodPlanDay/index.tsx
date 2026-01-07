@@ -198,7 +198,7 @@ const Index = () => {
 						label="Zeige Speiseangebot Kateogrie Name"
 						isEnabled={dayPlan.isMenuCategoryName}
 						onToggle={toggleMenuNameSwitch}
-						groupPosition="middle"
+						groupPosition="bottom"
 					/>
 				</View>
 				<View style={styles.settingsListGroup}>
