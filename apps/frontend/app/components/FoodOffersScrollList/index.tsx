@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
@@ -32,7 +32,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
         const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-        const { sortBy, language } = useSelector((state: RootState) => state.settings);
+        const { sortBy, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
         const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
         const { profile } = useSelector((state: RootState) => state.authReducer);
         const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
@@ -42,6 +42,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
         const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
         const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
         const bottomSheetRef = useRef<BottomSheet>(null);
+        const [listWidth, setListWidth] = useState<number | null>(null);
+        const MIN_CARD_WIDTH = 280;
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
@@ -68,7 +70,24 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}
 	}, [selectedSheet]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+    const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+
+    const numColumns = useMemo(() => {
+        if (amountColumnsForcard && amountColumnsForcard > 0) {
+            return amountColumnsForcard;
+        }
+        if (!listWidth) return 2;
+        const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+        return Math.max(2, cols);
+    }, [amountColumnsForcard, listWidth]);
+
+    const cardWidth = useMemo(() => {
+        if (!listWidth || !numColumns) return undefined;
+        const horizontalMargin = 10;
+        const totalMargin = horizontalMargin * 2 * numColumns;
+        const availableWidth = listWidth - totalMargin;
+        return availableWidth / numColumns;
+    }, [listWidth, numColumns]);
 
 	const sortOffers = useCallback(
 		(foodOffers: DatabaseTypes.Foodoffers[]) =>
@@ -158,12 +177,26 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				<View
 					style={{
 						...styles.foodContainer,
-						gap: 10,
-						justifyContent: 'center',
+						justifyContent: 'flex-start',
+					}}
+					onLayout={e => {
+						const w = e.nativeEvent.layout.width;
+						if (w && w !== listWidth) setListWidth(w);
 					}}
 				>
-					{item.offers.map(offer => (
-						<FoodItem key={offer.id} item={offer} canteen={selectedCanteen as DatabaseTypes.Canteens} handleMenuSheet={openSheet} handleImageSheet={openManagementSheet} handleEatingHabitsSheet={openSheet} />
+					{item.offers.map((offer, idx) => (
+						<View key={offer.id || `offer-${idx}`}
+							style={{ width: cardWidth || '100%', marginHorizontal: 10, marginVertical: 10, alignItems: 'center' }}
+						>
+							<FoodItem
+								item={offer}
+								canteen={selectedCanteen as DatabaseTypes.Canteens}
+								handleMenuSheet={openSheet}
+								handleImageSheet={openManagementSheet}
+								handleEatingHabitsSheet={openSheet}
+								cardWidth={cardWidth}
+							/>
+						</View>
 					))}
 					{item.offers.length === 0 && <Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>}
 				</View>

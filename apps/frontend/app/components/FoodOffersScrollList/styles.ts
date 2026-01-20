@@ -2,7 +2,8 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
 	dayContainer: {
-		padding: 10,
+		paddingVertical: 10,
+		paddingHorizontal: 0,
 	},
 	dateHeader: {
 		fontSize: 18,
