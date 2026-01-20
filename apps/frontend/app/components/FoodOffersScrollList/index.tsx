@@ -178,11 +178,12 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			<View style={styles.dayContainer}>
 				<Text style={[styles.dateHeader, { color: theme.screen.text }]}> {format(new Date(item.date), 'dd.MM.yyyy')} </Text>
 				<View
-					style={{
-						...styles.foodContainer,
-						gap: 10,
-						justifyContent: 'center',
-					}}
+					style={[
+						styles.foodContainer,
+						{
+							justifyContent: 'center',
+						},
+					]}
 					onLayout={event => {
 						const width = event.nativeEvent.layout.width;
 						if (!listWidth || width > listWidth) {

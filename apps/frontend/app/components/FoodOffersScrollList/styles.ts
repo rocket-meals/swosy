@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
+import { horizontalScreenPadding } from '@/constants/Constants';
 
 export default StyleSheet.create({
 	dayContainer: {
 		padding: 10,
+		width: '100%',
+		maxWidth: 1420,
+		alignSelf: 'center',
 	},
 	dateHeader: {
 		fontSize: 18,
@@ -23,5 +27,6 @@ export default StyleSheet.create({
 	feebackContainer: {
 		width: '100%',
 		marginTop: 20,
+		paddingHorizontal: horizontalScreenPadding,
 	},
 });
