@@ -272,10 +272,15 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                   style={{
                     minHeight: 52,
                     justifyContent: 'center',
+                    alignSelf: 'stretch',
                   }}
                 >
                   <Text
-                    style={{ ...styles.foodName, color: theme.screen.text }}
+                    style={[
+                      { ...styles.foodName, color: theme.screen.text },
+                      { maxWidth: '100%', flexShrink: 1 } as any,
+                      isWeb ? ({ wordBreak: 'break-word', overflowWrap: 'anywhere' } as any) : null,
+                    ]}
                     numberOfLines={2}
                     ellipsizeMode="tail"
                   >
