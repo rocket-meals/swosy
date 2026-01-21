@@ -58,7 +58,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
         const MIN_CARD_WIDTH = 280;
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const foods_area_color = appSettings?.foods_area_color || primaryColor;
-        const contrastColor = useMyContrastColor(foods_area_color, theme, mode === 'dark');
+        const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                         setSelectedSheet(sheet);
