@@ -289,10 +289,10 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				{afterElement && (
 					<View style={styles.elementContainer}>
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
-						<View style={{ height: 1, backgroundColor: contrastColor, marginTop: 12, marginHorizontal: 10 }} />
 					</View>
 				)}
 				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
+				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>
 		);
 	};
