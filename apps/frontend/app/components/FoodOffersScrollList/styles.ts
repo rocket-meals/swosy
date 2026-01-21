@@ -23,11 +23,16 @@ export default StyleSheet.create({
 	},
 	feebackContainer: {
 		width: '100%',
-		marginTop: 20,
+		marginTop: 12,
 	},
 	elementContainer: {
 		width: '100%',
-		marginTop: 20,
+		marginTop: 12,
 		paddingHorizontal: 10,
+	},
+	dayDivider: {
+		height: 1,
+		marginTop: 12,
+		marginHorizontal: 10,
 	},
 });
