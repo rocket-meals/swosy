@@ -21,6 +21,7 @@ import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem'
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { useMyContrastColor } from '@/helper/ColorHelper';
+import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -59,6 +60,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const foods_area_color = appSettings?.foods_area_color || primaryColor;
         const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
+	const smartReadableDate = useSmartReadableDateMethod();
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                         setSelectedSheet(sheet);
@@ -266,6 +268,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		[translate]
 	);
 
+	const parseDateOnly = useCallback((date: string) => {
+		const [year, month, day] = date.split('-').map(Number);
+		if (!year || !month || !day) {
+			return new Date(date);
+		}
+		return new Date(year, month - 1, day);
+	}, []);
+
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
 		const dayItems = buildDayItems(item.offers);
@@ -273,7 +283,10 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 		return (
 			<View style={styles.dayContainer}>
-				<Text style={[styles.dateHeader, { color: theme.screen.text }]}> {getDayLabel(item.date)} </Text>
+				<View style={styles.dateHeaderRow}>
+					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{getDayLabel(item.date)}</Text>
+					<Text style={[styles.dateHeaderRight, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
+				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
 						<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
