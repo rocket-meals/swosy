@@ -3143,6 +3143,46 @@
     "tr": "Test useModal",
     "zh": "Test useModal"
   },
+  "haptics_test": {
+    "de": "Haptics-Test",
+    "en": "Haptics Test",
+    "ar": "Haptics Test",
+    "es": "Haptics Test",
+    "fr": "Haptics Test",
+    "ru": "Haptics Test",
+    "tr": "Haptics Test",
+    "zh": "Haptics Test"
+  },
+  "haptics_test_description": {
+    "de": "Tippe auf einen Eintrag, um verschiedene Haptics auszuprobieren.",
+    "en": "Tap an entry to try different haptic feedback types.",
+    "ar": "Tap an entry to try different haptic feedback types.",
+    "es": "Tap an entry to try different haptic feedback types.",
+    "fr": "Tap an entry to try different haptic feedback types.",
+    "ru": "Tap an entry to try different haptic feedback types.",
+    "tr": "Tap an entry to try different haptic feedback types.",
+    "zh": "Tap an entry to try different haptic feedback types."
+  },
+  "haptics_test_empty": {
+    "de": "Noch kein Haptic ausgelöst.",
+    "en": "No haptic triggered yet.",
+    "ar": "No haptic triggered yet.",
+    "es": "No haptic triggered yet.",
+    "fr": "No haptic triggered yet.",
+    "ru": "No haptic triggered yet.",
+    "tr": "No haptic triggered yet.",
+    "zh": "No haptic triggered yet."
+  },
+  "last_haptic_event": {
+    "de": "Letztes Haptic-Ereignis",
+    "en": "Last haptic event",
+    "ar": "Last haptic event",
+    "es": "Last haptic event",
+    "fr": "Last haptic event",
+    "ru": "Last haptic event",
+    "tr": "Last haptic event",
+    "zh": "Last haptic event"
+  },
   "open_modal_example": {
     "de": "Beispiel-Modal öffnen",
     "en": "Open example modal",

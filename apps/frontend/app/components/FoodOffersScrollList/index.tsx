@@ -237,6 +237,35 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		setRefreshing(false);
 	};
 
+	const getDayLabel = useCallback(
+		(date: string) => {
+			const currentDate = new Date();
+			const day = new Date(date);
+
+			currentDate.setHours(0, 0, 0, 0);
+			day.setHours(0, 0, 0, 0);
+
+			if (currentDate.toDateString() === day.toDateString()) {
+				return translate(TranslationKeys.today);
+			}
+
+			const yesterday = new Date(currentDate);
+			yesterday.setDate(yesterday.getDate() - 1);
+			if (yesterday.toDateString() === day.toDateString()) {
+				return translate(TranslationKeys.yesterday);
+			}
+
+			const tomorrow = new Date(currentDate);
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			if (tomorrow.toDateString() === day.toDateString()) {
+				return translate(TranslationKeys.tomorrow);
+			}
+
+			return format(day, 'dd.MM.yyyy');
+		},
+		[translate]
+	);
+
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
 		const dayItems = buildDayItems(item.offers);
@@ -244,7 +273,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 		return (
 			<View style={styles.dayContainer}>
-				<Text style={[styles.dateHeader, { color: theme.screen.text }]}> {format(new Date(item.date), 'dd.MM.yyyy')} </Text>
+				<Text style={[styles.dateHeader, { color: theme.screen.text }]}> {getDayLabel(item.date)} </Text>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
 						<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
