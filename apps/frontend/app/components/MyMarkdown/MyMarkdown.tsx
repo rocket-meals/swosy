@@ -50,14 +50,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 	const textColor = textColorProp ?? theme.sheet.text;
 	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 
-	const tagsStyles = {
-		blockquote: { fontStyle: 'italic' },
-		td: { borderColor: 'gray', borderWidth: 1 },
-		th: { borderColor: 'gray', borderWidth: 1 },
-		a: { color: textColor },
-	} as const;
-
-	const customHTMLElementModels = {
+	const customHTMLElementModels = React.useMemo(() => ({
 		sub: HTMLElementModel.fromCustomModel({
 			tagName: 'sub',
 			contentModel: HTMLContentModel.textual,
@@ -66,16 +59,27 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 			tagName: 'sup',
 			contentModel: HTMLContentModel.textual,
 		}),
-	};
+	}), []);
 
-	const defaultTextProps = {
-		selectable: true,
+	const baseStyle = React.useMemo(() => ({
 		color: textColor,
 		fontSize,
-		fontStyle: 'normal',
-	};
+		fontStyle: 'normal' as const,
+	}), [textColor, fontSize]);
 
-	const customRenderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {
+	const defaultTextProps = React.useMemo(() => ({
+		selectable: true,
+	}), []);
+
+	const tagsStyles = React.useMemo(() => ({
+		blockquote: { fontStyle: 'italic' } as const,
+		td: { borderColor: 'gray', borderWidth: 1 } as const,
+		th: { borderColor: 'gray', borderWidth: 1 } as const,
+		a: { color: textColor } as const,
+	}), [textColor]);
+
+	const customRenderers = React.useMemo(() => {
+		const renderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {
 		a: (props: any) => {
 			const { href } = props.tnode.attributes;
 			const { data } = props.tnode;
@@ -123,13 +127,14 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
 		},
 	};
+	return renderers;
+}, [textColor, fontSize, contrastColor]);
 
 	return (
 		<View>
 			<RenderHtml
 				contentWidth={width}
-				// @ts-ignore
-				baseStyle={defaultTextProps}
+				baseStyle={baseStyle}
 				renderers={customRenderers}
 				defaultTextProps={defaultTextProps}
 				customHTMLElementModels={customHTMLElementModels}

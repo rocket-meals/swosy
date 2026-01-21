@@ -180,7 +180,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	};
 
 	useEffect(() => {
-		getWikis();
+		if (!wikis || wikis.length === 0) {
+			getWikis();
+		}
 	}, []);
 
         const generateMenuItems = (): MenuItemProps[] => {

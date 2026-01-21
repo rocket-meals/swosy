@@ -10,7 +10,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 import BaseBottomModal from '@/components/BaseBottomModal';
 import SettingsList from '@/components/SettingsList';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import useToast from '@/hooks/useToast';
 import { getHighResImageUrl } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';

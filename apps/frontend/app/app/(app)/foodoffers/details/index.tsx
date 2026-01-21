@@ -34,6 +34,7 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useToast from '@/hooks/useToast';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -51,6 +52,7 @@ export default function FoodDetailsScreen() {
 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const toast = useToast();
 	const dispatch = useDispatch();
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
@@ -288,19 +290,20 @@ export default function FoodDetailsScreen() {
 						name: translation ? translation.name : food?.name ?? null,
 					});
 
-                                        const attributes = food?.attribute_values || food?.foods_attributes_values;
-                                        if (attributes) {
-                                                setFoodAttributesLoading(true);
-                                                setFoodAttributes(attributes);
-                                        }
-                                } else {
-                                        console.log('No food data found');
-                                }
-                        }
-                } catch (e) {
-                        console.error('Error fetching food details: ', e);
-                }
-        };
+					const attributes = food?.attribute_values || food?.foods_attributes_values;
+					if (attributes) {
+						setFoodAttributesLoading(true);
+						setFoodAttributes(attributes);
+					}
+				} else {
+					console.log('No food data found');
+				}
+			}
+		} catch (e: any) {
+			console.error('Error fetching food details: ', e);
+			toast(e.message || translate(TranslationKeys.somethingWentWrong), 'error');
+		}
+	};
 
         useEffect(() => {
                 getFoodDetails();
