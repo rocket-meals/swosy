@@ -5,8 +5,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
 export const useSmartReadableDateMethod = () => {
-	const { translate } = useLanguage();
-	const dateLocale = Localization.locale || 'en';
+	const { translate, language } = useLanguage();
+	const dateLocale = language || Localization.locale || 'en';
 
 	const relativeDaysDiffTranslations = useMemo(
 		() => ({
