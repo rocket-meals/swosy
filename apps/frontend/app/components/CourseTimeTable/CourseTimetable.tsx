@@ -254,11 +254,11 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 
 											return (
 												<Tooltip
+													key={event.id}
 													placement="top"
 													trigger={triggerProps => (
 														<TouchableOpacity
 															{...triggerProps}
-															key={event.id}
 															style={{
 																...styles.slotEvent,
 																backgroundColor: event.color,

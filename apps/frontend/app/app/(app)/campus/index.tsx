@@ -38,6 +38,7 @@ import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirect
 import IconButton from '@/components/UI/IconButton';
 import Button from '@/components/UI/Button';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { RootDrawerParamList } from './types';
 
 const ITEM_HEIGHT = 140;
 
@@ -98,21 +99,25 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const ensureStableIds = useCallback((arr: DatabaseTypes.Buildings[] = []) => {
 		return arr.map((c, idx) => {
-			const stableId = c.id ?? c._id ?? `__generated__${idx}_${String(c.alias ?? '').slice(0, 10)}`;
-			if (c.id === stableId || c._id === stableId) return c;
+			const stableId = c.id ?? `__generated__${idx}_${String(c.alias ?? '').slice(0, 10)}`;
+			if (c.id === stableId) return c;
 			return { ...c, id: stableId };
 		});
 	}, []);
 
-	const addDistanceToList = useCallback((list: DatabaseTypes.Buildings[] | undefined, base: DatabaseTypes.Buildings | null) => {
+	type BuildingWithDistance = DatabaseTypes.Buildings & { distance?: number };
+
+	const addDistanceToList = useCallback((list: BuildingWithDistance[] | undefined, base: DatabaseTypes.Buildings | null) => {
 		if (!list) return list;
-		if (!base || !base.coordinates) return list;
+		if (!base) return list;
 		try {
-			const baseCoords = base.coordinates?.coordinates;
+			const baseCoords = (base as any)?.coordinates?.coordinates as [number, number] | undefined;
+			if (!Array.isArray(baseCoords) || baseCoords.length !== 2) return list;
 			return list.map(c => {
-				const dist = calculateDistanceInMeter(baseCoords, c?.coordinates?.coordinates);
-				return { ...c, distance: dist };
-			});
+				const coords = (c as any)?.coordinates?.coordinates as [number, number] | undefined;
+				const dist = Array.isArray(coords) && coords.length === 2 ? calculateDistanceInMeter(baseCoords, coords) : (Number.isFinite(Number((c as any)?.distance)) ? Number((c as any)?.distance) : 0);
+				return { ...(c as BuildingWithDistance), distance: dist };
+			}) as BuildingWithDistance[];
 		} catch (e) {
 			console.warn('addDistance error', e);
 			return list;
@@ -146,7 +151,12 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 					return acc;
 				}, {});
 
-				const campusDataWithDistance = baseBuilding ? addDistanceToList(campusData, baseBuilding) : campusData.map(c => ({ ...c, distance: Number.isFinite(Number(c?.distance)) ? Number(c.distance) : 0 }));
+				const campusDataWithDistance: BuildingWithDistance[] = baseBuilding
+					? (addDistanceToList(campusData as BuildingWithDistance[], baseBuilding) ?? (campusData as BuildingWithDistance[]))
+					: (campusData as BuildingWithDistance[]).map(c => ({
+							...(c as BuildingWithDistance),
+							distance: Number.isFinite(Number((c as any)?.distance)) ? Number((c as any)?.distance) : 0,
+					  }));
 
 				dispatch({ type: SET_CAMPUSES, payload: campusDataWithDistance });
 				dispatch({ type: SET_CAMPUSES_DICT, payload: dict });
@@ -188,21 +198,21 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		}
 	}, [selectedBuilding, campusesDispatched, addDistanceToList, campusesLocal, campuses, dispatch]);
 
-	const sortCampusesWithDistance = useCallback((list: DatabaseTypes.Buildings[] | undefined) => {
+	const sortCampusesWithDistance = useCallback((list: BuildingWithDistance[] | undefined) => {
 		if (!list) return list;
-		return [...list].sort((a: any, b: any) => (a?.distance || 0) - (b?.distance || 0));
+		return [...(list ?? [])].sort((a: any, b: any) => (a?.distance || 0) - (b?.distance || 0));
 	}, []);
 
-	const sortCampusesAlphabetically = useCallback((list: DatabaseTypes.Buildings[] | undefined) => {
+	const sortCampusesAlphabetically = useCallback((list: BuildingWithDistance[] | undefined) => {
 		if (!list) return list;
-		return [...list].sort((a: any, b: any) => (a?.alias ?? '').localeCompare(b?.alias ?? ''));
+		return [...(list ?? [])].sort((a: any, b: any) => (a?.alias ?? '').localeCompare(b?.alias ?? ''));
 	}, []);
 
 	useEffect(() => {
 		if (!campuses || campuses.length === 0) return;
-		let next = campuses;
-		if (campusesSortBy === CampusSortOption.ALPHABETICAL) next = sortCampusesAlphabetically(campuses);
-		else if (campusesSortBy === CampusSortOption.DISTANCE || campusesSortBy === CampusSortOption.INTELLIGENT) next = sortCampusesWithDistance(campuses);
+		let next: BuildingWithDistance[] = campuses as BuildingWithDistance[];
+		if (campusesSortBy === CampusSortOption.ALPHABETICAL) next = sortCampusesAlphabetically(campuses as BuildingWithDistance[]) ?? [];
+		else if (campusesSortBy === CampusSortOption.DISTANCE || campusesSortBy === CampusSortOption.INTELLIGENT) next = sortCampusesWithDistance(campuses as BuildingWithDistance[]) ?? [];
 
 		const same = next.length === campuses.length && next.every((c, i) => String(c?.id ?? '') === String(campuses[i]?.id ?? ''));
 		if (!same) {
@@ -218,8 +228,8 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		return () => clearTimeout(t);
 	}, [query, hasLoaded]);
 
-	const visibleCampuses = useMemo(() => {
-		const src = campusesLocal ?? campuses ?? [];
+	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
+		const src: BuildingWithDistance[] = (campusesLocal as BuildingWithDistance[]) ?? (campuses as BuildingWithDistance[]) ?? [];
 		if (!query || query.trim() === '') return src;
 		const q = query.toLowerCase().trim();
 		return src.filter(campus => (campus?.alias ?? '').toLowerCase().includes(q));
@@ -289,7 +299,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	);
 
 	const renderItem = useCallback(
-		({ item }: { item: DatabaseTypes.Buildings }) => {
+		({ item }: { item: BuildingWithDistance }) => {
 			return (
 				<View
 					style={{
@@ -316,10 +326,10 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		]
 	);
 
-	const keyExtractor = useCallback((item: DatabaseTypes.Buildings, index: number) => (item.id ? String(item.id) : `campus-${index}`), []);
+	const keyExtractor = useCallback((item: BuildingWithDistance, index: number) => (item.id ? String(item.id) : `campus-${index}`), []);
 
 	const ListHeaderComponent = useMemo(() => {
-		const widthStyle = { width: screenWidth > 768 ? '60%' : '100%' };
+		const widthStyle = { width: screenWidth > 768 ? Math.floor(screenWidth * 0.6) : Math.floor(screenWidth) };
 		return (
 			<View style={{ width: '100%', paddingHorizontal: 5, marginBottom: 10, alignItems: 'center' }}>
 

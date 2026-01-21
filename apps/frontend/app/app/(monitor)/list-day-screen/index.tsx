@@ -289,7 +289,7 @@ const Index = () => {
 		try {
 			// Create a map for quick lookup of sort order by attribute id
 			const attributeSortMap: Record<string, { index: number; alias: string }> = {};
-			foodAttributesDataFull?.forEach((attr, index: number) => {
+			foodAttributesDataFull?.forEach((attr: any, index: number) => {
 				attributeSortMap[attr.id] = { index, alias: attr.alias };
 			});
 
@@ -300,7 +300,7 @@ const Index = () => {
 				if (!offer.id) return;
 
 				// Initialize array with empty values for all possible attributes
-				const sortedValues = foodAttributesDataFull.map(attr => ({
+				const sortedValues = foodAttributesDataFull.map((attr: any) => ({
 					value: null, // or '-' if you prefer
 					alias: attr.alias,
 					exists: false,
@@ -438,13 +438,13 @@ const Index = () => {
 			const markingGroupsHelper = new MarkingGroupsHelper();
 			const markingGroups = await markingGroupsHelper.fetchMarkingGroups({});
 
-			const newMarkings = {};
+			const newMarkings: any = {};
 			foodList.forEach((food: any) => {
 				const markingIds = food?.markings?.map((mark: any) => mark.markings_id) || [];
 				let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
 
 				// Sort the filtered markings using sortMarkingsByGroup
-				filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups);
+				filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);
 
 				let dummyMarkings = filteredMarkings.map((item: any) => ({
 					image: item?.image_remote_url ? { uri: item.image_remote_url } : { uri: getImageUrl(item.image) },
@@ -574,7 +574,7 @@ const Index = () => {
 	return (
 		<ScrollView style={[styles.outerContainer, { backgroundColor: theme.screen.background }]}>
 			<View ref={headerRef} onLayout={handleHeaderLayout} style={{ width: '100%', height: 100, position: 'relative' }}>
-				<LabelHeader Label={selectedCanteen?.alias ? selectedCanteen?.alias : ''} isConnected={isConnected} />
+				<LabelHeader Label={selectedCanteen?.alias ? selectedCanteen?.alias : ''} isConnected={isConnected ?? undefined} />
 				<Animated.View
 					style={{
 						position: 'absolute',
@@ -766,7 +766,7 @@ const Index = () => {
 														},
 													]}
 												>
-													{`${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.student))} / ${showFormatedPrice(showDayPlanPrice(item, 'employee'))} / ${showFormatedPrice(showDayPlanPrice(item, 'guest'))}`}
+													{`${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.student))} / ${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.employee))} / ${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.guest))}`}
 												</Text>
 											</View>
 										);
@@ -906,7 +906,7 @@ const Index = () => {
 													},
 												]}
 											>
-												{`${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.student))} / ${showFormatedPrice(showDayPlanPrice(item, 'employee'))} / ${showFormatedPrice(showDayPlanPrice(item, 'guest'))}`}
+												{`${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.student))} / ${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.employee))} / ${showFormatedPrice(showDayPlanPrice(item, PriceGroupKey.guest))}`}
 											</Text>
 										</View>
 									))}

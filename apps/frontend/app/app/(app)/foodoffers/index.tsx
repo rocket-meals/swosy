@@ -82,7 +82,7 @@ export const SHEET_COMPONENTS = {
 
 interface DayItem {
 	foodoffer: DatabaseTypes.Foodoffers | null;
-	foodofferInfoItem: DatabaseTypes.FoodoffersInfogetDayLabelItems | null;
+	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
 
 
@@ -104,7 +104,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [listWidth, setListWidth] = useState<number | null>(null);
-	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
+	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | 'menu' | null>(null);
 
         const {
                 sortBy,
@@ -272,7 +272,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		});
 	};
 	useEffect(() => {
-		if (!user.id) setDefaultPriceGroupForAnonymousUser();
+		if (user && !user.id) setDefaultPriceGroupForAnonymousUser();
 	}, [user]);
 
 	useEffect(() => {
@@ -360,7 +360,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		const sortedOffers = sortFoodOffers(id, foodOffers, {
 			languageCode,
 			ownFoodFeedbacks,
-			profile,
+			profile: profile || { markings: [] },
 			foodCategories,
 			foodOfferCategories,
 		});
@@ -511,7 +511,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 				>
 					{item.foodoffer ? (
 						<FoodItem
-							canteen={selectedCanteen}
+							canteen={selectedCanteen as any}
 							item={item.foodoffer}
 							key={item.foodoffer.id || `food-item-${index}`}
 							handleMenuSheet={openSheet}
@@ -552,7 +552,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 return (
                         <>
                                 {afterElement && <View style={styles.elementContainer}>{afterElement && <CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>}
-                                {!feedbackLabelsLoading && canteenFeedbackLabelsExist > 0 && (
+                                {!feedbackLabelsLoading && (canteenFeedbackLabelsExist as any) > 0 && (
 					<View style={styles.feebackContainer}>
 						<View>
 							<Text style={{ ...styles.foodLabels, color: theme.screen.text }}>{translate(TranslationKeys.feedback_labels)}</Text>
@@ -611,7 +611,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						onPress={() => dispatch({ type: SET_SELECTED_DATE, payload: nextAvailableDate })}
 						style={[styles.jumpButton, { backgroundColor: foods_area_color }]}
 					>
-						<Text style={[styles.jumpButtonText, { color: contrastColor }]}>{`${translate(TranslationKeys.show_offers_on)} ${translate(TranslationKeys[getWeekdayKey(nextAvailableDate)])}`}</Text>
+						<Text style={[styles.jumpButtonText, { color: contrastColor }]}>{`${translate(TranslationKeys.show_offers_on)} ${translate(TranslationKeys[getWeekdayKey(nextAvailableDate) as keyof typeof TranslationKeys])}`}</Text>
 					</Button>
 				)}
 			</View>
@@ -688,7 +688,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-											{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.price_group)} ${translate(getPriceGroup(profile?.price_group))}`}
+											{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.price_group)} ${translate(getPriceGroup(profile?.price_group || ''))}`}
 										</TooltipText>
 									</TooltipContent>
 								</Tooltip>

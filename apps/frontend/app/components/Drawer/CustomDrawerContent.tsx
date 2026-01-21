@@ -345,7 +345,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						<View style={styles.logoContainer}>
 							<Image
 								source={{
-									uri: getImageUrl(serverInfo?.info?.project?.project_logo),
+									uri: getImageUrl(serverInfo?.info?.project?.project_logo) ?? undefined,
 								}}
 								style={styles.logo}
 							/>

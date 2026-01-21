@@ -37,7 +37,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 
 	// Use useMemo to optimize the filtering processs
 	const labelData = useMemo(() => {
-		return ownCanteenFeedBackLabelEntries?.find((entry: DatabaseTypes.CanteensFeedbacksLabelsEntries) => entry.label === label?.id && entry.canteen === selectedCanteen?.id && isSameDay(entry.date, date)) || ({} as DatabaseTypes.FoodsFeedbacksLabelsEntries);
+		return ownCanteenFeedBackLabelEntries?.find((entry: DatabaseTypes.CanteensFeedbacksLabelsEntries) => entry.label === label?.id && entry.canteen === selectedCanteen?.id && entry.date && isSameDay(entry.date, date)) || ({} as DatabaseTypes.FoodsFeedbacksLabelsEntries);
 	}, [ownCanteenFeedBackLabelEntries, date]);
 
 	// Function to handle updating the entry
@@ -46,6 +46,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 			openRatingPermissionModal();
 			return;
 		}
+		if (!selectedCanteen?.id) return;
 		let likeStats = null;
 		if (isLike === true && labelData?.like === true) {
 			likeStats = null;
@@ -72,6 +73,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	};
 
 	const getLabelEntries = async (labelId: string) => {
+		if (!selectedCanteen?.id) return;
 		const result = (await canteenFeedbackLabelEntryHelper.fetchCanteenFeedbackLabelEntries({}, date, selectedCanteen.id, labelId)) as ModifiedCanteensFeedbacksLabelsEntries[];
 		if (result) {
 			const likes = result?.find(entry => entry.like === true)?.count || 0;
@@ -87,6 +89,8 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 		}
 	}, [label?.id, date]);
 
+	const imageId = typeof label?.image === 'string' ? label.image : (label?.image as any)?.id;
+
 	return (
 		<View style={styles.row}>
 			<Tooltip
@@ -97,7 +101,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 						{label?.image_remote_url || label?.image ? (
 							<Image
 								source={{
-									uri: label?.image_remote_url || getImageUrl(label?.image),
+									uri: label?.image_remote_url || (imageId ? getImageUrl(imageId) : '') || '',
 								}}
 								style={styles.icon}
 							/>

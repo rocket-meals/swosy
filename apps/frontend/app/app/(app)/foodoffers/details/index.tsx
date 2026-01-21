@@ -56,12 +56,12 @@ export default function FoodDetailsScreen() {
 	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
 	const { user, profile } = useSelector((state: RootState) => state.authReducer);
 	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-        const previousFeedback = useSelector(state => selectPreviousFeedback(state, initialFoodId));
+	const previousFeedback = useSelector((state: RootState) => selectPreviousFeedback(state, initialFoodId));
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 	const { foodAttributeGroups } = useSelector((state: RootState) => state.foodAttributes);
 	const { foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
-	const [pushTokenObj, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
+	const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
@@ -265,28 +265,28 @@ export default function FoodDetailsScreen() {
                                 if (foodData && foodData.data) {
                                         const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
 
-                                        const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
-                                        setFoodDetails({
-                                                ...food,
-                                                foodoffer_category,
-                                                name: translation ? translation.name : null,
-                                        });
-                                        if (attribute_values) {
-                                                setFoodAttributesLoading(true);
-                                                setFoodAttributes(attribute_values);
-                                        }
-                                } else {
-                                        console.log('No food data found');
-                                }
-                        } else if (initialFoodId) {
-                                const foodData = await fetchFoodDetailsById(initialFoodId.toString());
-                                if (foodData && foodData.data) {
-                                        const food = foodData.data;
-                                        const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
-                                        setFoodDetails({
-                                                ...food,
-                                                name: translation ? translation.name : food?.name ?? null,
-                                        });
+					const translation = food?.translations?.find((val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
+					setFoodDetails({
+						...food,
+						foodoffer_category,
+						name: translation ? translation.name : null,
+					});
+					if (attribute_values) {
+						setFoodAttributesLoading(true);
+						setFoodAttributes(attribute_values);
+					}
+				} else {
+					console.log('No food data found');
+				}
+			} else if (initialFoodId) {
+				const foodData = await fetchFoodDetailsById(initialFoodId.toString());
+				if (foodData && foodData.data) {
+					const food = foodData.data;
+					const translation = food?.translations?.find((val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
+					setFoodDetails({
+						...food,
+						name: translation ? translation.name : food?.name ?? null,
+					});
 
                                         const attributes = food?.attribute_values || food?.foods_attributes_values;
                                         if (attributes) {
@@ -349,12 +349,13 @@ export default function FoodDetailsScreen() {
 			let deviceInformationsWithPushToken = {
 				...deviceInformationsWithoutPushToken,
 				pushTokenObj: pushTokenObj,
+				display_group: '',
 			};
 
 			let newDevices = profile?.devices || [];
 			let foundDevice = getCurrentDevice(deviceInformationsId, newDevices);
 			if (!foundDevice) {
-				newDevices.push(deviceInformationsWithPushToken);
+				newDevices.push(deviceInformationsWithPushToken as any);
 			} else {
 				const deviceInformationsForUpdate = {
 					...foundDevice,
@@ -641,7 +642,7 @@ export default function FoodDetailsScreen() {
 						style={{
 							...styles.notificationContainer,
 							backgroundColor: theme.drawerBg,
-							width: getContainerWidth() || '100%',
+							width: (getContainerWidth() || '100%') as any,
 						}}
 					>
 						<Text
@@ -705,7 +706,7 @@ export default function FoodDetailsScreen() {
 					<View
 						style={{
 							...styles.tabViewContainer,
-							width: getContainerWidth(),
+							width: getContainerWidth() as any,
 						}}
 					>
 						<View

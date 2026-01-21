@@ -44,19 +44,14 @@ const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) 
 		>
 			{canteens.map((canteen, index: number) => {
 				const isSelected = selectedCanteen && String(selectedCanteen.id) === String(canteen.id);
+				const imageUrl = canteen?.image_url || canteensData[index]?.image;
 				return (
 					<CardWithText
 						key={canteen.id + canteen.alias}
 						onPress={() => {
 							onSelectCanteen(canteen);
 						}}
-						imageSource={
-							canteen?.image_url || canteensData[index]?.image
-								? {
-										uri: canteen?.image_url || canteensData[index]?.image,
-									}
-								: { uri: defaultImage }
-						}
+						imageSource={{ uri: imageUrl || defaultImage || '' }}
 						containerStyle={{
 							width: screenWidth > 800 ? 210 : 160,
 							backgroundColor: theme.card.background,

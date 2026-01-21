@@ -1,6 +1,6 @@
 import { itemStatus } from '@/constants/Constants';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
+import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
 export class FoodCategoriesHelper extends CollectionHelper<DatabaseTypes.FoodsCategories> {
@@ -10,7 +10,7 @@ export class FoodCategoriesHelper extends CollectionHelper<DatabaseTypes.FoodsCa
 	}
 
 	// Fetch all food categories with optional query overrides
-	async fetchFoodCategories(queryOverride: any = {}) {
+	async fetchFoodCategories(queryOverride?: Query<DatabaseTypes.FoodsCategories>) {
 		const defaultQuery = {
 			fields: ['*', 'translations.*'],
 			limit: -1, // Fetch all
@@ -19,24 +19,24 @@ export class FoodCategoriesHelper extends CollectionHelper<DatabaseTypes.FoodsCa
 			},
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 
-	async fetchFoodCategoriesById(id: string, queryOverride: any = {}) {
+	async fetchFoodCategoriesById(id: string, queryOverride?: Query<DatabaseTypes.FoodsCategories>) {
 		const defaultQuery = {
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItem(id, query);
 	}
 
-	async createFoodCategories(canteenData: any) {
+	async createFoodCategories(canteenData: Partial<DatabaseTypes.FoodsCategories>) {
 		return await this.createItem(canteenData);
 	}
 
-	async updateFoodCategories(id: string, updatedData: any) {
+	async updateFoodCategories(id: string, updatedData: Partial<DatabaseTypes.FoodsCategories>) {
 		return await this.updateItem(id, updatedData);
 	}
 

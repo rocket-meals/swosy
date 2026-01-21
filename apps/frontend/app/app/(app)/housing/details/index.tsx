@@ -65,7 +65,7 @@ const Details = () => {
 
 	const handleOpenNavigation = () => {
 		if (!apartmentDetails) return;
-		const coordinates = apartmentDetails.coordinates?.coordinates; // [longitude, latitude]
+		const coordinates = (apartmentDetails as any).coordinates?.coordinates; // [longitude, latitude]
 
 		if (!coordinates || coordinates.length !== 2) {
 			console.error('Invalid coordinates');
@@ -131,9 +131,9 @@ const Details = () => {
 						>
 							<Image
 								source={
-									apartmentDetails?.image || apartmentDetails?.image_remote_url
+									(apartmentDetails as any)?.image || (apartmentDetails as any)?.image_remote_url
 										? {
-												uri: apartmentDetails?.image_remote_url || getImageUrl(String(apartmentDetails?.image)),
+												uri: (apartmentDetails as any)?.image_remote_url || getImageUrl(String((apartmentDetails as any)?.image)),
 											}
 										: { uri: defaultImage }
 								}
@@ -146,7 +146,7 @@ const Details = () => {
 								width: '100%',
 							}}
 						>
-							<Text style={{ ...styles.buildingHeading, color: theme.screen.text }}>{apartmentDetails?.alias}</Text>
+							<Text style={{ ...styles.buildingHeading, color: theme.screen.text }}>{(apartmentDetails as any)?.alias}</Text>
 							<View
 								style={{
 									width: '98%',

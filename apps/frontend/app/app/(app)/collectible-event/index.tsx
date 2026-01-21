@@ -33,11 +33,18 @@ type DebugSectionProps = {
         buttonColor: string;
         resetCurrentCollectibles: () => void;
         resetAllParticipations: () => void;
-        nextCollectibleKey?: CollectibleAt;
+        nextCollectibleKey?: any;
         debugSpotLabel: string;
 };
 
-const getGroupPosition = (index: number, length: number) => {
+type GroupPosition = 'top' | 'middle' | 'bottom' | 'single';
+
+type ExtendedCollectibleEvent = DatabaseTypes.CollectibleEvents & {
+        ask_for_contact_details?: boolean;
+        [key: string]: any;
+};
+
+const getGroupPosition = (index: number, length: number): GroupPosition => {
         if (length === 1) return 'single';
         if (index === 0) return 'top';
         if (index === length - 1) return 'bottom';
@@ -81,7 +88,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                             <TouchableOpacity
                                 style={{
                                         ...styles.button,
-                                        backgroundColor: theme.warning,
+                                        backgroundColor: theme.accent,
                                         opacity: 0.9,
                                 }}
                                 onPress={resetAllParticipations}
@@ -115,7 +122,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                             />
                                     }
                                     label={`ID: ${activeCollectibleEvent.id}`}
-                                    groupPosition={getGroupPosition(0, 2) as any}
+                                    groupPosition={getGroupPosition(0, 2)}
                                 />
                                 <SettingsList
                                     key="event-alias"
@@ -128,7 +135,7 @@ const DebugSection: React.FC<DebugSectionProps> = ({
                                             />
                                     }
                                     label={`Alias: ${activeCollectibleEvent.alias || '-'}`}
-                                    groupPosition={getGroupPosition(1, 2) as any}
+                                    groupPosition={getGroupPosition(1, 2)}
                                 />
                         </View>
                     ) : null}
@@ -158,12 +165,12 @@ const CollectibleEventScreen = () => {
                 setDebugLogs(prev => [...prev, `${timestamp} - ${message}`]);
         }, []);
 
-        const shouldAskForContactDetails = Boolean((activeCollectibleEvent as any)?.ask_for_contact_details);
+        const shouldAskForContactDetails = Boolean((activeCollectibleEvent as ExtendedCollectibleEvent)?.ask_for_contact_details);
 
         const activeCollectibleKeys = useMemo(
             () =>
                 activeCollectibleEvent
-                    ? COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as any)?.[key])
+                    ? COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as ExtendedCollectibleEvent)?.[key])
                     : [],
             [activeCollectibleEvent]
         );
@@ -171,7 +178,7 @@ const CollectibleEventScreen = () => {
         const sampleCollectibleKey = useMemo(
             () =>
                 activeCollectibleEvent
-                    ? COLLECTABLE_AT_FIELDS.find(key => (activeCollectibleEvent as any)?.[key])
+                    ? COLLECTABLE_AT_FIELDS.find(key => (activeCollectibleEvent as ExtendedCollectibleEvent)?.[key])
                     : undefined,
             [activeCollectibleEvent]
         );
@@ -184,7 +191,7 @@ const CollectibleEventScreen = () => {
         const maxCollectibleKeys = useMemo(
             () =>
                 activeCollectibleEvent
-                    ? COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as any)?.[key]).length
+                    ? COLLECTABLE_AT_FIELDS.filter(key => (activeCollectibleEvent as ExtendedCollectibleEvent)?.[key]).length
                     : 0,
             [activeCollectibleEvent]
         );
@@ -350,7 +357,7 @@ const CollectibleEventScreen = () => {
                         return;
                 }
 
-                const pointsToSave = String(displayedCollectedCount);
+                const pointsToSave = displayedCollectedCount;
 
                 setIsSaving(true);
                 try {
@@ -410,8 +417,8 @@ const CollectibleEventScreen = () => {
                                 );
 
                                 if (existing?.id) {
-                                        await participantsHelper.updateItem(existing.id, { points: '0', data: {} });
-                                        setParticipation(prev => (prev ? { ...prev, points: '0', data: {} } : prev));
+                                        await participantsHelper.updateItem(existing.id, { points: 0, data: {} });
+                                        setParticipation(prev => (prev ? { ...prev, points: 0, data: {} } : prev));
                                         toast(translate(TranslationKeys.reset), 'success');
                                 }
                         } catch (error) {
@@ -459,7 +466,9 @@ const CollectibleEventScreen = () => {
                             ) : null}
 
                             <View style={{ alignItems: 'center', marginTop: 16 }}>
-                                    <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} isPreview />
+                                    {sampleCollectibleKey ? (
+                                        <CollectibleItem collectibleKey={sampleCollectibleKey} hideOnCollect={false} isPreview />
+                                    ) : null}
                                     <Text style={{ color: theme.inactiveText, marginTop: 8 }}>
                                             {translate(TranslationKeys.collectible_event_preview_label)}
                                     </Text>
@@ -590,7 +599,7 @@ const CollectibleEventScreen = () => {
                                                                             : () => toggleCollectibleHint(key)
                                                                 }
                                                                 groupPosition={
-                                                                        getGroupPosition(index, activeCollectibleKeys.length) as any
+                                                                        getGroupPosition(index, activeCollectibleKeys.length)
                                                                 }
                                                             />
                                                         );

@@ -134,7 +134,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		let campusWithDistance: Array<DatabaseTypes.Buildings> = [];
 		if (apartments) {
 			apartments?.forEach((apartment: any) => {
-				const distance = Number(calculateDistanceInMeter(selectedBuilding?.coordinates?.coordinates, apartment?.coordinates?.coordinates));
+				const distance = Number(calculateDistanceInMeter((selectedBuilding as any)?.coordinates?.coordinates, apartment?.coordinates?.coordinates));
 				campusWithDistance.push({ ...apartment, distance });
 			});
 			if (campusWithDistance?.length === 0) {
@@ -153,7 +153,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			if (selectedBuilding) {
 				const apartmentsWithDistance = addDistance(apartments);
 				if (apartmentsWithDistance && apartmentsWithDistance.length > 0) {
-					next = apartmentsWithDistance;
+					next = apartmentsWithDistance as any;
 				}
 			}
 

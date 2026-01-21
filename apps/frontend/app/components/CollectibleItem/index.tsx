@@ -118,7 +118,7 @@ const CollectibleItem: React.FC<CollectibleItemProps> = ({
                 setIsSaving(true);
                 try {
                 const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                        points: String(updatedCount),
+                        points: updatedCount,
                         data: updatedData,
                 };
 

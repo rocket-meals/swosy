@@ -73,9 +73,7 @@ const LoginHeader = () => {
 	return (
 		<View style={styles.header}>
 			<MyImage
-				source={{
-					uri: getImageUrl(serverInfo?.info?.project?.project_logo),
-				}}
+				remote_image_url={getImageUrl(serverInfo?.info?.project?.project_logo)}
 				style={{
 					width: 64,
 					height: 64,
@@ -89,7 +87,6 @@ const LoginHeader = () => {
 					...styles.picker,
 					height: isWeb ? 41 : 'auto',
 					backgroundColor: theme.login.pickerBg,
-					color: theme.login.pickerText,
 				}}
 			>
 				<Text

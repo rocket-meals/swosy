@@ -25,7 +25,7 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 const fontSize = 10;
 
 const Index = () => {
-	const printRef = useRef<HTMLElement | null>(null);
+	const printRef = useRef<any>(null);
 	const { translate } = useLanguage();
 	const { theme, setThemeMode } = useTheme();
 	const dispatch = useDispatch();
@@ -147,7 +147,7 @@ const Index = () => {
 			const dailyCounts: Record<string, number> = {}; // Count foods per category for THIS day
 
 			// Count foods per category for the current day
-			dayFoods.forEach(food => {
+			dayFoods.forEach((food: any) => {
 				const categoryId = food?.food?.food_category;
 				// Only count if the category exists in our fetched categories list
 				if (categoryId && categories[categoryId]) {
@@ -246,7 +246,7 @@ const Index = () => {
 					let filteredMarkings = markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
 
 					// Sort the filtered markings using sortMarkingsByGroup
-					filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups);
+					filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups as any);
 
 					const dummyMarkings = filteredMarkings.map((item: any) => ({
 						image: item?.image_remote_url ? { uri: item.image_remote_url } : { uri: getImageUrl(item.image) },

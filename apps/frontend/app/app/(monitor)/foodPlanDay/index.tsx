@@ -215,13 +215,13 @@ const Index = () => {
 											params: {
 												canteens_id: dayPlan?.selectedCanteen?.id || '',
 												foodCategoryIds: dayPlan?.mealOfferCategory?.id || '',
-												showFoodCategoryName: dayPlan?.isMenuCategory || false,
+												showFoodCategoryName: String(dayPlan?.isMenuCategory || false),
 												foodOfferCategoryIds: dayPlan?.foodCategory?.id || '',
-												showFoodofferCategoryName: dayPlan?.isMenuCategoryName || false,
+												showFoodofferCategoryName: String(dayPlan?.isMenuCategoryName || false),
 												nextFoodIntervalInSeconds: dayPlan?.nextFoodInterval || 0,
 												refreshFoodOffersIntervalInSeconds: dayPlan?.refreshInterval || 0,
-												fullscreen: dayPlan?.isFullScreen || false,
-												showMarkingsOnCard: dayPlan?.showMarkingsOnCard ?? bigScreenDefaultValues.showMarkingsOnCard,
+												fullscreen: String(dayPlan?.isFullScreen || false),
+												showMarkingsOnCard: String(dayPlan?.showMarkingsOnCard ?? bigScreenDefaultValues.showMarkingsOnCard),
 											},
 										});
 									}

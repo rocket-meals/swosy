@@ -63,7 +63,7 @@ const Index = () => {
 			>
 				<View style={styles.row}>
 					<View style={styles.col1}>
-						<TouchableOpacity onPress={() => router.navigate(AppScreens.FOOD_OFFERS)} style={{ padding: 10 }}>
+						<TouchableOpacity onPress={() => router.navigate(('/(app)/' + AppScreens.FOOD_OFFERS) as any)} style={{ padding: 10 }}>
 							<Ionicons name="arrow-back" size={24} color={theme.header.text} />
 						</TouchableOpacity>
 						<Text style={{ ...styles.heading, color: theme.header.text }}>{wiki?.translations && getTitleFromTranslation(wiki?.translations, language)}</Text>

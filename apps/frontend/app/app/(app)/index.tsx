@@ -33,13 +33,13 @@ const Home = () => {
 
 	const checkCanteenSelection = () => {
 		if (selectedCanteen) {
-			router.push('/(app)/' + AppScreens.FOOD_OFFERS);
+			router.push(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 		}
 	};
 
 	const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
 		dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
-		router.push('/(app)/' + AppScreens.FOOD_OFFERS);
+		router.push(('/(app)/' + AppScreens.FOOD_OFFERS) as any);
 	};
 
 	const getCanteensWithBuildings = async () => {

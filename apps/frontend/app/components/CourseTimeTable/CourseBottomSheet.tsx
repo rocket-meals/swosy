@@ -136,7 +136,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 			return; // Prevent saving if times are invalid
 		}
 
-		let courseTimetable = profile?.course_timetable ? profile?.course_timetable : {};
+		let courseTimetable = (profile?.course_timetable ? { ...profile.course_timetable } : {}) as Record<string, BaseCourseTimetableEvent>;
 		const id = Object.keys(courseTimetable)?.length > 0 ? (Object.keys(courseTimetable).length + 1).toString() : '1';
 		const newTimetable: BaseCourseTimetableEvent = {
 			id: id,
@@ -176,7 +176,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 
 	const handleDeleteTimeTable = async () => {
 		setIsDeleting(true);
-		let courseTimetable = profile?.course_timetable || {};
+		let courseTimetable = (profile?.course_timetable ? { ...profile.course_timetable } : {}) as Record<string, BaseCourseTimetableEvent>;
 		if (courseTimetable) {
 			delete courseTimetable[Number(selectedEventId)];
 			if (profile?.id) {
@@ -228,7 +228,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 			setLoading(false);
 			return; // Prevent saving if times are invalid
 		}
-		let courseTimetable = profile?.course_timetable || {};
+		let courseTimetable = (profile?.course_timetable ? { ...profile.course_timetable } : {}) as Record<string, BaseCourseTimetableEvent>;
 		if (courseTimetable) {
 			const prevEvent = courseTimetable[Number(selectedEventId)];
 			if (prevEvent) {
@@ -300,8 +300,8 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 								display: 'flex',
 								justifyContent: 'center',
 								alignSelf: 'center',
-							}}
-						>
+							}}				
+							>
 							<View style={styles.weekdayView}>
 								{colorData.map((color, index) => (
 									<TouchableOpacity

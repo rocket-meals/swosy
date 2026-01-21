@@ -51,7 +51,7 @@ const MarkingBottomSheet = forwardRef<BottomSheet, MarkingBottomSheetProps>(({ o
                                         <View style={styles.imageContainer}>
                                                 <Image
                                                         source={{
-                                                                uri: markingDetails?.image_remote_url || getImageUrl(String(markingDetails?.image)),
+                                                                uri: markingDetails?.image_remote_url || getImageUrl(String(markingDetails?.image)) || undefined,
                                                         }}
                                                         style={{
                                                                 ...styles.image,

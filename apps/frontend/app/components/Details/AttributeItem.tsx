@@ -28,7 +28,7 @@ const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition }) =>
 
 	let value: string | undefined;
 	if (attr?.number_value !== null && attr?.number_value !== undefined) {
-		value = formatFoodInformationValue(attr?.number_value, suffix);
+		value = formatFoodInformationValue(attr?.number_value, suffix) ?? undefined;
 	} else if (attr?.string_value) {
 		value = `${attr?.string_value}${suffix}`;
 	}

@@ -157,7 +157,7 @@ export default function ImageFullScreen() {
 				document.body.removeChild(link);
 			} else {
 				const filename = extension ? `${name}.${extension}` : name;
-				const fileUri = FileSystem.documentDirectory + filename;
+				const fileUri = (FileSystem as any).documentDirectory + filename;
 				const { uri } = await FileSystem.downloadAsync(String(highResUri), fileUri);
 				await Share.share({
 					url: uri,
@@ -205,23 +205,25 @@ export default function ImageFullScreen() {
 				<Animated.View style={styles.flex}>
 					<TouchableWithoutFeedback onPress={toggleControls} onLongPress={() => setModalVisible(true)}>
 						<Animated.View style={[styles.imageWrapper, animatedStyle]}>
-							<Image source={{ uri: lowResUri }} style={styles.image} contentFit="contain" />
-							<Image source={{ uri: highResUri }} style={[styles.image, StyleSheet.absoluteFill]} contentFit="contain" />
+							<Image source={{ uri: lowResUri || undefined }} style={styles.image} contentFit="contain" />
+							<Image source={{ uri: highResUri || undefined }} style={[styles.image, StyleSheet.absoluteFill]} contentFit="contain" />
 						</Animated.View>
 					</TouchableWithoutFeedback>
 				</Animated.View>
 			</GestureDetector>
-			<BaseBottomModal visible={modalVisible} onClose={() => setModalVisible(false)}>
-				<SettingsList
-					leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />}
-					label="Download Image"
-					handleFunction={() => {
-						setModalVisible(false);
-						downloadImage();
-					}}
-					groupPosition="single"
-				/>
-			</BaseBottomModal>
+			{modalVisible && (
+				<BaseBottomModal onClose={() => setModalVisible(false)}>
+					<SettingsList
+						leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />}
+						label="Download Image"
+						handleFunction={() => {
+							setModalVisible(false);
+							downloadImage();
+						}}
+						groupPosition="single"
+					/>
+				</BaseBottomModal>
+			)}
 		</Animated.View>
 	);
 }

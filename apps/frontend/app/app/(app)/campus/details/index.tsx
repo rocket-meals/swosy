@@ -85,7 +85,8 @@ const Details = () => {
 
   const handleOpenNavigation = useCallback(() => {
     if (!campusDetails) return;
-    const coordinates = campusDetails.coordinates?.coordinates;
+    const point = campusDetails.coordinates as { coordinates?: [number, number] } | undefined | null;
+    const coordinates = Array.isArray(point?.coordinates) ? point?.coordinates : undefined;
     if (!coordinates || coordinates.length !== 2) {
       console.error('Invalid coordinates');
       return;

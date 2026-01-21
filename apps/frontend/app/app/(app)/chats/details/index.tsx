@@ -414,7 +414,7 @@ const ChatDetailsScreen = () => {
                                                                         value={foodName}
                                                                         leftIcon={
                                                                                 imageSource ? (
-                                                                                        <MyImage source={imageSource} style={styles.linkedFoodImage} />
+                                                                                        <MyImage remote_image_url={imageSource.uri} style={styles.linkedFoodImage} />
                                                                                 ) : (
                                                                                         <MaterialCommunityIcons
                                                                                                 name="silverware-fork-knife"

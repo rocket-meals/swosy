@@ -79,7 +79,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     useEffect(() => {
       try {
         markingsData.slice(0, 5).forEach(m => {
-          const img = m?.image_remote_url || getImageUrl(m?.image);
+          const img = m?.image_remote_url || getImageUrl(m?.image as string);
           if (img) Image.prefetch(img).catch(() => { });
         });
       } catch (e) { }
@@ -142,7 +142,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const openMarkingLabel = useCallback(
       (marking: DatabaseTypes.Markings) => {
         dispatch({ type: SET_MARKING_DETAILS, payload: marking });
-        handleMenuSheet('menu');
+        handleMenuSheet('menu' as any);
       },
       [dispatch, handleMenuSheet]
     );
@@ -161,7 +161,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const priceLabel = useMemo(() => showFormatedPrice(showPrice(item, profile)), [item, profile]);
 
     const imageUri = useMemo(() => {
-      return foodItem?.image_remote_url || getImageUrl(foodItem?.image) || defaultImage;
+      return foodItem?.image_remote_url || getImageUrl(foodItem?.image as string) || defaultImage;
     }, [foodItem?.image_remote_url, foodItem?.image, defaultImage]);
 
     return (
@@ -248,12 +248,10 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                       (mark?.image_remote_url || mark?.image) && mark?.show_on_card ? (
                         <TouchableOpacity key={mark.id} onPress={() => openMarkingLabel(mark)}>
                           <MyImage
-                            source={{
-                              uri: mark?.image_remote_url || getImageUrl(mark?.image),
-                            }}
+                            remote_image_url={mark?.image_remote_url || getImageUrl(mark?.image as string)}
                             style={{
                               ...styles.categoryLogo,
-                              backgroundColor: mark?.background_color,
+                              backgroundColor: mark?.background_color || undefined,
                               borderRadius: mark?.background_color ? 8 : mark.hide_border ? 5 : 0,
                             }}
                           />

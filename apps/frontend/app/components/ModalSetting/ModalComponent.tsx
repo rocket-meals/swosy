@@ -39,7 +39,15 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isVisible, title = 'Mod
 	}, []);
 
 	return (
-		<Modal isVisible={isVisible} onClose={onClose} animationIn="slideInUp" animationOut="slideOutDown" backdropOpacity={backdropOpacity} style={{ margin: 0 }}>
+		<Modal
+			isVisible={isVisible}
+			onBackdropPress={onClose}
+			onBackButtonPress={onClose}
+			animationIn="slideInUp"
+			animationOut="slideOutDown"
+			backdropOpacity={backdropOpacity}
+			style={{ margin: 0 }}
+		>
 			<View
 				style={[
 					styles.modalContainer,

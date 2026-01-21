@@ -34,7 +34,7 @@ const MyImage: React.FC<MyImageProps> = ({
                 }
 
                 if (directusAssetId) {
-                        return { uri: getHighResImageUrl(String(directusAssetId)) };
+                        return { uri: getHighResImageUrl(String(directusAssetId)) || undefined };
                 }
 
                 if (defaultImageUrl) {

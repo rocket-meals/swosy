@@ -199,7 +199,7 @@ const NotificationScreen = () => {
 							</View>
                                                 ))}
                                 </View>
-                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_noticiation} />
+                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_notification} />
                         </View>
                 </ScrollView>
         );

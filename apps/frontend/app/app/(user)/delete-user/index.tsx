@@ -67,7 +67,7 @@ const Index = () => {
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay} loop={false} />;
+			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay ?? false} loop={false} />;
 		}
 	}, [autoPlay, animationJson]);
 
@@ -167,7 +167,7 @@ const Index = () => {
 							disabled={!profile?.id}
 						>
 							<View style={{ ...styles.col }}>
-								<AntDesign name="deleteuser" size={24} color={theme.screen.icon} />
+								<AntDesign name="user-delete" size={24} color={theme.screen.icon} />
 								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account_delete)}</Text>
 							</View>
 						</TouchableOpacity>

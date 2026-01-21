@@ -1,5 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
-import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
+import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
 export class AppSettingsHelper extends CollectionHelper<DatabaseTypes.AppSettings> {
@@ -9,13 +9,13 @@ export class AppSettingsHelper extends CollectionHelper<DatabaseTypes.AppSetting
 	}
 
 	// Fetch all app settings with optional query overrides
-	async fetchAppSettings(queryOverride: any = {}) {
+	async fetchAppSettings(queryOverride?: Query<DatabaseTypes.AppSettings>) {
 		const defaultQuery = {
 			fields: ['*', 'translations.*', 'housing_translations.*', 'balance_translations.*', 'login_screen_translations.*'],
 			limit: -1,
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 }

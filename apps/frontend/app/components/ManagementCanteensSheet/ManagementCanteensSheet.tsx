@@ -148,9 +148,9 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({ close
 									source={
 										canteen?.image_url || canteensData[index]?.image
 											? {
-													uri: canteen?.image_url || canteensData[index]?.image,
+													uri: canteen?.image_url || canteensData[index]?.image || undefined,
 												}
-											: { uri: defaultImage }
+											: { uri: defaultImage || undefined }
 									}
 								/>
 								{canteen.status === 'archived' && (

@@ -1,5 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
-import { CollectionHelper } from '@/helper/collectionHelper';
+import { CollectionHelper, Query } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
@@ -9,7 +9,7 @@ export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
 	}
 
 	// Fetch all app settings with optional query overrides
-	async fetchAppFeedback(queryOverride: any = {}) {
+	async fetchAppFeedback(queryOverride?: Query<DatabaseTypes.AppFeedbacks>) {
 		const defaultQuery = {
 			fields: ['*'],
 			sort: ['sort', '-date_created'],
@@ -17,24 +17,24 @@ export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
 			limit: 100,
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 
-	async fetchAppFeedbackById(id: string, queryOverride: any = {}) {
+	async fetchAppFeedbackById(id: string, queryOverride?: Query<DatabaseTypes.AppFeedbacks>) {
 		const defaultQuery = {
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItem(id, query);
 	}
 
-	async updateAppFeedback(id: string, updatedData: any) {
+	async updateAppFeedback(id: string, updatedData: Partial<DatabaseTypes.AppFeedbacks>) {
 		return await this.updateItem(id, updatedData);
 	}
 
-	async createAppFeedback(data: any) {
+	async createAppFeedback(data: Partial<DatabaseTypes.AppFeedbacks>) {
 		return await this.createItem(data);
 	}
 }

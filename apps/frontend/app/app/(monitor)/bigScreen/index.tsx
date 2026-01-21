@@ -78,7 +78,7 @@ const Index = () => {
 
 	useEffect(() => {
 		const unsubscribe = NetInfo.addEventListener(state => {
-			setIsConnected(state?.isConnected);
+			setIsConnected(state?.isConnected ?? false);
 		});
 
 		return () => unsubscribe();

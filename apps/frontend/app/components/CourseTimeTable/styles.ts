@@ -141,13 +141,14 @@ export default StyleSheet.create({
 	},
 
 	sheetHeader: {
-		width: '95%',
+		width: '100%',
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		borderTopRightRadius: 28,
 		borderTopLeftRadius: 28,
-		marginTop: 20,
+		marginTop: 0,
+		marginBottom: 20
 	},
 	sheetcloseButton: {
 		width: 45,

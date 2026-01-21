@@ -455,7 +455,7 @@ const Settings = () => {
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
-							value={profile?.id ? profile?.nickname : nickNameLocal}
+							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
 							handleFunction={() => {
 								openNicknameSheet();
 							}}
@@ -541,7 +541,7 @@ const Settings = () => {
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" />
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
                                                 {/* Terms & Conditions */}
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate} handleFunction={() => {}} groupPosition="bottom" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate ?? undefined} handleFunction={() => {}} groupPosition="bottom" />
                                         </View>
                                         <TouchableOpacity
                                                 style={styles.footer}
@@ -557,9 +557,7 @@ const Settings = () => {
 					>
 						<View style={styles.logoContainer}>
 							<MyImage
-								source={{
-									uri: getImageUrl(serverInfo?.info?.project?.project_logo),
-								}}
+								remote_image_url={getImageUrl(serverInfo?.info?.project?.project_logo)}
 								style={styles.logo}
 							/>
 						</View>

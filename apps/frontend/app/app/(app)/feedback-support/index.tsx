@@ -123,7 +123,7 @@ const FeedbackScreen = () => {
 				.map(item => ({
 					...item,
 					multiline: item.key === 'content',
-					keyboardType: item.key === 'contact_email' ? 'email-address' : undefined,
+					keyboardType: (item.key === 'contact_email' ? 'email-address' : undefined) as KeyboardTypeOptions | undefined,
 				})),
 		[]
 	);
@@ -131,7 +131,7 @@ const FeedbackScreen = () => {
 		const numericDeviceKeys = new Set(['display_height', 'display_width', 'display_fontscale', 'display_pixelratio', 'display_scale']);
 		return deviceData.map(item => ({
 			...item,
-			keyboardType: numericDeviceKeys.has(item.key) ? 'numeric' : undefined,
+			keyboardType: (numericDeviceKeys.has(item.key) ? 'numeric' : undefined) as KeyboardTypeOptions | undefined,
 		}));
 	}, []);
 

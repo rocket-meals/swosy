@@ -55,7 +55,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		const fetchMarkingGroups = async () => {
 			try {
 				const markingGroupsHelper = new MarkingGroupsHelper();
-				const result = await markingGroupsHelper.fetchMarkingGroups({});
+				const result = (await markingGroupsHelper.fetchMarkingGroups({})) as DatabaseTypes.MarkingsGroups[];
 				if (result) {
 					setMarkingGroups(result);
 				}

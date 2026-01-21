@@ -12,7 +12,7 @@ import { FormSubmissionSortOption, FormSubmissionSortSheetProps } from './types'
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 
-const SORTING_OPTIONS: { id: FormSubmissionSortOption; label: TranslationKeys; icon: React.ReactElement }[] = [
+const SORTING_OPTIONS: { id: FormSubmissionSortOption; label: TranslationKeys; icon: React.ReactElement<{ color?: string }> }[] = [
 	{
 		id: 'alphabetical',
 		label: TranslationKeys.sort_option_alphabetical,

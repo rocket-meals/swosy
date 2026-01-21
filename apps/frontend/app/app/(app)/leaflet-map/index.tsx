@@ -51,7 +51,7 @@ const LeafletMap = () => {
 					setMarkerIconSrc(asset.uri);
 				} else if (asset.localUri) {
 					const content = await FileSystem.readAsStringAsync(asset.localUri, {
-						encoding: FileSystem.EncodingType.Base64,
+						encoding: (FileSystem as any).EncodingType.Base64,
 					});
 					setMarkerIconSrc(content);
 				} else {
@@ -91,7 +91,7 @@ const LeafletMap = () => {
 						id: 'example',
 						position: getMarkerPosition(1),
 						icon: MyMapMarkerIcons.getIconForWebByLocalPathUri(markerIconSrc),
-						size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
+						size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
 						iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 					},
 				]
@@ -100,14 +100,14 @@ const LeafletMap = () => {
 			id: 'img-marker',
 			position: getMarkerPosition(2),
 			icon: MyMapMarkerIcons.getIconForWebByExternalUri(EXTERNAL_MARKER_URL),
-			size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
+			size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
 			iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 		},
 		{
 			id: 'img-marker-base64',
 			position: getMarkerPosition(3),
 			icon: MyMapMarkerIcons.getIconForWebByBase64(LOCAL_BASE64_MARKER),
-			size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
+			size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
 			iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 		},
 	];

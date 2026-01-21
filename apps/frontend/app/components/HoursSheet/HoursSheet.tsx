@@ -93,7 +93,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 			});
 
 			const hoursResults = await Promise.all(hoursPromises);
-			const matchedHours = hoursResults.filter(hour => Boolean(hour) && Object.values(hour).some(val => val !== null));
+			const matchedHours = hoursResults.filter((hour): hour is BusinessHour => hour !== null && Object.values(hour).some(val => val !== null));
 
 			// Filter by valid dates
 			const currentDate = new Date().toISOString().split('T')[0];

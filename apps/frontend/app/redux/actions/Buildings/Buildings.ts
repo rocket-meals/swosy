@@ -1,5 +1,5 @@
 import { DatabaseTypes } from 'repo-depkit-common';
-import { CollectionHelper } from '@/helper/collectionHelper';
+import { CollectionHelper, Query } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
 export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
@@ -9,33 +9,33 @@ export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 	}
 
 	// Fetch all buildings with optional query overrides
-	async fetchBuildings(queryOverride: any = {}) {
+	async fetchBuildings(queryOverride?: Query<DatabaseTypes.Buildings>) {
 		const defaultQuery = {
 			fields: ['*', 'translations.*'],
 			limit: -1, // Fetch all
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 
 	// Fetch a specific building by ID
-	async fetchBuildingById(id: string, queryOverride: any = {}) {
+	async fetchBuildingById(id: string, queryOverride?: Query<DatabaseTypes.Buildings>) {
 		const defaultQuery = {
 			fields: ['*', 'translations.*, businesshours.*'],
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItem(id, query);
 	}
 
 	// Create a new building
-	async createBuilding(buildingData: any) {
+	async createBuilding(buildingData: Partial<DatabaseTypes.Buildings>) {
 		return await this.createItem(buildingData);
 	}
 
 	// Update an existing building
-	async updateBuilding(id: string, updatedData: any) {
+	async updateBuilding(id: string, updatedData: Partial<DatabaseTypes.Buildings>) {
 		return await this.updateItem(id, updatedData);
 	}
 
