@@ -5,9 +5,21 @@ export default StyleSheet.create({
 		paddingVertical: 10,
 		paddingHorizontal: 0,
 	},
+	dateHeaderRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginBottom: 8,
+		paddingHorizontal: 10,
+	},
 	dateHeader: {
 		fontSize: 18,
-		marginBottom: 8,
+		flex: 1,
+	},
+	dateHeaderRight: {
+		fontSize: 14,
+		textAlign: 'right',
+		paddingLeft: 12,
 	},
 	loader: {
 		flex: 1,
