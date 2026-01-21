@@ -407,42 +407,24 @@ export class DateHelper {
   }
 
   // returns "Yesterday", "Today", "Tomorrow", or "Tuesday", "Wednesday" or the date in the format "DD.MM.YYYY"
-  static useSmartReadableDate(date: Date, locale?: string) {
+  static useSmartReadableDate(date: Date, locale?: string, relativeDaysDiffTranslations?: Record<number, string>) {
     const dateCopy = new Date(date); // since the original date may be changed during the process of other functions we need to copy it in order have a reliable date
-    //console.log("useSmartReadableDate", dateCopy, locale)
-    const today = new Date();
-    const tomorrow = DateHelper.addDaysAndReturnNewDate(today, 1);
-    const yesterday = DateHelper.addDaysAndReturnNewDate(today, -1);
+    const dateStart = new Date(dateCopy.getFullYear(), dateCopy.getMonth(), dateCopy.getDate());
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
-    // const translationToday = useTranslation(TranslationKeys.today);
-    // const translationTomorrow = useTranslation(TranslationKeys.tomorrow);
-    // const translationYesterday = useTranslation(TranslationKeys.yesterday);
-
-    //console.log("check if date is today, then return 'today'", today, dateCopy)
-    // check if date is today, then return "today"
-    if (DateHelper.isSameDay(today, dateCopy)) {
-      // return translationToday;
-      return today;
+    const diffDays = Math.round((dateStart.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
+    if (relativeDaysDiffTranslations && Object.prototype.hasOwnProperty.call(relativeDaysDiffTranslations, diffDays)) {
+      return relativeDaysDiffTranslations[diffDays];
     }
 
-    // check if date is tomorrow, then return "tomorrow"
-    if (DateHelper.isSameDay(tomorrow, dateCopy)) {
-      // return translationTomorrow;
-      return tomorrow;
-    }
-    // check if date is yesterday, then return "yesterday"
-
-    if (DateHelper.isSameDay(yesterday, dateCopy)) {
-      // return translationYesterday;
-      return yesterday;
-    }
-
-    const oneWeekLater = DateHelper.addDaysAndReturnNewDate(today, 6);
-    if (dateCopy >= yesterday && dateCopy <= oneWeekLater) {
-      return DateHelper.getWeekdayNameByDate(dateCopy, locale);
+    const yesterday = DateHelper.addDaysAndReturnNewDate(todayStart, -1);
+    const oneWeekLater = DateHelper.addDaysAndReturnNewDate(todayStart, 6);
+    if (dateStart >= yesterday && dateStart <= oneWeekLater) {
+      return DateHelper.getWeekdayNameByDate(dateStart, locale);
     }
     // else return "01.01.2021"
-    return DateHelper.formatOfferDateToReadable(dateCopy, false, false);
+    return DateHelper.formatOfferDateToReadable(dateStart, false, false);
   }
 
   static formatDateToTime(date: Date, withHours?: boolean, withMinutes?: boolean, withSeconds?: boolean) {
