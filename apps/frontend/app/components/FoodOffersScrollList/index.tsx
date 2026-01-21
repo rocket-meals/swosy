@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { CollectionNames, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -17,6 +17,9 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
+import { getAppElementTranslation } from '@/helper/resourceHelper';
+import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -28,23 +31,32 @@ interface DayData {
 	offers: DatabaseTypes.Foodoffers[];
 }
 
+interface DayItem {
+	foodoffer: DatabaseTypes.Foodoffers | null;
+	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
+}
+
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
         const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-        const { sortBy, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
-        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+        const { sortBy, language, amountColumnsForcard, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
+        const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector((state: RootState) => state.food);
         const { profile } = useSelector((state: RootState) => state.authReducer);
+	const { appElements } = useSelector((state: RootState) => state.appElements);
         const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
         const [days, setDays] = useState<DayData[]>([]);
         const [loading, setLoading] = useState(false);
         const [refreshing, setRefreshing] = useState(false);
+        const [beforeElement, setBeforeElement] = useState<any>(null);
+        const [afterElement, setAfterElement] = useState<any>(null);
         const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
         const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
         const bottomSheetRef = useRef<BottomSheet>(null);
         const [listWidth, setListWidth] = useState<number | null>(null);
         const MIN_CARD_WIDTH = 280;
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
+        const foods_area_color = appSettings?.foods_area_color || primaryColor;
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                         setSelectedSheet(sheet);
@@ -69,6 +81,20 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			}, 150);
 		}
 	}, [selectedSheet]);
+
+	useEffect(() => {
+		if (!appElements || !appSettings) return;
+		const getElement = (id: string) => {
+			const element = appElements?.find((el: any) => el.id === id);
+			if (!element || !element.translations) return null;
+			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, language);
+			return { content, popup_button_text, popup_content };
+		};
+		const before = getElement(String(appSettings.foodoffers_list_before_element));
+		const after = getElement(String(appSettings.foodoffers_list_after_element));
+		setBeforeElement(before);
+		setAfterElement(after);
+	}, [appElements, appSettings, language]);
 
     const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
 
@@ -151,6 +177,47 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		init();
 	}, [init]);
 
+	const getInfoItemContent = useCallback(
+		(item: DatabaseTypes.FoodoffersInfoItems) => {
+			const elementId = typeof item.name === 'string' ? item.name : item.name?.id;
+			const element = appElements?.find((el: any) => el.id === elementId);
+			if (!element || !element.translations) return { content: '' };
+			return getAppElementTranslation(element.translations, language);
+		},
+		[appElements, language]
+	);
+
+	const buildDayItems = useCallback(
+		(offers: DatabaseTypes.Foodoffers[]) => {
+			const hasOffers = offers.length > 0;
+			const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
+				if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
+					return false;
+				}
+				if (info.show_only_when_no_foodoffers_found) {
+					return !hasOffers;
+				}
+				return hasOffers;
+			});
+
+			const startInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'start'));
+			const endInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'end'));
+
+			const start = startInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
+			const main = offers.map(o => ({ foodoffer: o, foodofferInfoItem: null }));
+			const end = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
+
+			return [...start, ...main, ...end] as DayItem[];
+		},
+		[foodOffersInfoItems, selectedCanteen]
+	);
+
+	const getDayItemKey = useCallback((item: DayItem, index: number) => {
+		if (item.foodoffer?.id) return `f-${item.foodoffer.id}`;
+		if (item.foodofferInfoItem?.id) return `i-${item.foodofferInfoItem.id}`;
+		return `di-${index}`;
+	}, []);
+
 	const loadNext = async () => {
 		const lastDate = days[days.length - 1].date;
 		const nextDate = addDays(new Date(lastDate), 1).toISOString().split('T')[0];
@@ -170,6 +237,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
+		const dayItems = buildDayItems(item.offers);
+		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
 		return (
 			<View style={styles.dayContainer}>
@@ -184,26 +253,54 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						if (w && w !== listWidth) setListWidth(w);
 					}}
 				>
-					{item.offers.map((offer, idx) => (
-						<View key={offer.id || `offer-${idx}`}
+					{dayItems.map((dayItem, idx) => (
+						<View key={getDayItemKey(dayItem, idx)}
 							style={{ width: cardWidth || '100%', marginHorizontal: 10, marginVertical: 10, alignItems: 'center' }}
 						>
-							<FoodItem
-								item={offer}
-								canteen={selectedCanteen as DatabaseTypes.Canteens}
-								handleMenuSheet={openSheet}
-								handleImageSheet={openManagementSheet}
-								handleEatingHabitsSheet={openSheet}
-								cardWidth={cardWidth}
-							/>
+							{dayItem.foodoffer ? (
+								<FoodItem
+									item={dayItem.foodoffer}
+									canteen={selectedCanteen as DatabaseTypes.Canteens}
+									handleMenuSheet={openSheet}
+									handleImageSheet={openManagementSheet}
+									handleEatingHabitsSheet={openSheet}
+									cardWidth={cardWidth}
+								/>
+							) : dayItem.foodofferInfoItem ? (
+								<FoodOfferInfoItem
+									item={dayItem.foodofferInfoItem}
+									content={(getInfoItemContent(dayItem.foodofferInfoItem) || {}).content || ''}
+									cardWidth={cardWidth}
+								/>
+							) : null}
 						</View>
 					))}
-					{item.offers.length === 0 && <Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>}
+					{item.offers.length === 0 && !hasInfoItems && (
+						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
+					)}
 				</View>
 				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
 			</View>
 		);
 	};
+
+	const listHeader = useMemo(() => {
+		if (!beforeElement) return null;
+		return (
+			<View style={styles.elementContainer}>
+				<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+			</View>
+		);
+	}, [beforeElement, foods_area_color]);
+
+	const listFooter = useMemo(() => {
+		if (!afterElement) return null;
+		return (
+			<View style={styles.elementContainer}>
+				<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+			</View>
+		);
+	}, [afterElement, foods_area_color]);
 
 	if (loading) {
 		return (
@@ -215,7 +312,19 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	return (
 		<>
-			<FlatList data={days} keyExtractor={item => item.date} renderItem={renderDay} onEndReached={onEndReached} onEndReachedThreshold={0.5} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} scrollEventThrottle={16} style={{ flex: 1 }} contentContainerStyle={{ backgroundColor: theme.screen.background }} />
+			<FlatList
+				data={days}
+				keyExtractor={item => item.date}
+				renderItem={renderDay}
+				onEndReached={onEndReached}
+				onEndReachedThreshold={0.5}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+				scrollEventThrottle={16}
+				style={{ flex: 1 }}
+				contentContainerStyle={{ backgroundColor: theme.screen.background }}
+				ListHeaderComponent={listHeader}
+				ListFooterComponent={listFooter}
+			/>
 			{selectedSheet &&
 				(selectedSheet === 'menu' ? (
 					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
