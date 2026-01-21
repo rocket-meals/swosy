@@ -25,6 +25,7 @@ import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet'
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import * as Notifications from 'expo-notifications';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
+import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import { addDays, format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
@@ -78,6 +79,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openUtilizationModal } = useUtilizationModal();
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
+	const smartReadableDate = useSmartReadableDateMethod();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -211,30 +213,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	};
 
 	const getDayLabel = (date: string) => {
-		const currentDate = new Date();
-		const day = new Date(date);
-
-		// Set both dates to midnight to avoid time differences affecting comparison
-		currentDate.setHours(0, 0, 0, 0);
-		day.setHours(0, 0, 0, 0);
-
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'today';
-		}
-
-		// Check for yesterday
-		currentDate.setDate(currentDate.getDate() - 1);
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'yesterday';
-		}
-
-		// Check for tomorrow
-		currentDate.setDate(currentDate.getDate() + 2);
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'tomorrow';
-		}
-
-		return format(day, 'dd.MM.yyyy'); // Return the date if it's not Today, Yesterday, or Tomorrow
+		return smartReadableDate(new Date(date));
 	};
 
 	const updateSort = (id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
@@ -576,7 +555,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? translate(getDayLabel(selectedDate)) : ''}</Text>
+								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}
