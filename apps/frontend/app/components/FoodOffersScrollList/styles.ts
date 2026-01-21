@@ -25,4 +25,9 @@ export default StyleSheet.create({
 		width: '100%',
 		marginTop: 20,
 	},
+	elementContainer: {
+		width: '100%',
+		marginTop: 20,
+		paddingHorizontal: 10,
+	},
 });
