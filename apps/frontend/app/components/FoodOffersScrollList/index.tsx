@@ -20,6 +20,7 @@ import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirect
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { myContrastColor } from '@/helper/ColorHelper';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -40,7 +41,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
         const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-        const { sortBy, language, amountColumnsForcard, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
+        const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
         const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector((state: RootState) => state.food);
         const { profile } = useSelector((state: RootState) => state.authReducer);
 	const { appElements } = useSelector((state: RootState) => state.appElements);
@@ -57,6 +58,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
         const MIN_CARD_WIDTH = 280;
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const foods_area_color = appSettings?.foods_area_color || primaryColor;
+        const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                         setSelectedSheet(sheet);
@@ -243,6 +245,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		return (
 			<View style={styles.dayContainer}>
 				<Text style={[styles.dateHeader, { color: theme.screen.text }]}> {format(new Date(item.date), 'dd.MM.yyyy')} </Text>
+				{beforeElement && (
+					<View style={styles.elementContainer}>
+						<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+					</View>
+				)}
 				<View
 					style={{
 						...styles.foodContainer,
@@ -279,28 +286,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
 					)}
 				</View>
+				{afterElement && (
+					<View style={styles.elementContainer}>
+						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+						<View style={{ height: 1, backgroundColor: contrastColor, marginTop: 12, marginHorizontal: 10 }} />
+					</View>
+				)}
 				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
 			</View>
 		);
 	};
-
-	const listHeader = useMemo(() => {
-		if (!beforeElement) return null;
-		return (
-			<View style={styles.elementContainer}>
-				<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
-			</View>
-		);
-	}, [beforeElement, foods_area_color]);
-
-	const listFooter = useMemo(() => {
-		if (!afterElement) return null;
-		return (
-			<View style={styles.elementContainer}>
-				<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
-			</View>
-		);
-	}, [afterElement, foods_area_color]);
 
 	if (loading) {
 		return (
@@ -322,8 +317,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				scrollEventThrottle={16}
 				style={{ flex: 1 }}
 				contentContainerStyle={{ backgroundColor: theme.screen.background }}
-				ListHeaderComponent={listHeader}
-				ListFooterComponent={listFooter}
 			/>
 			{selectedSheet &&
 				(selectedSheet === 'menu' ? (
