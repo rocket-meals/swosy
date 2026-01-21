@@ -27,7 +27,7 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
         const renderedLeftIcon = React.isValidElement(leftIcon)
                 ? noIconIndent
                         ? leftIcon
-                        : React.cloneElement(leftIcon, { color: iconColor })
+                        : React.cloneElement(leftIcon as any, { color: iconColor })
                 : leftIcon;
 
         const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: theme.screen.iconBg } as ViewStyle];
@@ -127,6 +127,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center', // statt flex-start, damit beide Container mittig sind
 		columnGap: 3,
 		flex: 1,
+	},
+	title: {
+		fontSize: 15,
 	},
 	titleContainer: {
 		flexShrink: 1,

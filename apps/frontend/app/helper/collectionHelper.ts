@@ -48,28 +48,28 @@ export class CollectionHelper<CollectionScheme> {
 	}
 
 	// CRUD Operations
-	async readSingletonItem(query?: Query<CollectionScheme>) {
-		return this.handleRequest(readSingleton, query);
+	async readSingletonItem(query?: Query<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(readSingleton, query);
 	}
 
-	async readItems(query?: Query<CollectionScheme>) {
-		return this.handleRequest(readItems, query);
+	async readItems(query?: Query<CollectionScheme>): Promise<CollectionScheme[]> {
+		return this.handleRequest<CollectionScheme[]>(readItems, query);
 	}
 
-	async readItem(id: number | string, query?: Query<CollectionScheme>) {
-		return this.handleRequest(readItem, id, query);
+	async readItem(id: number | string, query?: Query<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(readItem, id, query);
 	}
 
-	async createItem(data: Partial<CollectionScheme>) {
-		return this.handleRequest(createItem, data);
+	async createItem(data: Partial<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(createItem, data);
 	}
 
-	async updateItem(id: number | string, data: Partial<CollectionScheme>) {
-		return this.handleRequest(updateItem, id, data);
+	async updateItem(id: number | string, data: Partial<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(updateItem, id, data);
 	}
 
-	async updateItems(query: Query<CollectionScheme>, data: Partial<CollectionScheme>) {
-		return this.handleRequest(updateItems, query, data);
+	async updateItems(query: Query<CollectionScheme>, data: Partial<CollectionScheme>): Promise<CollectionScheme[]> {
+		return this.handleRequest<CollectionScheme[]>(updateItems, query, data);
 	}
 
 	async deleteItem(id: number | string) {

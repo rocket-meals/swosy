@@ -35,6 +35,18 @@ type DirectusImageEditModalContentProps = {
 	onClose: () => void;
 };
 
+type ActionItem = {
+	key: string;
+	label: string;
+	icon?: any;
+	rightElement?: any;
+	rightIcon?: any;
+	onPress?: () => void;
+	isCancel?: boolean;
+	groupPosition?: 'bottom' | 'top' | 'middle' | 'single';
+	showSeparator?: boolean;
+};
+
 const MAX_IMAGE_DIMENSION = 6000;
 
 const useCollectionFolder = (collection: CollectionNames) => {
@@ -303,7 +315,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 	}, [buildUpdatePayload, collection, collectionFields, field, itemId, loading, onClose, onUpdated]);
 
 	const actionItems = useMemo(() => {
-		const withGrouping = (items: Array<Record<string, any>>) =>
+		const withGrouping = (items: Omit<ActionItem, 'groupPosition' | 'showSeparator'>[]): ActionItem[] =>
 			items.map((item, index) => ({
 				...item,
 				groupPosition:
@@ -317,7 +329,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				showSeparator: index !== items.length - 1,
 			}));
 
-		const cancelItem = {
+		const cancelItem: ActionItem = {
 			key: isDelete ? 'delete-cancel' : 'cancel',
 			label: translate(TranslationKeys.cancel),
 			icon: <MaterialCommunityIcons name="close" size={24} />,
@@ -352,7 +364,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 			return [...deleteItems, cancelItem];
 		}
 
-		const items = [];
+		const items: Omit<ActionItem, 'groupPosition' | 'showSeparator'>[] = [];
 		if (!isWeb) {
 			items.push({
 				key: 'camera',

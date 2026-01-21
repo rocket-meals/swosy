@@ -111,7 +111,7 @@ export function replaceLottieColors(lottieJSON: any, primaryColor: string): any 
 	}
 	const { lighter, darker } = getLighterAndDarkerColors(primaryColor);
 
-	const colorReplaceMap = {
+	const colorReplaceMap: Record<string, string> = {
 		[DEFAULT_COLOR_TO_BE_REPLACED]: primaryColor,
 		[DEFAULT_COLOR_LIGHTER_TO_BE_REPLACED]: lighter,
 		[DEFAULT_COLOR_DARKER_TO_BE_REPLACED]: darker,

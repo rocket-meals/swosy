@@ -37,7 +37,7 @@ export const useLanguageModal = () => {
 
         const changeLanguage = useCallback(
                 (languageOption: (typeof languages)[number]) => {
-                        setLanguageMode(languageOption.value);
+                        setLanguageMode(languageOption.value as any);
                         closeScrollViewModal();
                 },
                 [closeScrollViewModal, setLanguageMode]

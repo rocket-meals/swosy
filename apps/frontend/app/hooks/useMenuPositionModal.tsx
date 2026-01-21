@@ -36,7 +36,7 @@ const MenuPositionSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet })
 					options={drawers.map((drawer) => ({
 						id: drawer.id,
 						label: translate(drawer.name),
-						icon: <MaterialCommunityIcons name={drawer.icon} size={24} />,
+						icon: <MaterialCommunityIcons name={drawer.icon as any} size={24} />,
 					}))}
 					selectedOption={selectedOption}
 					onSelect={(option) => updatePosition(option.id)}

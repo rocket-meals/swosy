@@ -174,7 +174,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 											alignItems: 'center',
 										}}
 									>
-										<LottieView source={replaceLottieColors(animationSource, primaryColor)} autoPlay={autoPlay} loop={!isWashingFinished} resizeMode="contain" style={{ width: '100%', height: '100%' }} />
+										<LottieView source={replaceLottieColors(animationSource, primaryColor)} autoPlay={autoPlay ?? false} loop={!isWashingFinished} resizeMode="contain" style={{ width: '100%', height: '100%' }} />
 									</View>
 									<View style={styles.details}>
 										<Text style={{ ...styles.title, color: theme.screen.text }}>{item?.alias}</Text>

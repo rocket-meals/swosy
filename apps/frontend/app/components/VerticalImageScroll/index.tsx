@@ -35,7 +35,7 @@ const VerticalImageScroll: React.FC = () => {
 	const fetchImages = async () => {
 		if (offset.current >= MAX_ITEMS) return;
 		const result = await loadBestRatedFoodsWithImage(Math.min(PAGE_SIZE, MAX_ITEMS - offset.current), offset.current);
-		const urls = (result ?? []).map((food: any) => getImageUrl(String((food as any).image))).filter(Boolean);
+		const urls = (result ?? []).map((food: any) => getImageUrl(String((food as any).image))).filter(Boolean) as string[];
 		setImages(prev => [...prev, ...urls]);
 		offset.current += urls.length;
 	};

@@ -12,10 +12,9 @@ export class AppSettingsHelper extends CollectionHelper<DatabaseTypes.AppSetting
 	async fetchAppSettings(queryOverride?: Query<DatabaseTypes.AppSettings>) {
 		const defaultQuery = {
 			fields: ['*', 'translations.*', 'housing_translations.*', 'balance_translations.*', 'login_screen_translations.*'],
-			limit: -1,
 		};
 
 		const query = { ...defaultQuery, ...(queryOverride || {}) };
-		return await this.readItems(query);
+		return await this.readSingletonItem(query);
 	}
 }

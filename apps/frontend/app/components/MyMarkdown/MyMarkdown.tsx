@@ -115,12 +115,12 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		sub: (props: any) => {
 			const { data } = props.tnode;
 			const text = data || props.children[0]?.data;
-			return <Text style={{ fontSize, verticalAlign: 'sub', color: textColor }}>{text}</Text>;
+			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize, textAlignVertical: 'bottom', color: textColor }}>{text}</Text>;
 		},
 		sup: (props: any) => {
 			const { data } = props.tnode;
 			const text = data || props.children[0]?.data;
-			return <Text style={{ fontSize, verticalAlign: 'super', color: textColor }}>{text}</Text>;
+			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
 		},
 	};
 

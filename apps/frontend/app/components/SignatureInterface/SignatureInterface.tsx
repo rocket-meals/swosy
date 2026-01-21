@@ -68,11 +68,11 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		if (isDisabled) return;
 
 		const base64Data = signature.replace(/^data:image\/\w+;base64,/, '');
-		const path = FileSystem.cacheDirectory + `signature_${Date.now()}.png`;
+		const path = (FileSystem as any).cacheDirectory + `signature_${Date.now()}.png`;
 
 		try {
-			await FileSystem.writeAsStringAsync(path, base64Data, {
-				encoding: FileSystem.EncodingType.Base64,
+			await (FileSystem as any).writeAsStringAsync(path, base64Data, {
+				encoding: 'base64',
 			});
 
 			console.log('Signature saved at:', path);

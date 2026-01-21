@@ -177,7 +177,6 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 		openTextInputModal({
 			title: resolvedTitle,
 			placeholder,
-			saveLabel,
 			onSave,
 			initialValue: resolvedInitialValue,
 			multiline,

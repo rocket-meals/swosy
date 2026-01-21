@@ -74,7 +74,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 
 	const getLabelEntries = async (labelId: string) => {
 		if (!selectedCanteen?.id) return;
-		const result = (await canteenFeedbackLabelEntryHelper.fetchCanteenFeedbackLabelEntries({}, date, selectedCanteen.id, labelId)) as ModifiedCanteensFeedbacksLabelsEntries[];
+		const result = (await canteenFeedbackLabelEntryHelper.fetchCanteenFeedbackLabelEntries({}, date, selectedCanteen.id, labelId)) as unknown as ModifiedCanteensFeedbacksLabelsEntries[];
 		if (result) {
 			const likes = result?.find(entry => entry.like === true)?.count || 0;
 			const dislikes = result?.find(entry => entry.like === false)?.count || 0;

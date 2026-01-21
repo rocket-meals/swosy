@@ -42,13 +42,9 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet,
 			>
 				<MyImage
 					style={styles.image}
-					source={
-						food?.image_remote_url || food?.image
-							? {
-									uri: food?.image_remote_url || getImageUrl(food?.image),
-								}
-							: { uri: defaultImage }
-					}
+					remote_image_url={food?.image_remote_url}
+					directus_asset_id={food?.image}
+					defaultImageUrl={defaultImage}
 				/>
 				<TouchableOpacity
 					style={styles.uploadImage}

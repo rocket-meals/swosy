@@ -143,7 +143,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					}}
 				>
 					<MyImage
-						source={{ uri: url }}
+						remote_image_url={url}
 						style={{
 							width: '100%',
 							height: 400,
@@ -187,7 +187,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 						);
 
 					case 'image':
-						return <MyImageContent key={`image-${level}-${index}`} url={item.url} altText={item.altText} level={level} />;
+						return <ImageContent key={`image-${level}-${index}`} url={item.url} altText={item.altText} level={level} />;
 
 					case 'collapsible':
 						return (
@@ -231,7 +231,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					alignItems: 'center',
 				}}
 			>
-				{closeSheet && <ProjectButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />}
+				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
 			</View>
 			<View
 				style={{
@@ -254,9 +254,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					<View style={styles.imageContainer}>
 						<MyImage
 							style={styles.image}
-							source={{
-								uri: eventData?.image_remote_url || getImageUrl(String(eventData?.image)),
-							}}
+							remote_image_url={eventData?.image_remote_url || getImageUrl(String(eventData?.image))}
 						/>
 					</View>
 				)}

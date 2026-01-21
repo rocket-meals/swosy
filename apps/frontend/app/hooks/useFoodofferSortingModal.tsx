@@ -120,16 +120,16 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
                                 copiedFoodOffers = sortByFoodCategory(copiedFoodOffers, foodCategories, languageCode);
                                 break;
                         case FoodSortOption.FOODOFFER_CATEGORY:
-                                copiedFoodOffers = sortByFoodOfferCategory(copiedFoodOffers, foodOfferCategories);
+                                copiedFoodOffers = sortByFoodOfferCategory(copiedFoodOffers, foodOfferCategories, languageCode);
                                 break;
                         case FoodSortOption.RATING:
                                 copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
                                 break;
                         case FoodSortOption.PRICE_ASCENDING:
-                                copiedFoodOffers = sortByPrice(copiedFoodOffers, profile?.price_group, false);
+                                copiedFoodOffers = sortByPrice(copiedFoodOffers, profile?.price_group ?? undefined, false);
                                 break;
                         case FoodSortOption.PRICE_DESCENDING:
-                                copiedFoodOffers = sortByPrice(copiedFoodOffers, profile?.price_group, true);
+                                copiedFoodOffers = sortByPrice(copiedFoodOffers, profile?.price_group ?? undefined, true);
                                 break;
                         case FoodSortOption.INTELLIGENT:
                                 copiedFoodOffers = intelligentSort(
