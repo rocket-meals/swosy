@@ -317,6 +317,7 @@ export enum TranslationKeys {
 	haptics_test = 'haptics_test',
 	haptics_test_description = 'haptics_test_description',
 	haptics_test_empty = 'haptics_test_empty',
+	date_helper_preview = 'date_helper_preview',
 	last_haptic_event = 'last_haptic_event',
         open_modal_example = 'open_modal_example',
         modal_example_body = 'modal_example_body',
