@@ -23,7 +23,7 @@ export default StyleSheet.create({
 	},
 	feebackContainer: {
 		width: '100%',
-		marginTop: 12,
+		marginTop: 6,
 	},
 	elementContainer: {
 		width: '100%',
@@ -32,7 +32,7 @@ export default StyleSheet.create({
 	},
 	dayDivider: {
 		height: 1,
-		marginTop: 12,
+		marginTop: 6,
 		marginHorizontal: 10,
 	},
 });
