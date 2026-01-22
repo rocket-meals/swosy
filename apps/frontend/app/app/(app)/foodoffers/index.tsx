@@ -5,7 +5,6 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps, DrawerNavigationProp } from '@react-navigation/drawer';
 import { isWeb } from '@/constants/Constants';
-import FoodOfferFlatList from '@/components/FoodOfferFlatList';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -41,7 +40,7 @@ import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
-import FoodOffersScrollList from "@/components/FoodoffersScrollList";
+import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 
 export const SHEET_COMPONENTS = {
 	canteen: CanteenSelectionSheet,
