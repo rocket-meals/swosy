@@ -212,8 +212,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		});
 	};
 
+	const parseDateOnly = (date: string) => {
+		const [year, month, day] = date.split('-').map(Number);
+		if (!year || !month || !day) {
+			return new Date(date);
+		}
+		return new Date(year, month - 1, day);
+	};
+
 	const getDayLabel = (date: string) => {
-		return smartReadableDate(new Date(date));
+		return smartReadableDate(parseDateOnly(date));
 	};
 
 	const updateSort = (id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
@@ -326,7 +334,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const getWeekdayKey = (date: string) => {
 		const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		return days[new Date(date).getDay()];
+		return days[parseDateOnly(date).getDay()];
 	};
 
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;

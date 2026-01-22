@@ -65,6 +65,12 @@ const Index = () => {
 			onPress: () => router.push('/foodoffers-scroll'),
 		},
 		{
+			key: 'date-helper-preview',
+			label: translate(TranslationKeys.date_helper_preview),
+			leftIcon: <MaterialCommunityIcons name="calendar-week" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/date-helper'),
+		},
+		{
 			key: 'haptics-test',
 			label: translate(TranslationKeys.haptics_test),
 			leftIcon: <MaterialCommunityIcons name="vibrate" size={24} color={theme.screen.icon} />,

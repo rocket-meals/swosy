@@ -3173,6 +3173,16 @@
     "tr": "No haptic triggered yet.",
     "zh": "No haptic triggered yet."
   },
+  "date_helper_preview": {
+    "de": "DateHelper-Vorschau",
+    "en": "DateHelper preview",
+    "ar": "DateHelper preview",
+    "es": "DateHelper preview",
+    "fr": "DateHelper preview",
+    "ru": "DateHelper preview",
+    "tr": "DateHelper preview",
+    "zh": "DateHelper preview"
+  },
   "last_haptic_event": {
     "de": "Letztes Haptic-Ereignis",
     "en": "Last haptic event",

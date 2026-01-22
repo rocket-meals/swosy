@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { horizontalScreenPadding } from '@/constants/Constants';
 
 export default StyleSheet.create({
 	foodOfferContainer: {
@@ -11,12 +10,12 @@ export default StyleSheet.create({
 		paddingVertical: 10,
 		gap: 10,
 	},
-    row: {
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-    },
+	row: {
+		width: '100%',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+	},
 	col1: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -26,22 +25,10 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-    heading: {
-            fontSize: 18,
-            fontFamily: 'Poppins_400Regular',
-    },
-    menuIconWrapper: {
-            position: 'relative',
-    },
-    notificationDot: {
-            position: 'absolute',
-            top: -2,
-            right: -2,
-            width: 12,
-            height: 12,
-            borderRadius: 6,
-            borderWidth: 2,
-    },
+	heading: {
+		fontSize: 18,
+		fontFamily: 'Poppins_400Regular',
+	},
 	container: {
 		flex: 1,
 	},
@@ -64,7 +51,6 @@ export default StyleSheet.create({
 	feebackContainer: {
 		width: '100%',
 		marginTop: 20,
-		paddingHorizontal: horizontalScreenPadding,
 	},
 	foodLabels: {
 		fontSize: 24,
@@ -73,7 +59,6 @@ export default StyleSheet.create({
 	elementContainer: {
 		width: '100%',
 		marginTop: 20,
-		paddingHorizontal: horizontalScreenPadding,
 	},
 	noFoodContainer: {
 		width: '100%',
@@ -98,24 +83,8 @@ export default StyleSheet.create({
 		borderRadius: 8,
 		alignItems: 'center',
 	},
-        jumpButtonText: {
-                fontSize: 16,
-                fontFamily: 'Poppins_500Medium',
-        },
-        debugInfoContainer: {
-                width: '100%',
-                marginTop: 20,
-                padding: 12,
-                borderRadius: 12,
-                borderWidth: 1,
-                gap: 6,
-        },
-        debugTitle: {
-                fontSize: 16,
-                fontFamily: 'Poppins_700Bold',
-        },
-        debugText: {
-                fontSize: 14,
-                fontFamily: 'Poppins_400Regular',
-        },
+	jumpButtonText: {
+		fontSize: 16,
+		fontFamily: 'Poppins_500Medium',
+	},
 });
