@@ -3,6 +3,8 @@ export const DEFAULT_COLOR_LIGHTER_TO_BE_REPLACED = '#FFAAFF';
 export const DEFAULT_COLOR_DARKER_TO_BE_REPLACED = '#DD00DD';
 export const DEFAULT_COLOR_TO_REPLACE_WITH = '#D14610';
 
+
+
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
