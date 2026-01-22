@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -22,6 +22,7 @@ import { getAppElementTranslation } from '@/helper/resourceHelper';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -303,6 +304,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
 					</View>
 				)}
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
 				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>
