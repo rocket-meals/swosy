@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { KeyboardTypeOptions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 
 import ProjectButton from '@/components/ProjectButton';
 import SettingsList from '@/components/SettingsList';
@@ -68,7 +68,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 	allowSubmitWhenDisabled = false,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;

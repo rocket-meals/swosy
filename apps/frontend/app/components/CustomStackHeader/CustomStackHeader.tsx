@@ -6,12 +6,12 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from './styles';
 import { CustomStackHeaderProps } from './types';
 import { usePathname, useRouter } from 'expo-router';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { excerpt } from '@/constants/HelperFunctions';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
+
 import { AppScreens } from 'repo-depkit-common';
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
@@ -19,7 +19,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 	const { translate } = useLanguage();
 	const router = useRouter();
 	const pathname = usePathname();
-	const { loggedIn } = useSelector((state: RootState) => state.authReducer);
+	const { loggedIn } = useAppSelector(state => state.authReducer);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const handleGoback = () => {

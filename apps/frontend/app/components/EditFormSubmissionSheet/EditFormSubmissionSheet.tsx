@@ -5,22 +5,22 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { sheetProps } from './types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { formSubmission } = useSelector((state: RootState) => state.form);
+	const { formSubmission } = useAppSelector((state) => state.form);
 	const [alias, setAlias] = useState(formSubmission ? formSubmission?.alias : '');
 	const [loading, setLoading] = useState(false);
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 
 	const handleChangeAlias = async () => {

@@ -1,14 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { CustomerConfig, getCustomerConfigurations, getCustomerEnumForConfig } from '@/config';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
-import { RootState } from '@/redux/reducer';
 
 type CustomerConfigModalProps = {
         selectedServer: string;
@@ -18,7 +17,7 @@ type CustomerConfigModalProps = {
 const useCustomerConfigModal = () => {
         const { show, close } = useMyScrollViewModal();
         const { translate } = useLanguage();
-        const { primaryColor } = useSelector((state: RootState) => state.settings);
+        const { primaryColor } = useAppSelector((state) => state.settings);
 
         const servers = useMemo(() => getCustomerConfigurations(), []);
 

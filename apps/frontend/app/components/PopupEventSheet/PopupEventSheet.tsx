@@ -5,7 +5,7 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { PopupEventSheetProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import CustomCollapsible from '../CustomCollapsible/CustomCollapsible';
@@ -13,13 +13,12 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
 import RedirectButton from '../RedirectButton';
 import ProjectButton from '../ProjectButton';
-import { RootState } from '@/redux/reducer';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSheet, eventData }) => {
 	const { theme } = useTheme();
 	const { close: closeScrollViewModal } = useMyScrollViewModal();
-	const { primaryColor, language, appSettings, serverInfo, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, language, appSettings, serverInfo, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
 	const title = eventData?.translations ? getTitleFromTranslation(eventData?.translations, language) : '';
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;

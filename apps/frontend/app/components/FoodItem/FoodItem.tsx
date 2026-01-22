@@ -9,7 +9,8 @@ import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/types';
 import { router } from 'expo-router';
 import { createSelector } from 'reselect';
@@ -42,12 +43,12 @@ const FoodItem: React.FC<FoodItemProps> = memo(
 
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods;
-    const { language, serverInfo, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
-    const { user, profile, isManagement } = useSelector((state: RootState) => state.authReducer);
+    const { language, serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
+    const { user, profile, isManagement } = useAppSelector((state) => state.authReducer);
     const { openRatingPermissionModal } = useRatingPermissionModal();
 
-    const previousFeedback = useSelector(state => selectPreviousFeedback(state as RootState, foodItem.id));
-    const markings = useSelector(selectMarkings);
+    const previousFeedback = useAppSelector(state => selectPreviousFeedback(state, foodItem.id));
+    const markings = useAppSelector(selectMarkings);
 
     const foods_area_color = appSettings?.foods_area_color || primaryColor;
     const defaultImage =

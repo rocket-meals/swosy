@@ -18,7 +18,8 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { DrawerContentComponentProps, DrawerNavigationProp } from '@react-navigation/drawer';
 import { useNavigation } from 'expo-router';
 import BuildingItem from '@/components/BuildingItem/BuildingItem';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { CampusHelper } from '@/redux/actions/Campus/Campus';
 import { SET_CAMPUSES, SET_CAMPUSES_DICT, SET_CAMPUSES_LOCAL, SET_UNSORTED_CAMPUSES } from '@/redux/Types/types';
@@ -62,9 +63,9 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const [listWidth, setListWidth] = useState<number | null>(null);
 
 	const { drawerPosition, campusesSortBy, amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme } =
-		useSelector((state: RootState) => state.settings);
-	const { campuses, campusesLocal, unSortedCampuses } = useSelector((state: RootState) => state.campus);
-	const { isManagement } = useSelector((state: RootState) => state.authReducer);
+		useAppSelector((state) => state.settings);
+	const { campuses, campusesLocal, unSortedCampuses } = useAppSelector((state) => state.campus);
+	const { isManagement } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 

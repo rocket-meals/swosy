@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { SET_SELECTED_DATE } from '@/redux/Types/types';
 
 const DEFAULT_THRESHOLD = '18:00';
@@ -34,8 +34,8 @@ const calculateDefaultDate = (now: Date, thresholdTime: string) => {
 
 const useFoodOffersDefaultDate = () => {
 	const dispatch = useDispatch();
-	const { selectedDate } = useSelector((state: RootState) => state.food);
-	const { foodOffersNextDayThreshold } = useSelector((state: RootState) => state.settings);
+	const { selectedDate } = useAppSelector((state) => state.food);
+	const { foodOffersNextDayThreshold } = useAppSelector((state) => state.settings);
 
 	const [currentTime, setCurrentTime] = useState(() => new Date());
 	const threshold = foodOffersNextDayThreshold || DEFAULT_THRESHOLD;

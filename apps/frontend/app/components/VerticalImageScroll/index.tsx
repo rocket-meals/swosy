@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import AutoImageScroller from '@/components/AutoImageScroller';
@@ -15,7 +15,7 @@ const MAX_ITEMS = 100;
 
 const VerticalImageScroll: React.FC = () => {
 	const { theme } = useTheme();
-	const { amountColumnsForcard } = useSelector((state: RootState) => state.settings);
+	const { amountColumnsForcard } = useAppSelector((state) => state.settings);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const numColumns = CardDimensionHelper.getNumColumns(screenWidth, amountColumnsForcard);

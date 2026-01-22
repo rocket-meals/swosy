@@ -8,7 +8,8 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { DrawerContentComponentProps, DrawerNavigationProp } from '@react-navigation/drawer';
 import { RootDrawerParamList } from './types';
 import { useFocusEffect, useNavigation } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { SET_APARTMENTS, SET_APARTMENTS_DICT, SET_APARTMENTS_LOCAL, SET_UNSORTED_APARTMENTS } from '@/redux/Types/types';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
@@ -54,8 +55,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [listWidth, setListWidth] = useState<number | null>(null);
 
 	const selectedCanteen = useSelectedCanteen();
-	const { drawerPosition, apartmentsSortBy, primaryColor: projectColor, appSettings, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
-	const { apartments, apartmentsLocal, unSortedApartments } = useSelector((state: RootState) => state.apartment);
+	const { drawerPosition, apartmentsSortBy, primaryColor: projectColor, appSettings, language, amountColumnsForcard } = useAppSelector((state) => state.settings);
+	const { apartments, apartmentsLocal, unSortedApartments } = useAppSelector((state) => state.apartment);
 
 	const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : projectColor;
 	const { openHousingSortingModal } = useHousingSortingModal();

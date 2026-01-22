@@ -14,7 +14,8 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
@@ -69,7 +70,7 @@ const Settings = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { manualCheck } = useExpoUpdateChecker();
-        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
+        const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
         const { openLanguageModal } = useLanguageModal();
@@ -81,7 +82,7 @@ const Settings = () => {
         const { openHousingSortingModal } = useHousingSortingModal();
         const { openCampusSortingModal } = useCampusSortingModal();
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]

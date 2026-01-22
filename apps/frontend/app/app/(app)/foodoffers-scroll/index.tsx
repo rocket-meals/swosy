@@ -7,7 +7,8 @@ import { DrawerContentComponentProps, DrawerNavigationProp } from '@react-naviga
 import { isWeb } from '@/constants/Constants';
 import FoodOfferFlatList from '@/components/FoodOfferFlatList';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
@@ -64,12 +65,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
 
-	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
-	const { profile, user } = useSelector((state: RootState) => state.authReducer);
+	const { profile, user } = useAppSelector((state) => state.authReducer);
         const selectedCanteen = useSelectedCanteen();
         const kioskMode = useKioskMode();
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});

@@ -4,7 +4,7 @@ import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-ico
 import MarkdownIt from 'markdown-it';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import RenderHtml, { CustomBlockRenderer, CustomMixedRenderer, CustomTextualRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -29,7 +29,7 @@ export const replaceLinebreaks = (sourceContent: string) => {
 };
 
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
-	const { primaryColor, selectedTheme } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
 
 	const colorScheme = Appearance.getColorScheme();
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;

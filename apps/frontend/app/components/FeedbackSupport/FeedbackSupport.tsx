@@ -4,9 +4,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useSelector } from 'react-redux';
 import { excerpt } from '@/constants/HelperFunctions';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 type FeedbackItemProps = {
 	icon?: string;
@@ -22,7 +21,7 @@ type FeedbackItemProps = {
 
 const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIcons = [], theme, windowWidth, onPress, inputValues, setInputValues }) => {
 	const { translate } = useLanguage();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 
 	const IconSelector: React.FC<{
 		name: any;

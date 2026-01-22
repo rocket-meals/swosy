@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 import { isWeb } from '@/constants/Constants';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { useTheme } from '@/hooks/useTheme';
 
 export const useFoodCard = (borderWidth: number = 0) => {
 	const { theme } = useTheme();
-	const { amountColumnsForcard } = useSelector((state: RootState) => state.settings);
+	const { amountColumnsForcard } = useAppSelector((state) => state.settings);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	useEffect(() => {

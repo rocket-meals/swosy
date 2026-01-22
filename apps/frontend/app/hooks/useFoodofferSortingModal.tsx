@@ -14,7 +14,8 @@ import {
         sortByPrice,
         sortByPublicFavorite,
 } from 'repo-depkit-common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -40,10 +41,10 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         const { translate } = useLanguage();
 
         const dispatch = useDispatch();
-        const { canteenFoodOffers } = useSelector((state: RootState) => state.canteenReducer);
-        const { primaryColor, language: languageCode, sortBy, appSettings } = useSelector((state: RootState) => state.settings);
-        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
-        const { profile } = useSelector((state: RootState) => state.authReducer);
+        const { canteenFoodOffers } = useAppSelector((state) => state.canteenReducer);
+        const { primaryColor, language: languageCode, sortBy, appSettings } = useAppSelector((state) => state.settings);
+        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
+        const { profile } = useAppSelector((state) => state.authReducer);
         const [selectedOption, setSelectedOption] = useState<FoodSortOption | null>(null);
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 

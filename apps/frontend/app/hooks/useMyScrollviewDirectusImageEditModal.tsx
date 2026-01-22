@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, Platform, Text, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { uploadFiles } from '@directus/sdk';
 
 import SettingsList from '@/components/SettingsList';
@@ -50,7 +50,7 @@ type ActionItem = {
 const MAX_IMAGE_DIMENSION = 6000;
 
 const useCollectionFolder = (collection: CollectionNames) => {
-	const { foodCollection } = useSelector((state: RootState) => state.food);
+	const { foodCollection } = useAppSelector((state) => state.food);
 	const [collectionFolder, setCollectionFolder] = useState('');
 
 	useEffect(() => {

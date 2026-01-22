@@ -4,7 +4,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
@@ -22,7 +22,7 @@ export default function ImageFullScreen() {
 		assetId?: string;
 	}>();
 	const { theme } = useTheme();
-	const { drawerPosition } = useSelector((state: RootState) => state.settings);
+	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const [showControls, setShowControls] = useState(true);

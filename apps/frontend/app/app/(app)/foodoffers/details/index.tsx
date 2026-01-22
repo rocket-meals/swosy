@@ -12,7 +12,8 @@ import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/action
 import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
@@ -56,13 +57,13 @@ export default function FoodDetailsScreen() {
 	const dispatch = useDispatch();
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
-	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const previousFeedback = useSelector((state: RootState) => selectPreviousFeedback(state, initialFoodId));
+	const { user, profile } = useAppSelector((state) => state.authReducer);
+	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const previousFeedback = useAppSelector((state) => selectPreviousFeedback(state, initialFoodId));
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-	const { foodAttributeGroups } = useSelector((state: RootState) => state.foodAttributes);
-	const { foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+	const { foodAttributeGroups } = useAppSelector((state) => state.foodAttributes);
+	const { foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
 	const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');

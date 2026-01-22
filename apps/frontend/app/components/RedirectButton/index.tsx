@@ -6,15 +6,14 @@ import { RedirectButtonProps } from './types';
 import usePlatformHelper from '@/helper/platformHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 const RedirectButton: React.FC<RedirectButtonProps> = ({ type, label, backgroundColor, color, onClick }) => {
 	let containerWidth: DimensionValue;
 	let fontSize;
 	const { isWeb } = usePlatformHelper();
 	const { theme } = useTheme();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 
 	const contrastColor = myContrastColor(backgroundColor || primaryColor, theme, mode === 'dark');
 

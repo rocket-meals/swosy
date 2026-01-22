@@ -6,12 +6,12 @@ import styles from './styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatisticsCardProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 
 const StatisticsCard: React.FC<StatisticsCardProps> = ({ food, handleImageSheet, setSelectedFoodId }) => {
 	const { theme } = useTheme();
-	const { serverInfo, appSettings } = useSelector((state: RootState) => state.settings);
+	const { serverInfo, appSettings } = useAppSelector((state) => state.settings);
 	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 

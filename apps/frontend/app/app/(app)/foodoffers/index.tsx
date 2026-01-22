@@ -18,7 +18,8 @@ import {isWeb} from '@/constants/Constants';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import {useFocusEffect, useNavigation, useRouter} from 'expo-router';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
@@ -115,16 +116,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 selectedTheme: mode,
                 amountColumnsForcard,
                 debugMode,
-        } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector(
-		(state: RootState) => state.food
+        } = useAppSelector((state) => state.settings);
+	const { ownFoodFeedbacks, selectedDate, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector(
+		(state) => state.food
 	);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
-	const { profile, user } = useSelector((state: RootState) => state.authReducer);
-	const { appElements } = useSelector((state: RootState) => state.appElements);
-	const { selectedCanteenFoodOffers, canteenFeedbackLabels } = useSelector((state: RootState) => state.canteenReducer);
+	const { profile, user } = useAppSelector((state) => state.authReducer);
+	const { appElements } = useAppSelector((state) => state.appElements);
+	const { selectedCanteenFoodOffers, canteenFeedbackLabels } = useAppSelector((state) => state.canteenReducer);
         const selectedCanteen = useSelectedCanteen();
         useFoodOffersDefaultDate();
         const kioskMode = useKioskMode();

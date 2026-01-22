@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
@@ -31,7 +31,7 @@ export const selectFoodOffer = (offerId?: string) =>
 const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, appSettings } = useAppSelector((state) => state.settings);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
 	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
@@ -40,12 +40,12 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
 	};
 
-        const markings = useSelector(selectMarkings);
-        const foodOfferSelector = useMemo(
-                () => (offerId ? selectFoodOffer(offerId) : () => undefined),
-                [offerId]
-        );
-        const foodOffer = useSelector(foodOfferSelector as (state: RootState) => DatabaseTypes.Foodoffers | undefined);
+	const markings = useAppSelector(selectMarkings);
+	const foodOfferSelector = useMemo(
+		() => (offerId ? selectFoodOffer(offerId) : () => undefined),
+		[offerId]
+	);
+	const foodOffer = useAppSelector(foodOfferSelector);
 
 	// State for marking groups
 	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);

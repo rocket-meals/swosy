@@ -5,7 +5,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import FeedbackLabel from '../FeedbackLabel';
 import { isWeb } from '@/constants/Constants';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { getpreviousFeedback, numToOneDecimal } from '@/constants/HelperFunctions';
 import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
@@ -25,7 +26,7 @@ const loadingState = {
 	deleteLoading: false,
 };
 
-const selectFeedbackData = createSelector([(state: RootState) => state.food, (state: any, foodId: string) => foodId], (food, foodId) => ({
+const selectFeedbackData = createSelector([(state: RootState) => state.food, (_state: RootState, foodId: string) => foodId], (food, foodId) => ({
 	labels: food.foodFeedbackLabels,
 	labelEntries: food.ownfoodFeedbackLabelEntries,
 	previousFeedback: getpreviousFeedback(food.ownFoodFeedbacks, foodId),
@@ -37,14 +38,14 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const foodOfferCanteenId = canteenId;
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
-	const { appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { user, profile } = useAppSelector((state) => state.authReducer);
+	const { appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
 	const { openRatingPermissionModal } = useRatingPermissionModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-	const { labels, labelEntries, previousFeedback } = useSelector((state: any) => selectFeedbackData(state, foodDetails?.id));
+	const { labels, labelEntries, previousFeedback } = useAppSelector((state) => selectFeedbackData(state, foodDetails?.id));
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	useEffect(() => {

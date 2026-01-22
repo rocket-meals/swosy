@@ -3,11 +3,11 @@ import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { styles } from './styles';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 interface ModalComponentProps {
 	isVisible: boolean;
@@ -20,7 +20,7 @@ interface ModalComponentProps {
 }
 
 const ModalComponent: React.FC<ModalComponentProps> = ({ isVisible, title = 'Modal Title', onClose, onSave, children, showButtons = true, disableSave }) => {
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const [isLargeScreen, setIsLargeScreen] = useState(Dimensions.get('window').width);

@@ -5,16 +5,16 @@ import { styles } from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { SheetProps } from './types';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { EmailHelper } from 'repo-depkit-common';
 
 const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loading }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const state = useAppSelector((state) => state);
+	const { primaryColor, selectedTheme: mode } = state.settings;
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [formState, setFormState] = useState({
 		email: '',

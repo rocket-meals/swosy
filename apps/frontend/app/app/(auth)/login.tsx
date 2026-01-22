@@ -11,7 +11,8 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { SET_APP_SETTINGS, SET_WIKIS, UPDATE_MANAGEMENT, UPDATE_PRIVACY_POLICY_DATE } from '@/redux/Types/types';
 import AttentionSheet from '@/components/Login/AttentionSheet';
 import useToast from '@/hooks/useToast';
@@ -24,7 +25,6 @@ import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import { getDetailedDescriptionTranslation, getIntroDescriptionTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 
 export default function Login() {
 	useSetPageTitle(TranslationKeys.sign_in);
@@ -42,7 +42,7 @@ export default function Login() {
 	const attentionSheetRef = useRef<BottomSheet>(null);
 	const [providers, setProviders] = useState<any>([]);
 	const [isWebVisible, setIsWebVisible] = useState(Dimensions.get('window').width > 500);
-	const { appSettings, language } = useSelector((state: RootState) => state.settings);
+	const { appSettings, language } = useAppSelector((state) => state.settings);
 	const intro_description = appSettings?.login_screen_translations && getIntroDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const detailed_description = appSettings?.login_screen_translations && getDetailedDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const [heading, subHeading] = intro_description?.split('-') || ['', ''];

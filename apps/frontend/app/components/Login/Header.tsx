@@ -5,21 +5,21 @@ import { styles } from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useLocales } from 'expo-localization';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { SET_DRAWER_POSITION } from '@/redux/Types/types';
 import { languages } from '../../constants/SettingData';
 import MyImage from '@/components/MyImage';
 import { Entypo } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { RootState } from '@/redux/reducer';
 import { useLanguageModal } from '@/hooks/useLanguageModal';
+import { useAppSelector } from '@/redux/hooks';
 
 const LoginHeader = () => {
         const { setLanguageMode, language } = useLanguage();
         const locales = useLocales();
         const dispatch = useDispatch();
         const { theme } = useTheme();
-        const { serverInfo } = useSelector((state: RootState) => state.settings);
+        const { serverInfo } = useAppSelector((state) => state.settings);
         const deviceLocale: any = useDeviceLocaleCodesWithoutRegionCode();
         const { openLanguageModal } = useLanguageModal();
 

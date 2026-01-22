@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { days } from '../../constants/SettingData';
 import FirstDayOfWeek from '../../components/FirstDay/FirstDayOfWeek';
 import { BaseCourseTimetableEvent, CourseBottomSheetProps } from './types';
@@ -19,7 +19,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, closeSheet, isUpdate, selectedEventId }) => {
 	const { theme } = useTheme();
@@ -27,10 +27,10 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const profileHelper = new ProfileHelper();
-	const { profile } = useSelector((state: RootState) => state.authReducer);
+	const { profile } = useAppSelector((state) => state.authReducer);
 	const [loading, setLoading] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const { primaryColor, appSettings, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 
 	const [selectedFirstDay, setSelectedFirstDay] = useState({
 		id: 'Monday',

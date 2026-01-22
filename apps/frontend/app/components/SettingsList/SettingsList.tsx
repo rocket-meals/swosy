@@ -2,8 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SettingsListProps } from './types';
 import { borderRadiusContainer, horizontalScreenPadding } from '@/constants/Constants';
@@ -13,7 +12,7 @@ const basePaddingVertical = 10;
 
 const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
         const { theme } = useTheme();
-        const { primaryColor, selectedTheme } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
 
         const pressHandler = onPress || handleFunction;
         const Container: any = pressHandler ? TouchableOpacity : View;

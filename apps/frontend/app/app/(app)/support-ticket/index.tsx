@@ -9,16 +9,15 @@ import { format } from 'date-fns';
 import { router, useFocusEffect } from 'expo-router';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes } from 'repo-depkit-common';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useAppSelector } from '@/redux/hooks';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.my_support_tickets);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 	const appFeedback = new AppFeedback();
 	const [loading, setLoading] = useState(false);
 	const [allTickets, setAllTickets] = useState<DatabaseTypes.AppFeedbacks[] | null>(null);

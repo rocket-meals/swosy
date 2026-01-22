@@ -1,6 +1,7 @@
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -12,7 +13,6 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { RootState } from '@/redux/reducer';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
@@ -25,10 +25,10 @@ const Home = () => {
 	const { translate } = useLanguage();
 	const canteenHelper = new CanteenHelper();
 	const buildingsHelper = new BuildingsHelper();
-	const { serverInfo } = useSelector((state: RootState) => state.settings);
-	const { isManagement } = useSelector((state: RootState) => state.authReducer);
+	const { serverInfo } = useAppSelector(state => state.settings);
+	const { isManagement } = useAppSelector(state => state.authReducer);
 	const [loading, setLoading] = useState(false);
-	const { canteens } = useSelector((state: RootState) => state.canteenReducer);
+	const { canteens } = useAppSelector(state => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
 	const checkCanteenSelection = () => {

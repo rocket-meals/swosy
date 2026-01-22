@@ -7,7 +7,8 @@ import { CanteenFeedbackLabelProps, ModifiedCanteensFeedbacksLabelsEntries } fro
 import { isWeb } from '@/constants/Constants';
 import { getIconComponent, getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
@@ -27,10 +28,10 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
 	const { openRatingPermissionModal } = useRatingPermissionModal();
 	const [showTooltip, setShowTooltip] = useState(false);
-	const { primaryColor, language, appSettings, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const [count, setCount] = useState({ likes: 0, dislikes: 0 });
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
-	const { ownCanteenFeedBackLabelEntries } = useSelector((state: RootState) => state.canteenReducer);
+	const { user, profile } = useAppSelector((state) => state.authReducer);
+	const { ownCanteenFeedBackLabelEntries } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');

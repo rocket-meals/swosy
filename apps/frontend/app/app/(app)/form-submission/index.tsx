@@ -5,7 +5,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { isWeb } from '@/constants/Constants';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
@@ -42,7 +43,6 @@ import { Buffer } from 'buffer';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 
 const parseDropdownValues = (input: unknown): string[] => {
 	if (!input) return [];
@@ -132,14 +132,14 @@ const Index = () => {
 	const [collectionData, setCollectionData] = useState<any>([]);
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
-	const { formSubmission } = useSelector((state: RootState) => state.form);
-	const { user } = useSelector((state: RootState) => state.authReducer);
+	const { formSubmission } = useAppSelector((state) => state.form);
+	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { language, drawerPosition, primaryColor } = useSelector((state: RootState) => state.settings);
+	const { language, drawerPosition, primaryColor } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
 	// Set Page Title

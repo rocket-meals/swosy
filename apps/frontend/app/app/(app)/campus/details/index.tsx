@@ -6,7 +6,7 @@ import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import LocationInformation from '@/components/LocationInformation/LocationInformation';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useLocalSearchParams } from 'expo-router';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -14,7 +14,6 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 import { Image as ExpoImage } from 'expo-image';
 import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 
@@ -24,8 +23,8 @@ const Details = () => {
   const { translate } = useLanguage();
   const { openLinkCoordinateModal } = useLinkCoordinateModal();
   const { id } = useLocalSearchParams();
-  const { serverInfo, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-  const { campusesDict } = useSelector((state: RootState) => state.campus);
+  const { serverInfo, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+  const { campusesDict } = useAppSelector((state) => state.campus);
   const defaultImage = useMemo(() => getImageUrl(serverInfo?.info?.project?.project_logo), [serverInfo]);
   const [activeTab, setActiveTab] = useState<'information' | 'description'>('information');
   const [loading, setLoading] = useState(false);

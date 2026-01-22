@@ -1,6 +1,7 @@
 import { ActivityIndicator, Dimensions, Image, Platform, ScrollView, Text, View } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
 import ListWeekHeader from '@/components/ListWeekHeader/ListWeekHeader';
 import styles from './styles';
@@ -19,7 +20,6 @@ import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { UPDATE_MARKINGS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
 
 const fontSize = 10;
@@ -36,13 +36,13 @@ const Index = () => {
 	const [foods, setFoods] = useState<any>({});
 	const [categories, setCategories] = useState<Record<string, { alias: string; sort: number }>>({});
 	const [foodMarkings, setFoodMarkings] = useState<any>({});
-	const { markings } = useSelector((state: RootState) => state.food);
+	const { markings } = useAppSelector((state) => state.food);
 	const [loading, setLoading] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	useSetPageTitle(canteen_alias + ` - ${translate(TranslationKeys.week)} ${week}`);
 	const isMobile = screenWidth < 800;
-	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
 
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');

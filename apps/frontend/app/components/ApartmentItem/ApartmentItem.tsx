@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
 import { BuildingItemProps } from './types';
@@ -22,9 +22,9 @@ import useMyScrollviewModalDistanceInformation from '@/hooks/useMyScrollviewModa
 const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, onEditImage, openDistanceSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor: projectColor, appSettings, serverInfo, selectedTheme: mode, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
+	const { primaryColor: projectColor, appSettings, serverInfo, selectedTheme: mode, amountColumnsForcard } = useAppSelector((state) => state.settings);
 	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-	const { isManagement } = useSelector((state: RootState) => state.authReducer);
+	const { isManagement } = useAppSelector((state) => state.authReducer);
 	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [showFreeModal, setShowFreeModal] = useState(false);

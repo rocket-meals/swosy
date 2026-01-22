@@ -7,13 +7,12 @@ import CardWithText from '../CardWithText/CardWithText';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import useFoodCard from '@/hooks/useFoodCard';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 import { View } from 'react-native';
 
 const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content, cardWidth }) => {
   const { theme } = useTheme();
-  const { appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
+  const { appSettings, primaryColor } = useAppSelector((state) => state.settings);
 
   const { containerStyle, imageContainerStyle, contentStyle } = useFoodCard();
   const foods_area_color = appSettings?.foods_area_color || primaryColor;

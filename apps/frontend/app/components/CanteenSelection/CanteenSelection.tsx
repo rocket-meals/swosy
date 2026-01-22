@@ -1,14 +1,13 @@
 import { Dimensions, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useTheme } from '@/hooks/useTheme';
-import { RootState } from '@/redux/reducer';
 import { canteensData, isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import CardWithText from '../CardWithText/CardWithText';
 import styles from '../CanteenSelectionSheet/styles';
+import { useAppSelector } from '@/redux/hooks';
 
 interface CanteenSelectionProps {
 	onSelectCanteen: (canteen: DatabaseTypes.Canteens) => void;
@@ -16,8 +15,8 @@ interface CanteenSelectionProps {
 
 const CanteenSelection: React.FC<CanteenSelectionProps> = ({ onSelectCanteen }) => {
 	const { theme } = useTheme();
-	const { serverInfo, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
-	const { canteens, selectedCanteen } = useSelector((state: RootState) => state.canteenReducer);
+	const { serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
+	const { canteens, selectedCanteen } = useAppSelector((state) => state.canteenReducer);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);

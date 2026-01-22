@@ -3,7 +3,7 @@ import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import FoodLabelingInfo from '../FoodLabelingInfo';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { DetailsProps } from './types';
@@ -16,7 +16,7 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor, appSettings, language } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, appSettings, language } = useAppSelector(state => state.settings);
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 

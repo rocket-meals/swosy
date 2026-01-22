@@ -6,7 +6,7 @@ import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { EatingHabitsSheetProps } from './types';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
@@ -14,7 +14,7 @@ import { RootState } from '@/redux/reducer';
 const EatingHabitsSheet: React.FC<EatingHabitsSheetProps> = ({ closeSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { selectedFoodMarkings } = useSelector((state: RootState) => state.food);
+	const { selectedFoodMarkings } = useAppSelector(state => state.food);
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
 			<View

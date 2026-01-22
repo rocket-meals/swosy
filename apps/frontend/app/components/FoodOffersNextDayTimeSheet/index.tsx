@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RootState } from '@/redux/reducer';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -17,7 +16,7 @@ const DEFAULT_THRESHOLD = '18:00';
 const FoodOffersNextDayTimeSheet: React.FC<FoodOffersNextDayTimeSheetProps> = ({ closeSheet, initialValue, onSave }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
 	const { bottom: bottomInset } = useSafeAreaInsets();
 	const contrastColor = useMemo(() => myContrastColor(primaryColor, theme, mode === 'dark'), [mode, primaryColor, theme]);
 

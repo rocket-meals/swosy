@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { Platform, ScrollView, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 import MyMap from '@/components/MyMap/MyMap';
 import { getDefaultIconAnchor, MARKER_DEFAULT_SIZE, MyMapMarkerIcons } from '@/components/MyMap/markerUtils';
 import { Asset } from 'expo-asset';
@@ -31,7 +30,7 @@ const EXTERNAL_MARKER_URL = 'https://cdn4.iconfinder.com/data/icons/small-n-flat
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
-	const { buildings } = useSelector((state: RootState) => state.canteenReducer);
+	const { buildings } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
 	const [markerIconSrc, setMarkerIconSrc] = useState<string | null>(null);

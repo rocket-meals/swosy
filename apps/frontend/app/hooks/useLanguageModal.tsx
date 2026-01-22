@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -33,7 +33,7 @@ export const useLanguageModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
         const { translate, setLanguageMode, language } = useLanguage();
         const { theme } = useTheme();
-        const { primaryColor } = useSelector((state: RootState) => state.settings);
+        const { primaryColor } = useAppSelector((state) => state.settings);
 
         const changeLanguage = useCallback(
                 (languageOption: (typeof languages)[number]) => {

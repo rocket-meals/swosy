@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Dimensions, FlatList, RefreshControl, Text, View } from 'react-native';
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { CollectionNames, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
@@ -17,6 +15,7 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
+import { useAppSelector } from '@/redux/hooks';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -31,10 +30,10 @@ interface DayData {
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-        const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-	const { sortBy, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
-        const { profile } = useSelector((state: RootState) => state.authReducer);
+        const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
+	const { sortBy, language, amountColumnsForcard } = useAppSelector((state) => state.settings);
+	const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
+        const { profile } = useAppSelector((state) => state.authReducer);
         const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
         const [days, setDays] = useState<DayData[]>([]);
         const [loading, setLoading] = useState(false);
