@@ -1,1 +1,1 @@
-export { default } from '@/components/FoodOffersScrollList';
+export { default } from '@/components/FoodoffersScrollList';
