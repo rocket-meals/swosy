@@ -46,6 +46,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 						<TouchableOpacity
 							style={[styles.confirmButton, { backgroundColor: primaryColor }]}
 							onPress={() => {
+								closeSheet();
 								handleLogin();
 							}}
 						>
