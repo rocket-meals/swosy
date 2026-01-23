@@ -117,6 +117,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	}, [autoPlay, animationJson]);
 
 	const setDefaultPriceGroupForAnonymousUser = () => {
+		if (profile?.price_group) {
+			return;
+		}
 		dispatch({
 			type: UPDATE_PROFILE,
 			payload: { ...(profile as any), price_group: 'student' },
