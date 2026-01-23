@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Dimensions, Image, ScrollView, Text, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -6,8 +6,6 @@ import Form from '@/components/Login/Form';
 import Header from '@/components/Login/Header';
 import Footer from '@/components/Login/Footer';
 import ManagementSheet from '@/components/Login/ManagementSheet';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
@@ -36,9 +34,6 @@ export default function Login() {
 	const appSettingsHelper = new AppSettingsHelper();
 	const wikisHelper = new WikisHelper();
 	const [loading, setLoading] = useState(false);
-	const [isActive, setIsActive] = useState(false);
-	const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
-	const attentionSheetRef = useRef<BottomSheet>(null);
 	const [providers, setProviders] = useState<any>([]);
 	const [isWebVisible, setIsWebVisible] = useState(Dimensions.get('window').width > 500);
 	const { appSettings, language } = useSelector((state: RootState) => state.settings);
@@ -46,6 +41,7 @@ export default function Login() {
 	const detailed_description = appSettings?.login_screen_translations && getDetailedDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const [heading, subHeading] = intro_description?.split('-') || ['', ''];
 	const { show: showManagementModal, close: closeManagementModal } = useMyScrollViewModal();
+	const { show: showAttentionModal, close: closeAttentionModal } = useMyScrollViewModal();
 	const getProviders = async () => {
 		const providers = await ServerAPI.getAuthProviders();
 		if (providers) {
@@ -68,16 +64,6 @@ export default function Login() {
 		getAppSettings();
 		getProviders();
 	}, []);
-
-	const openAttentionSheet = () => {
-		setIsBottomSheetVisible(true);
-		attentionSheetRef.current?.expand();
-	};
-
-	const closeAttentionSheet = () => {
-		setIsBottomSheetVisible(false);
-		attentionSheetRef?.current?.close();
-	};
 
         const handleUserLogin = async (token?: string, email?: string, password?: string) => {
                 try {
@@ -159,6 +145,18 @@ export default function Login() {
 		return currentDate;
 	};
 
+	const openAttentionSheet = useCallback(() => {
+		showAttentionModal({
+			onClose: closeAttentionModal,
+			children: (
+				<AttentionSheet
+					closeSheet={closeAttentionModal}
+					handleLogin={handleAnonymousLogin}
+				/>
+			),
+		});
+	}, [closeAttentionModal, handleAnonymousLogin, showAttentionModal]);
+
 	useEffect(() => {
 		const handleResize = () => {
 			setIsWebVisible(Dimensions.get('window').width > 650);
@@ -168,15 +166,6 @@ export default function Login() {
 
 		return () => subscription?.remove();
 	}, []);
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
 
 	const getWikis = async () => {
 		try {
@@ -267,20 +256,6 @@ export default function Login() {
 						</View>
 						{renderContent()}
 					</View>
-				)}
-				{isActive && (
-					<BaseBottomSheet
-						ref={attentionSheetRef}
-						index={-1}
-						backgroundStyle={{
-							borderTopRightRadius: 30,
-							borderTopLeftRadius: 30,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						onClose={closeAttentionSheet}
-					>
-						<AttentionSheet closeSheet={closeAttentionSheet} handleLogin={handleAnonymousLogin} isBottomSheetVisible={isBottomSheetVisible} />
-					</BaseBottomSheet>
 				)}
 			</ScrollView>
 		</>
