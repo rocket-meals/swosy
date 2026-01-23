@@ -34,6 +34,7 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import { ConfigCustomerEnum } from '@/config';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -55,7 +56,7 @@ export default function FoodDetailsScreen() {
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
 	const { user, profile } = useSelector((state: RootState) => state.authReducer);
-	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode, selectedCustomer } = useSelector((state: RootState) => state.settings);
         const previousFeedback = useSelector(state => selectPreviousFeedback(state, initialFoodId));
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
@@ -130,51 +131,55 @@ export default function FoodDetailsScreen() {
 			};
 		});
 
-		const generalAttributes: any[] = [];
-		if (foodDetails && foodCategories.length) {
-			const name = getFoodCategoryName(foodCategories, foodDetails.food_category, languageCode);
-			if (name) {
-				generalAttributes.push({
-					id: 'food_category',
-					string_value: name,
-					food_attribute: {
-						status: 'published',
-						translations: [
-							{
-								languages_code: languageCode,
-								name: translate(TranslationKeys.food_category_label),
-							},
-						],
-					},
+		const hideGeneralAttributes = selectedCustomer === ConfigCustomerEnum.STUDI_FUTTER;
+
+		if (!hideGeneralAttributes) {
+			const generalAttributes: any[] = [];
+			if (foodDetails && foodCategories.length) {
+				const name = getFoodCategoryName(foodCategories, foodDetails.food_category, languageCode);
+				if (name) {
+					generalAttributes.push({
+						id: 'food_category',
+						string_value: name,
+						food_attribute: {
+							status: 'published',
+							translations: [
+								{
+									languages_code: languageCode,
+									name: translate(TranslationKeys.food_category_label),
+								},
+							],
+						},
+					});
+				}
+			}
+
+			if (foodDetails && foodOfferCategories.length && foodDetails.foodoffer_category) {
+				const name = getFoodOfferCategoryName(foodOfferCategories, foodDetails.foodoffer_category, languageCode);
+				if (name) {
+					generalAttributes.push({
+						id: 'foodoffer_category',
+						string_value: name,
+						food_attribute: {
+							status: 'published',
+							translations: [
+								{
+									languages_code: languageCode,
+									name: translate(TranslationKeys.foodoffer_category_label),
+								},
+							],
+						},
+					});
+				}
+			}
+
+			if (generalAttributes.length) {
+				groupedAttributes?.push({
+					id: 'general',
+					translations: [{ languages_code: languageCode, name: translate(TranslationKeys.general) }],
+					attributes: generalAttributes,
 				});
 			}
-		}
-
-		if (foodDetails && foodOfferCategories.length && foodDetails.foodoffer_category) {
-			const name = getFoodOfferCategoryName(foodOfferCategories, foodDetails.foodoffer_category, languageCode);
-			if (name) {
-				generalAttributes.push({
-					id: 'foodoffer_category',
-					string_value: name,
-					food_attribute: {
-						status: 'published',
-						translations: [
-							{
-								languages_code: languageCode,
-								name: translate(TranslationKeys.foodoffer_category_label),
-							},
-						],
-					},
-				});
-			}
-		}
-
-		if (generalAttributes.length) {
-			groupedAttributes?.push({
-				id: 'general',
-				translations: [{ languages_code: languageCode, name: translate(TranslationKeys.general) }],
-				attributes: generalAttributes,
-			});
 		}
 
 		setGroupedAttributes(groupedAttributes);
@@ -185,7 +190,7 @@ export default function FoodDetailsScreen() {
 		if (foodAttributeGroups && foodAttributes) {
 			filterAttributes();
 		}
-	}, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories]);
+	}, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories, selectedCustomer]);
 
 	const renderContent = useCallback(
                 (foodDetails: DatabaseTypes.Foods) => {
