@@ -1,6 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dispatch } from 'redux';
-import { CLEAR_APARTMENTS, CLEAR_CAMPUSES, CLEAR_CANTEENS, CLEAR_CHATS, CLEAR_COLLECTION_DATES_LAST_UPDATED, CLEAR_DEVELOPER_MODE, CLEAR_FOODS, CLEAR_MANAGEMENT, CLEAR_NEWS, CLEAR_POPUP_EVENTS_HASH, CLEAR_PROFILE, CLEAR_SETTINGS, CLEAR_COLLECTIBLE_EVENTS } from '@/redux/Types/types';
+import {
+	CLEAR_APARTMENTS,
+	CLEAR_CAMPUSES,
+	CLEAR_CANTEENS,
+	CLEAR_CHATS,
+	CLEAR_COLLECTION_DATES_LAST_UPDATED,
+	CLEAR_COLLECTIBLE_EVENTS,
+	CLEAR_DEVELOPER_MODE,
+	CLEAR_FOODS,
+	CLEAR_MANAGEMENT,
+	CLEAR_NEWS,
+	CLEAR_POPUP_EVENTS_HASH,
+	CLEAR_PROFILE,
+	CLEAR_SETTINGS,
+	ON_LOGOUT,
+} from '@/redux/Types/types';
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
 
@@ -11,6 +26,7 @@ export const performLogout = async (
 	}
 ) => {
 	try {
+		dispatch({ type: ON_LOGOUT });
 		dispatch({ type: CLEAR_CANTEENS });
 		dispatch({ type: CLEAR_CAMPUSES });
 		dispatch({ type: CLEAR_APARTMENTS });
