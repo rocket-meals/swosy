@@ -31,7 +31,7 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'stretch',
 		flexWrap: 'wrap',
-		marginTop: 20,
+		marginTop: 12,
 	},
 	feebackContainer: {
 		width: '100%',

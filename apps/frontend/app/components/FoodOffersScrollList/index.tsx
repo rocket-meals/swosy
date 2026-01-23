@@ -304,8 +304,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
 					</View>
 				)}
-				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>
 		);
