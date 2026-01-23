@@ -131,7 +131,6 @@ export default function Login() {
 	const openSheet = useCallback(() => {
 		showManagementModal({
 			onClose: closeManagementModal,
-			backgroundColor: theme.sheet.sheetBg,
 			children: (
 				<ManagementSheet
 					closeSheet={closeManagementModal}
@@ -140,7 +139,7 @@ export default function Login() {
 				/>
 			),
 		});
-	}, [closeManagementModal, handleUserLogin, loading, showManagementModal, theme.sheet.sheetBg]);
+	}, [closeManagementModal, handleUserLogin, loading, showManagementModal]);
 
 	const handleAnonymousLogin = () => {
 		// @ts-ignore
