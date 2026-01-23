@@ -30,7 +30,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 	}, [hasPlayed, appSettings]);
 
 	return (
-		<View style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}>
+		<View style={[styles.sheetView, styles.attentionSheetView]}>
 			<View style={styles.contentContainer}>
 				<View style={styles.attentionSheetHeader}>
 					<View />
