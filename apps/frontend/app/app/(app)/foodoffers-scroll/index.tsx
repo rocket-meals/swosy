@@ -39,6 +39,7 @@ import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
+import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 
@@ -122,7 +123,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 		dispatch({
 			type: UPDATE_PROFILE,
-			payload: { ...(profile as any), price_group: 'student' },
+			payload: { ...(profile as any), price_group: PriceGroupKey.student },
 		});
 	};
 
