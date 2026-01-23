@@ -176,6 +176,10 @@ export const styles = StyleSheet.create({
 		borderTopLeftRadius: 28,
 		padding: 15,
 	},
+	attentionSheetView: {
+		backgroundColor: 'transparent',
+		padding: 0,
+	},
 	sheetHeader: {
 		width: '100%',
 		alignItems: 'flex-end',
