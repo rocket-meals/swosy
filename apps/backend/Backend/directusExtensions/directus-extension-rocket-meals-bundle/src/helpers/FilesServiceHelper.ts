@@ -22,7 +22,7 @@ export enum MyFileTypes {
 
 export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.DirectusFiles> implements FilesService, ShareDirectusFileMethod {
 
-  private readonly useAdminAccountability: boolean = false;
+  private useAdminAccountability: boolean = false;
 
   constructor(myDatabaseHelper: MyDatabaseHelperInterface, useAdminAccountability: boolean = false) {
     super(myDatabaseHelper, CollectionNames.DIRECTUS_FILES);

@@ -71,7 +71,7 @@ export type FoodImageGeneratorChatGptProps = {
 }
 export class ImageRawGeneratorChatGpt implements ImageRawGeneratorInterface{
 
-    private readonly props: FoodImageGeneratorChatGptProps;
+    private props: FoodImageGeneratorChatGptProps;
     protected openai: OpenAI;
 
   constructor(props: FoodImageGeneratorChatGptProps) {

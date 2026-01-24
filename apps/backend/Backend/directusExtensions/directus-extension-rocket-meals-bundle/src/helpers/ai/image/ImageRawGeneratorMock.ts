@@ -6,7 +6,7 @@ export type ImageRawGeneratorMockProps = {
 }
 export class ImageRawGeneratorMock implements ImageRawGeneratorInterface {
 
-  private readonly props: ImageRawGeneratorMockProps | null = null;
+  private props: ImageRawGeneratorMockProps | null = null;
 
   constructor(props?: ImageRawGeneratorMockProps) {
     this.props = props || null;

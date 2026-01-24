@@ -11,7 +11,7 @@ export interface ImageSafeGeneratorInterface extends ImageRawGeneratorInterface 
 
 export class ImageSafeGenerator implements ImageSafeGeneratorInterface {
 
-  private readonly props: ImageGeneratorProps;
+  private props: ImageGeneratorProps;
 
   constructor(props: ImageGeneratorProps) {
     this.props = props;

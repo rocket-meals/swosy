@@ -17,8 +17,8 @@ export type ModerationCheckChatGptProps = {
 }
 export class ModerationCheckChatGpt implements ModerationCheckInterface {
 
-    private readonly props: ModerationCheckChatGptProps;
-    private readonly openai: OpenAI;
+    private props: ModerationCheckChatGptProps;
+    private openai: OpenAI;
 
     constructor(props: ModerationCheckChatGptProps){
         this.props = props;

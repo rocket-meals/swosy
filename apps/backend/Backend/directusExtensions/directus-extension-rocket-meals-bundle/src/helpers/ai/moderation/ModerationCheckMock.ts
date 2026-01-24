@@ -5,7 +5,7 @@ export type ModerationCheckMockProps = {
 }
 export class ModerationCheckMock implements ModerationCheckInterface {
 
-    private readonly props: ModerationCheckMockProps | undefined;
+    private props: ModerationCheckMockProps | undefined;
 
     constructor(props?: ModerationCheckMockProps){
         this.props = props;
