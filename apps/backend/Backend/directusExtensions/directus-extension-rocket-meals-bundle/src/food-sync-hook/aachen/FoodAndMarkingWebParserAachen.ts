@@ -16,7 +16,7 @@ export class FoodAndMarkingWebParserAachen implements FoodParserInterface, Marki
   private readonly htmlFileReader: FoodWebParserAachenReadHtmlFiles;
   private canteensHtmlFilesMap: CanteenNamesToHtmlFileDict = {};
 
-  private filterDuplicatedOffersPerCanteen: boolean = true;
+  private readonly filterDuplicatedOffersPerCanteen: boolean = true;
 
   constructor(htmlFileReader?: FoodWebParserAachenReadHtmlFiles) {
     if (!htmlFileReader) {
