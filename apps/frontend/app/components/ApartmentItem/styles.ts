@@ -50,7 +50,7 @@ export default StyleSheet.create({
 	},
 	distanceActions: {
 		position: 'absolute',
-		top: 5,
+		bottom: 5,
 		right: 5,
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -59,7 +59,7 @@ export default StyleSheet.create({
 	freeBadge: {
 		position: 'absolute',
 		top: 5,
-		left: 5,
+		right: 5,
 		borderRadius: 8,
 		flexDirection: 'row',
 		justifyContent: 'center',
