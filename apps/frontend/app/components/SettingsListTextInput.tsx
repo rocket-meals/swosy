@@ -1,7 +1,7 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
-import type { KeyboardTypeOptions } from 'react-native';
+import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 
@@ -36,6 +36,21 @@ export interface SettingsListTextInputSheetProps {
 	allowSubmitWhenDisabled?: boolean;
 }
 
+export interface SettingsListTextInputFieldProps {
+	placeholder: string;
+	value: string;
+	onChangeText: (text: string) => void;
+	keyboardType?: KeyboardTypeOptions;
+	secureTextEntry?: boolean;
+	autoCapitalize?: TextInputProps['autoCapitalize'];
+	autoCorrect?: boolean;
+	textContentType?: TextInputProps['textContentType'];
+	inputStyle?: object;
+	autoFocus?: boolean;
+	returnKeyType?: TextInputProps['returnKeyType'];
+	onSubmitEditing?: TextInputProps['onSubmitEditing'];
+}
+
 export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onPress' | 'handleFunction'> {
 	modalTitle?: string;
 	placeholder: string;
@@ -51,6 +66,50 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
 }
+
+export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProps> = ({
+	placeholder,
+	value,
+	onChangeText,
+	keyboardType,
+	secureTextEntry,
+	autoCapitalize = 'none',
+	autoCorrect = false,
+	textContentType,
+	inputStyle,
+	autoFocus,
+	returnKeyType,
+	onSubmitEditing,
+}) => {
+	const { theme } = useTheme();
+	const { primaryColor } = useSelector((state: RootState) => state.settings);
+
+	return (
+		<TextInput
+			style={{
+				...styles.sheetInput,
+				color: theme.sheet.text,
+				backgroundColor: theme.sheet.inputBg,
+				borderColor: theme.sheet.inputBorder,
+				...(inputStyle ?? {}),
+			}}
+			autoFocus={autoFocus}
+			placeholder={placeholder}
+			placeholderTextColor={theme.sheet.placeholder}
+			cursorColor={theme.sheet.text}
+			selectionColor={primaryColor}
+			value={value}
+			onChangeText={onChangeText}
+			keyboardType={keyboardType}
+			secureTextEntry={secureTextEntry}
+			autoCapitalize={autoCapitalize}
+			autoCorrect={autoCorrect}
+			textContentType={textContentType}
+			returnKeyType={returnKeyType}
+			onSubmitEditing={onSubmitEditing}
+		/>
+	);
+};
 
 export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProps> = ({
 	placeholder,

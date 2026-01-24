@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { SheetProps } from './types';
@@ -10,8 +9,9 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { EmailHelper } from 'repo-depkit-common';
+import { SettingsListTextInputField } from '@/components/SettingsListTextInput';
 
-const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loading }) => {
+const ManagementSheet: React.FC<SheetProps> = ({ handleLogin, loading }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
@@ -19,28 +19,16 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loadin
 	const [formState, setFormState] = useState({
 		email: '',
 		password: '',
-		isEmailValid: false,
-		isPasswordValid: false,
 	});
 
-	const validateEmail = (email: string) => {
-		const { trimmedEmail, isValid } = EmailHelper.sanitizeAndValidate(email);
-		setFormState(prevState => ({
-			...prevState,
-			email: trimmedEmail,
-			isEmailValid: isValid,
-		}));
-	};
+	const emailValidation = useMemo(
+		() => EmailHelper.sanitizeAndValidate(formState.email),
+		[formState.email]
+	);
+	const isEmailValid = emailValidation.isValid;
+	const isPasswordValid = formState.password.length > 0;
 
-	const validatePassword = (password: string) => {
-		setFormState(prevState => ({
-			...prevState,
-			password,
-			isPasswordValid: password.length > 0,
-		}));
-	};
-
-	const isFormValid = formState.isEmailValid && formState.isPasswordValid;
+	const isFormValid = isEmailValid && isPasswordValid;
 
 	const onSubmit = () => {
 		if (!isFormValid || loading) return;
@@ -53,41 +41,34 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loadin
 	};
 
 	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+		<View style={styles.sheetView}>
 			<View style={styles.sheetHeader}></View>
-			<Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>{translate(TranslationKeys.show_login_for_management_with_email_and_password)}</Text>
-			<Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text }}>{translate(TranslationKeys.management_login_description)}</Text>
-			<TextInput
-				style={{
-					...styles.sheetInput,
-					color: theme.sheet.text,
-					backgroundColor: theme.sheet.inputBg,
-					borderColor: formState.isEmailValid ? theme.sheet.inputBorderValid : theme.sheet.inputBorderInvalid,
-				}}
-				placeholderTextColor={theme.sheet.placeholder}
-				cursorColor={theme.sheet.text}
-				selectionColor={primaryColor}
-				onChangeText={validateEmail}
+			<Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>
+				{translate(TranslationKeys.show_login_for_management_with_email_and_password)}
+			</Text>
+			<Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text }}>
+				{translate(TranslationKeys.management_login_description)}
+			</Text>
+			<SettingsListTextInputField
+				placeholder={translate(TranslationKeys.email)}
 				value={formState.email}
-				placeholder="You@swosy.com"
+				onChangeText={email => setFormState(prevState => ({ ...prevState, email }))}
 				keyboardType="email-address"
 				autoCapitalize="none"
 				autoCorrect={false}
+				textContentType="emailAddress"
+				returnKeyType="next"
 			/>
-			<TextInput
-				style={{
-					...styles.sheetInput,
-					color: theme.sheet.text,
-					backgroundColor: theme.sheet.inputBg,
-					borderColor: formState.isPasswordValid ? theme.sheet.inputBorderValid : theme.sheet.inputBorderInvalid,
-				}}
-				onChangeText={validatePassword}
-				placeholderTextColor={theme.sheet.placeholder}
-				cursorColor={theme.sheet.text}
-				selectionColor={primaryColor}
+			<SettingsListTextInputField
+				placeholder={translate(TranslationKeys.password)}
 				value={formState.password}
+				onChangeText={password => setFormState(prevState => ({ ...prevState, password }))}
 				secureTextEntry
-				placeholder="Password"
+				autoCapitalize="none"
+				autoCorrect={false}
+				textContentType="password"
+				returnKeyType="done"
+				onSubmitEditing={onSubmit}
 			/>
 			<TouchableOpacity
 				style={{
@@ -110,7 +91,7 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin, loadin
 					</Text>
 				)}
 			</TouchableOpacity>
-		</BottomSheetScrollView>
+		</View>
 	);
 };
 

@@ -285,6 +285,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 									handleImageSheet={openManagementSheet}
 									handleEatingHabitsSheet={openSheet}
 									cardWidth={cardWidth}
+									dividerColor={foods_area_color}
 								/>
 							) : dayItem.foodofferInfoItem ? (
 								<FoodOfferInfoItem

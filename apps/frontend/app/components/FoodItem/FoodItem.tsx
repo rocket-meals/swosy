@@ -33,7 +33,7 @@ const selectPreviousFeedback = createSelector([selectFoodState, (_: RootState, f
 const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
 
 const FoodItem: React.FC<FoodItemProps> = memo(
-  ({ item, canteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, cardWidth }) => {
+  ({ item, canteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, cardWidth, dividerColor }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { theme } = useTheme();
@@ -49,7 +49,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const previousFeedback = useSelector(state => selectPreviousFeedback(state as RootState, foodItem.id));
     const markings = useSelector(selectMarkings);
 
-    const foods_area_color = appSettings?.foods_area_color || primaryColor;
+    const foods_area_color = dividerColor || appSettings?.foods_area_color || primaryColor;
     const defaultImage =
       getImageUrl(String(appSettings.foods_placeholder_image)) ||
       appSettings.foods_placeholder_image_remote_url ||
@@ -299,7 +299,10 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       </>
     );
   },
-  (prev, next) => prev.item === next.item
+  (prev, next) =>
+    prev.item === next.item &&
+    prev.dividerColor === next.dividerColor &&
+    prev.cardWidth === next.cardWidth
 );
 
 export default FoodItem;
