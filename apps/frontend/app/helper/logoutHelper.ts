@@ -15,6 +15,9 @@ import {
 	CLEAR_PROFILE,
 	CLEAR_SETTINGS,
 	ON_LOGOUT,
+	SET_MARKING_DETAILS,
+	SET_SELECTED_FOOD_MARKINGS,
+	UPDATE_MARKINGS,
 } from '@/redux/Types/types';
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
@@ -30,6 +33,9 @@ export const performLogout = async (
 		dispatch({ type: CLEAR_CANTEENS });
 		dispatch({ type: CLEAR_CAMPUSES });
 		dispatch({ type: CLEAR_APARTMENTS });
+		dispatch({ type: UPDATE_MARKINGS, payload: [] });
+		dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: [] });
+		dispatch({ type: SET_MARKING_DETAILS, payload: {} });
 		dispatch({ type: CLEAR_FOODS });
                 dispatch({ type: CLEAR_MANAGEMENT });
                 dispatch({ type: CLEAR_DEVELOPER_MODE });

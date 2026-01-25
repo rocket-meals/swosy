@@ -16,20 +16,21 @@ import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 
 interface LabelsProps {
-        foodDetails: any;
-        offerId?: string;
-        handleMenuSheet?: () => void;
-        color: string;
+	foodDetails: any;
+	offerId?: string;
+	foodOfferDetails?: DatabaseTypes.Foodoffers | null;
+	handleMenuSheet?: () => void;
+	color: string;
 }
 
 const selectMarkings = (state: RootState) => state.food.markings;
 
 export const selectFoodOffer = (offerId?: string) =>
-        createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
-                offerId ? getFoodOffer(foodOffers, offerId) : undefined
-        );
+	createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
+		offerId ? getFoodOffer(foodOffers, offerId) : undefined
+	);
 
-const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, color }) => {
+const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
@@ -42,12 +43,12 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
 	};
 
-        const markings = useSelector(selectMarkings);
-        const foodOfferSelector = useMemo(
-                () => (offerId ? selectFoodOffer(offerId) : () => undefined),
-                [offerId]
-        );
-        const foodOffer = useSelector(foodOfferSelector as (state: RootState) => DatabaseTypes.Foodoffers | undefined);
+	const markings = useSelector(selectMarkings);
+	const foodOfferSelector = useMemo(
+		() => (offerId ? selectFoodOffer(offerId) : () => undefined),
+		[offerId]
+	);
+	const foodOffer = useSelector(foodOfferSelector as (state: RootState) => DatabaseTypes.Foodoffers | undefined);
 
 	// State for marking groups
 	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
@@ -70,12 +71,13 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 	}, []);
 
 	const mappedFoodOfferMarkings = useMemo(() => {
-		if (!foodOffer?.markings) return [];
+		const offerMarkings = foodOfferDetails?.markings ?? foodOffer?.markings;
+		if (!offerMarkings) return [];
 
-		return foodOffer.markings
+		return offerMarkings
 			?.map((marking: DatabaseTypes.FoodoffersMarkings) => markings.find((mark: DatabaseTypes.Markings) => mark.id === marking?.markings_id))
 			.filter((mark: any): mark is DatabaseTypes.Markings => Boolean(mark));
-	}, [foodOffer, markings]);
+	}, [foodOffer, foodOfferDetails, markings]);
 
 	const foodMarkings = useMemo(() => {
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
@@ -85,15 +87,15 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
-                        {foodMarkings?.map((marking: DatabaseTypes.Markings) => (
-                                <MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
-                        ))}
+			{foodMarkings?.map((marking: DatabaseTypes.Markings) => (
+				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
+			))}
 
 			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
 					{JSON.stringify(
 						{
-							foodOfferMarkings: foodOffer?.markings ?? [],
+							foodOfferMarkings: foodOfferDetails?.markings ?? foodOffer?.markings ?? [],
 							mappedMarkings: mappedFoodOfferMarkings,
 							sortedMarkings: foodMarkings,
 						},
@@ -104,13 +106,12 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 			</DebugView>
 
 			<DebugView title="Foodoffer Markings Count" isVisible={isDevMode}>
-				<Text style={{ ...styles.body, color: theme.screen.text }}>{foodOffer?.markings?.length ?? 0}</Text>
+				<Text style={{ ...styles.body, color: theme.screen.text }}>{foodOfferDetails?.markings?.length ?? foodOffer?.markings?.length ?? 0}</Text>
 			</DebugView>
 
-                        <FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
-
-                </View>
-        );
+			<FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
+		</View>
+	);
 };
 
 export default Labels;

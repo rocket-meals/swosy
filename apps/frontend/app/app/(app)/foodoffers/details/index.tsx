@@ -208,14 +208,15 @@ export default function FoodDetailsScreen() {
 			case 'details':
 				return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
                                 case 'labels':
-                                        return (
-                                                <Labels
-                                                        foodDetails={foodDetails}
-                                                        offerId={offerId ? offerId.toString() : undefined}
-                                                        handleMenuSheet={openMenuSheet}
-                                                        color={foods_area_color}
-                                                />
-                                        );
+							return (
+								<Labels
+									foodDetails={foodDetails}
+									offerId={offerId ? offerId.toString() : undefined}
+									foodOfferDetails={foodOfferDetails}
+									handleMenuSheet={openMenuSheet}
+									color={foods_area_color}
+								/>
+							);
                                 default:
                                         return null;
                         }
