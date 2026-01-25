@@ -35,6 +35,7 @@ import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 import { ConfigCustomerEnum } from '@/config';
+import DebugView from '@/components/DebugView';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -55,7 +56,7 @@ export default function FoodDetailsScreen() {
 	const dispatch = useDispatch();
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
+	const { user, profile, isDevMode } = useSelector((state: RootState) => state.authReducer);
 	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode, selectedCustomer } = useSelector((state: RootState) => state.settings);
         const previousFeedback = useSelector(state => selectPreviousFeedback(state, initialFoodId));
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
@@ -70,6 +71,7 @@ export default function FoodDetailsScreen() {
 	const selectedCanteen = useSelectedCanteen();
 	const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
 	const [foodDetails, setFoodDetails] = useState<any>(null);
+	const [foodOfferDetails, setFoodOfferDetails] = useState<any>(null);
         const { openRatingPermissionModal } = useRatingPermissionModal();
 
 	const [activeTab, setActiveTab] = useState('feedbacks');
@@ -267,8 +269,9 @@ export default function FoodDetailsScreen() {
                 try {
                         if (offerId) {
                                 const foodData = await fetchFoodOffersDetailsById(offerId.toString());
-                                if (foodData && foodData.data) {
-                                        const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+				if (foodData && foodData.data) {
+					const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+					setFoodOfferDetails(foodData.data);
 
                                         const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
                                         setFoodDetails({
@@ -283,10 +286,11 @@ export default function FoodDetailsScreen() {
                                 } else {
                                         console.log('No food data found');
                                 }
-                        } else if (initialFoodId) {
-                                const foodData = await fetchFoodDetailsById(initialFoodId.toString());
-                                if (foodData && foodData.data) {
-                                        const food = foodData.data;
+			} else if (initialFoodId) {
+				const foodData = await fetchFoodDetailsById(initialFoodId.toString());
+				if (foodData && foodData.data) {
+					const food = foodData.data;
+					setFoodOfferDetails(null);
                                         const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
                                         setFoodDetails({
                                                 ...food,
@@ -774,6 +778,11 @@ export default function FoodDetailsScreen() {
                                         {foodDetails?.id && renderContent(foodDetails)}
                                 </View>
                         </View>
+                        <DebugView title="Foodoffer Details" isVisible={isDevMode}>
+                                <Text style={{ color: theme.screen.text }}>
+                                        {foodOfferDetails ? JSON.stringify(foodOfferDetails, null, 2) : 'No foodoffer details available.'}
+                                </Text>
+                        </DebugView>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
                 </View>
         </ScrollView>
