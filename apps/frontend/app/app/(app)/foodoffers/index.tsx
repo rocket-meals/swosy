@@ -42,7 +42,6 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import FoodOffersScrollList from '@/components/FoodOffersScrollList';
-import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 
 export const SHEET_COMPONENTS = {
 	canteen: CanteenSelectionSheet,
@@ -82,8 +81,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 	const smartReadableDate = useSmartReadableDateMethod();
-	const { defaultDate } = useFoodOffersDefaultDate();
-	const startDate = selectedDate || defaultDate;
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -207,7 +204,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	}, []);
 
 	const handleDateChange = (direction: 'prev' | 'next') => {
-		const currentDate = new Date(startDate);
+		const currentDate = new Date(selectedDate);
 		if (direction === 'prev') {
 			currentDate.setDate(currentDate.getDate() - 1);
 		} else {
@@ -275,21 +272,21 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 try {
                         setLoading(true);
                         const canteenId = selectedCanteen?.id as string;
-                        let foodOffers = getCachedOffers(canteenId, startDate);
+                        let foodOffers = getCachedOffers(canteenId, selectedDate);
 
                         if (!foodOffers) {
-                                const foodData = await fetchFoodOffersByCanteen(canteenId, startDate);
+                                const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
                                 foodOffers = foodData?.data || [];
                         }
 
                         setPrefetchedFoodOffers(prev => ({
                                 ...prev,
-                                [getCacheKey(canteenId, startDate)]: foodOffers,
+                                [getCacheKey(canteenId, selectedDate)]: foodOffers,
                         }));
 
 			// Prefetch next two days
 			for (let i = 1; i <= 2; i++) {
-                                const date = addDays(new Date(startDate), i).toISOString().split('T')[0];
+                                const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
                                 const cacheKey = getCacheKey(canteenId, date);
                                 if (!prefetchedFoodOffers[cacheKey]) {
                                         fetchFoodOffersByCanteen(canteenId, date)
@@ -319,7 +316,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	useEffect(() => {
 		fetchFoods();
-	}, [selectedCanteen, startDate]);
+	}, [selectedCanteen, selectedDate]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
@@ -330,14 +327,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const nextAvailableDate = useMemo(() => {
                 const canteenId = selectedCanteen?.id as string;
                 for (let i = 1; i <= 2; i++) {
-                        const date = addDays(new Date(startDate), i).toISOString().split('T')[0];
+                        const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
                         const offers = getCachedOffers(canteenId, date);
                         if (offers && offers.length > 0) {
                                 return date;
                         }
                 }
                 return null;
-        }, [prefetchedFoodOffers, selectedCanteen, startDate]);
+        }, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
 
 	const getWeekdayKey = (date: string) => {
 		const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -545,7 +542,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-											{` ${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.date)}: ${startDate}`}
+											{` ${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.date)}: ${selectedDate}`}
 										</TooltipText>
 									</TooltipContent>
 								</Tooltip>
@@ -570,7 +567,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								<Text style={{ ...styles.heading, color: theme.header.text }}>{startDate ? getDayLabel(startDate) : ''}</Text>
+								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}
@@ -580,7 +577,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										trigger={triggerProps => (
 											<TouchableOpacity
 												{...triggerProps}
-                                                                                                onPress={() => openUtilizationModal(startDate, selectedCanteen)}
+                                                                                                onPress={() => openUtilizationModal(selectedDate, selectedCanteen)}
 												style={{
 													padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
 												}}
@@ -627,7 +624,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							backgroundColor: theme.screen.background,
 						}}
 					>
-						{selectedCanteen && <FoodOffersScrollList canteenId={selectedCanteen.id} startDate={startDate} />}
+						{selectedCanteen && <FoodOffersScrollList canteenId={selectedCanteen.id} startDate={selectedDate} />}
 					</View>
 				</View>
 				{isActive &&
