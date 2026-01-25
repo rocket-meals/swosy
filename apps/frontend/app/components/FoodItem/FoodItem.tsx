@@ -66,7 +66,27 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       [item?.markings, profile?.markings]
     );
 
-    const { screenWidth, containerStyle, imageContainerStyle, contentStyle } = useFoodCard(dislikedMarkings.length > 0 ? 3 : 0);
+    const likedMarkings = useMemo(
+      () =>
+        item?.markings?.filter(marking =>
+          profile?.markings?.some(
+            (profileMarking: DatabaseTypes.ProfilesMarkings) =>
+              profileMarking?.markings_id === marking?.markings_id && profileMarking?.like === true
+          )
+        ) ?? [],
+      [item?.markings, profile?.markings]
+    );
+
+    const isLiked = useMemo(
+      () =>
+        RatingHelper.isMaxRating(previousFeedback?.rating) ||
+        likedMarkings.length > 0,
+      [likedMarkings.length, previousFeedback?.rating]
+    );
+
+    const borderWidth = dislikedMarkings.length > 0 ? 3 : isLiked ? 3 : 0;
+    const borderColor = dislikedMarkings.length > 0 ? '#FF000095' : '#00B050';
+    const { screenWidth, containerStyle, imageContainerStyle, contentStyle } = useFoodCard(borderWidth, borderColor);
 
     const markingsData = useMemo(
       () =>
