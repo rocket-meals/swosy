@@ -28,15 +28,10 @@ export default StyleSheet.create({
 		borderTopLeftRadius: 18,
 		resizeMode: 'cover',
 	},
-	imageActionContainer: {
-		width: '100%',
-		position: 'absolute',
-		bottom: 0,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-	},
 	editImageButton: {
+		position: 'absolute',
+		bottom: 10,
+		left: 5,
 		width: 35,
 		height: 35,
 		borderRadius: 50,
@@ -54,6 +49,9 @@ export default StyleSheet.create({
 		paddingHorizontal: 10,
 	},
 	distanceActions: {
+		position: 'absolute',
+		bottom: 5,
+		right: 5,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
