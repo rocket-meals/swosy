@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
+import DebugView from '@/components/DebugView';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
@@ -32,6 +33,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const { isDevMode } = useSelector((state: RootState) => state.authReducer);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
 	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
@@ -67,15 +69,17 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		fetchMarkingGroups();
 	}, []);
 
-	const foodMarkings = useMemo(() => {
+	const mappedFoodOfferMarkings = useMemo(() => {
 		if (!foodOffer?.markings) return [];
 
-		// First, map food offer markings to actual marking objects
-		const mappedMarkings = foodOffer.markings?.map((marking: DatabaseTypes.FoodoffersMarkings) => markings.find((mark: DatabaseTypes.Markings) => mark.id === marking?.markings_id)).filter((mark: any): mark is DatabaseTypes.Markings => Boolean(mark));
+		return foodOffer.markings
+			?.map((marking: DatabaseTypes.FoodoffersMarkings) => markings.find((mark: DatabaseTypes.Markings) => mark.id === marking?.markings_id))
+			.filter((mark: any): mark is DatabaseTypes.Markings => Boolean(mark));
+	}, [foodOffer, markings]);
 
-		// Then sort them using the sortMarkingsByGroup function
-		return sortMarkingsByGroup(mappedMarkings, markingGroups);
-	}, [foodOffer, markings, markingGroups]);
+	const foodMarkings = useMemo(() => {
+		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
+	}, [mappedFoodOfferMarkings, markingGroups]);
 
 	return (
 		<View style={styles.container}>
@@ -84,6 +88,24 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
                         {foodMarkings?.map((marking: DatabaseTypes.Markings) => (
                                 <MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
                         ))}
+
+			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
+				<Text style={{ ...styles.body, color: theme.screen.text }}>
+					{JSON.stringify(
+						{
+							foodOfferMarkings: foodOffer?.markings ?? [],
+							mappedMarkings: mappedFoodOfferMarkings,
+							sortedMarkings: foodMarkings,
+						},
+						null,
+						2
+					)}
+				</Text>
+			</DebugView>
+
+			<DebugView title="Foodoffer Markings Count" isVisible={isDevMode}>
+				<Text style={{ ...styles.body, color: theme.screen.text }}>{foodOffer?.markings?.length ?? 0}</Text>
+			</DebugView>
 
                         <FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
 
