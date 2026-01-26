@@ -42,6 +42,7 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import FoodOffersScrollList from '@/components/FoodOffersScrollList';
+import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
 
 export const SHEET_COMPONENTS = {
 	canteen: CanteenSelectionSheet,
@@ -81,6 +82,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 	const smartReadableDate = useSmartReadableDateMethod();
+	useAppForegroundUpdateCheckModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
