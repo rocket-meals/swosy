@@ -4,7 +4,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class CampusHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 	constructor(client?: any) {
-		super('buildings', client || ServerAPI.getClient());
+		super('buildings', client);
 	}
 
 	// Fetch all campuses with optional query overrides

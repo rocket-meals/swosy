@@ -14,6 +14,7 @@ import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 import useMyScrollviewModalDistanceInformation from '@/hooks/useMyScrollviewModalDistanceInformation';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import IconButton from '../UI/IconButton';
 
 
 export interface BuildingItemPropsOptimized {
@@ -107,7 +108,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 							<Tooltip
 								placement="top"
 								trigger={triggerProps => (
-									<TouchableOpacity
+									<IconButton
 										{...triggerProps}
 										style={[
 											styles.navigationButton,
@@ -116,7 +117,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 										onPress={handleOpenNavigation}
 									>
 										<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
-									</TouchableOpacity>
+									</IconButton>
 								)}
 							>
 								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

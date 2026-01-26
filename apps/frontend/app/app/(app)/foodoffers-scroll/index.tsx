@@ -41,6 +41,7 @@ import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
+import IconButton from '@/components/UI/IconButton';
 
 export const SHEET_COMPONENTS = {
 	canteen: CanteenSelectionSheet,
@@ -384,7 +385,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => drawerNavigation.toggleDrawer()}
 											style={{
@@ -392,7 +393,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<Ionicons name="menu" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -418,7 +419,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => openSheet('sort')}
 											style={{
@@ -426,7 +427,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<MaterialIcons name="sort" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -440,7 +441,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => {
 												router.navigate('/price-group');
@@ -450,7 +451,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<FontAwesome6 name="euro-sign" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -465,7 +466,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => {
 												router.navigate('/eating-habits');
@@ -475,7 +476,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<Ionicons name="bag-add" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -489,7 +490,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => openSheet('canteen')}
 											style={{
@@ -497,7 +498,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<MaterialIcons name="restaurant-menu" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -519,7 +520,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => handleDateChange('prev')}
 											style={{
@@ -527,7 +528,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<Entypo name="chevron-left" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -539,7 +540,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => openSheet('calendar', { updateGlobal: true })}
 											style={{
@@ -547,7 +548,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<MaterialIcons name="calendar-month" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -559,7 +560,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => handleDateChange('next')}
 											style={{
@@ -567,7 +568,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<Entypo name="chevron-right" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -585,7 +586,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									<Tooltip
 										placement="top"
 										trigger={triggerProps => (
-											<TouchableOpacity
+											<IconButton
 												{...triggerProps}
                                                                                                 onPress={() => openUtilizationModal(selectedDate, selectedCanteen)}
 												style={{
@@ -593,7 +594,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 												}}
 											>
 												<FontAwesome6 name="people-group" size={24} color={theme.header.text} />
-											</TouchableOpacity>
+											</IconButton>
 										)}
 									>
 										<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
@@ -608,7 +609,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								<Tooltip
 									placement="top"
 									trigger={triggerProps => (
-										<TouchableOpacity
+										<IconButton
 											{...triggerProps}
 											onPress={() => openSheet('hours')}
 											style={{
@@ -616,7 +617,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											}}
 										>
 											<MaterialCommunityIcons name="clock-time-eight" size={24} color={theme.header.text} />
-										</TouchableOpacity>
+										</IconButton>
 									)}
 								>
 									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

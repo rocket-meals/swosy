@@ -13,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
 import { AppScreens } from 'repo-depkit-common';
+import IconButton from '../UI/IconButton';
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
@@ -85,9 +86,9 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 					<Tooltip
 						placement="top"
 						trigger={triggerProps => (
-							<TouchableOpacity {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
+							<IconButton {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
 								<Ionicons name="arrow-back" size={26} color={theme.header.text} />
-							</TouchableOpacity>
+							</IconButton>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

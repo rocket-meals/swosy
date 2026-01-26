@@ -6,7 +6,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 export class FoodOffersCategoriesHelper extends CollectionHelper<DatabaseTypes.FoodoffersCategories> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('foodoffers_categories', client || ServerAPI.getClient());
+		super('foodoffers_categories', client);
 	}
 
 	// Fetch all food categories with optional query overrides

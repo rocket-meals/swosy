@@ -4,7 +4,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class FoodAttributeGroupHelper extends CollectionHelper<DatabaseTypes.FoodsAttributesGroups> {
 	constructor(client?: any) {
-		super('foods_attributes_groups', client || ServerAPI.getClient());
+		super('foods_attributes_groups', client);
 	}
 
 	async fetchAllFoodAttributeGroups(queryOverride: any = {}) {

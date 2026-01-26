@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { Dimensions, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, View, useWindowDimensions } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
 import Labels from '@/components/Labels';
-import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
-import { excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal } from '@/constants/HelperFunctions';
+import { getImageUrl, getpreviousFeedback } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { useDispatch } from 'react-redux';
@@ -22,779 +20,367 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
-import { getFoodCategoryName, getFoodOfferCategoryName } from '@/helper/resourceHelper';
 import { getCurrentDevice, getDeviceIdentifier, getDeviceInformationWithoutPushToken } from '@/helper/DeviceHelper';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
-import useToast from '@/hooks/useToast';
+import FoodHeader from './components/FoodHeader';
+import NotificationSection from './components/NotificationSection';
+import TabController from './components/TabController';
+import { useFoodDetails } from './hooks/useFoodDetails';
+import { useFoodAttributes } from './hooks/useFoodAttributes';
 
 const selectFoodState = (state: RootState) => state.food;
 
 const selectPreviousFeedback = createSelector(
-        [selectFoodState, (_: RootState, foodId?: string | null) => foodId],
-        (foodState, foodId) => (foodId ? getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString()) : undefined)
+    [selectFoodState, (_: RootState, foodId?: string | null) => foodId],
+    (foodState, foodId) => (foodId ? getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString()) : undefined)
 );
 
 export default function FoodDetailsScreen() {
-        useSetPageTitle(TranslationKeys.food_details);
+    useSetPageTitle(TranslationKeys.food_details);
 
-        const { id, foodId } = useLocalSearchParams();
-        const offerId = Array.isArray(id) ? id[0] : id;
-        const initialFoodId = Array.isArray(foodId) ? foodId[0] : foodId;
+    const { id, foodId } = useLocalSearchParams();
+    const offerId = Array.isArray(id) ? id[0] : id;
+    const initialFoodId = Array.isArray(foodId) ? foodId[0] : foodId;
 
-	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const toast = useToast();
-	const dispatch = useDispatch();
-	const menuSheetRef = useRef<BottomSheet>(null);
-	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-	const { user, profile } = useAppSelector((state) => state.authReducer);
-	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const previousFeedback = useAppSelector((state) => selectPreviousFeedback(state, initialFoodId));
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
-	const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-	const { foodAttributeGroups } = useAppSelector((state) => state.foodAttributes);
-	const { foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
-	const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
+    const { theme } = useTheme();
+    const { translate } = useLanguage();
+    const dispatch = useDispatch();
+    const { width: screenWidth } = useWindowDimensions();
+    
+    const menuSheetRef = useRef<BottomSheet>(null);
+    const notificationSheetRef = useRef<BottomSheet>(null);
+    
+    const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
+    const { user, profile } = useAppSelector((state) => state.authReducer);
+    const { primaryColor, appSettings, serverInfo, selectedTheme: mode } = useAppSelector((state) => state.settings);
+    
+    const previousFeedback = useAppSelector((state) => selectPreviousFeedback(state, initialFoodId));
+    
+    // Hooks
+    const profileHelper = useMemo(() => new ProfileHelper(), []);
+    const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
+    const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
+    
+    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId });
+    const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
 
-	const selectedCanteen = useSelectedCanteen();
-	const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
-	const [foodDetails, setFoodDetails] = useState<any>(null);
-        const { openRatingPermissionModal } = useRatingPermissionModal();
+    const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+    const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+    const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
 
-	const [activeTab, setActiveTab] = useState('feedbacks');
-	const [isActive, setIsActive] = useState(false);
-	const [foodAttributes, setFoodAttributes] = useState<any>([]);
-	const [groupedAttributes, setGroupedAttributes] = useState<any>([]);
-	const [foodAttributesLoading, setFoodAttributesLoading] = useState(false);
-	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const notificationSheetRef = useRef<BottomSheet>(null);
+    const selectedCanteen = useSelectedCanteen();
+    const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
+    const { openRatingPermissionModal } = useRatingPermissionModal();
 
-	const openNotificationSheet = () => {
-		notificationSheetRef?.current?.expand();
-	};
+    const [activeTab, setActiveTab] = useState('feedbacks');
+    const [isActive, setIsActive] = useState(false);
 
-	const closeNotificationSheet = () => {
-		notificationSheetRef?.current?.close();
-	};
+    const openNotificationSheet = useCallback(() => {
+        notificationSheetRef?.current?.expand();
+    }, []);
 
-	const openMenuSheet = () => {
-		menuSheetRef?.current?.expand();
-	};
+    const closeNotificationSheet = useCallback(() => {
+        notificationSheetRef?.current?.close();
+    }, []);
 
-	const closeMenuSheet = () => {
-		menuSheetRef?.current?.close();
-	};
+    const openMenuSheet = useCallback(() => {
+        menuSheetRef?.current?.expand();
+    }, []);
 
-	const openFullScreenImage = () => {
-		if (foodDetails?.image_remote_url) {
-			router.push({
-				pathname: '/(app)/image-full-screen',
-				params: { uri: foodDetails.image_remote_url },
-			});
-		} else if (foodDetails?.image) {
-			router.push({
-				pathname: '/(app)/image-full-screen',
-				params: { assetId: String(foodDetails.image) },
-			});
-		} else {
-			router.push({
-				pathname: '/(app)/image-full-screen',
-				params: { uri: defaultImage },
-			});
-		}
-	};
+    const closeMenuSheet = useCallback(() => {
+        menuSheetRef?.current?.close();
+    }, []);
 
-	const filterAttributes = () => {
-		const groupedAttributes = foodAttributeGroups?.map((group: any) => {
-			const attributes = foodAttributes
-				?.filter((attr: any) => attr?.food_attribute?.group === group?.id)
-				?.sort((a: any, b: any) => {
-					const sortA = a?.food_attribute?.sort || 0;
-					const sortB = b?.food_attribute?.sort || 0;
-					return sortA - sortB;
-				});
+    const openFullScreenImage = useCallback(() => {
+        if (foodDetails?.image_remote_url) {
+            router.push({
+                pathname: '/(app)/image-full-screen',
+                params: { uri: foodDetails.image_remote_url },
+            });
+        } else if (foodDetails?.image) {
+            router.push({
+                pathname: '/(app)/image-full-screen',
+                params: { assetId: String(foodDetails.image) },
+            });
+        } else {
+            router.push({
+                pathname: '/(app)/image-full-screen',
+                params: { uri: defaultImage },
+            });
+        }
+    }, [foodDetails, defaultImage]);
 
-			return {
-				...group,
-				attributes: attributes || [],
-			};
-		});
+    const renderContent = useCallback(
+        (foodDetails: DatabaseTypes.Foods) => {
+            switch (activeTab) {
+                case 'feedbacks':
+                    return (
+                        <Feedbacks
+                            foodDetails={foodDetails}
+                            offerId={offerId ? offerId.toString() : undefined}
+                            canteenId={foodOfferCanteenId}
+                        />
+                    );
+                case 'details':
+                    return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
+                case 'labels':
+                    return (
+                        <Labels
+                            foodDetails={foodDetails}
+                            offerId={offerId ? offerId.toString() : undefined}
+                            handleMenuSheet={openMenuSheet}
+                            color={foods_area_color}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        },
+        [activeTab, offerId, foodOfferCanteenId, groupedAttributes, foodAttributesLoading, openMenuSheet, foods_area_color]
+    );
 
-		const generalAttributes: any[] = [];
-		if (foodDetails && foodCategories.length) {
-			const name = getFoodCategoryName(foodCategories, foodDetails.food_category, languageCode);
-			if (name) {
-				generalAttributes.push({
-					id: 'food_category',
-					string_value: name,
-					food_attribute: {
-						status: 'published',
-						translations: [
-							{
-								languages_code: languageCode,
-								name: translate(TranslationKeys.food_category_label),
-							},
-						],
-					},
-				});
-			}
-		}
+    const rateFood = useCallback((rating: number) => {
+        if (!user?.id) {
+            openRatingPermissionModal();
+            return;
+        }
+        const newRating = previousFeedback?.rating === rating ? null : rating;
 
-		if (foodDetails && foodOfferCategories.length && foodDetails.foodoffer_category) {
-			const name = getFoodOfferCategoryName(foodOfferCategories, foodDetails.foodoffer_category, languageCode);
-			if (name) {
-				generalAttributes.push({
-					id: 'foodoffer_category',
-					string_value: name,
-					food_attribute: {
-						status: 'published',
-						translations: [
-							{
-								languages_code: languageCode,
-								name: translate(TranslationKeys.foodoffer_category_label),
-							},
-						],
-					},
-				});
-			}
-		}
+        handleFoodRating({
+            foodId: foodDetails?.id,
+            profileId: profile?.id,
+            userId: user?.id || '',
+            rating: newRating,
+            canteenId: foodOfferCanteenId,
+            previousFeedback,
+            dispatch,
+        });
+    }, [user, previousFeedback, foodDetails, profile, foodOfferCanteenId, dispatch, openRatingPermissionModal]);
 
-		if (generalAttributes.length) {
-			groupedAttributes?.push({
-				id: 'general',
-				translations: [{ languages_code: languageCode, name: translate(TranslationKeys.general) }],
-				attributes: generalAttributes,
-			});
-		}
+    const updateFoodFeedbackNotification = useCallback(async () => {
+        try {
+            const payload = {
+                ...previousFeedback,
+                canteen: foodOfferCanteenId,
+                notify: !previousFeedback?.notify,
+            };
+            const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(foodDetails?.id, profile?.id, payload)) as DatabaseTypes.FoodsFeedbacks;
+            if (updateFeedbackResult?.id) {
+                dispatch({
+                    type: UPDATE_FOOD_FEEDBACK_LOCAL,
+                    payload: updateFeedbackResult,
+                });
+            } else {
+                dispatch({
+                    type: DELETE_FOOD_FEEDBACK_LOCAL,
+                    payload: previousFeedback?.id,
+                });
+            }
+        } catch (e) {
+            console.error('Error creating feedback:', e);
+        }
+    }, [previousFeedback, foodOfferCanteenId, foodDetails, profile, dispatch, foodfeedbackHelper]);
 
-		setGroupedAttributes(groupedAttributes);
-		setFoodAttributesLoading(false);
-	};
+    const getContainerWidth = useMemo(() => {
+        let containerWidth = '100%';
 
-	useEffect(() => {
-		if (foodAttributeGroups && foodAttributes) {
-			filterAttributes();
-		}
-	}, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories]);
+        if (isWeb) {
+            if (screenWidth < 600) {
+                containerWidth = '95%';
+            } else {
+                containerWidth = '80%';
+            }
+        } else {
+            containerWidth = '100%';
+        }
 
-	const renderContent = useCallback(
-                (foodDetails: DatabaseTypes.Foods) => {
-                        switch (activeTab) {
-                                case 'feedbacks':
-                                        return (
-                                                <Feedbacks
-                                                        foodDetails={foodDetails}
-                                                        offerId={offerId ? offerId.toString() : undefined}
-                                                        canteenId={foodOfferCanteenId}
-                                                />
-                                        );
-			case 'details':
-				return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
-                                case 'labels':
-                                        return (
-                                                <Labels
-                                                        foodDetails={foodDetails}
-                                                        offerId={offerId ? offerId.toString() : undefined}
-                                                        handleMenuSheet={openMenuSheet}
-                                                        color={foods_area_color}
-                                                />
-                                        );
-                                default:
-                                        return null;
-                        }
-                },
-                [activeTab, offerId, foodOfferCanteenId]
-        );
+        return containerWidth;
+    }, [screenWidth]);
 
-	const rateFood = (rating: number) => {
-                if (!user?.id) {
-                        openRatingPermissionModal();
-                        return;
+    useFocusEffect(
+        useCallback(() => {
+            setIsActive(true);
+            return () => {
+                setIsActive(false);
+            };
+        }, [])
+    );
+
+    const updateDeviceInfo = useCallback(async () => {
+        try {
+            const deviceInformationsWithoutPushToken = getDeviceInformationWithoutPushToken();
+            const deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
+            const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
+            let deviceInformationsWithPushToken = {
+                ...deviceInformationsWithoutPushToken,
+                pushTokenObj: pushTokenObj,
+                display_group: '',
+            };
+
+            let newDevices = profile?.devices || [];
+            let foundDevice = getCurrentDevice(deviceInformationsId, newDevices);
+            if (!foundDevice) {
+                newDevices.push(deviceInformationsWithPushToken as any);
+            } else {
+                const deviceInformationsForUpdate = {
+                    ...foundDevice,
+                    ...deviceInformationsWithPushToken,
+                }; // we want to keep id or createdAt
+                const index = newDevices.indexOf(foundDevice);
+                newDevices = [...newDevices];
+                newDevices[index] = deviceInformationsForUpdate;
+            }
+            const result = (await profileHelper.updateProfile({
+                ...profile,
+                devices: newDevices,
+            })) as DatabaseTypes.Profiles;
+            if (result) {
+                dispatch({
+                    type: UPDATE_PROFILE,
+                    payload: result,
+                });
+            }
+        } catch (e) {
+            console.error('Error updating device information:', e);
+        }
+    }, [profile, dispatch, profileHelper]);
+
+    useEffect(() => {
+        if (profile?.id) {
+            updateDeviceInfo();
+        }
+    }, [profile?.id]); // Added dependency to run only when profile.id changes/exists.
+
+    const updateNotification = useCallback(async () => {
+        if (!user?.id) {
+            openRatingPermissionModal();
+            return;
+        }
+        if (isSmartPhone()) {
+            const result = await NotificationHelper.getDeviceNotificationPermission();
+            if (isAndroid()) {
+                console.log('Result.granted', result?.granted);
+                if (result?.granted) {
+                    updateFoodFeedbackNotification();
+                } else {
+                    if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
+                        requestDeviceNotificationPermission();
+                    }
                 }
-		const newRating = previousFeedback?.rating === rating ? null : rating;
+            }
+            if (isIOS()) {
+                const result = await NotificationHelper.requestDeviceNotificationPermission();
+                console.log('Result.grantedios', result);
+                if (result?.granted) {
+                    updateFoodFeedbackNotification();
+                } else {
+                    if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
+                        requestDeviceNotificationPermission();
+                    }
+                }
+            }
+        } else {
+            openNotificationSheet();
+        }
+    }, [user, isSmartPhone, isAndroid, isIOS, pushTokenObj, requestDeviceNotificationPermission, updateFoodFeedbackNotification, openNotificationSheet, openRatingPermissionModal]);
 
-		handleFoodRating({
-			foodId: foodDetails?.id,
-			profileId: profile?.id,
-			userId: user?.id || '',
-			rating: newRating,
-			canteenId: foodOfferCanteenId,
-			previousFeedback,
-			dispatch,
-		});
-	};
+    return (
+        <SafeAreaView
+            style={{
+                flex: 1,
+                backgroundColor: theme.screen.background,
+            }}
+        >
+            <ScrollView
+                style={{
+                    backgroundColor: theme.screen.background,
+                    padding: isWeb ? 20 : 10,
+                }}
+                contentContainerStyle={{
+                    ...styles.contentContainer,
+                    width: '100%',
+                    backgroundColor: theme.screen.background,
+                }}
+            >
+                <View
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        alignItems: 'center',
+                    }}
+                >
+                    <FoodHeader
+                        foodDetails={foodDetails}
+                        screenWidth={screenWidth}
+                        openFullScreenImage={openFullScreenImage}
+                        rateFood={rateFood}
+                        previousFeedback={previousFeedback}
+                        appSettings={appSettings}
+                        foodsAreaColor={foods_area_color}
+                        theme={theme}
+                        translate={translate}
+                        defaultImage={defaultImage}
+                    />
+                    
+                    <NotificationSection
+                        theme={theme}
+                        containerWidth={getContainerWidth}
+                        translate={translate}
+                        previousFeedback={previousFeedback}
+                        updateNotification={updateNotification}
+                        foodsAreaColor={foods_area_color}
+                        foodDetails={foodDetails}
+                    />
 
-	const updateFoodFeedbackNotification = async () => {
-		try {
-			const payload = {
-				...previousFeedback,
-				canteen: foodOfferCanteenId,
-				notify: !previousFeedback?.notify,
-			};
-			const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(foodDetails?.id, profile?.id, payload)) as DatabaseTypes.FoodsFeedbacks;
-			if (updateFeedbackResult?.id) {
-				dispatch({
-					type: UPDATE_FOOD_FEEDBACK_LOCAL,
-					payload: updateFeedbackResult,
-				});
-			} else {
-				dispatch({
-					type: DELETE_FOOD_FEEDBACK_LOCAL,
-					payload: previousFeedback?.id,
-				});
-			}
-		} catch (e) {
-			console.error('Error creating feedback:', e);
-		}
-	};
+                    <TabController
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        theme={theme}
+                        contrastColor={contrastColor}
+                        translate={translate}
+                        containerWidth={getContainerWidth}
+                        foodsAreaColor={foods_area_color}
+                    />
 
-        const getFoodDetails = async () => {
-                try {
-                        if (offerId) {
-                                const foodData = await fetchFoodOffersDetailsById(offerId.toString());
-                                if (foodData && foodData.data) {
-                                        const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
-
-					const translation = food?.translations?.find((val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
-					setFoodDetails({
-						...food,
-						foodoffer_category,
-						name: translation ? translation.name : null,
-					});
-					if (attribute_values) {
-						setFoodAttributesLoading(true);
-						setFoodAttributes(attribute_values);
-					}
-				} else {
-					console.log('No food data found');
-				}
-			} else if (initialFoodId) {
-				const foodData = await fetchFoodDetailsById(initialFoodId.toString());
-				if (foodData && foodData.data) {
-					const food = foodData.data;
-					const translation = food?.translations?.find((val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
-					setFoodDetails({
-						...food,
-						name: translation ? translation.name : food?.name ?? null,
-					});
-
-					const attributes = food?.attribute_values || food?.foods_attributes_values;
-					if (attributes) {
-						setFoodAttributesLoading(true);
-						setFoodAttributes(attributes);
-					}
-				} else {
-					console.log('No food data found');
-				}
-			}
-		} catch (e: any) {
-			console.error('Error fetching food details: ', e);
-			toast(e.message || translate(TranslationKeys.somethingWentWrong), 'error');
-		}
-	};
-
-        useEffect(() => {
-                getFoodDetails();
-        }, [offerId, initialFoodId]);
-
-	const getContainerWidth = () => {
-		let containerWidth = '100%';
-
-		if (isWeb) {
-			if (screenWidth < 600) {
-				containerWidth = '95%';
-			} else {
-				containerWidth = '80%';
-			}
-		} else {
-			containerWidth = '100%';
-		}
-
-		return containerWidth;
-	};
-
-	useEffect(() => {
-		const handleResize = () => {
-			setScreenWidth(Dimensions.get('window').width);
-		};
-
-		const subscription = Dimensions.addEventListener('change', handleResize);
-
-		return () => subscription?.remove();
-	}, []);
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
-
-	const updateDeviceInfo = async () => {
-		try {
-			const deviceInformationsWithoutPushToken = getDeviceInformationWithoutPushToken();
-			const deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
-			const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
-			let deviceInformationsWithPushToken = {
-				...deviceInformationsWithoutPushToken,
-				pushTokenObj: pushTokenObj,
-				display_group: '',
-			};
-
-			let newDevices = profile?.devices || [];
-			let foundDevice = getCurrentDevice(deviceInformationsId, newDevices);
-			if (!foundDevice) {
-				newDevices.push(deviceInformationsWithPushToken as any);
-			} else {
-				const deviceInformationsForUpdate = {
-					...foundDevice,
-					...deviceInformationsWithPushToken,
-				}; // we want to keep id or createdAt
-				const index = newDevices.indexOf(foundDevice);
-				newDevices = [...newDevices];
-				newDevices[index] = deviceInformationsForUpdate;
-			}
-			const result = (await profileHelper.updateProfile({
-				...profile,
-				devices: newDevices,
-			})) as DatabaseTypes.Profiles;
-			if (result) {
-				dispatch({
-					type: UPDATE_PROFILE,
-					payload: result,
-				});
-			}
-		} catch (e) {
-			console.error('Error updating device information:', e);
-		}
-	};
-
-	useEffect(() => {
-		if (profile?.id) {
-			updateDeviceInfo();
-		}
-	}, []);
-
-	const updateNotification = async () => {
-		if (!user?.id) {
-			openRatingPermissionModal();
-			return;
-		}
-		if (isSmartPhone()) {
-			const result = await NotificationHelper.getDeviceNotificationPermission();
-			if (isAndroid()) {
-				console.log('Result.granted', result?.granted);
-				if (result?.granted) {
-					updateFoodFeedbackNotification();
-				} else {
-					if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-						requestDeviceNotificationPermission();
-					}
-				}
-			}
-			if (isIOS()) {
-				const result = await NotificationHelper.requestDeviceNotificationPermission();
-				console.log('Result.grantedios', result);
-				if (result?.granted) {
-					updateFoodFeedbackNotification();
-				} else {
-					if (NotificationHelper.isDeviceNotificationPermissionUndetermined(pushTokenObj)) {
-						requestDeviceNotificationPermission();
-					}
-				}
-			}
-		} else {
-			openNotificationSheet();
-		}
-	};
-
-	const themeStyles = {
-		backgroundColor: foods_area_color,
-		borderColor: foods_area_color,
-	};
-
-	return (
-		<SafeAreaView
-			style={{
-				flex: 1,
-				backgroundColor: theme.screen.background,
-			}}
-		>
-			<ScrollView
-				style={{
-					backgroundColor: theme.screen.background,
-					padding: isWeb ? 20 : 10,
-				}}
-				contentContainerStyle={{
-					...styles.contentContainer,
-					width: '100%',
-					backgroundColor: theme.screen.background,
-				}}
-			>
-				<View
-					style={{
-						width: '100%',
-						height: '100%',
-						alignItems: 'center',
-					}}
-				>
-					{isWeb ? (
-						<>
-							<View
-								style={{
-									...styles.featuredContainer,
-									width: screenWidth > 1000 ? '80%' : '100%',
-									flexDirection: screenWidth > 1000 ? 'row' : 'column',
-								}}
-							>
-								<View
-									style={{
-										...styles.foodDetail,
-										width: screenWidth > 1000 ? '50%' : '100%',
-										alignItems: screenWidth > 1000 ? 'flex-start' : 'center',
-									}}
-								>
-									<View
-										style={{
-											...styles.imageContainer,
-											width: screenWidth > 1000 ? 400 : Dimensions.get('window').width - 40,
-											height: screenWidth > 1000 ? 400 : Dimensions.get('window').width - 40,
-										}}
-									>
-										<TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.featuredImage}>
-											<Image
-												style={styles.featuredImage}
-												source={
-													foodDetails?.image_remote_url || foodDetails?.image
-														? {
-																uri: foodDetails?.image_remote_url || getImageUrl(foodDetails?.image),
-															}
-														: { uri: defaultImage }
-												}
-											/>
-										</TouchableOpacity>
-									</View>
-								</View>
-								<View
-									style={{
-										...styles.detailsContainer,
-										width: screenWidth > 1000 ? '50%' : '100%',
-										justifyContent: screenWidth > 1000 ? 'space-between' : 'flex-start',
-										height: screenWidth > 1000 ? 400 : 'auto',
-										paddingHorizontal: screenWidth > 800 ? 20 : 0,
-									}}
-								>
-									<View style={{ width: '100%', alignItems: 'flex-end' }}>
-										{appSettings?.foods_ratings_average_display && (
-											<View
-												style={{
-													...styles.ratingView,
-													borderColor: theme.screen.text,
-												}}
-											>
-												<AntDesign name="star" size={22} color={foods_area_color} />
-												<Text
-													style={{
-														...styles.totalRating,
-														color: theme.screen.text,
-													}}
-												>
-													{(foodDetails?.rating_average || foodDetails?.rating_average_legacy) && numToOneDecimal(foodDetails?.rating_average || foodDetails?.rating_average_legacy)}
-												</Text>
-											</View>
-										)}
-									</View>
-									<View
-										style={{
-											...styles.ratingContainer,
-											backgroundColor: theme.screen.iconBg,
-											marginTop: screenWidth > 1000 ? 0 : 20,
-										}}
-									>
-										<Text style={{ ...styles.rateUs, color: theme.screen.text }}>{translate(TranslationKeys.RATE_FOOD)}</Text>
-										<View style={styles.stars}>
-											{Array.from({ length: 5 }).map((_, index) => (
-												<Tooltip
-													placement="top"
-													trigger={triggerProps => (
-														<TouchableOpacity key={index} {...triggerProps} onPress={() => rateFood(index + 1)} style={{ padding: 5 }}>
-															{/* <AntDesign name={previousFeedback?.rating > index ? 'star' : 'staro'} size={22} color={foods_area_color} /> */}
-															<MaterialIcons name={previousFeedback?.rating > index ? 'star' : 'star-border'} size={22} color={foods_area_color} />
-														</TouchableOpacity>
-													)}
-												>
-													<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-														<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-															{`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
-														</TooltipText>
-													</TooltipContent>
-												</Tooltip>
-											))}
-										</View>
-									</View>
-								</View>
-							</View>
-							<View
-								style={{
-									...styles.featuredContainer,
-									width: screenWidth > 1000 ? '80%' : '100%',
-								}}
-							>
-								<Text
-									style={{
-										...styles.foodHeading,
-										width: '100%',
-										color: theme.screen.text,
-										textAlign: screenWidth > 1000 ? 'left' : 'center',
-										flexDirection: 'column',
-										fontSize: screenWidth > 800 ? 24 : 20,
-									}}
-								>
-									{foodDetails?.name}
-								</Text>
-							</View>
-						</>
-					) : (
-						<View style={styles.mobileImageContainer}>
-							<TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.mobileFeaturedImage}>
-								<Image
-									source={
-										foodDetails?.image_remote_url || foodDetails?.image
-											? {
-													uri: foodDetails?.image_remote_url || getImageUrl(foodDetails?.image),
-												}
-											: { uri: defaultImage }
-									}
-									style={styles.mobileFeaturedImage}
-								/>
-							</TouchableOpacity>
-							<View style={styles.overlay} pointerEvents="box-none">
-								<View style={styles.mobileDetailsHeader}>
-									<View style={styles.row}>
-										<View />
-										{appSettings?.foods_ratings_average_display && (
-											<View
-												style={{
-													...styles.mobileRatingView,
-													borderColor: theme.screen.text,
-												}}
-											>
-												<AntDesign name="star" size={18} color={foods_area_color} />
-												<Text
-													style={{
-														...styles.mobileTotalRating,
-														color: theme.screen.text,
-													}}
-												>
-													{(foodDetails?.rating_average || foodDetails?.rating_average_legacy) && numToOneDecimal(foodDetails?.rating_average || foodDetails?.rating_average_legacy)}
-												</Text>
-											</View>
-										)}
-									</View>
-								</View>
-								<View style={styles.mobileDetailsFooter}></View>
-							</View>
-							<Text
-								style={{
-									...styles.mobileFoodHeading,
-									color: theme.screen.text,
-								}}
-							>
-								{foodDetails?.name}
-							</Text>
-							<View
-								style={{
-									...styles.mobileRatingContainer,
-									backgroundColor: theme.screen.iconBg,
-								}}
-							>
-								<Text
-									style={{
-										...styles.mobileRateUs,
-										color: theme.screen.text,
-									}}
-								>
-									{translate(TranslationKeys.RATE_FOOD)}
-								</Text>
-								<View style={styles.mobileStars}>
-									{Array.from({ length: 5 }).map((_, index) => (
-										<TouchableOpacity key={index} onPress={() => rateFood(index + 1)}>
-											{/* <AntDesign name={previousFeedback?.rating > index ? 'star' : 'staro'} size={20} color={foods_area_color} /> */}
-											<MaterialIcons name={previousFeedback?.rating > index ? 'star' : 'star-border'} size={20} color={foods_area_color} />
-										</TouchableOpacity>
-									))}
-								</View>
-							</View>
-						</View>
-					)}
-					<View
-						style={{
-							...styles.notificationContainer,
-							backgroundColor: theme.drawerBg,
-							width: (getContainerWidth() || '100%') as any,
-						}}
-					>
-						<Text
-							style={{
-								...styles.notificationBody,
-								color: theme.screen.text,
-								maxWidth: '80%',
-								fontSize: isWeb ? 18 : 12,
-							}}
-						>
-							{translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
-						</Text>
-						{previousFeedback?.notify ? (
-							<Tooltip
-								placement="top"
-								trigger={triggerProps => (
-									<TouchableOpacity
-										{...triggerProps}
-										style={{
-											...styles.bellIconAtiveContainer,
-											backgroundColor: foods_area_color,
-											padding: isWeb ? 12 : 8,
-										}}
-										onPress={updateNotification}
-									>
-										<MaterialIcons name="notifications-active" size={32} color={theme.screen.text} />
-									</TouchableOpacity>
-								)}
-							>
-								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-										{`${translate(TranslationKeys.notification)}: ${translate(TranslationKeys.active)}: ${excerpt(foodDetails?.name, 90)}`}
-									</TooltipText>
-								</TooltipContent>
-							</Tooltip>
-						) : (
-							<Tooltip
-								placement="top"
-								trigger={triggerProps => (
-									<TouchableOpacity
-										style={{
-											...styles.bellIconContainer,
-											borderColor: foods_area_color,
-											padding: isWeb ? 12 : 8,
-										}}
-										{...triggerProps}
-										onPress={updateNotification}
-									>
-										<MaterialIcons name="notifications" size={32} color={theme.screen.text} />
-									</TouchableOpacity>
-								)}
-							>
-								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-										{`${translate(TranslationKeys.notification)}: ${translate(TranslationKeys.inactive)}: ${excerpt(foodDetails?.name, 90)}`}
-									</TooltipText>
-								</TooltipContent>
-							</Tooltip>
-						)}
-					</View>
-					<View
-						style={{
-							...styles.tabViewContainer,
-							width: getContainerWidth() as any,
-						}}
-					>
-						<View
-							style={{
-								...styles.tabs,
-								width: isWeb ? '95%' : '100%',
-								gap: isWeb ? 20 : 0,
-							}}
-						>
-							<Tooltip
-								placement="top"
-								trigger={triggerProps => (
-									<TouchableOpacity {...triggerProps} style={[styles.tab, activeTab === 'feedbacks' ? themeStyles : { backgroundColor: theme.screen.iconBg }]} onPress={() => setActiveTab('feedbacks')}>
-										<MaterialCommunityIcons name="chat" size={26} color={activeTab === 'feedbacks' ? contrastColor : theme.screen.icon} />
-									</TouchableOpacity>
-								)}
-							>
-								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-										{`${translate(TranslationKeys.food_feedbacks)}`}
-									</TooltipText>
-								</TooltipContent>
-							</Tooltip>
-							<Tooltip
-								placement="top"
-								trigger={triggerProps => (
-									<TouchableOpacity style={[styles.tab, activeTab === 'details' ? themeStyles : { backgroundColor: theme.screen.iconBg }]} {...triggerProps} onPress={() => setActiveTab('details')}>
-										<MaterialCommunityIcons name="nutrition" size={26} color={activeTab === 'details' ? contrastColor : theme.screen.icon} />
-									</TouchableOpacity>
-								)}
-							>
-								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-										{`${translate(TranslationKeys.food_data)}`}
-									</TooltipText>
-								</TooltipContent>
-							</Tooltip>
-
-							<Tooltip
-								placement="top"
-								trigger={triggerProps => (
-									<TouchableOpacity style={[styles.tab, activeTab === 'labels' ? themeStyles : { backgroundColor: theme.screen.iconBg }]} {...triggerProps} onPress={() => setActiveTab('labels')}>
-										<MaterialCommunityIcons name="medical-bag" size={26} color={activeTab === 'labels' ? contrastColor : theme.screen.icon} />
-									</TouchableOpacity>
-								)}
-							>
-								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-										{`${translate(TranslationKeys.markings)}`}
-									</TooltipText>
-								</TooltipContent>
-							</Tooltip>
-						</View>
-						<View
-							style={{
-								...styles.pagerView,
-								width: isWeb ? '95%' : '100%',
-								paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
-							}}
-						>
-                                        {foodDetails?.id && renderContent(foodDetails)}
-                                </View>
-                        </View>
-                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
+                    <View
+                        style={{
+                            ...styles.pagerView,
+                            width: isWeb ? '95%' : '100%',
+                            paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
+                        }}
+                    >
+                        {foodDetails?.id && renderContent(foodDetails)}
+                    </View>
                 </View>
-        </ScrollView>
-			{isActive && (
-				<BaseBottomSheet
-					ref={notificationSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={closeNotificationSheet}
-				>
-					<NotificationSheet closeSheet={closeNotificationSheet} previousFeedback={previousFeedback} foodDetails={foodDetails} />
-				</BaseBottomSheet>
-			)}
-			{/* Menu sheet */}
-
-			{isActive && <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />}
-		</SafeAreaView>
-	);
+                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
+            </ScrollView>
+            
+            {isActive && (
+                <BaseBottomSheet
+                    ref={notificationSheetRef}
+                    index={-1}
+                    backgroundStyle={{
+                        ...styles.sheetBackground,
+                        backgroundColor: theme.sheet.sheetBg,
+                    }}
+                    enablePanDownToClose
+                    handleComponent={null}
+                    onClose={closeNotificationSheet}
+                >
+                    <NotificationSheet closeSheet={closeNotificationSheet} previousFeedback={previousFeedback} foodDetails={foodDetails} />
+                </BaseBottomSheet>
+            )}
+            
+            {isActive && <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />}
+        </SafeAreaView>
+    );
 }

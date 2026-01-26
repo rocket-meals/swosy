@@ -5,7 +5,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('app_feedbacks', client || ServerAPI.getClient());
+		super('app_feedbacks', client);
 	}
 
 	// Fetch all app settings with optional query overrides

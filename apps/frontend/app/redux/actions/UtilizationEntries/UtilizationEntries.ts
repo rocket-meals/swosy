@@ -5,7 +5,7 @@ import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 export class UtilizationEntryHelper extends CollectionHelper<DatabaseTypes.UtilizationsEntries> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('utilizations_entries', client || ServerAPI.getClient());
+		super('utilizations_entries', client);
 	}
 
 	// Fetch utilization entries with query overrides

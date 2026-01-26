@@ -5,7 +5,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 export class NewsHelper extends CollectionHelper<DatabaseTypes.News> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('news', client || ServerAPI.getClient());
+		super('news', client);
 	}
 
 	// Fetch all news with optional query overrides

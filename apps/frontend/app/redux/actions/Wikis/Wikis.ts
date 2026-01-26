@@ -5,7 +5,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 export class WikisHelper extends CollectionHelper<DatabaseTypes.Wikis> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('wikis', client || ServerAPI.getClient());
+		super('wikis', client);
 	}
 
 	// Fetch all wikis with optional query overrides

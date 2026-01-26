@@ -4,7 +4,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class FormsSubmissionsHelper extends CollectionHelper<DatabaseTypes.FormSubmissions> {
 	constructor(client?: any) {
-		super('form_submissions', client || ServerAPI.getClient());
+		super('form_submissions', client);
 	}
 
 	async fetchFormSubmissions(queryOverride: any = {}) {

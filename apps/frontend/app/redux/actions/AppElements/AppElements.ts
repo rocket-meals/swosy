@@ -4,7 +4,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class AppElementsHelper extends CollectionHelper<DatabaseTypes.AppElements> {
 	constructor(client?: any) {
-		super('app_elements', client || ServerAPI.getClient());
+		super('app_elements', client);
 	}
 
 	async fetchAllAppElements(queryOverride?: Query<DatabaseTypes.AppElements>) {

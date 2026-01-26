@@ -4,7 +4,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class FormCategoriesHelper extends CollectionHelper<DatabaseTypes.FormCategories> {
 	constructor(client?: any) {
-		super('form_categories', client || ServerAPI.getClient());
+		super('form_categories', client);
 	}
 
 	async fetchFormCategories(queryOverride?: Query<DatabaseTypes.FormCategories>) {

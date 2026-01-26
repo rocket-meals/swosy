@@ -5,7 +5,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeedbacks> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('foods_feedbacks', client || ServerAPI.getClient());
+		super('foods_feedbacks', client);
 	}
 
 	async fetchAllFoodFeedbacks(queryOverride?: Query<DatabaseTypes.FoodsFeedbacks>) {

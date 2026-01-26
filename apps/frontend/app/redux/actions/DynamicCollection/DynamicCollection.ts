@@ -3,7 +3,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class DynamicCollectionHelper<T extends Record<string, unknown>> extends CollectionHelper<T> {
 	constructor(collection: string, client?: any) {
-		super(collection, client || ServerAPI.getClient());
+		super(collection, client);
 	}
 
 	async fectAllCollection(queryOverride?: Query<T>) {

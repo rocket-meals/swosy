@@ -116,8 +116,6 @@ enum ContrastThreshold {
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
 const useMyContrastColorByColorMode = (trueBg: string | undefined | null, isDarkMode: boolean, contrastThreshold: ContrastThreshold) => {
-	const start = performance.now();
-
 	let result = useMemo(() => {
 		const trueDarkText = '#000000';
 		const trueLightText = '#FFFFFF';
@@ -136,13 +134,6 @@ const useMyContrastColorByColorMode = (trueBg: string | undefined | null, isDark
 		// otherwise return the text color with the highest contrast
 		return darkTextContrast > lightTextContrast ? trueDarkText : trueLightText;
 	}, [trueBg, isDarkMode, contrastThreshold]); // Dependencies
-
-	const end = performance.now();
-	let duration = end - start;
-
-	if (duration > 5) {
-		console.warn('useMyContrastColorByColorMode: trueBg: ', trueBg, 'duration: ', duration, 'ms');
-	}
 
 	return result;
 };

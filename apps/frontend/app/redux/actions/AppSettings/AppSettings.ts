@@ -5,7 +5,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 export class AppSettingsHelper extends CollectionHelper<DatabaseTypes.AppSettings> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('app_settings', client || ServerAPI.getClient());
+		super('app_settings', client);
 	}
 
 	// Fetch all app settings with optional query overrides

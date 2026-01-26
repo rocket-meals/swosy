@@ -27,12 +27,16 @@ export type AggregateQuery<CollectionScheme> = {
 };
 
 export class CollectionHelper<CollectionScheme> {
-	private collection: string;
-	private client: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
+private collection: string;
+	private _client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
 
 	constructor(collection: string, client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) {
 		this.collection = collection;
-		this.client = client ?? ServerAPI.getClient();
+		this._client = client;
+	}
+
+	private get client(): DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes> {
+		return this._client ?? (ServerAPI.getClient() as any);
 	}
 
 	/**
