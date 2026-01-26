@@ -6,7 +6,7 @@ import { isWeb } from '@/constants/Constants';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { useTheme } from '@/hooks/useTheme';
 
-export const useFoodCard = (borderWidth: number = 0) => {
+export const useFoodCard = (borderWidth: number = 0, borderColor: string = '#FF000095') => {
 	const { theme } = useTheme();
 	const { amountColumnsForcard } = useSelector((state: RootState) => state.settings);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -27,7 +27,7 @@ export const useFoodCard = (borderWidth: number = 0) => {
 		width: dimension,
 		backgroundColor: theme.card.background,
 		borderWidth,
-		borderColor: '#FF000095',
+		borderColor,
 	};
 
 	const imageContainerStyle: ViewStyle = {
