@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { runAfterInteractions } from '@/helper/interactionHelper';
 import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -8,12 +9,23 @@ import { TranslationKeys } from '@/locales/keys';
 interface UseFoodDetailsProps {
     offerId?: string | string[];
     initialFoodId?: string | string[];
+    initialFoodOffer?: any;
 }
 
-export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) => {
+export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: UseFoodDetailsProps) => {
     const { language: languageCode, translate } = useLanguage();
     const toast = useToast();
-    const [foodDetails, setFoodDetails] = useState<any>(null);
+    const [foodDetails, setFoodDetails] = useState<any>(() => {
+        if (initialFoodOffer?.food) {
+            return {
+                ...initialFoodOffer.food,
+                foodoffer_category: initialFoodOffer.foodoffer_category,
+                // Apply translation logic if possible, or default to name
+                name: initialFoodOffer.food.name // We will refine this in useEffect
+            };
+        }
+        return null;
+    });
     const [foodAttributes, setFoodAttributes] = useState<any>([]);
     const [loading, setLoading] = useState(false);
 
@@ -69,7 +81,9 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
     }, [offerId, initialFoodId, languageCode, toast, translate]);
 
     useEffect(() => {
-        getFoodDetails();
+        runAfterInteractions(() => {
+            getFoodDetails();
+        });
     }, [getFoodDetails]);
 
     return { foodDetails, foodAttributes, loading };

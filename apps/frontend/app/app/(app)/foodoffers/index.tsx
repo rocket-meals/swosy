@@ -49,6 +49,8 @@ import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirect
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import FoodOffersList from './components/FoodOffersList';
+import ListEmptyComponent from './components/ListEmptyComponent';
+import ListFooterComponent from './components/ListFooterComponent';
 import { useFoodOffersData, useLayoutConfig, useSheetHandling, useNotifications, useAnimationLogic, useDateNavigation, DayItem } from './hooks';
 
 export const SHEET_COMPONENTS = {
@@ -75,10 +77,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const amountColumnsForcard = useAppSelector((state) => state.settings.amountColumnsForcard);
 	const debugMode = useAppSelector((state) => state.settings.debugMode);
 
-	const ownFoodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks);
 	const selectedDate = useAppSelector((state) => state.food.selectedDate);
-	const foodCategories = useAppSelector((state) => state.food.foodCategories);
-	const foodOfferCategories = useAppSelector((state) => state.food.foodOfferCategories);
 	const foodOffersInfoItems = useAppSelector((state) => state.food.foodOffersInfoItems);
 
 	const profile = useAppSelector((state) => state.authReducer.profile);
@@ -115,10 +114,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		selectedDate,
 		sortBy,
 		languageCode,
-		ownFoodFeedbacks,
-		profile,
-		foodCategories,
-		foodOfferCategories
+		profile
 	);
 
 	const {
@@ -225,36 +221,20 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	);
 	const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
-	const ListFooterComponent = useMemo(() => {
+	const ListFooterComponentMemo = useMemo(() => {
 		return (
-			<>
-				{afterElement && <View style={styles.elementContainer}>{afterElement && <CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />}</View>}
-				{!feedbackLabelsLoading && (canteenFeedbackLabelsExist as any) > 0 && (
-					<View style={styles.feebackContainer}>
-						<View>
-							<Text style={{ ...styles.foodLabels, color: theme.screen.text }}>{translate(TranslationKeys.feedback_labels)}</Text>
-						</View>
-						{memoizedCanteenFeedbackLabels}
-					</View>
-				)}
-				{debugMode && (
-					<View
-						style={[
-							styles.debugInfoContainer,
-							{ borderColor: theme.screen.icon, backgroundColor: theme.screen.background },
-						]}
-					>
-						<Text style={{ ...styles.debugTitle, color: theme.screen.text }}>
-							{translate(TranslationKeys.cached_foodoffers_days)}
-						</Text>
-						<Text style={{ ...styles.debugText, color: theme.screen.text }}>
-							{cachedFoodOfferDates.map(date => `${getDayLabel(date)} (${date})`).join(', ') || translate(TranslationKeys.cached_foodoffers_days_empty)}
-						</Text>
-					</View>
-				)}
-				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
-				<View style={{ height: 40 }} />
-			</>
+			<ListFooterComponent
+				afterElement={afterElement}
+				feedbackLabelsLoading={feedbackLabelsLoading}
+				canteenFeedbackLabelsExist={canteenFeedbackLabelsExist as boolean}
+				memoizedCanteenFeedbackLabels={memoizedCanteenFeedbackLabels}
+				foods_area_color={foods_area_color}
+				theme={theme}
+				translate={translate}
+				debugMode={debugMode}
+				cachedFoodOfferDates={cachedFoodOfferDates}
+				getDayLabel={getDayLabel}
+			/>
 		);
 	}, [
 		afterElement,
@@ -262,47 +242,33 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		canteenFeedbackLabelsExist,
 		memoizedCanteenFeedbackLabels,
 		foods_area_color,
-		theme.screen.text,
+		theme,
 		translate,
 		debugMode,
-		theme.screen.icon,
 		cachedFoodOfferDates,
 		getDayLabel
 	]);
 
 	const renderLottie = useMemo(() => {
 		if (!animationJson) return null;
-		return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
+		return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={styles.lottieView} autoPlay={autoPlay || false} loop={false} />;
 	}, [animationJson, autoPlay]);
 
-	const ListEmptyComponent = useMemo(() => {
-		if (loading) {
-			return (
-				<View style={{ width: '100%', height: 400, justifyContent: 'center' }}>
-					<ActivityIndicator size={'large'} color={theme.screen.icon} />
-				</View>
-			);
-		}
+	const ListEmptyComponentMemo = useMemo(() => {
 		return (
-			<View style={styles.noFoodContainer}>
-				<Text style={{ ...styles.noFoodOffer, color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
-				<View style={styles.animationContainer}>{renderLottie}</View>
-				{nextAvailableDate && (
-					<TouchableOpacity
-						onPress={() => dispatch({ type: SET_SELECTED_DATE, payload: nextAvailableDate })}
-						activeOpacity={0.7}
-						style={[styles.jumpButton, { backgroundColor: foods_area_color }]}
-					>
-						<Text style={[styles.jumpButtonText, { color: contrastColor }]}>
-							{`${translate(TranslationKeys.show_offers_on)} ${translate(
-								TranslationKeys[getWeekdayKey(nextAvailableDate) as keyof typeof TranslationKeys]
-							)}`}
-						</Text>
-					</TouchableOpacity>
-				)}
-			</View>
+			<ListEmptyComponent
+				loading={loading}
+				theme={theme}
+				translate={translate}
+				renderLottie={renderLottie}
+				nextAvailableDate={nextAvailableDate}
+				dispatch={dispatch}
+				foods_area_color={foods_area_color}
+				contrastColor={contrastColor}
+				getWeekdayKey={getWeekdayKey}
+			/>
 		);
-	}, [loading, theme.screen.icon, theme.screen.text, renderLottie, nextAvailableDate, foods_area_color, contrastColor, translate, getWeekdayKey, dispatch]);
+	}, [loading, theme, translate, renderLottie, nextAvailableDate, foods_area_color, contrastColor, getWeekdayKey, dispatch]);
 
 	const openManagementSheet = useCallback(
 		(food: DatabaseTypes.Foods) => {
@@ -330,28 +296,28 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
 
 	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
-			<View style={{ flex: 1 }}>
-				<FoodOffersHeader
-					drawerPosition={drawerPosition as 'left' | 'right'}
-					hasUnreadChats={hasUnreadChats}
-					selectedCanteen={selectedCanteen}
-					selectedDate={selectedDate}
-					profile={profile}
-					appSettings={appSettings}
-					openSheet={openSheet}
-					handleDateChange={handleDateChange}
-					openUtilizationModal={openUtilizationModal}
-					getDayLabel={getDayLabel}
-				/>
+		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
+			<FoodOffersHeader
+				drawerPosition={drawerPosition as 'left' | 'right'}
+				hasUnreadChats={hasUnreadChats}
+				selectedCanteen={selectedCanteen}
+				selectedDate={selectedDate}
+				profile={profile}
+				appSettings={appSettings}
+				openSheet={openSheet}
+				handleDateChange={handleDateChange}
+				openUtilizationModal={openUtilizationModal}
+				getDayLabel={getDayLabel}
+			/>
+			<View style={styles.contentWrapper}>
 				<FoodOffersList
 					dayItems={dayItems}
 					numColumns={numColumns}
 					cardWidth={cardWidth || 0}
 					refreshing={refreshing}
 					onRefresh={onRefresh}
-					ListFooterComponent={ListFooterComponent}
-					ListEmptyComponent={ListEmptyComponent}
+					ListFooterComponent={ListFooterComponentMemo}
+					ListEmptyComponent={ListEmptyComponentMemo}
 					setListWidth={setListWidth}
 					listWidth={listWidth}
 					selectedCanteen={selectedCanteen}

@@ -1,5 +1,5 @@
 import React, { useCallback, memo } from 'react';
-import { View, RefreshControl } from 'react-native';
+import { View, RefreshControl, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { DatabaseTypes } from 'repo-depkit-common';
 import FoodOfferListItem from './FoodOfferListItem';
@@ -27,6 +27,21 @@ interface FoodOffersListProps {
     handleEatingHabitsSheet: (sheet: any) => void;
     getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: string };
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    listContainer: {
+        width: '100%',
+        // maxWidth: 1420,
+        flex: 1,
+    },
+    flashListContent: {
+        marginTop: 20,
+    },
+});
 
 const FoodOffersList: React.FC<FoodOffersListProps> = ({
     dayItems,
@@ -67,13 +82,9 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     }, []);
 
     return (
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={styles.container}>
             <View
-                style={{
-                    width: '100%',
-                    maxWidth: 1420,
-                    flex: 1,
-                }}
+                style={styles.listContainer}
                 onLayout={e => {
                     const w = e.nativeEvent.layout.width;
                     if (w && w !== listWidth) {
@@ -84,14 +95,13 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 <FlashList
                     key={numColumns} // Force re-render when numColumns changes
                     data={dayItems}
+                    extraData={cardWidth}
                     renderItem={renderItem}
                     keyExtractor={keyExtractor}
                     numColumns={numColumns}
                     // @ts-ignore: estimatedItemSize is missing in the type definition but required for performance
                     estimatedItemSize={280}
-                    contentContainerStyle={{
-                        marginTop: 20,
-                    }}
+                    contentContainerStyle={styles.flashListContent}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }
@@ -104,4 +114,29 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     );
 };
 
-export default memo(FoodOffersList);
+export default memo(FoodOffersList, (prev, next) => {
+    const isSame = 
+        prev.dayItems === next.dayItems &&
+        prev.numColumns === next.numColumns &&
+        prev.cardWidth === next.cardWidth &&
+        prev.refreshing === next.refreshing &&
+        prev.listWidth === next.listWidth &&
+        prev.selectedCanteen === next.selectedCanteen &&
+        prev.onRefresh === next.onRefresh &&
+        prev.setListWidth === next.setListWidth &&
+        prev.handleMenuSheet === next.handleMenuSheet &&
+        prev.handleImageSheet === next.handleImageSheet &&
+        prev.handleEatingHabitsSheet === next.handleEatingHabitsSheet &&
+        prev.getInfoItemContent === next.getInfoItemContent &&
+        prev.ListFooterComponent === next.ListFooterComponent;
+
+    if (!isSame) return false;
+
+    // If everything else is same, check ListEmptyComponent ONLY if list is empty
+    if (next.dayItems.length === 0) {
+        return prev.ListEmptyComponent === next.ListEmptyComponent;
+    }
+
+    // If list has items, check if footer changed
+    return prev.ListFooterComponent === next.ListFooterComponent;
+});

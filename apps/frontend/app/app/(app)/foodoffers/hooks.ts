@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Dimensions, Platform, Image } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import { addDays, format, parse } from 'date-fns';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
+import { runAfterInteractions } from '@/helper/interactionHelper';
 import {
     SET_SELECTED_CANTEEN_FOOD_OFFERS,
     SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
@@ -18,6 +19,8 @@ import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { useFocusEffect } from 'expo-router';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { useAppSelector } from '@/redux/hooks';
+import { RootState } from '@/redux/reducer';
 
 // --- Types ---
 export interface DayItem {
@@ -71,17 +74,31 @@ export const useFoodOffersData = (
     selectedDate: string,
     sortBy: string | undefined,
     languageCode: string,
-    ownFoodFeedbacks: any,
     profile: any,
-    foodCategories: any,
-    foodOfferCategories: any
 ) => {
     const dispatch = useDispatch();
+    const store = useStore();
+
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
     const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
     const canteenFeedbackLabelHelper = useMemo(() => new CanteenFeedbackLabelHelper(), []);
+
+    const prefetchedKeys = useRef<Set<string>>(new Set());
+    
+    // Refs to stabilize callbacks and prevent unnecessary re-renders/fetches
+    const stateRef = useRef({
+        profile,
+        languageCode
+    });
+
+    useEffect(() => {
+        stateRef.current = {
+            profile,
+            languageCode
+        };
+    }, [profile, languageCode]);
 
     const getCacheKey = (canteenId: string, date: string) => {
         return `${canteenId}_${format(new Date(date), 'dd.MM.yyyy')}`;
@@ -92,6 +109,10 @@ export const useFoodOffersData = (
     }, [prefetchedFoodOffers]);
 
     const updateSort = useCallback((id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
+        const { profile, languageCode } = stateRef.current;
+        const state = store.getState() as RootState;
+        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = state.food;
+
         const sortedOffers = sortFoodOffers(id, foodOffers, {
             languageCode,
             ownFoodFeedbacks,
@@ -100,52 +121,59 @@ export const useFoodOffersData = (
             foodOfferCategories,
         });
         dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS, payload: sortedOffers });
-    }, [languageCode, ownFoodFeedbacks, profile, foodCategories, foodOfferCategories, dispatch]);
+    }, [dispatch, store]); // store is stable
 
     const fetchFoods = useCallback(async (forceFetch = false) => {
-        try {
-            setLoading(true);
-            const canteenId = selectedCanteen?.id as string;
-            if (!canteenId || !selectedDate) {
-                setLoading(false);
-                return;
-            }
+        const canteenId = selectedCanteen?.id as string;
+        if (!canteenId || !selectedDate) return;
 
-            let foodOffers = getCachedOffers(canteenId, selectedDate);
-            if (!foodOffers || forceFetch) {
+        let foodOffers = getCachedOffers(canteenId, selectedDate);
+        const cacheKey = getCacheKey(canteenId, selectedDate);
+
+        // Optimization: Use cached data immediately if available and not forcing fetch
+        if (foodOffers && !forceFetch) {
+            updateSort(sortBy as FoodSortOption, foodOffers);
+            dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+        } else {
+            try {
+                setLoading(true);
                 const foodData = await fetchFoodOffersByCanteen(canteenId, selectedDate);
                 foodOffers = foodData?.data || [];
+                
+                // Update cache and dispatch
+                setPrefetchedFoodOffers(prev => ({ ...prev, [cacheKey]: foodOffers }));
+                prefetchedKeys.current.add(cacheKey);
+                
+                updateSort(sortBy as FoodSortOption, foodOffers);
+                dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+            } catch (error) {
+                console.error('Error fetching Food Offers:', error);
+            } finally {
+                setLoading(false);
             }
+        }
 
-            setPrefetchedFoodOffers(prev => ({ ...prev, [getCacheKey(canteenId, selectedDate)]: foodOffers }));
-
-            // Prefetch next 2 days
+        // Prefetch next 2 days in background
+        runAfterInteractions(() => {
             for (let i = 1; i <= 2; i++) {
                 const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
-                const cacheKey = getCacheKey(canteenId, date);
-                if (!prefetchedFoodOffers[cacheKey]) {
+                const nextCacheKey = getCacheKey(canteenId, date);
+                
+                // Check if already fetched or in progress to prevent duplicate calls
+                if (!prefetchedKeys.current.has(nextCacheKey) && !prefetchedFoodOffers[nextCacheKey]) {
+                    prefetchedKeys.current.add(nextCacheKey);
                     fetchFoodOffersByCanteen(canteenId, date)
                         .then(res => {
                             const offers = res?.data || [];
-                            setPrefetchedFoodOffers(p => ({ ...p, [cacheKey]: offers }));
-                            try {
-                                offers.slice(0, 6).forEach((o: any) => {
-                                    const img = o?.food?.image_remote_url || o?.food?.image;
-                                    if (img) Image.prefetch(img).catch(() => { });
-                                });
-                            } catch (e) { }
+                            setPrefetchedFoodOffers(p => ({ ...p, [nextCacheKey]: offers }));
                         })
-                        .catch(e => console.error('Error prefetching Food Offers:', e));
+                        .catch(e => {
+                            console.error('Error prefetching Food Offers:', e);
+                            prefetchedKeys.current.delete(nextCacheKey); // Allow retry on error
+                        });
                 }
             }
-
-            updateSort(sortBy as FoodSortOption, foodOffers);
-            dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
-            setLoading(false);
-        } catch (error) {
-            setLoading(false);
-            console.error('Error fetching Food Offers:', error);
-        }
+        });
     }, [selectedCanteen, selectedDate, getCachedOffers, prefetchedFoodOffers, updateSort, sortBy, dispatch]);
 
     const fetchCanteenLabels = useCallback(async () => {
@@ -166,11 +194,15 @@ export const useFoodOffersData = (
     }, [fetchFoods, fetchCanteenLabels]);
 
     useEffect(() => {
-        fetchFoods();
+        runAfterInteractions(() => {
+            fetchFoods();
+        });
     }, [selectedCanteen, selectedDate]); // Removed updateSort and others to prevent loops, relying on fetchFoods dependencies
 
     useEffect(() => {
-        fetchCanteenLabels();
+        runAfterInteractions(() => {
+            fetchCanteenLabels();
+        });
     }, [fetchCanteenLabels]);
 
     const cachedFoodOfferDates = useMemo(() => {
@@ -213,14 +245,8 @@ export const useSheetHandling = (
     const bottomSheetRef = useRef<BottomSheet>(null);
     const [selectedSheet, setSelectedSheet] = useState<string | null>(null);
     const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
-    const [isActive, setIsActive] = useState(false);
-
-    useFocusEffect(
-        useCallback(() => {
-            setIsActive(true);
-            return () => setIsActive(false);
-        }, [])
-    );
+    // Optimization: Keep sheet active to prevent unmount/remount on navigation
+    const [isActive, setIsActive] = useState(true);
 
     const openSheet = useCallback((sheet: 'menu' | 'sort' | string, props = {}) => {
         if (sheet === 'sort') {
@@ -276,22 +302,17 @@ export const useAnimationLogic = (
     const [animationJson, setAmimationJson] = useState<any>(null);
     const animationRef = useRef<LottieView>(null);
 
-    useFocusEffect(
-        useCallback(() => {
+    // Optimization: Load animation once and keep it. Don't re-parse on every focus.
+    useEffect(() => {
+        runAfterInteractions(() => {
             setAmimationJson(replaceLottieColors(noFoodOffersFound, foods_area_color));
-            return () => setAmimationJson(null);
-        }, [foods_area_color])
-    );
+        });
+    }, [foods_area_color]);
 
-    useFocusEffect(
-        useCallback(() => {
-            setAutoPlay(appSettings?.animations_auto_start);
-            return () => {
-                setAutoPlay(false);
-                setAmimationJson(null);
-            };
-        }, [appSettings?.animations_auto_start])
-    );
+    // Optimization: Only update autoplay setting when it changes, don't toggle on focus
+    useEffect(() => {
+        setAutoPlay(appSettings?.animations_auto_start);
+    }, [appSettings?.animations_auto_start]);
 
     useEffect(() => {
         if (animationJson && autoPlay && animationRef.current) {

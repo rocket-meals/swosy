@@ -10,7 +10,35 @@ export default StyleSheet.create({
 		paddingBottom: 10,
 		paddingVertical: 10,
 		gap: 10,
+        paddingHorizontal: 10,
 	},
+    rowReverse: {
+        flexDirection: 'row-reverse',
+    },
+    colGapTiny: {
+        gap: 5,
+    },
+    colGapSmall: {
+        gap: 6,
+    },
+    colGapMedium: {
+        gap: 10,
+    },
+    colGapLarge: {
+        gap: 15,
+    },
+    paddingSmall: {
+        padding: 5,
+    },
+    paddingMedium: {
+        padding: 10,
+    },
+    paddingArrowSmall: {
+        padding: 2,
+    },
+    paddingArrowMedium: {
+        padding: 5,
+    },
     row: {
             width: '100%',
             flexDirection: 'row',
@@ -75,7 +103,14 @@ export default StyleSheet.create({
 		marginTop: 20,
 		paddingHorizontal: horizontalScreenPadding,
 	},
-	noFoodContainer: {
+	safeArea: {
+        flex: 1,
+    },
+    contentWrapper: {
+        flex: 1,
+        // alignItems: 'center',
+    },
+    noFoodContainer: {
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -118,4 +153,21 @@ export default StyleSheet.create({
                 fontSize: 14,
                 fontFamily: 'Poppins_400Regular',
         },
+    loadingContainer: {
+        width: '100%',
+        height: 400,
+        justifyContent: 'center',
+    },
+    footerSpacer: {
+        height: 40,
+    },
+    lottieView: {
+        width: '100%',
+        height: '100%',
+    },
+    listItemContainer: {
+        flex: 1,
+        marginHorizontal: 10,
+        marginVertical: 10,
+    },
 });

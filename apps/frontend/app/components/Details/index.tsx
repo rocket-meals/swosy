@@ -22,17 +22,10 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.food_data)}</Text>
+			<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.food_data)}</Text>
 
 			{loading ? (
-				<View
-					style={{
-						height: 200,
-						width: '100%',
-						justifyContent: 'center',
-						alignItems: 'center',
-					}}
-				>
+				<View style={styles.loadingContainer}>
 					<ActivityIndicator size={30} color={theme.screen.text} />
 				</View>
 			) : (

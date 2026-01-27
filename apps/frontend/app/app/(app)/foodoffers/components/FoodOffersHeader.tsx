@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome6, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useNavigation, useRouter } from 'expo-router';
@@ -43,7 +43,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
     const { translate } = useLanguage();
     const router = useRouter();
     const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
-    const screenWidth = Dimensions.get('window').width;
+    const { width: screenWidth } = useWindowDimensions();
 
     const getPriceGroup = (price_group: string) => {
         if (price_group) {
@@ -52,23 +52,27 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
         return '';
     };
 
-    const iconPadding = isWeb ? (screenWidth < 500 ? 5 : 10) : 5;
-    const arrowPadding = isWeb ? (screenWidth < 500 ? 2 : 5) : 2;
+    const iconPaddingStyle = isWeb && screenWidth >= 500 ? styles.paddingMedium : styles.paddingSmall;
+    const arrowPaddingStyle = isWeb && screenWidth >= 500 ? styles.paddingArrowMedium : styles.paddingArrowSmall;
+    const col2GapStyle = isWeb ? (screenWidth < 500 ? styles.colGapSmall : styles.colGapMedium) : styles.colGapTiny;
+    const col2GapStyle2 = isWeb && screenWidth < 500 ? styles.colGapLarge : styles.colGapMedium;
+
+    const rowStyle = [styles.row, drawerPosition === 'right' && styles.rowReverse];
+    const col1Style = [styles.col1, drawerPosition === 'right' && styles.rowReverse];
 
     return (
         <View
-            style={{
-                ...styles.header,
-                backgroundColor: theme.header.background,
-                paddingHorizontal: 10,
-            }}
+            style={[
+                styles.header,
+                { backgroundColor: theme.header.background }
+            ]}
         >
-            <View style={[styles.row, { flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }]}>
-                <View style={[styles.col1, { flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }]}>
+            <View style={rowStyle}>
+                <View style={col1Style}>
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={{ padding: iconPadding }}>
+                            <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle}>
                                 <Ionicons name="menu" size={24} color={theme.header.text} />
                                 {hasUnreadChats ? (
                                     <View
@@ -94,19 +98,19 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <TouchableOpacity
                         onPress={() => openSheet('canteen')}
                         activeOpacity={0.7}
-                        style={{ padding: iconPadding }}
+                        style={iconPaddingStyle}
                     >
-                        <Text style={{ ...styles.heading, color: theme.header.text }}>
+                        <Text style={[styles.heading, { color: theme.header.text }]}>
                             {excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}
                         </Text>
                     </TouchableOpacity>
                 </View>
 
-                <View style={{ ...styles.col2, gap: isWeb ? (screenWidth < 500 ? 6 : 10) : 5, flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }}>
+                <View style={[styles.col2, col2GapStyle, drawerPosition === 'right' && styles.rowReverse]}>
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => openSheet('sort')} style={{ padding: iconPadding }}>
+                            <IconButton {...triggerProps} onPress={() => openSheet('sort')} style={iconPaddingStyle}>
                                 <MaterialIcons name="sort" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -121,7 +125,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => router.navigate('/price-group')} style={{ padding: iconPadding }}>
+                            <IconButton {...triggerProps} onPress={() => router.navigate('/price-group')} style={iconPaddingStyle}>
                                 <FontAwesome6 name="euro-sign" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -136,7 +140,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => router.navigate('/eating-habits')} style={{ padding: iconPadding }}>
+                            <IconButton {...triggerProps} onPress={() => router.navigate('/eating-habits')} style={iconPaddingStyle}>
                                 <Ionicons name="bag-add" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -151,7 +155,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => openSheet('canteen')} style={{ padding: iconPadding }}>
+                            <IconButton {...triggerProps} onPress={() => openSheet('canteen')} style={iconPaddingStyle}>
                                 <MaterialIcons name="restaurant-menu" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -166,11 +170,11 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
             </View>
 
             <View style={styles.row}>
-                <View style={{ ...styles.col2, gap: isWeb ? (screenWidth < 500 ? 15 : 10) : 10 }}>
+                <View style={[styles.col2, col2GapStyle2]}>
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => handleDateChange('prev')} style={{ padding: arrowPadding }}>
+                            <IconButton {...triggerProps} onPress={() => handleDateChange('prev')} style={arrowPaddingStyle}>
                                 <Entypo name="chevron-left" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -185,7 +189,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => openSheet('calendar')} style={{ padding: arrowPadding }}>
+                            <IconButton {...triggerProps} onPress={() => openSheet('calendar')} style={arrowPaddingStyle}>
                                 <MaterialIcons name="calendar-month" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -200,7 +204,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => handleDateChange('next')} style={{ padding: arrowPadding }}>
+                            <IconButton {...triggerProps} onPress={() => handleDateChange('next')} style={arrowPaddingStyle}>
                                 <Entypo name="chevron-right" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -212,10 +216,10 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                         </TooltipContent>
                     </Tooltip>
 
-                    <Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? translate(getDayLabel(selectedDate)) : ''}</Text>
+                    <Text style={[styles.heading, { color: theme.header.text }]}>{selectedDate ? translate(getDayLabel(selectedDate)) : ''}</Text>
                 </View>
 
-                <View style={{ ...styles.col2, gap: 10 }}>
+                <View style={[styles.col2, styles.colGapMedium]}>
                     {appSettings?.utilization_display_enabled && (
                         <Tooltip
                             placement="top"
@@ -223,7 +227,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 <IconButton
                                     {...triggerProps}
                                     onPress={() => openUtilizationModal(selectedDate, selectedCanteen)}
-                                    style={{ padding: arrowPadding }}
+                                    style={arrowPaddingStyle}
                                 >
                                     <FontAwesome6 name="people-group" size={24} color={theme.header.text} />
                                 </IconButton>
@@ -240,7 +244,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => openSheet('hours')} style={{ padding: arrowPadding }}>
+                            <IconButton {...triggerProps} onPress={() => openSheet('hours')} style={arrowPaddingStyle}>
                                 <MaterialCommunityIcons name="clock-time-eight" size={24} color={theme.header.text} />
                             </IconButton>
                         )}

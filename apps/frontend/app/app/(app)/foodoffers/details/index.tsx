@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView, ScrollView, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView, ScrollView, View, useWindowDimensions, type DimensionValue } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import { runAfterInteractions } from '@/helper/interactionHelper';
 import { isWeb } from '@/constants/Constants';
 import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
@@ -38,18 +39,25 @@ import { useFoodDetails } from './hooks/useFoodDetails';
 import { useFoodAttributes } from './hooks/useFoodAttributes';
 
 const selectFoodState = (state: RootState) => state.food;
-
-const selectPreviousFeedback = createSelector(
-    [selectFoodState, (_: RootState, foodId?: string | null) => foodId],
-    (foodState, foodId) => (foodId ? getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString()) : undefined)
-);
+const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
 
 export default function FoodDetailsScreen() {
     useSetPageTitle(TranslationKeys.food_details);
 
-    const { id, foodId } = useLocalSearchParams();
+    const { id, foodId, initialData } = useLocalSearchParams();
     const offerId = Array.isArray(id) ? id[0] : id;
     const initialFoodId = Array.isArray(foodId) ? foodId[0] : foodId;
+
+    const initialFoodOffer = useMemo(() => {
+        if (typeof initialData === 'string') {
+            try {
+                return JSON.parse(initialData);
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    }, [initialData]);
 
     const { theme } = useTheme();
     const { translate } = useLanguage();
@@ -60,17 +68,25 @@ export default function FoodDetailsScreen() {
     const notificationSheetRef = useRef<BottomSheet>(null);
     
     const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-    const { user, profile } = useAppSelector((state) => state.authReducer);
-    const { primaryColor, appSettings, serverInfo, selectedTheme: mode } = useAppSelector((state) => state.settings);
+    const user = useAppSelector((state) => state.authReducer.user);
+    const profile = useAppSelector((state) => state.authReducer.profile);
     
-    const previousFeedback = useAppSelector((state) => selectPreviousFeedback(state, initialFoodId));
+    const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+    const appSettings = useAppSelector((state) => state.settings.appSettings);
+    const serverInfo = useAppSelector((state) => state.settings.serverInfo);
+    const mode = useAppSelector((state) => state.settings.selectedTheme);
+    
+    const ownFoodFeedbacks = useAppSelector(selectOwnFoodFeedbacks);
+    const previousFeedback = useMemo(() => 
+        initialFoodId ? getpreviousFeedback(ownFoodFeedbacks, initialFoodId.toString()) : undefined,
+    [ownFoodFeedbacks, initialFoodId]);
     
     // Hooks
     const profileHelper = useMemo(() => new ProfileHelper(), []);
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
     const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
     
-    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId });
+    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, initialFoodOffer });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
 
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
@@ -208,7 +224,9 @@ export default function FoodDetailsScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            setIsActive(true);
+            runAfterInteractions(() => {
+                setIsActive(true);
+            });
             return () => {
                 setIsActive(false);
             };
@@ -256,7 +274,9 @@ export default function FoodDetailsScreen() {
 
     useEffect(() => {
         if (profile?.id) {
-            updateDeviceInfo();
+            runAfterInteractions(() => {
+                updateDeviceInfo();
+            });
         }
     }, [profile?.id]); // Added dependency to run only when profile.id changes/exists.
 
@@ -295,29 +315,20 @@ export default function FoodDetailsScreen() {
 
     return (
         <SafeAreaView
-            style={{
-                flex: 1,
-                backgroundColor: theme.screen.background,
-            }}
+            style={[styles.safeArea, { backgroundColor: theme.screen.background }]}
         >
             <ScrollView
-                style={{
-                    backgroundColor: theme.screen.background,
-                    padding: isWeb ? 20 : 10,
-                }}
-                contentContainerStyle={{
-                    ...styles.contentContainer,
-                    width: '100%',
-                    backgroundColor: theme.screen.background,
-                }}
+                style={[
+                    isWeb ? styles.scrollViewWeb : styles.scrollView,
+                    { backgroundColor: theme.screen.background }
+                ]}
+                contentContainerStyle={[
+                    styles.contentContainer,
+                    styles.scrollViewContent,
+                    { backgroundColor: theme.screen.background }
+                ]}
             >
-                <View
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        alignItems: 'center',
-                    }}
-                >
+                <View style={styles.mainWrapper}>
                     <FoodHeader
                         foodDetails={foodDetails}
                         screenWidth={screenWidth}
@@ -352,11 +363,12 @@ export default function FoodDetailsScreen() {
                     />
 
                     <View
-                        style={{
-                            ...styles.pagerView,
-                            width: isWeb ? '95%' : '100%',
-                            paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
-                        }}
+                        style={[
+                            styles.pagerView,
+                            isWeb ? styles.pagerViewWeb : styles.pagerViewMobile,
+                            isWeb && (screenWidth > 1000 ? styles.pagerViewWebLarge : styles.pagerViewWebSmall),
+                            { width: getContainerWidth as DimensionValue }
+                        ]}
                     >
                         {foodDetails?.id && renderContent(foodDetails)}
                     </View>

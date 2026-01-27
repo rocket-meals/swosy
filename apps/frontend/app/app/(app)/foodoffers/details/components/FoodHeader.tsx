@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -36,6 +36,11 @@ const FoodHeader = ({
     const isLargeScreen = screenWidth > 1000;
     const isMediumScreen = screenWidth > 800;
 
+    const dynamicImageStyle = useMemo(() => ({
+        width: isLargeScreen ? 400 : screenWidth - 40,
+        height: isLargeScreen ? 400 : screenWidth - 40,
+    }), [isLargeScreen, screenWidth]);
+
     const renderRatingStars = () => (
         <View style={isWeb ? styles.stars : styles.mobileStars}>
             {Array.from({ length: 5 }).map((_, index) => (
@@ -44,7 +49,7 @@ const FoodHeader = ({
                         <Tooltip
                             placement="top"
                             trigger={(triggerProps) => (
-                                <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={{ padding: 5 }}>
+                                <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
                                     <MaterialIcons
                                         name={previousFeedback?.rating > index ? 'star' : 'star-border'}
                                         size={22}
@@ -77,26 +82,23 @@ const FoodHeader = ({
         return (
             <>
                 <View
-                    style={{
-                        ...styles.featuredContainer,
-                        width: isLargeScreen ? '80%' : '100%',
-                        flexDirection: isLargeScreen ? 'row' : 'column',
-                    }}
+                    style={[
+                        styles.featuredContainer,
+                        isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall
+                    ]}
                 >
                     <View
-                        style={{
-                            ...styles.foodDetail,
-                            width: isLargeScreen ? '50%' : '100%',
-                            alignItems: isLargeScreen ? 'flex-start' : 'center',
-                        }}
+                        style={[
+                            styles.foodDetail,
+                            isLargeScreen ? styles.foodDetailLarge : styles.foodDetailSmall
+                        ]}
                     >
                         <View
-                            style={{
-                                ...styles.imageContainer,
-                                width: isLargeScreen ? 400 : screenWidth - 40,
-                                height: isLargeScreen ? 400 : screenWidth - 40,
-                            }}
-                        >
+                        style={[
+                            styles.imageContainer,
+                            dynamicImageStyle
+                        ]}
+                    >
                             <TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.featuredImage}>
                                 <Image
                                     style={styles.featuredImage}
@@ -112,28 +114,26 @@ const FoodHeader = ({
                         </View>
                     </View>
                     <View
-                        style={{
-                            ...styles.detailsContainer,
-                            width: isLargeScreen ? '50%' : '100%',
-                            justifyContent: isLargeScreen ? 'space-between' : 'flex-start',
-                            height: isLargeScreen ? 400 : 'auto',
-                            paddingHorizontal: isMediumScreen ? 20 : 0,
-                        }}
+                        style={[
+                            styles.detailsContainer,
+                            isLargeScreen ? styles.detailsContainerLarge : styles.detailsContainerSmall,
+                            isMediumScreen ? styles.paddingHorizontalMedium : styles.paddingHorizontalNone
+                        ]}
                     >
-                        <View style={{ width: '100%', alignItems: 'flex-end' }}>
+                        <View style={styles.fullWidthEnd}>
                             {appSettings?.foods_ratings_average_display && (
                                 <View
-                                    style={{
-                                        ...styles.ratingView,
-                                        borderColor: theme.screen.text,
-                                    }}
+                                    style={[
+                                        styles.ratingView,
+                                        { borderColor: theme.screen.text }
+                                    ]}
                                 >
                                     <AntDesign name="star" size={22} color={foodsAreaColor} />
                                     <Text
-                                        style={{
-                                            ...styles.totalRating,
-                                            color: theme.screen.text,
-                                        }}
+                                        style={[
+                                            styles.totalRating,
+                                            { color: theme.screen.text }
+                                        ]}
                                     >
                                         {(foodDetails?.rating_average || foodDetails?.rating_average_legacy) &&
                                             numToOneDecimal(
@@ -144,13 +144,13 @@ const FoodHeader = ({
                             )}
                         </View>
                         <View
-                            style={{
-                                ...styles.ratingContainer,
-                                backgroundColor: theme.screen.iconBg,
-                                marginTop: isLargeScreen ? 0 : 20,
-                            }}
+                            style={[
+                                styles.ratingContainer,
+                                { backgroundColor: theme.screen.iconBg },
+                                isLargeScreen ? null : styles.marginTopMedium
+                            ]}
                         >
-                            <Text style={{ ...styles.rateUs, color: theme.screen.text }}>
+                            <Text style={[styles.rateUs, { color: theme.screen.text }]}>
                                 {translate(TranslationKeys.RATE_FOOD)}
                             </Text>
                             {renderRatingStars()}
@@ -158,20 +158,20 @@ const FoodHeader = ({
                     </View>
                 </View>
                 <View
-                    style={{
-                        ...styles.featuredContainer,
-                        width: isLargeScreen ? '80%' : '100%',
-                    }}
+                    style={[
+                        styles.featuredContainer,
+                        isLargeScreen ? styles.featuredContainerLarge : styles.featuredContainerSmall
+                    ]}
                 >
                     <Text
-                        style={{
-                            ...styles.foodHeading,
-                            width: '100%',
-                            color: theme.screen.text,
-                            textAlign: isLargeScreen ? 'left' : 'center',
-                            flexDirection: 'column',
-                            fontSize: isMediumScreen ? 24 : 20,
-                        }}
+                        style={[
+                            styles.foodHeading,
+                            styles.widthFull,
+                            { color: theme.screen.text },
+                            isLargeScreen ? styles.textLeft : styles.textCenter,
+                            styles.flexColumn,
+                            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium
+                        ]}
                     >
                         {foodDetails?.name}
                     </Text>
@@ -200,17 +200,17 @@ const FoodHeader = ({
                         <View />
                         {appSettings?.foods_ratings_average_display && (
                             <View
-                                style={{
-                                    ...styles.mobileRatingView,
-                                    borderColor: theme.screen.text,
-                                }}
+                                style={[
+                                    styles.mobileRatingView,
+                                    { borderColor: theme.screen.text }
+                                ]}
                             >
                                 <AntDesign name="star" size={18} color={foodsAreaColor} />
                                 <Text
-                                    style={{
-                                        ...styles.mobileTotalRating,
-                                        color: theme.screen.text,
-                                    }}
+                                    style={[
+                                        styles.mobileTotalRating,
+                                        { color: theme.screen.text }
+                                    ]}
                                 >
                                     {(foodDetails?.rating_average || foodDetails?.rating_average_legacy) &&
                                         numToOneDecimal(
@@ -224,24 +224,24 @@ const FoodHeader = ({
                 <View style={styles.mobileDetailsFooter}></View>
             </View>
             <Text
-                style={{
-                    ...styles.mobileFoodHeading,
-                    color: theme.screen.text,
-                }}
+                style={[
+                    styles.mobileFoodHeading,
+                    { color: theme.screen.text }
+                ]}
             >
                 {foodDetails?.name}
             </Text>
             <View
-                style={{
-                    ...styles.mobileRatingContainer,
-                    backgroundColor: theme.screen.iconBg,
-                }}
+                style={[
+                    styles.mobileRatingContainer,
+                    { backgroundColor: theme.screen.iconBg }
+                ]}
             >
                 <Text
-                    style={{
-                        ...styles.mobileRateUs,
-                        color: theme.screen.text,
-                    }}
+                    style={[
+                        styles.mobileRateUs,
+                        { color: theme.screen.text }
+                    ]}
                 >
                     {translate(TranslationKeys.RATE_FOOD)}
                 </Text>

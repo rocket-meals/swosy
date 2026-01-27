@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -27,21 +27,24 @@ const NotificationSection = ({
     foodsAreaColor,
     foodDetails,
 }: NotificationSectionProps) => {
+    const containerStyle = useMemo(() => ({
+        backgroundColor: theme.drawerBg,
+        width: containerWidth as any,
+    }), [theme.drawerBg, containerWidth]);
+
     return (
         <View
-            style={{
-                ...styles.notificationContainer,
-                backgroundColor: theme.drawerBg,
-                width: containerWidth as any,
-            }}
+            style={[
+                styles.notificationContainer,
+                containerStyle
+            ]}
         >
             <Text
-                style={{
-                    ...styles.notificationBody,
-                    color: theme.screen.text,
-                    maxWidth: '80%',
-                    fontSize: isWeb ? 18 : 12,
-                }}
+                style={[
+                    styles.notificationBody,
+                    { color: theme.screen.text },
+                    isWeb ? styles.notificationTextWeb : styles.notificationTextMobile
+                ]}
             >
                 {translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
             </Text>
@@ -51,11 +54,11 @@ const NotificationSection = ({
                     trigger={(triggerProps) => (
                         <IconButton
                             {...triggerProps}
-                            style={{
-                                ...styles.bellIconAtiveContainer,
-                                backgroundColor: foodsAreaColor,
-                                padding: isWeb ? 12 : 8,
-                            }}
+                            style={[
+                                styles.bellIconAtiveContainer,
+                                { backgroundColor: foodsAreaColor },
+                                isWeb ? styles.bellIconPaddingWeb : styles.bellIconPaddingMobile
+                            ]}
                             onPress={updateNotification}
                         >
                             <MaterialIcons name="notifications-active" size={32} color={theme.screen.text} />
@@ -76,11 +79,11 @@ const NotificationSection = ({
                     placement="top"
                     trigger={(triggerProps) => (
                         <IconButton
-                            style={{
-                                ...styles.bellIconContainer,
-                                borderColor: foodsAreaColor,
-                                padding: isWeb ? 12 : 8,
-                            }}
+                            style={[
+                                styles.bellIconContainer,
+                                { borderColor: foodsAreaColor },
+                                isWeb ? styles.bellIconPaddingWeb : styles.bellIconPaddingMobile
+                            ]}
                             {...triggerProps}
                             onPress={updateNotification}
                         >

@@ -136,17 +136,17 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 			{showRatingsAmount ||
 				(showRatingsAverage && (
 					<Text
-						style={{
-							...styles.heading,
-							color: theme.screen.text,
-							fontSize: isWeb ? 26 : 24,
-						}}
+						style={[
+							styles.heading,
+							isWeb ? styles.headingWeb : styles.headingMobile,
+							{ color: theme.screen.text }
+						]}
 					>
 						{translate(TranslationKeys.food_feedbacks)}
 					</Text>
 				))}
 			{ratingSummaryItems.length > 0 && (
-				<View style={{ width: '100%', marginBottom: 20 }}>
+				<View style={styles.ratingSummaryContainer}>
 					{ratingSummaryItems.map((item, index) => {
 						const groupPosition =
 							ratingSummaryItems.length === 1 ? 'single' : index === 0 ? 'top' : index === ratingSummaryItems.length - 1 ? 'bottom' : 'middle';
@@ -165,11 +165,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 			)}
 
 			<Text
-				style={{
-					...styles.heading,
-					color: theme.screen.text,
-					fontSize: isWeb ? 26 : 24,
-				}}
+				style={[
+					styles.heading,
+					isWeb ? styles.headingWeb : styles.headingMobile,
+					{ color: theme.screen.text }
+				]}
 			>
 				{translate(TranslationKeys.feedback_labels)}
 			</Text>
@@ -178,22 +178,22 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 			))}
 			{commentType !== 'disabled' && commentType !== 'read' && (
 				<View
-					style={{
-						...styles.searchContainer,
-						backgroundColor: theme.screen.iconBg,
-						flexDirection: resp ? 'row' : 'column',
-						borderRadius: resp ? 50 : 8,
-						gap: 20,
-					}}
+					style={[
+						styles.searchContainer,
+						resp ? styles.searchContainerRow : styles.searchContainerColumn,
+						{ backgroundColor: theme.screen.iconBg }
+					]}
 				>
-					<TextInput style={[styles.input, { width: resp ? '70%' : '100%' }, Platform.OS === 'web' && ({ outlineStyle: 'none' } as any)]} cursorColor={theme.modal.text} placeholderTextColor={theme.modal.placeholder} onChangeText={handleTextChange} value={comment} placeholder={translate(TranslationKeys.your_comment)} editable={commentType === 'disabled' || commentType === 'read' ? false : true} />
+					<TextInput style={[styles.input, resp ? styles.inputWide : styles.inputFull, Platform.OS === 'web' && styles.inputWeb]} cursorColor={theme.modal.text} placeholderTextColor={theme.modal.placeholder} onChangeText={handleTextChange} value={comment} placeholder={translate(TranslationKeys.your_comment)} editable={commentType === 'disabled' || commentType === 'read' ? false : true} />
 					<TouchableOpacity
-						style={{
-							...styles.commentButton,
-							width: resp ? 220 : '90%',
-							borderRadius: 50,
-							backgroundColor: foods_area_color,
-						}}
+						style={[
+							styles.commentButton,
+							styles.commentButtonBase,
+							{
+								width: resp ? 220 : '90%',
+								backgroundColor: foods_area_color,
+							}
+						]}
 						onPress={() => {
 							submitCommentFeedback(comment);
 						}}
@@ -207,36 +207,29 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				<>
 					{previousFeedback && previousFeedback.comment && (
 						<View style={styles.commentsContainer}>
-							<View
-								style={{
-									width: '100%',
-									flexDirection: 'row',
-									justifyContent: 'space-between',
-									alignItems: 'center',
-								}}
-							>
+							<View style={styles.commentsHeader}>
 								<Text
-									style={{
-										...styles.heading,
-										color: theme.screen.text,
-										fontSize: 24,
-									}}
+									style={[
+										styles.heading,
+										styles.subHeading,
+										{ color: theme.screen.text }
+									]}
 								>
 									{translate(TranslationKeys.your_comment)}
 								</Text>
 								<TouchableOpacity
-									style={{
-										...styles.deleteButton,
-										backgroundColor: theme.screen.iconBg,
-									}}
+									style={[
+										styles.deleteButton,
+										{ backgroundColor: theme.screen.iconBg }
+									]}
 									onPress={() => submitCommentFeedback(null)}
 								>
 									{loading.deleteLoading ? <ActivityIndicator color={foods_area_color} size={20} /> : <MaterialIcons name="delete-outline" size={24} color={'red'} />}
 								</TouchableOpacity>
 							</View>
 							<View style={styles.comment}>
-								<Text style={{ ...styles.commentText, color: theme.screen.text }}>{previousFeedback.comment}</Text>
-								<Text style={{ ...styles.commentDate, color: theme.screen.text }}>{DateHelper.formatOfferDateToReadable(previousFeedback.updated_at, true, true)}</Text>
+								<Text style={[styles.commentText, { color: theme.screen.text }]}>{previousFeedback.comment}</Text>
+								<Text style={[styles.commentDate, { color: theme.screen.text }]}>{DateHelper.formatOfferDateToReadable(previousFeedback.updated_at, true, true)}</Text>
 								<View style={styles.divider} />
 							</View>
 						</View>
@@ -246,29 +239,29 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 							{otherComments?.length > 0 && (
 								<View style={styles.commentsContainer}>
 									<Text
-										style={{
-											...styles.heading,
-											color: theme.screen.text,
-											fontSize: 24,
-										}}
+										style={[
+											styles.heading,
+											styles.subHeading,
+											{ color: theme.screen.text }
+										]}
 									>
 										{translate(TranslationKeys.others_comments)}
 									</Text>
 									{otherComments.map(feedback => (
 										<View key={feedback.id} style={styles.comment}>
 											<Text
-												style={{
-													...styles.commentText,
-													color: theme.screen.text,
-												}}
+												style={[
+													styles.commentText,
+													{ color: theme.screen.text }
+												]}
 											>
 												{feedback.comment}
 											</Text>
 											<Text
-												style={{
-													...styles.commentDate,
-													color: theme.screen.text,
-												}}
+												style={[
+													styles.commentDate,
+													{ color: theme.screen.text }
+												]}
 											>
 												{DateHelper.formatOfferDateToReadable(feedback.date_updated, true, true)}
 											</Text>

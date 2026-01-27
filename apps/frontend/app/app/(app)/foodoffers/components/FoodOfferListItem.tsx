@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import { DatabaseTypes } from 'repo-depkit-common';
+import styles from '../styles';
 
 interface DayItem {
     foodoffer: DatabaseTypes.Foodoffers | null;
@@ -33,12 +34,9 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
 }) => {
     return (
         <View
-            style={{
-                width: cardWidth || '100%',
-                marginHorizontal: 10,
-                marginVertical: 10,
-                alignItems: 'center'
-            }}
+            style={[
+                styles.listItemContainer
+            ]}
         >
             {item.foodoffer ? (
                 <FoodItem

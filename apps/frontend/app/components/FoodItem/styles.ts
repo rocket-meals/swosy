@@ -112,4 +112,8 @@ export default StyleSheet.create({
                 textTransform: 'uppercase',
                 textAlign: 'center',
         },
+        foodNameContainer: {
+            minHeight: 52,
+            justifyContent: 'center',
+        },
 });

@@ -28,10 +28,8 @@ import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 
 
 const selectFoodState = (state: RootState) => state.food;
-const selectPreviousFeedback = createSelector([selectFoodState, (_: RootState, foodId: string) => foodId], (foodState, foodId) =>
-  getpreviousFeedback(foodState.ownFoodFeedbacks, foodId)
-);
 const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
+const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
 
 const FoodItem: React.FC<FoodItemProps> = memo(
   ({ item, canteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, cardWidth }) => {
@@ -43,11 +41,32 @@ const FoodItem: React.FC<FoodItemProps> = memo(
 
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods;
-    const { language, serverInfo, appSettings, primaryColor } = useAppSelector((state) => state.settings);
-    const { user, profile, isManagement } = useAppSelector((state) => state.authReducer);
+    const language = useAppSelector((state) => state.settings.language);
+    const serverInfo = useAppSelector((state) => state.settings.serverInfo);
+    const appSettings = useAppSelector((state) => state.settings.appSettings);
+    const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+    
+    const user = useAppSelector((state) => state.authReducer.user);
+    const isManagement = useAppSelector((state) => state.authReducer.isManagement);
+    
+    // Optimization: Select only necessary profile fields to avoid re-renders on unrelated profile updates (e.g. device info)
+    const profileId = useAppSelector((state) => state.authReducer.profile?.id);
+    const profileMarkings = useAppSelector((state) => state.authReducer.profile?.markings);
+    const priceGroup = useAppSelector((state) => state.authReducer.profile?.price_group);
+    
+    const profile = useMemo(() => ({
+        id: profileId,
+        markings: profileMarkings,
+        price_group: priceGroup
+    }), [profileId, profileMarkings, priceGroup]);
+
     const { openRatingPermissionModal } = useRatingPermissionModal();
 
-    const previousFeedback = useAppSelector(state => selectPreviousFeedback(state, foodItem.id));
+    // Select specific feedback for this food item only to prevent re-renders of the entire list
+    const previousFeedback = useAppSelector((state) => 
+      state.food.ownFoodFeedbacks.find((f: any) => f.food === foodItem.id)
+    );
+    
     const markings = useAppSelector(selectMarkings);
 
     const foods_area_color = appSettings?.foods_area_color || primaryColor;
@@ -67,7 +86,27 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       [item?.markings, profile?.markings]
     );
 
-    const { screenWidth, containerStyle, imageContainerStyle, contentStyle } = useFoodCard(dislikedMarkings.length > 0 ? 3 : 0);
+    const likedMarkings = useMemo(
+      () =>
+        item?.markings?.filter(marking =>
+          profile?.markings?.some(
+            (profileMarking: DatabaseTypes.ProfilesMarkings) =>
+              profileMarking?.markings_id === marking?.markings_id && profileMarking?.like === true
+          )
+        ) ?? [],
+      [item?.markings, profile?.markings]
+    );
+
+    const isLiked = useMemo(
+      () =>
+        RatingHelper.isMaxRating(previousFeedback?.rating) ||
+        likedMarkings.length > 0,
+      [likedMarkings.length, previousFeedback?.rating]
+    );
+
+    const borderWidth = dislikedMarkings.length > 0 ? 3 : isLiked ? 3 : 0;
+    const borderColor = dislikedMarkings.length > 0 ? '#FF000095' : '#00B050';
+    const { screenWidth, containerStyle, imageContainerStyle, contentStyle } = useFoodCard(borderWidth, borderColor);
 
     const markingsData = useMemo(
       () =>
@@ -76,15 +115,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
         ),
       [markings, item?.markings]
     );
-
-    useEffect(() => {
-      try {
-        markingsData.slice(0, 5).forEach(m => {
-          const img = m?.image_remote_url || getImageUrl(m?.image as string);
-          if (img) Image.prefetch(img).catch(() => { });
-        });
-      } catch (e) { }
-    }, [markingsData]);
 
     const openInBrowser = useCallback(
       async (url: string) => {
@@ -104,8 +134,22 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     );
 
     const handleNavigation = useCallback((id: string, foodId: string) => {
-      router.push({ pathname: '/(app)/foodoffers/details', params: { id, foodId } });
-    }, []);
+      let initialDataStr = '';
+      try {
+        initialDataStr = JSON.stringify(item);
+      } catch (e) {
+        console.warn('Failed to stringify item for navigation', e);
+      }
+
+      router.push({ 
+        pathname: '/(app)/foodoffers/details', 
+        params: { 
+            id, 
+            foodId,
+            initialData: initialDataStr
+        } 
+      });
+    }, [item]);
 
     const handleOpenSheet = useCallback(() => {
       dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
@@ -250,11 +294,13 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                         <TouchableOpacity key={mark.id} onPress={() => openMarkingLabel(mark)}>
                           <MyImage
                             remote_image_url={mark?.image_remote_url || getImageUrl(mark?.image as string)}
-                            style={{
-                              ...styles.categoryLogo,
-                              backgroundColor: mark?.background_color || undefined,
-                              borderRadius: mark?.background_color ? 8 : mark.hide_border ? 5 : 0,
-                            }}
+                            style={[
+                              styles.categoryLogo,
+                              {
+                                backgroundColor: mark?.background_color || undefined,
+                                borderRadius: mark?.background_color ? 8 : mark.hide_border ? 5 : 0,
+                              }
+                            ]}
                           />
                         </TouchableOpacity>
                       ) : null
@@ -267,14 +313,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 </>
               }
             >
-              <View
-                  style={{
-                    minHeight: 52,
-                    justifyContent: 'center',
-                  }}
-                >
+              <View style={styles.foodNameContainer}>
                   <Text
-                    style={{ ...styles.foodName, color: theme.screen.text }}
+                    style={[styles.foodName, { color: theme.screen.text }]}
                     numberOfLines={2}
                     ellipsizeMode="tail"
                   >

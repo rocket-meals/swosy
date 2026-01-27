@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -26,10 +26,12 @@ const TabController = ({
     containerWidth,
     foodsAreaColor,
 }: TabControllerProps) => {
-    const themeStyles = {
-        backgroundColor: foodsAreaColor,
-        borderColor: foodsAreaColor,
-    };
+    const getTabStyle = useCallback((tabName: string) => [
+        styles.tab,
+        activeTab === tabName 
+            ? { backgroundColor: foodsAreaColor, borderColor: foodsAreaColor } 
+            : { backgroundColor: theme.screen.iconBg }
+    ], [activeTab, foodsAreaColor, theme.screen.iconBg]);
 
     const renderTab = (tabName: string, iconName: any, labelKey: string) => (
         <Tooltip
@@ -37,8 +39,9 @@ const TabController = ({
             trigger={(triggerProps) => (
                 <IconButton
                     {...triggerProps}
-                    style={[styles.tab, activeTab === tabName ? themeStyles : { backgroundColor: theme.screen.iconBg }]}
+                    style={getTabStyle(tabName)}
                     onPress={() => setActiveTab(tabName)}
+                    padding={10}
                 >
                     <MaterialCommunityIcons
                         name={iconName}
@@ -58,17 +61,16 @@ const TabController = ({
 
     return (
         <View
-            style={{
-                ...styles.tabViewContainer,
-                width: containerWidth as any,
-            }}
+            style={[
+                styles.tabViewContainer,
+                { width: containerWidth as number }
+            ]}
         >
             <View
-                style={{
-                    ...styles.tabs,
-                    width: isWeb ? '95%' : '100%',
-                    gap: isWeb ? 20 : 0,
-                }}
+                style={[
+                    styles.tabs,
+                    isWeb ? styles.tabsWeb : styles.tabsMobile
+                ]}
             >
                 {renderTab('feedbacks', 'chat', TranslationKeys.food_feedbacks)}
                 {renderTab('details', 'nutrition', TranslationKeys.food_data)}
