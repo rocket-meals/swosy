@@ -5,7 +5,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps, DrawerNavigationProp } from '@react-navigation/drawer';
 import { isWeb } from '@/constants/Constants';
-import FoodOfferFlatList from '@/components/FoodOfferFlatList';
+import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -39,6 +39,7 @@ import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
+import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 
@@ -117,9 +118,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	}, [autoPlay, animationJson]);
 
 	const setDefaultPriceGroupForAnonymousUser = () => {
+		if (profile?.price_group) {
+			return;
+		}
 		dispatch({
 			type: UPDATE_PROFILE,
-			payload: { ...(profile as any), price_group: 'student' },
+			payload: { ...(profile as any), price_group: PriceGroupKey.student },
 		});
 	};
 
@@ -620,7 +624,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							backgroundColor: theme.screen.background,
 						}}
 					>
-						{selectedCanteen && <FoodOfferFlatList canteenId={selectedCanteen.id} startDate={selectedDate} />}
+						{selectedCanteen && <FoodOffersScrollList canteenId={selectedCanteen.id} startDate={selectedDate} />}
 					</View>
 				</View>
 				{isActive &&

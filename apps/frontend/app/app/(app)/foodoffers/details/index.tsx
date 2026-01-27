@@ -34,6 +34,8 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import { ConfigCustomerEnum } from '@/config';
+import DebugView from '@/components/DebugView';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -54,8 +56,8 @@ export default function FoodDetailsScreen() {
 	const dispatch = useDispatch();
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
-	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { user, profile, isDevMode } = useSelector((state: RootState) => state.authReducer);
+	const { primaryColor, language: languageCode, appSettings, serverInfo, selectedTheme: mode, selectedCustomer } = useSelector((state: RootState) => state.settings);
         const previousFeedback = useSelector(state => selectPreviousFeedback(state, initialFoodId));
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
@@ -69,6 +71,7 @@ export default function FoodDetailsScreen() {
 	const selectedCanteen = useSelectedCanteen();
 	const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
 	const [foodDetails, setFoodDetails] = useState<any>(null);
+	const [foodOfferDetails, setFoodOfferDetails] = useState<any>(null);
         const { openRatingPermissionModal } = useRatingPermissionModal();
 
 	const [activeTab, setActiveTab] = useState('feedbacks');
@@ -130,51 +133,55 @@ export default function FoodDetailsScreen() {
 			};
 		});
 
-		const generalAttributes: any[] = [];
-		if (foodDetails && foodCategories.length) {
-			const name = getFoodCategoryName(foodCategories, foodDetails.food_category, languageCode);
-			if (name) {
-				generalAttributes.push({
-					id: 'food_category',
-					string_value: name,
-					food_attribute: {
-						status: 'published',
-						translations: [
-							{
-								languages_code: languageCode,
-								name: translate(TranslationKeys.food_category_label),
-							},
-						],
-					},
+		const hideGeneralAttributes = selectedCustomer === ConfigCustomerEnum.STUDI_FUTTER;
+
+		if (!hideGeneralAttributes) {
+			const generalAttributes: any[] = [];
+			if (foodDetails && foodCategories.length) {
+				const name = getFoodCategoryName(foodCategories, foodDetails.food_category, languageCode);
+				if (name) {
+					generalAttributes.push({
+						id: 'food_category',
+						string_value: name,
+						food_attribute: {
+							status: 'published',
+							translations: [
+								{
+									languages_code: languageCode,
+									name: translate(TranslationKeys.food_category_label),
+								},
+							],
+						},
+					});
+				}
+			}
+
+			if (foodDetails && foodOfferCategories.length && foodDetails.foodoffer_category) {
+				const name = getFoodOfferCategoryName(foodOfferCategories, foodDetails.foodoffer_category, languageCode);
+				if (name) {
+					generalAttributes.push({
+						id: 'foodoffer_category',
+						string_value: name,
+						food_attribute: {
+							status: 'published',
+							translations: [
+								{
+									languages_code: languageCode,
+									name: translate(TranslationKeys.foodoffer_category_label),
+								},
+							],
+						},
+					});
+				}
+			}
+
+			if (generalAttributes.length) {
+				groupedAttributes?.push({
+					id: 'general',
+					translations: [{ languages_code: languageCode, name: translate(TranslationKeys.general) }],
+					attributes: generalAttributes,
 				});
 			}
-		}
-
-		if (foodDetails && foodOfferCategories.length && foodDetails.foodoffer_category) {
-			const name = getFoodOfferCategoryName(foodOfferCategories, foodDetails.foodoffer_category, languageCode);
-			if (name) {
-				generalAttributes.push({
-					id: 'foodoffer_category',
-					string_value: name,
-					food_attribute: {
-						status: 'published',
-						translations: [
-							{
-								languages_code: languageCode,
-								name: translate(TranslationKeys.foodoffer_category_label),
-							},
-						],
-					},
-				});
-			}
-		}
-
-		if (generalAttributes.length) {
-			groupedAttributes?.push({
-				id: 'general',
-				translations: [{ languages_code: languageCode, name: translate(TranslationKeys.general) }],
-				attributes: generalAttributes,
-			});
 		}
 
 		setGroupedAttributes(groupedAttributes);
@@ -185,7 +192,7 @@ export default function FoodDetailsScreen() {
 		if (foodAttributeGroups && foodAttributes) {
 			filterAttributes();
 		}
-	}, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories]);
+	}, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories, selectedCustomer]);
 
 	const renderContent = useCallback(
                 (foodDetails: DatabaseTypes.Foods) => {
@@ -201,14 +208,15 @@ export default function FoodDetailsScreen() {
 			case 'details':
 				return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
                                 case 'labels':
-                                        return (
-                                                <Labels
-                                                        foodDetails={foodDetails}
-                                                        offerId={offerId ? offerId.toString() : undefined}
-                                                        handleMenuSheet={openMenuSheet}
-                                                        color={foods_area_color}
-                                                />
-                                        );
+							return (
+								<Labels
+									foodDetails={foodDetails}
+									offerId={offerId ? offerId.toString() : undefined}
+									foodOfferDetails={foodOfferDetails}
+									handleMenuSheet={openMenuSheet}
+									color={foods_area_color}
+								/>
+							);
                                 default:
                                         return null;
                         }
@@ -262,8 +270,9 @@ export default function FoodDetailsScreen() {
                 try {
                         if (offerId) {
                                 const foodData = await fetchFoodOffersDetailsById(offerId.toString());
-                                if (foodData && foodData.data) {
-                                        const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+				if (foodData && foodData.data) {
+					const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+					setFoodOfferDetails(foodData.data);
 
                                         const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
                                         setFoodDetails({
@@ -278,10 +287,11 @@ export default function FoodDetailsScreen() {
                                 } else {
                                         console.log('No food data found');
                                 }
-                        } else if (initialFoodId) {
-                                const foodData = await fetchFoodDetailsById(initialFoodId.toString());
-                                if (foodData && foodData.data) {
-                                        const food = foodData.data;
+			} else if (initialFoodId) {
+				const foodData = await fetchFoodDetailsById(initialFoodId.toString());
+				if (foodData && foodData.data) {
+					const food = foodData.data;
+					setFoodOfferDetails(null);
                                         const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
                                         setFoodDetails({
                                                 ...food,
@@ -769,6 +779,11 @@ export default function FoodDetailsScreen() {
                                         {foodDetails?.id && renderContent(foodDetails)}
                                 </View>
                         </View>
+                        <DebugView title="Foodoffer Details" isVisible={isDevMode}>
+                                <Text style={{ color: theme.screen.text }}>
+                                        {foodOfferDetails ? JSON.stringify(foodOfferDetails, null, 2) : 'No foodoffer details available.'}
+                                </Text>
+                        </DebugView>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
                 </View>
         </ScrollView>

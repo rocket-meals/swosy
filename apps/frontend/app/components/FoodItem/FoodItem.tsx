@@ -33,7 +33,7 @@ const selectPreviousFeedback = createSelector([selectFoodState, (_: RootState, f
 const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
 
 const FoodItem: React.FC<FoodItemProps> = memo(
-  ({ item, canteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, cardWidth }) => {
+  ({ item, canteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, cardWidth, dividerColor }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { theme } = useTheme();
@@ -49,7 +49,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const previousFeedback = useSelector(state => selectPreviousFeedback(state as RootState, foodItem.id));
     const markings = useSelector(selectMarkings);
 
-    const foods_area_color = appSettings?.foods_area_color || primaryColor;
+    const foods_area_color = dividerColor || appSettings?.foods_area_color || primaryColor;
     const defaultImage =
       getImageUrl(String(appSettings.foods_placeholder_image)) ||
       appSettings.foods_placeholder_image_remote_url ||
@@ -66,7 +66,27 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       [item?.markings, profile?.markings]
     );
 
-    const { screenWidth, containerStyle, imageContainerStyle, contentStyle } = useFoodCard(dislikedMarkings.length > 0 ? 3 : 0);
+    const likedMarkings = useMemo(
+      () =>
+        item?.markings?.filter(marking =>
+          profile?.markings?.some(
+            (profileMarking: DatabaseTypes.ProfilesMarkings) =>
+              profileMarking?.markings_id === marking?.markings_id && profileMarking?.like === true
+          )
+        ) ?? [],
+      [item?.markings, profile?.markings]
+    );
+
+    const isLiked = useMemo(
+      () =>
+        RatingHelper.isMaxRating(previousFeedback?.rating) ||
+        likedMarkings.length > 0,
+      [likedMarkings.length, previousFeedback?.rating]
+    );
+
+    const borderWidth = dislikedMarkings.length > 0 ? 3 : isLiked ? 3 : 0;
+    const borderColor = dislikedMarkings.length > 0 ? '#FF000095' : '#00B050';
+    const { screenWidth, containerStyle, imageContainerStyle, contentStyle } = useFoodCard(borderWidth, borderColor);
 
     const markingsData = useMemo(
       () =>
@@ -299,7 +319,10 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       </>
     );
   },
-  (prev, next) => prev.item === next.item
+  (prev, next) =>
+    prev.item === next.item &&
+    prev.dividerColor === next.dividerColor &&
+    prev.cardWidth === next.cardWidth
 );
 
 export default FoodItem;
