@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, Text, View, useWindowDimensions } from 'react-native';
 import { addDays } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
@@ -56,19 +56,26 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
         const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
         const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
         const bottomSheetRef = useRef<BottomSheet>(null);
-        const [listWidth, setListWidth] = useState<number | null>(null);
+	const { width: windowWidth } = useWindowDimensions();
+	const [listWidth, setListWidth] = useState<number | null>(windowWidth || null);
         const MIN_CARD_WIDTH = 280;
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const foods_area_color = appSettings?.foods_area_color || primaryColor;
         const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
-        const openSheet = useCallback(
-                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-                        setSelectedSheet(sheet);
-                        setSheetProps(props);
-                },
-                []
-        );
+	const openSheet = useCallback(
+			(sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+				setSelectedSheet(sheet);
+				setSheetProps(props);
+			},
+			[]
+	);
+
+	useEffect(() => {
+		if (!listWidth && windowWidth) {
+			setListWidth(windowWidth);
+		}
+	}, [listWidth, windowWidth]);
 
 	const closeSheet = useCallback(() => {
 		bottomSheetRef.current?.snapToIndex(-1);
