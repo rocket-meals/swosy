@@ -31,7 +31,8 @@ export const useFoodCard = (borderWidth: number = 0, borderColor: string = '#FF0
 	};
 
 	const imageContainerStyle: ViewStyle = {
-		height: dimension,
+		width: '100%',
+		height: '100%',
 	};
 
 	const contentStyle: ViewStyle = {
