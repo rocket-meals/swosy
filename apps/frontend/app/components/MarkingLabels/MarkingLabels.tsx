@@ -26,11 +26,14 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
-	const { primaryColor, language, appSettings } = useAppSelector(state => state.settings);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const language = useAppSelector(state => state.settings.language);
+	const appSettings = useAppSelector(state => state.settings.appSettings);
 
-	const { user, profile } = useAppSelector(state => state.authReducer);
+	const user = useAppSelector(state => state.authReducer.user);
+	const profile = useAppSelector(state => state.authReducer.profile);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const { markings } = useAppSelector(state => state.food);
+	const markings = useAppSelector(state => state.food.markings);
 	const marking = markings?.find((mark: any) => mark.id === markingId);
 	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
 	const [likeLoading, setLikeLoading] = useState(false);

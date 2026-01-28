@@ -59,13 +59,11 @@ export default StyleSheet.create({
 	featuredImage: {
 		width: '100%',
 		height: '100%',
-		resizeMode: 'cover',
 		borderRadius: 25,
 	},
 	mobileFeaturedImage: {
 		width: '100%',
 		height: 350,
-		resizeMode: 'cover',
 		borderRadius: 25,
 	},
 	detailsContainer: {

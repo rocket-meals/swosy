@@ -16,7 +16,8 @@ const DEFAULT_THRESHOLD = '18:00';
 const FoodOffersNextDayTimeSheet: React.FC<FoodOffersNextDayTimeSheetProps> = ({ closeSheet, initialValue, onSave }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const mode = useAppSelector(state => state.settings.selectedTheme);
 	const { bottom: bottomInset } = useSafeAreaInsets();
 	const contrastColor = useMemo(() => myContrastColor(primaryColor, theme, mode === 'dark'), [mode, primaryColor, theme]);
 

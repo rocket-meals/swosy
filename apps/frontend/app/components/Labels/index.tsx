@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
@@ -7,12 +7,11 @@ import FoodLabelingInfo from '../FoodLabelingInfo';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
-import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { shallowEqual } from 'react-redux';
 
 interface LabelsProps {
         foodDetails: any;
@@ -21,17 +20,10 @@ interface LabelsProps {
         color: string;
 }
 
-const selectMarkings = (state: RootState) => state.food.markings;
-
-export const selectFoodOffer = (offerId?: string) =>
-        createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
-                offerId ? getFoodOffer(foodOffers, offerId) : undefined
-        );
-
 const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, appSettings } = useAppSelector((state) => state.settings);
+	const { primaryColor, appSettings } = useAppSelector((state) => state.settings, shallowEqual);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
 	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
@@ -40,12 +32,13 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
 	};
 
-	const markings = useAppSelector(selectMarkings);
-	const foodOfferSelector = useMemo(
-		() => (offerId ? selectFoodOffer(offerId) : () => undefined),
-		[offerId]
+	const markings = useAppSelector((state) => state.food.markings, shallowEqual);
+    const selectedCanteenFoodOffers = useAppSelector((state) => state.canteenReducer.selectedCanteenFoodOffers, shallowEqual);
+	
+	const foodOffer = useMemo(
+		() => (offerId ? getFoodOffer(selectedCanteenFoodOffers, offerId) : undefined),
+		[offerId, selectedCanteenFoodOffers]
 	);
-	const foodOffer = useAppSelector(foodOfferSelector);
 
 	// State for marking groups
 	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
@@ -91,4 +84,10 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
         );
 };
 
-export default Labels;
+export default memo(Labels, (prevProps, nextProps) => {
+    return (
+        prevProps.offerId === nextProps.offerId &&
+        prevProps.color === nextProps.color &&
+        prevProps.foodDetails?.id === nextProps.foodDetails?.id
+    );
+});

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Dimensions, Platform, Image } from 'react-native';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch, useStore, shallowEqual } from 'react-redux';
 import { DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import { addDays, format, parse } from 'date-fns';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
@@ -93,6 +93,8 @@ export const useFoodOffersData = (
         languageCode
     });
 
+    const currentFoodOffers = useAppSelector((state: RootState) => state.canteenReducer.canteenFoodOffers, shallowEqual);
+
     useEffect(() => {
         stateRef.current = {
             profile,
@@ -132,8 +134,12 @@ export const useFoodOffersData = (
 
         // Optimization: Use cached data immediately if available and not forcing fetch
         if (foodOffers && !forceFetch) {
+            // Always resort with current sortBy to reflect UI changes
             updateSort(sortBy as FoodSortOption, foodOffers);
-            dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+            // Dispatch local raw offers only if reference changed
+            if (foodOffers !== currentFoodOffers) {
+                dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+            }
         } else {
             try {
                 setLoading(true);
@@ -144,8 +150,12 @@ export const useFoodOffersData = (
                 setPrefetchedFoodOffers(prev => ({ ...prev, [cacheKey]: foodOffers }));
                 prefetchedKeys.current.add(cacheKey);
                 
+                // Always resort with current sortBy to reflect UI changes
                 updateSort(sortBy as FoodSortOption, foodOffers);
-                dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+                // Dispatch local raw offers only if reference changed
+                if (foodOffers !== currentFoodOffers) {
+                    dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+                }
             } catch (error) {
                 console.error('Error fetching Food Offers:', error);
             } finally {
@@ -174,7 +184,7 @@ export const useFoodOffersData = (
                 }
             }
         });
-    }, [selectedCanteen, selectedDate, getCachedOffers, prefetchedFoodOffers, updateSort, sortBy, dispatch]);
+    }, [selectedCanteen, selectedDate, getCachedOffers, prefetchedFoodOffers, updateSort, sortBy, dispatch, currentFoodOffers]);
 
     const fetchCanteenLabels = useCallback(async () => {
         try {

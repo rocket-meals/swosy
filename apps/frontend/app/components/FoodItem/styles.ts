@@ -65,7 +65,6 @@ export default StyleSheet.create({
         categoryLogo: {
                 width: 35,
                 height: 35,
-                resizeMode: 'cover',
         },
 	foodName: {
 		fontSize: 16,

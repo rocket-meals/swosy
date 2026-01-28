@@ -1,23 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-	ActivityIndicator,
 	SafeAreaView,
-	Text,
-	TouchableOpacity,
 	View,
 } from 'react-native';
-import { CollectibleAt, CollectionNames, DatabaseTypes, sortBySortField } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, sortBySortField } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import useKioskMode from '@/hooks/useKioskMode';
 import {
 	SET_BUSINESS_HOURS,
-	SET_SELECTED_DATE,
 	UPDATE_PROFILE,
 } from '@/redux/Types/types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -34,8 +30,6 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
-import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
@@ -65,10 +59,8 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const dispatch = useDispatch();
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const router = useRouter();
 
-	// --- Selectors ---
-	const appSettings = useAppSelector((state) => state.settings.appSettings);
+	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 	const sortBy = useAppSelector((state) => state.settings.sortBy);
 	const languageCode = useAppSelector((state) => state.settings.language);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
@@ -78,15 +70,20 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const debugMode = useAppSelector((state) => state.settings.debugMode);
 
 	const selectedDate = useAppSelector((state) => state.food.selectedDate);
-	const foodOffersInfoItems = useAppSelector((state) => state.food.foodOffersInfoItems);
+	const foodOffersInfoItems = useAppSelector((state) => state.food.foodOffersInfoItems, shallowEqual);
 
-	const profile = useAppSelector((state) => state.authReducer.profile);
-	const user = useAppSelector((state) => state.authReducer.user);
-	const appElements = useAppSelector((state) => state.appElements.appElements);
-	const selectedCanteenFoodOffers = useAppSelector((state) => state.canteenReducer.selectedCanteenFoodOffers);
-	const canteenFeedbackLabels = useAppSelector((state) => state.canteenReducer.canteenFeedbackLabels);
+	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
+	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
+	const appElements = useAppSelector((state) => state.appElements.appElements, shallowEqual);
+	const selectedCanteenFoodOffers = useAppSelector((state) => state.canteenReducer.selectedCanteenFoodOffers, shallowEqual);
+	const canteenFeedbackLabels = useAppSelector((state) => state.canteenReducer.canteenFeedbackLabels, shallowEqual);
+	const businessHours = useAppSelector((state) => state.canteenReducer.businessHours, shallowEqual);
+	const ownFoodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks, shallowEqual);
 
-	// --- Hooks & State ---
+	const markings = useAppSelector((state) => state.food.markings, shallowEqual);
+	const serverInfo = useAppSelector((state) => state.settings.serverInfo, shallowEqual);
+	const isManagement = useAppSelector((state) => state.authReducer.isManagement, shallowEqual);
+
 	const selectedCanteen = useSelectedCanteen();
 	useFoodOffersDefaultDate();
 	const kioskMode = useKioskMode();
@@ -100,6 +97,18 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+
+	const appElementsMap = useMemo(() => {
+		if (!appElements) return new Map();
+		const map = new Map(appElements.map((el: any) => [el.id, el]));
+		return map;
+	}, [appElements]);
+
+	const feedbackMap = useMemo(() => {
+		if (!ownFoodFeedbacks) return new Map();
+		const map = new Map(ownFoodFeedbacks.map((f: any) => [f.food, f]));
+		return map;
+	}, [ownFoodFeedbacks]);
 
 	const {
 		loading,
@@ -118,12 +127,11 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	);
 
 	const {
-		screenWidth,
 		listWidth,
 		setListWidth,
 		numColumns,
 		cardWidth,
-		itemGap
+		screenWidth,
 	} = useLayoutConfig(amountColumnsForcard);
 
 	const {
@@ -138,7 +146,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const { animationRef, animationJson, autoPlay } = useAnimationLogic(appSettings, foods_area_color);
 	const { handleDateChange, getDayLabel, getWeekdayKey } = useDateNavigation(selectedDate);
 
-	// --- Effects ---
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 
 	useEffect(() => {
@@ -157,20 +164,20 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	}, [user, setDefaultPriceGroupForAnonymousUser]);
 
 	const getBusinessHours = useCallback(async () => {
+		if (businessHours && businessHours.length > 0) return;
 		const businessHoursHelper = new BusinessHoursHelper();
 		try {
-			const businessHours = (await businessHoursHelper.fetchBusinessHours({})) as DatabaseTypes.Businesshours[];
-			dispatch({ type: SET_BUSINESS_HOURS, payload: businessHours });
+			const businessHoursData = (await businessHoursHelper.fetchBusinessHours({})) as DatabaseTypes.Businesshours[];
+			dispatch({ type: SET_BUSINESS_HOURS, payload: businessHoursData });
 		} catch (error) {
 			console.error('Error fetching business hours:', error);
 		}
-	}, [dispatch]);
+	}, [dispatch, businessHours]);
 
 	useEffect(() => {
 		getBusinessHours();
 	}, [getBusinessHours]);
 
-	// --- Memoized Data ---
 	const dayItems = useMemo(() => {
 		const offers = selectedCanteenFoodOffers || [];
 		const hasOffers = offers.length > 0;
@@ -188,41 +195,51 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		const startInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'start'));
 		const endInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'end'));
 
-		const start = startInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
+		const startItems = startInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 		const main = offers.map(o => ({ foodoffer: o, foodofferInfoItem: null }));
-		const end = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
+		const endItems = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 
-		return [...start, ...main, ...end] as DayItem[];
+		const result = [...startItems, ...main, ...endItems] as DayItem[];
+		return result;
 	}, [selectedCanteenFoodOffers, foodOffersInfoItems, selectedCanteen]);
 
 	const [beforeElement, setBeforeElement] = useState<any>(null);
 	const [afterElement, setAfterElement] = useState<any>(null);
 
 	useEffect(() => {
-		if (!appElements || !appSettings) return;
+		if (!appElementsMap || !appSettings) return;
 		const getElement = (id: string) => {
-			const element = appElements?.find((el: any) => el.id === id);
+			const element = appElementsMap.get(id);
 			if (!element || !element.translations) return null;
 			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
 			return { content, popup_button_text, popup_content };
 		};
 		const before = getElement(String(appSettings.foodoffers_list_before_element));
 		const after = getElement(String(appSettings.foodoffers_list_after_element));
-		setBeforeElement(before);
-		setAfterElement(after);
-	}, [appElements, appSettings, languageCode]);
+
+		setBeforeElement((prev: any) => {
+			if (JSON.stringify(prev) === JSON.stringify(before)) return prev;
+			return before;
+		});
+		setAfterElement((prev: any) => {
+			if (JSON.stringify(prev) === JSON.stringify(after)) return prev;
+			return after;
+		});
+	}, [appElementsMap, appSettings, languageCode]);
 
 	const memoizedCanteenFeedbackLabels = useMemo(
-		() =>
-			canteenFeedbackLabels?.map((label: DatabaseTypes.CanteensFeedbacksLabels, index: number) => (
+		() => {
+			const result = canteenFeedbackLabels?.map((label: DatabaseTypes.CanteensFeedbacksLabels, index: number) => (
 				<CanteenFeedbackLabels key={label?.id || `feedback-label-${index}`} label={label} date={selectedDate} />
-			)),
+			));
+			return result;
+		},
 		[canteenFeedbackLabels, selectedDate]
 	);
 	const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
 	const ListFooterComponentMemo = useMemo(() => {
-		return (
+		const result = (
 			<ListFooterComponent
 				afterElement={afterElement}
 				feedbackLabelsLoading={feedbackLabelsLoading}
@@ -236,6 +253,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				getDayLabel={getDayLabel}
 			/>
 		);
+		return result;
 	}, [
 		afterElement,
 		feedbackLabelsLoading,
@@ -251,11 +269,12 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const renderLottie = useMemo(() => {
 		if (!animationJson) return null;
-		return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={styles.lottieView} autoPlay={autoPlay || false} loop={false} />;
+		const result = <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={styles.lottieView} autoPlay={autoPlay || false} loop={false} />;
+		return result;
 	}, [animationJson, autoPlay]);
 
 	const ListEmptyComponentMemo = useMemo(() => {
-		return (
+		const result = (
 			<ListEmptyComponent
 				loading={loading}
 				theme={theme}
@@ -268,6 +287,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 				getWeekdayKey={getWeekdayKey}
 			/>
 		);
+		return result;
 	}, [loading, theme, translate, renderLottie, nextAvailableDate, foods_area_color, contrastColor, getWeekdayKey, dispatch]);
 
 	const openManagementSheet = useCallback(
@@ -285,12 +305,14 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const getInfoItemContent = useCallback(
 		(item: DatabaseTypes.FoodoffersInfoItems) => {
+			if (!item || !appElementsMap) return null;
 			const elementId = typeof item.name === 'string' ? item.name : item.name?.id;
-			const element = appElements?.find((el: any) => el.id === elementId);
-			if (!element || !element.translations) return { content: '' };
-			return getAppElementTranslation(element.translations, languageCode);
+			const element = appElementsMap.get(elementId);
+			if (!element) return null;
+			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
+			return { content, popup_button_text, popup_content };
 		},
-		[appElements, languageCode]
+		[appElementsMap, languageCode]
 	);
 
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
@@ -325,6 +347,18 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 					handleImageSheet={openManagementSheet}
 					handleEatingHabitsSheet={openSheet}
 					getInfoItemContent={getInfoItemContent}
+					feedbackMap={feedbackMap}
+					language={languageCode}
+					serverInfo={serverInfo}
+					appSettings={appSettings}
+					primaryColor={primaryColor}
+					user={user}
+					isManagement={isManagement}
+					profile={profile}
+					markings={markings}
+					screenWidth={screenWidth}
+					theme={theme}
+					amountColumnsForcard={amountColumnsForcard}
 				/>
 			</View>
 

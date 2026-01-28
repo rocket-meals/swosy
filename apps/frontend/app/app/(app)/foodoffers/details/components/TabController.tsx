@@ -40,7 +40,13 @@ const TabController = ({
                 <IconButton
                     {...triggerProps}
                     style={getTabStyle(tabName)}
-                    onPress={() => setActiveTab(tabName)}
+                    activeOpacity={1}
+                    onPress={(e: any) => {
+                        setActiveTab(tabName);
+                        if (triggerProps.onPress) {
+                            triggerProps.onPress(e);
+                        }
+                    }}
                     padding={10}
                 >
                     <MaterialCommunityIcons
@@ -80,4 +86,12 @@ const TabController = ({
     );
 };
 
-export default memo(TabController);
+export default memo(TabController, (prevProps, nextProps) => {
+    return (
+        prevProps.activeTab === nextProps.activeTab &&
+        prevProps.theme === nextProps.theme &&
+        prevProps.contrastColor === nextProps.contrastColor &&
+        prevProps.containerWidth === nextProps.containerWidth &&
+        prevProps.foodsAreaColor === nextProps.foodsAreaColor
+    );
+});

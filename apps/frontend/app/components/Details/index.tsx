@@ -16,7 +16,9 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor, appSettings, language } = useAppSelector(state => state.settings);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const appSettings = useAppSelector(state => state.settings.appSettings);
+	const language = useAppSelector(state => state.settings.language);
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 

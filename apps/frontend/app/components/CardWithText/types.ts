@@ -28,4 +28,5 @@ export interface CardWithTextProps extends TouchableOpacityProps {
 	 */
 	bottomContent?: React.ReactNode;
 	children?: React.ReactNode;
+	knownCardWidth?: number;
 }

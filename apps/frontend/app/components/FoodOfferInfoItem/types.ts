@@ -4,4 +4,5 @@ export interface FoodOfferInfoItemProps {
 	item: DatabaseTypes.FoodoffersInfoItems;
 	content: string;
 	cardWidth?: number; 
+	screenWidth?: number;
 }

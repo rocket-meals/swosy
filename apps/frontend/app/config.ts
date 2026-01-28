@@ -73,8 +73,8 @@ export function getCompanyLogoLocalSaved(): ImageSourcePropType {
 export const devConfig: CustomerConfig = {
 	projectName: 'Rocket Meals',
 	projectSlug: 'rocket-meals-dev',
-	easUpdateId: '9e6a031b-ae59-4728-a9b9-2ecec0487c69',
-	easProjectId: '9e6a031b-ae59-4728-a9b9-2ecec0487c69',
+	easUpdateId: '36f72583-5997-4602-8609-05f39444f2e7',
+	easProjectId: '36f72583-5997-4602-8609-05f39444f2e7',
 	appScheme: 'app-rocket-meals',
 	bundleIdIos: 'de.baumgartner-software.rocket-meals-demo',
 	bundleIdAndroid: 'com.baumgartnersoftware.rocketmealsdev',
@@ -304,7 +304,7 @@ export function getFinalConfig(config?: any) {
 						includeNdefEntitlement: false,
 					},
 				],
-				['expo-updates', { username: 'ahmedfazil' }],
+				['expo-updates', { username: 'jack5496' }],
 				[
 					'expo-image-picker',
 					{
@@ -343,7 +343,7 @@ export function getFinalConfig(config?: any) {
 					projectId: customerConfig.easProjectId,
 				},
 			},
-			// owner: 'baumgartner-software',
+			owner: 'baumgartner-software',
 			runtimeVersion: {
 				policy: 'appVersion',
 			},

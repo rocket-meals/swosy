@@ -25,7 +25,20 @@ interface FoodOffersListProps {
     handleMenuSheet: (sheet: any, props?: any) => void;
     handleImageSheet: (food: DatabaseTypes.Foods) => void;
     handleEatingHabitsSheet: (sheet: any) => void;
-    getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: string };
+    getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: any; popup_button_text?: any; popup_content?: any; } | null;
+    feedbackMap: Map<string, any>;
+    // Optimization props
+    language?: string;
+    serverInfo?: any;
+    appSettings?: any;
+    primaryColor?: string;
+    user?: any;
+    isManagement?: boolean;
+    profile?: any;
+    markings?: any[];
+    screenWidth?: number;
+    theme?: any;
+    amountColumnsForcard?: number;
 }
 
 const styles = StyleSheet.create({
@@ -48,19 +61,37 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     numColumns,
     cardWidth,
     refreshing,
-    onRefresh,
-    ListFooterComponent,
-    ListEmptyComponent,
-    setListWidth,
     listWidth,
     selectedCanteen,
+    onRefresh,
+    setListWidth,
     handleMenuSheet,
     handleImageSheet,
     handleEatingHabitsSheet,
     getInfoItemContent,
+    ListFooterComponent,
+    ListEmptyComponent,
+    feedbackMap,
+    language,
+    serverInfo,
+    appSettings,
+    primaryColor,
+    user,
+    isManagement,
+    profile,
+    markings,
+    screenWidth,
+    theme,
+    amountColumnsForcard
 }) => {
 
     const renderItem = useCallback(({ item, index }: { item: DayItem; index: number }) => {
+        // Optimization: Lookup feedback directly from the map passed as prop
+        // Use food.id for lookup as feedbackMap is keyed by food ID
+        const food = item.foodoffer?.food;
+        const foodId = food ? (typeof food === 'string' ? food : food.id) : undefined;
+        const previousFeedback = foodId ? feedbackMap.get(foodId) : undefined;
+
         return (
             <FoodOfferListItem
                 item={item}
@@ -71,14 +102,31 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 handleImageSheet={handleImageSheet}
                 handleEatingHabitsSheet={handleEatingHabitsSheet}
                 getInfoItemContent={getInfoItemContent}
+                itemGap={10}
+                previousFeedback={previousFeedback}
+                language={language}
+                serverInfo={serverInfo}
+                appSettings={appSettings}
+                primaryColor={primaryColor}
+                user={user}
+                isManagement={isManagement}
+                profile={profile}
+                markings={markings}
+                screenWidth={screenWidth}
+                theme={theme}
+                amountColumnsForcard={amountColumnsForcard}
             />
         );
-    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, getInfoItemContent]);
+    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, getInfoItemContent, feedbackMap, language, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
 
     const keyExtractor = useCallback((item: DayItem, index: number) => {
         if (item.foodoffer && item.foodoffer.id) return `f-${item.foodoffer.id}`;
         if (item.foodofferInfoItem && item.foodofferInfoItem.id) return `i-${item.foodofferInfoItem.id}`;
         return `di-${index}`;
+    }, []);
+
+    const getItemType = useCallback((item: DayItem) => {
+        return item.foodoffer ? 'food' : 'info';
     }, []);
 
     return (
@@ -95,9 +143,25 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 <FlashList
                     key={numColumns} // Force re-render when numColumns changes
                     data={dayItems}
-                    extraData={cardWidth}
+                    extraData={[
+                        cardWidth,
+                        selectedCanteen,
+                        feedbackMap,
+                        language,
+                        serverInfo,
+                        appSettings,
+                        primaryColor,
+                        user,
+                        isManagement,
+                        profile,
+                        markings,
+                        screenWidth,
+                        theme,
+                        amountColumnsForcard
+                    ]}
                     renderItem={renderItem}
                     keyExtractor={keyExtractor}
+                    getItemType={getItemType}
                     numColumns={numColumns}
                     // @ts-ignore: estimatedItemSize is missing in the type definition but required for performance
                     estimatedItemSize={280}
@@ -128,7 +192,8 @@ export default memo(FoodOffersList, (prev, next) => {
         prev.handleImageSheet === next.handleImageSheet &&
         prev.handleEatingHabitsSheet === next.handleEatingHabitsSheet &&
         prev.getInfoItemContent === next.getInfoItemContent &&
-        prev.ListFooterComponent === next.ListFooterComponent;
+        prev.ListFooterComponent === next.ListFooterComponent &&
+        prev.feedbackMap === next.feedbackMap;
 
     if (!isSame) return false;
 
@@ -138,5 +203,16 @@ export default memo(FoodOffersList, (prev, next) => {
     }
 
     // If list has items, check if footer changed
-    return prev.ListFooterComponent === next.ListFooterComponent;
+    return prev.ListFooterComponent === next.ListFooterComponent &&
+           prev.language === next.language &&
+           prev.serverInfo === next.serverInfo &&
+           prev.appSettings === next.appSettings &&
+           prev.primaryColor === next.primaryColor &&
+           prev.user === next.user &&
+           prev.isManagement === next.isManagement &&
+           prev.profile === next.profile &&
+           prev.markings === next.markings &&
+           prev.screenWidth === next.screenWidth &&
+           prev.theme === next.theme &&
+           prev.amountColumnsForcard === next.amountColumnsForcard;
 });

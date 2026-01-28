@@ -1,5 +1,5 @@
-import React, { memo, useMemo } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { memo, useMemo, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import IconButton from '@/components/UI/IconButton';
@@ -7,6 +7,7 @@ import { getImageUrl, numToOneDecimal } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
+import MyImage from '@/components/MyImage';
 
 interface FoodHeaderProps {
     foodDetails: any;
@@ -41,7 +42,7 @@ const FoodHeader = ({
         height: isLargeScreen ? 400 : screenWidth - 40,
     }), [isLargeScreen, screenWidth]);
 
-    const renderRatingStars = () => (
+    const renderRatingStars = useCallback(() => (
         <View style={isWeb ? styles.stars : styles.mobileStars}>
             {Array.from({ length: 5 }).map((_, index) => (
                 <React.Fragment key={index}>
@@ -76,7 +77,7 @@ const FoodHeader = ({
                 </React.Fragment>
             ))}
         </View>
-    );
+    ), [isWeb, previousFeedback?.rating, foodsAreaColor, rateFood, theme, translate]);
 
     if (isWeb) {
         return (
@@ -100,15 +101,12 @@ const FoodHeader = ({
                         ]}
                     >
                             <TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.featuredImage}>
-                                <Image
+                                <MyImage
                                     style={styles.featuredImage}
-                                    source={
-                                        foodDetails?.image_remote_url || foodDetails?.image
-                                            ? {
-                                                  uri: foodDetails?.image_remote_url || getImageUrl(foodDetails?.image),
-                                              }
-                                            : { uri: defaultImage || undefined }
-                                    }
+                                    remote_image_url={foodDetails?.image_remote_url}
+                                    directus_asset_id={foodDetails?.image}
+                                    defaultImageUrl={defaultImage}
+                                    contentFit="cover"
                                 />
                             </TouchableOpacity>
                         </View>
@@ -183,15 +181,12 @@ const FoodHeader = ({
     return (
         <View style={styles.mobileImageContainer}>
             <TouchableOpacity onPress={openFullScreenImage} activeOpacity={0.9} style={styles.mobileFeaturedImage}>
-                <Image
-                    source={
-                        foodDetails?.image_remote_url || foodDetails?.image
-                            ? {
-                                  uri: foodDetails?.image_remote_url || getImageUrl(foodDetails?.image),
-                              }
-                            : { uri: defaultImage || undefined }
-                    }
+                <MyImage
                     style={styles.mobileFeaturedImage}
+                    remote_image_url={foodDetails?.image_remote_url}
+                    directus_asset_id={foodDetails?.image}
+                    defaultImageUrl={defaultImage}
+                    contentFit="cover"
                 />
             </TouchableOpacity>
             <View style={styles.overlay} pointerEvents="box-none">
@@ -251,4 +246,13 @@ const FoodHeader = ({
     );
 };
 
-export default memo(FoodHeader);
+export default memo(FoodHeader, (prevProps, nextProps) => {
+    return (
+        prevProps.foodDetails === nextProps.foodDetails &&
+        prevProps.screenWidth === nextProps.screenWidth &&
+        prevProps.previousFeedback === nextProps.previousFeedback &&
+        prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
+        prevProps.theme === nextProps.theme &&
+        prevProps.defaultImage === nextProps.defaultImage
+    );
+});

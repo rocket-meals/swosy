@@ -108,7 +108,6 @@ const Index = () => {
 	};
 
 	useEffect(() => {
-		console.log('Profile changed, updating selected option:', profile);
 		setSelectedOption(profile?.price_group || PriceGroupKey.student);
 	}, [profile]);
 

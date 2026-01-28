@@ -86,9 +86,9 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 					<Tooltip
 						placement="top"
 						trigger={triggerProps => (
-							<IconButton {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
+							<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
 								<Ionicons name="arrow-back" size={26} color={theme.header.text} />
-							</IconButton>
+							</TouchableOpacity>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

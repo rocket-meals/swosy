@@ -29,6 +29,7 @@ const CardWithText: React.FC<Props> = ({
   children,
   bottomContent,
   imageProps,
+  knownCardWidth,
   ...rest
 }) => {
   const forwardedImageProps: AnyImageProps = {
@@ -41,22 +42,25 @@ const CardWithText: React.FC<Props> = ({
     : [styles.imageContainer, imageContainerStyle];
 
   // state to store measured card width, used to dynamically determine caption height
-  const [cardWidth, setCardWidth] = useState<number | null>(null);
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+  
+  const widthToUse = knownCardWidth ?? measuredWidth;
 
   // compute min caption height based on measured width
   const captionMinHeight = useMemo(() => {
-    if (!cardWidth) return 84; // fallback
+    if (!widthToUse) return 84; // fallback
     // tune the multiplier to your design — 0.22 (22%) works well in screenshots
-    const computed = Math.round(cardWidth * 0.22);
+    const computed = Math.round(widthToUse * 0.22);
     return Math.max(64, Math.min(130, computed)); // clamp between 64 and 130 px
-  }, [cardWidth]);
+  }, [widthToUse]);
 
   const onLayoutCard = useCallback((e: LayoutChangeEvent) => {
+    if (knownCardWidth) return; // Skip measurement if width is known
     const w = Math.round(e.nativeEvent.layout.width);
-    if (w && w !== cardWidth) {
-      setCardWidth(w);
+    if (w && w !== measuredWidth) {
+      setMeasuredWidth(w);
     }
-  }, [cardWidth]);
+  }, [knownCardWidth, measuredWidth]);
 
   return (
     <TouchableOpacity
@@ -83,7 +87,7 @@ const CardWithText: React.FC<Props> = ({
       <View
         style={[
           styles.cardContent,
-          { minHeight: captionMinHeight, paddingHorizontal: Math.round((cardWidth ?? 360) * 0.05) }, // padding scales with width
+          { minHeight: captionMinHeight, paddingHorizontal: Math.round((widthToUse ?? 360) * 0.05) }, // padding scales with width
           contentStyle,
         ]}
       >

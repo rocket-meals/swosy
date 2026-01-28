@@ -17,7 +17,8 @@ interface FoodLabelingInfoProps {
 const FoodLabelingInfo: React.FC<FoodLabelingInfoProps> = ({ textStyle, containerStyle, backgroundColor }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, appSettings } = useAppSelector(state => state.settings);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const appSettings = useAppSelector(state => state.settings.appSettings);
 
 	const foods_area_color = backgroundColor ?? appSettings?.foods_area_color ?? primaryColor;
 

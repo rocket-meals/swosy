@@ -105,4 +105,12 @@ const NotificationSection = ({
     );
 };
 
-export default memo(NotificationSection);
+export default memo(NotificationSection, (prevProps, nextProps) => {
+    return (
+        prevProps.theme === nextProps.theme &&
+        prevProps.containerWidth === nextProps.containerWidth &&
+        prevProps.previousFeedback === nextProps.previousFeedback &&
+        prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
+        prevProps.foodDetails === nextProps.foodDetails
+    );
+});

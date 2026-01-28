@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
-import FoodItem from '@/components/FoodItem/FoodItem';
+import { FoodItemBase } from '@/components/FoodItem/FoodItem';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from '../styles';
@@ -18,8 +18,21 @@ interface FoodOfferListItemProps {
     handleMenuSheet: (sheet: any, props?: any) => void;
     handleImageSheet: (food: DatabaseTypes.Foods) => void;
     handleEatingHabitsSheet: (sheet: any) => void;
-    getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: string };
+    getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: any; popup_button_text?: any; popup_content?: any; } | null;
     itemGap?: number;
+    previousFeedback?: any;
+    // Optimization props
+    language?: string;
+    serverInfo?: any;
+    appSettings?: any;
+    primaryColor?: string;
+    user?: any;
+    isManagement?: boolean;
+    profile?: any;
+    markings?: any[];
+    screenWidth?: number;
+    theme?: any;
+    amountColumnsForcard?: number;
 }
 
 const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
@@ -31,15 +44,29 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
     handleImageSheet,
     handleEatingHabitsSheet,
     getInfoItemContent,
+    itemGap,
+    previousFeedback,
+    language,
+    serverInfo,
+    appSettings,
+    primaryColor,
+    user,
+    isManagement,
+    profile,
+    markings,
+    screenWidth,
+    theme,
+    amountColumnsForcard
 }) => {
     return (
         <View
             style={[
-                styles.listItemContainer
+                styles.listItemContainer,
+                itemGap !== undefined && { marginHorizontal: itemGap, marginVertical: itemGap }
             ]}
         >
             {item.foodoffer ? (
-                <FoodItem
+                <FoodItemBase
                     canteen={selectedCanteen as any}
                     item={item.foodoffer}
                     key={item.foodoffer.id || `food-item-${index}`}
@@ -47,6 +74,18 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
                     handleImageSheet={handleImageSheet}
                     handleEatingHabitsSheet={handleEatingHabitsSheet}
                     cardWidth={cardWidth}
+                    previousFeedback={previousFeedback}
+                    language={language}
+                    serverInfo={serverInfo}
+                    appSettings={appSettings}
+                    primaryColor={primaryColor}
+                    user={user}
+                    isManagement={isManagement}
+                    profile={profile}
+                    markings={markings}
+                    screenWidth={screenWidth}
+                    theme={theme}
+                    amountColumnsForcard={amountColumnsForcard}
                 />
             ) : item.foodofferInfoItem ? (
                 <FoodOfferInfoItem
@@ -56,10 +95,37 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
                         (getInfoItemContent(item.foodofferInfoItem) || {}).content || ''
                     }
                     cardWidth={cardWidth}
+                    screenWidth={screenWidth}
                 />
             ) : null}
         </View>
     );
 };
 
-export default memo(FoodOfferListItem);
+export default memo(FoodOfferListItem, (prev, next) => {
+    const isItemEqual = 
+        prev.item.foodoffer === next.item.foodoffer && 
+        prev.item.foodofferInfoItem === next.item.foodofferInfoItem;
+        
+    return isItemEqual &&
+        prev.index === next.index &&
+        prev.cardWidth === next.cardWidth &&
+        prev.selectedCanteen === next.selectedCanteen &&
+        prev.handleMenuSheet === next.handleMenuSheet &&
+        prev.handleImageSheet === next.handleImageSheet &&
+        prev.handleEatingHabitsSheet === next.handleEatingHabitsSheet &&
+        prev.getInfoItemContent === next.getInfoItemContent &&
+        prev.itemGap === next.itemGap &&
+        prev.previousFeedback === next.previousFeedback &&
+        prev.language === next.language &&
+        prev.serverInfo === next.serverInfo &&
+        prev.appSettings === next.appSettings &&
+        prev.primaryColor === next.primaryColor &&
+        prev.user === next.user &&
+        prev.isManagement === next.isManagement &&
+        prev.profile === next.profile &&
+        prev.markings === next.markings &&
+        prev.screenWidth === next.screenWidth &&
+        prev.theme === next.theme &&
+        prev.amountColumnsForcard === next.amountColumnsForcard;
+});

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, ScrollView, View, useWindowDimensions, type DimensionValue } from 'react-native';
 import styles from './styles';
@@ -11,7 +11,7 @@ import Labels from '@/components/Labels';
 import { getImageUrl, getpreviousFeedback } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
-import { useDispatch } from 'react-redux';
+import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
@@ -51,7 +51,8 @@ export default function FoodDetailsScreen() {
     const initialFoodOffer = useMemo(() => {
         if (typeof initialData === 'string') {
             try {
-                return JSON.parse(initialData);
+                const result = JSON.parse(initialData);
+                return result;
             } catch (e) {
                 return null;
             }
@@ -63,29 +64,30 @@ export default function FoodDetailsScreen() {
     const { translate } = useLanguage();
     const dispatch = useDispatch();
     const { width: screenWidth } = useWindowDimensions();
-    
+
     const menuSheetRef = useRef<BottomSheet>(null);
     const notificationSheetRef = useRef<BottomSheet>(null);
-    
+
     const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-    const user = useAppSelector((state) => state.authReducer.user);
-    const profile = useAppSelector((state) => state.authReducer.profile);
-    
+    const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
+    const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
+
     const primaryColor = useAppSelector((state) => state.settings.primaryColor);
-    const appSettings = useAppSelector((state) => state.settings.appSettings);
-    const serverInfo = useAppSelector((state) => state.settings.serverInfo);
+    const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
+    const serverInfo = useAppSelector((state) => state.settings.serverInfo, shallowEqual);
     const mode = useAppSelector((state) => state.settings.selectedTheme);
-    
+
     const ownFoodFeedbacks = useAppSelector(selectOwnFoodFeedbacks);
-    const previousFeedback = useMemo(() => 
-        initialFoodId ? getpreviousFeedback(ownFoodFeedbacks, initialFoodId.toString()) : undefined,
-    [ownFoodFeedbacks, initialFoodId]);
-    
+    const previousFeedback = useMemo(() => {
+        const result = initialFoodId ? getpreviousFeedback(ownFoodFeedbacks, initialFoodId.toString()) : undefined;
+        return result;
+    }, [ownFoodFeedbacks, initialFoodId]);
+
     // Hooks
     const profileHelper = useMemo(() => new ProfileHelper(), []);
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
     const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
-    
+
     const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, initialFoodOffer });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
 
@@ -135,33 +137,47 @@ export default function FoodDetailsScreen() {
         }
     }, [foodDetails, defaultImage]);
 
+    // Memoized content renderers to prevent unnecessary re-renders of inactive tabs
+    const FeedbacksContent = useMemo(() => (
+        <Feedbacks
+            foodDetails={foodDetails}
+            offerId={offerId ? offerId.toString() : undefined}
+            canteenId={foodOfferCanteenId}
+        />
+    ), [foodDetails, offerId, foodOfferCanteenId]);
+
+    const DetailsContent = useMemo(() => (
+        <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />
+    ), [groupedAttributes, foodAttributesLoading]);
+
+    const LabelsContent = useMemo(() => (
+        <Labels
+            foodDetails={foodDetails}
+            offerId={offerId ? offerId.toString() : undefined}
+            handleMenuSheet={openMenuSheet}
+            color={foods_area_color}
+        />
+    ), [foodDetails, offerId, openMenuSheet, foods_area_color]);
+
     const renderContent = useCallback(
-        (foodDetails: DatabaseTypes.Foods) => {
+        () => {
+            let result = null;
             switch (activeTab) {
                 case 'feedbacks':
-                    return (
-                        <Feedbacks
-                            foodDetails={foodDetails}
-                            offerId={offerId ? offerId.toString() : undefined}
-                            canteenId={foodOfferCanteenId}
-                        />
-                    );
+                    result = FeedbacksContent;
+                    break;
                 case 'details':
-                    return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
+                    result = DetailsContent;
+                    break;
                 case 'labels':
-                    return (
-                        <Labels
-                            foodDetails={foodDetails}
-                            offerId={offerId ? offerId.toString() : undefined}
-                            handleMenuSheet={openMenuSheet}
-                            color={foods_area_color}
-                        />
-                    );
+                    result = LabelsContent;
+                    break;
                 default:
-                    return null;
+                    result = null;
             }
+            return result;
         },
-        [activeTab, offerId, foodOfferCanteenId, groupedAttributes, foodAttributesLoading, openMenuSheet, foods_area_color]
+        [activeTab, FeedbacksContent, DetailsContent, LabelsContent]
     );
 
     const rateFood = useCallback((rating: number) => {
@@ -244,7 +260,7 @@ export default function FoodDetailsScreen() {
                 display_group: '',
             };
 
-            let newDevices = profile?.devices || [];
+            let newDevices = profile?.devices ? [...profile.devices] : [];
             let foundDevice = getCurrentDevice(deviceInformationsId, newDevices);
             if (!foundDevice) {
                 newDevices.push(deviceInformationsWithPushToken as any);
@@ -253,8 +269,13 @@ export default function FoodDetailsScreen() {
                     ...foundDevice,
                     ...deviceInformationsWithPushToken,
                 }; // we want to keep id or createdAt
+
+                // Optimization: Check if update is needed
+                if (JSON.stringify(foundDevice) === JSON.stringify(deviceInformationsForUpdate)) {
+                    return;
+                }
+
                 const index = newDevices.indexOf(foundDevice);
-                newDevices = [...newDevices];
                 newDevices[index] = deviceInformationsForUpdate;
             }
             const result = (await profileHelper.updateProfile({
@@ -272,13 +293,19 @@ export default function FoodDetailsScreen() {
         }
     }, [profile, dispatch, profileHelper]);
 
-    useEffect(() => {
-        if (profile?.id) {
-            runAfterInteractions(() => {
-                updateDeviceInfo();
-            });
-        }
-    }, [profile?.id]); // Added dependency to run only when profile.id changes/exists.
+    // Optimize updateDeviceInfo to run less frequently
+    const deviceInfoUpdatedRef = useRef(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (profile?.id && !deviceInfoUpdatedRef.current) {
+                runAfterInteractions(() => {
+                    updateDeviceInfo();
+                    deviceInfoUpdatedRef.current = true;
+                });
+            }
+        }, [profile?.id, updateDeviceInfo])
+    );
 
     const updateNotification = useCallback(async () => {
         if (!user?.id) {
@@ -288,7 +315,6 @@ export default function FoodDetailsScreen() {
         if (isSmartPhone()) {
             const result = await NotificationHelper.getDeviceNotificationPermission();
             if (isAndroid()) {
-                console.log('Result.granted', result?.granted);
                 if (result?.granted) {
                     updateFoodFeedbackNotification();
                 } else {
@@ -299,7 +325,6 @@ export default function FoodDetailsScreen() {
             }
             if (isIOS()) {
                 const result = await NotificationHelper.requestDeviceNotificationPermission();
-                console.log('Result.grantedios', result);
                 if (result?.granted) {
                     updateFoodFeedbackNotification();
                 } else {
@@ -312,6 +337,15 @@ export default function FoodDetailsScreen() {
             openNotificationSheet();
         }
     }, [user, isSmartPhone, isAndroid, isIOS, pushTokenObj, requestDeviceNotificationPermission, updateFoodFeedbackNotification, openNotificationSheet, openRatingPermissionModal]);
+
+
+    // Memoize container style to prevent re-calculations on every render
+    const pagerViewStyle = useMemo(() => [
+        styles.pagerView,
+        isWeb ? styles.pagerViewWeb : styles.pagerViewMobile,
+        isWeb && (screenWidth > 1000 ? styles.pagerViewWebLarge : styles.pagerViewWebSmall),
+        { width: getContainerWidth as DimensionValue }
+    ], [isWeb, screenWidth, getContainerWidth]);
 
     return (
         <SafeAreaView
@@ -327,6 +361,8 @@ export default function FoodDetailsScreen() {
                     styles.scrollViewContent,
                     { backgroundColor: theme.screen.background }
                 ]}
+                removeClippedSubviews={true} // Optimization for large lists
+                scrollEventThrottle={16}
             >
                 <View style={styles.mainWrapper}>
                     <FoodHeader
@@ -341,7 +377,7 @@ export default function FoodDetailsScreen() {
                         translate={translate}
                         defaultImage={defaultImage}
                     />
-                    
+
                     <NotificationSection
                         theme={theme}
                         containerWidth={getContainerWidth}
@@ -362,20 +398,13 @@ export default function FoodDetailsScreen() {
                         foodsAreaColor={foods_area_color}
                     />
 
-                    <View
-                        style={[
-                            styles.pagerView,
-                            isWeb ? styles.pagerViewWeb : styles.pagerViewMobile,
-                            isWeb && (screenWidth > 1000 ? styles.pagerViewWebLarge : styles.pagerViewWebSmall),
-                            { width: getContainerWidth as DimensionValue }
-                        ]}
-                    >
-                        {foodDetails?.id && renderContent(foodDetails)}
+                    <View style={pagerViewStyle}>
+                        {foodDetails?.id && renderContent()}
                     </View>
                 </View>
                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
             </ScrollView>
-            
+
             {isActive && (
                 <BaseBottomSheet
                     ref={notificationSheetRef}
@@ -391,7 +420,7 @@ export default function FoodDetailsScreen() {
                     <NotificationSheet closeSheet={closeNotificationSheet} previousFeedback={previousFeedback} foodDetails={foodDetails} />
                 </BaseBottomSheet>
             )}
-            
+
             {isActive && <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />}
         </SafeAreaView>
     );
