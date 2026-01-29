@@ -199,30 +199,18 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 	return renderCard();
 };
 
-function areEqual(prev: BuildingItemPropsOptimized, next: BuildingItemPropsOptimized) {
-	const p = prev.campus;
-	const n = next.campus;
-
-	if (String(p?.id ?? '') !== String(n?.id ?? '')) return false;
-	if (String(p?.alias ?? '') !== String(n?.alias ?? '')) return false;
-	const pImg = String(p?.image_remote_url ?? p?.image ?? '');
-	const nImg = String(n?.image_remote_url ?? n?.image ?? '');
-	if (pImg !== nImg) return false;
-	if (Number(p?.distance ?? 0) !== Number(n?.distance ?? 0)) return false;
-
-	// Compare primitives directly
-	if (prev.amountColumnsForcard !== next.amountColumnsForcard) return false;
-	if (prev.screenWidth !== next.screenWidth) return false;
-	if (prev.primaryColor !== next.primaryColor) return false;
-	if (prev.selectedTheme !== next.selectedTheme) return false;
-	if (prev.isManagement !== next.isManagement) return false;
-	if (prev.campusAreaColor !== next.campusAreaColor) return false;
-	if (prev.projectLogo !== next.projectLogo) return false;
-
-	return true;
-}
-
-export default memo(BuildingItem, areEqual);
+export default memo(BuildingItem, (prev, next) => {
+    return prev.campus === next.campus &&
+        prev.amountColumnsForcard === next.amountColumnsForcard &&
+        prev.primaryColor === next.primaryColor &&
+        prev.projectLogo === next.projectLogo &&
+        prev.campusAreaColor === next.campusAreaColor &&
+        prev.selectedTheme === next.selectedTheme &&
+        prev.screenWidth === next.screenWidth &&
+        prev.isManagement === next.isManagement &&
+        prev.onEditImage === next.onEditImage &&
+        prev.openDistanceSheet === next.openDistanceSheet;
+});
 
 const styles = StyleSheet.create({
 	overlay: {

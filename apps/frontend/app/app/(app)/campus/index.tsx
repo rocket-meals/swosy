@@ -275,6 +275,9 @@ const Index: React.FC = () => {
 	}, [toast, closeDistanceSheet]);
 
 	// Image Management
+	const fetchAllCampusesRef = useRef(fetchAllCampuses);
+	useEffect(() => { fetchAllCampusesRef.current = fetchAllCampuses; }, [fetchAllCampuses]);
+
 	const openImageManagementModal = useCallback(
 		(campus: DatabaseTypes.Buildings) => {
 			if (!campus?.id) return;
@@ -284,11 +287,11 @@ const Index: React.FC = () => {
 				collection: CollectionNames.BUILDINGS,
 				onUpdated: () => {
 					setCampusesDispatched(false);
-					fetchAllCampuses();
+					fetchAllCampusesRef.current();
 				},
 			});
 		},
-		[fetchAllCampuses, openDirectusImageEditModal]
+		[openDirectusImageEditModal]
 	);
 
 	// Memoized Props for Item
@@ -376,6 +379,15 @@ const Index: React.FC = () => {
 						<FlashList
 							key={`list-${numColumns}`}
 							data={visibleCampuses}
+							extraData={[
+								amountColumnsForcard,
+								primaryColor,
+								projectLogo,
+								campusAreaColor,
+								selectedTheme,
+								windowWidth,
+								isManagement
+							]}
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
