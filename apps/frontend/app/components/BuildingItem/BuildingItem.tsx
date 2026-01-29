@@ -21,27 +21,35 @@ export interface BuildingItemPropsOptimized {
 	campus: any;
 	onEditImage?: (campus: any) => void;
 	openDistanceSheet: () => void;
-	settings: {
-		amountColumnsForcard: number;
-		primaryColor?: string;
-		serverInfo?: any;
-		appSettings?: any;
-		selectedTheme?: string;
-		screenWidth: number;
-		isManagement?: boolean;
-	};
+	// Flattened settings to improve memoization stability
+	amountColumnsForcard: number;
+	primaryColor?: string;
+	projectLogo?: string; // Replaces serverInfo
+	campusAreaColor?: string; // Replaces appSettings logic
+	selectedTheme?: string;
+	screenWidth: number;
+	isManagement?: boolean;
 }
 
-const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImage, openDistanceSheet, settings }) => {
+const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ 
+	campus, 
+	onEditImage, 
+	openDistanceSheet, 
+	amountColumnsForcard,
+	primaryColor,
+	projectLogo,
+	campusAreaColor,
+	selectedTheme: mode,
+	screenWidth,
+	isManagement = false
+}) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
 	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
 
-	const { amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme: mode, screenWidth, isManagement = false } = settings;
-
-	const defaultImage = useMemo(() => getImageUrl(serverInfo?.info?.project?.project_logo), [serverInfo]);
-	const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
+	const defaultImage = useMemo(() => getImageUrl(projectLogo ?? ''), [projectLogo]);
+	const campus_area_color = campusAreaColor ? campusAreaColor : primaryColor;
 	const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
 
 	const handleNavigation = useCallback(
@@ -81,95 +89,114 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 		  ? CardDimensionHelper.getCardDimension(screenWidth)
 		  : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 
-	return (
-		<Tooltip
-			placement="top"
-			trigger={triggerProps => (
-				<CardWithText
-					{...triggerProps}
-					aspectRatio={false}
-					onPress={() => handleNavigation(campus?.id)}
-					imageSource={imageSource}
-					containerStyle={{
-						width: '100%',
-						backgroundColor: theme.card.background,
-						flex: 1,
-					}}
-					imageContainerStyle={{
-						height: cardSize,
-					}}
-					contentStyle={{
-						paddingHorizontal: 5,
-						flex: 1,
-						justifyContent: 'center'
-					}}
-					borderColor={campus_area_color}
-					imageChildren={
-						<>
-							<Tooltip
-								placement="top"
-								trigger={triggerProps => (
-									<IconButton
-										{...triggerProps}
-										style={[
-											styles.navigationButton,
-											{ backgroundColor: campus_area_color },
-										]}
-										onPress={handleOpenNavigation}
-									>
-										<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
-									</IconButton>
-								)}
+	const renderCard = (triggerProps: any = {}) => (
+		<CardWithText
+			{...triggerProps}
+			aspectRatio={false}
+			onPress={() => handleNavigation(campus?.id)}
+			imageSource={imageSource}
+			containerStyle={{
+				width: '100%',
+				backgroundColor: theme.card.background,
+				flex: 1,
+			}}
+			imageContainerStyle={{
+				height: cardSize,
+			}}
+			contentStyle={{
+				paddingHorizontal: 5,
+				flex: 1,
+				justifyContent: 'center'
+			}}
+			borderColor={campus_area_color}
+			knownCardWidth={cardSize}
+			imageChildren={
+				<>
+					{isWeb ? (
+						<Tooltip
+							placement="top"
+							trigger={innerTriggerProps => (
+								<IconButton
+									{...innerTriggerProps}
+									style={[
+										styles.navigationButton,
+										{ backgroundColor: campus_area_color },
+									]}
+									onPress={handleOpenNavigation}
+								>
+									<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
+								</IconButton>
+							)}
+						>
+							<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+								<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+									{`${translate(TranslationKeys.open_navitation_to_location)}`}
+								</TooltipText>
+							</TooltipContent>
+						</Tooltip>
+					) : (
+						<IconButton
+							style={[
+								styles.navigationButton,
+								{ backgroundColor: campus_area_color },
+							]}
+							onPress={handleOpenNavigation}
+						>
+							<MaterialCommunityIcons name="navigation-variant" size={20} color={contrastColor} />
+						</IconButton>
+					)}
+
+					<View style={styles.imageActionContainer}>
+						{isManagement ? (
+							<TouchableOpacity
+								style={styles.editImageButton}
+								onPress={() => {
+									onEditImage?.(campus);
+								}}
 							>
-								<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-									<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-										{`${translate(TranslationKeys.open_navitation_to_location)}`}
-									</TooltipText>
-								</TooltipContent>
-							</Tooltip>
+								<View />
+							</TouchableOpacity>
+						) : (
+							<View />
+						)}
 
-							<View style={styles.imageActionContainer}>
-								{isManagement ? (
-									<TouchableOpacity
-										style={styles.editImageButton}
-										onPress={() => {
-											onEditImage?.(campus);
-										}}
-									>
-										<View />
-									</TouchableOpacity>
-								) : (
-									<View />
-								)}
-
-								<View style={styles.distanceActions}>
-									<TouchableOpacity
-										style={{
-											...styles.directionButton,
-											backgroundColor: campus_area_color,
-										}}
-										onPress={openDistanceInformationModal}
-										onLongPress={openDistanceSheet}
-									>
-										<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
-										<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-						</>
-					}
-				>
-					<Text style={{ ...styles.campusName, color: theme.screen.text }}>{isWeb ? excerpt(campus?.alias, 70) : excerpt(campus?.alias, 40)}</Text>
-				</CardWithText>
-			)}
+						<View style={styles.distanceActions}>
+							<TouchableOpacity
+								style={{
+									...styles.directionButton,
+									backgroundColor: campus_area_color,
+								}}
+								onPress={openDistanceInformationModal}
+								onLongPress={openDistanceSheet}
+							>
+								<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
+								<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(campus?.distance)}</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</>
+			}
 		>
-			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-				<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-					{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
-				</TooltipText>
-			</TooltipContent>
-		</Tooltip>
+			<Text style={{ ...styles.campusName, color: theme.screen.text }}>{isWeb ? excerpt(campus?.alias, 70) : excerpt(campus?.alias, 40)}</Text>
+		</CardWithText>
 	);
+
+	if (isWeb) {
+		return (
+			<Tooltip
+				placement="top"
+				trigger={triggerProps => renderCard(triggerProps)}
+			>
+				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+						{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
+					</TooltipText>
+				</TooltipContent>
+			</Tooltip>
+		);
+	}
+
+	return renderCard();
 };
 
 function areEqual(prev: BuildingItemPropsOptimized, next: BuildingItemPropsOptimized) {
@@ -183,8 +210,14 @@ function areEqual(prev: BuildingItemPropsOptimized, next: BuildingItemPropsOptim
 	if (pImg !== nImg) return false;
 	if (Number(p?.distance ?? 0) !== Number(n?.distance ?? 0)) return false;
 
-	if (prev.settings.amountColumnsForcard !== next.settings.amountColumnsForcard) return false;
-	if (prev.settings.screenWidth !== next.settings.screenWidth) return false;
+	// Compare primitives directly
+	if (prev.amountColumnsForcard !== next.amountColumnsForcard) return false;
+	if (prev.screenWidth !== next.screenWidth) return false;
+	if (prev.primaryColor !== next.primaryColor) return false;
+	if (prev.selectedTheme !== next.selectedTheme) return false;
+	if (prev.isManagement !== next.isManagement) return false;
+	if (prev.campusAreaColor !== next.campusAreaColor) return false;
+	if (prev.projectLogo !== next.projectLogo) return false;
 
 	return true;
 }

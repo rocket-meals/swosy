@@ -12,7 +12,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useNavigation } from 'expo-router';
 import BuildingItem from '@/components/BuildingItem/BuildingItem';
-import { useDispatch } from 'react-redux';
+import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { CampusHelper } from '@/redux/actions/Campus/Campus';
@@ -59,7 +59,6 @@ const Index: React.FC = () => {
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
 
 	// Redux Selectors
-	const settings = useAppSelector((state) => state.settings);
 	const {
 		drawerPosition,
 		campusesSortBy,
@@ -68,10 +67,19 @@ const Index: React.FC = () => {
 		serverInfo,
 		appSettings,
 		selectedTheme
-	} = settings;
+	} = useAppSelector((state) => ({
+		drawerPosition: state.settings.drawerPosition,
+		campusesSortBy: state.settings.campusesSortBy,
+		amountColumnsForcard: state.settings.amountColumnsForcard,
+		primaryColor: state.settings.primaryColor,
+		serverInfo: state.settings.serverInfo,
+		appSettings: state.settings.appSettings,
+		selectedTheme: state.settings.selectedTheme,
+	}), shallowEqual);
 
-	const { campuses, campusesLocal } = useAppSelector((state) => state.campus);
-	const { isManagement } = useAppSelector((state) => state.authReducer);
+	const campuses = useAppSelector((state) => state.campus.campuses, shallowEqual);
+
+	const { isManagement } = useAppSelector((state) => state.authReducer, shallowEqual);
 
 	const selectedCanteen = useSelectedCanteen();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
@@ -105,7 +113,8 @@ const Index: React.FC = () => {
 	}, []);
 
 	const addDistanceToList = useCallback((list: BuildingWithDistance[] | undefined, base: DatabaseTypes.Buildings | null) => {
-		if (!list || !base) return list;
+		if (!list) return [];
+		if (!base) return list;
 		try {
 			const baseCoords = (base as any)?.coordinates?.coordinates as [number, number] | undefined;
 			if (!Array.isArray(baseCoords) || baseCoords.length !== 2) return list;
@@ -145,28 +154,50 @@ const Index: React.FC = () => {
 	}, [buildingsHelper, selectedCanteen, toast]);
 
 	const fetchAllCampuses = useCallback(
-		async (baseBuilding: DatabaseTypes.Buildings | null = null) => {
+		async (baseBuilding: DatabaseTypes.Buildings | null = null, showLoading = true) => {
 			try {
-				setLoading(true);
+				if (showLoading) setLoading(true);
 				const campusDataRaw = (await campusHelper.fetchCampus({})) as DatabaseTypes.Buildings[] | undefined;
 				const campusData = ensureStableIds(campusDataRaw ?? []);
 
-				const dict = campusData.reduce((acc: Record<string, DatabaseTypes.Buildings>, campus) => {
-					if (campus?.id) acc[campus.id] = campus;
-					return acc;
-				}, {});
+				// Deep merge to preserve object references
+				const currentCampuses = campuses || [];
+				const currentMap = new Map(currentCampuses.map((c: DatabaseTypes.Buildings) => [c.id, c]));
 
-				const campusDataWithDistance: BuildingWithDistance[] = baseBuilding
-					? (addDistanceToList(campusData as BuildingWithDistance[], baseBuilding) ?? (campusData as BuildingWithDistance[]))
-					: (campusData as BuildingWithDistance[]).map(c => ({
-							...c,
-							distance: Number.isFinite(Number((c as any)?.distance)) ? Number((c as any)?.distance) : 0,
-					  }));
+				const mergedData = campusData.map((newCampus) => {
+					const oldCampus = currentMap.get(newCampus.id);
+					if (oldCampus) {
+						// If date_updated matches, assume equal. 
+						// Fallback to JSON comparison if no date or dates differ (to catch other changes)
+						// Note: JSON.stringify is expensive but safer than missing updates.
+						// Given the severe performance issues, we prioritize stability.
+						const isDateMatch = newCampus.date_updated && oldCampus.date_updated && newCampus.date_updated === oldCampus.date_updated;
+						
+						if (isDateMatch) return oldCampus;
+						
+						// Fallback deep compare
+						if (JSON.stringify(newCampus) === JSON.stringify(oldCampus)) {
+							return oldCampus;
+						}
+					}
+					return newCampus;
+				});
 
-				dispatch({ type: SET_CAMPUSES, payload: campusDataWithDistance });
-				dispatch({ type: SET_CAMPUSES_DICT, payload: dict });
-				dispatch({ type: SET_UNSORTED_CAMPUSES, payload: campusDataWithDistance });
-				dispatch({ type: SET_CAMPUSES_LOCAL, payload: campusDataWithDistance });
+				// Check if the array itself is effectively the same (all items are same references)
+				const isSameArray = mergedData.length === currentCampuses.length &&
+					mergedData.every((c, i) => c === currentCampuses[i]);
+
+				if (!isSameArray) {
+					const dict = mergedData.reduce((acc: Record<string, DatabaseTypes.Buildings>, campus) => {
+						if (campus?.id) acc[campus.id] = campus;
+						return acc;
+					}, {});
+
+					dispatch({ type: SET_CAMPUSES, payload: mergedData });
+					dispatch({ type: SET_CAMPUSES_DICT, payload: dict });
+					dispatch({ type: SET_UNSORTED_CAMPUSES, payload: mergedData });
+					dispatch({ type: SET_CAMPUSES_LOCAL, payload: mergedData });
+				}
 
 				setCampusesDispatched(true);
 				setHasLoaded(true);
@@ -174,40 +205,25 @@ const Index: React.FC = () => {
 				console.error('fetchAllCampuses error', e);
 				toast('Failed to load campuses', 'error');
 			} finally {
-				setLoading(false);
+				if (showLoading) setLoading(false);
 			}
 		},
-		[campusHelper, dispatch, ensureStableIds, addDistanceToList, toast]
+		[campusHelper, dispatch, ensureStableIds, toast, campuses]
 	);
 
 	// Effects
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
-			setLoading(true);
+			const hasData = campuses && campuses.length > 0;
+			if (!hasData) setLoading(true);
+
 			const base = await fetchSelectedBuilding();
-			if (mounted) await fetchAllCampuses(base ?? null);
+			if (mounted) await fetchAllCampuses(base ?? null, !hasData);
 			if (mounted) setLoading(false);
 		})();
 		return () => { mounted = false; };
 	}, []); // Run once
-
-	// Update distance when selectedBuilding changes
-	useEffect(() => {
-		if (!campusesDispatched || !selectedBuilding) return;
-
-		const nextList = addDistanceToList(campusesLocal ?? [], selectedBuilding);
-		if (nextList) {
-			// Check for equality more robustly if needed, but keeping original logic structure for safety
-			const equal = (campuses ?? []).length === nextList.length &&
-						  (campuses ?? []).every((c, i) => String(c?.id ?? '') === String(nextList[i]?.id ?? ''));
-
-			if (!equal) {
-				dispatch({ type: SET_CAMPUSES, payload: nextList });
-				dispatch({ type: SET_UNSORTED_CAMPUSES, payload: nextList });
-			}
-		}
-	}, [selectedBuilding, campusesDispatched, addDistanceToList, campusesLocal, campuses, dispatch]);
 
 	// Sorting Logic
 	const sortCampuses = useCallback((list: BuildingWithDistance[], sortBy: CampusSortOption) => {
@@ -220,28 +236,22 @@ const Index: React.FC = () => {
 		 return newList;
 	}, []);
 
-	useEffect(() => {
-		if (!campuses || campuses.length === 0) return;
+	// Memoized Processing Pipeline
+	const campusesWithDistance = useMemo(() => {
+		if (!campuses) return [];
+		return addDistanceToList(campuses as BuildingWithDistance[], selectedBuilding);
+	}, [campuses, selectedBuilding, addDistanceToList]);
 
-		const sorted = sortCampuses(campuses as BuildingWithDistance[], campusesSortBy);
+	const sortedCampuses = useMemo(() => {
+		return sortCampuses(campusesWithDistance, campusesSortBy);
+	}, [campusesWithDistance, campusesSortBy, sortCampuses]);
 
-		// Simple equality check to avoid infinite loops
-		const same = sorted.length === campuses.length &&
-					 sorted.every((c, i) => String(c?.id ?? '') === String(campuses[i]?.id ?? ''));
-
-		if (!same) {
-			dispatch({ type: SET_CAMPUSES, payload: sorted });
-			dispatch({ type: SET_CAMPUSES_LOCAL, payload: sorted });
-		}
-	}, [campusesSortBy, campuses, sortCampuses, dispatch]);
-
-	// Filtering
 	const visibleCampuses: BuildingWithDistance[] = useMemo(() => {
-		const src: BuildingWithDistance[] = (campusesLocal as BuildingWithDistance[]) ?? (campuses as BuildingWithDistance[]) ?? [];
+		const src = sortedCampuses;
 		if (!query || query.trim() === '') return src;
 		const q = query.toLowerCase().trim();
 		return src.filter(campus => (campus?.alias ?? '').toLowerCase().includes(q));
-	}, [campusesLocal, campuses, query]);
+	}, [sortedCampuses, query]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
@@ -282,15 +292,8 @@ const Index: React.FC = () => {
 	);
 
 	// Memoized Props for Item
-	const settingsForItem = useMemo(() => ({
-		amountColumnsForcard,
-		primaryColor,
-		serverInfo,
-		appSettings,
-		selectedTheme,
-		screenWidth: windowWidth,
-		isManagement,
-	}), [amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme, windowWidth, isManagement]);
+	const projectLogo = serverInfo?.info?.project?.project_logo;
+	const campusAreaColor = appSettings?.campus_area_color;
 
 	const renderItem = useCallback(
 		({ item }: { item: BuildingWithDistance }) => {
@@ -300,12 +303,28 @@ const Index: React.FC = () => {
 						campus={item}
 						onEditImage={openImageManagementModal}
 						openDistanceSheet={openDistanceSheet}
-						settings={settingsForItem}
+						amountColumnsForcard={amountColumnsForcard}
+						primaryColor={primaryColor}
+						projectLogo={projectLogo ?? undefined}
+						campusAreaColor={campusAreaColor ?? undefined}
+						selectedTheme={selectedTheme}
+						screenWidth={windowWidth}
+						isManagement={isManagement}
 					/>
 				</View>
 			);
 		},
-		[openImageManagementModal, openDistanceSheet, settingsForItem]
+		[
+			openImageManagementModal, 
+			openDistanceSheet, 
+			amountColumnsForcard, 
+			primaryColor, 
+			projectLogo, 
+			campusAreaColor, 
+			selectedTheme, 
+			windowWidth, 
+			isManagement
+		]
 	);
 
 	const keyExtractor = useCallback((item: BuildingWithDistance, index: number) => (item.id ? String(item.id) : `campus-${index}`), []);
@@ -348,7 +367,8 @@ const Index: React.FC = () => {
 						}}
 						onLayout={e => {
 							const w = e.nativeEvent.layout.width;
-							if (w && w !== listWidth) {
+							// Only update if difference is significant to avoid jitter
+							if (w && Math.abs(w - listWidth) > 1) {
 								setListWidth(w);
 							}
 						}}

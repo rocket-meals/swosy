@@ -17,6 +17,7 @@ import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 import DetailsImage from './components/DetailsImage';
 import DetailsHeader from './components/DetailsHeader';
 import DetailsTabs from './components/DetailsTabs';
+import { shallowEqual } from 'react-redux';
 
 const Details = () => {
   useSetPageTitle(TranslationKeys.building_details);
@@ -24,21 +25,25 @@ const Details = () => {
   const { translate } = useLanguage();
   const { openLinkCoordinateModal } = useLinkCoordinateModal();
   const { id } = useLocalSearchParams();
-  const { serverInfo, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
-  const { campusesDict } = useAppSelector((state) => state.campus);
+  const { serverInfo, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => ({
+    serverInfo: state.settings.serverInfo,
+    appSettings: state.settings.appSettings,
+    primaryColor: state.settings.primaryColor,
+    selectedTheme: state.settings.selectedTheme,
+  }), shallowEqual);
+
+  const campusDetails = useAppSelector((state) => {
+    if (!id) return null;
+    return state.campus.campusesDict[String(id)] || null;
+  }, shallowEqual);
   const { width: screenWidth } = useWindowDimensions();
   
-  const defaultImage = useMemo(() => getImageUrl(serverInfo?.info?.project?.project_logo), [serverInfo]);
+  const projectLogo = serverInfo?.info?.project?.project_logo;
+  const defaultImage = useMemo(() => getImageUrl(projectLogo), [projectLogo]);
   const [activeTab, setActiveTab] = useState<'information' | 'description'>('information');
 
   const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
   const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
-
-  const campusDetails = useMemo<DatabaseTypes.Buildings | null>(() => {
-    if (!id) return null;
-    const data = campusesDict[String(id)];
-    return data || null;
-  }, [campusesDict, id]);
 
   const imageSource = useMemo(() => {
     if (!campusDetails) return { uri: defaultImage };
