@@ -93,7 +93,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 
     const { openRatingPermissionModal } = useRatingPermissionModal();
 
-    const foods_area_color = dividerColor || appSettings?.foods_area_color || primaryColor;
+    const foods_area_color = appSettings?.foods_area_color || primaryColor;
     const defaultImage =
       getImageUrl(String(appSettings?.foods_placeholder_image)) ||
       appSettings?.foods_placeholder_image_remote_url ||

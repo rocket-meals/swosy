@@ -18,6 +18,10 @@ import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirect
 import { useAppSelector } from '@/redux/hooks';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
+import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { getAppElementTranslation } from '@/helper/resourceHelper';
+import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -37,23 +41,91 @@ interface DayItem {
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-        const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
-	const { sortBy, language, amountColumnsForcard } = useAppSelector((state) => state.settings);
-	const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
-        const { profile } = useAppSelector((state) => state.authReducer);
-        const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
-        const [days, setDays] = useState<DayData[]>([]);
-        const [loading, setLoading] = useState(false);
-        const [refreshing, setRefreshing] = useState(false);
+	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
+	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
+	const { profile } = useAppSelector((state) => state.authReducer);
+	const { appElements } = useAppSelector((state) => state.appElements);
+	
+	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
+	const [days, setDays] = useState<DayData[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
-        const foods_area_color = appSettings?.foods_area_color || primaryColor;
-        const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
+	const foods_area_color = appSettings?.foods_area_color || primaryColor;
+	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
+	const languageCode = language;
+
+	const appElementsMap = useMemo(() => {
+		if (!appElements) return new Map();
+		const map = new Map(appElements.map((el: any) => [el.id, el]));
+		return map;
+	}, [appElements]);
+
+	const [beforeElement, setBeforeElement] = useState<any>(null);
+	const [afterElement, setAfterElement] = useState<any>(null);
+
+	useEffect(() => {
+		if (!appElementsMap || !appSettings) return;
+		const getElement = (id: string) => {
+			const element = appElementsMap.get(id);
+			if (!element || !element.translations) return null;
+			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
+			return { content, popup_button_text, popup_content };
+		};
+		const before = getElement(String(appSettings.foodoffers_list_before_element));
+		const after = getElement(String(appSettings.foodoffers_list_after_element));
+
+		setBeforeElement((prev: any) => {
+			if (JSON.stringify(prev) === JSON.stringify(before)) return prev;
+			return before;
+		});
+		setAfterElement((prev: any) => {
+			if (JSON.stringify(prev) === JSON.stringify(after)) return prev;
+			return after;
+		});
+	}, [appElementsMap, appSettings, languageCode]);
+
+	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[]) => {
+		const hasOffers = offers.length > 0;
+		const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
+			if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
+				return false;
+			}
+			if (info.show_only_when_no_foodoffers_found) {
+				return !hasOffers;
+			}
+			return hasOffers;
+		});
+
+		const startInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'start'));
+		const endInfos = sortBySortField(infoItemsFiltered.filter(i => i.placement === 'end'));
+
+		const startItems = startInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
+		const main = offers.map(o => ({ foodoffer: o, foodofferInfoItem: null }));
+		const endItems = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
+
+		return [...startItems, ...main, ...endItems] as DayItem[];
+	}, [foodOffersInfoItems, selectedCanteen]);
+
+	const getInfoItemContent = useCallback(
+		(item: DatabaseTypes.FoodoffersInfoItems) => {
+			if (!item || !appElementsMap) return null;
+			const elementId = typeof item.name === 'string' ? item.name : item.name?.id;
+			const element = appElementsMap.get(elementId);
+			if (!element) return null;
+			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, languageCode);
+			return { content, popup_button_text, popup_content };
+		},
+		[appElementsMap, languageCode]
+	);
+
 	const openSheet = useCallback(
 			(sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
 				setSelectedSheet(sheet);
@@ -63,10 +135,10 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	);
 
 	useEffect(() => {
-		if (!listWidth && windowWidth) {
-			setListWidth(windowWidth);
+		if (!listWidth && screenWidth) {
+			setListWidth(screenWidth);
 		}
-	}, [listWidth, windowWidth]);
+	}, [listWidth, screenWidth]);
 
 	const closeSheet = useCallback(() => {
 		bottomSheetRef.current?.snapToIndex(-1);
@@ -240,26 +312,53 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						}
 					}}
 				>
-					{item.offers.map(offer => (
-						<View
-							key={offer.id}
-							style={{
-								width: cardWidth || '100%',
-								marginHorizontal: itemGap,
-								marginVertical: itemGap,
-								alignItems: 'center',
-							}}
-						>
-							<FoodItem
-								item={offer}
-								canteen={selectedCanteen as DatabaseTypes.Canteens}
-								handleMenuSheet={openSheet}
-								handleImageSheet={openManagementSheet}
-								handleEatingHabitsSheet={openSheet}
-								cardWidth={cardWidth}
-							/>
-						</View>
-					))}
+					{dayItems.map((dayItem, index) => {
+						if (dayItem.foodoffer) {
+							return (
+								<View
+									key={`offer-${dayItem.foodoffer.id}`}
+									style={{
+										width: cardWidth || '100%',
+										marginHorizontal: itemGap,
+										marginVertical: itemGap,
+										alignItems: 'center',
+									}}
+								>
+									<FoodItem
+										item={dayItem.foodoffer}
+										canteen={selectedCanteen as DatabaseTypes.Canteens}
+										handleMenuSheet={openSheet}
+										handleImageSheet={openManagementSheet}
+										handleEatingHabitsSheet={openSheet}
+										cardWidth={cardWidth}
+									/>
+								</View>
+							);
+						}
+						if (dayItem.foodofferInfoItem) {
+							const infoContent = getInfoItemContent(dayItem.foodofferInfoItem);
+							if (!infoContent) return null;
+							return (
+								<View
+									key={`info-${dayItem.foodofferInfoItem.id}`}
+									style={{
+										width: cardWidth || '100%',
+										marginHorizontal: itemGap,
+										marginVertical: itemGap,
+										alignItems: 'center',
+									}}
+								>
+									<FoodOfferInfoItem
+										item={dayItem.foodofferInfoItem}
+										content={infoContent.content}
+										cardWidth={cardWidth}
+										screenWidth={screenWidth}
+									/>
+								</View>
+							);
+						}
+						return null;
+					})}
 					{item.offers.length === 0 && !hasInfoItems && (
 						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
 					)}

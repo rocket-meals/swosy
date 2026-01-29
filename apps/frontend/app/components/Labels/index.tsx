@@ -22,11 +22,12 @@ interface LabelsProps {
 	color: string;
 }
 
-const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, color }) => {
+const Labels: React.FC<LabelsProps> = ({ foodOfferDetails, offerId, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor, appSettings } = useAppSelector((state) => state.settings, shallowEqual);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+	const { isDevMode } = useAppSelector(state => state.authReducer);
 
 	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
 	let food_responsible_organization_link = appSettings?.food_responsible_organization_link || 'https://www.studentenwerk-osnabrueck.de/';
@@ -35,8 +36,8 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 	};
 
 	const markings = useAppSelector((state) => state.food.markings, shallowEqual);
-    const selectedCanteenFoodOffers = useAppSelector((state) => state.canteenReducer.selectedCanteenFoodOffers, shallowEqual);
-	
+	const selectedCanteenFoodOffers = useAppSelector((state) => state.canteenReducer.selectedCanteenFoodOffers, shallowEqual);
+
 	const foodOffer = useMemo(
 		() => (offerId ? getFoodOffer(selectedCanteenFoodOffers, offerId) : undefined),
 		[offerId, selectedCanteenFoodOffers]
@@ -107,9 +108,9 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, handleMenuSheet, 
 };
 
 export default memo(Labels, (prevProps, nextProps) => {
-    return (
-        prevProps.offerId === nextProps.offerId &&
-        prevProps.color === nextProps.color &&
-        prevProps.foodDetails?.id === nextProps.foodDetails?.id
-    );
+	return (
+		prevProps.offerId === nextProps.offerId &&
+		prevProps.color === nextProps.color &&
+		prevProps.foodDetails?.id === nextProps.foodDetails?.id
+	);
 });
