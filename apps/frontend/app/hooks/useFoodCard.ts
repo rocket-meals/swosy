@@ -22,7 +22,8 @@ export const useFoodCardBase = (
 	};
 
 	const imageContainerStyle: ViewStyle = {
-		height: dimension,
+		width: '100%',
+		height: '100%',
 	};
 
 	const contentStyle: ViewStyle = {

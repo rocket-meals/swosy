@@ -1,6 +1,5 @@
 import { Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useRef, useState } from 'react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { AttentionSheetProps } from './types';
 import { styles } from './styles';
@@ -10,11 +9,10 @@ import { useAppSelector } from '@/redux/hooks';
 import LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import animationJson from '@/assets/animations/astronaut-computer.json';
-import { useFocusEffect } from 'expo-router';
 import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
 
-const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin, isBottomSheetVisible }) => {
+const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
@@ -23,44 +21,43 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 	const animationRef = useRef<LottieView>(null);
 	const [hasPlayed, setHasPlayed] = useState(false);
 
-	useFocusEffect(
-		useCallback(() => {
-			if (isBottomSheetVisible) {
-				if (!hasPlayed && appSettings?.animations_auto_start) {
-					animationRef.current?.play();
-					setHasPlayed(true);
-				}
-			}
-		}, [isBottomSheetVisible, hasPlayed, appSettings])
-	);
+	useEffect(() => {
+		if (!hasPlayed && appSettings?.animations_auto_start) {
+			animationRef.current?.play();
+			setHasPlayed(true);
+		}
+	}, [hasPlayed, appSettings]);
 
 	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
-			<View style={styles.attentionSheetHeader}>
-				<View />
-			</View>
+		<View style={[styles.sheetView, styles.attentionSheetView]}>
+			<View style={styles.contentContainer}>
+				<View style={styles.attentionSheetHeader}>
+					<View />
+				</View>
 
-			<View style={styles.gifContainer}>
-				<LottieView ref={animationRef} source={updatedAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={false} loop={false} />
-			</View>
-			<Text style={{ ...styles.attentionSheetHeading, color: theme.sheet.text }}>{translate(TranslationKeys.attention)}</Text>
-			<View style={{ ...styles.attentionContent, width: isWeb ? '80%' : '100%' }}>
-				<Text style={{ ...styles.attentionBody, color: theme.sheet.text }}>{translate(TranslationKeys.without_account_limitations)}</Text>
-				<View style={{ ...styles.attentionActions, width: isWeb ? '60%' : '100%' }}>
-					<TouchableOpacity
-						style={[styles.confirmButton, { backgroundColor: primaryColor }]}
-						onPress={() => {
-							handleLogin();
-						}}
-					>
-						<Text style={[styles.confirmLabel, { color: contrastColor }]}>{translate(TranslationKeys.confirm)}</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.cancleButton} onPress={closeSheet}>
-						<Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
-					</TouchableOpacity>
+				<View style={styles.gifContainer}>
+					<LottieView ref={animationRef} source={updatedAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={false} loop={false} />
+				</View>
+				<Text style={{ ...styles.attentionSheetHeading, color: theme.sheet.text }}>{translate(TranslationKeys.attention)}</Text>
+				<View style={{ ...styles.attentionContent, width: isWeb ? '80%' : '100%' }}>
+					<Text style={{ ...styles.attentionBody, color: theme.sheet.text }}>{translate(TranslationKeys.without_account_limitations)}</Text>
+					<View style={{ ...styles.attentionActions, width: isWeb ? '60%' : '100%' }}>
+						<TouchableOpacity
+							style={[styles.confirmButton, { backgroundColor: primaryColor }]}
+							onPress={() => {
+								closeSheet();
+								handleLogin();
+							}}
+						>
+							<Text style={[styles.confirmLabel, { color: contrastColor }]}>{translate(TranslationKeys.confirm)}</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.cancleButton} onPress={closeSheet}>
+							<Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</View>
-		</BottomSheetScrollView>
+		</View>
 	);
 };
 

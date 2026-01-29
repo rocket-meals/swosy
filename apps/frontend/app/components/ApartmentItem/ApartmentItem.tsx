@@ -107,44 +107,40 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, onEditImage, op
 										<Text style={{ ...styles.freeBadgeText, color: contrastColor }}>{translate(TranslationKeys.free_rooms)}</Text>
 									</TouchableOpacity>
 								)}
-								<View style={styles.imageActionContainer}>
-									{isManagement ? (
-										<Tooltip
-											placement="top"
-											trigger={triggerProps => (
-												<TouchableOpacity
-													{...triggerProps}
-													style={styles.editImageButton}
-													onPress={() => {
-														onEditImage?.(apartment);
-													}}
-												>
-													<MaterialCommunityIcons name="image-edit" size={20} color={'white'} />
-												</TouchableOpacity>
-											)}
-										>
-											<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-												<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-													{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
-												</TooltipText>
-											</TooltipContent>
-										</Tooltip>
-									) : (
-										<View />
-									)}
-									<View style={styles.distanceActions}>
-										<TouchableOpacity
-											style={{
-												...styles.directionButton,
-												backgroundColor: housing_area_color,
-											}}
-											onPress={openDistanceInformationModal}
-											onLongPress={openDistanceSheet}
-										>
-											<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
-											<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(apartment?.distance)}</Text>
-										</TouchableOpacity>
-									</View>
+								{isManagement && (
+									<Tooltip
+										placement="top"
+										trigger={triggerProps => (
+											<TouchableOpacity
+												{...triggerProps}
+												style={styles.editImageButton}
+												onPress={() => {
+													onEditImage?.(apartment);
+												}}
+											>
+												<MaterialCommunityIcons name="image-edit" size={20} color="white" />
+											</TouchableOpacity>
+										)}
+									>
+										<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+											<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+												{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
+											</TooltipText>
+										</TooltipContent>
+									</Tooltip>
+								)}
+								<View style={styles.distanceActions}>
+									<TouchableOpacity
+										style={{
+											...styles.directionButton,
+											backgroundColor: housing_area_color,
+										}}
+										onPress={openDistanceInformationModal}
+										onLongPress={openDistanceSheet}
+									>
+										<MaterialCommunityIcons name="map-marker-distance" size={20} color={contrastColor} />
+										<Text style={{ ...styles.distance, color: contrastColor }}>{getDistanceUnit(apartment?.distance)}</Text>
+									</TouchableOpacity>
 								</View>
 							</>
 						}

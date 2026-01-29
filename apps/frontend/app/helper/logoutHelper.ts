@@ -1,6 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dispatch } from 'redux';
-import { CLEAR_APARTMENTS, CLEAR_CAMPUSES, CLEAR_CANTEENS, CLEAR_CHATS, CLEAR_COLLECTION_DATES_LAST_UPDATED, CLEAR_DEVELOPER_MODE, CLEAR_FOODS, CLEAR_MANAGEMENT, CLEAR_NEWS, CLEAR_POPUP_EVENTS_HASH, CLEAR_PROFILE, CLEAR_SETTINGS, CLEAR_COLLECTIBLE_EVENTS } from '@/redux/Types/types';
+import {
+	CLEAR_APARTMENTS,
+	CLEAR_CAMPUSES,
+	CLEAR_CANTEENS,
+	CLEAR_CHATS,
+	CLEAR_COLLECTION_DATES_LAST_UPDATED,
+	CLEAR_COLLECTIBLE_EVENTS,
+	CLEAR_DEVELOPER_MODE,
+	CLEAR_FOODS,
+	CLEAR_MANAGEMENT,
+	CLEAR_NEWS,
+	CLEAR_POPUP_EVENTS_HASH,
+	CLEAR_PROFILE,
+	CLEAR_SETTINGS,
+	ON_LOGOUT,
+	SET_MARKING_DETAILS,
+	SET_SELECTED_FOOD_MARKINGS,
+	UPDATE_MARKINGS,
+} from '@/redux/Types/types';
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
 
@@ -9,9 +27,13 @@ export const performLogout = async (
 	router: any
 ) => {
 	try {
+		dispatch({ type: ON_LOGOUT });
 		dispatch({ type: CLEAR_CANTEENS });
 		dispatch({ type: CLEAR_CAMPUSES });
 		dispatch({ type: CLEAR_APARTMENTS });
+		dispatch({ type: UPDATE_MARKINGS, payload: [] });
+		dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: [] });
+		dispatch({ type: SET_MARKING_DETAILS, payload: {} });
 		dispatch({ type: CLEAR_FOODS });
                 dispatch({ type: CLEAR_MANAGEMENT });
                 dispatch({ type: CLEAR_DEVELOPER_MODE });
@@ -22,12 +44,13 @@ export const performLogout = async (
                 await clearChatReadStatus();
                 dispatch({ type: CLEAR_SETTINGS });
 		dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
-		dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
 		await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
 
 		persistor.purge();
 		router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });
 	} catch (error) {
 		console.error('Error during logout:', error);
+	} finally {
+		dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
 	}
 };

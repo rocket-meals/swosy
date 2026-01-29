@@ -35,17 +35,19 @@ import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
-import useUtilizationModal from '@/hooks/useUtilizationModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
+import { PriceGroupKey } from '@/app/(app)/settings/types';
+import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
+import Foodofferscrolllist from '@/components/FoodOffersScrollList';
 import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
-import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import FoodOffersList from './components/FoodOffersList';
 import ListEmptyComponent from './components/ListEmptyComponent';
 import ListFooterComponent from './components/ListFooterComponent';
 import { useFoodOffersData, useLayoutConfig, useSheetHandling, useNotifications, useAnimationLogic, useDateNavigation, DayItem } from './hooks';
+import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 export const SHEET_COMPONENTS = {
 	canteen: CanteenSelectionSheet,

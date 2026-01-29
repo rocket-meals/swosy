@@ -76,12 +76,12 @@ const CardWithText: React.FC<Props> = ({
             <ExpoImage {...forwardedImageProps} source={imageSource as any} style={[styles.image, imageStyle]} />
           ) : null}
 
-          {/* absolute divider glued to bottom of image area */}
-          {borderColor ? <View style={[styles.topDivider, { backgroundColor: borderColor }]} /> : null}
-
           {imageChildren}
         </View>
       </View>
+
+      {/* divider is a dedicated element between image and text */}
+      {borderColor ? <View style={[styles.divider, { backgroundColor: borderColor }]} /> : null}
 
       {/* bottom content sits below the square image area; keep a responsive min-height */}
       <View
@@ -119,13 +119,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  topDivider: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
+  divider: {
+    width: '100%',
     height: 3,
-    bottom: 0, // glued to bottom of 1:1 image area
-    zIndex: 5,
   },
   cardContent: {
     // remove a hard fixed minHeight; we compute it dynamically

@@ -5,7 +5,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { DrawerContentComponentProps, DrawerNavigationProp } from '@react-navigation/drawer';
 import { isWeb } from '@/constants/Constants';
-import FoodOfferFlatList from '@/components/FoodOfferFlatList';
+import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -26,6 +26,7 @@ import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet'
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import * as Notifications from 'expo-notifications';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
+import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import { addDays, format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
@@ -39,6 +40,7 @@ import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
+import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import IconButton from '@/components/UI/IconButton';
@@ -80,6 +82,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openUtilizationModal } = useUtilizationModal();
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
+	const smartReadableDate = useSmartReadableDateMethod();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -117,9 +120,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	}, [autoPlay, animationJson]);
 
 	const setDefaultPriceGroupForAnonymousUser = () => {
+		if (profile?.price_group) {
+			return;
+		}
 		dispatch({
 			type: UPDATE_PROFILE,
-			payload: { ...(profile as any), price_group: 'student' },
+			payload: { ...(profile as any), price_group: PriceGroupKey.student },
 		});
 	};
 
@@ -212,31 +218,16 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		});
 	};
 
+	const parseDateOnly = (date: string) => {
+		const [year, month, day] = date.split('-').map(Number);
+		if (!year || !month || !day) {
+			return new Date(date);
+		}
+		return new Date(year, month - 1, day);
+	};
+
 	const getDayLabel = (date: string) => {
-		const currentDate = new Date();
-		const day = new Date(date);
-
-		// Set both dates to midnight to avoid time differences affecting comparison
-		currentDate.setHours(0, 0, 0, 0);
-		day.setHours(0, 0, 0, 0);
-
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'today';
-		}
-
-		// Check for yesterday
-		currentDate.setDate(currentDate.getDate() - 1);
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'yesterday';
-		}
-
-		// Check for tomorrow
-		currentDate.setDate(currentDate.getDate() + 2);
-		if (currentDate.toDateString() === day.toDateString()) {
-			return 'tomorrow';
-		}
-
-		return format(day, 'dd.MM.yyyy'); // Return the date if it's not Today, Yesterday, or Tomorrow
+		return smartReadableDate(parseDateOnly(date));
 	};
 
 	const updateSort = (id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
@@ -349,7 +340,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const getWeekdayKey = (date: string) => {
 		const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		return days[new Date(date).getDay()];
+		return days[parseDateOnly(date).getDay()];
 	};
 
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
@@ -578,7 +569,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</Tooltip>
 
-								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? translate(getDayLabel(selectedDate)) : ''}</Text>
+								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}
@@ -635,7 +626,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							backgroundColor: theme.screen.background,
 						}}
 					>
-						{selectedCanteen && <FoodOfferFlatList canteenId={selectedCanteen.id} startDate={selectedDate} />}
+						{selectedCanteen && <FoodOffersScrollList canteenId={selectedCanteen.id} startDate={selectedDate} />}
 					</View>
 				</View>
 				{isActive &&

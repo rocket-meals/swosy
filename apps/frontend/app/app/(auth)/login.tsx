@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Dimensions, Image, ScrollView, Text, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -6,8 +6,6 @@ import Form from '@/components/Login/Form';
 import Header from '@/components/Login/Header';
 import Footer from '@/components/Login/Footer';
 import ManagementSheet from '@/components/Login/ManagementSheet';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
@@ -25,6 +23,7 @@ import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import { getDetailedDescriptionTranslation, getIntroDescriptionTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 export default function Login() {
 	useSetPageTitle(TranslationKeys.sign_in);
@@ -34,18 +33,15 @@ export default function Login() {
 	const { deviceMock } = useGlobalSearchParams();
 	const appSettingsHelper = new AppSettingsHelper();
 	const wikisHelper = new WikisHelper();
-	const bottomSheetRef = useRef<BottomSheet>(null);
 	const [loading, setLoading] = useState(false);
-	const snapPoints = useMemo(() => ['50%'], []);
-	const [isActive, setIsActive] = useState(false);
-	const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
-	const attentionSheetRef = useRef<BottomSheet>(null);
 	const [providers, setProviders] = useState<any>([]);
 	const [isWebVisible, setIsWebVisible] = useState(Dimensions.get('window').width > 500);
 	const { appSettings, language } = useAppSelector((state) => state.settings);
 	const intro_description = appSettings?.login_screen_translations && getIntroDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const detailed_description = appSettings?.login_screen_translations && getDetailedDescriptionTranslation(appSettings?.login_screen_translations, language);
 	const [heading, subHeading] = intro_description?.split('-') || ['', ''];
+	const { show: showManagementModal, close: closeManagementModal } = useMyScrollViewModal();
+	const { show: showAttentionModal, close: closeAttentionModal } = useMyScrollViewModal();
 	const getProviders = async () => {
 		const providers = await ServerAPI.getAuthProviders();
 		if (providers) {
@@ -68,24 +64,6 @@ export default function Login() {
 		getAppSettings();
 		getProviders();
 	}, []);
-
-	const openSheet = () => {
-		bottomSheetRef.current?.expand();
-	};
-
-	const closeSheet = () => {
-		bottomSheetRef?.current?.close();
-	};
-
-	const openAttentionSheet = () => {
-		setIsBottomSheetVisible(true);
-		attentionSheetRef.current?.expand();
-	};
-
-	const closeAttentionSheet = () => {
-		setIsBottomSheetVisible(false);
-		attentionSheetRef?.current?.close();
-	};
 
         const handleUserLogin = async (token?: string, email?: string, password?: string) => {
                 try {
@@ -136,6 +114,19 @@ export default function Login() {
 		}
 	};
 
+	const openSheet = useCallback(() => {
+		showManagementModal({
+			onClose: closeManagementModal,
+			children: (
+				<ManagementSheet
+					closeSheet={closeManagementModal}
+					handleLogin={handleUserLogin}
+					loading={loading}
+				/>
+			),
+		});
+	}, [closeManagementModal, handleUserLogin, loading, showManagementModal]);
+
 	const handleAnonymousLogin = () => {
 		// @ts-ignore
 		updateLoginStatus(dispatch, { id: '' });
@@ -154,6 +145,18 @@ export default function Login() {
 		return currentDate;
 	};
 
+	const openAttentionSheet = useCallback(() => {
+		showAttentionModal({
+			onClose: closeAttentionModal,
+			children: (
+				<AttentionSheet
+					closeSheet={closeAttentionModal}
+					handleLogin={handleAnonymousLogin}
+				/>
+			),
+		});
+	}, [closeAttentionModal, handleAnonymousLogin, showAttentionModal]);
+
 	useEffect(() => {
 		const handleResize = () => {
 			setIsWebVisible(Dimensions.get('window').width > 650);
@@ -163,15 +166,6 @@ export default function Login() {
 
 		return () => subscription?.remove();
 	}, []);
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
 
 	const getWikis = async () => {
 		try {
@@ -262,37 +256,6 @@ export default function Login() {
 						</View>
 						{renderContent()}
 					</View>
-				)}
-				{isActive && (
-					<BaseBottomSheet
-						ref={bottomSheetRef}
-						index={-1}
-						snapPoints={snapPoints}
-						handleComponent={null}
-						backgroundStyle={{
-							borderTopRightRadius: 30,
-							borderTopLeftRadius: 30,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						onClose={closeSheet}
-					>
-						<ManagementSheet closeSheet={closeSheet} handleLogin={handleUserLogin} loading={loading} />
-					</BaseBottomSheet>
-				)}
-				{isActive && (
-					<BaseBottomSheet
-						ref={attentionSheetRef}
-						index={-1}
-						backgroundStyle={{
-							borderTopRightRadius: 30,
-							borderTopLeftRadius: 30,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						onClose={closeAttentionSheet}
-					>
-						<AttentionSheet closeSheet={closeAttentionSheet} handleLogin={handleAnonymousLogin} isBottomSheetVisible={isBottomSheetVisible} />
-					</BaseBottomSheet>
 				)}
 			</ScrollView>
 		</>

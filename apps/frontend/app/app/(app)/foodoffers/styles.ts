@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { horizontalScreenPadding } from '@/constants/Constants';
 
 export default StyleSheet.create({
 	foodOfferContainer: {
@@ -54,22 +53,10 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 	},
-    heading: {
-            fontSize: 18,
-            fontFamily: 'Poppins_400Regular',
-    },
-    menuIconWrapper: {
-            position: 'relative',
-    },
-    notificationDot: {
-            position: 'absolute',
-            top: -2,
-            right: -2,
-            width: 12,
-            height: 12,
-            borderRadius: 6,
-            borderWidth: 2,
-    },
+	heading: {
+		fontSize: 18,
+		fontFamily: 'Poppins_400Regular',
+	},
 	container: {
 		flex: 1,
 	},
@@ -92,7 +79,6 @@ export default StyleSheet.create({
 	feebackContainer: {
 		width: '100%',
 		marginTop: 20,
-		paddingHorizontal: horizontalScreenPadding,
 	},
 	foodLabels: {
 		fontSize: 24,
@@ -101,7 +87,6 @@ export default StyleSheet.create({
 	elementContainer: {
 		width: '100%',
 		marginTop: 20,
-		paddingHorizontal: horizontalScreenPadding,
 	},
 	safeArea: {
         flex: 1,

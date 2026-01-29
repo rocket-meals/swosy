@@ -10,7 +10,12 @@ export default StyleSheet.create({
 	},
 	dateHeader: {
 		fontSize: 18,
-		marginBottom: 8,
+		flex: 1,
+	},
+	dateHeaderRight: {
+		fontSize: 14,
+		textAlign: 'right',
+		paddingLeft: 12,
 	},
 	loader: {
 		flex: 1,
@@ -22,7 +27,7 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'stretch',
 		flexWrap: 'wrap',
-		marginTop: 20,
+		marginTop: 12,
 	},
 	feebackContainer: {
 		width: '100%',

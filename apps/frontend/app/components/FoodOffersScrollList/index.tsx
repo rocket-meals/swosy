@@ -3,7 +3,7 @@ import { ActivityIndicator, Dimensions, FlatList, RefreshControl, Text, View } f
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { CollectionNames, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -16,6 +16,8 @@ import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useAppSelector } from '@/redux/hooks';
+import { useMyContrastColor } from '@/helper/ColorHelper';
+import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -25,6 +27,11 @@ interface FoodOffersScrollListProps {
 interface DayData {
 	date: string;
 	offers: DatabaseTypes.Foodoffers[];
+}
+
+interface DayItem {
+	foodoffer: DatabaseTypes.Foodoffers | null;
+	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
 
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
@@ -44,13 +51,22 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
-        const openSheet = useCallback(
-                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-                        setSelectedSheet(sheet);
-                        setSheetProps(props);
-                },
-                []
-        );
+        const foods_area_color = appSettings?.foods_area_color || primaryColor;
+        const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
+	const smartReadableDate = useSmartReadableDateMethod();
+	const openSheet = useCallback(
+			(sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+				setSelectedSheet(sheet);
+				setSheetProps(props);
+			},
+			[]
+	);
+
+	useEffect(() => {
+		if (!listWidth && windowWidth) {
+			setListWidth(windowWidth);
+		}
+	}, [listWidth, windowWidth]);
 
 	const closeSheet = useCallback(() => {
 		bottomSheetRef.current?.snapToIndex(-1);
@@ -187,12 +203,29 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		setRefreshing(false);
 	};
 
+	const parseDateOnly = useCallback((date: string) => {
+		const [year, month, day] = date.split('-').map(Number);
+		if (!year || !month || !day) {
+			return new Date(date);
+		}
+		return new Date(year, month - 1, day);
+	}, []);
+
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
+		const dayItems = buildDayItems(item.offers);
+		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
 		return (
 			<View style={styles.dayContainer}>
-				<Text style={[styles.dateHeader, { color: theme.screen.text }]}> {format(new Date(item.date), 'dd.MM.yyyy')} </Text>
+				<View style={styles.dateHeaderRow}>
+					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
+				</View>
+				{beforeElement && (
+					<View style={styles.elementContainer}>
+						<CustomMarkdown content={beforeElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+					</View>
+				)}
 				<View
 					style={[
 						styles.foodContainer,
@@ -227,9 +260,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 							/>
 						</View>
 					))}
-					{item.offers.length === 0 && <Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>}
+					{item.offers.length === 0 && !hasInfoItems && (
+						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
+					)}
 				</View>
+				{afterElement && (
+					<View style={styles.elementContainer}>
+						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
+					</View>
+				)}
 				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
+				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>
 		);
 	};
@@ -244,7 +286,17 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	return (
 		<>
-			<FlatList data={days} keyExtractor={item => item.date} renderItem={renderDay} onEndReached={onEndReached} onEndReachedThreshold={0.5} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} scrollEventThrottle={16} style={{ flex: 1 }} contentContainerStyle={{ backgroundColor: theme.screen.background }} />
+			<FlatList
+				data={days}
+				keyExtractor={item => item.date}
+				renderItem={renderDay}
+				onEndReached={onEndReached}
+				onEndReachedThreshold={0.5}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+				scrollEventThrottle={16}
+				style={{ flex: 1 }}
+				contentContainerStyle={{ backgroundColor: theme.screen.background }}
+			/>
 			{selectedSheet &&
 				(selectedSheet === 'menu' ? (
 					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />

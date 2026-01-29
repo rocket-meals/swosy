@@ -17,5 +17,4 @@ export type SheetProps = {
 export type AttentionSheetProps = {
 	closeSheet: () => void;
 	handleLogin: () => void;
-	isBottomSheetVisible: boolean;
 }

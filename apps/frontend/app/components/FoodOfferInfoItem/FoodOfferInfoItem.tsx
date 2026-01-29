@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { Text } from 'react-native';
+import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
 import { FoodOfferInfoItemProps } from './types';
 import styles from './styles';
@@ -49,9 +50,19 @@ const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, conten
         style={{
           minHeight: 52,
           justifyContent: 'center',
+          alignSelf: 'stretch',
         }}
       >
-        <Text style={[styles.text, { color: theme.screen.text }]} numberOfLines={3}>
+        <Text
+          style={[
+            styles.text,
+            { color: theme.screen.text },
+            { maxWidth: '100%', flexShrink: 1 } as any,
+            isWeb ? ({ wordBreak: 'break-word', overflowWrap: 'anywhere' } as any) : null,
+          ]}
+          numberOfLines={3}
+          ellipsizeMode="tail"
+        >
           {content}
         </Text>
       </View>
