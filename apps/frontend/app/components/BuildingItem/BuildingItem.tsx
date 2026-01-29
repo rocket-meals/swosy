@@ -87,6 +87,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImag
 			trigger={triggerProps => (
 				<CardWithText
 					{...triggerProps}
+					aspectRatio={false}
 					onPress={() => handleNavigation(campus?.id)}
 					imageSource={imageSource}
 					containerStyle={{

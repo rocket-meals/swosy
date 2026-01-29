@@ -288,7 +288,7 @@ const Index: React.FC = () => {
 		serverInfo,
 		appSettings,
 		selectedTheme,
-		screenWidth: windowWidth, // Use windowWidth here
+		screenWidth: windowWidth,
 		isManagement,
 	}), [amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme, windowWidth, isManagement]);
 

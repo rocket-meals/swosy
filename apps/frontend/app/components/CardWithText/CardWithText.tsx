@@ -15,6 +15,7 @@ const DEFAULT_IMAGE_PROPS: AnyImageProps = {
 type Props = CardWithTextProps & {
   imageProps?: AnyImageProps;
   imageContainerStyle?: ViewStyle | ViewStyle[];
+  aspectRatio?: number | boolean;
 };
 
 const CardWithText: React.FC<Props> = ({
@@ -30,6 +31,7 @@ const CardWithText: React.FC<Props> = ({
   bottomContent,
   imageProps,
   knownCardWidth,
+  aspectRatio = 1,
   ...rest
 }) => {
   const forwardedImageProps: AnyImageProps = {
@@ -70,7 +72,13 @@ const CardWithText: React.FC<Props> = ({
       {...rest}
     >
       {/* square wrapper ensures a stable 1:1 image area */}
-      <View style={[styles.squareWrapper, { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }]}>
+      <View style={[
+        styles.squareWrapper,
+        { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius },
+        {
+          aspectRatio: aspectRatio === false ? undefined : (typeof aspectRatio === 'number' ? aspectRatio : 1)
+        }
+      ]}>
         <View style={[{ borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius }, ...resolvedImageContainerStyle as any]}>
           {imageSource ? (
             <ExpoImage {...forwardedImageProps} source={imageSource as any} style={[styles.image, imageStyle]} />
@@ -105,7 +113,6 @@ const styles = StyleSheet.create({
   },
   squareWrapper: {
     width: '100%',
-    aspectRatio: 1,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -124,9 +131,6 @@ const styles = StyleSheet.create({
     height: 3,
   },
   cardContent: {
-    // remove a hard fixed minHeight; we compute it dynamically
-    paddingTop: 12,
-    paddingBottom: 14,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',

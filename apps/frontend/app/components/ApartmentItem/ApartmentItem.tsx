@@ -82,6 +82,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, onEditImage, op
               				backgroundColor: theme.card.background,
 							flex: 1,
 						}}
+						aspectRatio={false}
 						imageContainerStyle={{
 							...styles.imageContainer,
 							height: cardSize,
