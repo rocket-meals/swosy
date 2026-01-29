@@ -11,6 +11,15 @@ export default StyleSheet.create({
 		gap: 10,
         paddingHorizontal: 10,
 	},
+    notificationDot: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        borderWidth: 2,
+    },
     rowReverse: {
         flexDirection: 'row-reverse',
     },

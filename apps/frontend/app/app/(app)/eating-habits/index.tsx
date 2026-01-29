@@ -1,4 +1,4 @@
-import { Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, InteractionManager, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -57,11 +57,14 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			setAmimationJson(replaceLottieColors(animation, primaryColor));
+			const task = InteractionManager.runAfterInteractions(() => {
+				setAmimationJson(replaceLottieColors(animation, primaryColor));
+			});
 			return () => {
+				task.cancel();
 				setAmimationJson(null);
 			};
-		}, [])
+		}, [primaryColor])
 	);
 
 	useFocusEffect(
@@ -77,8 +80,11 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			setIsActive(true);
+			const timer = setTimeout(() => {
+				setIsActive(true);
+			}, 100);
 			return () => {
+				clearTimeout(timer);
 				setIsActive(false);
 			};
 		}, [])
