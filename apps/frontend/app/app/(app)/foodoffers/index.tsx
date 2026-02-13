@@ -320,29 +320,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		fetchFoods();
 	}, [selectedCanteen, selectedDate]);
 
-	const onRefresh = useCallback(() => {
-		setRefreshing(true);
-		fetchFoods();
-		setRefreshing(false);
-	}, []);
-
-        const nextAvailableDate = useMemo(() => {
-                const canteenId = selectedCanteen?.id as string;
-                for (let i = 1; i <= 2; i++) {
-                        const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
-                        const offers = getCachedOffers(canteenId, date);
-                        if (offers && offers.length > 0) {
-                                return date;
-                        }
-                }
-                return null;
-        }, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
-
-	const getWeekdayKey = (date: string) => {
-		const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-		return days[parseDateOnly(date).getDay()];
-	};
-
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
 
 	return (
@@ -513,26 +490,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									trigger={triggerProps => (
 										<TouchableOpacity
 											{...triggerProps}
-											onPress={() => handleDateChange('prev')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-											}}
-										>
-											<Entypo name="chevron-left" size={24} color={theme.header.text} />
-										</TouchableOpacity>
-									)}
-								>
-									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-											{` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.previous)}`}
-										</TooltipText>
-									</TooltipContent>
-								</Tooltip>
-								<Tooltip
-									placement="top"
-									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
 											onPress={() => openSheet('calendar', { updateGlobal: true })}
 											style={{
 												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
@@ -548,28 +505,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										</TooltipText>
 									</TooltipContent>
 								</Tooltip>
-								<Tooltip
-									placement="top"
-									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											onPress={() => handleDateChange('next')}
-											style={{
-												padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
-											}}
-										>
-											<Entypo name="chevron-right" size={24} color={theme.header.text} />
-										</TouchableOpacity>
-									)}
-								>
-									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-											{` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.proceed)}`}
-										</TooltipText>
-									</TooltipContent>
-								</Tooltip>
-
-								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}

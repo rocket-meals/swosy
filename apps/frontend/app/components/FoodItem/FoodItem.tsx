@@ -4,10 +4,10 @@ import MyImage from '@/components/MyImage';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
-import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import {AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
-import { getTextFromTranslation } from '@/helper/resourceHelper';
+import {getDescriptionFromTranslation, getTextFromTranslation} from '@/helper/resourceHelper';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/types';
@@ -24,6 +24,8 @@ import useFoodCard from '@/hooks/useFoodCard';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import { useMyContrastColor } from '@/helper/ColorHelper';
+import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -184,6 +186,31 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       return foodItem?.image_remote_url || getImageUrl(foodItem?.image) || defaultImage;
     }, [foodItem?.image_remote_url, foodItem?.image, defaultImage]);
 
+    // Update to fetch the description from translations, similar to how the food name is fetched
+    const foodDescription = useMemo(
+      () =>
+          getDescriptionFromTranslation(foodItem?.translations, language),
+      [foodItem?.translations, language, screenWidth]
+    );
+
+    // Update the modal content to use the fetched description
+    const handleDescriptionModal = useCallback(() => {
+      if (foodDescription) {
+        showScrollViewModal(
+          {
+            title: translate(TranslationKeys.description),
+            children: (
+              <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
+            ),
+          },
+          {}
+        );
+      }
+    }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
+
+    // Update to use dynamic contrast color from foods_area_color
+    const contrastColor = useMyContrastColor(foods_area_color, theme, theme?.mode === 'dark');
+
     return (
       <>
         <Tooltip
@@ -259,6 +286,15 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                     {dislikedMarkings.length > 0 && (
                       <TouchableOpacity style={styles.favContainerWarn} onPress={handleOpenSheet}>
                         <MaterialIcons name="warning" size={20} color={foods_area_color} />
+                      </TouchableOpacity>
+                    )}
+
+                    {foodItem?.show_description_icon_on_card && (
+                      <TouchableOpacity
+                        style={[styles.favContainer, { backgroundColor: foods_area_color }]}
+                        onPress={handleDescriptionModal}
+                      >
+                        <Entypo name="megaphone" size={20} color={contrastColor} />
                       </TouchableOpacity>
                     )}
                   </View>
