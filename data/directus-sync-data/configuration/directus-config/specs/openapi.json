@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "99890d69c0b32b04d0791dc76b0b586533bd3df0"
+    "version": "5714793dd3090c321c8b4d17fa76becc33f07994"
   },
   "servers": [
     {
@@ -47188,12 +47188,12 @@
             "nullable": false,
             "type": "string"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -47240,18 +47240,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "businesshours_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsBusinesshours"
-              }
-            ]
-          },
           "buildings_id": {
             "nullable": true,
             "oneOf": [
@@ -47261,6 +47249,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsBuildings"
+              }
+            ]
+          },
+          "businesshours_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsBusinesshours"
               }
             ]
           }
@@ -47343,6 +47343,11 @@
             "nullable": true,
             "type": "string"
           },
+          "display_pixelratio": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
           "display_scale": {
             "nullable": true,
             "type": "number",
@@ -47359,11 +47364,6 @@
             "format": "float"
           },
           "display_width": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "display_pixelratio": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -48287,17 +48287,12 @@
             "nullable": true,
             "type": "integer"
           },
-          "display_scale": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "display_pixelratio": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
           "display_height": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_scale": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -48306,6 +48301,11 @@
             "nullable": true
           },
           "display_fontscale": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_pixelratio": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -48933,6 +48933,9 @@
             "nullable": false,
             "type": "integer"
           },
+          "validation": {
+            "nullable": true
+          },
           "validation_message": {
             "nullable": true,
             "type": "string"
@@ -48948,9 +48951,6 @@
             "nullable": true
           },
           "conditions": {
-            "nullable": true
-          },
-          "validation": {
             "nullable": true
           },
           "translations": {
@@ -49104,11 +49104,6 @@
             "example": 1,
             "type": "integer"
           },
-          "permissions": {
-            "description": "JSON structure containing the permissions checks for this permission.",
-            "type": "object",
-            "nullable": true
-          },
           "fields": {
             "description": "CSV of fields that the user is allowed to interact with.",
             "type": "array",
@@ -49124,6 +49119,11 @@
           },
           "validation": {
             "description": "JSON structure containing the validation checks for this permission.",
+            "type": "object",
+            "nullable": true
+          },
+          "permissions": {
+            "description": "JSON structure containing the permissions checks for this permission.",
             "type": "object",
             "nullable": true
           },
@@ -49172,12 +49172,12 @@
             "nullable": true,
             "type": "integer"
           },
+          "item_duplication_fields": {
+            "nullable": true
+          },
           "note": {
             "nullable": true,
             "type": "string"
-          },
-          "item_duplication_fields": {
-            "nullable": true
           },
           "translations": {
             "nullable": true
@@ -49905,9 +49905,6 @@
             "nullable": true,
             "type": "string"
           },
-          "visual_editor_urls": {
-            "nullable": true
-          },
           "public_registration_email_filter": {
             "nullable": true,
             "description": "$t:fields.directus_settings.public_registration_email_filter_note"
@@ -50012,6 +50009,9 @@
               }
             },
             "example": null,
+            "nullable": true
+          },
+          "visual_editor_urls": {
             "nullable": true
           },
           "project_color": {
@@ -51005,6 +51005,10 @@
             "nullable": true,
             "type": "boolean"
           },
+          "show_description_icon_on_card": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "rating_amount_legacy": {
             "nullable": true,
             "type": "integer"
@@ -51017,12 +51021,12 @@
             "nullable": true,
             "type": "integer"
           },
-          "rating_average": {
+          "rating_average_legacy": {
             "nullable": true,
             "type": "number",
             "format": "float"
           },
-          "rating_average_legacy": {
+          "rating_average": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -51258,15 +51262,15 @@
       "ItemsFoodsAttributes": {
         "type": "object",
         "properties": {
+          "full_width": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "show_on_card": {
             "nullable": true,
             "type": "boolean"
           },
           "show_on_label_list": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "full_width": {
             "nullable": true,
             "type": "boolean"
           },
@@ -51547,6 +51551,18 @@
             "type": "string",
             "format": "timestamp"
           },
+          "recipient_email_field": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFormFields"
+              }
+            ]
+          },
           "id": {
             "nullable": false,
             "type": "string",
@@ -51597,18 +51613,6 @@
               },
               {
                 "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "recipient_email_field": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFormFields"
               }
             ]
           },
@@ -51719,12 +51723,12 @@
             "nullable": true,
             "type": "string"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -52006,17 +52010,17 @@
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "date_submitted": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
           "date_started": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -52038,7 +52042,7 @@
               }
             ]
           },
-          "user_updated": {
+          "user_locked_by": {
             "nullable": true,
             "oneOf": [
               {
@@ -52050,7 +52054,7 @@
               }
             ]
           },
-          "user_locked_by": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -52118,10 +52122,6 @@
             "type": "boolean"
           },
           "let_be_translated": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "show_description_icon_on_card": {
             "nullable": true,
             "type": "boolean"
           },
@@ -52538,12 +52538,12 @@
             "nullable": true,
             "type": "integer"
           },
+          "value_custom": {
+            "nullable": true
+          },
           "value_string": {
             "nullable": true,
             "type": "string"
-          },
-          "value_custom": {
-            "nullable": true
           },
           "value_number": {
             "nullable": true,
@@ -52716,12 +52716,12 @@
             "description": "Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.",
             "type": "string"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -54319,6 +54319,10 @@
             "nullable": true,
             "type": "boolean"
           },
+          "status_log": {
+            "nullable": true,
+            "type": "string"
+          },
           "sort": {
             "nullable": true,
             "type": "integer"
@@ -54330,10 +54334,6 @@
           "ios_badge_count": {
             "nullable": true,
             "type": "integer"
-          },
-          "status_log": {
-            "nullable": true,
-            "type": "string"
           },
           "message_data": {
             "nullable": true
@@ -55440,6 +55440,10 @@
             "nullable": false,
             "type": "integer"
           },
+          "name": {
+            "nullable": true,
+            "type": "string"
+          },
           "languages_code": {
             "nullable": true,
             "oneOf": [
@@ -55450,10 +55454,6 @@
                 "$ref": "#/components/schemas/ItemsLanguages"
               }
             ]
-          },
-          "name": {
-            "nullable": true,
-            "type": "string"
           },
           "foodoffers_categories_id": {
             "nullable": true,

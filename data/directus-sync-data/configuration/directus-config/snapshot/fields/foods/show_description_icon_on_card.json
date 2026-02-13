@@ -1,9 +1,9 @@
 {
-  "collection": "foods_translations",
+  "collection": "foods",
   "field": "show_description_icon_on_card",
   "type": "boolean",
   "meta": {
-    "collection": "foods_translations",
+    "collection": "foods",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 6,
+    "sort": 17,
     "special": [
       "cast-boolean"
     ],
@@ -26,9 +26,9 @@
   },
   "schema": {
     "name": "show_description_icon_on_card",
-    "table": "foods_translations",
+    "table": "foods",
     "data_type": "boolean",
-    "default_value": false,
+    "default_value": null,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
