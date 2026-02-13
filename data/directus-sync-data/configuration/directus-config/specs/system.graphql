@@ -1227,7 +1227,7 @@ type collectible_events {
   collectible_at_card_balance: Boolean
   collectible_at_settings_amount_column: Boolean
   collectible_at_settings_first_day_of_week: Boolean
-  collectible_at_noticiation: Boolean
+  collectible_at_notification: Boolean
   collectible_at_settings_menuposition: Boolean
   collectible_at_housing: Boolean
   collectible_at_license_information: Boolean
@@ -4905,7 +4905,7 @@ input collectible_events_filter {
   collectible_at_card_balance: boolean_filter_operators
   collectible_at_settings_amount_column: boolean_filter_operators
   collectible_at_settings_first_day_of_week: boolean_filter_operators
-  collectible_at_noticiation: boolean_filter_operators
+  collectible_at_notification: boolean_filter_operators
   collectible_at_settings_menuposition: boolean_filter_operators
   collectible_at_housing: boolean_filter_operators
   collectible_at_license_information: boolean_filter_operators
