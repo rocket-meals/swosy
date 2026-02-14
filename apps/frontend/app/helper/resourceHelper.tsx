@@ -106,21 +106,6 @@ const getDescriptionFromTranslation = (translations: Array<Translation | Marking
 	return translation?.description || '';
 };
 
-const extractFoodDetails = (food: DatabaseTypes.Foodoffers) => {
-	const { fat_g, protein_g, saturated_fat_g, sugar_g, carbohydrate_g, calories_kcal, fiber_g, salt_g } = food;
-
-	return {
-		fat_g,
-		protein_g,
-		saturated_fat_g,
-		sugar_g,
-		carbohydrate_g,
-		calories_kcal,
-		fiber_g,
-		salt_g,
-	};
-};
-
 const DEFAULT_LANGUAGE_CODE_GERMAN = 'de';
 const FALLBACK_LANGUAGE_CODE_ENGLISH = 'en';
 const MISSING_TRANSLATION = 'Missing translation';
@@ -259,4 +244,12 @@ export const getAppElementTranslation = (translations: any[], languageCode: stri
 	}
 };
 
-export { getIconComponent, getTextFromTranslation, extractFoodDetails, getDescriptionFromTranslation, getFoodCategoryName, getFoodOfferCategoryName };
+export { getIconComponent, getTextFromTranslation, getDescriptionFromTranslation, getFoodCategoryName, getFoodOfferCategoryName };
+
+
+
+
+
+
+
+
