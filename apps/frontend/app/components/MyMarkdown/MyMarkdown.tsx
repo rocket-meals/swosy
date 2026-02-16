@@ -57,6 +57,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		td: { borderColor: 'gray', borderWidth: 1 },
 		th: { borderColor: 'gray', borderWidth: 1 },
 		a: { color: textColor },
+		p: { marginTop: 0, marginBottom: 14 },
 	} as const;
 
 	const customHTMLElementModels = {
