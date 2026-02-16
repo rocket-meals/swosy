@@ -18,9 +18,8 @@ export interface MyMarkdownProps {
 export const replaceLinebreaks = (sourceContent: string) => {
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
-		sourceContent = sourceContent.replaceAll('\\r\\n', '\n');
 		sourceContent = sourceContent.replaceAll('\\n', '\n');
-		sourceContent = sourceContent.replaceAll('\\r', '\n');
+		sourceContent = sourceContent.replaceAll('\\r\\n', '\n');
 		sourceContent = sourceContent.replaceAll('<br/>', '\n');
 		sourceContent = sourceContent.replaceAll('</br>', '\n');
 		sourceContent = sourceContent.replaceAll('<br>', '\n');
