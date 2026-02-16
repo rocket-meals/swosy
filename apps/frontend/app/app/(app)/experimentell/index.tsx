@@ -107,6 +107,13 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/react-native-qrcode-svg'),
 		},
 		{
+			key: 'markdown-test',
+			label: translate(TranslationKeys.markdown_test),
+			leftIcon: <MaterialCommunityIcons name="language-markdown-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/markdown-test'),
+		},
+
+		{
 			key: 'settings-list-components',
 			label: 'SettingsList Komponenten',
 			leftIcon: <MaterialCommunityIcons name="format-list-bulleted" size={24} color={theme.screen.icon} />,
@@ -145,17 +152,7 @@ const Index = () => {
 					const totalItems = listItems.length;
 					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
 
-					return (
-						<SettingsList
-							key={item.key}
-							iconBgColor={primaryColor}
-							leftIcon={item.leftIcon}
-							label={item.label}
-							rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-							handleFunction={item.onPress}
-							groupPosition={groupPosition}
-						/>
-					);
+					return <SettingsList key={item.key} iconBgColor={primaryColor} leftIcon={item.leftIcon} label={item.label} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} handleFunction={item.onPress} groupPosition={groupPosition} />;
 				})}
 			</View>
 		</ScrollView>
