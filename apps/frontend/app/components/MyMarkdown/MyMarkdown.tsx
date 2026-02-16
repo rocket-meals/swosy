@@ -18,6 +18,8 @@ export interface MyMarkdownProps {
 export const replaceLinebreaks = (sourceContent: string) => {
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
+		sourceContent = sourceContent.replaceAll('\\n', '\n');
+		sourceContent = sourceContent.replaceAll('\\r\\n', '\n');
 		sourceContent = sourceContent.replaceAll('<br/>', '\n');
 		sourceContent = sourceContent.replaceAll('</br>', '\n');
 		sourceContent = sourceContent.replaceAll('<br>', '\n');
@@ -35,7 +37,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;
 
 	const { width } = useWindowDimensions();
-	const md = new MarkdownIt({ html: true });
+	const md = new MarkdownIt({ html: true, breaks: true });
 
 	let sourceContent = content || '';
 	const option_find_linebreaks = true;
@@ -55,6 +57,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		td: { borderColor: 'gray', borderWidth: 1 },
 		th: { borderColor: 'gray', borderWidth: 1 },
 		a: { color: textColor },
+		p: { marginTop: 0, marginBottom: 14 },
 	} as const;
 
 	const customHTMLElementModels = {
