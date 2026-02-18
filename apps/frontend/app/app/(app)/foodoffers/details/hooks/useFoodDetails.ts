@@ -20,13 +20,17 @@ export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: Use
             return {
                 ...initialFoodOffer.food,
                 foodoffer_category: initialFoodOffer.foodoffer_category,
-                // Apply translation logic if possible, or default to name
-                name: initialFoodOffer.food.name // We will refine this in useEffect
+                name: initialFoodOffer.food.name
             };
         }
         return null;
     });
-    const [foodAttributes, setFoodAttributes] = useState<any>([]);
+    const [foodAttributes, setFoodAttributes] = useState<any>(() => {
+        if (initialFoodOffer?.attribute_values || initialFoodOffer?.foods_attributes_values) {
+            return initialFoodOffer.attribute_values || initialFoodOffer.foods_attributes_values || [];
+        }
+        return [];
+    });
     const [loading, setLoading] = useState(false);
 
     const getFoodDetails = useCallback(async () => {
@@ -80,11 +84,16 @@ export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: Use
         }
     }, [offerId, initialFoodId, languageCode, toast, translate]);
 
+    const hasInitialFood = !!initialFoodOffer?.food;
+    const hasInitialAttributes = !!(initialFoodOffer?.attribute_values || initialFoodOffer?.foods_attributes_values);
+    const shouldSkipInitialFetch = hasInitialFood && hasInitialAttributes;
+
     useEffect(() => {
+        if (shouldSkipInitialFetch) return;
         runAfterInteractions(() => {
             getFoodDetails();
         });
-    }, [getFoodDetails]);
+    }, [getFoodDetails, shouldSkipInitialFetch]);
 
     return { foodDetails, foodAttributes, loading };
 };

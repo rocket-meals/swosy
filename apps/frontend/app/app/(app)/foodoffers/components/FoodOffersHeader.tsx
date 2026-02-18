@@ -21,10 +21,8 @@ interface FoodOffersHeaderProps {
     selectedDate: string;
     profile: any;
     appSettings: any;
-    openSheet: (sheet: any) => void;
-    handleDateChange: (direction: 'prev' | 'next') => void;
+    openSheet: (sheet: any, props?: Record<string, any>) => void;
     openUtilizationModal: (date: string, canteen: any) => void;
-    getDayLabel: (date: string) => string;
 }
 
 const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
@@ -35,9 +33,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
     profile,
     appSettings,
     openSheet,
-    handleDateChange,
     openUtilizationModal,
-    getDayLabel,
 }) => {
     const { theme } = useTheme();
     const { translate } = useLanguage();
@@ -174,22 +170,11 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                     <Tooltip
                         placement="top"
                         trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => handleDateChange('prev')} style={arrowPaddingStyle}>
-                                <Entypo name="chevron-left" size={24} color={theme.header.text} />
-                            </IconButton>
-                        )}
-                    >
-                        <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-                            <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-                                {` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.previous)}`}
-                            </TooltipText>
-                        </TooltipContent>
-                    </Tooltip>
-
-                    <Tooltip
-                        placement="top"
-                        trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => openSheet('calendar')} style={arrowPaddingStyle}>
+                            <IconButton
+                                {...triggerProps}
+                                onPress={() => openSheet('calendar', { updateGlobal: true })}
+                                style={arrowPaddingStyle}
+                            >
                                 <MaterialIcons name="calendar-month" size={24} color={theme.header.text} />
                             </IconButton>
                         )}
@@ -200,23 +185,6 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                             </TooltipText>
                         </TooltipContent>
                     </Tooltip>
-
-                    <Tooltip
-                        placement="top"
-                        trigger={triggerProps => (
-                            <IconButton {...triggerProps} onPress={() => handleDateChange('next')} style={arrowPaddingStyle}>
-                                <Entypo name="chevron-right" size={24} color={theme.header.text} />
-                            </IconButton>
-                        )}
-                    >
-                        <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-                            <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-                                {` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.proceed)}`}
-                            </TooltipText>
-                        </TooltipContent>
-                    </Tooltip>
-
-                    <Text style={[styles.heading, { color: theme.header.text }]}>{selectedDate ? translate(getDayLabel(selectedDate)) : ''}</Text>
                 </View>
 
                 <View style={[styles.col2, styles.colGapMedium]}>

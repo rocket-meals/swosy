@@ -104,6 +104,7 @@ export default function Login() {
 				payload: currentDate,
 			});
 			setLoading(false);
+			closeManagementModal();
 			router.replace('/(app)');
 		} catch (error) {
 			console.error('Error during login: ', error);

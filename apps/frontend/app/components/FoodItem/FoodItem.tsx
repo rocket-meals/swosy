@@ -4,10 +4,10 @@ import MyImage from '@/components/MyImage';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
-import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
-import { getTextFromTranslation } from '@/helper/resourceHelper';
+import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -15,17 +15,18 @@ import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/t
 import { router } from 'expo-router';
 import { createSelector } from 'reselect';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import { useLanguage } from '@/hooks/useLanguage';
 import translations from '@/locales/translations.json';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CardWithText from '../CardWithText/CardWithText';
-import { useFoodCardBase, useFoodCard } from '@/hooks/useFoodCard';
+import { useFoodCardBase } from '@/hooks/useFoodCard';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import { useMyContrastColor } from '@/helper/ColorHelper';
+import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -89,11 +90,12 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const { show: showScrollViewModal } = useMyScrollViewModal();
 
     const { food } = item;
-    const foodItem = food as DatabaseTypes.Foods;
+    const foodItem = food as DatabaseTypes.Foods & { show_description_icon_on_card?: boolean | null };
 
     const { openRatingPermissionModal } = useRatingPermissionModal();
 
     const foods_area_color = appSettings?.foods_area_color || primaryColor;
+    const contrastColor = useMyContrastColor(foods_area_color, theme, (theme as any)?.mode === 'dark');
     const defaultImage =
       getImageUrl(String(appSettings?.foods_placeholder_image)) ||
       appSettings?.foods_placeholder_image_remote_url ||
@@ -120,7 +122,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
         ) ?? [],
       [item?.markings, profile?.markings]
     );
-
+    
     const isLiked = useMemo(
       () =>
         RatingHelper.isMaxRating(currentRating) ||
@@ -130,6 +132,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 
     const borderWidth = dislikedMarkings.length > 0 ? 3 : isLiked ? 3 : 0;
     const borderColor = dislikedMarkings.length > 0 ? '#FF000095' : '#00B050';
+
     
     // Use pure useFoodCardBase if optimized props are present
     // If not, we might be in trouble (layout issues).
@@ -177,18 +180,24 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const handleNavigation = useCallback((id: string, foodId: string) => {
       let initialDataStr = '';
       try {
-        initialDataStr = JSON.stringify(item);
+        const minimalInitialData = {
+          food: item.food,
+          foodoffer_category: (item as any).foodoffer_category,
+          attribute_values: (item as any).attribute_values,
+          foods_attributes_values: (item as any).foods_attributes_values,
+        };
+        initialDataStr = JSON.stringify(minimalInitialData);
       } catch (e) {
         console.warn('Failed to stringify item for navigation', e);
       }
 
-      router.push({ 
-        pathname: '/(app)/foodoffers/details', 
-        params: { 
-            id, 
-            foodId,
-            initialData: initialDataStr
-        } 
+      router.push({
+        pathname: '/(app)/foodoffers/details',
+        params: {
+          id,
+          foodId,
+          initialData: initialDataStr,
+        },
       });
     }, [item]);
 
@@ -241,6 +250,22 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     );
 
     const handlePriceChange = useCallback(() => router.navigate('/price-group'), []);
+
+    const foodDescription = useMemo(
+      () => getDescriptionFromTranslation(foodItem?.translations, language || 'de'),
+      [foodItem?.translations, language]
+    );
+
+    const handleDescriptionModal = useCallback(() => {
+      if (!foodDescription) return;
+      showScrollViewModal(
+        {
+          title: translate(TranslationKeys.description),
+          children: <MyMarkdown content={foodDescription} textColor={theme.screen.text} />,
+        },
+        {}
+      );
+    }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
 
     const foodName = useMemo(
       () =>
@@ -335,6 +360,15 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         <MaterialIcons name="warning" size={20} color={foods_area_color} />
                       </TouchableOpacity>
                     )}
+
+                    {foodItem?.show_description_icon_on_card && (
+                      <TouchableOpacity
+                        style={[styles.favContainer, { backgroundColor: foods_area_color }]}
+                        onPress={handleDescriptionModal}
+                      >
+                        <Entypo name="megaphone" size={20} color={contrastColor} />
+                      </TouchableOpacity>
+                    )}
                   </View>
 
                   <View style={styles.categoriesContainer}>
@@ -403,6 +437,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 );
 
 const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
+    const { item } = props;
     // Use props if available, otherwise fallback to selectors (for backward compatibility if used elsewhere)
     const language = props.language ?? useAppSelector((state) => state.settings.language);
     const serverInfo = props.serverInfo ?? useAppSelector((state) => state.settings.serverInfo);
@@ -419,6 +454,16 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const profileId = useAppSelector((state) => state.authReducer.profile?.id);
     const profileMarkings = useAppSelector((state) => state.authReducer.profile?.markings);
     const priceGroup = useAppSelector((state) => state.authReducer.profile?.price_group);
+
+    const ownFoodFeedbacks = useAppSelector(selectOwnFoodFeedbacks);
+
+    const previousFeedback = useMemo(() => {
+        if (props.previousFeedback) return props.previousFeedback;
+        const food = item?.food as any;
+        const foodId = food ? (typeof food === 'string' ? food : food.id) : undefined;
+        if (!foodId) return undefined;
+        return getpreviousFeedback(ownFoodFeedbacks as any, foodId);
+    }, [props.previousFeedback, item, ownFoodFeedbacks]);
     
     const profile = useMemo(() => {
         if (props.profile) return props.profile;
@@ -434,6 +479,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     return (
         <FoodItemBase
             {...props}
+            previousFeedback={previousFeedback}
             language={language}
             serverInfo={serverInfo}
             appSettings={appSettings}

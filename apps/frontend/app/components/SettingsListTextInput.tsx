@@ -13,6 +13,7 @@ import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal
 import { RootState } from '@/redux/reducer';
 import type { SettingsListProps } from '@/components/SettingsList/types';
 import { TranslationKeys } from '@/locales/keys';
+
 export type CheckTextInputResult = {
 	isValid: boolean;
 	value: string;
@@ -82,7 +83,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	onSubmitEditing,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state: RootState) => state.settings);
 
 	return (
 		<TextInput

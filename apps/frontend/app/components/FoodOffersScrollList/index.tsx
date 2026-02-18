@@ -38,6 +38,9 @@ interface DayItem {
 	foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
 
+const EMPTY_FEEDBACKS: any[] = [];
+const daysCache: Record<string, DayData[]> = {};
+
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -61,6 +64,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
+
+	const cacheKey = useMemo(
+		() => `${canteenId}_${format(new Date(startDate), 'yyyy-MM-dd')}`,
+		[canteenId, startDate]
+	);
+
+	const updateCache = useCallback(
+		(newDays: DayData[]) => {
+			daysCache[cacheKey] = newDays;
+		},
+		[cacheKey]
+	);
 
 	const appElementsMap = useMemo(() => {
 		if (!appElements) return new Map();
@@ -190,22 +205,35 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		return availableWidth / numColumns;
 	}, [itemGap, listWidth, numColumns]);
 
+	const ownFoodFeedbacksForSort = useMemo(() => {
+		if (sortBy === FoodSortOption.FAVORITE || sortBy === FoodSortOption.INTELLIGENT) {
+			return ownFoodFeedbacks;
+		}
+		return EMPTY_FEEDBACKS;
+	}, [sortBy]);
+
 	const sortOffers = useCallback(
 		(foodOffers: DatabaseTypes.Foodoffers[]) =>
 			sortFoodOffers(sortBy as FoodSortOption, foodOffers, {
 				languageCode: language,
-				ownFoodFeedbacks,
+				ownFoodFeedbacks: ownFoodFeedbacksForSort,
 				profile,
 				foodCategories,
 				foodOfferCategories,
 				useFoodOfferCategoryOnly: true,
 			}),
-		[sortBy, language, ownFoodFeedbacks, profile, foodCategories, foodOfferCategories]
+		[sortBy, language, ownFoodFeedbacksForSort, profile, foodCategories, foodOfferCategories]
 	);
 
 	useEffect(() => {
-		setDays(prev => prev.map(d => ({ ...d, offers: sortOffers(d.offers) })));
-	}, [sortOffers]);
+		setDays(prev => {
+			const updated = prev.map(d => ({ ...d, offers: sortOffers(d.offers) }));
+			if (updated.length > 0) {
+				updateCache(updated);
+			}
+			return updated;
+		});
+	}, [sortOffers, updateCache]);
 
 	const loadDay = useCallback(
 		async (date: string) => {
@@ -222,18 +250,28 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		[canteenId, sortOffers]
 	);
 
-	const init = useCallback(async () => {
-		setLoading(true);
-		const baseDate = new Date(startDate);
-		const toLoad = [0, 1, 2];
-		const loaded: DayData[] = [];
-		for (const offset of toLoad) {
-			const d = addDays(baseDate, offset).toISOString().split('T')[0];
-			loaded.push(await loadDay(d));
-		}
-		setDays(loaded);
-		setLoading(false);
-	}, [startDate, loadDay]);
+	const init = useCallback(
+		async (forceReload = false) => {
+			if (!forceReload && daysCache[cacheKey]) {
+				setDays(daysCache[cacheKey]);
+				setLoading(false);
+				return;
+			}
+
+			setLoading(true);
+			const baseDate = new Date(startDate);
+			const toLoad = [0, 1, 2];
+			const loaded: DayData[] = [];
+			for (const offset of toLoad) {
+				const d = addDays(baseDate, offset).toISOString().split('T')[0];
+				loaded.push(await loadDay(d));
+			}
+			setDays(loaded);
+			updateCache(loaded);
+			setLoading(false);
+		},
+		[startDate, loadDay, cacheKey, updateCache]
+	);
 
 	const openManagementSheet = useCallback(
 		(food: DatabaseTypes.Foods) => {
@@ -259,10 +297,15 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	}, []);
 
 	const loadNext = async () => {
+		if (!days.length) return;
 		const lastDate = days[days.length - 1].date;
 		const nextDate = addDays(new Date(lastDate), 1).toISOString().split('T')[0];
 		const nextDay = await loadDay(nextDate);
-		setDays(prev => [...prev, nextDay]);
+		setDays(prev => {
+			const updated = [...prev, nextDay];
+			updateCache(updated);
+			return updated;
+		});
 	};
 
 	const onEndReached = () => {
@@ -271,7 +314,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const onRefresh = async () => {
 		setRefreshing(true);
-		await init();
+		await init(true);
 		setRefreshing(false);
 	};
 
