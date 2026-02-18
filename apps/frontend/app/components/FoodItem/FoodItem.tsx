@@ -4,7 +4,7 @@ import MyImage from '@/components/MyImage';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
-import {AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
+import {AntDesign, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import {getDescriptionFromTranslation, getTextFromTranslation} from '@/helper/resourceHelper';
@@ -294,7 +294,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                         style={[styles.favContainer, { backgroundColor: foods_area_color }]}
                         onPress={handleDescriptionModal}
                       >
-                        <Entypo name="megaphone" size={20} color={contrastColor} />
+                        <MaterialIcons name="info-outline" size={20} color={contrastColor} />
                       </TouchableOpacity>
                     )}
                   </View>
