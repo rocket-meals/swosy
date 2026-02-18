@@ -10,7 +10,7 @@ import styles from '../styles';
 
 interface HousingListHeaderProps {
 	screenWidth: number;
-	appSettings: any;
+	housingTranslations: any;
 	language: string;
 	housingAreaColor: string;
 	theme: any;
@@ -21,7 +21,7 @@ interface HousingListHeaderProps {
 
 const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 	screenWidth,
-	appSettings,
+	housingTranslations,
 	language,
 	housingAreaColor,
 	theme,
@@ -32,9 +32,9 @@ const HousingListHeader: React.FC<HousingListHeaderProps> = ({
 	return (
 		<View style={{ width: '100%', alignItems: 'center' }}>
 			<View style={{ width: '100%', padding: screenWidth > 600 ? 20 : 5 }}>
-				{appSettings && appSettings?.housing_translations && (
+				{housingTranslations && (
 					<CustomMarkdown
-						content={getTextFromTranslation(appSettings?.housing_translations, language) || ''}
+						content={getTextFromTranslation(housingTranslations, language) || ''}
 						backgroundColor={housingAreaColor}
 						imageWidth={'100%'}
 						imageHeight={400}

@@ -16,6 +16,7 @@ import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 import { TranslationKeys } from '@/locales/keys';
+import { shallowEqual } from 'react-redux';
 
 import styles from './styles';
 import HousingDetailsImage from './components/HousingDetailsImage';
@@ -32,45 +33,43 @@ const Details = () => {
 	const { width: screenWidth } = useWindowDimensions();
 
 	// Redux State
-	const {
-		appSettings,
-		serverInfo,
-		primaryColor,
-		selectedTheme: mode,
-	} = useAppSelector((state) => state.settings);
-	const { apartmentsDict } = useAppSelector((state) => state.apartment);
+	// Optimize selectors to avoid selecting large objects
+	const housingAreaColor = useAppSelector((state) => state.settings.appSettings?.housing_area_color);
+	const projectLogo = useAppSelector((state) => state.settings.serverInfo?.info?.project?.project_logo);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+	const mode = useAppSelector((state) => state.settings.selectedTheme);
 
 	// Local State
 	const [activeTab, setActiveTab] = useState('information');
 
 	// Derived State
-	const apartmentDetails = useMemo(() => {
+	const apartmentDetails = useAppSelector((state) => {
 		if (!id) return null;
-		return apartmentsDict[String(id)] || null;
-	}, [apartmentsDict, id]);
+		return state.apartment.apartmentsDict[String(id)] || null;
+	}, shallowEqual);
 
 	const defaultImage = useMemo(
-		() => getImageUrl(serverInfo?.info?.project?.project_logo),
-		[serverInfo]
+		() => getImageUrl(projectLogo),
+		[projectLogo]
 	);
 
-	const housingAreaColor = useMemo(
-		() => (appSettings?.housing_area_color ? appSettings?.housing_area_color : primaryColor),
-		[appSettings, primaryColor]
+	const housingAreaColorFinal = useMemo(
+		() => (housingAreaColor ? housingAreaColor : primaryColor),
+		[housingAreaColor, primaryColor]
 	);
 
 	const contrastColor = useMemo(
-		() => myContrastColor(housingAreaColor, theme, mode === 'dark'),
-		[housingAreaColor, theme, mode]
+		() => myContrastColor(housingAreaColorFinal, theme, mode === 'dark'),
+		[housingAreaColorFinal, theme, mode]
 	);
 
 	const themeStyles = useMemo(
 		() => ({
-			backgroundColor: housingAreaColor,
-			borderColor: housingAreaColor,
+			backgroundColor: housingAreaColorFinal,
+			borderColor: housingAreaColorFinal,
 			color: contrastColor,
 		}),
-		[housingAreaColor, contrastColor]
+		[housingAreaColorFinal, contrastColor]
 	);
 
 	// Handlers
@@ -115,6 +114,25 @@ const Details = () => {
 		[screenWidth]
 	);
 
+	// Memoize static content to prevent re-renders when activeTab changes
+	const imageSection = useMemo(() => (
+		<HousingDetailsImage
+			apartmentDetails={apartmentDetails}
+			screenWidth={screenWidth}
+			defaultImage={defaultImage || ''}
+		/>
+	), [apartmentDetails, screenWidth, defaultImage]);
+
+	const headerSection = useMemo(() => (
+		<HousingDetailsHeader
+			apartmentDetails={apartmentDetails}
+			theme={theme}
+			screenWidth={screenWidth}
+			translate={translate}
+			onOpenNavigation={handleOpenNavigation}
+		/>
+	), [apartmentDetails, theme, screenWidth, translate, handleOpenNavigation]);
+
 	if (!apartmentDetails) {
 		return (
 			<SafeAreaView style={[styles.safeAreaContainer, { backgroundColor: theme.screen.background }]}>
@@ -133,20 +151,10 @@ const Details = () => {
 				showsVerticalScrollIndicator={false}
 			>
 				<View style={buildingContainerStyle}>
-					<HousingDetailsImage
-						apartmentDetails={apartmentDetails}
-						screenWidth={screenWidth}
-						defaultImage={defaultImage || ''}
-					/>
+					{imageSection}
 
 					<View style={[styles.detailsContainer, { width: '100%' }]}>
-						<HousingDetailsHeader
-							apartmentDetails={apartmentDetails}
-							theme={theme}
-							screenWidth={screenWidth}
-							translate={translate}
-							onOpenNavigation={handleOpenNavigation}
-						/>
+						{headerSection}
 
 						<View style={[styles.tabViewContainer, { width: '100%' }]}>
 							<HousingDetailsTabs

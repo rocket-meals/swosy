@@ -1,7 +1,8 @@
 import React, { memo, useMemo } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { getImageUrl } from '@/constants/HelperFunctions';
+import MyImage from '@/components/MyImage';
 import styles from '../styles';
 
 interface HousingDetailsImageProps {
@@ -15,18 +16,9 @@ const HousingDetailsImage: React.FC<HousingDetailsImageProps> = ({
 	screenWidth,
 	defaultImage,
 }) => {
-	const imageSource = useMemo(() => {
-		const remoteUrl = (apartmentDetails as any)?.image_remote_url;
-		const imageId = (apartmentDetails as any)?.image;
+	const remoteUrl = (apartmentDetails as any)?.image_remote_url;
+	const imageId = (apartmentDetails as any)?.image;
 
-		if (remoteUrl) {
-			return { uri: remoteUrl };
-		}
-		if (imageId) {
-			return { uri: getImageUrl(String(imageId)) };
-		}
-		return { uri: defaultImage };
-	}, [apartmentDetails, defaultImage]);
 
 	const containerStyle = useMemo(() => {
 		let size = screenWidth - 20; // Default for small screens
@@ -44,7 +36,13 @@ const HousingDetailsImage: React.FC<HousingDetailsImageProps> = ({
 
 	return (
 		<View style={[styles.imageContainer, containerStyle]}>
-			<Image source={imageSource} style={styles.image} resizeMode="cover" />
+			<MyImage
+				remote_image_url={remoteUrl}
+				directus_asset_id={imageId}
+				defaultImage={{ uri: defaultImage }}
+				contentFit="cover"
+				style={styles.image}
+			/>
 		</View>
 	);
 };

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RefreshControl, SafeAreaView, useWindowDimensions, View } from 'react-native';
+import { RefreshControl, SafeAreaView, useWindowDimensions, View, unstable_batchedUpdates } from 'react-native';
 import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import { FlashList } from '@shopify/flash-list';
 import * as Location from 'expo-location';
-import { useFocusEffect } from 'expo-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, shallowEqual } from 'react-redux';
 
 import {
 	SET_APARTMENTS,
@@ -25,6 +24,7 @@ import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirect
 import { TranslationKeys } from '@/locales/keys';
 import ApartmentItem from '@/components/ApartmentItem/ApartmentItem';
 import DistanceModal from '@/components/DistanceModal';
+import { getImageUrl } from '@/constants/HelperFunctions';
 
 import styles from './styles';
 import { addDistanceToApartments, getSortedApartments } from './utils';
@@ -45,21 +45,25 @@ const Index: React.FC = () => {
 	const { width: screenWidth } = useWindowDimensions();
 
 	// Global State
-	const {
-		drawerPosition,
-		apartmentsSortBy,
-		primaryColor: projectColor,
-		appSettings,
-		language,
-		amountColumnsForcard,
-	} = useAppSelector((state) => state.settings);
-	const { unSortedApartments } = useAppSelector((state) => state.apartment);
+	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
+	const apartmentsSortBy = useAppSelector((state) => state.settings.apartmentsSortBy);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+	const housingAreaColorFromSettings = useAppSelector((state) => state.settings.appSettings?.housing_area_color);
+	const housingTranslations = useAppSelector((state) => state.settings.appSettings?.housing_translations, shallowEqual);
+	const language = useAppSelector((state) => state.settings.language);
+	const amountColumnsForcard = useAppSelector((state) => state.settings.amountColumnsForcard);
+	const projectLogo = useAppSelector((state) => state.settings.serverInfo?.info?.project?.project_logo);
+	const isManagement = useAppSelector((state) => state.authReducer.isManagement);
+	const selectedTheme = useAppSelector((state) => state.settings.selectedTheme);
+
+	const unSortedApartments = useAppSelector((state) => state.apartment.unSortedApartments, shallowEqual);
+
 	const selectedCanteen = useSelectedCanteen();
 
 	// Local State
+	// Optimization: Initialize loading to false if we already have data in Redux
 	const [query, setQuery] = useState<string>('');
-	const [loading, setLoading] = useState(true);
-	const [isActive, setIsActive] = useState(false);
+	const [loading, setLoading] = useState(!unSortedApartments || unSortedApartments.length === 0);
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 	const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>();
@@ -69,9 +73,14 @@ const Index: React.FC = () => {
 	const { openHousingSortingModal } = useHousingSortingModal();
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 
-	const housingAreaColor = appSettings?.housing_area_color
-		? appSettings?.housing_area_color
-		: projectColor;
+	const housingAreaColor = housingAreaColorFromSettings
+		? housingAreaColorFromSettings
+		: primaryColor;
+
+	const defaultImage = useMemo(
+		() => getImageUrl(projectLogo),
+		[projectLogo]
+	);
 
 	// Callbacks
 	const openDistanceSheet = useCallback(() => {
@@ -82,17 +91,14 @@ const Index: React.FC = () => {
 		setDistanceModalVisible(false);
 	}, []);
 
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
-
-	const fetchAllApartments = useCallback(async () => {
-		setLoading(true);
+	const fetchAllApartments = useCallback(async (isRefresh = false) => {
+		if (!isRefresh && unSortedApartments && unSortedApartments.length > 0) {
+			setLoading(false);
+			return;
+		}
+		if ((!unSortedApartments || unSortedApartments.length === 0) && !isRefresh) {
+			setLoading(true);
+		}
 		try {
 			const apartmentData = (await apartmentsHelper.fetchApartments({})) as DatabaseTypes.Apartments[];
 			const list = apartmentData || [];
@@ -117,22 +123,23 @@ const Index: React.FC = () => {
 				return acc;
 			}, {} as Record<string, any>);
 
-			// We update Redux to keep the store consistent, but we rely on unSortedApartments for local logic
-			dispatch({ type: SET_APARTMENTS, payload: apartmentWithBuilding });
-			dispatch({ type: SET_UNSORTED_APARTMENTS, payload: apartmentWithBuilding });
-			dispatch({ type: SET_APARTMENTS_LOCAL, payload: apartmentWithBuilding });
-			dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
+			unstable_batchedUpdates(() => {
+				dispatch({ type: SET_APARTMENTS, payload: apartmentWithBuilding });
+				dispatch({ type: SET_UNSORTED_APARTMENTS, payload: apartmentWithBuilding });
+				dispatch({ type: SET_APARTMENTS_LOCAL, payload: apartmentWithBuilding });
+				dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
+			});
 		} catch (error) {
 			console.error('Error fetching apartments or buildings:', error);
 			toast('Failed to load apartments', 'error');
 		} finally {
 			setLoading(false);
 		}
-	}, [dispatch, toast]);
+	}, [dispatch, toast, unSortedApartments]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);
-		fetchAllApartments().finally(() => {
+		fetchAllApartments(true).finally(() => {
 			setRefreshing(false);
 		});
 	}, [fetchAllApartments]);
@@ -220,6 +227,13 @@ const Index: React.FC = () => {
 		return Math.max(2, cols);
 	}, [amountColumnsForcard, listWidth]);
 
+	const cardWidth = useMemo(() => {
+		if (!listWidth) return MIN_CARD_WIDTH;
+		const availableWidth = listWidth - 10;
+		const itemTotalMargin = 20;
+		return (availableWidth / numColumns) - itemTotalMargin;
+	}, [listWidth, numColumns]);
+
 	// Render Helpers
 	const renderItem = useCallback(
 		({ item }: { item: any }) => (
@@ -228,10 +242,17 @@ const Index: React.FC = () => {
 					apartment={item}
 					onEditImage={openImageManagementModal}
 					openDistanceSheet={openDistanceSheet}
+					knownCardWidth={cardWidth}
+					housingAreaColor={housingAreaColor}
+					defaultImage={defaultImage}
+					theme={theme}
+					translate={translate}
+					isManagement={isManagement}
+					mode={selectedTheme as 'light' | 'dark' | 'systematic'}
 				/>
 			</View>
 		),
-		[openImageManagementModal, openDistanceSheet]
+		[openImageManagementModal, openDistanceSheet, cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme]
 	);
 
 	const keyExtractor = useCallback(
@@ -243,7 +264,7 @@ const Index: React.FC = () => {
 		() => (
 			<HousingListHeader
 				screenWidth={screenWidth}
-				appSettings={appSettings}
+				housingTranslations={housingTranslations}
 				language={language}
 				housingAreaColor={housingAreaColor}
 				theme={theme}
@@ -252,13 +273,23 @@ const Index: React.FC = () => {
 				translate={translate}
 			/>
 		),
-		[screenWidth, appSettings, language, housingAreaColor, theme, query, translate]
+		[screenWidth, housingTranslations, language, housingAreaColor, theme, query, translate]
 	);
 
 	const ListEmpty = useMemo(
 		() => <HousingListEmpty loading={loading} theme={theme} />,
 		[loading, theme]
 	);
+
+	const extraData = useMemo(() => ([
+		cardWidth,
+		housingAreaColor,
+		defaultImage,
+		theme,
+		translate,
+		isManagement,
+		selectedTheme
+	]), [cardWidth, housingAreaColor, defaultImage, theme, translate, isManagement, selectedTheme]);
 
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
@@ -279,7 +310,7 @@ const Index: React.FC = () => {
 						}}
 						onLayout={(e) => {
 							const w = e.nativeEvent.layout.width;
-							if (w && w !== listWidth) {
+							if (w && (!listWidth || Math.abs(w - listWidth) > 10)) {
 								setListWidth(w);
 							}
 						}}
@@ -287,6 +318,7 @@ const Index: React.FC = () => {
 						<FlashList
 							key={numColumns}
 							data={visibleApartments}
+							extraData={extraData}
 							renderItem={renderItem}
 							keyExtractor={keyExtractor}
 							numColumns={numColumns}
@@ -301,13 +333,13 @@ const Index: React.FC = () => {
 							refreshControl={
 								<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 							}
-							removeClippedSubviews={false} // FlashList handles this, sometimes true is better but original was false
+							removeClippedSubviews={true}
 							showsVerticalScrollIndicator={false}
 							onEndReachedThreshold={0.4}
 						/>
 					</View>
 				</View>
-				{isActive && (
+				{distanceModalVisible && (
 					<DistanceModal
 						visible={distanceModalVisible}
 						onClose={closeDistanceSheet}
