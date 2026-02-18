@@ -294,7 +294,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                         style={[styles.favContainer, { backgroundColor: foods_area_color }]}
                         onPress={handleDescriptionModal}
                       >
-                        <Entypo name="info-with-circle" size={18} color={contrastColor} />
+                        <Entypo name="info" size={18} color={contrastColor} />
                       </TouchableOpacity>
                     )}
                   </View>
