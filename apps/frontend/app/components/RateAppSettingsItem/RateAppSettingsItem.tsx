@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
-import * as StoreReview from 'expo-store-review';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import SettingsList from '@/components/SettingsList/SettingsList';
@@ -9,8 +8,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 
-const RATED_APP_STORAGE_KEY = 'rate_app_review_completed';
 const RATE_APP_ICON_BACKGROUND = '#F7D21F';
 
 type RateAppSettingsItemProps = {
@@ -19,58 +18,81 @@ type RateAppSettingsItemProps = {
 	onLog?: (message: string) => void;
 };
 
+type StoreTarget = 'ios' | 'android';
+
 export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition = 'single', showSeparator = false, onLog }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
-	const [alreadyRated, setAlreadyRated] = useState(false);
+	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
 
-	useEffect(() => {
-		const loadRatedState = async () => {
-			try {
-				const storedRatedState = await AsyncStorage.getItem(RATED_APP_STORAGE_KEY);
-				setAlreadyRated(storedRatedState === 'true');
-				onLog?.(`Already rated: ${storedRatedState === 'true'}`);
-			} catch (error: any) {
-				onLog?.(`Read error: ${error?.message || error}`);
-			}
-		};
+	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
+	const androidStoreUrl = appSettings?.app_stores_url_to_google;
+	const isWeb = Platform.OS === 'web';
+	const hasBothWebLinks = isWeb && Boolean(iosStoreUrl) && Boolean(androidStoreUrl);
 
-		loadRatedState();
-	}, [onLog]);
+	const openStore = useCallback(
+		(storeUrl: string, store: StoreTarget) => {
+			onLog?.(`Opening ${store} store URL`);
+			CommonSystemActionHelper.openExternalURL(storeUrl, true);
+		},
+		[onLog]
+	);
 
-	const handleRate = useCallback(async () => {
-		if (alreadyRated) {
-			return;
+	const rows = useMemo(
+		() => [
+			{ key: 'ios', store: 'ios' as const, label: 'App Store (iOS)', url: iosStoreUrl },
+			{ key: 'android', store: 'android' as const, label: 'Google Play (Android)', url: androidStoreUrl },
+		],
+		[androidStoreUrl, iosStoreUrl]
+	);
+
+	if (isWeb) {
+		const visibleRows = rows.filter(row => Boolean(row.url));
+
+		if (!visibleRows.length) {
+			return null;
 		}
 
-		try {
-			onLog?.('Checking availability');
-			const available = await StoreReview.isAvailableAsync();
-			onLog?.(`Available: ${available}`);
+		return (
+			<>
+				{visibleRows.map((row, index) => {
+					const isFirst = index === 0;
+					const isLast = index === visibleRows.length - 1;
+					const computedGroupPosition = hasBothWebLinks ? (isFirst ? 'top' : 'bottom') : 'single';
 
-			if (available) {
-				await StoreReview.requestReview();
-				await AsyncStorage.setItem(RATED_APP_STORAGE_KEY, 'true');
-				setAlreadyRated(true);
-				onLog?.('Review requested');
-			}
-		} catch (error: any) {
-			onLog?.(`Error: ${error?.message || error}`);
-			console.log('Error requesting review', error);
-		}
-	}, [alreadyRated, onLog]);
+					return (
+						<SettingsList
+							key={row.key}
+							label={row.label}
+							handleFunction={row.url ? () => openStore(row.url, row.store) : undefined}
+							groupPosition={computedGroupPosition}
+							showSeparator={!isLast}
+							iconBgColor={RATE_APP_ICON_BACKGROUND}
+							leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
+							rightIcon={row.url ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : undefined}
+						/>
+					);
+				})}
+			</>
+		);
+	}
+
+	const nativeStore = Platform.OS === 'ios' ? 'ios' : 'android';
+	const nativeStoreUrl = nativeStore === 'ios' ? iosStoreUrl : androidStoreUrl;
+
+	if (!nativeStoreUrl) {
+		return null;
+	}
 
 	return (
 		<SettingsList
 			label={translate(TranslationKeys.rate_app)}
-			handleFunction={alreadyRated ? undefined : handleRate}
+			handleFunction={() => openStore(nativeStoreUrl, nativeStore)}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
 			iconBgColor={RATE_APP_ICON_BACKGROUND}
 			leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
-			value={alreadyRated ? 'Dankeschön' : undefined}
-			rightIcon={alreadyRated ? undefined : <Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+			rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 		/>
 	);
 };
