@@ -5,7 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import styles from './styles';
-import RateAppSettingsItem from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 
 const RateApp = () => {
 	useSetPageTitle(TranslationKeys.rate_app);

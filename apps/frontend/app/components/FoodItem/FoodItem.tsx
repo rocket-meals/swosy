@@ -26,7 +26,7 @@ import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
-import RateAppSettingsItem from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 
 
 const selectFoodState = (state: RootState) => state.food;

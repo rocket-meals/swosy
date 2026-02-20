@@ -13,7 +13,7 @@ type RateAppSettingsItemProps = {
 	onLog?: (message: string) => void;
 };
 
-const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition = 'single', showSeparator = false, onLog }) => {
+export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition = 'single', showSeparator = false, onLog }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 
@@ -44,5 +44,3 @@ const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition
 		/>
 	);
 };
-
-export default RateAppSettingsItem;
