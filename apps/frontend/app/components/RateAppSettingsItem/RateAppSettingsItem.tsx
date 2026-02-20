@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { MaterialIcons, Octicons } from '@expo/vector-icons';
-import { Platform } from 'react-native';
+import { Ionicons, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import SettingsList from '@/components/SettingsList/SettingsList';
@@ -19,6 +19,11 @@ type RateAppSettingsItemProps = {
 };
 
 type StoreTarget = 'ios' | 'android';
+
+const STORE_ICON_BY_TARGET: Record<StoreTarget, keyof typeof Ionicons.glyphMap> = {
+	ios: 'logo-apple',
+	android: 'logo-google-playstore',
+};
 
 export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition = 'single', showSeparator = false, onLog }) => {
 	const { translate } = useLanguage();
@@ -40,8 +45,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 
 	const rows = useMemo(
 		() => [
-			{ key: 'ios', store: 'ios' as const, label: 'App Store (iOS)', url: iosStoreUrl },
-			{ key: 'android', store: 'android' as const, label: 'Google Play (Android)', url: androidStoreUrl },
+			{ key: 'ios', store: 'ios' as const, label: 'App Store (iOS)', url: iosStoreUrl, icon: STORE_ICON_BY_TARGET.ios },
+			{ key: 'android', store: 'android' as const, label: 'Google Play (Android)', url: androidStoreUrl, icon: STORE_ICON_BY_TARGET.android },
 		],
 		[androidStoreUrl, iosStoreUrl]
 	);
@@ -69,7 +74,14 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 							showSeparator={!isLast}
 							iconBgColor={RATE_APP_ICON_BACKGROUND}
 							leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
-							rightIcon={row.url ? <Octicons name="chevron-right" size={24} color={theme.screen.icon} /> : undefined}
+							rightElement={
+								row.url ? (
+									<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+										<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
+										<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+									</View>
+								) : undefined
+							}
 						/>
 					);
 				})}
@@ -78,7 +90,8 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 	}
 
 	const nativeStore = Platform.OS === 'ios' ? 'ios' : 'android';
-	const nativeStoreUrl = nativeStore === 'ios' ? iosStoreUrl : androidStoreUrl;
+	const nativeRow = rows.find(row => row.store === nativeStore);
+	const nativeStoreUrl = nativeRow?.url;
 
 	if (!nativeStoreUrl) {
 		return null;
@@ -86,13 +99,18 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 
 	return (
 		<SettingsList
-			label={translate(TranslationKeys.rate_app)}
+			label={nativeRow?.label || translate(TranslationKeys.rate_app)}
 			handleFunction={() => openStore(nativeStoreUrl, nativeStore)}
 			groupPosition={groupPosition}
 			showSeparator={showSeparator}
 			iconBgColor={RATE_APP_ICON_BACKGROUND}
 			leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
-			rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+			rightElement={
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+					<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+					<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+				</View>
+			}
 		/>
 	);
 };
