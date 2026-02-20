@@ -26,6 +26,7 @@ import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
+import RateAppSettingsItem from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -200,7 +201,10 @@ const FoodItem: React.FC<FoodItemProps> = memo(
           {
             title: translate(TranslationKeys.description),
             children: (
-              <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
+              <View style={{ gap: 20 }}>
+                <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
+                <RateAppSettingsItem />
+              </View>
             ),
           },
           {}
