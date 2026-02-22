@@ -45,10 +45,10 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 
 	const rows = useMemo(
 		() => [
-			{ key: 'ios', store: 'ios' as const, label: 'App Store (iOS)', url: iosStoreUrl, icon: STORE_ICON_BY_TARGET.ios },
-			{ key: 'android', store: 'android' as const, label: 'Google Play (Android)', url: androidStoreUrl, icon: STORE_ICON_BY_TARGET.android },
+			{ key: 'ios', store: 'ios' as const, label: translate(TranslationKeys.rate_app), url: iosStoreUrl, icon: STORE_ICON_BY_TARGET.ios },
+			{ key: 'android', store: 'android' as const, label: translate(TranslationKeys.rate_app), url: androidStoreUrl, icon: STORE_ICON_BY_TARGET.android },
 		],
-		[androidStoreUrl, iosStoreUrl]
+		[androidStoreUrl, iosStoreUrl, translate]
 	);
 
 	if (isWeb) {
