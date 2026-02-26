@@ -1,6 +1,6 @@
 import { defineHook } from '@directus/extensions-sdk';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, MailAdresses } from 'repo-depkit-common';
 import { EmailOptions, MailService as MailServiceType } from '@directus/api/dist/services/mail';
 import { DEFAULT_HTML_TEMPLATE } from '../helpers/html/HtmlGenerator';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
@@ -93,8 +93,16 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       },
     });
 
-    if (todayMailCount >= DAILY_MAIL_LIMIT) {
+    if (todayMailCount > DAILY_MAIL_LIMIT - 1) {
       throw new Error(`Daily mail limit reached (${DAILY_MAIL_LIMIT}).`);
+    }
+
+    if (todayMailCount === DAILY_MAIL_LIMIT - 1) {
+      await sendMail({
+        to: MailAdresses.SupportMail,
+        subject: `Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT})`,
+        text: `Das Tageslimit von ${DAILY_MAIL_LIMIT} Mails wurde erreicht. Weitere Mails werden heute blockiert.`,
+      });
     }
 
     //console.log("Filter: Mails create: ", input);
