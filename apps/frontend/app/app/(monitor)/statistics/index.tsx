@@ -4,7 +4,8 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import StatisticsCard from '@/components/StatisticsCard/StatisticsCard';
 import { loadMostLikedOrDislikedFoods } from '@/helper/FoodHelper';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { SET_MOST_DISLIKED_FOODS, SET_MOST_LIKED_FOODS } from '@/redux/Types/types';
 import { DatabaseTypes } from 'repo-depkit-common';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -13,7 +14,6 @@ import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagem
 import { useFocusEffect } from 'expo-router';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.statistiken);
@@ -23,7 +23,7 @@ const Index = () => {
 	const [selectedFoodId, setSelectedFoodId] = useState('');
 	const imageManagementSheetRef = useRef<BottomSheet>(null);
 
-	const { mostLikedFoods, mostDislikedFoods } = useSelector((state: RootState) => state.food);
+	const { mostLikedFoods, mostDislikedFoods } = useAppSelector((state) => state.food);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const openImageManagementSheet = () => {

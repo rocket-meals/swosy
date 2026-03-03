@@ -5,13 +5,12 @@ import RedirectButton from '../RedirectButton';
 import styles from './styles';
 import { CustomMarkdownProps } from './types';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
-import { RootState } from '@/redux/reducer';
 
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
 	const { theme } = useTheme();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 
 	const getContent = () => {
 		// Regex patterns for different content types

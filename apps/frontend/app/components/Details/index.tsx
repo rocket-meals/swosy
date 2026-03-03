@@ -3,7 +3,7 @@ import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import FoodLabelingInfo from '../FoodLabelingInfo';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { DetailsProps } from './types';
@@ -16,23 +16,18 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor, appSettings, language } = useSelector((state: RootState) => state.settings);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const appSettings = useAppSelector(state => state.settings.appSettings);
+	const language = useAppSelector(state => state.settings.language);
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
 	return (
 		<View style={styles.container}>
-			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.food_data)}</Text>
+			<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.food_data)}</Text>
 
 			{loading ? (
-				<View
-					style={{
-						height: 200,
-						width: '100%',
-						justifyContent: 'center',
-						alignItems: 'center',
-					}}
-				>
+				<View style={styles.loadingContainer}>
 					<ActivityIndicator size={30} color={theme.screen.text} />
 				</View>
 			) : (

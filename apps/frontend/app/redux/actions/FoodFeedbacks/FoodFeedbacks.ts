@@ -1,24 +1,24 @@
 import { DatabaseTypes } from 'repo-depkit-common';
-import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
+import { CollectionHelper, Query } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
 export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeedbacks> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('foods_feedbacks', client || ServerAPI.getClient());
+		super('foods_feedbacks', client);
 	}
 
-	async fetchAllFoodFeedbacks(queryOverride: any = {}) {
+	async fetchAllFoodFeedbacks(queryOverride?: Query<DatabaseTypes.FoodsFeedbacks>) {
 		const defaultQuery = {
 			fields: ['*'],
 			limit: -1, // Fetch all
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 	// Fetch all food feedbacks with optional query overrides
-	async fetchFoodFeedbacks(usersProfileId: string, queryOverride: any = {}) {
+	async fetchFoodFeedbacks(usersProfileId: string, queryOverride?: Query<DatabaseTypes.FoodsFeedbacks>) {
 		const defaultQuery = {
 			fields: ['*'],
 			limit: -1, // Fetch all
@@ -33,27 +33,27 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			},
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 
 	// Fetch a specific food feedback by ID
-	async fetchFoodFeedbackById(id: string, queryOverride: any = {}) {
+	async fetchFoodFeedbackById(id: string, queryOverride?: Query<DatabaseTypes.FoodsFeedbacks>) {
 		const defaultQuery = {
 			fields: ['*'],
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItem(id, query);
 	}
 
 	// Create new food feedback
-	async createFoodFeedback(feedbackData: any) {
+	async createFoodFeedback(feedbackData: Partial<DatabaseTypes.FoodsFeedbacks>) {
 		return await this.createItem(feedbackData);
 	}
 
 	// Update an existing food feedback By Profile ID
-	async fetchFoodFeedbackByProfileId(profileId: string, queryOverride: any = {}) {
+	async fetchFoodFeedbackByProfileId(profileId: string, queryOverride?: Query<DatabaseTypes.FoodsFeedbacks>) {
 		const defaultQuery = {
 			fields: ['*'],
 			limit: -1, // Fetch all
@@ -68,7 +68,7 @@ export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeed
 			},
 		};
 
-		const query = { ...defaultQuery, ...queryOverride };
+		const query = { ...defaultQuery, ...(queryOverride || {}) };
 		return await this.readItems(query);
 	}
 

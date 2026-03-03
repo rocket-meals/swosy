@@ -1,22 +1,28 @@
-import { ActivityIndicator, Dimensions, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
-import styles from './styles';
-import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
-import LocationInformation from '@/components/LocationInformation/LocationInformation';
-import BuildingDescription from '@/components/BuildingDescription';
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useSelector } from 'react-redux';
-import { DatabaseTypes } from 'repo-depkit-common';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+	ActivityIndicator,
+	DimensionValue,
+	SafeAreaView,
+	ScrollView,
+	View,
+	useWindowDimensions,
+} from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { useAppSelector } from '@/redux/hooks';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import WashingMachines from '@/components/WashingMachines';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import { TranslationKeys } from '@/locales/keys';
+import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
 import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
+import { TranslationKeys } from '@/locales/keys';
+import { shallowEqual } from 'react-redux';
+
+import styles from './styles';
+import HousingDetailsImage from './components/HousingDetailsImage';
+import HousingDetailsHeader from './components/HousingDetailsHeader';
+import HousingDetailsTabs from './components/HousingDetailsTabs';
+import HousingDetailsContent from './components/HousingDetailsContent';
 
 const Details = () => {
 	useSetPageTitle(TranslationKeys.apartment_details);
@@ -24,48 +30,52 @@ const Details = () => {
 	const { translate } = useLanguage();
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
 	const { id } = useLocalSearchParams();
-	const { appSettings, serverInfo, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const { apartmentsDict } = useSelector((state: RootState) => state.apartment);
-	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-	const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : primaryColor;
-	const contrastColor = myContrastColor(housing_area_color, theme, mode === 'dark');
+	const { width: screenWidth } = useWindowDimensions();
+
+	// Redux State
+	// Optimize selectors to avoid selecting large objects
+	const housingAreaColor = useAppSelector((state) => state.settings.appSettings?.housing_area_color);
+	const projectLogo = useAppSelector((state) => state.settings.serverInfo?.info?.project?.project_logo);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+	const mode = useAppSelector((state) => state.settings.selectedTheme);
+
+	// Local State
 	const [activeTab, setActiveTab] = useState('information');
-	const [loading, setLoading] = useState(false);
-	const [apartmentDetails, setApartmentDetails] = useState<DatabaseTypes.Apartments | null>(null);
-	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
-	const fetchApartmentById = async () => {
-		setLoading(true);
-		const apartmentDetails = apartmentsDict[String(id)];
+	// Derived State
+	const apartmentDetails = useAppSelector((state) => {
+		if (!id) return null;
+		return state.apartment.apartmentsDict[String(id)] || null;
+	}, shallowEqual);
 
-		if (apartmentDetails) {
-			setApartmentDetails(apartmentDetails);
-		}
-		setLoading(false);
-	};
-
-	useFocusEffect(
-		useCallback(() => {
-			if (id) {
-				fetchApartmentById();
-			}
-			return () => {};
-		}, [id])
+	const defaultImage = useMemo(
+		() => getImageUrl(projectLogo),
+		[projectLogo]
 	);
 
-	useEffect(() => {
-		const handleResize = () => {
-			setScreenWidth(Dimensions.get('window').width);
-		};
+	const housingAreaColorFinal = useMemo(
+		() => (housingAreaColor ? housingAreaColor : primaryColor),
+		[housingAreaColor, primaryColor]
+	);
 
-		const subscription = Dimensions.addEventListener('change', handleResize);
+	const contrastColor = useMemo(
+		() => myContrastColor(housingAreaColorFinal, theme, mode === 'dark'),
+		[housingAreaColorFinal, theme, mode]
+	);
 
-		return () => subscription?.remove();
-	}, []);
+	const themeStyles = useMemo(
+		() => ({
+			backgroundColor: housingAreaColorFinal,
+			borderColor: housingAreaColorFinal,
+			color: contrastColor,
+		}),
+		[housingAreaColorFinal, contrastColor]
+	);
 
-	const handleOpenNavigation = () => {
+	// Handlers
+	const handleOpenNavigation = useCallback(() => {
 		if (!apartmentDetails) return;
-		const coordinates = apartmentDetails.coordinates?.coordinates; // [longitude, latitude]
+		const coordinates = (apartmentDetails as any).coordinates?.coordinates; // [longitude, latitude]
 
 		if (!coordinates || coordinates.length !== 2) {
 			console.error('Invalid coordinates');
@@ -76,190 +86,97 @@ const Details = () => {
 		openLinkCoordinateModal({
 			latlon: { latitude, longitude },
 		});
-	};
+	}, [apartmentDetails, openLinkCoordinateModal]);
 
-	const renderContent = () => {
-		switch (activeTab) {
-			case 'information':
-				return <LocationInformation campusDetails={apartmentDetails} />;
-			case 'description':
-				return <BuildingDescription campusDetails={apartmentDetails} />;
-			case 'washing-machine':
-				return <WashingMachines campusDetails={apartmentDetails} />;
-			default:
-				return null;
-		}
-	};
+	const containerStyle = useMemo(
+		() => ({
+			...styles.contentContainer,
+			paddingHorizontal: screenWidth > 900 ? 20 : 10,
+		}),
+		[screenWidth]
+	);
 
-	const themeStyles = {
-		backgroundColor: housing_area_color,
-		borderColor: housing_area_color,
-		color: contrastColor,
-	};
+	const buildingContainerStyle = useMemo(
+		() => ({
+			...styles.bulidingContainer,
+			width: (screenWidth > 1000 ? '80%' : '100%') as DimensionValue,
+			flexDirection: 'column' as const,
+		}),
+		[screenWidth]
+	);
+
+	const pagerViewStyle = useMemo(
+		() => ({
+			...styles.pagerView,
+			width: (screenWidth > 900 ? '95%' : '100%') as DimensionValue,
+			paddingHorizontal: screenWidth > 900 ? 20 : 0,
+		}),
+		[screenWidth]
+	);
+
+	// Memoize static content to prevent re-renders when activeTab changes
+	const imageSection = useMemo(() => (
+		<HousingDetailsImage
+			apartmentDetails={apartmentDetails}
+			screenWidth={screenWidth}
+			defaultImage={defaultImage || ''}
+		/>
+	), [apartmentDetails, screenWidth, defaultImage]);
+
+	const headerSection = useMemo(() => (
+		<HousingDetailsHeader
+			apartmentDetails={apartmentDetails}
+			theme={theme}
+			screenWidth={screenWidth}
+			translate={translate}
+			onOpenNavigation={handleOpenNavigation}
+		/>
+	), [apartmentDetails, theme, screenWidth, translate, handleOpenNavigation]);
+
+	if (!apartmentDetails) {
+		return (
+			<SafeAreaView style={[styles.safeAreaContainer, { backgroundColor: theme.screen.background }]}>
+				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+					<ActivityIndicator size="large" color={theme.screen.text} />
+				</View>
+			</SafeAreaView>
+		);
+	}
 
 	return (
-		<SafeAreaView
-			style={{
-				...styles.safeAreaContainer,
-				backgroundColor: theme.screen.background,
-			}}
-		>
+		<SafeAreaView style={[styles.safeAreaContainer, { backgroundColor: theme.screen.background }]}>
 			<ScrollView
-				style={{
-					...styles.container,
-					backgroundColor: theme.screen.background,
-				}}
-				contentContainerStyle={{
-					...styles.contentContainer,
-					paddingHorizontal: screenWidth > 900 ? 20 : 10,
-				}}
+				style={[styles.container, { backgroundColor: theme.screen.background }]}
+				contentContainerStyle={containerStyle}
+				showsVerticalScrollIndicator={false}
 			>
-				{!loading ? (
-					<View
-						style={{
-							...styles.bulidingContainer,
-							width: screenWidth > 1000 ? '80%' : '100%',
-							flexDirection: 'column',
-						}}
-					>
-						<View
-							style={{
-								...styles.imageContainer,
-								width: screenWidth > 1000 ? 400 : screenWidth > 900 ? 350 : Dimensions.get('window').width - 20,
-								height: screenWidth > 1000 ? 400 : screenWidth > 900 ? 350 : Dimensions.get('window').width - 20,
-							}}
-						>
-							<Image
-								source={
-									apartmentDetails?.image || apartmentDetails?.image_remote_url
-										? {
-												uri: apartmentDetails?.image_remote_url || getImageUrl(String(apartmentDetails?.image)),
-											}
-										: { uri: defaultImage }
-								}
-								style={styles.image}
-							/>
-						</View>
-						<View
-							style={{
-								...styles.detailsContainer,
-								width: '100%',
-							}}
-						>
-							<Text style={{ ...styles.buildingHeading, color: theme.screen.text }}>{apartmentDetails?.alias}</Text>
-							<View
-								style={{
-									width: '98%',
-									flexDirection: 'row',
-									justifyContent: screenWidth > 900 ? 'flex-start' : 'flex-end',
-									gap: 10,
-								}}
-							>
-								<Tooltip
-									placement="top"
-									trigger={triggerProps => (
-										<TouchableOpacity
-											{...triggerProps}
-											style={{
-												...styles.navigationButton,
-												backgroundColor: theme.screen.iconBg,
-											}}
-											onPress={handleOpenNavigation}
-										>
-											<MaterialCommunityIcons name="navigation-variant" size={24} color={theme.screen.icon} />
-										</TouchableOpacity>
-									)}
-								>
-									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-											{`${translate(TranslationKeys.open_navitation_to_location)}`}
-										</TooltipText>
-									</TooltipContent>
-								</Tooltip>
-							</View>
-							<View
-								style={{
-									...styles.tabViewContainer,
-									width: '100%',
-								}}
-							>
-								<View
-									style={{
-										...styles.tabs,
-										width: '100%',
-										gap: screenWidth > 900 ? 20 : 0,
-									}}
-								>
-									<Tooltip
-										placement="top"
-										trigger={triggerProps => (
-											<TouchableOpacity {...triggerProps} style={[styles.tab, activeTab === 'information' ? themeStyles : { backgroundColor: theme.screen.iconBg }]} onPress={() => setActiveTab('information')}>
-												<Foundation name="info" size={26} color={activeTab === 'information' ? contrastColor : theme.screen.icon} />
-											</TouchableOpacity>
-										)}
-									>
-										<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-											<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-												{`${translate(TranslationKeys.information)}`}
-											</TooltipText>
-										</TooltipContent>
-									</Tooltip>
-									<Tooltip
-										placement="top"
-										trigger={triggerProps => (
-											<TouchableOpacity {...triggerProps} style={[styles.tab, activeTab === 'description' ? themeStyles : { backgroundColor: theme.screen.iconBg }]} onPress={() => setActiveTab('description')}>
-												<MaterialCommunityIcons name="sort-variant" size={26} color={activeTab === 'description' ? contrastColor : theme.screen.icon} />
-											</TouchableOpacity>
-										)}
-									>
-										<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-											<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-												{`${translate(TranslationKeys.description)}`}
-											</TooltipText>
-										</TooltipContent>
-									</Tooltip>
+				<View style={buildingContainerStyle}>
+					{imageSection}
 
-									{apartmentDetails && apartmentDetails?.washingmachines?.length > 0 && (
-										<Tooltip
-											placement="top"
-											trigger={triggerProps => (
-												<TouchableOpacity {...triggerProps} style={[styles.tab, activeTab === 'washing-machine' ? themeStyles : { backgroundColor: theme.screen.iconBg }]} onPress={() => setActiveTab('washing-machine')}>
-													<MaterialCommunityIcons name="washing-machine" size={26} color={activeTab === 'washing-machine' ? contrastColor : theme.screen.icon} />
-												</TouchableOpacity>
-											)}
-										>
-											<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-												<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-													{`${translate(TranslationKeys.washing_machine)}`}
-												</TooltipText>
-											</TooltipContent>
-										</Tooltip>
-									)}
-								</View>
-								<View
-									style={{
-										...styles.pagerView,
-										width: screenWidth > 900 ? '95%' : '100%',
-										paddingHorizontal: screenWidth > 900 ? 20 : 0,
-									}}
-								>
-									{renderContent()}
-								</View>
+					<View style={[styles.detailsContainer, { width: '100%' }]}>
+						{headerSection}
+
+						<View style={[styles.tabViewContainer, { width: '100%' }]}>
+							<HousingDetailsTabs
+								activeTab={activeTab}
+								setActiveTab={setActiveTab}
+								theme={theme}
+								themeStyles={themeStyles}
+								contrastColor={contrastColor}
+								translate={translate}
+								apartmentDetails={apartmentDetails}
+								screenWidth={screenWidth}
+							/>
+
+							<View style={pagerViewStyle}>
+								<HousingDetailsContent
+									activeTab={activeTab}
+									apartmentDetails={apartmentDetails}
+								/>
 							</View>
 						</View>
 					</View>
-				) : (
-					<View
-						style={{
-							width: '100%',
-							height: 400,
-							justifyContent: 'center',
-							alignItems: 'center',
-						}}
-					>
-						<ActivityIndicator size="large" color={theme.screen.text} />
-					</View>
-				)}
+				</View>
 			</ScrollView>
 		</SafeAreaView>
 	);

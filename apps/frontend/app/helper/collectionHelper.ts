@@ -6,8 +6,8 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 export type FilterOperator = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte' | 'in' | 'nin' | 'null' | 'nnull' | 'contains' | 'ncontains' | 'icontains' | 'between' | 'nbetween' | 'empty' | 'nempty' | 'intersects' | 'nintersects' | 'intersects_bbox' | 'nintersects_bbox';
 
 export type Query<CollectionScheme> = {
-	fields?: (keyof CollectionScheme)[] | null;
-	sort?: (keyof CollectionScheme)[] | null;
+	fields?: (keyof CollectionScheme | string)[] | null;
+	sort?: (keyof CollectionScheme | string)[] | null;
 	filter?: any | null;
 	deep?: Record<string, Query<CollectionScheme>> | null;
 	limit?: number | null;
@@ -27,12 +27,16 @@ export type AggregateQuery<CollectionScheme> = {
 };
 
 export class CollectionHelper<CollectionScheme> {
-	private collection: string;
-	private client: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<any>;
+private collection: string;
+	private _client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>;
 
-	constructor(collection: string, client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<any>) {
+	constructor(collection: string, client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes>) {
 		this.collection = collection;
-		this.client = client ?? ServerAPI.getClient();
+		this._client = client;
+	}
+
+	private get client(): DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<DatabaseTypes.CustomDirectusTypes> {
+		return this._client ?? (ServerAPI.getClient() as any);
 	}
 
 	/**
@@ -48,28 +52,28 @@ export class CollectionHelper<CollectionScheme> {
 	}
 
 	// CRUD Operations
-	async readSingletonItem(query?: Query<CollectionScheme>) {
-		return this.handleRequest(readSingleton, query);
+	async readSingletonItem(query?: Query<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(readSingleton, query);
 	}
 
-	async readItems(query?: Query<CollectionScheme>) {
-		return this.handleRequest(readItems, query);
+	async readItems(query?: Query<CollectionScheme>): Promise<CollectionScheme[]> {
+		return this.handleRequest<CollectionScheme[]>(readItems, query);
 	}
 
-	async readItem(id: number | string, query?: Query<CollectionScheme>) {
-		return this.handleRequest(readItem, id, query);
+	async readItem(id: number | string, query?: Query<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(readItem, id, query);
 	}
 
-	async createItem(data: Partial<CollectionScheme>) {
-		return this.handleRequest(createItem, data);
+	async createItem(data: Partial<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(createItem, data);
 	}
 
-	async updateItem(id: number | string, data: Partial<CollectionScheme>) {
-		return this.handleRequest(updateItem, id, data);
+	async updateItem(id: number | string, data: Partial<CollectionScheme>): Promise<CollectionScheme> {
+		return this.handleRequest<CollectionScheme>(updateItem, id, data);
 	}
 
-	async updateItems(query: Query<CollectionScheme>, data: Partial<CollectionScheme>) {
-		return this.handleRequest(updateItems, query, data);
+	async updateItems(query: Query<CollectionScheme>, data: Partial<CollectionScheme>): Promise<CollectionScheme[]> {
+		return this.handleRequest<CollectionScheme[]>(updateItems, query, data);
 	}
 
 	async deleteItem(id: number | string) {

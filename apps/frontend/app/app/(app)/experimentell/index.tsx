@@ -2,22 +2,21 @@ import { ScrollView, Text, View } from 'react-native';
 import React, { useMemo } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import { useAppSelector } from '@/redux/hooks';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { RootState } from '@/redux/reducer';
 import SettingsList from '@/components/SettingsList';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.experimentell);
 	const { translate } = useLanguage();
-	const { theme } = useTheme();
-	const { buildings } = useSelector((state: RootState) => state.canteenReducer);
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+    const { theme } = useTheme();
+    const { buildings } = useAppSelector((state) => state.canteenReducer);
+    const { primaryColor } = useAppSelector((state) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
 
 	const buildingPosition = useMemo(() => {

@@ -4,7 +4,7 @@ export interface FeedbackLabelProps {
         label: Array<DatabaseTypes.FoodsFeedbacksLabelsTranslations>;
         imageUrl?: string | null | undefined;
         icon?: string;
-        labelEntries: any;
+        labelEntries: DatabaseTypes.FoodsFeedbacksLabelsEntries[];
         foodId: string;
         offerId?: string;
 }

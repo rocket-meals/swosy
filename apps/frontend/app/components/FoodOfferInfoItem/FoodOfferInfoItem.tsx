@@ -8,15 +8,15 @@ import CardWithText from '../CardWithText/CardWithText';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import useFoodCard from '@/hooks/useFoodCard';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 import { View } from 'react-native';
 
-const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content, cardWidth }) => {
+const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, content, cardWidth, screenWidth }) => {
   const { theme } = useTheme();
-  const { appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
+  const appSettings = useAppSelector((state) => state.settings.appSettings);
+  const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 
-  const { containerStyle, imageContainerStyle, contentStyle } = useFoodCard();
+  const { containerStyle, imageContainerStyle, contentStyle } = useFoodCard(0, undefined, screenWidth);
   const foods_area_color = appSettings?.foods_area_color || primaryColor;
 
   const imageUri = useMemo(() => {
@@ -33,10 +33,11 @@ const FoodOfferInfoItem: React.FC<FoodOfferInfoItemProps> = memo(({ item, conten
       onPress={item.link ? handlePress : undefined}
       imageSource={imageUri ? { uri: imageUri } : undefined}
       borderColor={foods_area_color}
-              containerStyle={[
-                containerStyle,
-                cardWidth ? { width: '100%' } : { flex: 1 },
-              ]}
+      knownCardWidth={cardWidth}
+      containerStyle={[
+        containerStyle,
+        cardWidth ? { width: '100%' } : { flex: 1 },
+      ]}
               imageContainerStyle={[
                 imageContainerStyle,
               ]}

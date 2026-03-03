@@ -4,9 +4,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useSelector } from 'react-redux';
 import { excerpt } from '@/constants/HelperFunctions';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 type FeedbackItemProps = {
 	icon?: string;
@@ -22,10 +21,10 @@ type FeedbackItemProps = {
 
 const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIcons = [], theme, windowWidth, onPress, inputValues, setInputValues }) => {
 	const { translate } = useLanguage();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 
 	const IconSelector: React.FC<{
-		name: string;
+		name: any;
 		size: number;
 		color: string;
 		style?: object;
@@ -40,7 +39,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIc
 	};
 
 	return (
-		<TouchableOpacity style={[styles.container, { backgroundColor: theme.screen.iconBg }]} disabled={title === 'like_status'} onPress={title !== 'like_status' ? onPress : null}>
+		<TouchableOpacity style={[styles.container, { backgroundColor: theme.screen.iconBg }]} disabled={title === 'like_status'} onPress={title !== 'like_status' ? onPress : undefined}>
 			<View style={styles.iconTextContainer}>
 				{icon && <IconSelector name={icon} size={20} color={theme.screen.icon} style={{ marginRight: 10 }} />}
 				<Text
@@ -88,7 +87,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ icon, title, value, extraIc
 						}}
 						key={idx}
 					>
-						<MaterialCommunityIcons key={idx} name={iconName} size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
+						<MaterialCommunityIcons key={idx} name={iconName as any} size={22} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />
 					</TouchableOpacity>
 				))}
 				{title !== 'like_status' && <MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} style={{ marginHorizontal: 5 }} />}

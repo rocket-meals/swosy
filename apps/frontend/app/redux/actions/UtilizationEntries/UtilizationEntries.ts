@@ -5,13 +5,19 @@ import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 export class UtilizationEntryHelper extends CollectionHelper<DatabaseTypes.UtilizationsEntries> {
 	constructor(client?: any) {
 		// Pass the collection name and API client
-		super('utilizations_entries', client || ServerAPI.getClient());
+		super('utilizations_entries', client);
 	}
 
 	// Fetch utilization entries with query overrides
 	async fetchUtilizationEntries(queryOverride: any = {}, utilizationGroupId: string, dateToGet: string) {
 		// Default query structure
-		const defaultQuery = {
+		const defaultQuery: {
+			fields: string[];
+			filter: {
+				_and: any[];
+			};
+			limit: number;
+		} = {
 			fields: ['*, utilization_group.*'],
 			filter: {
 				_and: [], // Start with an empty array

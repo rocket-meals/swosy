@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import AutoImageScroller from '@/components/AutoImageScroller';
@@ -15,7 +15,7 @@ const MAX_ITEMS = 100;
 
 const VerticalImageScroll: React.FC = () => {
 	const { theme } = useTheme();
-	const { amountColumnsForcard } = useSelector((state: RootState) => state.settings);
+	const { amountColumnsForcard } = useAppSelector((state) => state.settings);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const numColumns = CardDimensionHelper.getNumColumns(screenWidth, amountColumnsForcard);
@@ -35,7 +35,7 @@ const VerticalImageScroll: React.FC = () => {
 	const fetchImages = async () => {
 		if (offset.current >= MAX_ITEMS) return;
 		const result = await loadBestRatedFoodsWithImage(Math.min(PAGE_SIZE, MAX_ITEMS - offset.current), offset.current);
-		const urls = (result ?? []).map((food: any) => getImageUrl(String((food as any).image))).filter(Boolean);
+		const urls = (result ?? []).map((food: any) => getImageUrl(String((food as any).image))).filter(Boolean) as string[];
 		setImages(prev => [...prev, ...urls]);
 		offset.current += urls.length;
 	};

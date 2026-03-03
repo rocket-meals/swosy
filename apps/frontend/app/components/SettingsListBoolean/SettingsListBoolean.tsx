@@ -1,10 +1,9 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React from 'react';
 import { Switch } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
-import { RootState } from '@/redux/reducer';
 import type { PropsWithChildren } from 'react';
 import type { SettingsListProps } from '@/components/SettingsList';
 
@@ -29,7 +28,7 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
         ...props
 }) => {
         const { theme } = useTheme();
-        const { primaryColor } = useSelector((state: RootState) => state.settings);
+        const { primaryColor } = useAppSelector(state => state.settings);
 
         return (
                 <SettingsList
