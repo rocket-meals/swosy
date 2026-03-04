@@ -2,6 +2,7 @@ import {CSVExportParser} from './CSVExportParser';
 
 import {
   CanteensTypeForParser,
+  FoodComponentForParser,
   FoodofferDateType,
   FoodoffersTypeForParser,
   FoodofferTypeWithBasicData,
@@ -215,6 +216,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer),
         canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
         food_id: rawFoodoffer.food_id,
+        components: FoodTL1Parser.getComponentsFromRawTL1Foodoffer(parsedReportItem),
       };
       result.push(foodofferForParser);
     }
@@ -797,5 +799,28 @@ export class FoodTL1Parser implements FoodParserInterface {
   static _getFoodNameEn(parsedReportItem: RawTL1FoodofferType) {
     let rawFoodName = FoodTL1Parser._getRawNamesList(parsedReportItem, '_1').join(', ');
     return FoodTL1Parser.sanitizeFoodNameFromMarkingLabels(rawFoodName);
+  }
+
+  static getComponentsFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodComponentForParser[] {
+    const components: FoodComponentForParser[] = [];
+    for (let i = 1; i <= 6; i++) {
+      const rawNameDe = parsedReportItem[FoodTL1Parser.DEFAULT_TEXT_FIELD + i];
+      if (!rawNameDe || rawNameDe.trim().length === 0 || rawNameDe === ' ') {
+        continue;
+      }
+      const aliasDe = FoodTL1Parser.sanitizeFoodNameFromMarkingLabels(rawNameDe);
+      if (!aliasDe || aliasDe.trim().length === 0) {
+        continue;
+      }
+      const rawNameEn = parsedReportItem[FoodTL1Parser.DEFAULT_TEXT_FIELD + i + '_1'] || null;
+      const aliasEn = rawNameEn ? FoodTL1Parser.sanitizeFoodNameFromMarkingLabels(rawNameEn) || null : null;
+      const markings = Object.keys(FoodTL1Parser.getMarkingLabelsDictFromFoodName(rawNameDe));
+      components.push({
+        alias: aliasDe,
+        alias_en: aliasEn,
+        marking_external_identifiers: markings,
+      });
+    }
+    return components;
   }
 }

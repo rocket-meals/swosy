@@ -340,4 +340,62 @@ describe('FoodTL1ParserHannover Test', () => {
     }
     expect(firstFoodoffer.basicFoodofferData.price_student).toEqual(FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_PRICE);
     });
+
+  it('Foodoffer with single TEXT field has one component', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    expect(firstFoodoffer.components.length).toBe(1);
+    expect(firstFoodoffer.components[0]?.alias).toBe('Karamellpudding');
+  });
+
+  it('Foodoffer with multiple TEXT fields has correct number of components', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    // TEXT1: "Vegane Nuggets (4,20A,20C)", TEXT2: "Chili Jam", TEXT3: "Asiagemüse (20A,25)", TEXT4: "Basmatireis"
+    expect(firstFoodoffer.components.length).toBe(4);
+  });
+
+  it('Foodoffer components have correct aliases (sanitized from marking labels)', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    const components = firstFoodoffer.components;
+    expect(components[0]?.alias).toBe('Vegane Nuggets');
+    expect(components[1]?.alias).toBe('Chili Jam');
+    expect(components[2]?.alias).toBe('Asiagemüse');
+    expect(components[3]?.alias).toBe('Basmatireis');
+  });
+
+  it('Foodoffer components have correct marking external identifiers', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    const components = firstFoodoffer.components;
+    // TEXT1: "Vegane Nuggets (4,20A,20C)"
+    expect(components[0]?.marking_external_identifiers).toEqual(expect.arrayContaining(['4', '20A', '20C']));
+    // TEXT2: "Chili Jam" - no markings
+    expect(components[1]?.marking_external_identifiers).toHaveLength(0);
+    // TEXT3: "Asiagemüse (20A,25)"
+    expect(components[2]?.marking_external_identifiers).toEqual(expect.arrayContaining(['20A', '25']));
+    // TEXT4: "Basmatireis" - no markings
+    expect(components[3]?.marking_external_identifiers).toHaveLength(0);
+  });
 });
