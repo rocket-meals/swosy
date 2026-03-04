@@ -488,6 +488,7 @@ export enum TranslationKeys {
 	group_app_management = 'group_app_management',
 	game_ideas = 'game_ideas',
 	food_wishlist = 'food_wishlist',
+	last_offered_in_canteen = 'last_offered_in_canteen',
 	guess_better_rated_dish = 'guess_better_rated_dish',
 	guess_most_disliked_marking = 'guess_most_disliked_marking',
 	food_memory_game = 'food_memory_game',

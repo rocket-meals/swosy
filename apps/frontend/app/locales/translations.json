@@ -4783,6 +4783,16 @@
     "tr": "Game Ideas",
     "zh": "Game Ideas"
   },
+  "last_offered_in_canteen": {
+    "de": "Zuletzt angeboten",
+    "en": "Last offered",
+    "ar": "Last offered",
+    "es": "Last offered",
+    "fr": "Last offered",
+    "ru": "Last offered",
+    "tr": "Last offered",
+    "zh": "Last offered"
+  },
   "food_wishlist": {
     "de": "Speisen-Wunschliste",
     "en": "Food Wishlist",
