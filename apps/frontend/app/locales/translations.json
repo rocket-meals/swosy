@@ -4783,6 +4783,16 @@
     "tr": "Game Ideas",
     "zh": "Game Ideas"
   },
+  "food_wishlist": {
+    "de": "Speisen-Wunschliste",
+    "en": "Food Wishlist",
+    "ar": "Food Wishlist",
+    "es": "Food Wishlist",
+    "fr": "Food Wishlist",
+    "ru": "Food Wishlist",
+    "tr": "Food Wishlist",
+    "zh": "Food Wishlist"
+  },
   "guess_better_rated_dish": {
     "de": "Rate, welches Gericht besser bewertet ist",
     "en": "Guess which dish is better rated",
