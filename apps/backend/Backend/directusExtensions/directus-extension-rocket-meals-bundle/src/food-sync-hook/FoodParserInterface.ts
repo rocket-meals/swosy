@@ -33,6 +33,14 @@ export type FoodofferDateType = {
   day: number; // 01-31
 };
 export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values'>;
+
+export type FoodComponentForParser = {
+  alias: string;
+  alias_en: string | null;
+  marking_external_identifiers: string[];
+  food_id: string;
+};
+
 export type FoodoffersTypeForParser = {
   basicFoodofferData: FoodofferTypeWithBasicData;
   attribute_values: FoodParseFoodAttributesType;
@@ -41,6 +49,7 @@ export type FoodoffersTypeForParser = {
   date: FoodofferDateType;
   canteen_external_identifier: string;
   food_id: string;
+  components: FoodComponentForParser[];
 };
 
 export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
@@ -118,6 +127,7 @@ export class FoodParserHelper {
       date: DateHelper.getFoodofferDateTypeFromDate(date),
       canteen_external_identifier: canteenExternalIdentifier,
       food_id: foodId,
+      components: [],
     };
   }
 

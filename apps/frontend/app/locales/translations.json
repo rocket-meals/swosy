@@ -889,6 +889,16 @@
     "tr": "Yemek Teklifi Kategorisi",
     "zh": "餐品类别"
   },
+  "foodoffer_components_label": {
+    "de": "Bestandteile",
+    "en": "Components",
+    "ar": "مكونات",
+    "es": "Componentes",
+    "fr": "Composants",
+    "ru": "Составляющие",
+    "tr": "Bileşenler",
+    "zh": "成分"
+  },
   "free_rooms": {
     "de": "Freie Zimmer",
     "en": "Free Rooms",

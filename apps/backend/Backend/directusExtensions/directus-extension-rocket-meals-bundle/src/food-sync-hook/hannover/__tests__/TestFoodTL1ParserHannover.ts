@@ -2,7 +2,10 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodTL1ParserHannover } from '../FoodTL1ParserHannover';
 import { FoodTL1Parser_GetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
-import { FoodTL1Parser_RawReportTestReaderHannover } from '../FoodTL1Parser_RawReportTestReaderHannover';
+import {
+  FoodofferComponentForTestReader,
+  FoodTL1Parser_RawReportTestReaderHannover
+} from '../FoodTL1Parser_RawReportTestReaderHannover';
 import { FoodoffersTypeForParser, FoodParseFoodAttributeValueType, FoodsInformationTypeForParser } from '../../FoodParserInterface';
 import { FoodTL1Parser, Tl1AttributeType, TL1AttributeValueType } from '../../FoodTL1Parser';
 import { MarkingsTypeForParser } from '../../MarkingParserInterface';
@@ -340,4 +343,99 @@ describe('FoodTL1ParserHannover Test', () => {
     }
     expect(firstFoodoffer.basicFoodofferData.price_student).toEqual(FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_PRICE);
     });
+
+  it('Foodoffer with single TEXT field has one component', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    expect(firstFoodoffer.components.length).toBe(1);
+    expect(firstFoodoffer.components[0]?.alias).toBe('Karamellpudding');
+  });
+
+  it('Foodoffer with multiple TEXT fields has correct number of components', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    // TEXT1: "Vegane Nuggets (4,20A,20C)", TEXT2: "Chili Jam", TEXT3: "Asiagemüse (20A,25)", TEXT4: "Basmatireis"
+    expect(firstFoodoffer.components.length).toBe(4);
+  });
+
+  it('Foodoffer components have correct aliases (sanitized from marking labels)', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    const components = firstFoodoffer.components;
+    expect(components[0]?.alias).toBe('Vegane Nuggets');
+    expect(components[1]?.alias).toBe('Chili Jam');
+    expect(components[2]?.alias).toBe('Asiagemüse');
+    expect(components[3]?.alias).toBe('Basmatireis');
+  });
+
+  it('Foodoffer components have correct marking external identifiers', async () => {
+
+    let foodofferComponents: FoodofferComponentForTestReader[] = [
+        {
+          component_identifier: "1001",
+          alias: "Vegane Nuggets",
+          alias_en: "Vegan Nuggets",
+          marking_external_identifiers: "4,20A,20C"
+        },
+      {
+            component_identifier: "1002",
+            alias: "Chili Jam",
+            alias_en: "Chili Jam",
+            marking_external_identifiers: ""
+        },
+        {
+            component_identifier: "1003",
+            alias: "Asiagemüse",
+            alias_en: "Asian Vegetables",
+            marking_external_identifiers: "20A,25"
+        },
+        {
+            component_identifier: "1004",
+            alias: "Basmatireis",
+            alias_en: "Basmati Rice",
+            marking_external_identifiers: ""
+        }
+      ]
+
+
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportForFoodofferComponentTest(foodofferComponents));
+
+    expect(foodoffersJson.length).toBe(1);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    const components = firstFoodoffer.components;
+
+    for(let i = 0; i < foodofferComponents.length; i++) {
+      let foodofferComponent = foodofferComponents[i];
+      expect(!!foodofferComponent).toBe(true)
+      let component = components[i];
+      expect(!!component).toBe(true);
+
+      if(component && foodofferComponent) {
+        expect(component.alias).toBe(foodofferComponent.alias);
+        expect(component.alias_en).toBe(foodofferComponent.alias_en);
+        let foodofferComponentMarkingExternalIdentifiers = Object.keys(FoodTL1Parser.getMarkingLabelsDictFromFoodName(foodofferComponent.alias+" ("+foodofferComponent.marking_external_identifiers+")"))
+        expect(component.marking_external_identifiers.join(",")).toBe(foodofferComponentMarkingExternalIdentifiers.join(","));
+      }
+    }
+
+  });
 });

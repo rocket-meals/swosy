@@ -1,5 +1,6 @@
 import {
   CanteensTypeForParser,
+  FoodComponentForParser,
   FoodofferDateType,
   FoodoffersTypeForParser,
   FoodParseFoodAttributesType,
@@ -134,6 +135,7 @@ export class ParseSchedule {
           await this.updateFoods(foodsJSONList, helperObject);
 
           await this.context.logger.appendLog('Delete specific food offers');
+          //await this.deleteAllComponentFoodoffers(); // No need since, a hook will delete the components if the foodoffer is deleted
           await this.deleteRequiredFoodOffersForTheirCanteens(foodofferListForParser);
 
           await this.context.logger.appendLog('Create food offers');
@@ -667,6 +669,45 @@ export class ParseSchedule {
     return await this.findOrCreateCanteen(searchJSON);
   }
 
+  buildComponentFoodoffersCreate(components: FoodComponentForParser[], canteen: DatabaseTypes.Canteens, food_id: string): any {
+    if (!components || components.length === 0) {
+      return {
+        create: [],
+        update: [],
+        delete: [],
+      };
+    }
+
+    const componentCreates = components.map(component => {
+      return {
+        component_foodoffers_id: {
+          alias: component.alias,
+          canteen: null,
+          date: null,
+          food: food_id,
+          foodoffer_components: [],
+          status: 'published',
+          markings: {
+            create: [],
+            update: [],
+            delete: [],
+          },
+          attribute_values: {
+            create: [],
+            update: [],
+            delete: [],
+          },
+        },
+      };
+    });
+
+    return {
+      create: componentCreates,
+      update: [],
+      delete: [],
+    };
+  }
+
   getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: DatabaseTypes.Canteens, markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject) {
     let food_id = foodofferForParser.food_id;
     const basicFoodofferData = foodofferForParser.basicFoodofferData;
@@ -704,6 +745,8 @@ export class ParseSchedule {
         update: [],
         delete: [],
       },
+      // @ts-ignore
+      foodoffer_components: this.buildComponentFoodoffersCreate(foodofferForParser.components, canteen, food_id), // Directus nested create format is not reflected in the static type
     };
     return foodOfferToCreate;
   }

@@ -88,7 +88,7 @@ export default function FoodDetailsScreen() {
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
     const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
 
-    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, initialFoodOffer });
+    const { foodDetails, foodAttributes, foodofferComponents, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, initialFoodOffer });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
 
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
@@ -147,8 +147,8 @@ export default function FoodDetailsScreen() {
     ), [foodDetails, offerId, foodOfferCanteenId]);
 
     const DetailsContent = useMemo(() => (
-        <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />
-    ), [groupedAttributes, foodAttributesLoading]);
+        <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} foodofferComponents={foodofferComponents} />
+    ), [groupedAttributes, foodAttributesLoading, foodofferComponents]);
 
     const LabelsContent = useMemo(() => (
         <Labels
