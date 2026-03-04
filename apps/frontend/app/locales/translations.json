@@ -609,6 +609,16 @@
     "tr": "Yorumu kaydet",
     "zh": "保存评论"
   },
+  "write_a_comment": {
+    "de": "Schreibe einen Kommentar",
+    "en": "Write a comment",
+    "ar": "اكتب تعليقاً",
+    "es": "Escribe un comentario",
+    "fr": "Écrire un commentaire",
+    "ru": "Напишите комментарий",
+    "tr": "Bir yorum yaz",
+    "zh": "写一条评论"
+  },
   "delete_comment": {
     "de": "Kommentar löschen",
     "en": "Delete Comment",
