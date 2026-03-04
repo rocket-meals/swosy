@@ -202,7 +202,8 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				<View style={styles.ratingSummaryContainer}>
 					<SettingsListTextInput
 						label={translate(TranslationKeys.your_comment)}
-						value={comment || ''}
+						value={comment || translate(TranslationKeys.write_a_comment)}
+						initialValue={comment || ''}
 						placeholder={translate(TranslationKeys.your_comment)}
 						onSave={submitCommentFeedback}
 						leftIcon={<MaterialCommunityIcons name="chat-outline" size={20} />}

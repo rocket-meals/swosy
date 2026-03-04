@@ -60,6 +60,7 @@ export enum TranslationKeys {
 	others_comments = 'others_comments',
 	comments = 'comments',
 	save_comment = 'save_comment',
+	write_a_comment = 'write_a_comment',
 	delete_comment = 'delete_comment',
 	average_rating = 'average_rating',
 	amount_ratings = 'amount_ratings',
