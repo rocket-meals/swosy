@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, ScrollView, View, useWindowDimensions, type DimensionValue } from 'react-native';
 import styles from './styles';
@@ -37,6 +37,8 @@ import NotificationSection from './components/NotificationSection';
 import TabController from './components/TabController';
 import { useFoodDetails } from './hooks/useFoodDetails';
 import { useFoodAttributes } from './hooks/useFoodAttributes';
+import {fetchFoodDetailsById, fetchFoodOffersDetailsById} from "@/redux/actions/FoodOffers/FoodOffers";
+import { FoodsTranslations } from 'repo-depkit-common/src/databaseTypes/types';
 
 const selectFoodState = (state: RootState) => state.food;
 const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => foodState.ownFoodFeedbacks);
@@ -64,6 +66,7 @@ export default function FoodDetailsScreen() {
     const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
     const serverInfo = useAppSelector((state) => state.settings.serverInfo, shallowEqual);
     const mode = useAppSelector((state) => state.settings.selectedTheme);
+    const languageCode = useAppSelector((state) => state.settings.language);
 
     const ownFoodFeedbacks = useAppSelector(selectOwnFoodFeedbacks);
     const previousFeedback = useMemo(() => {
@@ -82,10 +85,35 @@ export default function FoodDetailsScreen() {
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
     const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
     const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
+    const [foodOfferDetails, setFoodOfferDetails] = useState<any>(null);
 
     const selectedCanteen = useSelectedCanteen();
     const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
     const { openRatingPermissionModal } = useRatingPermissionModal();
+
+    const getFoodDetails = async () => {
+        try {
+            if (offerId) {
+                const foodData = await fetchFoodOffersDetailsById(offerId.toString());
+                if (foodData && foodData.data) {
+                    setFoodOfferDetails(foodData.data);
+                } else {
+                    console.log('No food data found');
+                }
+            } else if (initialFoodId) {
+                const foodData = await fetchFoodDetailsById(initialFoodId.toString());
+                if (foodData && foodData.data) {
+                    const food = foodData.data;
+                    setFoodOfferDetails(null);
+                    const translation = food?.translations?.find((val: FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode);
+                } else {
+                    console.log('No food data found');
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching food details: ', e);
+        }
+    };
 
     const [activeTab, setActiveTab] = useState('feedbacks');
     const [isActive, setIsActive] = useState(false);
@@ -142,10 +170,16 @@ export default function FoodDetailsScreen() {
         <Labels
             foodDetails={foodDetails}
             offerId={offerId ? offerId.toString() : undefined}
+            foodOfferDetails={foodOfferDetails}
             handleMenuSheet={openMenuSheet}
             color={foods_area_color}
         />
     ), [foodDetails, offerId, openMenuSheet, foods_area_color]);
+
+    useEffect(() => {
+        getFoodDetails();
+    }, [offerId, initialFoodId]);
+
 
     const renderContent = useCallback(
         () => {
