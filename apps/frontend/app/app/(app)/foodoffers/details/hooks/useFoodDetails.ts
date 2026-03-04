@@ -16,6 +16,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
     const toast = useToast();
     const [foodDetails, setFoodDetails] = useState<any>(null);
     const [foodAttributes, setFoodAttributes] = useState<any>([]);
+    const [foodofferComponents, setFoodofferComponents] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
     const getFoodDetails = useCallback(async () => {
@@ -29,7 +30,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
             if (id) {
                 const foodData = await fetchFoodOffersDetailsById(id.toString());
                 if (foodData && foodData.data) {
-                    const { food, attribute_values, foodoffer_category } = foodData?.data ?? {};
+                    const { food, attribute_values, foodoffer_category, foodoffer_components } = foodData?.data ?? {};
 
                     const translation = food?.translations?.find(
                         (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
@@ -41,6 +42,9 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
                     });
                     if (attribute_values) {
                         setFoodAttributes(attribute_values);
+                    }
+                    if (foodoffer_components) {
+                        setFoodofferComponents(foodoffer_components);
                     }
                 }
             } else if (foodId) {
@@ -75,5 +79,5 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
         });
     }, [getFoodDetails]);
 
-    return { foodDetails, foodAttributes, loading };
+    return { foodDetails, foodAttributes, foodofferComponents, loading };
 };

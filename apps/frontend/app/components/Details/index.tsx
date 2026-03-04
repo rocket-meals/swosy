@@ -13,7 +13,7 @@ import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
+const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading, foodofferComponents }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const primaryColor = useAppSelector(state => state.settings.primaryColor);
@@ -22,9 +22,45 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
+	const componentItems = foodofferComponents
+		?.map(junction => junction?.component_foodoffers_id)
+		?.filter((c: any) => !!c?.alias) ?? [];
+
 	return (
 		<View style={styles.container}>
 			<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.food_data)}</Text>
+
+			{componentItems.length > 0 && (
+				<View style={styles.groupedAttributes}>
+					<SettingsGroupTitle>{translate(TranslationKeys.foodoffer_components_label)}</SettingsGroupTitle>
+					<View style={styles.attributeList}>
+						{componentItems.map((component: any, index: number) => {
+							const groupPosition =
+								componentItems.length === 1
+									? 'single'
+									: index === 0
+										? 'top'
+										: index === componentItems.length - 1
+											? 'bottom'
+											: 'middle';
+							return (
+								<AttributeItem
+									key={component?.id ?? `component-${index}`}
+									attr={{
+										id: component?.id ?? `component-${index}`,
+										string_value: component?.alias,
+										food_attribute: {
+											status: 'published',
+											translations: [],
+										},
+									}}
+									groupPosition={groupPosition}
+								/>
+							);
+						})}
+					</View>
+				</View>
+			)}
 
 			{loading ? (
 				<View style={styles.loadingContainer}>
