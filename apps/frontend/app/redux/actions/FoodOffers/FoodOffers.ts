@@ -169,6 +169,31 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 	}
 };
 
+export const fetchNextFoodOfferByFoodAndCanteen = async (foodId: string, canteenId: string) => {
+	try {
+		const today = new Date().toISOString().split('T')[0];
+		const response = await fetchWithRetry('/items/foodoffers', {
+			params: {
+				fields: 'id,date,food,canteen',
+				limit: 1,
+				sort: 'date',
+				filter: {
+					_and: [
+						{ food: { _eq: foodId } },
+						{ canteen: { _eq: canteenId } },
+						{ date: { _nnull: true } },
+						{ date: { _gte: today } },
+					],
+				},
+			},
+		});
+		const items = response?.data?.data;
+		return Array.isArray(items) && items.length > 0 ? items[0] : null;
+	} catch (error) {
+		throw new Error(`Error fetching next food offer: ${(error as Error).message}`);
+	}
+};
+
 export const fetchLastFoodOfferByFoodAndCanteen = async (foodId: string, canteenId: string) => {
 	try {
 		const response = await fetchWithRetry('/items/foodoffers', {

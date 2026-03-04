@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Octicons } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
 import MyImage from '@/components/MyImage';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { fetchFoodDetailsById, fetchLastFoodOfferByFoodAndCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
+import { fetchFoodDetailsById, fetchNextFoodOfferByFoodAndCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { RatingHelper, DatabaseTypes } from 'repo-depkit-common';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -25,20 +25,23 @@ const FoodWishlist = () => {
 	const selectedCanteen = useSelectedCanteen();
 
 	const [foods, setFoods] = useState<DatabaseTypes.Foods[]>([]);
-	const [lastOfferedDates, setLastOfferedDates] = useState<Record<string, string | null>>({});
+	const [nextOfferedDates, setNextOfferedDates] = useState<Record<string, string | null>>({});
 
-	const fiveStarFeedbacks = useMemo(
-		() => (ownFoodFeedbacks as DatabaseTypes.FoodsFeedbacks[]).filter((feedback) => RatingHelper.isMaxRating(feedback.rating)),
+	const wishlistFeedbacks = useMemo(
+		() =>
+			(ownFoodFeedbacks as DatabaseTypes.FoodsFeedbacks[]).filter(
+				(feedback) => RatingHelper.isMaxRating(feedback.rating) || feedback.notify
+			),
 		[ownFoodFeedbacks]
 	);
 
 	useEffect(() => {
-		if (fiveStarFeedbacks.length === 0) {
+		if (wishlistFeedbacks.length === 0) {
 			setFoods([]);
 			return;
 		}
 		Promise.all(
-			fiveStarFeedbacks.map((feedback: DatabaseTypes.FoodsFeedbacks) =>
+			wishlistFeedbacks.map((feedback: DatabaseTypes.FoodsFeedbacks) =>
 				fetchFoodDetailsById(String(feedback.food)).catch(() => null)
 			)
 		).then((results) => {
@@ -47,7 +50,7 @@ const FoodWishlist = () => {
 				.filter(Boolean) as DatabaseTypes.Foods[];
 			setFoods(foodItems);
 		});
-	}, [fiveStarFeedbacks]);
+	}, [wishlistFeedbacks]);
 
 	useEffect(() => {
 		if (foods.length === 0 || !selectedCanteen?.id) return;
@@ -57,14 +60,112 @@ const FoodWishlist = () => {
 			foods.map(async (food) => {
 				const foodId = String(food.id);
 				try {
-					const offer = await fetchLastFoodOfferByFoodAndCanteen(foodId, canteenId);
+					const offer = await fetchNextFoodOfferByFoodAndCanteen(foodId, canteenId);
 					dates[foodId] = offer?.date ?? null;
 				} catch {
 					dates[foodId] = null;
 				}
 			})
-		).then(() => setLastOfferedDates(dates));
+		).then(() => setNextOfferedDates(dates));
 	}, [foods, selectedCanteen?.id]);
+
+	const getSmartDateLabel = useCallback(
+		(date: string): string => {
+			const today = new Date();
+			const offerDate = new Date(date);
+			today.setHours(0, 0, 0, 0);
+			offerDate.setHours(0, 0, 0, 0);
+
+			if (today.toDateString() === offerDate.toDateString()) {
+				return translate(TranslationKeys.today);
+			}
+			const tomorrow = new Date(today);
+			tomorrow.setDate(today.getDate() + 1);
+			if (tomorrow.toDateString() === offerDate.toDateString()) {
+				return translate(TranslationKeys.tomorrow);
+			}
+			const weekdayKeys = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+			const weekdayKey = weekdayKeys[offerDate.getDay()];
+			return `${translate(TranslationKeys[weekdayKey])}, ${offerDate.toLocaleDateString()}`;
+		},
+		[translate]
+	);
+
+	const plannedFoods = useMemo(
+		() =>
+			foods
+				.filter((food) => nextOfferedDates[String(food.id)] != null)
+				.sort((a, b) => {
+					const dateA = new Date(nextOfferedDates[String(a.id)] as string).getTime();
+					const dateB = new Date(nextOfferedDates[String(b.id)] as string).getTime();
+					return dateA - dateB;
+				}),
+		[foods, nextOfferedDates]
+	);
+
+	const unplannedFoods = useMemo(
+		() => foods.filter((food) => nextOfferedDates[String(food.id)] == null),
+		[foods, nextOfferedDates]
+	);
+
+	const renderFoodItem = (food: DatabaseTypes.Foods, index: number, totalItems: number) => {
+		const groupPosition =
+			totalItems === 1
+				? 'single'
+				: index === 0
+				? 'top'
+				: index === totalItems - 1
+				? 'bottom'
+				: 'middle';
+
+		const imageUri =
+			food.image_remote_url || getImageUrl(food.image as string) || undefined;
+
+		const foodName =
+			getTextFromTranslation(
+				food.translations as DatabaseTypes.FoodsTranslations[],
+				language || 'de'
+			) ||
+			food.alias ||
+			'';
+
+		const foodId = String(food.id);
+		const nextDate = nextOfferedDates[foodId];
+		const dateLabel = nextDate
+			? `${translate(TranslationKeys.offered_on)}: ${getSmartDateLabel(nextDate)}`
+			: undefined;
+
+		return (
+			<SettingsList
+				key={food.id}
+				iconBgColor={primaryColor}
+				leftIconComponent={
+					<MyImage
+						remote_image_url={imageUri}
+						directus_asset_id={!imageUri ? (food.image as string) : undefined}
+						style={{
+							width: 34,
+							height: 34,
+							borderRadius: 8,
+							marginRight: 10,
+						}}
+						contentFit="cover"
+					/>
+				}
+				label={foodName}
+				value={dateLabel}
+				groupPosition={groupPosition}
+				showSeparator={groupPosition !== 'bottom' && groupPosition !== 'single'}
+				rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+				onPress={() => {
+					router.push({
+						pathname: '/(app)/foodoffers/details',
+						params: { foodId },
+					});
+				}}
+			/>
+		);
+	};
 
 	return (
 		<ScrollView
@@ -78,64 +179,28 @@ const FoodWishlist = () => {
 				<Text style={{ ...styles.heading, color: theme.screen.text }}>
 					{translate(TranslationKeys.food_wishlist)}
 				</Text>
-				{foods.map((food, index) => {
-					const totalItems = foods.length;
-					const groupPosition =
-						totalItems === 1
-							? 'single'
-							: index === 0
-							? 'top'
-							: index === totalItems - 1
-							? 'bottom'
-							: 'middle';
 
-					const imageUri =
-						food.image_remote_url ||
-						getImageUrl(food.image as string) ||
-						undefined;
+				{plannedFoods.length > 0 && (
+					<View style={styles.section}>
+						<Text style={{ ...styles.heading, color: theme.screen.text, fontSize: 18 }}>
+							{translate(TranslationKeys.food_wishlist_planned)}
+						</Text>
+						{plannedFoods.map((food, index) =>
+							renderFoodItem(food, index, plannedFoods.length)
+						)}
+					</View>
+				)}
 
-					const foodName =
-						getTextFromTranslation(food.translations as DatabaseTypes.FoodsTranslations[], language || 'de') ||
-						food.alias ||
-						'';
-
-					const foodId = String(food.id);
-					const lastDate = lastOfferedDates[foodId];
-					const lastOfferedLabel = lastDate
-						? `${translate(TranslationKeys.last_offered_in_canteen)}: ${new Date(lastDate).toLocaleDateString()}`
-						: undefined;
-
-					return (
-						<SettingsList
-							key={food.id}
-							iconBgColor={primaryColor}
-							leftIconComponent={
-								<MyImage
-									remote_image_url={imageUri}
-									directus_asset_id={!imageUri ? (food.image as string) : undefined}
-									style={{
-										width: 34,
-										height: 34,
-										borderRadius: 8,
-										marginRight: 10,
-									}}
-									contentFit="cover"
-								/>
-							}
-							label={foodName}
-							value={lastOfferedLabel}
-							groupPosition={groupPosition}
-							showSeparator={groupPosition !== 'bottom' && groupPosition !== 'single'}
-							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-							onPress={() => {
-								router.push({
-									pathname: '/(app)/foodoffers/details',
-									params: { foodId },
-								});
-							}}
-						/>
-					);
-				})}
+				{unplannedFoods.length > 0 && (
+					<View style={styles.section}>
+						<Text style={{ ...styles.heading, color: theme.screen.text, fontSize: 18 }}>
+							{translate(TranslationKeys.food_wishlist_not_planned)}
+						</Text>
+						{unplannedFoods.map((food, index) =>
+							renderFoodItem(food, index, unplannedFoods.length)
+						)}
+					</View>
+				)}
 			</View>
 		</ScrollView>
 	);
