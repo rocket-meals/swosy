@@ -38,6 +38,7 @@ export type FoodComponentForParser = {
   alias: string;
   alias_en: string | null;
   marking_external_identifiers: string[];
+  food_id: string;
 };
 
 export type FoodoffersTypeForParser = {

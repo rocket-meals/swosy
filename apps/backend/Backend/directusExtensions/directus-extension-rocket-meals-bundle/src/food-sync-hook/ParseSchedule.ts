@@ -135,7 +135,7 @@ export class ParseSchedule {
           await this.updateFoods(foodsJSONList, helperObject);
 
           await this.context.logger.appendLog('Delete specific food offers');
-          await this.deleteAllComponentFoodoffers();
+          //await this.deleteAllComponentFoodoffers(); // No need since, a hook will delete the components if the foodoffer is deleted
           await this.deleteRequiredFoodOffersForTheirCanteens(foodofferListForParser);
 
           await this.context.logger.appendLog('Create food offers');
@@ -335,20 +335,6 @@ export class ParseSchedule {
       limit: -1,
     });
     await this.deleteFoodOffers(itemsToDelete, `Delete all food offers for canteen without dates: ${canteen.id} - amount: ${itemsToDelete.length}`);
-  }
-
-  async deleteAllComponentFoodoffers() {
-    let itemService = await this.context.myDatabaseHelper.getFoodoffersHelper();
-    let itemsToDelete = await itemService.readByQuery({
-      filter: {
-        canteen: {
-          _null: true,
-        },
-      },
-      fields: ['id'],
-      limit: -1,
-    });
-    await this.deleteFoodOffers(itemsToDelete, `Delete all component food offers (null canteen) - amount: ${itemsToDelete.length}`);
   }
 
   async deleteFoodOffersNewerOrEqualThanDate(foodofferDatesToDelete: FoodofferDateType[], canteen: DatabaseTypes.Canteens) {

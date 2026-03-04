@@ -1,4 +1,12 @@
 import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
+import {FoodTL1Parser} from "../FoodTL1Parser";
+
+export type FoodofferComponentForTestReader = {
+    component_identifier: string;
+    alias: string;
+    alias_en: string;
+    marking_external_identifiers: string;
+}
 
 export class FoodTL1Parser_RawReportTestReaderHannover implements FoodTL1Parser_GetRawReportInterface {
     private readonly reportToReturn: string | undefined;
@@ -43,6 +51,51 @@ Hauptmensa\t100\t10.12.2024\t309328\t291991\tVEGGIE & VEGAN\t\t801834\tVegane Nu
 Hauptmensa\t100\t10.12.2024\t309328\t291991\tVEGGIE & VEGAN\t\t802726\tVegane Nuggets (4,20A,20C)\tChili Jam\tAsiagemüse (20A,25)\tBasmatireis\t\t\tvegan nuggets (4,20A,20C)\tasian vegetables (20A,25)\tbasmati rice\t\t\t\t3,00\t6,30\t7,90\t3,00\t6,30\t7,90\t\t\t\t4, 20, 20A, 20C, 25, 99\tmit Geschmacksverstärker / flavour enhancer, Glutenhaltiges Getreide, enthält Glutenhaltiges Getreide: Weizen, enthält Glutenhaltiges Getreide: Gerste, enthält Soja und Sojaerzeugnisse, ohne kennzeichnungspflichtige Zusatzstoffe\t-\tBrennwert=3230 kJ (772 kcal), Fett=18,4g, davon gesättigte Fettsäuren=1,8g, Kohlenhydrate=121,2g, davon Zucker=49,3g, Ballaststoffe=1,5g, Eiweiß=30,3g, Salz=4,9g,\t3230,2\t772\t18,4\t1,8\t30,3\t121,2\t49,3\t4,9\tx
 Hauptmensa\t100\t10.12.2024\t309328\t291991\tVEGGIE & VEGAN\t\t800562\tVegane Nuggets (4,20A,20C)\tChili Jam\tAsiagemüse (20A,25)\tBasmatireis\t\t\tvegan nuggets (4,20A,20C)\tasian vegetables (20A,25)\tbasmati rice\t\t\t\t3,00\t6,30\t7,90\t3,00\t6,30\t7,90\t\t\t\t4, 20, 20A, 20C, 25, 99\tmit Geschmacksverstärker / flavour enhancer, Glutenhaltiges Getreide, enthält Glutenhaltiges Getreide: Weizen, enthält Glutenhaltiges Getreide: Gerste, enthält Soja und Sojaerzeugnisse, ohne kennzeichnungspflichtige Zusatzstoffe\t-\tBrennwert=3230 kJ (772 kcal), Fett=18,4g, davon gesättigte Fettsäuren=1,8g, Kohlenhydrate=121,2g, davon Zucker=49,3g, Ballaststoffe=1,5g, Eiweiß=30,3g, Salz=4,9g,\t3230,2\t772\t18,4\t1,8\t30,3\t121,2\t49,3\t4,9\tx
 Hauptmensa\t100\t10.12.2024\t309328\t291991\tVEGGIE & VEGAN\t\t801454\tVegane Nuggets (4,20A,20C)\tChili Jam\tAsiagemüse (20A,25)\tBasmatireis\t\t\tvegan nuggets (4,20A,20C)\tasian vegetables (20A,25)\tbasmati rice\t\t\t\t3,00\t6,30\t7,90\t3,00\t6,30\t7,90\t\t\t\t4, 20, 20A, 20C, 25, 99\tmit Geschmacksverstärker / flavour enhancer, Glutenhaltiges Getreide, enthält Glutenhaltiges Getreide: Weizen, enthält Glutenhaltiges Getreide: Gerste, enthält Soja und Sojaerzeugnisse, ohne kennzeichnungspflichtige Zusatzstoffe\t-\tBrennwert=3230 kJ (772 kcal), Fett=18,4g, davon gesättigte Fettsäuren=1,8g, Kohlenhydrate=121,2g, davon Zucker=49,3g, Ballaststoffe=1,5g, Eiweiß=30,3g, Salz=4,9g,\t3230,2\t772\t18,4\t1,8\t30,3\t121,2\t49,3\t4,9\tx
+`;
+    }
+
+    public static getSavedRawReportForFoodofferComponentTest(foodComponents: FoodofferComponentForTestReader[]) {
+
+        let totalMarkings = "";
+        let lines = "";
+
+        for(let foodComponent of foodComponents) {
+            totalMarkings += foodComponent.marking_external_identifiers;
+        }
+
+        let commonLineFoodofferNames = "";
+        // For german
+        for (let i = 0; i < FoodTL1Parser.DEFAULT_TEXT_FIELD_AMOUNT_FIELDS; i++) {
+            let foodComponent = foodComponents[i];
+            if(foodComponent){
+                commonLineFoodofferNames += foodComponent.alias;
+                let foodComponentMarking = foodComponent.marking_external_identifiers;
+                if(foodComponentMarking){
+                    commonLineFoodofferNames += " ("+foodComponentMarking+")";
+                }
+            }
+            commonLineFoodofferNames += "\t";
+        }
+        // for english
+        for (let i = 0; i < FoodTL1Parser.DEFAULT_TEXT_FIELD_AMOUNT_FIELDS; i++) {
+            let foodComponent = foodComponents[i];
+            if(foodComponent){
+                commonLineFoodofferNames += foodComponent.alias_en;
+                let foodComponentMarking = foodComponent.marking_external_identifiers;
+                if(foodComponentMarking){
+                    commonLineFoodofferNames += " ("+foodComponentMarking+")";
+                }
+            }
+            commonLineFoodofferNames += "\t";
+        }
+
+        for(let foodComponent of foodComponents) {
+            lines += `Hauptmensa\t100\t10.12.2024\t309328\t291991\tVEGGIE & VEGAN\t\t${foodComponent.component_identifier}\t${commonLineFoodofferNames}3,00\t6,30\t7,90\t3,00\t6,30\t7,90\t\t\t\t${totalMarkings}\tmit Geschmacksverstärker / flavour enhancer, Glutenhaltiges Getreide, enthält Glutenhaltiges Getreide: Weizen, enthält Glutenhaltiges Getreide: Gerste, enthält Soja und Sojaerzeugnisse, ohne kennzeichnungspflichtige Zusatzstoffe\t-\tBrennwert=3230 kJ (772 kcal), Fett=18,4g, davon gesättigte Fettsäuren=1,8g, Kohlenhydrate=121,2g, davon Zucker=49,3g, Ballaststoffe=1,5g, Eiweiß=30,3g, Salz=4,9g,\t3230,2\t772\t18,4\t1,8\t30,3\t121,2\t49,3\t4,9\tx`;
+            lines += `\n`;
+        }
+
+        return `MENSA\tVBORT_ID\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tPREIS_STUDENT\tPREIS_BEDIENSTETER\tPREIS_GAST\tPREIS_STUDENT_KARTE\tPREIS_BEDIENSTETER_KARTE\tPREIS_GAST_KARTE\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tNW_KJ\tNW_KCAL\tNW_FETT\tNW_GESFETT\tNW_EIWEISS\tNW_KH\tNW_ZUCKER\tNW_SALZ\tMENUEKENNZEICHEN
+${lines}
 `;
     }
 

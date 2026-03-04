@@ -2,7 +2,10 @@
 import { describe, expect, it } from '@jest/globals';
 import { FoodTL1ParserHannover } from '../FoodTL1ParserHannover';
 import { FoodTL1Parser_GetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
-import { FoodTL1Parser_RawReportTestReaderHannover } from '../FoodTL1Parser_RawReportTestReaderHannover';
+import {
+  FoodofferComponentForTestReader,
+  FoodTL1Parser_RawReportTestReaderHannover
+} from '../FoodTL1Parser_RawReportTestReaderHannover';
 import { FoodoffersTypeForParser, FoodParseFoodAttributeValueType, FoodsInformationTypeForParser } from '../../FoodParserInterface';
 import { FoodTL1Parser, Tl1AttributeType, TL1AttributeValueType } from '../../FoodTL1Parser';
 import { MarkingsTypeForParser } from '../../MarkingParserInterface';
@@ -381,21 +384,58 @@ describe('FoodTL1ParserHannover Test', () => {
   });
 
   it('Foodoffer components have correct marking external identifiers', async () => {
-    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
-    expect(foodoffersJson.length).toBeGreaterThan(0);
+
+    let foodofferComponents: FoodofferComponentForTestReader[] = [
+        {
+          component_identifier: "1001",
+          alias: "Vegane Nuggets",
+          alias_en: "Vegan Nuggets",
+          marking_external_identifiers: "4,20A,20C"
+        },
+      {
+            component_identifier: "1002",
+            alias: "Chili Jam",
+            alias_en: "Chili Jam",
+            marking_external_identifiers: ""
+        },
+        {
+            component_identifier: "1003",
+            alias: "Asiagemüse",
+            alias_en: "Asian Vegetables",
+            marking_external_identifiers: "20A,25"
+        },
+        {
+            component_identifier: "1004",
+            alias: "Basmatireis",
+            alias_en: "Basmati Rice",
+            marking_external_identifiers: ""
+        }
+      ]
+
+
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportForFoodofferComponentTest(foodofferComponents));
+
+    expect(foodoffersJson.length).toBe(1);
     const firstFoodoffer = foodoffersJson[0];
     expect(!!firstFoodoffer).toBe(true);
     if (!firstFoodoffer) {
       return;
     }
     const components = firstFoodoffer.components;
-    // TEXT1: "Vegane Nuggets (4,20A,20C)"
-    expect(components[0]?.marking_external_identifiers).toEqual(expect.arrayContaining(['4', '20A', '20C']));
-    // TEXT2: "Chili Jam" - no markings
-    expect(components[1]?.marking_external_identifiers).toHaveLength(0);
-    // TEXT3: "Asiagemüse (20A,25)"
-    expect(components[2]?.marking_external_identifiers).toEqual(expect.arrayContaining(['20A', '25']));
-    // TEXT4: "Basmatireis" - no markings
-    expect(components[3]?.marking_external_identifiers).toHaveLength(0);
+
+    for(let i = 0; i < foodofferComponents.length; i++) {
+      let foodofferComponent = foodofferComponents[i];
+      expect(!!foodofferComponent).toBe(true)
+      let component = components[i];
+      expect(!!component).toBe(true);
+
+      if(component && foodofferComponent) {
+        expect(component.alias).toBe(foodofferComponent.alias);
+        expect(component.alias_en).toBe(foodofferComponent.alias_en);
+        let foodofferComponentMarkingExternalIdentifiers = Object.keys(FoodTL1Parser.getMarkingLabelsDictFromFoodName(foodofferComponent.alias+" ("+foodofferComponent.marking_external_identifiers+")"))
+        expect(component.marking_external_identifiers.join(",")).toBe(foodofferComponentMarkingExternalIdentifiers.join(","));
+      }
+    }
+
   });
 });
