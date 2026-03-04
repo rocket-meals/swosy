@@ -288,9 +288,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       );
     }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
 
-    // Update to use dynamic contrast color from foods_area_color
-    const contrastColor = useMyContrastColor(foods_area_color, theme, theme?.mode === 'dark');
-
     return (
       <>
         <Tooltip
