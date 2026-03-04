@@ -210,6 +210,10 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     return new ItemsServiceHelper<DatabaseTypes.Foodoffers>(this, CollectionNames.FOODOFFERS);
   }
 
+  getFoodofferComponentsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodoffersComponents>(this, CollectionNames.FOODOFFER_COMPONENTS);
+  }
+
   getFoodofferCategoriesHelper() {
     return new ItemsServiceHelper<DatabaseTypes.FoodoffersCategories>(this, CollectionNames.FOODOFFER_CATEGORIES);
   }
