@@ -257,17 +257,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [foodItem?.translations, language]
     );
 
-    const handleDescriptionModal = useCallback(() => {
-      if (!foodDescription) return;
-      showScrollViewModal(
-        {
-          title: translate(TranslationKeys.description),
-          children: <MyMarkdown content={foodDescription} textColor={theme.screen.text} />,
-        },
-        {}
-      );
-    }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
-
     const foodName = useMemo(
       () =>
         excerpt(
@@ -283,29 +272,20 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       return foodItem?.image_remote_url || getImageUrl(foodItem?.image as string) || defaultImage;
     }, [foodItem?.image_remote_url, foodItem?.image, defaultImage]);
 
-    // Update to fetch the description from translations, similar to how the food name is fetched
-    const foodDescription = useMemo(
-      () =>
-          getDescriptionFromTranslation(foodItem?.translations, language),
-      [foodItem?.translations, language, screenWidth]
-    );
-
-    // Update the modal content to use the fetched description
     const handleDescriptionModal = useCallback(() => {
-      if (foodDescription) {
-        showScrollViewModal(
-          {
-            title: translate(TranslationKeys.description),
-            children: (
-              <View style={{ gap: 20 }}>
-                <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
-                <RateAppSettingsItem />
-              </View>
-            ),
-          },
-          {}
-        );
-      }
+      if (!foodDescription) return;
+      showScrollViewModal(
+        {
+          title: translate(TranslationKeys.description),
+          children: (
+            <View style={{ gap: 20 }}>
+              <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
+              <RateAppSettingsItem />
+            </View>
+          ),
+        },
+        {}
+      );
     }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
 
     // Update to use dynamic contrast color from foods_area_color
