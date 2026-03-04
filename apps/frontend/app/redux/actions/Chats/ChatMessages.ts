@@ -4,7 +4,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class ChatMessagesHelper extends CollectionHelper<DatabaseTypes.ChatMessages> {
 	constructor(client?: any) {
-		super('chat_messages', client || ServerAPI.getClient());
+		super('chat_messages', client);
 	}
 
 	async fetchMessagesByChat(chatId: string, queryOverride: any = {}) {

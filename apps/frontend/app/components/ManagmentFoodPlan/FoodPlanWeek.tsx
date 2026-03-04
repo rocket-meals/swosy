@@ -24,7 +24,7 @@ const FoodPlanWeek = ({ data, onPressItem }: { data: any[]; onPressItem: (item: 
 		};
 	}, []);
 
-	const handleToggleChange = index => {
+	const handleToggleChange = (index: number) => {
 		const updatedStates = [...toggleStates];
 		updatedStates[index] = !updatedStates[index];
 		setToggleStates(updatedStates);
@@ -84,7 +84,7 @@ const FoodPlanWeek = ({ data, onPressItem }: { data: any[]; onPressItem: (item: 
 										]}
 										editable={false}
 										pointerEvents="none"
-										value={selectedCanteen?.alias}
+										value={selectedCanteen?.alias || undefined}
 									/>
 								)}
 

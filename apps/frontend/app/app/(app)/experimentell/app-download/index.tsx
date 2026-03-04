@@ -1,7 +1,6 @@
 import React from 'react';
 import {Image, ScrollView, View} from 'react-native';
-import {useSelector} from 'react-redux';
-import {RootState} from '@/redux/reducer';
+import {useAppSelector} from '@/redux/hooks';
 import {useTheme} from '@/hooks/useTheme';
 import {TranslationKeys} from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -16,7 +15,7 @@ import {getAppIconInsideExpoLocalSaved} from "@/config";
 const AppDownload = () => {
 	useSetPageTitle(TranslationKeys.app_download);
 	const { theme } = useTheme();
-	const { serverInfo, appSettings } = useSelector((state: RootState) => state.settings);
+	const { serverInfo, appSettings } = useAppSelector((state) => state.settings);
 
 	const projectLogo = serverInfo?.info?.project?.project_logo && getImageUrl(serverInfo.info.project.project_logo);
 

@@ -3,8 +3,17 @@ export type FirstDayOfWeek = {
 	name: string;
 };
 
+export interface TimeTableField {
+	id: number;
+	leftIcon: any;
+	label: string;
+	value: any;
+	rightIcon: any;
+	handleFunction: () => void;
+}
+
 export interface CourseBottomSheetProps {
-	timeTableData: any[];
+	timeTableData: TimeTableField[];
 	closeSheet: () => void;
 	isUpdate: boolean;
 	selectedEventId: string;
@@ -12,9 +21,9 @@ export interface CourseBottomSheetProps {
 
 export interface CourseBottomSheetState {
 	selectedFirstDay: string;
-	selectedItem: any | null;
+	selectedItem: TimeTableField | null;
 	windowWidth: number;
-	data: any[];
+	data: TimeTableField[];
 	inputValue: string;
 }
 
@@ -42,6 +51,6 @@ export interface CourseTimetableProps {
 	events: EventTypes[];
 	openSheet: () => void;
 	setIsUpdate: React.Dispatch<React.SetStateAction<boolean>>;
-	setTimeTableData: React.Dispatch<React.SetStateAction<any>>;
+	setTimeTableData: React.Dispatch<React.SetStateAction<TimeTableField[]>>;
 	setSelectedEventId: React.Dispatch<React.SetStateAction<string>>;
 }

@@ -61,5 +61,11 @@ export default StyleSheet.create({
 		borderTopRightRadius: 30,
 		borderTopLeftRadius: 30,
 	},
+	itemContainer: {
+		flex: 1,
+		marginHorizontal: 10,
+		marginVertical: 10,
+		alignItems: 'center',
+	},
 	dummy: {},
 });

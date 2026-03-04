@@ -4,7 +4,8 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { FilterFormSheetProps } from './types';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_FORM_FILTER } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
@@ -21,7 +22,7 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({ closeSheet, isVisible
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
 	const updateSort = (option: { id: string }) => {

@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import styles from './styles';
 import SignatureScreen from 'react-native-signature-canvas';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import * as FileSystem from 'expo-file-system';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 
 // Import libraries based on platform
 const SignatureCanvas = Platform.OS === 'web' ? require('react-signature-canvas').default : require('react-native-signature-canvas').default;
@@ -17,7 +16,7 @@ const SignatureCanvas = Platform.OS === 'web' ? require('react-signature-canvas'
 const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_type, scrollViewRef }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; scrollViewRef?: any }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector((state) => state.settings);
 	const signatureRef = useRef<any>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
@@ -68,11 +67,11 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		if (isDisabled) return;
 
 		const base64Data = signature.replace(/^data:image\/\w+;base64,/, '');
-		const path = FileSystem.cacheDirectory + `signature_${Date.now()}.png`;
+		const path = (FileSystem as any).cacheDirectory + `signature_${Date.now()}.png`;
 
 		try {
-			await FileSystem.writeAsStringAsync(path, base64Data, {
-				encoding: FileSystem.EncodingType.Base64,
+			await (FileSystem as any).writeAsStringAsync(path, base64Data, {
+				encoding: 'base64',
 			});
 
 			console.log('Signature saved at:', path);

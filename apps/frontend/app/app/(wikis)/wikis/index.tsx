@@ -2,7 +2,7 @@ import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'rea
 import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
 import { router, useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,6 @@ import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
-import { RootState } from '@/redux/reducer';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 
@@ -20,7 +19,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const [wiki, setWiki] = useState<DatabaseTypes.Wikis>();
 	const [loading, setLoading] = useState(true);
-	const { wikis, language, primaryColor } = useSelector((state: RootState) => state.settings);
+	const { wikis, language, primaryColor } = useAppSelector((state) => state.settings);
 	const { deviceMock } = useGlobalSearchParams();
 	const { custom_id, id } = useLocalSearchParams();
 	//Set Page Title
@@ -63,7 +62,7 @@ const Index = () => {
 			>
 				<View style={styles.row}>
 					<View style={styles.col1}>
-						<TouchableOpacity onPress={() => router.navigate(AppScreens.FOOD_OFFERS)} style={{ padding: 10 }}>
+						<TouchableOpacity onPress={() => router.navigate(('/(app)/' + AppScreens.FOOD_OFFERS) as any)} style={{ padding: 10 }}>
 							<Ionicons name="arrow-back" size={24} color={theme.header.text} />
 						</TouchableOpacity>
 						<Text style={{ ...styles.heading, color: theme.header.text }}>{wiki?.translations && getTitleFromTranslation(wiki?.translations, language)}</Text>

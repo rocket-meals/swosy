@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Redirect } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import { registerForPushNotificationsAsync } from '@/helper/getPushToken';
 import * as Notifications from 'expo-notifications';
@@ -72,7 +73,7 @@ async function savePushTokenToAPI(opts: { token: string | null; profile: Databas
 
 const Index = () => {
 	const dispatch = useDispatch();
-	const { loggedIn, profile } = useSelector((state: RootState) => state.authReducer);
+	const { loggedIn, profile } = useAppSelector((state) => state.authReducer);
 
 	useEffect(() => {
 		if (!loggedIn || !profile?.id) return;

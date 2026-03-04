@@ -6,7 +6,8 @@ import { isWeb } from '@/constants/Constants';
 import NewsItem from '@/components/NewsItem/NewsItem';
 import { NewsHelper } from '@/redux/actions/News/News';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { SET_NEWS } from '@/redux/Types/types';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
@@ -21,7 +22,7 @@ const Index = () => {
 	const newsHelper = new NewsHelper();
 	const [refreshing, setRefreshing] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const { news } = useSelector((state: RootState) => state.news);
+	const { news } = useAppSelector((state) => state.news);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing(true);

@@ -1,12 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import { CollectibleAt } from 'repo-depkit-common';
+import { CollectibleAt, CollectibleAtType } from 'repo-depkit-common';
 
 import CollectibleItem from './index';
 
 type CollectibleSpotProps = {
-        collectibleKey: CollectibleAt;
-        isPreview?: boolean;
+	collectibleKey: CollectibleAtType;
+	isPreview?: boolean;
 };
 
 const CollectibleSpot: React.FC<CollectibleSpotProps> = ({ collectibleKey, isPreview }) => {

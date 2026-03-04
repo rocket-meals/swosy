@@ -2,12 +2,11 @@ import { useCallback } from 'react';
 import { useLanguage } from './useLanguage';
 import { useFocusEffect } from 'expo-router';
 import { isWeb } from '@/constants/Constants';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 const useSetPageTitle = (translationKey: string) => {
 	const { translate } = useLanguage();
-	const { language } = useSelector((state: RootState) => state.settings);
+	const { language } = useAppSelector((state) => state.settings);
 
 	useFocusEffect(
 		useCallback(() => {

@@ -1,33 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 import { isWeb } from '@/constants/Constants';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import { useTheme } from '@/hooks/useTheme';
 
-export const useFoodCard = (borderWidth: number = 0, borderColor: string = '#FF000095') => {
-	const { theme } = useTheme();
-	const { amountColumnsForcard } = useSelector((state: RootState) => state.settings);
-	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-
-	useEffect(() => {
-		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
-		const subscription = Dimensions.addEventListener('change', handleResize);
-		return () => subscription?.remove();
-	}, []);
-
-	useEffect(() => {
-		CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
-	}, [amountColumnsForcard, screenWidth]);
-
+export const useFoodCardBase = (
+    borderWidth: number = 0, 
+    borderColor: string | undefined, 
+    screenWidth: number, 
+    theme: any, 
+    amountColumnsForcard: number
+) => {
 	const dimension = amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 
 	const containerStyle: ViewStyle = {
 		width: dimension,
-		backgroundColor: theme.card.background,
+		backgroundColor: theme?.card?.background,
 		borderWidth,
-		borderColor,
+		borderColor: borderColor || '#FF000095',
 	};
 
 	const imageContainerStyle: ViewStyle = {
@@ -41,6 +32,30 @@ export const useFoodCard = (borderWidth: number = 0, borderColor: string = '#FF0
 	};
 
 	return { screenWidth, containerStyle, imageContainerStyle, contentStyle };
+};
+
+export const useFoodCard = (borderWidth: number = 0, borderColor?: string, providedScreenWidth?: number) => {
+	const { theme } = useTheme();
+	const amountColumnsForcard = useAppSelector((state) => state.settings.amountColumnsForcard);
+	const [localScreenWidth, setLocalScreenWidth] = useState(providedScreenWidth || Dimensions.get('window').width);
+
+	const screenWidth = providedScreenWidth || localScreenWidth;
+
+	useEffect(() => {
+		if (providedScreenWidth) return;
+
+		const handleResize = () => setLocalScreenWidth(Dimensions.get('window').width);
+		const subscription = Dimensions.addEventListener('change', handleResize);
+		return () => subscription?.remove();
+	}, [providedScreenWidth]);
+
+	useEffect(() => {
+		if (!providedScreenWidth) {
+			CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
+		}
+	}, [amountColumnsForcard, screenWidth, providedScreenWidth]);
+
+    return useFoodCardBase(borderWidth, borderColor, screenWidth, theme, amountColumnsForcard);
 };
 
 export default useFoodCard;

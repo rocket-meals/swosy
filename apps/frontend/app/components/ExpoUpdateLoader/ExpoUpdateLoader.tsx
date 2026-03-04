@@ -31,7 +31,9 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 
 			try {
 				setStatus(TranslationKeys.CHECK_FOR_APP_UPDATES);
-				const update = (await Promise.race([Updates.checkForUpdateAsync(), timeoutPromise])) as Updates.CheckForUpdateResult | null;
+				const update = (await Promise.race([Updates.checkForUpdateAsync(), timeoutPromise])) as Awaited<
+					ReturnType<typeof Updates.checkForUpdateAsync>
+				> | null;
 
 				if (cancelUpdateRef.current) {
 					return;
