@@ -45,6 +45,7 @@ export class FoodTL1Parser implements FoodParserInterface {
   static DEFAULT_CANTEEN_FIELD = 'MENSA';
   static DEFAULT_DATE_FIELD = 'DATUM';
   static DEFAULT_TEXT_FIELD = 'TEXT';
+  static DEFAULT_TEXT_FIELD_AMOUNT_FIELDS = 6;
   static DEFAULT_RECIPE_ID_FIELD = 'REZEPTUR_ID';
   static DEFAULT_NUTRITIONS_FIELD = 'NAEHRWERTEJEPORT';
   static DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER = 'calories_kcal';
@@ -771,7 +772,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       postFieldName = '';
     }
     let food_partials_names = [];
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= FoodTL1Parser.DEFAULT_TEXT_FIELD_AMOUNT_FIELDS; i++) {
       let partialName = parsedReportItem[FoodTL1Parser.DEFAULT_TEXT_FIELD + i + postFieldName];
       if (!!partialName && partialName.length > 0 && partialName !== ' ') {
         food_partials_names.push(partialName);
@@ -803,7 +804,7 @@ export class FoodTL1Parser implements FoodParserInterface {
 
   static getComponentsFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodComponentForParser[] {
     const components: FoodComponentForParser[] = [];
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= FoodTL1Parser.DEFAULT_TEXT_FIELD_AMOUNT_FIELDS; i++) {
       const rawNameDe = parsedReportItem[FoodTL1Parser.DEFAULT_TEXT_FIELD + i];
       if (!rawNameDe || rawNameDe.trim().length === 0 || rawNameDe === ' ') {
         continue;
