@@ -130,6 +130,12 @@ const Index = () => {
 			leftIcon: <MaterialCommunityIcons name="gamepad-variant" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/game-ideas'),
 		},
+		{
+			key: 'food-wishlist',
+			label: translate(TranslationKeys.food_wishlist),
+			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/food-wishlist'),
+		},
 	];
 
 	return (

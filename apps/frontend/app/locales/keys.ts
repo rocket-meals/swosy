@@ -487,6 +487,7 @@ export enum TranslationKeys {
 	pull_down_to_close = 'pull_down_to_close',
 	group_app_management = 'group_app_management',
 	game_ideas = 'game_ideas',
+	food_wishlist = 'food_wishlist',
 	guess_better_rated_dish = 'guess_better_rated_dish',
 	guess_most_disliked_marking = 'guess_most_disliked_marking',
 	food_memory_game = 'food_memory_game',
