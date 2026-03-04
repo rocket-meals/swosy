@@ -10,7 +10,7 @@ import {EnvVariableHelper, SyncForCustomerEnum} from '../helpers/EnvVariableHelp
 import {WorkflowScheduleHelper} from '../workflows-runs-hook';
 import {SingleWorkflowRun} from '../workflows-runs-hook/WorkflowRunJobInterface';
 import {WorkflowRunContext} from '../helpers/WorkflowRunContext';
-import {CronHelper, CollectionNames, DatabaseTypes} from 'repo-depkit-common';
+import {CronHelper, DatabaseTypes} from 'repo-depkit-common';
 import {WORKFLOW_RUN_STATE} from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import {FoodAndMarkingWebParserAachen} from './aachen/FoodAndMarkingWebParserAachen';
 import {MyDefineHook} from "../helpers/MyDefineHook";
@@ -120,34 +120,5 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     myDatabaseHelper: myDatabaseHelper,
     schedule: schedule,
     cronOject: CronHelper.EVERY_5_MINUTES,
-  });
-
-  filter(CollectionNames.FOODOFFER_COMPONENTS + '.items.delete', async (payloadModifiable) => {
-    const junctionIds = payloadModifiable as number[];
-    if (!junctionIds || !Array.isArray(junctionIds) || junctionIds.length === 0) {
-      return payloadModifiable;
-    }
-
-    try {
-      const componentsHelper = myDatabaseHelper.getFoodofferComponentsHelper();
-      const junctionRows = await componentsHelper.readByQuery({
-        filter: { id: { _in: junctionIds } },
-        fields: ['component_foodoffers_id'],
-        limit: -1,
-      });
-
-      const componentFoodofferIds = junctionRows
-        .map(row => (typeof row.component_foodoffers_id === 'string' ? row.component_foodoffers_id : null))
-        .filter((id): id is string => !!id);
-
-      if (componentFoodofferIds.length > 0) {
-        const foodoffersHelper = myDatabaseHelper.getFoodoffersHelper();
-        await foodoffersHelper.deleteMany(componentFoodofferIds);
-      }
-    } catch (err) {
-      console.error(SCHEDULE_NAME + ': Error deleting component foodoffers on junction delete:', err);
-    }
-
-    return payloadModifiable;
   });
 });
