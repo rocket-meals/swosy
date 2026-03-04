@@ -44,21 +44,9 @@ const selectOwnFoodFeedbacks = createSelector([selectFoodState], foodState => fo
 export default function FoodDetailsScreen() {
     useSetPageTitle(TranslationKeys.food_details);
 
-    const { id, foodId, initialData } = useLocalSearchParams();
+    const { id, foodId } = useLocalSearchParams();
     const offerId = Array.isArray(id) ? id[0] : id;
     const initialFoodId = Array.isArray(foodId) ? foodId[0] : foodId;
-
-    const initialFoodOffer = useMemo(() => {
-        if (typeof initialData === 'string') {
-            try {
-                const result = JSON.parse(initialData);
-                return result;
-            } catch (e) {
-                return null;
-            }
-        }
-        return null;
-    }, [initialData]);
 
     const { theme } = useTheme();
     const { translate } = useLanguage();
@@ -88,7 +76,7 @@ export default function FoodDetailsScreen() {
     const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
     const [notificationGranted, pushTokenObj, _, requestDeviceNotificationPermission] = NotificationHelper.useNotificationPermission(profile);
 
-    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId, initialFoodOffer });
+    const { foodDetails, foodAttributes, loading: foodAttributesLoading } = useFoodDetails({ offerId, initialFoodId });
     const { groupedAttributes } = useFoodAttributes({ foodAttributes, foodDetails });
 
     const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;

@@ -179,28 +179,14 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     );
 
     const handleNavigation = useCallback((id: string, foodId: string) => {
-      let initialDataStr = '';
-      try {
-        const minimalInitialData = {
-          food: item.food,
-          foodoffer_category: (item as any).foodoffer_category,
-          attribute_values: (item as any).attribute_values,
-          foods_attributes_values: (item as any).foods_attributes_values,
-        };
-        initialDataStr = JSON.stringify(minimalInitialData);
-      } catch (e) {
-        console.warn('Failed to stringify item for navigation', e);
-      }
-
       router.push({
         pathname: '/(app)/foodoffers/details',
         params: {
           id,
           foodId,
-          initialData: initialDataStr,
         },
       });
-    }, [item]);
+    }, []);
 
     const handleOpenSheet = useCallback(() => {
       dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
