@@ -7,6 +7,7 @@
     "app-frontend-start": "yarn && yarn workspace rocket-meals-dev start",
     "app-frontend-gh-pages-deploy": "yarn && yarn workspace rocket-meals-dev deploy:gh:pages",
     "test": "yarn && yarn app-backend-test",
+    "build": "yarn && yarn app-backend-build",
     "app-backend-test": "yarn workspace directus-extension-rocket-meals-bundle test",
     "app-backend-build": "yarn workspace directus-extension-rocket-meals-bundle build",
     "app-backend-build-without-test": "yarn workspace directus-extension-rocket-meals-bundle buildWithoutTest",
