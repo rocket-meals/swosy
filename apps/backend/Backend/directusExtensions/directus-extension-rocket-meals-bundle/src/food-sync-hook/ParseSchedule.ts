@@ -669,7 +669,7 @@ export class ParseSchedule {
     return await this.findOrCreateCanteen(searchJSON);
   }
 
-  buildComponentFoodoffersCreate(components: FoodComponentForParser[], canteen: DatabaseTypes.Canteens, food_id: string): any {
+  buildComponentFoodoffersCreate(components: FoodComponentForParser[], canteen: DatabaseTypes.Canteens, dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>, dictMarkingsExclusions: DictMarkingsExclusions): any {
     if (!components || components.length === 0) {
       return {
         create: [],
@@ -679,16 +679,33 @@ export class ParseSchedule {
     }
 
     const componentCreates = components.map(component => {
+      const componentMarkings: DatabaseTypes.Markings[] = [];
+      for (const marking_external_identifier of component.marking_external_identifiers) {
+        const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+        if (marking) {
+          componentMarkings.push(marking);
+        }
+      }
+      const filteredComponentMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(componentMarkings, dictMarkingsExclusions);
+      const componentMarkingsCreate: any[] = filteredComponentMarkings.map(marking => {
+        return {
+          foodoffers_id: '+',
+          markings_id: {
+            id: marking.id,
+          },
+        };
+      });
+
       return {
         component_foodoffers_id: {
           alias: component.alias,
           canteen: null,
           date: null,
-          food: food_id,
+          food: null,
           foodoffer_components: [],
           status: 'published',
           markings: {
-            create: [],
+            create: componentMarkingsCreate,
             update: [],
             delete: [],
           },
@@ -708,7 +725,7 @@ export class ParseSchedule {
     };
   }
 
-  getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: DatabaseTypes.Canteens, markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject) {
+  getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: DatabaseTypes.Canteens, markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject, dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null>) {
     let food_id = foodofferForParser.food_id;
     const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
@@ -746,7 +763,7 @@ export class ParseSchedule {
         delete: [],
       },
       // @ts-ignore
-      foodoffer_components: this.buildComponentFoodoffersCreate(foodofferForParser.components, canteen, food_id), // Directus nested create format is not reflected in the static type
+      foodoffer_components: this.buildComponentFoodoffersCreate(foodofferForParser.components, canteen, dictMarkingExternalIdentifierToMarking, helperObject.dictMarkingsExclusions), // Directus nested create format is not reflected in the static type
     };
     return foodOfferToCreate;
   }
@@ -766,6 +783,12 @@ export class ParseSchedule {
       let marking_external_identifiers = foodofferForParser.marking_external_identifiers;
       for (let marking_external_identifier of marking_external_identifiers) {
         dictMarkingExternalIdentifierToMarking[marking_external_identifier] = null;
+      }
+
+      for (let component of foodofferForParser.components) {
+        for (let marking_external_identifier of component.marking_external_identifiers) {
+          dictMarkingExternalIdentifierToMarking[marking_external_identifier] = null;
+        }
       }
     }
 
@@ -841,7 +864,7 @@ export class ParseSchedule {
 
       if (canteenFound && markingsAllFound && foodFound) {
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, helperObject.dictMarkingsExclusions);
-        let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject);
+        let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject, dictMarkingExternalIdentifierToMarking);
         foodoffersToCreate.push(foodOfferToCreate);
       } else {
         await this.context.logger.appendLog('Error Foodoffer ' + (index + 1) + ' / ' + amountOfRawMealOffers + ' - canteenFound: ' + canteenFound + ' - markingsAllFound: ' + markingsAllFound + ' - foodFound: ' + foodFound);
