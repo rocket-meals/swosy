@@ -15,6 +15,8 @@ import { RootState } from '@/redux/reducer';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
+import { getTextFromTranslation } from '@/helper/resourceHelper';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -33,7 +35,7 @@ export const selectFoodOffer = (offerId?: string) =>
 
 const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
 	const { isDevMode } = useSelector((state: RootState) => state.authReducer);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
@@ -104,6 +106,18 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
 	}, [mappedFoodOfferMarkings, markingGroups]);
 
+	const globalMarkingIds = useMemo(() => {
+		const allComponentMarkingIds = new Set<string>(
+			foodofferComponents.flatMap((component: any) =>
+				(component?.component_foodoffers_id?.markings ?? []).map((m: any) => m?.markings_id)
+			)
+		);
+		const foodOfferMarkingIds: string[] = (foodOfferDetails?.markings ?? foodOffer?.markings ?? [])
+			.map((m: DatabaseTypes.FoodoffersMarkings) => m?.markings_id as string)
+			.filter(Boolean);
+		return foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id));
+	}, [foodofferComponents, foodOfferDetails, foodOffer]);
+
 	return (
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
@@ -113,10 +127,34 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			))}
 
 			<DebugView title="Foodoffer Components" isVisible={isDevMode}>
-				<Text style={{ ...styles.body, color: theme.screen.text }}>
-					{JSON.stringify(foodofferComponents, null, 2)}
-				</Text>
-			</DebugView>
+			{foodofferComponents.map((component: any) => {
+				const componentFoodoffer = component?.component_foodoffers_id;
+				if (!componentFoodoffer) return null;
+				const componentName =
+					getTextFromTranslation(componentFoodoffer?.translations, language) ||
+					componentFoodoffer?.alias ||
+					`Component #${componentFoodoffer?.id}`;
+				const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
+					(m: any) => m?.markings_id
+				);
+				return (
+					<View key={componentFoodoffer?.id}>
+						<SettingsGroupTitle>{componentName}</SettingsGroupTitle>
+						{componentMarkingIds.map((markingId: string) => (
+							<MarkingLabels key={markingId} markingId={markingId} handleMenuSheet={handleMenuSheet} />
+						))}
+					</View>
+				);
+			})}
+			{globalMarkingIds.length > 0 && (
+				<View>
+					<SettingsGroupTitle>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
+					{globalMarkingIds.map((markingId: string) => (
+						<MarkingLabels key={markingId} markingId={markingId} handleMenuSheet={handleMenuSheet} />
+					))}
+				</View>
+			)}
+		</DebugView>
 
 			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
