@@ -107,6 +107,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		});
 	}, [appElementsMap, appSettings, languageCode]);
 
+	const parseDateOnly = useCallback((date: string) => {
+		const [year, month, day] = date.split('-').map(Number);
+		if (!year || !month || !day) {
+			return new Date(date);
+		}
+		return new Date(year, month - 1, day);
+	}, []);
+
 	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[], date: string) => {
 		const hasOffers = offers.length > 0;
 		const dayOfWeek = parseDateOnly(date).getDay();
@@ -335,14 +343,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		await init(true);
 		setRefreshing(false);
 	};
-
-	const parseDateOnly = useCallback((date: string) => {
-		const [year, month, day] = date.split('-').map(Number);
-		if (!year || !month || !day) {
-			return new Date(date);
-		}
-		return new Date(year, month - 1, day);
-	}, []);
 
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
