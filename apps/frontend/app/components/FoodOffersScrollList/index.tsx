@@ -12,7 +12,7 @@ import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import MarkingBottomSheet from '@/components/MarkingBottomSheet';
+
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useAppSelector } from '@/redux/hooks';
@@ -54,7 +54,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const [days, setDays] = useState<DayData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
-	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
+	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -107,10 +107,28 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		});
 	}, [appElementsMap, appSettings, languageCode]);
 
-	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[]) => {
+	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[], date: string) => {
 		const hasOffers = offers.length > 0;
+		const dayOfWeek = parseDateOnly(date).getDay();
+		// Index matches getDay() return values: 0=Sunday, 1=Monday, ..., 6=Saturday
+		const weekdayFields: string[] = [
+			'show_on_sundays',
+			'show_on_mondays',
+			'show_on_tuesdays',
+			'show_on_wednesdays',
+			'show_on_thursdays',
+			'show_on_fridays',
+			'show_on_saturdays',
+		];
 		const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
 			if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
+				return false;
+			}
+			// Weekday filter: null/undefined and true are both treated as "show on this day" (default true).
+			// Only an explicit false value excludes the item on this day.
+			const weekdayField = weekdayFields[dayOfWeek];
+			const fieldValue = (info as DatabaseTypes.FoodoffersInfoItems & Record<string, boolean | null | undefined>)[weekdayField];
+			if (fieldValue != null && !fieldValue) {
 				return false;
 			}
 			if (info.show_only_when_no_foodoffers_found) {
@@ -127,7 +145,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		const endItems = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 
 		return [...startItems, ...main, ...endItems] as DayItem[];
-	}, [foodOffersInfoItems, selectedCanteen]);
+	}, [foodOffersInfoItems, selectedCanteen, parseDateOnly]);
 
 	const getInfoItemContent = useCallback(
 		(item: DatabaseTypes.FoodoffersInfoItems) => {
@@ -142,7 +160,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	);
 
 	const openSheet = useCallback(
-			(sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+			(sheet: keyof typeof SHEET_COMPONENTS, props = {}) => {
 				setSelectedSheet(sheet);
 				setSheetProps(props);
 			},
@@ -172,7 +190,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}
 	}, [selectedSheet]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+	const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
 		if (amountColumnsForcard && amountColumnsForcard > 0) {
@@ -328,7 +346,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
-		const dayItems = buildDayItems(item.offers);
+		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
 		return (
@@ -439,14 +457,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				style={{ flex: 1 }}
 				contentContainerStyle={{ backgroundColor: theme.screen.background }}
 			/>
-			{selectedSheet &&
-				(selectedSheet === 'menu' ? (
-					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
-				) : (
-					<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
-						{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
-					</BaseBottomSheet>
-				))}
+			{selectedSheet && (
+				<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
+					{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
+				</BaseBottomSheet>
+			)}
 		</>
 	);
 };

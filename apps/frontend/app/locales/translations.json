@@ -899,6 +899,26 @@
     "tr": "Yemek Teklifi Kategorisi",
     "zh": "餐品类别"
   },
+  "foodoffer_components_label": {
+    "de": "Bestandteile",
+    "en": "Components",
+    "ar": "مكونات",
+    "es": "Componentes",
+    "fr": "Composants",
+    "ru": "Составляющие",
+    "tr": "Bileşenler",
+    "zh": "成分"
+  },
+  "global_markings": {
+    "de": "Übergreifende Kennzeichnungen",
+    "en": "Overall Markings",
+    "ar": "علامات عامة",
+    "es": "Marcas generales",
+    "fr": "Marquages globaux",
+    "ru": "Общие маркировки",
+    "tr": "Genel İşaretlemeler",
+    "zh": "总体标记"
+  },
   "free_rooms": {
     "de": "Freie Zimmer",
     "en": "Free Rooms",
