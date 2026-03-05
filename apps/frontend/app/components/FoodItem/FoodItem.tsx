@@ -26,6 +26,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 import useFoodOfferDetailsModal from '@/hooks/useFoodOfferDetailsModal';
+import { MarkingContent } from '../MarkingBottomSheet';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
@@ -39,7 +40,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
   ({ 
     item, 
     canteen, 
-    handleMenuSheet, 
     handleImageSheet, 
     handleEatingHabitsSheet, 
     cardWidth, 
@@ -223,9 +223,12 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const openMarkingLabel = useCallback(
       (marking: DatabaseTypes.Markings) => {
         dispatch({ type: SET_MARKING_DETAILS, payload: marking });
-        handleMenuSheet('menu' as any);
+        showScrollViewModal({
+          children: <MarkingContent />,
+          disableHorizontalPadding: true,
+        });
       },
-      [dispatch, handleMenuSheet]
+      [dispatch, showScrollViewModal]
     );
 
     const handlePriceChange = useCallback(() => router.navigate('/price-group'), []);
