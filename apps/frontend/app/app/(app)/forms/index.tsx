@@ -11,6 +11,7 @@ import { getFromCategoryTranslation } from '@/helper/resourceHelper';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FormsHelper } from '@/redux/actions/Forms/Forms';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
+import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -31,8 +32,9 @@ const Index = () => {
     const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);
 	const formsHelper = new FormsHelper();
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
+	const formAnswersHelper = new FormAnswersHelper();
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { cachedSubmissions } = useAppSelector((state) => state.form);
+	const { cachedFormData } = useAppSelector((state) => state.form);
 
 	const getAllForms = async () => {
 		setLoading(true);
@@ -48,14 +50,36 @@ const Index = () => {
 	const downloadFormDrafts = async (formId: string) => {
 		setDownloadingIds(prev => new Set(prev).add(formId));
 		try {
-			const result = (await formsSubmissionsHelper.fetchFormSubmissions({
-				form: formId,
-				state: 'draft',
-				limit: -1,
-			})) as DatabaseTypes.FormSubmissions[];
+			const [formDetails, submissions] = await Promise.all([
+				formsHelper.fetchFormsById(formId) as Promise<DatabaseTypes.Forms | null>,
+				formsSubmissionsHelper.fetchFormSubmissions({
+					form: formId,
+					state: 'draft',
+					limit: -1,
+				}) as Promise<DatabaseTypes.FormSubmissions[]>,
+			]);
+
+			const submissionList = submissions || [];
+			const answersMap: Record<string, DatabaseTypes.FormAnswers[]> = {};
+
+			await Promise.allSettled(
+				submissionList.map(async (submission: DatabaseTypes.FormSubmissions) => {
+					const submissionId = String(submission.id);
+					const answers = (await formAnswersHelper.fetchFormAnswers({
+						filter: { form_submission: { _eq: submissionId } },
+					})) as DatabaseTypes.FormAnswers[];
+					answersMap[submissionId] = answers || [];
+				})
+			);
+
 			dispatch({
 				type: SET_CACHED_FORM_DATA,
-				payload: { form_id: formId, submissions: result || [] },
+				payload: {
+					form_id: formId,
+					form: formDetails || null,
+					submissions: submissionList,
+					answers: answersMap,
+				},
 			});
 		} catch {
 			// keep any previously cached data unchanged
@@ -147,7 +171,7 @@ const Index = () => {
 									}
 								}
 								const formId = String(form?.id);
-								const isCached = !!(cachedSubmissions && cachedSubmissions[formId]);
+								const isCached = !!(cachedFormData && cachedFormData[formId]);
 								const isThisDownloading = downloadingIds.has(formId);
 								return (
 									<TouchableOpacity
