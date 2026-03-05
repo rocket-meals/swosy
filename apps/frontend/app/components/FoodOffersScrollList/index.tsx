@@ -111,7 +111,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		const hasOffers = offers.length > 0;
 		const dayOfWeek = parseDateOnly(date).getDay();
 		// Index matches getDay() return values: 0=Sunday, 1=Monday, ..., 6=Saturday
-		const weekdayFields: Array<keyof DatabaseTypes.FoodoffersInfoItems> = [
+		const weekdayFields: string[] = [
 			'show_on_sundays',
 			'show_on_mondays',
 			'show_on_tuesdays',
@@ -127,7 +127,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			// Weekday filter: null/undefined and true are both treated as "show on this day" (default true).
 			// Only an explicit false value excludes the item on this day.
 			const weekdayField = weekdayFields[dayOfWeek];
-			const fieldValue = info[weekdayField];
+			const fieldValue = (info as DatabaseTypes.FoodoffersInfoItems & Record<string, boolean | null | undefined>)[weekdayField];
 			if (fieldValue != null && !fieldValue) {
 				return false;
 			}
