@@ -12,7 +12,7 @@ import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import MarkingBottomSheet from '@/components/MarkingBottomSheet';
+
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useAppSelector } from '@/redux/hooks';
@@ -54,7 +54,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const [days, setDays] = useState<DayData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
-	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
+	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -142,7 +142,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	);
 
 	const openSheet = useCallback(
-			(sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+			(sheet: keyof typeof SHEET_COMPONENTS, props = {}) => {
 				setSelectedSheet(sheet);
 				setSheetProps(props);
 			},
@@ -172,7 +172,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}
 	}, [selectedSheet]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+	const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
 		if (amountColumnsForcard && amountColumnsForcard > 0) {
@@ -439,14 +439,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				style={{ flex: 1 }}
 				contentContainerStyle={{ backgroundColor: theme.screen.background }}
 			/>
-			{selectedSheet &&
-				(selectedSheet === 'menu' ? (
-					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
-				) : (
-					<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
-						{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
-					</BaseBottomSheet>
-				))}
+			{selectedSheet && (
+				<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
+					{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
+				</BaseBottomSheet>
+			)}
 		</>
 	);
 };

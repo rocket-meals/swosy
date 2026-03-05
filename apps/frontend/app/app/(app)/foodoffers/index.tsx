@@ -22,7 +22,6 @@ import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours
 import { TranslationKeys } from '@/locales/keys';
 
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
@@ -110,7 +109,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		getBusinessHours();
 	}, [getBusinessHours]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'menu' && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
+	const SheetComponent = selectedSheet && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
@@ -134,10 +133,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			</View>
 
 			{isActive &&
-				!kioskMode &&
-				(selectedSheet === 'menu' ? (
-					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
-				) : (
+				!kioskMode && (
 					<BaseBottomSheet
 						key={selectedSheet || 'sheet'}
 						ref={bottomSheetRef}
@@ -160,7 +156,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							)
 						)}
 					</BaseBottomSheet>
-				))}
+				)}
 		</SafeAreaView>
 	);
 };
