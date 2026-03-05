@@ -19,6 +19,8 @@ type ModalStackItem = {
 type ModalContextType = {
         open: (content: ReactNode, options?: ModalOptions) => void;
         close: () => void;
+        openAndDiscardOthers: (content: ReactNode, options?: ModalOptions) => void;
+        closeAll: () => void;
         debug: {
                 lastAction: 'open' | 'close' | null;
                 contentSet: boolean;
@@ -87,6 +89,56 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                         backgroundStyleProvided: Boolean(options?.backgroundStyle),
                         sheetRefReady: Boolean(sheetRef.current),
                         openInvocations: prev.openInvocations + 1,
+                }));
+        };
+
+        const openAndDiscardOthers = (c: ReactNode, options?: ModalOptions) => {
+                clearCloseTimeout();
+                // Clear any in-progress close guard so the replacement open is never blocked
+                isClosingRef.current = false;
+
+                const newItem: ModalStackItem = {
+                        content: c,
+                        backgroundStyle: options?.backgroundStyle ?? null,
+                        overlayStyle: options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' },
+                        headerBackgroundColor:
+                                options?.headerBackgroundColor ?? options?.backgroundStyle?.backgroundColor ?? undefined,
+                };
+
+                // Replace the entire stack with only this new item
+                modalStackRef.current = [newItem];
+                setModalStack([newItem]);
+
+                setDebug(prev => ({
+                        ...prev,
+                        lastAction: 'open',
+                        contentSet: true,
+                        backgroundStyleProvided: Boolean(options?.backgroundStyle),
+                        sheetRefReady: Boolean(sheetRef.current),
+                        openInvocations: prev.openInvocations + 1,
+                }));
+        };
+
+        const closeAll = () => {
+                if (modalStackRef.current.length === 0) return;
+                if (isClosingRef.current) return;
+                isClosingRef.current = true;
+
+                modalStackRef.current = [];
+                sheetRef.current?.close?.();
+                clearCloseTimeout();
+                closeTimeoutRef.current = setTimeout(() => {
+                        setModalStack([]);
+                        clearCloseTimeout();
+                        isClosingRef.current = false;
+                }, SHEET_CLOSE_ANIMATION_MS);
+
+                setDebug(prev => ({
+                        ...prev,
+                        lastAction: 'close',
+                        contentSet: false,
+                        sheetRefReady: Boolean(sheetRef.current),
+                        closeInvocations: prev.closeInvocations + 1,
                 }));
         };
 
@@ -190,7 +242,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const screenBackgroundColor = currentItem?.headerBackgroundColor || theme.screen.background;
 
         return (
-                <ModalContext.Provider value={{ open, close, debug }}>
+                <ModalContext.Provider value={{ open, close, openAndDiscardOthers, closeAll, debug }}>
                         {children}
                         {currentItem && (
                                 <View style={styles.modalContainer} pointerEvents="box-none">

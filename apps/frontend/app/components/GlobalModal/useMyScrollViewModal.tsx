@@ -4,10 +4,15 @@ import { useModal } from './useModal';
 
 export type MyScrollViewModalConfig = Omit<MyScrollViewModalProps, 'closeSheet'> & { children?: ReactNode };
 
-export const useMyScrollViewModal = () => {
-        const { show: showModal, close, debug } = useModal();
+type ScrollViewModalOptions = { backgroundStyle?: any; headerBackgroundColor?: string };
 
-        const show = (modalProps: MyScrollViewModalConfig, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
+export const useMyScrollViewModal = () => {
+        const { show: showModal, close, showAndDiscardOthers: showAndDiscardOthersModal, closeAll, debug } = useModal();
+
+        const buildArgs = (
+                modalProps: MyScrollViewModalConfig,
+                options?: ScrollViewModalOptions,
+        ): [React.ReactElement, ScrollViewModalOptions | undefined] => {
                 const { children, backgroundColor, ...restProps } = modalProps;
 
                 const backgroundStyle = backgroundColor
@@ -22,13 +27,24 @@ export const useMyScrollViewModal = () => {
                           }
                         : undefined;
 
-                showModal(
+                const element = (
                         <MyScrollViewModal closeSheet={close} backgroundColor={backgroundColor} {...restProps}>
                                 {children}
-                        </MyScrollViewModal>,
-                        mergedOptions,
+                        </MyScrollViewModal>
                 );
+
+                return [element, mergedOptions];
         };
 
-        return { show, close, debug };
+        const show = (modalProps: MyScrollViewModalConfig, options?: ScrollViewModalOptions) => {
+                const [element, mergedOptions] = buildArgs(modalProps, options);
+                showModal(element, mergedOptions);
+        };
+
+        const showAndDiscardOthers = (modalProps: MyScrollViewModalConfig, options?: ScrollViewModalOptions) => {
+                const [element, mergedOptions] = buildArgs(modalProps, options);
+                showAndDiscardOthersModal(element, mergedOptions);
+        };
+
+        return { show, close, showAndDiscardOthers, closeAll, debug };
 };
