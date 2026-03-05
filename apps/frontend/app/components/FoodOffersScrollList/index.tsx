@@ -124,9 +124,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
 				return false;
 			}
-			// Weekday filter: if the field is explicitly set, apply it.
-			// false => exclude on this day; true => allowed, continue to other conditions.
-			// null/undefined => no weekday restriction, continue to other conditions.
+			// Weekday filter: null/undefined and true are both treated as "show on this day" (default true).
+			// Only an explicit false value excludes the item on this day.
 			const weekdayField = weekdayFields[dayOfWeek];
 			const fieldValue = info[weekdayField];
 			if (fieldValue != null && !fieldValue) {
