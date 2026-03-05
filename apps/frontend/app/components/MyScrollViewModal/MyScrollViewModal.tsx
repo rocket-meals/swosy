@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { View, Text } from 'react-native';
+import { Platform, View, Text, useWindowDimensions } from 'react-native';
 import { BottomSheetFlatList, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,6 +40,13 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
+
+  // On web browsers the safe-area bottom inset is 0 and the bottom-sheet scroll
+  // area is clipped by browser chrome.  Add this ratio of the window height as an
+  // extra bottom buffer so the user can always scroll to the very last item.
+  const WEB_BOTTOM_PADDING_RATIO = 0.2;
+  const extraBottomPadding = Platform.OS === 'web' ? windowHeight * WEB_BOTTOM_PADDING_RATIO : 0;
 
   const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
 
@@ -58,9 +65,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
     </>
   );
 
-  const footerComponent = ListFooterComponent || <View style={{ height: Math.max(24, insets.bottom + 16) }} />;
+  const footerComponent = ListFooterComponent || <View style={{ height: Math.max(24, insets.bottom + 16) + extraBottomPadding }} />;
 
-  const contentStyle = { paddingBottom: 24 + insets.bottom, paddingHorizontal: disableHorizontalPadding ? 0 : 20 };
+  const contentStyle = { paddingBottom: 24 + insets.bottom + extraBottomPadding, paddingHorizontal: disableHorizontalPadding ? 0 : 20 };
   const scrollInsets = { bottom: insets.bottom };
 
   const containerStyle = { backgroundColor: resolvedBackgroundColor };
