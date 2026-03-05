@@ -7,10 +7,9 @@ const useFoodOfferDetailsModal = () => {
 
     const openFoodOfferDetailsModal = useCallback((offerId?: string, foodId?: string) => {
         show({
-            onClose: close,
             children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} />,
         });
-    }, [show, close]);
+    }, [show]);
 
     return { openFoodOfferDetailsModal, closeFoodOfferDetailsModal: close };
 };
