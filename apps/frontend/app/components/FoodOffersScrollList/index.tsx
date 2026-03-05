@@ -107,10 +107,28 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		});
 	}, [appElementsMap, appSettings, languageCode]);
 
-	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[]) => {
+	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[], date: string) => {
 		const hasOffers = offers.length > 0;
+		const dayOfWeek = parseDateOnly(date).getDay();
+		// Index matches getDay() return values: 0=Sunday, 1=Monday, ..., 6=Saturday
+		const weekdayFields: string[] = [
+			'show_on_sundays',
+			'show_on_mondays',
+			'show_on_tuesdays',
+			'show_on_wednesdays',
+			'show_on_thursdays',
+			'show_on_fridays',
+			'show_on_saturdays',
+		];
 		const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
 			if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
+				return false;
+			}
+			// Weekday filter: null/undefined and true are both treated as "show on this day" (default true).
+			// Only an explicit false value excludes the item on this day.
+			const weekdayField = weekdayFields[dayOfWeek];
+			const fieldValue = (info as DatabaseTypes.FoodoffersInfoItems & Record<string, boolean | null | undefined>)[weekdayField];
+			if (fieldValue != null && !fieldValue) {
 				return false;
 			}
 			if (info.show_only_when_no_foodoffers_found) {
@@ -127,7 +145,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		const endItems = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 
 		return [...startItems, ...main, ...endItems] as DayItem[];
-	}, [foodOffersInfoItems, selectedCanteen]);
+	}, [foodOffersInfoItems, selectedCanteen, parseDateOnly]);
 
 	const getInfoItemContent = useCallback(
 		(item: DatabaseTypes.FoodoffersInfoItems) => {
@@ -328,7 +346,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 
 	const renderDay = ({ item }: { item: DayData }) => {
 		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
-		const dayItems = buildDayItems(item.offers);
+		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
 		return (
