@@ -22,24 +22,25 @@ const formReducer = (state = initialState, actions: any) => {
 			};
 		}
 		case ADD_FORM_QUEUE_ENTRY: {
-			const existingIndex = state.formQueue.findIndex((entry: FormQueueEntry) => entry.form_submission_id === actions.payload.form_submission_id);
+			const queue = state.formQueue || [];
+			const existingIndex = queue.findIndex((entry: FormQueueEntry) => entry.form_submission_id === actions.payload.form_submission_id);
 			if (existingIndex !== -1) {
-				const updated = [...state.formQueue];
+				const updated = [...queue];
 				updated[existingIndex] = actions.payload;
 				return { ...state, formQueue: updated };
 			}
-			return { ...state, formQueue: [...state.formQueue, actions.payload] };
+			return { ...state, formQueue: [...queue, actions.payload] };
 		}
 		case REMOVE_FORM_QUEUE_ENTRY: {
 			return {
 				...state,
-				formQueue: state.formQueue.filter((entry: FormQueueEntry) => entry.id !== actions.payload),
+				formQueue: (state.formQueue || []).filter((entry: FormQueueEntry) => entry.id !== actions.payload),
 			};
 		}
 		case UPDATE_FORM_QUEUE_ENTRY: {
 			return {
 				...state,
-				formQueue: state.formQueue.map((entry: FormQueueEntry) =>
+				formQueue: (state.formQueue || []).map((entry: FormQueueEntry) =>
 					entry.id === actions.payload.id ? { ...entry, ...actions.payload } : entry
 				),
 			};
