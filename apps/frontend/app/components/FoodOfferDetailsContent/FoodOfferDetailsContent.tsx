@@ -117,6 +117,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const openMenuSheet = useCallback(() => {
         showModal({
             children: <MarkingContent />,
+            disableHorizontalPadding: true,
         });
     }, [showModal]);
 
