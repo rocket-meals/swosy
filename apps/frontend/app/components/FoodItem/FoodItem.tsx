@@ -25,6 +25,7 @@ import { useFoodCardBase } from '@/hooks/useFoodCard';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useFoodOfferDetailsModal from '@/hooks/useFoodOfferDetailsModal';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
@@ -89,6 +90,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     // NOTE: If language prop is undefined, translations will fail. But FoodItemConnected passes it.
     
     const { show: showScrollViewModal } = useMyScrollViewModal();
+    const { openFoodOfferDetailsModal } = useFoodOfferDetailsModal();
 
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods & { show_description_icon_on_card?: boolean | null };
@@ -177,16 +179,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       },
       [toast]
     );
-
-    const handleNavigation = useCallback((id: string, foodId: string) => {
-      router.push({
-        pathname: '/(app)/foodoffers/details',
-        params: {
-          id,
-          foodId,
-        },
-      });
-    }, []);
 
     const handleOpenSheet = useCallback(() => {
       dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
@@ -284,7 +276,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
               onPress={() =>
                 item.redirect_url
                   ? openInBrowser(item.redirect_url)
-                  : handleNavigation(item?.id, foodItem?.id || '')
+                  : openFoodOfferDetailsModal(item?.id, foodItem?.id || '')
               }
               imageSource={{
                 uri: imageUri as string,
