@@ -5122,5 +5122,35 @@
     "ru": "Синхронизация не удалась. Форма остаётся в очереди.",
     "tr": "Senkronizasyon başarısız. Form kuyrukta kalıyor.",
     "zh": "同步失败。表单仍在队列中。"
+  },
+  "form_cache_download": {
+    "de": "Entwürfe herunterladen",
+    "en": "Download drafts",
+    "ar": "تنزيل المسودات",
+    "es": "Descargar borradores",
+    "fr": "Télécharger les brouillons",
+    "ru": "Скачать черновики",
+    "tr": "Taslakları indir",
+    "zh": "下载草稿"
+  },
+  "form_cache_downloading": {
+    "de": "Wird heruntergeladen…",
+    "en": "Downloading…",
+    "ar": "جارٍ التنزيل…",
+    "es": "Descargando…",
+    "fr": "Téléchargement…",
+    "ru": "Загрузка…",
+    "tr": "İndiriliyor…",
+    "zh": "下载中…"
+  },
+  "form_cache_downloaded": {
+    "de": "Heruntergeladen",
+    "en": "Downloaded",
+    "ar": "تم التنزيل",
+    "es": "Descargado",
+    "fr": "Téléchargé",
+    "ru": "Загружено",
+    "tr": "İndirildi",
+    "zh": "已下载"
   }
 }

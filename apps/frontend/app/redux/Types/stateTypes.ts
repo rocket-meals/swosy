@@ -106,6 +106,7 @@ export type FormState = {
 	filterBy: string;
 	formSubmission: DatabaseTypes.FormSubmissions;
 	formQueue: FormQueueEntry[];
+	cachedSubmissions: Record<string, DatabaseTypes.FormSubmissions[]>;
 }
 
 export type CampusState = {

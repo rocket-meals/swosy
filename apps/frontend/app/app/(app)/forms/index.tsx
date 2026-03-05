@@ -2,25 +2,37 @@ import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
+import { useDispatch } from 'react-redux';
 import { getFromCategoryTranslation } from '@/helper/resourceHelper';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FormsHelper } from '@/redux/actions/Forms/Forms';
+import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { useLanguage } from '@/hooks/useLanguage';
+import { SET_CACHED_FORM_DATA } from '@/redux/Types/types';
+
+const CACHED_COLOR = '#22c55e';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form);
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
+	const [downloadingIds, setDownloadingIds] = useState<Set<string>>(new Set());
+	const [isDownloadingAll, setIsDownloadingAll] = useState(false);
     const { category_id } = useLocalSearchParams();
     const { language } = useAppSelector((state) => state.settings);
     const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);
 	const formsHelper = new FormsHelper();
+	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const { cachedSubmissions } = useAppSelector((state) => state.form);
 
 	const getAllForms = async () => {
 		setLoading(true);
@@ -31,6 +43,36 @@ const Index = () => {
 			setLoading(false);
 			setForms(result);
 		}
+	};
+
+	const downloadFormDrafts = async (formId: string) => {
+		setDownloadingIds(prev => new Set(prev).add(formId));
+		try {
+			const result = (await formsSubmissionsHelper.fetchFormSubmissions({
+				form: formId,
+				state: 'draft',
+				limit: -1,
+			})) as DatabaseTypes.FormSubmissions[];
+			dispatch({
+				type: SET_CACHED_FORM_DATA,
+				payload: { form_id: formId, submissions: result || [] },
+			});
+		} catch {
+			// keep any previously cached data unchanged
+		} finally {
+			setDownloadingIds(prev => {
+				const next = new Set(prev);
+				next.delete(formId);
+				return next;
+			});
+		}
+	};
+
+	const downloadAllDrafts = async () => {
+		if (!forms || forms.length === 0 || isDownloadingAll) return;
+		setIsDownloadingAll(true);
+		await Promise.allSettled(forms.map(form => downloadFormDrafts(String(form.id))));
+		setIsDownloadingAll(false);
 	};
 
 	useFocusEffect(
@@ -56,6 +98,30 @@ const Index = () => {
 					width: screenWidth > 600 ? '80%' : '90%',
 				}}
 			>
+				<TouchableOpacity
+					onPress={downloadAllDrafts}
+					disabled={isDownloadingAll || loading}
+					style={{
+						flexDirection: 'row',
+						alignItems: 'center',
+						alignSelf: 'flex-end',
+						gap: 6,
+						paddingVertical: 8,
+						paddingHorizontal: 14,
+						borderRadius: 20,
+						backgroundColor: theme.screen.iconBg,
+						marginBottom: 6,
+					}}
+				>
+					{isDownloadingAll ? (
+						<ActivityIndicator size={18} color={theme.screen.icon} />
+					) : (
+						<MaterialCommunityIcons name="download" size={20} color={theme.screen.icon} />
+					)}
+					<Text style={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 14 }}>
+						{isDownloadingAll ? translate(TranslationKeys.form_cache_downloading) : translate(TranslationKeys.form_cache_download)}
+					</Text>
+				</TouchableOpacity>
 				{loading ? (
 					<View
 						style={{
@@ -80,6 +146,9 @@ const Index = () => {
 										iconName = name;
 									}
 								}
+								const formId = String(form?.id);
+								const isCached = !!(cachedSubmissions && cachedSubmissions[formId]);
+								const isThisDownloading = downloadingIds.has(formId);
 								return (
 									<TouchableOpacity
 										style={{
@@ -98,7 +167,14 @@ const Index = () => {
 											{IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
 											<Text style={{ ...styles.body, color: theme.screen.text }}>{form?.translations ? getFromCategoryTranslation(form?.translations, language) : form?.alias}</Text>
 										</View>
-										<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+										<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+											{isThisDownloading ? (
+												<ActivityIndicator size={16} color={CACHED_COLOR} />
+											) : isCached ? (
+												<MaterialCommunityIcons name="check-circle" size={18} color={CACHED_COLOR} />
+											) : null}
+											<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+										</View>
 									</TouchableOpacity>
 								);
 							})}
