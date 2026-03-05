@@ -1070,6 +1070,7 @@ export type FoodoffersComponents = {
 };
 
 export type FoodoffersInfoItems = {
+  alias?: string | null;
   canteen?: string | Canteens | null;
   date_created?: string | null;
   date_updated?: string | null;
