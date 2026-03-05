@@ -1080,6 +1080,13 @@ export type FoodoffersInfoItems = {
   name?: string | AppElements | null;
   placement?: string | null;
   show_only_when_no_foodoffers_found?: boolean | null;
+  show_on_mondays?: boolean | null;
+  show_on_tuesdays?: boolean | null;
+  show_on_wednesdays?: boolean | null;
+  show_on_thursdays?: boolean | null;
+  show_on_fridays?: boolean | null;
+  show_on_saturdays?: boolean | null;
+  show_on_sundays?: boolean | null;
   sort?: number | null;
   status: string;
   user_created?: string | DirectusUsers | null;
