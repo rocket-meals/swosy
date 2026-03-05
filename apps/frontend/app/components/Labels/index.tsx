@@ -14,6 +14,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -53,6 +54,9 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	// State for marking groups
 	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
 
+	// State for foodoffer components
+	const [foodofferComponents, setFoodofferComponents] = useState<any[]>([]);
+
 	// Fetch marking groups
 	useEffect(() => {
 		const fetchMarkingGroups = async () => {
@@ -69,6 +73,23 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 
 		fetchMarkingGroups();
 	}, []);
+
+	// Fetch foodoffer components when offerId is available
+	useEffect(() => {
+		if (!offerId) return;
+		const fetchComponents = async () => {
+			try {
+				const result = await fetchFoodofferComponentsById(offerId);
+				const components = result?.data?.foodoffer_components;
+				if (components) {
+					setFoodofferComponents(components);
+				}
+			} catch (error) {
+				console.error('Error fetching foodoffer components:', error);
+			}
+		};
+		fetchComponents();
+	}, [offerId]);
 
 	const mappedFoodOfferMarkings = useMemo(() => {
 		const offerMarkings = foodOfferDetails?.markings ?? foodOffer?.markings;
@@ -90,6 +111,12 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			{foodMarkings?.map((marking: DatabaseTypes.Markings) => (
 				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
 			))}
+
+			<DebugView title="Foodoffer Components" isVisible={isDevMode}>
+				<Text style={{ ...styles.body, color: theme.screen.text }}>
+					{JSON.stringify(foodofferComponents, null, 2)}
+				</Text>
+			</DebugView>
 
 			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
 				<Text style={{ ...styles.body, color: theme.screen.text }}>

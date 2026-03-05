@@ -169,6 +169,20 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 	}
 };
 
+export const fetchFoodofferComponentsById = async (id: string) => {
+	try {
+		const response = await fetchWithRetry(`/items/foodoffers/${id}`, {
+			params: {
+				fields: 'foodoffer_components.component_foodoffers_id.*,foodoffer_components.component_foodoffers_id.markings.*',
+				limit: -1,
+			},
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error('Error fetching Foodoffer Components');
+	}
+};
+
 export const fetchNextFoodOfferByFoodAndCanteen = async (foodId: string, canteenId: string) => {
 	try {
 		const today = new Date().toISOString().split('T')[0];
