@@ -1,15 +1,16 @@
 import React, { useCallback } from 'react';
-import { useModal } from '@/components/GlobalModal/useModal';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import FoodOfferDetailsContent from '@/components/FoodOfferDetailsContent/FoodOfferDetailsContent';
 
 const useFoodOfferDetailsModal = () => {
-    const { show, close } = useModal();
+    const { show, close } = useMyScrollViewModal();
 
     const openFoodOfferDetailsModal = useCallback((offerId?: string, foodId?: string) => {
-        show(
-            <FoodOfferDetailsContent offerId={offerId} foodId={foodId} />,
-        );
-    }, [show]);
+        show({
+            onClose: close,
+            children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} />,
+        });
+    }, [show, close]);
 
     return { openFoodOfferDetailsModal, closeFoodOfferDetailsModal: close };
 };
