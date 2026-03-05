@@ -6,6 +6,7 @@ import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
 import DebugView from '@/components/DebugView';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
+import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
 import { createSelector } from 'reselect';
@@ -140,18 +141,14 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				return (
 					<View key={componentFoodoffer?.id}>
 						<SettingsGroupTitle>{componentName}</SettingsGroupTitle>
-						{componentMarkingIds.map((markingId: string) => (
-							<MarkingLabels key={markingId} markingId={markingId} handleMenuSheet={handleMenuSheet} />
-						))}
+						<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
 					</View>
 				);
 			})}
 			{globalMarkingIds.length > 0 && (
 				<View>
 					<SettingsGroupTitle>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
-					{globalMarkingIds.map((markingId: string) => (
-						<MarkingLabels key={markingId} markingId={markingId} handleMenuSheet={handleMenuSheet} />
-					))}
+					<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
 				</View>
 			)}
 		</DebugView>
