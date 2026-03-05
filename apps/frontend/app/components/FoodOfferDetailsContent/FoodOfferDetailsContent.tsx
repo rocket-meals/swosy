@@ -14,9 +14,7 @@ import { useDispatch, shallowEqual } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
-import MarkingBottomSheet from '@/components/MarkingBottomSheet';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
+import { MarkingContent } from '@/components/MarkingBottomSheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
@@ -37,6 +35,7 @@ import { useFoodDetails } from '@/app/(app)/foodoffers/details/hooks/useFoodDeta
 import { useFoodAttributes } from '@/app/(app)/foodoffers/details/hooks/useFoodAttributes';
 import { fetchFoodDetailsById, fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import styles from '@/app/(app)/foodoffers/details/styles';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 export interface FoodOfferDetailsContentProps {
     offerId?: string;
@@ -52,8 +51,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     const dispatch = useDispatch();
     const { width: screenWidth } = useWindowDimensions();
 
-    const menuSheetRef = useRef<BottomSheet>(null);
-    const notificationSheetRef = useRef<BottomSheet>(null);
+    const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
     const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
     const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
@@ -111,20 +109,16 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
     }, [offerId, initialFoodId]);
 
     const openNotificationSheet = useCallback(() => {
-        notificationSheetRef?.current?.expand();
-    }, []);
-
-    const closeNotificationSheet = useCallback(() => {
-        notificationSheetRef?.current?.close();
-    }, []);
+        showModal({
+            children: <NotificationSheet closeSheet={closeModal} previousFeedback={previousFeedback} foodDetails={foodDetails} />,
+        });
+    }, [showModal, closeModal, previousFeedback, foodDetails]);
 
     const openMenuSheet = useCallback(() => {
-        menuSheetRef?.current?.expand();
-    }, []);
-
-    const closeMenuSheet = useCallback(() => {
-        menuSheetRef?.current?.close();
-    }, []);
+        showModal({
+            children: <MarkingContent />,
+        });
+    }, [showModal]);
 
     const openFullScreenImage = useCallback(() => {
         if (foodDetails?.image_remote_url) {
@@ -384,22 +378,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                 </View>
                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
             </ScrollView>
-
-            <BaseBottomSheet
-                    ref={notificationSheetRef}
-                    index={-1}
-                    backgroundStyle={{
-                        ...styles.sheetBackground,
-                        backgroundColor: theme.sheet.sheetBg,
-                    }}
-                    enablePanDownToClose
-                    handleComponent={null}
-                    onClose={closeNotificationSheet}
-                >
-                    <NotificationSheet closeSheet={closeNotificationSheet} previousFeedback={previousFeedback} foodDetails={foodDetails} />
-                </BaseBottomSheet>
-
-            <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
         </View>
     );
 };
