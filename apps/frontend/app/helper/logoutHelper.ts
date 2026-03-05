@@ -24,9 +24,7 @@ import { clearChatReadStatus } from '@/helper/chatReadStatus';
 
 export const performLogout = async (
 	dispatch: Dispatch,
-	router: {
-		replace: (args: { pathname: string; params?: Record<string, string> }) => void;
-	}
+	router: any
 ) => {
 	try {
 		dispatch({ type: ON_LOGOUT });

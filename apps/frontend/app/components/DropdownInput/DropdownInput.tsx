@@ -8,8 +8,7 @@ import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DropdownSheet from './DropdownSheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { useAppSelector } from '@/redux/hooks';
 
 const ensureStringArray = (options: string[]): string[] => {
 	const uniqueValues = new Set<string>();
@@ -39,7 +38,7 @@ type DropdownInputProps = {
 const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true, onOpenSheet, onCloseSheet }: DropdownInputProps) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useSelector((state: RootState) => state.settings);
+	const { primaryColor } = useAppSelector(state => state.settings);
 
 	const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);
 

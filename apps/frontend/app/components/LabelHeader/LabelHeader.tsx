@@ -1,16 +1,16 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import CompanyImage from '@/components/CompanyImage';
-import { RootState } from '@/redux/reducer';
+
 
 const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, isConnected = true }) => {
 	const { theme } = useTheme();
 	const [currentTime, setCurrentTime] = useState('');
 	const [logoStyle, setLogoStyle] = useState(styles.logo);
 	const { width } = Dimensions.get('window');
-	const { appSettings } = useSelector((state: RootState) => state.settings);
+	const { appSettings } = useAppSelector(state => state.settings);
 	const updateLogoStyle = useCallback(() => {
 		setLogoStyle({
 			width: width < 600 ? 150 : 300,

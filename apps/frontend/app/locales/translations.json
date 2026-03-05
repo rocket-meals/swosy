@@ -609,6 +609,16 @@
     "tr": "Yorumu kaydet",
     "zh": "保存评论"
   },
+  "write_a_comment": {
+    "de": "Schreibe einen Kommentar",
+    "en": "Write a comment",
+    "ar": "اكتب تعليقاً",
+    "es": "Escribe un comentario",
+    "fr": "Écrire un commentaire",
+    "ru": "Напишите комментарий",
+    "tr": "Bir yorum yaz",
+    "zh": "写一条评论"
+  },
   "delete_comment": {
     "de": "Kommentar löschen",
     "en": "Delete Comment",
@@ -4783,6 +4793,26 @@
     "tr": "Game Ideas",
     "zh": "Game Ideas"
   },
+  "last_offered_in_canteen": {
+    "de": "Zuletzt angeboten",
+    "en": "Last offered",
+    "ar": "Last offered",
+    "es": "Last offered",
+    "fr": "Last offered",
+    "ru": "Last offered",
+    "tr": "Last offered",
+    "zh": "Last offered"
+  },
+  "food_wishlist": {
+    "de": "Speisen-Wunschliste",
+    "en": "Food Wishlist",
+    "ar": "Food Wishlist",
+    "es": "Food Wishlist",
+    "fr": "Food Wishlist",
+    "ru": "Food Wishlist",
+    "tr": "Food Wishlist",
+    "zh": "Food Wishlist"
+  },
   "guess_better_rated_dish": {
     "de": "Rate, welches Gericht besser bewertet ist",
     "en": "Guess which dish is better rated",
@@ -4962,5 +4992,35 @@
     "ru": "Нажмите для редактирования",
     "tr": "Düzenlemek için dokun",
     "zh": "点击编辑"
+  },
+  "food_wishlist_planned": {
+    "de": "Geplante Speisen",
+    "en": "Planned Foods",
+    "ar": "Planned Foods",
+    "es": "Planned Foods",
+    "fr": "Planned Foods",
+    "ru": "Planned Foods",
+    "tr": "Planned Foods",
+    "zh": "Planned Foods"
+  },
+  "food_wishlist_not_planned": {
+    "de": "Aktuell nicht geplante Speisen",
+    "en": "Currently Not Planned Foods",
+    "ar": "Currently Not Planned Foods",
+    "es": "Currently Not Planned Foods",
+    "fr": "Currently Not Planned Foods",
+    "ru": "Currently Not Planned Foods",
+    "tr": "Currently Not Planned Foods",
+    "zh": "Currently Not Planned Foods"
+  },
+  "offered_on": {
+    "de": "Angeboten am",
+    "en": "Offered on",
+    "ar": "Offered on",
+    "es": "Offered on",
+    "fr": "Offered on",
+    "ru": "Offered on",
+    "tr": "Offered on",
+    "zh": "Offered on"
   }
 }

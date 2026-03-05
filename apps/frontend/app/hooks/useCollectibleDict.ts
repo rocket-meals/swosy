@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 
-import { RootState } from '@/redux/reducer';
 import { SET_COLLECTIBLE_EVENT_DICT } from '@/redux/Types/types';
 
 const useCollectibleDict = (eventId?: string) => {
         const dispatch = useDispatch();
-        const { collectibleEventsDict = {} } = useSelector((state: RootState) => state.collectibleEvents ?? {});
+        const { collectibleEventsDict = {} } = useAppSelector((state) => state.collectibleEvents ?? {});
 
         const collectibleDict = useMemo(
                 () => (eventId && collectibleEventsDict ? collectibleEventsDict[eventId] ?? {} : {}),

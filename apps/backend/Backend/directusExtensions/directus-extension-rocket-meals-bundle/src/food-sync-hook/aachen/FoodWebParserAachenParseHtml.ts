@@ -224,6 +224,7 @@ export class FoodWebParserAachenParseHtml {
       date: date,
       canteen_external_identifier: context.canteenName,
       food_id: FoodWebParserAachenParseHtml.generateRecipeId(basicFoodofferData, markingExternalIdentifiers),
+      components: [],
     };
   }
 

@@ -110,6 +110,11 @@
       },
       {
         "type": "hook",
+        "name": "foodoffers-components-hook",
+        "source": "src/foodoffers-components-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-image-ai-generation-hook",
         "source": "src/food-image-ai-generation-hook/index.ts"
       },

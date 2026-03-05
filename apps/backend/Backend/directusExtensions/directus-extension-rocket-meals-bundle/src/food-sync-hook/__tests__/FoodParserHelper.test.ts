@@ -21,6 +21,7 @@ const baseFoodofferInformationForParser: FoodoffersTypeForParser = {
   },
   canteen_external_identifier: 'canteen-01',
   food_id: 'food-01',
+  components: [],
 };
 
 function createFoodofferInformationForParser(overrides?: PartialFoodofferForParser): FoodoffersTypeForParser {
@@ -38,6 +39,7 @@ function createFoodofferInformationForParser(overrides?: PartialFoodofferForPars
     canteen_external_identifier:
       overrides?.canteen_external_identifier ?? baseFoodofferInformationForParser.canteen_external_identifier,
     food_id: overrides?.food_id ?? baseFoodofferInformationForParser.food_id,
+    components: overrides?.components ?? [...baseFoodofferInformationForParser.components],
   };
 }
 

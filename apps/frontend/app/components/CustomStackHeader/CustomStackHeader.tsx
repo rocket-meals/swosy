@@ -6,20 +6,21 @@ import { Ionicons } from '@expo/vector-icons';
 import styles from './styles';
 import { CustomStackHeaderProps } from './types';
 import { usePathname, useRouter } from 'expo-router';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { excerpt } from '@/constants/HelperFunctions';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
+
 import { AppScreens } from 'repo-depkit-common';
+import IconButton from '../UI/IconButton';
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const router = useRouter();
 	const pathname = usePathname();
-	const { loggedIn } = useSelector((state: RootState) => state.authReducer);
+	const { loggedIn } = useAppSelector(state => state.authReducer);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const handleGoback = () => {
@@ -85,7 +86,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 					<Tooltip
 						placement="top"
 						trigger={triggerProps => (
-							<TouchableOpacity {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
+							<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
 								<Ionicons name="arrow-back" size={26} color={theme.header.text} />
 							</TouchableOpacity>
 						)}

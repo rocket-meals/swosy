@@ -1,15 +1,14 @@
 import { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 
-import { RootState } from '@/redux/reducer';
 
 export const getChatTimestamp = (chat: DatabaseTypes.Chats): string | null => {
         return chat?.date_updated || chat?.date_created || null;
 };
 
 const useChatUnreadStatus = () => {
-        const { chats = [], readStatus = {} } = useSelector((state: RootState) => state.chats ?? {});
+        const { chats = [], readStatus = {} } = useAppSelector((state) => state.chats ?? {});
 
         const readStatusMap = readStatus ?? {};
 

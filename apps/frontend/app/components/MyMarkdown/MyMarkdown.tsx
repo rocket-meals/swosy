@@ -4,7 +4,7 @@ import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-ico
 import MarkdownIt from 'markdown-it';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import RenderHtml, { CustomBlockRenderer, CustomMixedRenderer, CustomTextualRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -31,7 +31,7 @@ export const replaceLinebreaks = (sourceContent: string) => {
 };
 
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
-	const { primaryColor, selectedTheme } = useSelector((state: RootState) => state.settings);
+	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
 
 	const colorScheme = Appearance.getColorScheme();
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;
@@ -52,15 +52,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 	const textColor = textColorProp ?? theme.sheet.text;
 	const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 
-	const tagsStyles = {
-		blockquote: { fontStyle: 'italic' },
-		td: { borderColor: 'gray', borderWidth: 1 },
-		th: { borderColor: 'gray', borderWidth: 1 },
-		a: { color: textColor },
-		p: { marginTop: 0, marginBottom: 14 },
-	} as const;
-
-	const customHTMLElementModels = {
+	const customHTMLElementModels = React.useMemo(() => ({
 		sub: HTMLElementModel.fromCustomModel({
 			tagName: 'sub',
 			contentModel: HTMLContentModel.textual,
@@ -69,16 +61,27 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 			tagName: 'sup',
 			contentModel: HTMLContentModel.textual,
 		}),
-	};
+	}), []);
 
-	const defaultTextProps = {
-		selectable: true,
+	const baseStyle = React.useMemo(() => ({
 		color: textColor,
 		fontSize,
-		fontStyle: 'normal',
-	};
+		fontStyle: 'normal' as const,
+	}), [textColor, fontSize]);
 
-	const customRenderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {
+	const defaultTextProps = React.useMemo(() => ({
+		selectable: true,
+	}), []);
+
+	const tagsStyles = React.useMemo(() => ({
+		blockquote: { fontStyle: 'italic' } as const,
+		td: { borderColor: 'gray', borderWidth: 1 } as const,
+		th: { borderColor: 'gray', borderWidth: 1 } as const,
+		a: { color: textColor } as const,
+	}), [textColor]);
+
+	const customRenderers = React.useMemo(() => {
+		const renderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {
 		a: (props: any) => {
 			const { href } = props.tnode.attributes;
 			const { data } = props.tnode;
@@ -118,21 +121,22 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		sub: (props: any) => {
 			const { data } = props.tnode;
 			const text = data || props.children[0]?.data;
-			return <Text style={{ fontSize, verticalAlign: 'sub', color: textColor }}>{text}</Text>;
+			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize, textAlignVertical: 'bottom', color: textColor }}>{text}</Text>;
 		},
 		sup: (props: any) => {
 			const { data } = props.tnode;
 			const text = data || props.children[0]?.data;
-			return <Text style={{ fontSize, verticalAlign: 'super', color: textColor }}>{text}</Text>;
+			return <Text style={{ fontSize: fontSize * 0.8, lineHeight: fontSize * 1.5, textAlignVertical: 'top', color: textColor }}>{text}</Text>;
 		},
 	};
+	return renderers;
+}, [textColor, fontSize, contrastColor]);
 
 	return (
 		<View>
 			<RenderHtml
 				contentWidth={width}
-				// @ts-ignore
-				baseStyle={defaultTextProps}
+				baseStyle={baseStyle}
 				renderers={customRenderers}
 				defaultTextProps={defaultTextProps}
 				customHTMLElementModels={customHTMLElementModels}

@@ -65,7 +65,6 @@ export default StyleSheet.create({
         categoryLogo: {
                 width: 35,
                 height: 35,
-                resizeMode: 'cover',
         },
 	foodName: {
 		fontSize: 16,
@@ -111,5 +110,9 @@ export default StyleSheet.create({
                 fontFamily: 'Poppins_700Bold',
                 textTransform: 'uppercase',
                 textAlign: 'center',
+        },
+        foodNameContainer: {
+            minHeight: 52,
+            justifyContent: 'center',
         },
 });

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { CampusSortOption } from 'repo-depkit-common';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -14,7 +15,7 @@ import { SET_CAMPUSES_SORTING } from '@/redux/Types/types';
 const CampusSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { campusesSortBy, primaryColor: projectColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const { campusesSortBy, primaryColor: projectColor, appSettings } = useAppSelector((state) => state.settings);
 	const [selectedOption, setSelectedOption] = useState<CampusSortOption | null>(null);
 	const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : projectColor;
 

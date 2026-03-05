@@ -3,13 +3,12 @@ import React from 'react';
 import { styles } from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
-import { RootState } from '@/redux/reducer';
 
 const Footer = () => {
 	const { theme } = useTheme();
-	const { wikis, language } = useSelector((state: RootState) => state.settings);
+	const { wikis, language } = useAppSelector(state => state.settings);
 
 	return (
 		<View style={styles.footer}>

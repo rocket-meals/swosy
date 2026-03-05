@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 
-import { RootState } from '@/redux/reducer';
 
 export const isCollectibleEventActive = (
         event?: DatabaseTypes.CollectibleEvents,
@@ -35,7 +34,7 @@ export const isCollectibleEventActive = (
 };
 
 const useActiveCollectibleEvent = () => {
-        const { collectibleEvents = [] } = useSelector((state: RootState) => state.collectibleEvents ?? {});
+        const { collectibleEvents = [] } = useAppSelector((state) => state.collectibleEvents ?? {});
 
         const activeCollectibleEvent = useMemo(
                 () => collectibleEvents.find(event => isCollectibleEventActive(event)),

@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
 import { MarkingLabelProps } from './types';
 
 import { SET_MARKING_DETAILS, UPDATE_PROFILE } from '@/redux/Types/types';
@@ -25,11 +26,14 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
-	const { primaryColor, language, appSettings } = useSelector((state: RootState) => state.settings);
+	const primaryColor = useAppSelector(state => state.settings.primaryColor);
+	const language = useAppSelector(state => state.settings.language);
+	const appSettings = useAppSelector(state => state.settings.appSettings);
 
-	const { user, profile } = useSelector((state: RootState) => state.authReducer);
+	const user = useAppSelector(state => state.authReducer.user);
+	const profile = useAppSelector(state => state.authReducer.profile);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const { markings } = useSelector((state: RootState) => state.food);
+	const markings = useAppSelector(state => state.food.markings);
 	const marking = markings?.find((mark: any) => mark.id === markingId);
 	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
 	const [likeLoading, setLikeLoading] = useState(false);

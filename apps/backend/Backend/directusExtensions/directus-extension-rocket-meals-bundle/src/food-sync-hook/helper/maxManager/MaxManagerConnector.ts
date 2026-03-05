@@ -484,7 +484,8 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                             category_external_identifier: null,
                             date: foodofferDate,
                             canteen_external_identifier: canteenId+"",
-                            food_id: food_id
+                            food_id: food_id,
+                            components: [],
                         }
 
                         foodoffers.push(foodoffer);

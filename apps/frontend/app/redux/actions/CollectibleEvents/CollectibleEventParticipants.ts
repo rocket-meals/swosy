@@ -5,7 +5,7 @@ import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export class CollectibleEventParticipantsHelper extends CollectionHelper<DatabaseTypes.CollectibleEventParticipants> {
         constructor(client?: any) {
-                super('collectible_event_participants', client || ServerAPI.getClient());
+                super('collectible_event_participants', client);
         }
 
         async fetchParticipationByProfileAndEvent(profileId: string, eventId: string, queryOverride: any = {}) {
