@@ -5042,5 +5042,85 @@
     "ru": "Offered on",
     "tr": "Offered on",
     "zh": "Offered on"
+  },
+  "form_queue": {
+    "de": "Warteschlange",
+    "en": "Queue",
+    "ar": "قائمة الانتظار",
+    "es": "Cola",
+    "fr": "File d'attente",
+    "ru": "Очередь",
+    "tr": "Kuyruk",
+    "zh": "队列"
+  },
+  "form_queue_empty": {
+    "de": "Keine ausstehenden Formulare in der Warteschlange",
+    "en": "No pending forms in the queue",
+    "ar": "لا توجد نماذج معلقة في قائمة الانتظار",
+    "es": "No hay formularios pendientes en la cola",
+    "fr": "Aucun formulaire en attente dans la file",
+    "ru": "Нет ожидающих форм в очереди",
+    "tr": "Kuyrukta bekleyen form yok",
+    "zh": "队列中没有待处理的表单"
+  },
+  "form_queue_add": {
+    "de": "Zur Warteschlange hinzufügen",
+    "en": "Add to Queue",
+    "ar": "إضافة إلى قائمة الانتظار",
+    "es": "Añadir a la cola",
+    "fr": "Ajouter à la file d'attente",
+    "ru": "Добавить в очередь",
+    "tr": "Kuyruğa ekle",
+    "zh": "添加到队列"
+  },
+  "form_queue_sync": {
+    "de": "Synchronisieren",
+    "en": "Sync",
+    "ar": "مزامنة",
+    "es": "Sincronizar",
+    "fr": "Synchroniser",
+    "ru": "Синхронизировать",
+    "tr": "Senkronize et",
+    "zh": "同步"
+  },
+  "form_queue_sync_all": {
+    "de": "Alle synchronisieren",
+    "en": "Sync All",
+    "ar": "مزامنة الكل",
+    "es": "Sincronizar todo",
+    "fr": "Tout synchroniser",
+    "ru": "Синхронизировать все",
+    "tr": "Hepsini senkronize et",
+    "zh": "全部同步"
+  },
+  "form_queue_added": {
+    "de": "Formular wurde zur Warteschlange hinzugefügt",
+    "en": "Form added to queue",
+    "ar": "تمت إضافة النموذج إلى قائمة الانتظار",
+    "es": "Formulario añadido a la cola",
+    "fr": "Formulaire ajouté à la file d'attente",
+    "ru": "Форма добавлена в очередь",
+    "tr": "Form kuyruğa eklendi",
+    "zh": "表单已添加到队列"
+  },
+  "form_queue_synced": {
+    "de": "Formular erfolgreich synchronisiert",
+    "en": "Form synced successfully",
+    "ar": "تمت مزامنة النموذج بنجاح",
+    "es": "Formulario sincronizado exitosamente",
+    "fr": "Formulaire synchronisé avec succès",
+    "ru": "Форма успешно синхронизирована",
+    "tr": "Form başarıyla senkronize edildi",
+    "zh": "表单已成功同步"
+  },
+  "form_queue_sync_failed": {
+    "de": "Synchronisierung fehlgeschlagen. Formular bleibt in der Warteschlange.",
+    "en": "Sync failed. Form remains in queue.",
+    "ar": "فشلت المزامنة. النموذج يبقى في قائمة الانتظار.",
+    "es": "Sincronización fallida. El formulario permanece en la cola.",
+    "fr": "Synchronisation échouée. Le formulaire reste dans la file.",
+    "ru": "Синхронизация не удалась. Форма остаётся в очереди.",
+    "tr": "Senkronizasyon başarısız. Form kuyrukta kalıyor.",
+    "zh": "同步失败。表单仍在队列中。"
   }
 }

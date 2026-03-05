@@ -35,7 +35,7 @@ import CollectionSelection from '@/components/CollectionSelection/CollectionSele
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { filterOptions } from './constants';
 import EditFormSubmissionSheet from '@/components/EditFormSubmissionSheet/EditFormSubmissionSheet';
-import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
+import { SET_FORM_SUBMISSION, ADD_FORM_QUEUE_ENTRY, REMOVE_FORM_QUEUE_ENTRY } from '@/redux/Types/types';
 import { excerpt, getFileFromDirectus, getFormValueImageUrl, uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
 import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/SubmissionWarningSheet';
 import { format, isValid, parse, parseISO } from 'date-fns';
@@ -119,7 +119,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
-	const { form_submission_id } = useLocalSearchParams();
+	const { form_submission_id, queue_entry_id } = useLocalSearchParams();
 	const formAnswersHelper = new FormAnswersHelper();
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 	const editSheetRef = useRef<BottomSheet>(null);
@@ -132,7 +132,7 @@ const Index = () => {
 	const [collectionData, setCollectionData] = useState<any>([]);
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
-	const { formSubmission } = useAppSelector((state) => state.form);
+	const { formSubmission, formQueue } = useAppSelector((state) => state.form);
 	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
@@ -341,6 +341,16 @@ const Index = () => {
 			});
 
 			setFormData(initialFormData);
+
+			// If opened from queue, override with queued formData
+			if (queue_entry_id) {
+				const queueEntry = (formQueue || []).find((entry: any) => entry.id === queue_entry_id);
+				if (queueEntry) {
+					setFormData({ ...initialFormData, ...queueEntry.formData });
+					setSelectedState(queueEntry.targetState);
+				}
+			}
+
 			setLoading(false);
 		}
 	};
@@ -511,6 +521,30 @@ const Index = () => {
 		return fileId;
 	};
 
+	const handleAddToQueue = () => {
+		const rawFormId = (formSubmission as any)?.form;
+		const form_id = rawFormId ? (typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId)) : '';
+		const alias = String(formSubmission?.alias || form_submission_id || '');
+		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+		const entry = {
+			id: entryId,
+			form_submission_id: String(form_submission_id),
+			form_id,
+			alias,
+			targetState: selectedState,
+			formData,
+			timestamp: new Date().toISOString(),
+		};
+		dispatch({ type: ADD_FORM_QUEUE_ENTRY, payload: entry });
+		toast(translate(TranslationKeys.form_queue_added), 'success');
+		setFormData({});
+		if (router.canGoBack()) {
+			router.back();
+		} else {
+			router.navigate('/form-categories');
+		}
+	};
+
 	const handleFormSubmission = async () => {
 		setSubmissionLoading(true);
 		let hasError = false;
@@ -589,6 +623,11 @@ const Index = () => {
 
 				await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), { state: selectedState });
 
+				// If submitted from queue, remove the queue entry
+				if (queue_entry_id) {
+					dispatch({ type: REMOVE_FORM_QUEUE_ENTRY, payload: String(queue_entry_id) });
+				}
+
 				setSubmissionLoading(false);
 				setFormData({});
 				if (router.canGoBack()) {
@@ -600,9 +639,8 @@ const Index = () => {
 				console.error('Error updating form answers:', error);
 				const errorMessage = error instanceof Error ? error.message : String(error);
 				toast(errorMessage || 'An error occurred while updating form answers', 'error');
-			} finally {
 				setSubmissionLoading(false);
-				setFormData({});
+				handleAddToQueue();
 			}
 		} else {
 			setSubmissionLoading(false);
