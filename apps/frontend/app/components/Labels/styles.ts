@@ -14,8 +14,4 @@ export default StyleSheet.create({
 		fontFamily: 'Poppins_400Regular',
 		marginTop: 20,
 	},
-	attributeList: {
-		width: '100%',
-		gap: 0,
-	},
 });

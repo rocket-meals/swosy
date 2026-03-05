@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Linking, Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -15,7 +15,6 @@ import { RootState } from '@/redux/reducer';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
-import AttributeItem from '@/components/Details/AttributeItem';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -57,7 +56,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 
 	// State for foodoffer components
 	const [foodofferComponents, setFoodofferComponents] = useState<any[]>([]);
-	const [componentsLoading, setComponentsLoading] = useState(false);
 
 	// Fetch marking groups
 	useEffect(() => {
@@ -80,7 +78,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	useEffect(() => {
 		if (!offerId) return;
 		const fetchComponents = async () => {
-			setComponentsLoading(true);
 			try {
 				const result = await fetchFoodofferComponentsById(offerId);
 				const components = result?.data?.foodoffer_components;
@@ -89,8 +86,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				}
 			} catch (error) {
 				console.error('Error fetching foodoffer components:', error);
-			} finally {
-				setComponentsLoading(false);
 			}
 		};
 		fetchComponents();
@@ -109,12 +104,6 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
 	}, [mappedFoodOfferMarkings, markingGroups]);
 
-	const componentItems = useMemo(() => {
-		return foodofferComponents
-			?.map(junction => junction?.component_foodoffers_id)
-			?.filter((c: any) => !!c?.alias) ?? [];
-	}, [foodofferComponents]);
-
 	return (
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
@@ -123,43 +112,11 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
 			))}
 
-			{offerId && (
-				<View>
-					<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.foodoffer_components_label)}</Text>
-					{componentsLoading ? (
-						<ActivityIndicator size={30} color={theme.screen.text} />
-					) : (
-						componentItems.length > 0 && (
-							<View style={styles.attributeList}>
-								{componentItems.map((component: any, index: number) => {
-									const groupPosition =
-										componentItems.length === 1
-											? 'single'
-											: index === 0
-												? 'top'
-												: index === componentItems.length - 1
-													? 'bottom'
-													: 'middle';
-									return (
-										<AttributeItem
-											key={component?.id ?? `component-${index}`}
-											attr={{
-												id: component?.id ?? `component-${index}`,
-												string_value: component?.alias,
-												food_attribute: {
-													status: 'published',
-													translations: [],
-												},
-											}}
-											groupPosition={groupPosition}
-										/>
-									);
-								})}
-							</View>
-						)
-					)}
-				</View>
-			)}
+			<DebugView title="Foodoffer Components" isVisible={isDevMode}>
+				<Text style={{ ...styles.body, color: theme.screen.text }}>
+					{JSON.stringify(foodofferComponents, null, 2)}
+				</Text>
+			</DebugView>
 
 			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
