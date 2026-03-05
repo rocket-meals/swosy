@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -175,39 +175,41 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	);
 
 	const leftIconComponent = (
-		<Tooltip
-			placement="top"
-			trigger={triggerProps =>
-				handleMenuSheet ? (
-					<Pressable
-						{...triggerProps}
-						onPress={() => openMarkingLabel(marking)}
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-					>
-						<MarkingIcon marking={marking} size={size} />
-					</Pressable>
-				) : (
-					<Pressable
-						{...triggerProps}
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-					>
-						<MarkingIcon marking={marking} size={size} />
-					</Pressable>
-				)
-			}
-		>
-			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-				<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-					{`${markingText}`}
-				</TooltipText>
-			</TooltipContent>
-		</Tooltip>
+		<View style={styles.leftIconWrapper}>
+			<Tooltip
+				placement="top"
+				trigger={triggerProps =>
+					handleMenuSheet ? (
+						<Pressable
+							{...triggerProps}
+							onPress={() => openMarkingLabel(marking)}
+							onHoverIn={() => setShowTooltip(true)}
+							onHoverOut={() => setShowTooltip(false)}
+						>
+							<MarkingIcon marking={marking} size={size} />
+						</Pressable>
+					) : (
+						<Pressable
+							{...triggerProps}
+							onHoverIn={() => setShowTooltip(true)}
+							onHoverOut={() => setShowTooltip(false)}
+						>
+							<MarkingIcon marking={marking} size={size} />
+						</Pressable>
+					)
+				}
+			>
+				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+						{`${markingText}`}
+					</TooltipText>
+				</TooltipContent>
+			</Tooltip>
+		</View>
 	);
 
 	const rightElement = (
-		<>
+		<View style={styles.rightRow}>
 			<Tooltip
 				placement="top"
 				trigger={triggerProps => (
@@ -265,7 +267,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 				</TooltipContent>
 			</Tooltip>
 			<PermissionModal isVisible={warning} setIsVisible={setWarning} />
-		</>
+		</View>
 	);
 
 	return (
@@ -279,3 +281,13 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 };
 
 export default SettingsListMarkingLabel;
+
+const styles = StyleSheet.create({
+	leftIconWrapper: {
+		marginRight: 10,
+	},
+	rightRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+});
