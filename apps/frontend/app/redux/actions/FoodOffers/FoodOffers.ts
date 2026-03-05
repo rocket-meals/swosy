@@ -151,7 +151,7 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 	try {
 		const response = await fetchWithRetry(`/items/foodoffers/${id}`, {
 			params: {
-				fields: '*, markings.*,feedbacks.*,food.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*,foodoffer_components.component_foodoffers_id.*,foodoffer_components.component_foodoffers_id.markings.*',
+				fields: '*, markings.*,feedbacks.*,food.*,food.translations.*,food.food_category.*,food.food_category.translations.*,foodoffer_category.*,foodoffer_category.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
 				limit: -1,
 				deep: {
 					feedbacks: {
@@ -166,6 +166,20 @@ export const fetchFoodOffersDetailsById = async (id: string) => {
 		return response.data;
 	} catch (error) {
 		throw new Error('Error fetching Food Offers');
+	}
+};
+
+export const fetchFoodofferComponentsById = async (id: string) => {
+	try {
+		const response = await fetchWithRetry(`/items/foodoffers/${id}`, {
+			params: {
+				fields: 'foodoffer_components.component_foodoffers_id.*,foodoffer_components.component_foodoffers_id.markings.*',
+				limit: -1,
+			},
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error('Error fetching Foodoffer Components');
 	}
 };
 
