@@ -8,6 +8,7 @@ const useFoodOfferDetailsModal = () => {
     const openFoodOfferDetailsModal = useCallback((offerId?: string, foodId?: string) => {
         show({
             children: <FoodOfferDetailsContent offerId={offerId} foodId={foodId} />,
+            disableHorizontalPadding: true,
         });
     }, [show]);
 
