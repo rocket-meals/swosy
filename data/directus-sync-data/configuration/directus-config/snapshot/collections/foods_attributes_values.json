@@ -11,7 +11,7 @@
     "display_template": null,
     "group": "foods_attributes",
     "hidden": false,
-    "icon": null,
+    "icon": "label",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,

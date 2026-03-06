@@ -11,14 +11,19 @@
     "display_template": null,
     "group": "canteens_feedbacks_labels",
     "hidden": false,
-    "icon": null,
+    "icon": "sell",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
     "sort": 2,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Mensa Feedbackeinträge"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

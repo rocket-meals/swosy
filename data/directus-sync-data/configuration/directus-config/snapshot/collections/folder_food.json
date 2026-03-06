@@ -1,35 +1,30 @@
 {
-  "collection": "forms",
+  "collection": "folder_food",
   "meta": {
     "accountability": "all",
     "archive_app_filter": true,
-    "archive_field": "status",
-    "archive_value": "archived",
+    "archive_field": null,
+    "archive_value": null,
     "collapse": "closed",
-    "collection": "forms",
+    "collection": "folder_food",
     "color": null,
     "display_template": null,
     "group": null,
     "hidden": false,
-    "icon": "assignment",
+    "icon": "restaurant",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 7,
-    "sort_field": "sort",
+    "sort": 1,
+    "sort_field": null,
     "translations": [
       {
         "language": "de-DE",
-        "plural": "Formulare",
-        "singular": "Formular",
-        "translation": "Formulare"
+        "translation": "Essen"
       }
     ],
-    "unarchive_value": "draft",
+    "unarchive_value": null,
     "versioning": false
-  },
-  "schema": {
-    "name": "forms"
   }
 }

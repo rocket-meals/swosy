@@ -11,7 +11,7 @@
     "display_template": null,
     "group": "cashregisters",
     "hidden": false,
-    "icon": null,
+    "icon": "receipt_long",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
