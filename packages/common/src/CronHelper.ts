@@ -92,4 +92,13 @@ export class CronHelper {
     month: '*',
     dayOfWeek: '*',
   }
+
+  static EVERY_FRIDAY_AT_8AM: CronObject = {
+    seconds: 0,
+    minutes: 0,
+    hours: 8,
+    dayOfMonth: '*',
+    month: '*',
+    dayOfWeek: 5,
+  };
 }
