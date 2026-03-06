@@ -152,7 +152,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			})}
 			{globalMarkingIds.length > 0 && (
 				<View>
-					<SettingsGroupTitle>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
+					<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
 					<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
 				</View>
 			)}
