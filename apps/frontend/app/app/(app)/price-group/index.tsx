@@ -95,7 +95,7 @@ const Index = () => {
 			if (isRegisteredUser) {
 				const result = (await profileHelper.updateProfile(payload)) as DatabaseTypes.Profiles;
 				if (result) {
-					dispatch({ type: UPDATE_PROFILE, payload });
+					dispatch({ type: UPDATE_PROFILE, payload: result });
 				}
 			} else {
 				dispatch({ type: UPDATE_PROFILE, payload });
@@ -103,6 +103,7 @@ const Index = () => {
 			setLoading(false);
 		} catch (error) {
 			console.error('Error updating profile:', error);
+			setSelectedOption(profile?.price_group || PriceGroupKey.student);
 			setLoading(false);
 		}
 	};
