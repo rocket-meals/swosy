@@ -79,7 +79,7 @@ export class FormHelper {
 
     formExtractRelevantInformation.push(this.addFormField({
       alias: 'IBAN',
-      data: { value_string: 'DE02202208000051066366' }, // example iban
+      data: { value_string: 'DE89370400440532013000' }, // example iban (DE89 3704 0044 0532 0130 00)
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT,
       form_submission_id: form_submission_id,
       index: index++
@@ -328,8 +328,8 @@ export class FormHelper {
   /** Base style shared by every IBAN/BIC character box (no top border = open top). */
   private static readonly BANK_ACCOUNT_BOX_BASE_STYLE =
     'display:inline-block; border-bottom:1px solid #555; border-left:1px solid #555;' +
-    ' width:18px; height:22px; text-align:center; font-family:monospace; font-size:12px;' +
-    ' line-height:22px; margin:0; vertical-align:bottom;';
+    ' width:14px; height:18px; text-align:center; font-family:monospace; font-size:11px;' +
+    ' line-height:18px; margin:0; vertical-align:bottom;';
 
   /** Extra style appended to the last box in each group to close the right side. */
   private static readonly BANK_ACCOUNT_BOX_RIGHT_BORDER = 'border-right:1px solid #555;';
