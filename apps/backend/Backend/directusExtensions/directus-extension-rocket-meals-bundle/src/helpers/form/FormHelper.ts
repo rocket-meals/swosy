@@ -346,16 +346,18 @@ export class FormHelper {
   /**
    * Renders a bank-account string (IBAN or BIC) as a row of bordered single-
    * character boxes, grouped in fours to match printed form conventions.
+   * Only as many boxes as there are characters are rendered.
    * Each box has no top border (open top). Boxes within a group share borders
    * (collapsed) for a connected look; groups are separated by a small gap.
    */
-  private static generateBankAccountBoxesHtml(value: string, maxBoxes: number): string {
+  private static generateBankAccountBoxesHtml(value: string): string {
     const cleaned = value.replace(/\s/g, '').toUpperCase();
+    const total = cleaned.length;
 
     let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:flex-end; gap:0; line-height:0;">';
-    for (let i = 0; i < maxBoxes; i++) {
+    for (let i = 0; i < total; i++) {
       const posInGroup = i % 4;
-      const isLastInGroup = posInGroup === 3 || i === maxBoxes - 1;
+      const isLastInGroup = posInGroup === 3 || i === total - 1;
 
       if (i > 0 && posInGroup === 0) {
         // gap between groups
@@ -365,8 +367,7 @@ export class FormHelper {
       const boxStyle = isLastInGroup
         ? `${FormHelper.BANK_ACCOUNT_BOX_BASE_STYLE} ${FormHelper.BANK_ACCOUNT_BOX_RIGHT_BORDER}`
         : FormHelper.BANK_ACCOUNT_BOX_BASE_STYLE;
-      const char = i < cleaned.length ? cleaned[i] : '&nbsp;';
-      html += `<span style="${boxStyle}">${char}</span>`;
+      html += `<span style="${boxStyle}">${cleaned[i]}</span>`;
     }
     html += '</span>';
     return html;
@@ -401,9 +402,9 @@ export class FormHelper {
     const fieldType = formExtract.form_field.field_type;
     let valueHtml: string;
     if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT) {
-      valueHtml = this.generateBankAccountBoxesHtml(value, 34);
+      valueHtml = this.generateBankAccountBoxesHtml(value);
     } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC) {
-      valueHtml = this.generateBankAccountBoxesHtml(value, 11);
+      valueHtml = this.generateBankAccountBoxesHtml(value);
     } else {
       const formatted = this.formatValueWithPrefixAndSuffix(value, formExtract.form_field);
       valueHtml = `<span>${formatted}</span>`;
