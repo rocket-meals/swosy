@@ -323,7 +323,7 @@ export class FormHelper {
   // ── HTML generation helpers ────────────────────────────────────────────────
 
   private static readonly FIELD_NAME_STYLE =
-    'font-weight: 700; font-size: inherit;';
+    'font-weight: 900; font-size: inherit;';
 
   /** Base style shared by every IBAN/BIC character box (no top border = open top). */
   private static readonly BANK_ACCOUNT_BOX_BASE_STYLE =
@@ -409,7 +409,7 @@ export class FormHelper {
       const formatted = this.formatValueWithPrefixAndSuffix(value, formExtract.form_field);
       valueHtml = `<span>${formatted}</span>`;
     }
-    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} ${valueHtml}</div>\n`;
+    return `<div style="margin:4px 0 10px 0;">${this.generateFieldNameHtml(fieldName)} ${valueHtml}</div>\n`;
   }
 
   private static generateHtmlForNumberField(
@@ -419,7 +419,7 @@ export class FormHelper {
     const value = formExtract.form_answer.value_number;
     if (value === null || value === undefined) return '';
     const formatted = this.formatValueWithPrefixAndSuffix(value, formExtract.form_field);
-    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} <span>${formatted}</span></div>\n`;
+    return `<div style="margin:4px 0 10px 0;">${this.generateFieldNameHtml(fieldName)} <span>${formatted}</span></div>\n`;
   }
 
   private static generateHtmlForBooleanField(
@@ -427,7 +427,7 @@ export class FormHelper {
     value: boolean | null | undefined,
   ): string {
     if (value !== true && value !== false) return '';
-    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)}&nbsp;&nbsp;&nbsp;${this.generateBooleanCheckboxHtml(value)}</div>\n`;
+    return `<div style="margin:4px 0 10px 0;">${this.generateFieldNameHtml(fieldName)}&nbsp;&nbsp;&nbsp;${this.generateBooleanCheckboxHtml(value)}</div>\n`;
   }
 
   private static generateHtmlForDateField(
@@ -456,7 +456,7 @@ export class FormHelper {
       EnvVariableHelper.getTimeZoneString(),
       momentFormat,
     );
-    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} <span>${dateString}</span></div>\n`;
+    return `<div style="margin:4px 0 10px 0;">${this.generateFieldNameHtml(fieldName)} <span>${dateString}</span></div>\n`;
   }
 
   private static generateHtmlForImageUrl(fieldName: string, imageUrl: string | undefined, isSignature = false): string {
@@ -465,14 +465,14 @@ export class FormHelper {
       // Signature layout: field name label, then the image sitting on a bottom-border line
       return (
         `<div style="margin:8px 0 0 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
-        `<div style="display:inline-block; border-bottom:1px solid #000; min-width:200px; vertical-align:bottom; margin:2px 0 4px 0;">` +
+        `<div style="display:inline-block; border-bottom:1px solid #000; min-width:200px; vertical-align:bottom; margin:2px 0 14px 0;">` +
         `<img src="${imageUrl}" alt="${fieldName}" style="max-height:40px; width:auto; display:block;"/>` +
         `</div>\n`
       );
     }
     return (
-      `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
-      `<div style="margin:4px 0;"><img src="${imageUrl}" alt="${fieldName}" style="max-width:100%; height:auto;"/></div>\n`
+      `<div style="margin:4px 0 4px 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
+      `<div style="margin:4px 0 10px 0;"><img src="${imageUrl}" alt="${fieldName}" style="max-width:100%; height:auto;"/></div>\n`
     );
   }
 

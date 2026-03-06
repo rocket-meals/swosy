@@ -19,11 +19,7 @@ PdfGeneratorForJest.activateForJest();
 
 const EXAMPLE_STRING    = 'Max Mustermann';
 const EXAMPLE_MULTILINE =
-  'Musterstraße 12\n' +
-  '12345 Musterstadt\n' +
-  'Bundesland: Niedersachsen\n' +
-  'Hinweise: Bitte bei Rückfragen die Referenznummer angeben.\n' +
-  'Weitere Anmerkungen können hier eingetragen werden.';
+  'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.';
 const EXAMPLE_EMAIL     = 'max.mustermann@example.com';
 const EXAMPLE_IBAN      = 'DE89370400440532013000';
 const EXAMPLE_BIC       = 'DEUTDEDBXXX';
@@ -31,10 +27,10 @@ const EXAMPLE_NUMBER    = 12345.67;
 const EXAMPLE_DATE      = '2000-01-01T00:00:00.000Z'; // 01.01.2000
 // EXAMPLE_DROPDOWN is resolved dynamically from dropdown_values; this is the fallback
 const EXAMPLE_DROPDOWN_FALLBACK = 'Option A';
-// Photo URLs used for FILES_FILES fields
+// Photo URLs used for FILES_FILES fields — use larger images so they render clearly
 const EXAMPLE_FILE_PHOTOS = [
-  'https://picsum.photos/200/200',
-  'https://picsum.photos/201/201',
+  'https://picsum.photos/600/400',
+  'https://picsum.photos/601/400',
 ];
 
 // Signature image as data URI (reuse existing test fixture)
