@@ -10,6 +10,8 @@ import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon} from 'r
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
+import * as fs from 'fs';
+import * as path from 'path';
 
 type FormFieldExampleData = {
   value_string?: string | null;
@@ -166,6 +168,19 @@ export class FormHelper {
       form_submission_id: form_submission_id,
       index: index++
     }));
+
+    const signaturePngPath = path.join(__dirname, '__tests__', 'data', 'signature_handwritten_example.png');
+    if (fs.existsSync(signaturePngPath)) {
+      const signaturePngBuffer = fs.readFileSync(signaturePngPath);
+      const signatureDataUri = `data:image/png;base64,${signaturePngBuffer.toString('base64')}`;
+      formExtractRelevantInformation.push(this.addFormField({
+        alias: 'Signature Field',
+        data: { value_image: signatureDataUri },
+        form_field_type: FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE,
+        form_submission_id: form_submission_id,
+        index: index++
+      }));
+    }
 
     return formExtractRelevantInformation;
   }
@@ -367,7 +382,7 @@ export class FormHelper {
   private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DatabaseTypes.DirectusFiles | string | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
     let assetUrl: undefined | string = undefined;
     if (value_image) {
-      if (typeof value_image === 'string' && value_image.startsWith('http')) {
+      if (typeof value_image === 'string' && (value_image.startsWith('http') || value_image.startsWith('data:'))) {
         assetUrl = value_image;
       } else {
         assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(value_image, myDatabaseHelperInterface, FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS);
