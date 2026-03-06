@@ -9,16 +9,21 @@
     "collection": "apartments",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "folder_living",
     "hidden": false,
-    "icon": null,
+    "icon": "hotel",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 8,
+    "sort": 1,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wohnungen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

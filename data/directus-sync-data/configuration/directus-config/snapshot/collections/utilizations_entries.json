@@ -11,14 +11,19 @@
     "display_template": null,
     "group": "utilizations_groups",
     "hidden": false,
-    "icon": null,
+    "icon": "query_stats",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
     "sort": 1,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Auslastungs Einträge"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

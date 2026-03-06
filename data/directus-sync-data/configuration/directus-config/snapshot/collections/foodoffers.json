@@ -11,12 +11,12 @@
     "display_template": null,
     "group": "foods",
     "hidden": false,
-    "icon": null,
+    "icon": "restaurant_menu",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 3,
+    "sort": 4,
     "sort_field": "sort",
     "translations": [
       {

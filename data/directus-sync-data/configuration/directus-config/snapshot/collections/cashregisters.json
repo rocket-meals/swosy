@@ -11,12 +11,12 @@
     "display_template": null,
     "group": "canteens",
     "hidden": false,
-    "icon": null,
+    "icon": "point_of_sale",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 2,
+    "sort": 3,
     "sort_field": "sort",
     "translations": [
       {

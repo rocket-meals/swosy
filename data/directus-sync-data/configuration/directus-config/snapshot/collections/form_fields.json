@@ -11,7 +11,7 @@
     "display_template": "{{alias}} ({{form.alias}})",
     "group": "forms",
     "hidden": false,
-    "icon": null,
+    "icon": "view_list",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
