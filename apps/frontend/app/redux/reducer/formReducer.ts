@@ -1,12 +1,11 @@
 import { ADD_FORM_QUEUE_ENTRY, CLEAR_CACHED_FORM_DATA, CLEAR_FORM, CLEAR_FORM_QUEUE, REMOVE_FORM_QUEUE_ENTRY, SET_CACHED_FORM_DATA, SET_FORM_FILTER, SET_FORM_SUBMISSION, UPDATE_FORM_QUEUE_ENTRY } from '@/redux/Types/types';
-import { FormQueueEntry } from '@/redux/Types/stateTypes';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { CachedFormEntry, FormQueueEntry } from '@/redux/Types/stateTypes';
 
 const initialState = {
 	filterBy: 'draft',
 	formSubmission: {},
 	formQueue: [] as FormQueueEntry[],
-	cachedSubmissions: {} as Record<string, DatabaseTypes.FormSubmissions[]>,
+	cachedFormData: {} as Record<string, CachedFormEntry>,
 };
 
 const formReducer = (state = initialState, actions: any) => {
@@ -51,17 +50,17 @@ const formReducer = (state = initialState, actions: any) => {
 			return { ...state, formQueue: [] };
 		}
 		case SET_CACHED_FORM_DATA: {
-			const { form_id, submissions } = actions.payload;
+			const { form_id, form, submissions, answers } = actions.payload;
 			return {
 				...state,
-				cachedSubmissions: {
-					...state.cachedSubmissions,
-					[form_id]: submissions,
+				cachedFormData: {
+					...(state.cachedFormData || {}),
+					[form_id]: { form, submissions, answers },
 				},
 			};
 		}
 		case CLEAR_CACHED_FORM_DATA: {
-			return { ...state, cachedSubmissions: {} };
+			return { ...state, cachedFormData: {} };
 		}
 		case CLEAR_FORM: {
 			return {

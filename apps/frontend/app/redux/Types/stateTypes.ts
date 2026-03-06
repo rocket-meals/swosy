@@ -102,11 +102,17 @@ export type FormQueueEntry = {
 	timestamp: string;
 };
 
+export type CachedFormEntry = {
+	form: DatabaseTypes.Forms | null;
+	submissions: DatabaseTypes.FormSubmissions[];
+	answers: Record<string, DatabaseTypes.FormAnswers[]>;
+};
+
 export type FormState = {
 	filterBy: string;
 	formSubmission: DatabaseTypes.FormSubmissions;
 	formQueue: FormQueueEntry[];
-	cachedSubmissions: Record<string, DatabaseTypes.FormSubmissions[]>;
+	cachedFormData: Record<string, CachedFormEntry>;
 }
 
 export type CampusState = {
