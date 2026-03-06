@@ -123,7 +123,7 @@ const FoodHeader = ({
                                 <View
                                     style={[
                                         styles.ratingView,
-                                        { borderColor: theme.screen.text }
+                                        { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
                                     ]}
                                 >
                                     <AntDesign name="star" size={22} color={foodsAreaColor} />
@@ -197,7 +197,7 @@ const FoodHeader = ({
                             <View
                                 style={[
                                     styles.mobileRatingView,
-                                    { borderColor: theme.screen.text }
+                                    { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
                                 ]}
                             >
                                 <AntDesign name="star" size={18} color={foodsAreaColor} />
