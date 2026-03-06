@@ -10,6 +10,8 @@ import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon} from 'r
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
+import * as fs from 'fs';
+import * as path from 'path';
 
 type FormFieldExampleData = {
   value_string?: string | null;
@@ -53,7 +55,7 @@ export class FormHelper {
     };
   }
 
-  public static getExampleFormExtractRelevantInformation(signatureDataUri?: string): FormExtractRelevantInformation {
+  public static getExampleFormExtractRelevantInformation(): FormExtractRelevantInformation {
     let formExtractRelevantInformation: FormExtractRelevantInformation = [];
     let form_submission_id = Math.random().toString();
 
@@ -167,7 +169,10 @@ export class FormHelper {
       index: index++
     }));
 
-    if (signatureDataUri) {
+    const signaturePngPath = path.join(__dirname, '__tests__', 'data', 'signature_handwritten_example.png');
+    if (fs.existsSync(signaturePngPath)) {
+      const signaturePngBuffer = fs.readFileSync(signaturePngPath);
+      const signatureDataUri = `data:image/png;base64,${signaturePngBuffer.toString('base64')}`;
       formExtractRelevantInformation.push(this.addFormField({
         alias: 'Signature Field',
         data: { value_image: signatureDataUri },
