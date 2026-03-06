@@ -84,6 +84,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	}, [activePopupEvent, openActiveModal]);
 
 	const setDefaultPriceGroupForAnonymousUser = useCallback(() => {
+		if (profile?.price_group) return;
 		dispatch({
 			type: UPDATE_PROFILE,
 			payload: { ...profile, price_group: 'student' },
