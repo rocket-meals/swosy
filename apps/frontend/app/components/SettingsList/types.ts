@@ -48,6 +48,15 @@ type SettingsListPropsOwn = {
 	 * adds padding on both sides. "middle" leaves the default styling.
 	 */
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+	/**
+	 * Font size of the title text. "small" = 13, "medium" = 15 (default),
+	 * "large" = 26 (same size as the food-data section heading, not bold).
+	 */
+	fontSize?: 'small' | 'medium' | 'large';
+	/**
+	 * Render the title in italic style.
+	 */
+	italic?: boolean;
 }
 
 export type SettingsListProps = PropsWithChildren<SettingsListPropsOwn>;
