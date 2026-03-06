@@ -86,6 +86,14 @@ export class FormHelper {
     }));
 
     formExtractRelevantInformation.push(this.addFormField({
+      alias: 'BIC',
+      data: { value_string: 'DEUTDEDBXXX' }, // example bic (11 chars)
+      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC,
+      form_submission_id: form_submission_id,
+      index: index++
+    }));
+
+    formExtractRelevantInformation.push(this.addFormField({
         alias: 'Number Field',
         data: { value_number: 123 },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
@@ -124,6 +132,14 @@ export class FormHelper {
     formExtractRelevantInformation.push(this.addFormField({
       alias: 'Boolean Field',
       data: { value_boolean: false },
+      form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
+      form_submission_id: form_submission_id,
+      index: index++
+    }));
+
+    formExtractRelevantInformation.push(this.addFormField({
+      alias: 'Boolean Field True',
+      data: { value_boolean: true },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.BOOLEAN_CHECKBOX,
       form_submission_id: form_submission_id,
       index: index++
@@ -267,7 +283,7 @@ export class FormHelper {
       status: 'published',
       user_created: '1',
       user_updated: '1',
-      value_boolean: data.value_boolean || null,
+      value_boolean: data.value_boolean !== undefined ? data.value_boolean : null,
       value_custom: data.value_custom || null,
       value_date: data.value_date || null,
       value_files: value_files || null,
@@ -295,6 +311,171 @@ export class FormHelper {
     let suffix = this.getSuffix(formField);
     return `${prefix}${value}${suffix}`;
   }
+
+  // ── HTML generation helpers ────────────────────────────────────────────────
+
+  private static readonly FIELD_NAME_STYLE =
+    'font-weight: 700; font-size: inherit;';
+
+  private static generateFieldNameHtml(fieldName: string): string {
+    return `<strong style="${FormHelper.FIELD_NAME_STYLE}">${fieldName}:</strong>`;
+  }
+
+  /**
+   * Renders a bank-account string (IBAN or BIC) as a row of bordered single-
+   * character boxes, grouped in fours to match printed form conventions.
+   */
+  private static generateBankAccountBoxesHtml(value: string, maxBoxes: number): string {
+    const cleaned = value.replace(/\s/g, '').toUpperCase();
+    const boxStyle =
+      'display:inline-block; border:1px solid #555; min-width:16px; width:16px;' +
+      ' height:22px; text-align:center; font-family:monospace; font-size:12px;' +
+      ' line-height:22px; margin:0 1px;';
+    let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:center; gap:0;">';
+    for (let i = 0; i < maxBoxes; i++) {
+      if (i > 0 && i % 4 === 0) {
+        // small gap between groups of four
+        html += '<span style="display:inline-block; width:4px;"></span>';
+      }
+      const char = i < cleaned.length ? cleaned[i] : '&nbsp;';
+      html += `<span style="${boxStyle}">${char}</span>`;
+    }
+    html += '</span>';
+    return html;
+  }
+
+  /**
+   * Renders a boolean value as two labelled checkboxes:
+   *   ☐ Nein   ☑ Ja   (when true)
+   *   ☑ Nein   ☐ Ja   (when false)
+   */
+  private static generateBooleanCheckboxHtml(value: boolean): string {
+    const checked   = '&#x2611;'; // ☑
+    const unchecked = '&#x2610;'; // ☐
+    const neinSymbol = value ? unchecked : checked;
+    const jaSymbol   = value ? checked   : unchecked;
+    return (
+      `<span style="margin-right:12px;">${neinSymbol} Nein</span>` +
+      `<span>${jaSymbol} Ja</span>`
+    );
+  }
+
+  private static generateHtmlForStringField(
+    fieldName: string,
+    formExtract: FormExtractRelevantInformationSingle,
+  ): string {
+    const value = formExtract.form_answer.value_string;
+    if (!value) return '';
+    const fieldType = formExtract.form_field.field_type;
+    let valueHtml: string;
+    if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BANK_ACCOUNT) {
+      valueHtml = this.generateBankAccountBoxesHtml(value, 34);
+    } else if (fieldType === FormHelperCommon.FORM_FIELD_TYPE.STRING_BIC) {
+      valueHtml = this.generateBankAccountBoxesHtml(value, 11);
+    } else {
+      const formatted = this.formatValueWithPrefixAndSuffix(value, formExtract.form_field);
+      valueHtml = `<span>${formatted}</span>`;
+    }
+    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} ${valueHtml}</div>\n`;
+  }
+
+  private static generateHtmlForNumberField(
+    fieldName: string,
+    formExtract: FormExtractRelevantInformationSingle,
+  ): string {
+    const value = formExtract.form_answer.value_number;
+    if (value === null || value === undefined) return '';
+    const formatted = this.formatValueWithPrefixAndSuffix(value, formExtract.form_field);
+    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} <span>${formatted}</span></div>\n`;
+  }
+
+  private static generateHtmlForBooleanField(
+    fieldName: string,
+    value: boolean | null | undefined,
+  ): string {
+    if (value !== true && value !== false) return '';
+    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} ${this.generateBooleanCheckboxHtml(value)}</div>\n`;
+  }
+
+  private static generateHtmlForDateField(
+    fieldName: string,
+    formExtract: FormExtractRelevantInformationSingle,
+  ): string {
+    const value = formExtract.form_answer.value_date;
+    if (!value) return '';
+    let momentFormat = DateHelper.MOMENT_FORMAT.DATE_ONLY;
+    switch (formExtract.form_field.field_type) {
+      case FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM:
+        momentFormat = DateHelper.MOMENT_FORMAT.DATE_HH_MM;
+        break;
+      case FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM:
+        momentFormat = DateHelper.MOMENT_FORMAT.DATE_AND_HH_MM;
+        break;
+      case FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP:
+        momentFormat = DateHelper.MOMENT_FORMAT.DATE_TIMESTAMP;
+        break;
+      case FormHelperCommon.FORM_FIELD_TYPE.DATE:
+        momentFormat = DateHelper.MOMENT_FORMAT.DATE_ONLY;
+        break;
+    }
+    const dateString = DateHelper.formatDateToTimeZoneReadable(
+      new Date(value),
+      EnvVariableHelper.getTimeZoneString(),
+      momentFormat,
+    );
+    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} <span>${dateString}</span></div>\n`;
+  }
+
+  private static generateHtmlForImageUrl(fieldName: string, imageUrl: string | undefined): string {
+    if (!imageUrl) return '';
+    return (
+      `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
+      `<div style="margin:4px 0;"><img src="${imageUrl}" alt="${fieldName}" style="max-width:100%; height:auto;"/></div>\n`
+    );
+  }
+
+  private static generateHtmlForImageValue(
+    fieldName: string,
+    value_image: DatabaseTypes.DirectusFiles | string | null | undefined,
+    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+  ): string {
+    let assetUrl: string | undefined;
+    if (value_image) {
+      if (typeof value_image === 'string' && (value_image.startsWith('http') || value_image.startsWith('data:'))) {
+        assetUrl = value_image;
+      } else {
+        assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
+          value_image,
+          myDatabaseHelperInterface,
+          FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS,
+        );
+      }
+    }
+    return this.generateHtmlForImageUrl(fieldName, assetUrl);
+  }
+
+  private static generateHtmlForFileValue(
+    fieldName: string,
+    value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined,
+    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+  ): string {
+    let assetUrl: string | undefined;
+    if (value_file) {
+      if (typeof value_file === 'string' && value_file.startsWith('http')) {
+        assetUrl = value_file;
+      } else {
+        const valueFileAsObject = value_file as FormExtractFormAnswerValueFileSingle;
+        assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(
+          valueFileAsObject.directus_files_id,
+          myDatabaseHelperInterface,
+          FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS,
+        );
+      }
+    }
+    return this.generateHtmlForImageUrl(fieldName, assetUrl);
+  }
+
+  // ── Markdown generation (kept for backward compatibility) ─────────────────
 
   private static generateMarkdownForTypeStringValue(fieldName: string, formExtract: FormExtractRelevantInformationSingle): string {
     let markdownContent = '';
@@ -456,6 +637,48 @@ export class FormHelper {
     return markdownContent;
   }
 
+  /**
+   * Generates HTML content directly for a form, enabling richer rendering than
+   * the markdown-based approach (e.g. IBAN/BIC character boxes, boolean
+   * checkboxes, bold field names).
+   */
+  public static async generateHtmlContentFromForm(
+    form: DatabaseTypes.Forms,
+    formExtractRelevantInformation: FormExtractRelevantInformationSingle[],
+    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+  ): Promise<string> {
+    let html = '';
+
+    html += `<h1 style="font-size:1.6em; margin-bottom:12px;">${form.alias || form.id}</h1>\n`;
+    html += '<div style="font-size:14px; line-height:1.7;">\n';
+
+    for (const formExtract of formExtractRelevantInformation) {
+      const fieldName = formExtract.form_field.alias || formExtract.form_field.id;
+
+      html += this.generateHtmlForStringField(fieldName, formExtract);
+      html += this.generateHtmlForNumberField(fieldName, formExtract);
+      html += this.generateHtmlForBooleanField(fieldName, formExtract.form_answer.value_boolean);
+      html += this.generateHtmlForDateField(fieldName, formExtract);
+      html += this.generateHtmlForImageValue(fieldName, formExtract.form_answer.value_image, myDatabaseHelperInterface);
+      if (formExtract.form_answer.value_files && formExtract.form_answer.value_files.length > 0) {
+        for (const file of formExtract.form_answer.value_files) {
+          html += this.generateHtmlForFileValue(fieldName, file, myDatabaseHelperInterface);
+        }
+      }
+    }
+
+    html += '</div>\n';
+
+    // footer
+    html += '<hr style="margin:24px 0 12px 0;"/>\n';
+    const generatedAtDateString = DateHelper.formatDateToTimeZoneReadable(new Date(), DateHelperTimezone.GERMANY);
+    html += `<p style="font-size:12px; color:#555;">Generiert am ${generatedAtDateString}</p>\n`;
+    const hashValue = HashHelper.getHashFromObject(formExtractRelevantInformation);
+    html += `<p style="font-size:12px; color:#555;">Hash: ${hashValue}</p>\n`;
+
+    return html;
+  }
+
   public static async generatePdfFromHtml(html: string, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, requestOptions?: RequestOptions): Promise<Buffer> {
     if (!requestOptions) {
       requestOptions = {};
@@ -478,9 +701,14 @@ export class FormHelper {
 
   public static async generateHtmlFromForm(params: FormGenerationParams): Promise<string> {
     let { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
-    let markdownContent = await this.generateMarkdownContentFromForm(form, formExtractRelevantInformation, myDatabaseHelperInterface);
+    let htmlContent = await this.generateHtmlContentFromForm(form, formExtractRelevantInformation, myDatabaseHelperInterface);
     let template = DEFAULT_HTML_TEMPLATE;
-    let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
+    // Pass the generated HTML directly into the template field.
+    // Note: despite the field name containing "Markdown", the Liquid template simply
+    // outputs the value as-is ({{ mailContentFieldRenderedAsHtml }}), so both
+    // markdown-converted HTML and raw HTML are accepted here.
+    let templateData = { [BaseGermanMarkdownTemplateHelper.TEMPLATE_MARKDOWN_FIELD]: htmlContent };
+    let html = await HtmlGenerator.generateHtml(templateData, myDatabaseHelperInterface, template);
 
     return html;
   }
