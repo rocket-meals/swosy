@@ -6,7 +6,7 @@ import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { TranslationBackendKeys, TranslationsBackend } from '../TranslationsBackend';
-import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberHelper} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
@@ -95,7 +95,7 @@ export class FormHelper {
 
     formExtractRelevantInformation.push(this.addFormField({
         alias: 'Number Field',
-        data: { value_number: 123 },
+        data: { value_number: 12345.67 },
         form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
         form_submission_id: form_submission_id,
         index: index++
@@ -103,7 +103,7 @@ export class FormHelper {
 
     formExtractRelevantInformation.push(this.addFormField({
       alias: 'Number Field With Prefix',
-      data: { value_number: 123 },
+      data: { value_number: 12345.67 },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
       prefix: "$ ",
       form_submission_id: form_submission_id,
@@ -112,7 +112,7 @@ export class FormHelper {
 
     formExtractRelevantInformation.push(this.addFormField({
       alias: 'Number Field With Suffix',
-      data: { value_number: 123 },
+      data: { value_number: 12345.67 },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
         suffix: " €",
       form_submission_id: form_submission_id,
@@ -121,7 +121,7 @@ export class FormHelper {
 
     formExtractRelevantInformation.push(this.addFormField({
       alias: 'Number Field With Prefix And Suffix',
-      data: { value_number: 123 },
+      data: { value_number: 12345.67 },
       form_field_type: FormHelperCommon.FORM_FIELD_TYPE.NUMBER,
       prefix: "€ ",
       suffix: " EUR",
@@ -309,13 +309,35 @@ export class FormHelper {
   private static formatValueWithPrefixAndSuffix(value: string | number, formField: DatabaseTypes.FormFields): string {
     let prefix = this.getPrefix(formField);
     let suffix = this.getSuffix(formField);
-    return `${prefix}${value}${suffix}`;
+    let formattedValue: string;
+    if (typeof value === 'number') {
+      // NumberHelper.formatNumber(value, unit, roundUpOrDown, fractionsSeparator, thousandsSeparator, decimals)
+      // German locale: comma decimal separator, dot thousands separator, 2 decimal places
+      formattedValue = NumberHelper.formatNumber(value, null, true, ',', '.', 2);
+    } else {
+      formattedValue = value;
+    }
+    return `${prefix}${formattedValue}${suffix}`;
   }
 
   // ── HTML generation helpers ────────────────────────────────────────────────
 
   private static readonly FIELD_NAME_STYLE =
     'font-weight: 700; font-size: inherit;';
+
+  /** Base style shared by every IBAN/BIC character box (no top border = open top). */
+  private static readonly BANK_ACCOUNT_BOX_BASE_STYLE =
+    'display:inline-block; border-bottom:1px solid #555; border-left:1px solid #555;' +
+    ' width:18px; height:22px; text-align:center; font-family:monospace; font-size:12px;' +
+    ' line-height:22px; margin:0; vertical-align:bottom;';
+
+  /** Extra style appended to the last box in each group to close the right side. */
+  private static readonly BANK_ACCOUNT_BOX_RIGHT_BORDER = 'border-right:1px solid #555;';
+
+  /** Shared style for the empty/checked boolean checkbox square. */
+  private static readonly BOOLEAN_CHECKBOX_STYLE =
+    'display:inline-block; width:18px; height:18px; border:2px solid #333;' +
+    ' vertical-align:middle; line-height:18px; text-align:center; font-size:14px; font-weight:900;';
 
   private static generateFieldNameHtml(fieldName: string): string {
     return `<strong style="${FormHelper.FIELD_NAME_STYLE}">${fieldName}:</strong>`;
@@ -324,19 +346,25 @@ export class FormHelper {
   /**
    * Renders a bank-account string (IBAN or BIC) as a row of bordered single-
    * character boxes, grouped in fours to match printed form conventions.
+   * Each box has no top border (open top). Boxes within a group share borders
+   * (collapsed) for a connected look; groups are separated by a small gap.
    */
   private static generateBankAccountBoxesHtml(value: string, maxBoxes: number): string {
     const cleaned = value.replace(/\s/g, '').toUpperCase();
-    const boxStyle =
-      'display:inline-block; border:1px solid #555; min-width:16px; width:16px;' +
-      ' height:22px; text-align:center; font-family:monospace; font-size:12px;' +
-      ' line-height:22px; margin:0 1px;';
-    let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:center; gap:0;">';
+
+    let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:flex-end; gap:0; line-height:0;">';
     for (let i = 0; i < maxBoxes; i++) {
-      if (i > 0 && i % 4 === 0) {
-        // small gap between groups of four
-        html += '<span style="display:inline-block; width:4px;"></span>';
+      const posInGroup = i % 4;
+      const isLastInGroup = posInGroup === 3 || i === maxBoxes - 1;
+
+      if (i > 0 && posInGroup === 0) {
+        // gap between groups
+        html += '<span style="display:inline-block; width:5px;"></span>';
       }
+
+      const boxStyle = isLastInGroup
+        ? `${FormHelper.BANK_ACCOUNT_BOX_BASE_STYLE} ${FormHelper.BANK_ACCOUNT_BOX_RIGHT_BORDER}`
+        : FormHelper.BANK_ACCOUNT_BOX_BASE_STYLE;
       const char = i < cleaned.length ? cleaned[i] : '&nbsp;';
       html += `<span style="${boxStyle}">${char}</span>`;
     }
@@ -346,17 +374,21 @@ export class FormHelper {
 
   /**
    * Renders a boolean value as two labelled checkboxes:
-   *   ☐ Nein   ☑ Ja   (when true)
    *   ☑ Nein   ☐ Ja   (when false)
+   *   ☐ Nein   ☑ Ja   (when true)
+   * The check symbol is rendered large and bold via CSS.
    */
   private static generateBooleanCheckboxHtml(value: boolean): string {
-    const checked   = '&#x2611;'; // ☑
-    const unchecked = '&#x2610;'; // ☐
-    const neinSymbol = value ? unchecked : checked;
-    const jaSymbol   = value ? checked   : unchecked;
+    const checkSymbol = '&#x2713;'; // ✓  thick check mark
+    const checkStyle = FormHelper.BOOLEAN_CHECKBOX_STYLE;
+    const emptyBox   = `<span style="${checkStyle}"></span>`;
+    const checkedBox = `<span style="${checkStyle}">${checkSymbol}</span>`;
+
+    const neinBox = value ? emptyBox : checkedBox;
+    const jaBox   = value ? checkedBox : emptyBox;
     return (
-      `<span style="margin-right:12px;">${neinSymbol} Nein</span>` +
-      `<span>${jaSymbol} Ja</span>`
+      `<span style="margin-right:20px;">${neinBox}&nbsp;Nein</span>` +
+      `<span>${jaBox}&nbsp;Ja</span>`
     );
   }
 
@@ -394,7 +426,7 @@ export class FormHelper {
     value: boolean | null | undefined,
   ): string {
     if (value !== true && value !== false) return '';
-    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} ${this.generateBooleanCheckboxHtml(value)}</div>\n`;
+    return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)}&nbsp;&nbsp;&nbsp;${this.generateBooleanCheckboxHtml(value)}</div>\n`;
   }
 
   private static generateHtmlForDateField(
