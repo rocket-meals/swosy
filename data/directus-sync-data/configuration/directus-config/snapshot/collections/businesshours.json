@@ -9,14 +9,14 @@
     "collection": "businesshours",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "buildings",
     "hidden": true,
     "icon": null,
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 6,
+    "sort": 1,
     "sort_field": "sort",
     "translations": [
       {

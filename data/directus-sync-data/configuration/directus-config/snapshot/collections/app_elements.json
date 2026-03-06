@@ -5,20 +5,25 @@
     "archive_app_filter": true,
     "archive_field": "status",
     "archive_value": "archived",
-    "collapse": "open",
+    "collapse": "closed",
     "collection": "app_elements",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "folder_system",
     "hidden": false,
-    "icon": null,
+    "icon": "widgets",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 26,
+    "sort": 3,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "App Elemente"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

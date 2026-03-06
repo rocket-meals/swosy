@@ -11,14 +11,19 @@
     "display_template": null,
     "group": "chats",
     "hidden": false,
-    "icon": null,
+    "icon": "sms",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
     "sort": 2,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Chat Nachrichten"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

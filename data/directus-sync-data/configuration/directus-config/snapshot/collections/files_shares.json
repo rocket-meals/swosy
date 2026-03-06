@@ -9,16 +9,21 @@
     "collection": "files_shares",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "folder_system",
     "hidden": false,
-    "icon": null,
+    "icon": "folder_shared",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 25,
+    "sort": 4,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Dateien Geteilt"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },
