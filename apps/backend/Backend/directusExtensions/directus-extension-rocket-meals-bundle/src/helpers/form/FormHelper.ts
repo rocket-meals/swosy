@@ -459,8 +459,17 @@ export class FormHelper {
     return `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)} <span>${dateString}</span></div>\n`;
   }
 
-  private static generateHtmlForImageUrl(fieldName: string, imageUrl: string | undefined): string {
+  private static generateHtmlForImageUrl(fieldName: string, imageUrl: string | undefined, isSignature = false): string {
     if (!imageUrl) return '';
+    if (isSignature) {
+      // Signature layout: field name label, then the image sitting on a bottom-border line
+      return (
+        `<div style="margin:8px 0 0 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
+        `<div style="display:inline-block; border-bottom:1px solid #000; min-width:200px; vertical-align:bottom; margin:2px 0 4px 0;">` +
+        `<img src="${imageUrl}" alt="${fieldName}" style="max-height:40px; width:auto; display:block;"/>` +
+        `</div>\n`
+      );
+    }
     return (
       `<div style="margin:4px 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
       `<div style="margin:4px 0;"><img src="${imageUrl}" alt="${fieldName}" style="max-width:100%; height:auto;"/></div>\n`
@@ -471,6 +480,7 @@ export class FormHelper {
     fieldName: string,
     value_image: DatabaseTypes.DirectusFiles | string | null | undefined,
     myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+    isSignature = false,
   ): string {
     let assetUrl: string | undefined;
     if (value_image) {
@@ -484,7 +494,7 @@ export class FormHelper {
         );
       }
     }
-    return this.generateHtmlForImageUrl(fieldName, assetUrl);
+    return this.generateHtmlForImageUrl(fieldName, assetUrl, isSignature);
   }
 
   private static generateHtmlForFileValue(
@@ -692,7 +702,8 @@ export class FormHelper {
       html += this.generateHtmlForNumberField(fieldName, formExtract);
       html += this.generateHtmlForBooleanField(fieldName, formExtract.form_answer.value_boolean);
       html += this.generateHtmlForDateField(fieldName, formExtract);
-      html += this.generateHtmlForImageValue(fieldName, formExtract.form_answer.value_image, myDatabaseHelperInterface);
+      const isSignature = formExtract.form_field.field_type === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE;
+      html += this.generateHtmlForImageValue(fieldName, formExtract.form_answer.value_image, myDatabaseHelperInterface, isSignature);
       if (formExtract.form_answer.value_files && formExtract.form_answer.value_files.length > 0) {
         for (const file of formExtract.form_answer.value_files) {
           html += this.generateHtmlForFileValue(fieldName, file, myDatabaseHelperInterface);
