@@ -83,17 +83,17 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		openActiveModal();
 	}, [activePopupEvent, openActiveModal]);
 
-	const setDefaultPriceGroupForAnonymousUser = useCallback(() => {
+	const setDefaultPriceGroupForAnonymousUser = () => {
 		if (profile?.price_group) return;
 		dispatch({
 			type: UPDATE_PROFILE,
 			payload: { ...profile, price_group: 'student' },
 		});
-	}, [dispatch, profile]);
+	};
 
 	useEffect(() => {
-		if (user && !user.id) setDefaultPriceGroupForAnonymousUser();
-	}, [user, setDefaultPriceGroupForAnonymousUser]);
+		if (!user?.id) setDefaultPriceGroupForAnonymousUser();
+	}, [user]);
 
 	const getBusinessHours = useCallback(async () => {
 		if (businessHours && businessHours.length > 0) return;
