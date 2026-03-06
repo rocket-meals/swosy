@@ -141,7 +141,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				);
 				return (
 					<View key={componentFoodoffer?.id}>
-						<SettingsGroupTitle>{componentName}</SettingsGroupTitle>
+						<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
 						{componentMarkingIds.length === 0 ? (
 							<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
 						) : (
