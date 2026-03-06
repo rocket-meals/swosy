@@ -9,6 +9,7 @@ import { MyDatabaseTestableHelper } from '../../../../MyDatabaseHelperInterface'
 import { DatabaseTypes, FormHelperCommon } from 'repo-depkit-common';
 import {
   FormExtractFormAnswer,
+  FormExtractFormAnswerValueFileSingleOrString,
   FormExtractRelevantInformation,
   FormExtractRelevantInformationSingle,
 } from '../../../../../forms-sync-hook';
@@ -40,7 +41,7 @@ const EXAMPLE_SIGNATURE_DATA_URI: string | null = fs.existsSync(SIGNATURE_PNG_PA
   : null;
 
 // A small placeholder image URL for regular image fields
-const EXAMPLE_IMAGE_URL = EXAMPLE_FILE_PHOTOS[0];
+const EXAMPLE_IMAGE_URL: string = EXAMPLE_FILE_PHOTOS[0] ?? 'https://picsum.photos/600/400';
 
 // ── Helper: build a FormExtractRelevantInformationSingle from a raw form field ─
 
@@ -71,7 +72,7 @@ function buildExtract(
       // Use the first option from dropdown_values if available, otherwise fall back
       const rawOptions = formField.dropdown_values;
       const options: string[] = Array.isArray(rawOptions) ? (rawOptions as string[]) : [];
-      value_string = options.length > 0 ? options[0] : EXAMPLE_DROPDOWN_FALLBACK;
+      value_string = options[0] ?? EXAMPLE_DROPDOWN_FALLBACK;
       break;
     }
     case FT.STRING_EMAIL:
