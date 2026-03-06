@@ -10,7 +10,13 @@ import { borderRadiusContainer, horizontalScreenPadding } from '@/constants/Cons
 const padding = 0; // px used for additional padding and border radius
 const basePaddingVertical = 10;
 
-const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
+const fontSizeMap: Record<'small' | 'medium' | 'large', number> = {
+	small: 13,
+	medium: 15,
+	large: 26,
+};
+
+const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false, fontSize = 'medium', italic = false }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
 
@@ -71,7 +77,7 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
                                 {shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
                                 <View style={styles.textWrapper}>
                                         <View style={styles.titleContainer}>
-                                                <Text style={[styles.title, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
+                                                <Text style={[styles.title, { color: theme.screen.text, fontSize: fontSizeMap[fontSize], fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={0}>
                                                         {title || label}
                                                 </Text>
 					</View>

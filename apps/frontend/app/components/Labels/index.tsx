@@ -7,6 +7,7 @@ import FoodLabelingInfo from '../FoodLabelingInfo';
 import DebugView from '@/components/DebugView';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
+import SettingsList from '@/components/SettingsList';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
 import { createSelector } from 'reselect';
@@ -141,7 +142,11 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				return (
 					<View key={componentFoodoffer?.id}>
 						<SettingsGroupTitle>{componentName}</SettingsGroupTitle>
-						<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
+						{componentMarkingIds.length === 0 ? (
+							<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
+						) : (
+							<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
+						)}
 					</View>
 				);
 			})}
