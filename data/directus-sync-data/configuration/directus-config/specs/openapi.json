@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "ced078db9f0a2f7bb8d47bb2ee92a1706330cb8c"
+    "version": "57455fe573d285c63a80eba4396316d7e2532470"
   },
   "servers": [
     {
