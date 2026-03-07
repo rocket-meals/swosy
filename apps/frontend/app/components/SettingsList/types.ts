@@ -53,9 +53,10 @@ type SettingsListPropsOwn = {
 	 */
 	italic?: boolean;
 	/**
-	 * When true the item displays a lock icon on the left side and a
-	 * shimmer flash animation to indicate that an account is required.
-	 * No border colour is added.
+	 * When true the item is shown with a dashed border (using the primary
+	 * color) and a semi-transparent dim overlay with a centered lock icon to
+	 * indicate that an account is required.  The original left icon is kept
+	 * unchanged.
 	 */
 	isAccountRequired?: boolean;
 }

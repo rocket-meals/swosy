@@ -106,15 +106,14 @@ const AccountRequiredExample = () => {
 			<View style={styles.content}>
 				<Text style={[styles.heading, { color: textColor }]}>Account Required - Beispiele</Text>
 
-				{/* ── 1. Standard SettingsList without any indicator ─────────────── */}
-				<Text style={[styles.sectionTitle, { color: textColor }]}>1. Normal (kein Indikator)</Text>
-				<Text style={[styles.sectionDescription, { color: textColor }]}>Zum Vergleich: ein gewöhnlicher Button ohne Account-Hinweis.</Text>
+				{/* ── 1. Default isAccountRequired ─────────────────────────────── */}
+				<Text style={[styles.sectionTitle, { color: textColor }]}>1. Default isAccountRequired</Text>
+				<Text style={[styles.sectionDescription, { color: textColor }]}>Standard-Anzeige wenn ein Account erforderlich ist: gestrichelter Rahmen und gedimmtes Schloss-Icon.</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="information-outline" size={24} color={iconColor} />}
-					label="Normale Aktion"
-					rightIcon={<Entypo name="chevron-small-right" color={iconColor} size={24} />}
-					handleFunction={() => {}}
+					label="Account-Funktion"
+					isAccountRequired
 					groupPosition="single"
 				/>
 
