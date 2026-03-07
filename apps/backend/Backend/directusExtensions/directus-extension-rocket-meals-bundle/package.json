@@ -90,6 +90,11 @@
       },
       {
         "type": "hook",
+        "name": "files-without-folder-report-schedule",
+        "source": "src/files-without-folder-report-schedule/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-rating-calculate-hook",
         "source": "src/food-feedback-rating-calculate-hook/index.ts"
       },

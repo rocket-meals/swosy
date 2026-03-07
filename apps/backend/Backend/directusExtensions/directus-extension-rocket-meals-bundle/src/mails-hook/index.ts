@@ -9,6 +9,7 @@ import {MyDefineHook} from "../helpers/MyDefineHook";
 
 const SCHEDULE_NAME = 'food_feedback_report';
 const DAILY_MAIL_LIMIT = 1000;
+const SUPPORT_MAIL_EXTRA_LIMIT = 500;
 
 enum MAIL_SEND_STATUS {
   SUCCESS = 'success',
@@ -94,7 +95,12 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     });
 
     if (todayMailCount > DAILY_MAIL_LIMIT - 1) {
-      throw new Error(`Daily mail limit reached (${DAILY_MAIL_LIMIT}).`);
+      const isSupportMail = input.recipient === MailAdresses.SupportMail;
+      const exceedsSupportLimit = !isSupportMail || todayMailCount > DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT - 1;
+      if (exceedsSupportLimit) {
+        const effectiveLimit = isSupportMail ? DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT : DAILY_MAIL_LIMIT;
+        throw new Error(`Daily mail limit reached (${effectiveLimit}).`);
+      }
     }
 
     if (todayMailCount === DAILY_MAIL_LIMIT - 1) {
@@ -102,6 +108,12 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
         to: MailAdresses.SupportMail,
         subject: `Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT})`,
         text: `Das Tageslimit von ${DAILY_MAIL_LIMIT} Mails wurde erreicht. Weitere Mails werden heute blockiert.`,
+      });
+    } else if (todayMailCount === DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT - 1) {
+      await sendMail({
+        to: MailAdresses.SupportMail,
+        subject: `Support-Mail Tageslimit erreicht (${DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT})`,
+        text: `Das erhöhte Tageslimit von ${DAILY_MAIL_LIMIT + SUPPORT_MAIL_EXTRA_LIMIT} Mails für die Support-Adresse wurde erreicht. Weitere Mails werden heute blockiert.`,
       });
     }
 
