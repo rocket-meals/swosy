@@ -566,6 +566,7 @@ const Settings = () => {
 					</TouchableOpacity>
 					<DebugView
 						title={translate(TranslationKeys.debug_mode)}
+						showInDevMode={true}
 					>
 						<Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>
 						<View style={{ gap: 0 }}>
