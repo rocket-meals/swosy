@@ -5052,5 +5052,15 @@
     "ru": "Offered on",
     "tr": "Offered on",
     "zh": "Offered on"
+  },
+  "account_required_example": {
+    "de": "Account Required Beispiel",
+    "en": "Account Required Example",
+    "ar": "Account Required Example",
+    "es": "Account Required Example",
+    "fr": "Account Required Example",
+    "ru": "Account Required Example",
+    "tr": "Account Required Example",
+    "zh": "Account Required Example"
   }
 }
