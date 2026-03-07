@@ -427,12 +427,12 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
 					)}
 				</View>
+				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
 				{afterElement && (
 					<View style={styles.elementContainer}>
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
 					</View>
 				)}
-				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>
