@@ -150,7 +150,6 @@ const FoodHeader = ({
                                 rightElement={renderRatingStars()}
                                 showSeparator={false}
                                 groupPosition="single"
-                                isAccountRequired={true}
                             />
                         </View>
                     </View>
@@ -234,7 +233,6 @@ const FoodHeader = ({
                     rightElement={renderRatingStars()}
                     showSeparator={false}
                     groupPosition="single"
-                    isAccountRequired={true}
                 />
             </View>
         </View>

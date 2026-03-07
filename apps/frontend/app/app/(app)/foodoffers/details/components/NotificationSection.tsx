@@ -47,7 +47,6 @@ const NotificationSection = ({
                 valueInactive={translate(TranslationKeys.inactive)}
                 showSeparator={false}
                 groupPosition="single"
-                isAccountRequired={true}
             />
         </View>
     );
