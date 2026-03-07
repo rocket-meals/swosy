@@ -24,7 +24,6 @@ interface FoodOffersListProps {
     selectedCanteen: DatabaseTypes.Canteens | null;
     handleMenuSheet: (sheet: any, props?: any) => void;
     handleImageSheet: (food: DatabaseTypes.Foods) => void;
-    handleEatingHabitsSheet: (sheet: any) => void;
     getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: any; popup_button_text?: any; popup_content?: any; } | null;
     feedbackMap: Map<string, any>;
     // Optimization props
@@ -67,7 +66,6 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     setListWidth,
     handleMenuSheet,
     handleImageSheet,
-    handleEatingHabitsSheet,
     getInfoItemContent,
     ListFooterComponent,
     ListEmptyComponent,
@@ -100,7 +98,6 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 selectedCanteen={selectedCanteen}
                 handleMenuSheet={handleMenuSheet}
                 handleImageSheet={handleImageSheet}
-                handleEatingHabitsSheet={handleEatingHabitsSheet}
                 getInfoItemContent={getInfoItemContent}
                 itemGap={10}
                 previousFeedback={previousFeedback}
@@ -117,7 +114,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 amountColumnsForcard={amountColumnsForcard}
             />
         );
-    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, getInfoItemContent, feedbackMap, language, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
+    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, getInfoItemContent, feedbackMap, language, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
 
     const keyExtractor = useCallback((item: DayItem, index: number) => {
         if (item.foodoffer && item.foodoffer.id) return `f-${item.foodoffer.id}`;
@@ -190,7 +187,6 @@ export default memo(FoodOffersList, (prev, next) => {
         prev.setListWidth === next.setListWidth &&
         prev.handleMenuSheet === next.handleMenuSheet &&
         prev.handleImageSheet === next.handleImageSheet &&
-        prev.handleEatingHabitsSheet === next.handleEatingHabitsSheet &&
         prev.getInfoItemContent === next.getInfoItemContent &&
         prev.ListFooterComponent === next.ListFooterComponent &&
         prev.feedbackMap === next.feedbackMap;

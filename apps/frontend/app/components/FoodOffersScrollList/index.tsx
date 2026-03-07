@@ -390,7 +390,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 										canteen={selectedCanteen as DatabaseTypes.Canteens}
 										handleMenuSheet={openSheet}
 										handleImageSheet={openManagementSheet}
-										handleEatingHabitsSheet={openSheet}
 										cardWidth={cardWidth}
 									/>
 								</View>
