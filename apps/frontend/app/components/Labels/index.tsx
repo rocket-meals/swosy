@@ -5,7 +5,6 @@ import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
 import DebugView from '@/components/DebugView';
-import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
 import SettingsList from '@/components/SettingsList';
 import { getFoodOffer } from '@/constants/HelperFunctions';
@@ -124,9 +123,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
-			{foodMarkings?.map((marking: DatabaseTypes.Markings) => (
-				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
-			))}
+			<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
 
 			<DebugView title="Foodoffer Components">
 			{foodofferComponents.map((component: any) => {

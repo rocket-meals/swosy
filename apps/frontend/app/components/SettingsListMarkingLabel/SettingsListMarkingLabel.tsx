@@ -218,7 +218,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 						onHoverOut={() => setShowTooltip(false)}
 						{...triggerProps}
 						onPress={() => handleUpdateMarking(true)}
-						style={{ padding: 8 }}
+						style={styles.likeButton}
 					>
 						{likeLoading ? (
 							<ActivityIndicator size={iconSize} color={foods_area_color} />
@@ -246,7 +246,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 						onHoverOut={() => setShowTooltip(false)}
 						{...triggerProps}
 						onPress={() => handleUpdateMarking(false)}
-						style={{ padding: 8 }}
+						style={styles.dislikeButton}
 					>
 						{dislikeLoading ? (
 							<ActivityIndicator size={iconSize} color={foods_area_color} />
@@ -288,6 +288,26 @@ const styles = StyleSheet.create({
 	},
 	rightRow: {
 		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	likeButton: {
+		padding: 8,
+		borderWidth: 1,
+		borderTopLeftRadius: 5,
+		borderBottomLeftRadius: 5,
+		borderColor: '#2E2E2E',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	dislikeButton: {
+		padding: 8,
+		borderWidth: 1,
+		borderTopRightRadius: 5,
+		borderBottomRightRadius: 5,
+		borderColor: '#2E2E2E',
+		flexDirection: 'row',
+		justifyContent: 'center',
 		alignItems: 'center',
 	},
 });
