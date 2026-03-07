@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { useTheme } from '@/hooks/useTheme';
+import useDebugMode from '@/hooks/useDebugMode';
 import styles from './styles';
 
 export type DebugLog = string | { message: string; timestamp?: string | Date };
@@ -33,6 +34,7 @@ const DebugView: React.FC<DebugViewProps> = ({
         children,
 }) => {
         const { theme } = useTheme();
+        const debugMode = useDebugMode();
 
         const formattedLogs = useMemo(() => {
                 return logs
@@ -50,7 +52,7 @@ const DebugView: React.FC<DebugViewProps> = ({
                         .filter(Boolean);
         }, [logs]);
 
-        if (!isVisible) return null;
+        if (!isVisible || !debugMode) return null;
 
         return (
                 <View
