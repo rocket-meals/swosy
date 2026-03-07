@@ -32,7 +32,7 @@ const DebugView: React.FC<DebugViewProps> = ({
         title = 'Debug',
         logs = [],
         actions = [],
-        isVisible = true,
+        isVisible = false,
         showInDevMode = false,
         children,
 }) => {
@@ -56,7 +56,7 @@ const DebugView: React.FC<DebugViewProps> = ({
                         .filter(Boolean);
         }, [logs]);
 
-        if (!isVisible || (!debugMode && !(showInDevMode && isDevMode))) return null;
+        if (!isVisible && !debugMode && !(showInDevMode && isDevMode)) return null;
 
         return (
                 <View
