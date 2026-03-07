@@ -133,7 +133,7 @@ const Index = () => {
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
 	const { formSubmission } = useAppSelector((state) => state.form);
-	const { user } = useAppSelector((state) => state.authReducer);
+	const { user, isDevMode } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
 		[key: string]: { value: any; error: string; custom_type?: string };
@@ -853,7 +853,7 @@ const Index = () => {
 										</View>
 									);
 								})}
-							<DebugView title="Form Data" isVisible>
+							<DebugView title="Form Data" isVisible={isDevMode}>
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{JSON.stringify(formData, null, 2)}</Text>
 							</DebugView>
 						</View>
