@@ -6,7 +6,7 @@ import { isWeb } from '@/constants/Constants';
 import FoodLabelingInfo from '@/components/FoodLabelingInfo';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import MarkingLabels from '@/components/MarkingLabels/MarkingLabels';
+import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
 import { useLanguage } from '@/hooks/useLanguage';
 import { excerpt } from '@/constants/HelperFunctions';
 import animation from '@/assets/animations/allergist.json';
@@ -18,7 +18,6 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
@@ -173,11 +172,10 @@ const Index = () => {
 							handleFunction={handleClearMarkings}
 							groupPosition="single"
 						/>
-						<View style={styles.feedbackLabelsContainer}>
-                                                {markings?.map(marking => {
-                                                        return <MarkingLabels key={marking?.id} markingId={marking?.id} handleMenuSheet={openMenuSheet} />;
-                                                })}
-                                        </View>
+						<SettingsListMarkingLabels
+							markingIds={(markings?.map(marking => marking?.id).filter(Boolean) as string[]) || []}
+							handleMenuSheet={openMenuSheet}
+						/>
                                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
                                 </View>
                         </ScrollView>
