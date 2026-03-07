@@ -56,7 +56,8 @@ const DebugView: React.FC<DebugViewProps> = ({
                         .filter(Boolean);
         }, [logs]);
 
-        if (!isVisible && !debugMode && !(showInDevMode && isDevMode)) return null;
+        const shouldRender = isVisible || debugMode || (showInDevMode && isDevMode);
+        if (!shouldRender) return null;
 
         return (
                 <View
