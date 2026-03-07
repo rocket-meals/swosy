@@ -360,7 +360,6 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         previousFeedback={previousFeedback}
                         updateNotification={updateNotification}
                         foodsAreaColor={foods_area_color}
-                        foodDetails={foodDetails}
                     />
 
                     <TabController
