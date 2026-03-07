@@ -30,16 +30,16 @@ const NotificationSection = ({
 
     const bellIcon = useMemo(() => (
         <MaterialIcons
-            name={isNotifyEnabled ? 'notifications-active' : 'notifications'}
+            name={isNotifyEnabled ? 'notifications-active' : 'notifications-off'}
             size={24}
-            color={isNotifyEnabled ? foodsAreaColor : theme.screen.text}
         />
-    ), [isNotifyEnabled, foodsAreaColor, theme.screen.text]);
+    ), [isNotifyEnabled]);
 
     return (
         <View style={[styles.marginTopMedium, containerStyle]}>
             <SettingsListBoolean
-                leftIconComponent={bellIcon}
+                leftIcon={bellIcon}
+                iconBgColor={foodsAreaColor}
                 title={translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
                 isEnabled={isNotifyEnabled}
                 onToggle={updateNotification}

@@ -144,7 +144,8 @@ const FoodHeader = ({
                         </View>
                         <View style={isLargeScreen ? null : styles.marginTopMedium}>
                             <SettingsList
-                                leftIconComponent={<MaterialIcons name="star" size={22} color={foodsAreaColor} />}
+                                leftIcon={<MaterialIcons name="star" size={22} />}
+                                iconBgColor={foodsAreaColor}
                                 title={translate(TranslationKeys.RATE_FOOD)}
                                 rightElement={renderRatingStars()}
                                 showSeparator={false}
@@ -226,7 +227,8 @@ const FoodHeader = ({
             </Text>
             <View style={styles.marginTopMedium}>
                 <SettingsList
-                    leftIconComponent={<MaterialIcons name="star" size={22} color={foodsAreaColor} />}
+                    leftIcon={<MaterialIcons name="star" size={22} />}
+                    iconBgColor={foodsAreaColor}
                     title={translate(TranslationKeys.RATE_FOOD)}
                     rightElement={renderRatingStars()}
                     showSeparator={false}
