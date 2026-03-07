@@ -7,7 +7,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SettingsListProps } from './types';
 import { borderRadiusContainer, horizontalScreenPadding } from '@/constants/Constants';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 
 const padding = 0; // px used for additional padding and border radius
 const basePaddingVertical = 10;
@@ -15,8 +14,6 @@ const basePaddingVertical = 10;
 const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false, italic = false, isAccountRequired = false }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
-        const user = useAppSelector((state) => state.authReducer.user);
-        const { openRatingPermissionModal } = useRatingPermissionModal();
 
         const pressHandler = onPress || handleFunction;
         const Container: any = pressHandler ? TouchableOpacity : View;
@@ -97,18 +94,17 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
 
 	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: noIconIndent ? 0 : 54 }]} /> : null;
 
-	if (isAccountRequired && !user?.id) {
+	if (isAccountRequired) {
 		return (
 			<>
 				<View style={[styles.accountRequiredWrapper, wrapperBorderRadius, { borderColor: primaryColor }]}>
 					{inner}
-					<TouchableOpacity
-						onPress={openRatingPermissionModal}
-						activeOpacity={0.8}
+					<View
+						pointerEvents="none"
 						style={[StyleSheet.absoluteFill, styles.dimOverlay, wrapperBorderRadius]}
 					>
 						<MaterialCommunityIcons name="lock" size={28} color="#fff" />
-					</TouchableOpacity>
+					</View>
 				</View>
 				{separator}
 			</>
