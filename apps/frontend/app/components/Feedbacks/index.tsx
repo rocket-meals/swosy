@@ -195,9 +195,13 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 			>
 				{translate(TranslationKeys.feedback_labels)}
 			</Text>
-			{labels.map((label: any) => (
-				<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} />
-			))}
+			{labels.map((label: any, index: number) => {
+				const total = labels.length;
+				const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				return (
+					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} />
+				);
+			})}
 			{commentType !== 'disabled' && commentType !== 'read' && (
 				<View style={styles.ratingSummaryContainer}>
 					<SettingsListTextInput

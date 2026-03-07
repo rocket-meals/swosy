@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import styles from './styles';
 import { FeedbackLabelProps } from './types';
 import { isWeb } from '@/constants/Constants';
 import { getIconComponent, getTextFromTranslation } from '@/helper/resourceHelper';
@@ -16,10 +15,10 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import SettingsList from '@/components/SettingsList';
 
-const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId }) => {
+const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId, groupPosition }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
@@ -59,30 +58,19 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 		});
 	};
 
-	const { like, dislike } = labelData;
+	const { like } = labelData;
+	const labelText = getTextFromTranslation(label, language);
+	const iconSize = isWeb ? 24 : 22;
 
-	return (
-		<View style={styles.row}>
+	const leftIconComponent = (
+		<View style={styles.leftIconWrapper}>
 			<Tooltip
 				placement="top"
 				isOpen={showTooltip}
 				trigger={triggerProps => (
-					<Pressable {...triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={{ ...styles.col, cursor: 'default' }}>
-						{/* <View > */}
+					<Pressable {...triggerProps} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={{ cursor: 'default' } as any}>
 						{imageUrl && <Image source={{ uri: imageUrl }} style={styles.icon} />}
 						{icon && getIconComponent(icon, theme.screen.icon)}
-						<Text
-							style={[
-								styles.label,
-								{
-									color: theme.screen.text,
-									fontSize: isWeb ? 18 : 14,
-								},
-							]}
-						>
-							{getTextFromTranslation(label, language)}
-						</Text>
-						{/* </View> */}
 					</Pressable>
 				)}
 			>
@@ -90,65 +78,110 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 					bg={theme.tooltip.background}
 					py="$1"
 					px="$2"
-					left="100%"
-					transform={[{ translateX: -50 }]} // Adjust to truly center it
 				>
 					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{getTextFromTranslation(label, language)}
+						{labelText}
 					</TooltipText>
 				</TooltipContent>
 			</Tooltip>
-
-			<View style={styles.col2}>
-				<Tooltip
-					placement="top"
-					trigger={triggerProps => (
-						<Pressable
-							style={{
-								...styles.likeButton,
-								backgroundColor: like && foods_area_color,
-							}}
-							{...triggerProps}
-							onPress={() => handleUpdateEntry(true)}
-							onHoverIn={() => setShowTooltip(true)}
-							onHoverOut={() => setShowTooltip(false)}
-						>
-							<MaterialCommunityIcons name={like ? 'thumb-up' : 'thumb-up-outline'} size={isWeb ? 24 : 22} color={like ? contrastColor : theme.screen.icon} />
-						</Pressable>
-					)}
-				>
-					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-						<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-							{`${translate(TranslationKeys.i_like_that)}: ${translate(like ? TranslationKeys.active : TranslationKeys.inactive)}: ${getTextFromTranslation(label, language)}`}
-						</TooltipText>
-					</TooltipContent>
-				</Tooltip>
-				<Tooltip
-					placement="top"
-					trigger={triggerProps => (
-						<Pressable
-							style={{
-								...styles.dislikeButton,
-								backgroundColor: like === false && foods_area_color,
-							}}
-							{...triggerProps}
-							onHoverIn={() => setShowTooltip(true)}
-							onHoverOut={() => setShowTooltip(false)}
-							onPress={() => handleUpdateEntry(false)}
-						>
-							<MaterialCommunityIcons name={like === false ? 'thumb-down' : 'thumb-down-outline'} size={isWeb ? 24 : 22} color={like === false ? contrastColor : theme.screen.icon} />
-						</Pressable>
-					)}
-				>
-					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-						<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-							{`${translate(TranslationKeys.i_dislike_that)}: ${translate(like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${getTextFromTranslation(label, language)}`}
-						</TooltipText>
-					</TooltipContent>
-				</Tooltip>
-			</View>
 		</View>
+	);
+
+	const rightElement = (
+		<View style={styles.rightRow}>
+			<Tooltip
+				placement="top"
+				trigger={triggerProps => (
+					<Pressable
+						style={{
+							...styles.likeButton,
+							backgroundColor: like ? foods_area_color : undefined,
+						}}
+						{...triggerProps}
+						onPress={() => handleUpdateEntry(true)}
+						onHoverIn={() => setShowTooltip(true)}
+						onHoverOut={() => setShowTooltip(false)}
+					>
+						<MaterialCommunityIcons name={like ? 'thumb-up' : 'thumb-up-outline'} size={iconSize} color={like ? contrastColor : theme.screen.icon} />
+					</Pressable>
+				)}
+			>
+				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+						{`${translate(TranslationKeys.i_like_that)}: ${translate(like ? TranslationKeys.active : TranslationKeys.inactive)}: ${labelText}`}
+					</TooltipText>
+				</TooltipContent>
+			</Tooltip>
+			<Tooltip
+				placement="top"
+				trigger={triggerProps => (
+					<Pressable
+						style={{
+							...styles.dislikeButton,
+							backgroundColor: like === false ? foods_area_color : undefined,
+						}}
+						{...triggerProps}
+						onHoverIn={() => setShowTooltip(true)}
+						onHoverOut={() => setShowTooltip(false)}
+						onPress={() => handleUpdateEntry(false)}
+					>
+						<MaterialCommunityIcons name={like === false ? 'thumb-down' : 'thumb-down-outline'} size={iconSize} color={like === false ? contrastColor : theme.screen.icon} />
+					</Pressable>
+				)}
+			>
+				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
+					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
+						{`${translate(TranslationKeys.i_dislike_that)}: ${translate(like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${labelText}`}
+					</TooltipText>
+				</TooltipContent>
+			</Tooltip>
+		</View>
+	);
+
+	return (
+		<SettingsList
+			leftIconComponent={leftIconComponent}
+			title={labelText || ''}
+			rightElement={rightElement}
+			groupPosition={groupPosition}
+		/>
 	);
 };
 
 export default FeedbackLabel;
+
+const styles = StyleSheet.create({
+	leftIconWrapper: {
+		marginRight: 10,
+	},
+	icon: {
+		width: 30,
+		height: 30,
+		resizeMode: 'cover',
+		borderRadius: 25,
+	},
+	rightRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	likeButton: {
+		padding: 8,
+		borderWidth: 1,
+		borderTopLeftRadius: 5,
+		borderBottomLeftRadius: 5,
+		borderColor: '#2E2E2E',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	dislikeButton: {
+		padding: 8,
+		borderWidth: 1,
+		borderTopRightRadius: 5,
+		borderBottomRightRadius: 5,
+		borderColor: '#2E2E2E',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+});
