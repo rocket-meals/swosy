@@ -136,6 +136,12 @@ const Index = () => {
 			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/food-wishlist'),
 		},
+		{
+			key: 'account-required-example',
+			label: translate(TranslationKeys.account_required_example),
+			leftIcon: <MaterialCommunityIcons name="account-lock" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/account-required-example'),
+		},
 	];
 
 	return (
