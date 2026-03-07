@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { CanteenFeedbackLabelProps, ModifiedCanteensFeedbacksLabelsEntries } from './types';
-import { isWeb } from '@/constants/Constants';
 import { getIconComponent, getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
@@ -14,11 +12,11 @@ import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { CanteenFeedbackLabelEntryHelper } from '@/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries';
 import { isSameDay } from 'date-fns';
-import { myContrastColor } from '@/helper/ColorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
+import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 
 const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, date, groupPosition }) => {
 	const { theme } = useTheme();
@@ -27,13 +25,11 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
 	const { openRatingPermissionModal } = useRatingPermissionModal();
 	const [showTooltip, setShowTooltip] = useState(false);
-	const { primaryColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { language } = useAppSelector((state) => state.settings);
 	const [count, setCount] = useState({ likes: 0, dislikes: 0 });
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const { ownCanteenFeedBackLabelEntries } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 
 	// Use useMemo to optimize the filtering processs
 	const labelData = useMemo(() => {
@@ -91,7 +87,6 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 
 	const imageId = typeof label?.image === 'string' ? label.image : (label?.image as any)?.id;
 	const labelText = getTextFromTranslation(label?.translations, language);
-	const iconSize = isWeb ? 24 : 22;
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>
@@ -127,57 +122,15 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	);
 
 	const rightElement = (
-		<View style={styles.rightRow}>
-			<Tooltip
-				placement="top"
-				trigger={triggerProps => (
-					<Pressable
-						{...triggerProps}
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-						style={{
-							...styles.likeButton,
-							backgroundColor: labelData?.like ? foods_area_color : undefined,
-						}}
-						onPress={() => handleUpdateEntry(true)}
-					>
-						<MaterialCommunityIcons name={labelData?.like ? 'thumb-up' : 'thumb-up-outline'} size={iconSize} color={labelData?.like ? contrastColor : theme.screen.icon} />
-						{count?.likes > 0 && <Text style={[styles.count, { color: contrastColor }]}>{count.likes}</Text>}
-					</Pressable>
-				)}
-			>
-				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{`${translate(TranslationKeys.i_like_that)}: ${translate(labelData?.like ? TranslationKeys.active : TranslationKeys.inactive)}: ${labelText}`}
-					</TooltipText>
-				</TooltipContent>
-			</Tooltip>
-
-			<Tooltip
-				placement="top"
-				trigger={triggerProps => (
-					<Pressable
-						{...triggerProps}
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-						style={{
-							...styles.dislikeButton,
-							backgroundColor: labelData?.like === false ? foods_area_color : undefined,
-						}}
-						onPress={() => handleUpdateEntry(false)}
-					>
-						<MaterialCommunityIcons name={labelData?.like === false ? 'thumb-down' : 'thumb-down-outline'} size={iconSize} color={labelData?.like === false ? contrastColor : theme.screen.icon} />
-						{count?.dislikes > 0 && <Text style={[styles.count, { color: contrastColor }]}>{count.dislikes}</Text>}
-					</Pressable>
-				)}
-			>
-				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{`${translate(TranslationKeys.i_dislike_that)}: ${translate(labelData?.like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${labelText}`}
-					</TooltipText>
-				</TooltipContent>
-			</Tooltip>
-		</View>
+		<SettingsListLikeDislike
+			like={labelData?.like}
+			onPressLike={() => handleUpdateEntry(true)}
+			onPressDislike={() => handleUpdateEntry(false)}
+			likeTooltipText={`${translate(TranslationKeys.i_like_that)}: ${translate(labelData?.like ? TranslationKeys.active : TranslationKeys.inactive)}: ${labelText}`}
+			dislikeTooltipText={`${translate(TranslationKeys.i_dislike_that)}: ${translate(labelData?.like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${labelText}`}
+			likeCount={count.likes > 0 ? count.likes : undefined}
+			dislikeCount={count.dislikes > 0 ? count.dislikes : undefined}
+		/>
 	);
 
 	return (
@@ -201,34 +154,5 @@ const styles = StyleSheet.create({
 		height: 30,
 		resizeMode: 'cover',
 		borderRadius: 25,
-	},
-	rightRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	likeButton: {
-		padding: 8,
-		borderWidth: 1,
-		borderTopLeftRadius: 5,
-		borderBottomLeftRadius: 5,
-		borderColor: '#2E2E2E',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	dislikeButton: {
-		padding: 8,
-		borderWidth: 1,
-		borderTopRightRadius: 5,
-		borderBottomRightRadius: 5,
-		borderColor: '#2E2E2E',
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	count: {
-		fontSize: 14,
-		fontFamily: 'Poppins_400Regular',
-		marginLeft: 6,
 	},
 });
