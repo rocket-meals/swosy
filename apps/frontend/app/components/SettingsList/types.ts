@@ -52,6 +52,12 @@ type SettingsListPropsOwn = {
 	 * Render the title in italic style.
 	 */
 	italic?: boolean;
+	/**
+	 * When true the item displays a lock icon on the left side and a
+	 * shimmer flash animation to indicate that an account is required.
+	 * No border colour is added.
+	 */
+	isAccountRequired?: boolean;
 }
 
 export type SettingsListProps = PropsWithChildren<SettingsListPropsOwn>;

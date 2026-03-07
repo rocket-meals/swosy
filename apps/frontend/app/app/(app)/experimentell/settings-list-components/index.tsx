@@ -37,7 +37,16 @@ const SettingsListComponents = () => {
 			<View style={styles.content}>
 				<Text style={{ ...styles.heading, color: theme.screen.text }}>SettingsList Komponenten</Text>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList (isAccountRequired)</Text>
+			<SettingsList
+				iconBgColor={primaryColor}
+				title="Account-Funktion"
+				value="Login erforderlich"
+				isAccountRequired
+				groupPosition="single"
+			/>
+
+			<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="format-list-text" size={24} color={theme.screen.icon} />}
