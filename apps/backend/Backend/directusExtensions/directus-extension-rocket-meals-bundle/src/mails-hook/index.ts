@@ -7,10 +7,6 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MailHelper } from '../helpers/mail/MailHelper';
 import {MyDefineHook} from "../helpers/MyDefineHook";
 
-// Extends the auto-generated Mails type with a system-only flag.
-// Note: packages/common/src/databaseTypes/types.ts is auto-generated and must not be edited.
-type MailsWithSystemFlag = Partial<DatabaseTypes.Mails> & { ignore_mail_limit?: boolean | null };
-
 const SCHEDULE_NAME = 'food_feedback_report';
 const DAILY_MAIL_LIMIT = 1000;
 
@@ -74,7 +70,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
   });
 
   // filter all update actions where from value running to start want to change, since this is not allowed
-  filter<MailsWithSystemFlag>(CollectionNames.MAILS + '.items.create', async (input: MailsWithSystemFlag, meta, eventContext) => {
+  filter<Partial<DatabaseTypes.Mails>>(CollectionNames.MAILS + '.items.create', async (input: Partial<DatabaseTypes.Mails>, meta, eventContext) => {
     // TODO: Maybe outsource this into a workflow instead of a filter
     let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     const mailsHelper = myDatabaseHelper.getMailsHelper();
@@ -98,16 +94,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     });
 
     if (todayMailCount > DAILY_MAIL_LIMIT - 1) {
-      if (input.ignore_mail_limit) {
-        apiContext.logger.info(
-          'Mail limit reached but ignore_mail_limit is set, sending mail anyway. recipient: ' +
-            input.recipient +
-            ', subject: ' +
-            input.subject
-        );
-      } else {
-        throw new Error(`Daily mail limit reached (${DAILY_MAIL_LIMIT}).`);
-      }
+      throw new Error(`Daily mail limit reached (${DAILY_MAIL_LIMIT}).`);
     }
 
     if (todayMailCount === DAILY_MAIL_LIMIT - 1) {

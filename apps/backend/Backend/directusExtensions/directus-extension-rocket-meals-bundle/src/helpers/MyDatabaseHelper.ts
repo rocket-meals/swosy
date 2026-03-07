@@ -290,11 +290,9 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     return new ItemsServiceHelper<T>(this, collectionName);
   }
 
-  async sendMail(mail: Partial<DatabaseTypes.Mails> & { ignore_mail_limit?: boolean }) {
+  async sendMail(mail: Partial<DatabaseTypes.Mails>) {
     let mailsHelper = this.getMailsHelper();
-    // The cast is TypeScript-only; ignore_mail_limit is intentionally kept in the runtime object
-    // so that the Directus items.create filter in mails-hook can read and act on it.
-    return await mailsHelper.createOne(mail as Partial<DatabaseTypes.Mails>);
+    return await mailsHelper.createOne(mail);
   }
 
   getMailsHelper() {
