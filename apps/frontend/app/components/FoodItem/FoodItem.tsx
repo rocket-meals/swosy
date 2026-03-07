@@ -183,21 +183,26 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const handleOpenSheet = useCallback(() => {
       showScrollViewModal({
         children: (
-          <Labels
-            foodDetails={foodItem}
-            offerId={item?.id}
-            foodOfferDetails={item}
-            handleMenuSheet={() => {
-              showScrollViewModal({
-                children: <MarkingContent />,
-                disableHorizontalPadding: true,
-              });
-            }}
-            color={foods_area_color}
-          />
+          <View>
+            <Text style={[styles.markingHintText, { color: theme.screen.text }]}>
+              {translate(TranslationKeys.food_offer_contains_disliked_markings)}
+            </Text>
+            <Labels
+              foodDetails={foodItem}
+              offerId={item?.id}
+              foodOfferDetails={item}
+              handleMenuSheet={() => {
+                showScrollViewModal({
+                  children: <MarkingContent />,
+                  disableHorizontalPadding: true,
+                });
+              }}
+              color={foods_area_color}
+            />
+          </View>
         ),
       });
-    }, [showScrollViewModal, foodItem, item, foods_area_color]);
+    }, [showScrollViewModal, foodItem, item, foods_area_color, translate, theme.screen.text]);
 
     const updateRating = useCallback(
       async (rating: number | null) => {
