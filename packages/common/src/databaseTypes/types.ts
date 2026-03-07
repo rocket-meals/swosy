@@ -1498,6 +1498,7 @@ export type Mails = {
   date_updated?: string | null;
   form_submission?: string | FormSubmissions | null;
   id: string;
+  ignore_mail_limit?: boolean | null;
   log?: string | null;
   mail_information: string;
   markdown_content?: string | null;

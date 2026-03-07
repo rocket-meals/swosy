@@ -42,6 +42,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
       recipient: MailAdresses.SupportMail,
       subject: subject,
       markdown_content: markdown_content,
+      ignore_mail_limit: true,
     });
 
     apiContext.logger.info(HOOK_NAME + ': Mail created for files without folder.');

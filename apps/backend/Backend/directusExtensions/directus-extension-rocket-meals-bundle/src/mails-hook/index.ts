@@ -94,7 +94,16 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
     });
 
     if (todayMailCount > DAILY_MAIL_LIMIT - 1) {
-      throw new Error(`Daily mail limit reached (${DAILY_MAIL_LIMIT}).`);
+      if (input.ignore_mail_limit) {
+        apiContext.logger.info(
+          'Mail limit reached but ignore_mail_limit is set, sending mail anyway. recipient: ' +
+            input.recipient +
+            ', subject: ' +
+            input.subject
+        );
+      } else {
+        throw new Error(`Daily mail limit reached (${DAILY_MAIL_LIMIT}).`);
+      }
     }
 
     if (todayMailCount === DAILY_MAIL_LIMIT - 1) {
