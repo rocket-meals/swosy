@@ -180,13 +180,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [toast]
     );
 
-    const openMenuSheet = useCallback(() => {
-      showScrollViewModal({
-        children: <MarkingContent />,
-        disableHorizontalPadding: true,
-      });
-    }, [showScrollViewModal]);
-
     const handleOpenSheet = useCallback(() => {
       showScrollViewModal({
         children: (
@@ -198,13 +191,12 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
               foodDetails={foodItem}
               offerId={item?.id}
               foodOfferDetails={item}
-              handleMenuSheet={openMenuSheet}
               color={foods_area_color}
             />
           </View>
         ),
       });
-    }, [showScrollViewModal, foodItem, item, foods_area_color, translate, theme.screen.text, openMenuSheet]);
+    }, [showScrollViewModal, foodItem, item, foods_area_color, translate, theme.screen.text]);
 
     const updateRating = useCallback(
       async (rating: number | null) => {
