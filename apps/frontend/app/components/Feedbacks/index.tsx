@@ -19,7 +19,7 @@ import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import { RootState } from '@/redux/reducer';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const loadingState = {
 	submitLoading: false,
@@ -43,7 +43,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
-	const { openRatingPermissionModal } = useRatingPermissionModal();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
 	// Optimized Selectors
@@ -67,7 +67,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const submitCommentFeedback = async (string: string | null) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 
@@ -107,7 +107,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const handleTextChange = (text: string) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 

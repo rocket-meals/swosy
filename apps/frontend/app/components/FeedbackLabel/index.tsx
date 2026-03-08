@@ -12,7 +12,7 @@ import { DELETE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL, UPDATE_OWN_FOOD_FEEDBACK_
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 
@@ -24,7 +24,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 	const [showTooltip, setShowTooltip] = useState(false);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
-	const { openRatingPermissionModal } = useRatingPermissionModal();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
 
 	// Use useMemo to optimize the filtering process
@@ -35,7 +35,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 	// Function to handle updating the entry
 	const handleUpdateEntry = async (isLike: boolean | null) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 		let likeStats = null;

@@ -7,7 +7,8 @@ import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SettingsListProps } from './types';
 import { borderRadiusContainer, horizontalScreenPadding } from '@/constants/Constants';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import { accountRequiredStyles } from '@/helper/accountRequiredStyles';
 
 const padding = 0; // px used for additional padding and border radius
 const basePaddingVertical = 10;
@@ -15,10 +16,10 @@ const basePaddingVertical = 10;
 const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false, italic = false, isAccountRequired = false }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
-        const { openRatingPermissionModal } = useRatingPermissionModal();
+        const { openAccountRequiredModal } = useAccountRequiredModal();
 
         const pressHandler = isAccountRequired
-                ? openRatingPermissionModal
+                ? openAccountRequiredModal
                 : (onPress || handleFunction);
         const Container: any = pressHandler ? TouchableOpacity : View;
         const iconBg = iconBackgroundColor || iconBgColor || primaryColor;
@@ -106,11 +107,11 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
 	if (isAccountRequired) {
 		return (
 			<>
-				<View style={[styles.accountRequiredWrapper, wrapperBorderRadius, accountRequiredBorderStyle, { borderColor: primaryColor }]}>
+				<View style={[accountRequiredStyles.wrapper, wrapperBorderRadius, accountRequiredBorderStyle, { borderColor: primaryColor }]}>
 					{inner}
 					<View
 						pointerEvents="none"
-						style={[StyleSheet.absoluteFill, styles.dimOverlay, wrapperBorderRadius]}
+						style={[StyleSheet.absoluteFill, accountRequiredStyles.dimOverlay, wrapperBorderRadius]}
 					>
 						<MaterialCommunityIcons name="lock" size={28} color="#fff" />
 					</View>
@@ -194,15 +195,5 @@ const styles = StyleSheet.create({
 	separator: {
 		width: '100%',
 		height: StyleSheet.hairlineWidth,
-	},
-	accountRequiredWrapper: {
-		position: 'relative',
-		overflow: 'hidden',
-		borderStyle: 'dashed',
-	},
-	dimOverlay: {
-		backgroundColor: 'rgba(128,128,128,0.45)',
-		justifyContent: 'center',
-		alignItems: 'center',
 	},
 });
