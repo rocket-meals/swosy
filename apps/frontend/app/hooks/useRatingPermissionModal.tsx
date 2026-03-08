@@ -11,7 +11,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { performLogout } from '@/helper/logoutHelper';
 
 const useRatingPermissionModal = () => {
-	const { show, close } = useMyScrollViewModal();
+	const { show, close, closeAll } = useMyScrollViewModal();
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const router = useRouter();
@@ -33,7 +33,7 @@ const useRatingPermissionModal = () => {
 					<ProjectButton
 						text={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}
 						onPress={() => {
-							close();
+							closeAll();
 							handleLogin();
 						}}
 						style={{ marginVertical: 0 }}
@@ -41,7 +41,7 @@ const useRatingPermissionModal = () => {
 				</View>
 			),
 		});
-	}, [close, dispatch, router, show, theme.sheet.text, translate]);
+	}, [close, closeAll, dispatch, router, show, theme.sheet.text, translate]);
 
 	return { openRatingPermissionModal, closeRatingPermissionModal: close };
 };
