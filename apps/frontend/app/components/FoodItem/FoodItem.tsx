@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import MyImage from '@/components/MyImage';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
@@ -24,7 +24,8 @@ import CardWithText from '../CardWithText/CardWithText';
 import { useFoodCardBase } from '@/hooks/useFoodCard';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import { accountRequiredStyles } from '@/helper/accountRequiredStyles';
 import useFoodOfferDetailsModal from '@/hooks/useFoodOfferDetailsModal';
 import { MarkingContent } from '../MarkingBottomSheet';
 import Labels from '@/components/Labels';
@@ -95,7 +96,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods & { show_description_icon_on_card?: boolean | null };
 
-    const { openRatingPermissionModal } = useRatingPermissionModal();
+    const { openAccountRequiredModal } = useAccountRequiredModal();
 
     const foods_area_color = appSettings?.foods_area_color || primaryColor;
     const contrastColor = useMyContrastColor(foods_area_color, theme, (theme as any)?.mode === 'dark');
@@ -201,7 +202,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const updateRating = useCallback(
       async (rating: number | null) => {
         if (!user?.id) {
-          openRatingPermissionModal();
+          openAccountRequiredModal();
           return;
         }
 
@@ -223,14 +224,14 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           // Revert on error
           setCurrentRating(oldRating);
           if ((err as any).status === 403) {
-            openRatingPermissionModal();
+            openAccountRequiredModal();
           } else {
             console.error('Failed to update rating:', err);
             toast('Could not update rating', 'error');
           }
         }
       },
-      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openRatingPermissionModal, currentRating]
+      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openAccountRequiredModal, currentRating]
     );
 
     const openMarkingLabel = useCallback(
@@ -324,7 +325,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                   )}
 
                   <View style={styles.overlayActionsContainer}>
-                    <TouchableOpacity style={styles.favContainer}>
+                    <TouchableOpacity
+                      style={[
+                        styles.favContainer,
+                        !user?.id && accountRequiredStyles.wrapper,
+                        !user?.id && { borderWidth: 2, borderColor: foods_area_color },
+                      ]}
+                    >
                       {RatingHelper.isMaxRating(currentRating) ? (
                         <TouchableOpacity onPress={() => updateRating(null)}>
                           <AntDesign name="star" size={20} color={foods_area_color} />
@@ -333,6 +340,12 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         <TouchableOpacity onPress={() => updateRating(RatingHelper.MAX_RATING)}>
                           <MaterialIcons name="star" size={20} color="white" />
                         </TouchableOpacity>
+                      )}
+                      {!user?.id && (
+                        <View
+                          pointerEvents="none"
+                          style={[StyleSheet.absoluteFill, accountRequiredStyles.dimOverlay, { borderRadius: 50 }]}
+                        />
                       )}
                     </TouchableOpacity>
 
