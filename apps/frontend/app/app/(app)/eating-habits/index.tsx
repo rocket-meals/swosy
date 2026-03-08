@@ -140,6 +140,7 @@ const Index = () => {
 				handleFunction={handleClearMarkings}
 				groupPosition="single"
 			/>
+			<View style={styles.markingsTopSpacer} />
 		</View>
 	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkings]);
 

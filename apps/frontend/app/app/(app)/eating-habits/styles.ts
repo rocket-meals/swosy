@@ -46,4 +46,7 @@ export default StyleSheet.create({
 	flatListContent: {
 		padding: 16,
 	},
+	markingsTopSpacer: {
+		height: 16,
+	},
 });
