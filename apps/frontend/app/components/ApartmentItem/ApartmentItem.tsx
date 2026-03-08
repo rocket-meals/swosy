@@ -8,7 +8,7 @@ import { getDistanceUnit } from '@/helper/distanceHelper';
 import { BuildingItemProps } from './types';
 import styles from './styles';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';

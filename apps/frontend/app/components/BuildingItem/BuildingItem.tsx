@@ -7,7 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
@@ -113,7 +113,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 			imageChildren={
 				<>
 					{isWeb ? (
-						<Tooltip
+						<CustomTooltip
 							placement="top"
 							trigger={innerTriggerProps => (
 								<IconButton
@@ -133,7 +133,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 									{`${translate(TranslationKeys.open_navitation_to_location)}`}
 								</TooltipText>
 							</TooltipContent>
-						</Tooltip>
+						</CustomTooltip>
 					) : (
 						<IconButton
 							style={[
@@ -183,7 +183,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 
 	if (isWeb) {
 		return (
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				trigger={triggerProps => renderCard(triggerProps)}
 			>
@@ -192,7 +192,7 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 						{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
 					</TooltipText>
 				</TooltipContent>
-			</Tooltip>
+			</CustomTooltip>
 		);
 	}
 

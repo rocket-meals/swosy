@@ -23,7 +23,7 @@ import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import * as Notifications from 'expo-notifications';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
@@ -373,7 +373,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								]}
 							>
 								{/* Menu */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -392,7 +392,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{`${translate(TranslationKeys.open_drawer)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Canteen Heading */}
 								<TouchableOpacity onPress={() => openSheet('canteen')} activeOpacity={0.7}>
@@ -407,7 +407,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								}}
 							>
 								{/* Sorting */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -426,10 +426,10 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{`${translate(TranslationKeys.sort)}: ${translate(TranslationKeys.foods)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Price Group */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -450,11 +450,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.price_group)} ${translate(getPriceGroup(profile?.price_group))}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Eating Habits */}
 
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -475,10 +475,10 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.eating_habits)}: ${translate(TranslationKeys.edit)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Change Canteen */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -497,7 +497,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.canteen)}: ${translate(TranslationKeys.select)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 							</View>
 						</View>
 						<View style={styles.row}>
@@ -508,7 +508,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									gap: isWeb ? (screenWidth < 500 ? 15 : 10) : 10,
 								}}
 							>
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -527,8 +527,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.previous)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
-								<Tooltip
+								</CustomTooltip>
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -547,8 +547,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.date)}: ${selectedDate}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
-								<Tooltip
+								</CustomTooltip>
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -567,14 +567,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.proceed)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}
 								{appSettings?.utilization_display_enabled && (
-									<Tooltip
+									<CustomTooltip
 										placement="top"
 										trigger={triggerProps => (
 											<IconButton
@@ -593,11 +593,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 												{` ${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`}
 											</TooltipText>
 										</TooltipContent>
-									</Tooltip>
+									</CustomTooltip>
 								)}
 								{/* Opening Hours */}
 
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -616,7 +616,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.businesshours)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 							</View>
 						</View>
 					</View>

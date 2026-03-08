@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -27,7 +27,7 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 
 	return (
 		<View style={styles.row}>
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				trigger={triggerProps => (
 					<Pressable
@@ -60,9 +60,9 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 						</TooltipText>
 					</TooltipContent>
 				) : <></>}
-			</Tooltip>
+			</CustomTooltip>
 
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				trigger={triggerProps => (
 					<Pressable
@@ -95,7 +95,7 @@ const SettingsListLikeDislike: React.FC<SettingsListLikeDislikeProps> = ({
 						</TooltipText>
 					</TooltipContent>
 				) : <></>}
-			</Tooltip>
+			</CustomTooltip>
 		</View>
 	);
 };

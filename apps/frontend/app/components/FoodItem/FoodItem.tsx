@@ -14,7 +14,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { router } from 'expo-router';
 import { createSelector } from 'reselect';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import translations from '@/locales/translations.json';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
@@ -285,7 +285,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 
     return (
       <>
-        <Tooltip
+        <CustomTooltip
           placement="top"
           trigger={triggerProps => (
             <CardWithText
@@ -427,7 +427,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
               {getTextFromTranslation(foodItem?.translations, language || 'de')}
             </TooltipText>
           </TooltipContent>
-        </Tooltip>
+        </CustomTooltip>
       </>
     );
   },

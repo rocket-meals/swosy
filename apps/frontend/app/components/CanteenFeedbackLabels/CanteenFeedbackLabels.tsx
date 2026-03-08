@@ -12,7 +12,7 @@ import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { CanteenFeedbackLabelEntryHelper } from '@/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries';
 import { isSameDay } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
@@ -90,7 +90,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
 				trigger={triggerProps => (
@@ -117,7 +117,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 						{labelText}
 					</TooltipText>
 				</TooltipContent>
-			</Tooltip>
+			</CustomTooltip>
 		</View>
 	);
 
