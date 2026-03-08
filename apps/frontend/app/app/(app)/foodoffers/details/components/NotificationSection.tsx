@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
+import { isWeb } from '@/constants/Constants';
 import styles from '../styles';
 
 interface NotificationSectionProps {
@@ -12,6 +13,7 @@ interface NotificationSectionProps {
     previousFeedback: any;
     updateNotification: () => void;
     foodsAreaColor: string;
+    isAccountRequired?: boolean;
 }
 
 const NotificationSection = ({
@@ -21,6 +23,7 @@ const NotificationSection = ({
     previousFeedback,
     updateNotification,
     foodsAreaColor,
+    isAccountRequired,
 }: NotificationSectionProps) => {
     const isNotifyEnabled = !!previousFeedback?.notify;
 
@@ -36,7 +39,7 @@ const NotificationSection = ({
     ), [isNotifyEnabled]);
 
     return (
-        <View style={[styles.marginTopMedium, containerStyle]}>
+        <View style={[isWeb ? styles.marginTopMedium : null, containerStyle]}>
             <SettingsListBoolean
                 leftIcon={bellIcon}
                 iconBgColor={foodsAreaColor}
@@ -46,7 +49,8 @@ const NotificationSection = ({
                 valueActive={translate(TranslationKeys.active)}
                 valueInactive={translate(TranslationKeys.inactive)}
                 showSeparator={false}
-                groupPosition="single"
+                groupPosition={isWeb ? "single" : "bottom"}
+                isAccountRequired={isAccountRequired}
             />
         </View>
     );
@@ -57,6 +61,7 @@ export default memo(NotificationSection, (prevProps, nextProps) => {
         prevProps.theme === nextProps.theme &&
         prevProps.containerWidth === nextProps.containerWidth &&
         prevProps.previousFeedback === nextProps.previousFeedback &&
-        prevProps.foodsAreaColor === nextProps.foodsAreaColor
+        prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
+        prevProps.isAccountRequired === nextProps.isAccountRequired
     );
 });
