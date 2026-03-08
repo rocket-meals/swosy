@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -43,7 +43,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
 	const [likeLoading, setLikeLoading] = useState(false);
 	const [dislikeLoading, setDislikeLoading] = useState(false);
-	const profileHelper = new ProfileHelper();
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 
 	const openMarkingLabel = (marking: DatabaseTypes.Markings) => {

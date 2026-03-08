@@ -1,4 +1,4 @@
-import { Dimensions, InteractionManager, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, InteractionManager, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -33,6 +33,10 @@ import { UserHelper } from '@/helper/UserHelper';
 let _cachedAnimationJson: any = null;
 let _cachedPrimaryColor: string | null = null;
 
+// Tracks whether the heavy markings list has been rendered at least once so that
+// subsequent navigations (even after a full remount) skip the deferred-render delay.
+let _markingContentLoaded = false;
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
 	const { theme } = useTheme();
@@ -49,6 +53,9 @@ const Index = () => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const [isActive, setIsActive] = useState(false);
+	// Initialized from the module-level flag so content appears instantly on re-entry
+	// even if the component was fully unmounted and remounted.
+	const [isContentVisible, setIsContentVisible] = useState(_markingContentLoaded);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 
@@ -141,6 +148,26 @@ const Index = () => {
 		}, [])
 	);
 
+	// Defer rendering the heavy markings list (many Gluestack UI Tooltip instances)
+	// until after the navigation animation so the transition is never blocked.
+	useFocusEffect(
+		useCallback(() => {
+			if (_markingContentLoaded) {
+				// Content was already loaded on a previous visit – nothing to do.
+				// isContentVisible is already true (initialized from the flag or preserved
+				// across navigations), so no state update is needed.
+				return;
+			}
+			const task = InteractionManager.runAfterInteractions(() => {
+				_markingContentLoaded = true;
+				setIsContentVisible(true);
+			});
+			return () => {
+				task.cancel();
+			};
+		}, [])
+	);
+
 	useEffect(() => {
 		if (animationJson && autoPlay && animationRef.current) {
 			animationRef?.current?.play(); // Reset animation to ensure it starts fresh
@@ -224,19 +251,23 @@ const Index = () => {
 							handleFunction={handleClearMarkings}
 							groupPosition="single"
 						/>
-						{markingsSections.map((section) => (
-							<View key={section.group?.id || 'ungrouped'}>
-								{section.group && (
-									<SettingsGroupTitle>
-										{getTextFromTranslation(section.group.translations, language) || section.group.alias || ''}
-									</SettingsGroupTitle>
-								)}
-								<SettingsListMarkingLabels
-									markingIds={section.markingIds}
-									handleMenuSheet={openMenuSheet}
-								/>
-							</View>
-						))}
+						{isContentVisible ? (
+							markingsSections.map((section) => (
+								<View key={section.group?.id || 'ungrouped'}>
+									{section.group && (
+										<SettingsGroupTitle>
+											{getTextFromTranslation(section.group.translations, language) || section.group.alias || ''}
+										</SettingsGroupTitle>
+									)}
+									<SettingsListMarkingLabels
+										markingIds={section.markingIds}
+										handleMenuSheet={openMenuSheet}
+									/>
+								</View>
+							))
+						) : (
+							<ActivityIndicator color={primaryColor} style={{ marginTop: 20 }} />
+						)}
                                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
                                 </View>
                         </ScrollView>
