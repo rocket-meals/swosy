@@ -1,6 +1,23 @@
-import { ActivityIndicator, Dimensions, InteractionManager, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+/**
+ * Eating Habits Performance Variant: Without Deferred Rendering
+ *
+ * The markings list is rendered immediately on mount (no InteractionManager
+ * deferral). Compare with the Full variant to measure how much time the
+ * deferred-render strategy actually saves for the navigation transition.
+ *
+ * On slow native devices this variant may cause the navigation animation to
+ * stutter, which is exactly the behaviour we want to measure.
+ */
+import {
+	Dimensions,
+	InteractionManager,
+	SafeAreaView,
+	ScrollView,
+	Text,
+	TouchableOpacity,
+	View,
+} from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import FoodLabelingInfo from '@/components/FoodLabelingInfo';
@@ -18,28 +35,23 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import DebugView from '@/components/DebugView';
+import eatingHabitsStyles from '../../../eating-habits/styles';
 
-// Module-level cache so the expensive color-replacement deep-copy only runs once
-// per primaryColor value across all navigations, even when the screen is unmounted.
+// Isolated cache so this variant doesn't interfere with other screens
 let _cachedAnimationJson: any = null;
 let _cachedPrimaryColor: string | null = null;
 
-// Tracks whether the heavy markings list has been rendered at least once so that
-// subsequent navigations (even after a full remount) skip the deferred-render delay.
-let _markingContentLoaded = false;
-
-const Index = () => {
-	useSetPageTitle(TranslationKeys.eating_habits);
+const EatingHabitsPerformanceNoDefer = () => {
+	useSetPageTitle(TranslationKeys.eating_habits_performance_no_defer);
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate, language } = useLanguage();
@@ -50,32 +62,27 @@ const Index = () => {
 	const [readMore, setReadMore] = useState(false);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
 	const animationRef = useRef<LottieView>(null);
-	const [animationJson, setAmimationJson] = useState<any>(null);
+	const [animationJson, setAnimationJson] = useState<any>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const [isActive, setIsActive] = useState(false);
-	// Initialized from the module-level flag so content appears instantly on re-entry
-	// even if the component was fully unmounted and remounted.
-	const [isContentVisible, setIsContentVisible] = useState(_markingContentLoaded);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 
-	// Performance timing refs
+	// Performance timing
 	const mountTimeRef = useRef<number>(performance.now());
 	const [animationReadyMs, setAnimationReadyMs] = useState<number | null>(null);
-	const [contentVisibleMs, setContentVisibleMs] = useState<number | null>(null);
+	// Content is rendered immediately – record how long until the component actually shows
+	const [firstRenderMs] = useState<number>(() => Math.round(performance.now() - mountTimeRef.current));
 
 	const markingsSections = useMemo(() => {
 		if (!markings || markings.length === 0) return [];
-
 		if (!markingGroups || markingGroups.length === 0) {
 			return [{ group: null, markingIds: markings.map((m: DatabaseTypes.Markings) => m.id) }];
 		}
-
 		const sortedGroups = [...markingGroups].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
 		const groupedMarkingIds = new Set<string>();
 		const sections: { group: DatabaseTypes.MarkingsGroups | null; markingIds: string[] }[] = [];
-
 		for (const group of sortedGroups) {
 			const groupMarkingIds = markings
 				.filter((m: DatabaseTypes.Markings) => {
@@ -83,77 +90,50 @@ const Index = () => {
 					return groupId === group.id;
 				})
 				.map((m: DatabaseTypes.Markings) => m.id);
-
 			if (groupMarkingIds.length > 0) {
 				sections.push({ group, markingIds: groupMarkingIds });
 				groupMarkingIds.forEach((id: string) => groupedMarkingIds.add(id));
 			}
 		}
-
 		const ungroupedIds = markings
 			.filter((m: DatabaseTypes.Markings) => !groupedMarkingIds.has(m.id))
 			.map((m: DatabaseTypes.Markings) => m.id);
-
 		if (ungroupedIds.length > 0) {
 			sections.push({ group: null, markingIds: ungroupedIds });
 		}
-
 		return sections;
 	}, [markings, markingGroups]);
 
-	const openMenuSheet = () => {
-		menuSheetRef?.current?.expand();
-	};
-
-	const closeMenuSheet = () => {
-		menuSheetRef?.current?.close();
-	};
+	const openMenuSheet = () => menuSheetRef?.current?.expand();
+	const closeMenuSheet = () => menuSheetRef?.current?.close();
 
 	useFocusEffect(
 		useCallback(() => {
-			// Cache hit: set the processed animation immediately, no need to wait for
-			// interactions to finish, making re-entry essentially instant.
 			if (_cachedAnimationJson && _cachedPrimaryColor === primaryColor) {
-				setAmimationJson(_cachedAnimationJson);
+				setAnimationJson(_cachedAnimationJson);
 				setAnimationReadyMs(Math.round(performance.now() - mountTimeRef.current));
 				return;
 			}
-
-			// Cache miss (first visit or primaryColor changed): defer the expensive
-			// deep-copy + color-replacement until after the navigation animation so it
-			// never blocks the transition.
 			const task = InteractionManager.runAfterInteractions(() => {
-				const start = performance.now();
 				_cachedAnimationJson = replaceLottieColors(animation, primaryColor);
 				_cachedPrimaryColor = primaryColor;
-				const lottieProcessMs = Math.round(performance.now() - start);
-				setAmimationJson(_cachedAnimationJson);
+				setAnimationJson(_cachedAnimationJson);
 				setAnimationReadyMs(Math.round(performance.now() - mountTimeRef.current));
-				if (lottieProcessMs > 5) {
-					console.log('[EatingHabits] replaceLottieColors took', lottieProcessMs, 'ms');
-				}
 			});
-			return () => {
-				task.cancel();
-			};
+			return () => task.cancel();
 		}, [primaryColor])
 	);
 
 	useFocusEffect(
 		useCallback(() => {
-			setAutoPlay(appSettings?.animations_auto_start); // Enable when entering
-
-			return () => {
-				setAutoPlay(false); // Reset when leaving
-			};
+			setAutoPlay(appSettings?.animations_auto_start);
+			return () => setAutoPlay(false);
 		}, [appSettings?.animations_auto_start])
 	);
 
 	useFocusEffect(
 		useCallback(() => {
-			const timer = setTimeout(() => {
-				setIsActive(true);
-			}, 100);
+			const timer = setTimeout(() => setIsActive(true), 100);
 			return () => {
 				clearTimeout(timer);
 				setIsActive(false);
@@ -161,73 +141,44 @@ const Index = () => {
 		}, [])
 	);
 
-	// Defer rendering the heavy markings list (many Gluestack UI Tooltip instances)
-	// until after the navigation animation so the transition is never blocked.
-	useFocusEffect(
-		useCallback(() => {
-			if (_markingContentLoaded) {
-				// Content was already loaded on a previous visit – nothing to do.
-				// isContentVisible is already true (initialized from the flag or preserved
-				// across navigations), so no state update is needed.
-				return;
-			}
-			const task = InteractionManager.runAfterInteractions(() => {
-				_markingContentLoaded = true;
-				setIsContentVisible(true);
-				setContentVisibleMs(Math.round(performance.now() - mountTimeRef.current));
-			});
-			return () => {
-				task.cancel();
-			};
-		}, [])
-	);
-
 	useEffect(() => {
 		if (animationJson && autoPlay && animationRef.current) {
-			animationRef?.current?.play(); // Reset animation to ensure it starts fresh
+			animationRef.current.play();
 		}
 	}, [animationJson, autoPlay]);
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
+			return (
+				<LottieView
+					ref={animationRef}
+					source={animationJson}
+					resizeMode="contain"
+					style={{ width: '100%', height: '100%' }}
+					autoPlay={autoPlay || false}
+					loop={false}
+				/>
+			);
 		}
 	}, [autoPlay, animationJson]);
 
 	useEffect(() => {
 		const handleResize = () => {
 			setScreenWidth(Dimensions.get('window').width);
-			if (Dimensions.get('window').width > 600) {
-				setReadMore(true);
-			}
+			if (Dimensions.get('window').width > 600) setReadMore(true);
 		};
-
 		const subscription = Dimensions.addEventListener('change', handleResize);
-
 		return () => subscription?.remove();
 	}, []);
 
-	const handleReadMore = () => {
-		setReadMore(!readMore);
-	};
-
 	const handleClearMarkings = useCallback(async () => {
 		if (!profile) return;
-
-		const updatedProfile = {
-			...profile,
-			markings: [],
-		};
-
+		const updatedProfile = { ...profile, markings: [] };
 		dispatch({ type: UPDATE_PROFILE, payload: updatedProfile });
-
 		if (isAnonymousUser) return;
-
 		try {
 			const result = await profileHelper.updateProfile(updatedProfile);
-			if (result) {
-				dispatch({ type: UPDATE_PROFILE, payload: result });
-			}
+			if (result) dispatch({ type: UPDATE_PROFILE, payload: result });
 		} catch (error) {
 			console.error('Error clearing markings:', error);
 		}
@@ -240,36 +191,38 @@ const Index = () => {
 		animationReadyMs !== null
 			? `${translate(TranslationKeys.eating_habits_debug_animation_time)}: ${animationReadyMs}ms`
 			: `${translate(TranslationKeys.eating_habits_debug_animation_time)}: …`,
-		contentVisibleMs !== null
-			? `${translate(TranslationKeys.eating_habits_debug_content_time)}: ${contentVisibleMs}ms`
-			: isContentVisible
-				? `${translate(TranslationKeys.eating_habits_debug_content_time)}: cached (instant)`
-				: `${translate(TranslationKeys.eating_habits_debug_content_time)}: …`,
-	], [totalMarkingsCount, animationReadyMs, contentVisibleMs, isContentVisible, translate]);
+		`${translate(TranslationKeys.eating_habits_debug_content_time)}: immediate (no defer) – first render: ${firstRenderMs}ms`,
+	], [totalMarkingsCount, animationReadyMs, firstRenderMs, translate]);
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
 			<View style={{ flex: 1 }}>
-				<ScrollView style={{ backgroundColor: theme.screen.background }} contentContainerStyle={styles.contentContainer}>
-					<View style={styles.gifContainer}>{renderLottie}</View>
+				<ScrollView
+					style={{ backgroundColor: theme.screen.background }}
+					contentContainerStyle={eatingHabitsStyles.contentContainer}
+				>
+					<View style={eatingHabitsStyles.gifContainer}>{renderLottie}</View>
 					<View
 						style={{
-							...styles.eatingHabitsContainer,
+							...eatingHabitsStyles.eatingHabitsContainer,
 							width: isWeb ? (screenWidth > 600 ? '80%' : '100%') : '100%',
 						}}
 					>
-						<DebugView title="Performance" logs={debugLogs} showInDevMode />
-						<Text style={{ ...styles.body1, color: theme.screen.text }}>{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}</Text>
-						{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
-						<View style={styles.readMoreContainer}>
+						<DebugView title="Performance (No Defer)" logs={debugLogs} isVisible />
+						<Text style={{ ...eatingHabitsStyles.body1, color: theme.screen.text }}>
+							{readMore
+								? translate(TranslationKeys.eatinghabits_introduction)
+								: excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}
+						</Text>
+						{readMore && <FoodLabelingInfo textStyle={eatingHabitsStyles.body2} backgroundColor={primaryColor} />}
+						<View style={eatingHabitsStyles.readMoreContainer}>
 							<TouchableOpacity
-								onPress={handleReadMore}
-								style={{
-									...styles.readMoreButton,
-									backgroundColor: theme.primary,
-								}}
+								onPress={() => setReadMore(!readMore)}
+								style={{ ...eatingHabitsStyles.readMoreButton, backgroundColor: theme.primary }}
 							>
-								<Text style={{ ...styles.readMore, color: contrastColor }}>{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}</Text>
+								<Text style={{ ...eatingHabitsStyles.readMore, color: contrastColor }}>
+									{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
+								</Text>
 							</TouchableOpacity>
 						</View>
 						<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
@@ -280,30 +233,26 @@ const Index = () => {
 							handleFunction={handleClearMarkings}
 							groupPosition="single"
 						/>
-						{isContentVisible ? (
-							markingsSections.map((section) => (
-								<View key={section.group?.id || 'ungrouped'}>
-									{section.group && (
-										<SettingsGroupTitle>
-											{getTextFromTranslation(section.group.translations, language) || section.group.alias || ''}
-										</SettingsGroupTitle>
-									)}
-									<SettingsListMarkingLabels
-										markingIds={section.markingIds}
-										handleMenuSheet={openMenuSheet}
-									/>
-								</View>
-							))
-						) : (
-							<ActivityIndicator color={primaryColor} style={{ marginTop: 20 }} />
-						)}
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />
-                                </View>
-                        </ScrollView>
-                </View>
-                {isActive && <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />}
+						{/* Markings rendered immediately without deferral */}
+						{markingsSections.map((section) => (
+							<View key={section.group?.id || 'ungrouped'}>
+								{section.group && (
+									<SettingsGroupTitle>
+										{getTextFromTranslation(section.group.translations, language) || section.group.alias || ''}
+									</SettingsGroupTitle>
+								)}
+								<SettingsListMarkingLabels
+									markingIds={section.markingIds}
+									handleMenuSheet={openMenuSheet}
+								/>
+							</View>
+						))}
+					</View>
+				</ScrollView>
+			</View>
+			{isActive && <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />}
 		</SafeAreaView>
 	);
 };
 
-export default Index;
+export default EatingHabitsPerformanceNoDefer;
