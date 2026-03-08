@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import CustomDrawerContent from '@/components/Drawer/CustomDrawerContent';
 import { useTheme } from '@/hooks/useTheme';
@@ -55,28 +55,28 @@ export default function Layout() {
 	const { deviceMock } = useGlobalSearchParams();
 	const kioskMode = useKioskMode();
 	const dispatch = useDispatch();
-	const wikisHelper = new WikisHelper();
-	const markingHelper = new MarkingHelper();
-	const profileHelper = new ProfileHelper();
-	const popupEventsHelper = new PopupEventsHelper();
-	const appSettingsHelper = new AppSettingsHelper();
-	const appElementsHelper = new AppElementsHelper();
-	const foodFeedbackHelper = new FoodFeedbackHelper();
-	const businessHoursHelper = new BusinessHoursHelper();
-	const markingGroupsHelper = new MarkingGroupsHelper();
-	const foodAttributesHelper = new FoodAttributesHelper();
-	const foodCategoriesHelper = new FoodCategoriesHelper();
-	const foodfeedbackLabelHelper = new FoodFeedbackLabelHelper();
-        const foodAttributeGroupHelper = new FoodAttributeGroupHelper();
-        const businessHoursGroupsHelper = new BusinessHoursGroupsHelper();
-        const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
-        const foodOffersInfoItemsHelper = new FoodOffersInfoItemsHelper();
-        const newsHelper = new NewsHelper();
-        const collectibleEventsHelper = new CollectibleEventsHelper();
-        const chatsHelper = new ChatsHelper();
-        const collectionLastUpdateHelper = new CollectionLastUpdateHelper();
-        const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
-	const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
+	const wikisHelper = useMemo(() => new WikisHelper(), []);
+	const markingHelper = useMemo(() => new MarkingHelper(), []);
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
+	const popupEventsHelper = useMemo(() => new PopupEventsHelper(), []);
+	const appSettingsHelper = useMemo(() => new AppSettingsHelper(), []);
+	const appElementsHelper = useMemo(() => new AppElementsHelper(), []);
+	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
+	const businessHoursHelper = useMemo(() => new BusinessHoursHelper(), []);
+	const markingGroupsHelper = useMemo(() => new MarkingGroupsHelper(), []);
+	const foodAttributesHelper = useMemo(() => new FoodAttributesHelper(), []);
+	const foodCategoriesHelper = useMemo(() => new FoodCategoriesHelper(), []);
+	const foodfeedbackLabelHelper = useMemo(() => new FoodFeedbackLabelHelper(), []);
+	const foodAttributeGroupHelper = useMemo(() => new FoodAttributeGroupHelper(), []);
+	const businessHoursGroupsHelper = useMemo(() => new BusinessHoursGroupsHelper(), []);
+	const foodOffersCategoriesHelper = useMemo(() => new FoodOffersCategoriesHelper(), []);
+	const foodOffersInfoItemsHelper = useMemo(() => new FoodOffersInfoItemsHelper(), []);
+	const newsHelper = useMemo(() => new NewsHelper(), []);
+	const collectibleEventsHelper = useMemo(() => new CollectibleEventsHelper(), []);
+	const chatsHelper = useMemo(() => new ChatsHelper(), []);
+	const collectionLastUpdateHelper = useMemo(() => new CollectionLastUpdateHelper(), []);
+	const foodFeedbackLabelEntryHelper = useMemo(() => new FoodFeedbackLabelEntryHelper(), []);
+	const canteenFeedbackLabelEntryHelper = useMemo(() => new CanteenFeedbackLabelEntryHelper(), []);
 	const { popupEvents } = useAppSelector((state) => state.food);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
@@ -517,6 +517,19 @@ export default function Layout() {
 		getAllCollectionDatesLastUpdate();
 	}, [user]);
 
+	const drawerScreenOptions = useMemo(
+		() => ({
+			headerStyle: { backgroundColor: theme.header.background },
+			headerTintColor: theme.header.text,
+			drawerType: 'front' as const,
+			drawerPosition: (() => {
+				const position = drawerPosition === 'system' ? 'left' : drawerPosition;
+				return position === 'left' || position === 'right' ? position : 'left';
+			})() as 'left' | 'right',
+		}),
+		[theme.header.background, theme.header.text, drawerPosition]
+	);
+
 	if (!loggedIn && !kioskMode) {
 		return <Redirect href="/(auth)/login" />;
 	}
@@ -525,17 +538,9 @@ export default function Layout() {
 		<>
 			{deviceMock && deviceMock === 'iphone' && isWeb && <DeviceMock />}
 			<Drawer
-				screenOptions={{
-					headerStyle: { backgroundColor: theme.header.background },
-					headerTintColor: theme.header.text,
-					drawerType: 'front',
-					drawerPosition: (() => {
-						const position = drawerPosition === 'system' ? 'left' : drawerPosition;
-						return position === 'left' || position === 'right' ? position : 'left';
-					})(),
-				}}
+				screenOptions={drawerScreenOptions}
 				detachInactiveScreens={true}
-				drawerContent={props => <CustomDrawerContent {...props} />}
+				drawerContent={CustomDrawerContent}
 				backBehavior="history"
 			>
 				<Drawer.Screen
