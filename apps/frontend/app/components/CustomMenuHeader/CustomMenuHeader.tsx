@@ -8,7 +8,7 @@ import { useNavigation } from 'expo-router';
 import { CustomMenuHeaderProps, DrawerParamList } from './types';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useAppSelector } from '@/redux/hooks';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
@@ -44,7 +44,7 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 							: { justifyContent: 'flex-start', flexDirection: 'row' },
 					]}
 				>
-					<Tooltip
+					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
                                                         <TouchableOpacity
@@ -74,7 +74,7 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 								{`${translate(TranslationKeys.open_drawer)}`}
 							</TooltipText>
 						</TooltipContent>
-					</Tooltip>
+					</CustomTooltip>
 
 					<Text style={{ ...styles.heading, color: theme.header.text }}>{label}</Text>
 				</View>

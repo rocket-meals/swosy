@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
@@ -32,7 +32,7 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
     return (
         <View style={{ ...styles.tabViewContainer, width: '100%' }}>
             <View style={{ ...styles.tabs, width: '100%', gap: screenWidth > 900 ? 20 : 0 }}>
-                <Tooltip
+                <CustomTooltip
                     placement="top"
                     trigger={triggerProps => (
                         <IconButton
@@ -56,9 +56,9 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
                             {`${translate(TranslationKeys.information)}`}
                         </TooltipText>
                     </TooltipContent>
-                </Tooltip>
+                </CustomTooltip>
 
-                <Tooltip
+                <CustomTooltip
                     placement="top"
                     trigger={triggerProps => (
                         <IconButton
@@ -82,7 +82,7 @@ const DetailsTabs: React.FC<DetailsTabsProps> = ({
                             {`${translate(TranslationKeys.description)}`}
                         </TooltipText>
                     </TooltipContent>
-                </Tooltip>
+                </CustomTooltip>
             </View>
 
             <View

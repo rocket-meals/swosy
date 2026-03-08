@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { getImageUrl, numToOneDecimal } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
@@ -52,7 +52,7 @@ const FoodHeader = ({
             {Array.from({ length: 5 }).map((_, index) => (
                 <React.Fragment key={index}>
                     {isWeb ? (
-                        <Tooltip
+                        <CustomTooltip
                             placement="top"
                             trigger={(triggerProps) => (
                                 <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
@@ -69,7 +69,7 @@ const FoodHeader = ({
                                     {`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
                                 </TooltipText>
                             </TooltipContent>
-                        </Tooltip>
+                        </CustomTooltip>
                     ) : (
                         <TouchableOpacity onPress={() => rateFood(index + 1)}>
                             <MaterialIcons

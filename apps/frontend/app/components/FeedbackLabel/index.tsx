@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL } from '@/redux/Types/types';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
@@ -59,7 +59,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
 				trigger={triggerProps => (
@@ -78,7 +78,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 						{labelText}
 					</TooltipText>
 				</TooltipContent>
-			</Tooltip>
+			</CustomTooltip>
 		</View>
 	);
 
