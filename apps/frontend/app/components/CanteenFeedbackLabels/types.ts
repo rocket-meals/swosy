@@ -5,6 +5,7 @@ export interface CanteenFeedbackLabelProps {
 	label: DatabaseTypes.CanteensFeedbacksLabels;
 	date: string;
 	groupPosition?: SettingsListProps['groupPosition'];
+	isAccountRequired?: boolean;
 }
 
 export interface ModifiedCanteensFeedbacksLabelsEntries {

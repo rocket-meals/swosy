@@ -199,11 +199,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				const total = labels.length;
 				const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
 				return (
-					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} />
+					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} isAccountRequired={!user?.id} />
 				);
 			})}
 			{commentType !== 'disabled' && commentType !== 'read' && (
-				<View style={styles.ratingSummaryContainer}>
+				<View style={styles.commentSectionContainer}>
 					<SettingsListTextInput
 						label={translate(TranslationKeys.your_comment)}
 						value={comment || translate(TranslationKeys.write_a_comment)}
@@ -217,6 +217,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 						groupPosition="single"
 						saveLabel={translate(TranslationKeys.save_comment)}
 						checkTextInput={(value) => ({ isValid: value.length <= 120, value })}
+						isAccountRequired={!user?.id}
 					/>
 				</View>
 			)}

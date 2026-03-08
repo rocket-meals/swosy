@@ -16,7 +16,7 @@ import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 
-const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId, groupPosition }) => {
+const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, labelEntries, foodId, offerId, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
@@ -98,6 +98,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({ label, icon, imageUrl, la
 			title={labelText || ''}
 			rightElement={rightElement}
 			groupPosition={groupPosition}
+			isAccountRequired={isAccountRequired}
 		/>
 	);
 };
