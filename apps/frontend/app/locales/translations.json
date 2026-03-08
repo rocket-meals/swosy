@@ -5183,6 +5183,16 @@
         "tr": "SettingsListFast: No Tooltips (fast)",
         "zh": "SettingsListFast: No Tooltips (fast)"
     },
+    "eating_habits_performance_settings_list_flash": {
+        "de": "SettingsListFlash: FlashList (kein ScrollView)",
+        "en": "SettingsListFlash: FlashList (no ScrollView)",
+        "ar": "SettingsListFlash: FlashList (no ScrollView)",
+        "es": "SettingsListFlash: FlashList (no ScrollView)",
+        "fr": "SettingsListFlash: FlashList (no ScrollView)",
+        "ru": "SettingsListFlash: FlashList (no ScrollView)",
+        "tr": "SettingsListFlash: FlashList (no ScrollView)",
+        "zh": "SettingsListFlash: FlashList (no ScrollView)"
+    },
     "eating_habits_debug_mount_time": {
         "de": "Screen-Mount-Zeit",
         "en": "Screen mount time",
