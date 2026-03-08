@@ -70,6 +70,7 @@ const LoginHeader = () => {
 	}, []);
 
         const selectedLanguage = language;
+        const selectedLanguageOption = languages.find(lang => lang.value === selectedLanguage);
 	return (
 		<View style={styles.header}>
 			<MyImage
@@ -95,7 +96,7 @@ const LoginHeader = () => {
 						color: theme.screen.text,
 					}}
 				>
-                                        {languages.find(lang => lang.value === selectedLanguage)?.label || 'selected language'}
+                                        {selectedLanguageOption?.emoji}{' '}{selectedLanguageOption?.label || 'selected language'}
                                 </Text>
                                 <Entypo name="chevron-small-down" size={25} color={theme.screen.icon} />
                         </TouchableOpacity>
