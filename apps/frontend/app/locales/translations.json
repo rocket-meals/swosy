@@ -5113,6 +5113,56 @@
         "tr": "Without Deferred Render",
         "zh": "Without Deferred Render"
     },
+    "eating_habits_performance_plain_text": {
+        "de": "Plain: Nur Text & Übersetzungen",
+        "en": "Plain: Text & Translations Only",
+        "ar": "Plain: Text & Translations Only",
+        "es": "Plain: Text & Translations Only",
+        "fr": "Plain: Text & Translations Only",
+        "ru": "Plain: Text & Translations Only",
+        "tr": "Plain: Text & Translations Only",
+        "zh": "Plain: Text & Translations Only"
+    },
+    "eating_habits_performance_plain_text_image": {
+        "de": "Plain: Text, Übersetzung & Bild",
+        "en": "Plain: Text, Translation & Image",
+        "ar": "Plain: Text, Translation & Image",
+        "es": "Plain: Text, Translation & Image",
+        "fr": "Plain: Text, Translation & Image",
+        "ru": "Plain: Text, Translation & Image",
+        "tr": "Plain: Text, Translation & Image",
+        "zh": "Plain: Text, Translation & Image"
+    },
+    "eating_habits_performance_plain_each_component": {
+        "de": "Plain: Jede Markierung als eigene Komponente",
+        "en": "Plain: Each Marking as Own Component",
+        "ar": "Plain: Each Marking as Own Component",
+        "es": "Plain: Each Marking as Own Component",
+        "fr": "Plain: Each Marking as Own Component",
+        "ru": "Plain: Each Marking as Own Component",
+        "tr": "Plain: Each Marking as Own Component",
+        "zh": "Plain: Each Marking as Own Component"
+    },
+    "eating_habits_performance_plain_component_with_image": {
+        "de": "Plain: Komponente mit Bild & Text",
+        "en": "Plain: Component with Image & Text",
+        "ar": "Plain: Component with Image & Text",
+        "es": "Plain: Component with Image & Text",
+        "fr": "Plain: Component with Image & Text",
+        "ru": "Plain: Component with Image & Text",
+        "tr": "Plain: Component with Image & Text",
+        "zh": "Plain: Component with Image & Text"
+    },
+    "eating_habits_performance_plain_component_full": {
+        "de": "Plain: Vollständige Komponente mit Like-Status",
+        "en": "Plain: Full Component with Like State",
+        "ar": "Plain: Full Component with Like State",
+        "es": "Plain: Full Component with Like State",
+        "fr": "Plain: Full Component with Like State",
+        "ru": "Plain: Full Component with Like State",
+        "tr": "Plain: Full Component with Like State",
+        "zh": "Plain: Full Component with Like State"
+    },
     "eating_habits_debug_mount_time": {
         "de": "Screen-Mount-Zeit",
         "en": "Screen mount time",
