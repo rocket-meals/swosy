@@ -6,7 +6,7 @@ import { isWeb } from '@/constants/Constants';
 import FoodLabelingInfo from '@/components/FoodLabelingInfo';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
+import SettingsListMarkingLabelsFast from '@/components/SettingsListMarkingLabelsFast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { excerpt } from '@/constants/HelperFunctions';
 import animation from '@/assets/animations/allergist.json';
@@ -288,7 +288,7 @@ const Index = () => {
 											{getTextFromTranslation(section.group.translations, language) || section.group.alias || ''}
 										</SettingsGroupTitle>
 									)}
-									<SettingsListMarkingLabels
+									<SettingsListMarkingLabelsFast
 										markingIds={section.markingIds}
 										handleMenuSheet={openMenuSheet}
 									/>
