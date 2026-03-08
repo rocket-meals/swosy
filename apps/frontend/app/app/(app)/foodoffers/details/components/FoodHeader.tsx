@@ -21,6 +21,8 @@ interface FoodHeaderProps {
     theme: any;
     translate: (key: string) => string;
     defaultImage?: string | null;
+    isAccountRequired?: boolean;
+    containerWidth?: string | number;
 }
 
 const FoodHeader = ({
@@ -34,6 +36,8 @@ const FoodHeader = ({
     theme,
     translate,
     defaultImage,
+    isAccountRequired,
+    containerWidth,
 }: FoodHeaderProps) => {
     const isLargeScreen = screenWidth > 1000;
     const isMediumScreen = screenWidth > 800;
@@ -142,7 +146,7 @@ const FoodHeader = ({
                                 </View>
                             )}
                         </View>
-                        <View style={isLargeScreen ? null : styles.marginTopMedium}>
+                        <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth } : null]}>
                             <SettingsList
                                 leftIcon={<MaterialIcons name="star" size={22} />}
                                 iconBgColor={foodsAreaColor}
@@ -150,6 +154,7 @@ const FoodHeader = ({
                                 rightElement={renderRatingStars()}
                                 showSeparator={false}
                                 groupPosition="single"
+                                isAccountRequired={isAccountRequired}
                             />
                         </View>
                     </View>
@@ -226,13 +231,15 @@ const FoodHeader = ({
                 {foodDetails?.name}
             </Text>
             <View style={styles.marginTopMedium}>
+                {/* groupPosition="top" so the rating item visually groups with the notification item below (no gap, "bottom" position on mobile) */}
                 <SettingsList
                     leftIcon={<MaterialIcons name="star" size={22} />}
                     iconBgColor={foodsAreaColor}
                     title={translate(TranslationKeys.RATE_FOOD)}
                     rightElement={renderRatingStars()}
                     showSeparator={false}
-                    groupPosition="single"
+                    groupPosition="top"
+                    isAccountRequired={isAccountRequired}
                 />
             </View>
         </View>
@@ -246,6 +253,7 @@ export default memo(FoodHeader, (prevProps, nextProps) => {
         prevProps.previousFeedback === nextProps.previousFeedback &&
         prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
         prevProps.theme === nextProps.theme &&
-        prevProps.defaultImage === nextProps.defaultImage
+        prevProps.defaultImage === nextProps.defaultImage &&
+        prevProps.isAccountRequired === nextProps.isAccountRequired
     );
 });

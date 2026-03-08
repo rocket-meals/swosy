@@ -351,6 +351,8 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         theme={theme}
                         translate={translate}
                         defaultImage={defaultImage}
+                        isAccountRequired={!user?.id}
+                        containerWidth={getContainerWidth}
                     />
 
                     <NotificationSection
@@ -360,6 +362,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
                         previousFeedback={previousFeedback}
                         updateNotification={updateNotification}
                         foodsAreaColor={foods_area_color}
+                        isAccountRequired={!user?.id}
                     />
 
                     <TabController
