@@ -80,34 +80,6 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 		}
 	}, [profileHelper, user?.profile, dispatch]);
 
-	const handleAnonymousMarking = useCallback((like: boolean) => {
-		const profileData = { ...profile };
-		let markingFound = false;
-
-		profileData?.markings?.forEach((profileMarkings: any, index: number) => {
-			if (profileMarkings?.markings_id === markingId) {
-				const likeStats = profileMarkings?.like === like ? null : like;
-				markingFound = true;
-				if (likeStats === null) {
-					profileData?.markings.splice(index, 1);
-				} else {
-					profileData.markings[index] = { ...ownMarking, like: like };
-				}
-			}
-		});
-
-		if (!markingFound) {
-			profileData?.markings?.push({
-				...ownMarking,
-				like: like,
-				markings_id: markingId,
-				profiles_id: profileData?.id,
-			});
-		}
-
-		dispatch({ type: UPDATE_PROFILE, payload: profileData });
-	}, [profile, ownMarking, markingId, dispatch]);
-
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
 			if (like) {
@@ -115,64 +87,48 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 			} else {
 				setDislikeLoading(true);
 			}
-			if (isAnonymousUser) {
-				handleAnonymousMarking(like);
+			try {
+				const newLike = ownMarking?.like === like ? null : like;
+
+				// Create a new array reference so Redux selectors recompute after dispatch
+				const markingsCopy = [...(profile?.markings ?? [])];
+				const existingIndex = markingsCopy.findIndex((m: any) => m.markings_id === markingId);
+
+				if (existingIndex >= 0) {
+					if (newLike === null) {
+						markingsCopy.splice(existingIndex, 1);
+					} else {
+						markingsCopy[existingIndex] = { ...markingsCopy[existingIndex], like: newLike };
+					}
+				} else {
+					markingsCopy.push({
+						...(ownMarking ?? {}),
+						like: newLike,
+						markings_id: markingId,
+						profiles_id: profile?.id,
+					});
+				}
+
+				const profileData = { ...profile, markings: markingsCopy };
+				dispatch({ type: UPDATE_PROFILE, payload: profileData });
+
+				if (isAnonymousUser) return;
+
+				const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
+				if (result) {
+					fetchProfile();
+				}
+			} catch (error) {
+				console.error('Error updating marking:', error);
+			} finally {
 				if (like) {
 					setLikeLoading(false);
 				} else {
 					setDislikeLoading(false);
 				}
-				return;
-			} else {
-				try {
-					const likeStats = ownMarking?.like === like ? null : like;
-					const updatedMarking = { ...ownMarking, like: likeStats };
-
-					const profileData = { ...profile };
-					let markingFound = false;
-
-					profileData?.markings.forEach((profileMarkings: any, index: number) => {
-						if (profileMarkings.markings_id === updatedMarking?.markings_id) {
-							markingFound = true;
-							if (updatedMarking?.like === null) {
-								profileData.markings.splice(index, 1);
-							} else {
-								profileData.markings[index] = updatedMarking;
-							}
-						}
-					});
-
-					if (!markingFound) {
-						profileData.markings.push({
-							...updatedMarking,
-							markings_id: markingId,
-							profiles_id: profileData?.id,
-						});
-					}
-
-					dispatch({ type: UPDATE_PROFILE, payload: profileData });
-
-					const result = (await profileHelper.updateProfile(profileData)) as DatabaseTypes.Profiles;
-					if (result) {
-						fetchProfile();
-						if (like) {
-							setLikeLoading(false);
-						} else {
-							setDislikeLoading(false);
-						}
-					}
-				} catch (error) {
-					console.error('Error updating marking:', error);
-				} finally {
-					if (like) {
-						setLikeLoading(false);
-					} else {
-						setDislikeLoading(false);
-					}
-				}
 			}
 		},
-		[user?.id, profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile, isAnonymousUser, handleAnonymousMarking]
+		[profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile, isAnonymousUser]
 	);
 
 	const handlePressLike = useCallback(() => handleUpdateMarking(true), [handleUpdateMarking]);
