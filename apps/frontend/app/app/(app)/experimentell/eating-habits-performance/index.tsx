@@ -35,6 +35,36 @@ const EatingHabitsPerformanceIndex = () => {
 			leftIcon: <MaterialCommunityIcons name="timer-off-outline" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/eating-habits-performance/no-defer'),
 		},
+		{
+			key: 'plain-text',
+			label: translate(TranslationKeys.eating_habits_performance_plain_text),
+			leftIcon: <MaterialCommunityIcons name="text-box-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance/plain-text'),
+		},
+		{
+			key: 'plain-text-image',
+			label: translate(TranslationKeys.eating_habits_performance_plain_text_image),
+			leftIcon: <MaterialCommunityIcons name="image-text" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance/plain-text-image'),
+		},
+		{
+			key: 'plain-each-component',
+			label: translate(TranslationKeys.eating_habits_performance_plain_each_component),
+			leftIcon: <MaterialCommunityIcons name="view-list-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance/plain-each-component'),
+		},
+		{
+			key: 'plain-component-with-image',
+			label: translate(TranslationKeys.eating_habits_performance_plain_component_with_image),
+			leftIcon: <MaterialCommunityIcons name="card-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance/plain-component-with-image'),
+		},
+		{
+			key: 'plain-component-full',
+			label: translate(TranslationKeys.eating_habits_performance_plain_component_full),
+			leftIcon: <MaterialCommunityIcons name="format-list-bulleted" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance/plain-component-full'),
+		},
 	];
 
 	return (
