@@ -98,10 +98,15 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
 
 	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: noIconIndent ? 0 : 54 }]} /> : null;
 
+	const accountRequiredBorderStyle: ViewStyle =
+		groupPosition === 'middle' || groupPosition === 'bottom'
+			? { borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }
+			: { borderWidth: 2 };
+
 	if (isAccountRequired) {
 		return (
 			<>
-				<View style={[styles.accountRequiredWrapper, wrapperBorderRadius, { borderColor: primaryColor }]}>
+				<View style={[styles.accountRequiredWrapper, wrapperBorderRadius, accountRequiredBorderStyle, { borderColor: primaryColor }]}>
 					{inner}
 					<View
 						pointerEvents="none"
@@ -193,7 +198,6 @@ const styles = StyleSheet.create({
 	accountRequiredWrapper: {
 		position: 'relative',
 		overflow: 'hidden',
-		borderWidth: 2,
 		borderStyle: 'dashed',
 	},
 	dimOverlay: {
