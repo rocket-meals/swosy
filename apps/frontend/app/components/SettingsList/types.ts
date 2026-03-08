@@ -52,6 +52,13 @@ type SettingsListPropsOwn = {
 	 * Render the title in italic style.
 	 */
 	italic?: boolean;
+	/**
+	 * When true the item is shown with a dashed border (using the primary
+	 * color) and a semi-transparent dim overlay with a centered lock icon to
+	 * indicate that an account is required.  The original left icon is kept
+	 * unchanged.
+	 */
+	isAccountRequired?: boolean;
 }
 
 export type SettingsListProps = PropsWithChildren<SettingsListPropsOwn>;

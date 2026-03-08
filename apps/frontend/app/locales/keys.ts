@@ -499,6 +499,8 @@ export enum TranslationKeys {
 	guess_most_disliked_marking = 'guess_most_disliked_marking',
 	food_memory_game = 'food_memory_game',
 	guess_more_expensive_dish = 'guess_more_expensive_dish',
+	food_offer_contains_disliked_markings = 'food_offer_contains_disliked_markings',
+	account_required_example = 'account_required_example',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',

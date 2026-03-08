@@ -11,7 +11,7 @@ import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/types';
+import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { router } from 'expo-router';
 import { createSelector } from 'reselect';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -27,6 +27,7 @@ import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 import useFoodOfferDetailsModal from '@/hooks/useFoodOfferDetailsModal';
 import { MarkingContent } from '../MarkingBottomSheet';
+import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
@@ -41,7 +42,6 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     item, 
     canteen, 
     handleImageSheet, 
-    handleEatingHabitsSheet, 
     cardWidth, 
     previousFeedback,
     // Opt props
@@ -181,9 +181,22 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     );
 
     const handleOpenSheet = useCallback(() => {
-      dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
-      handleEatingHabitsSheet('eatingHabits');
-    }, [dispatch, dislikedMarkings, handleEatingHabitsSheet]);
+      showScrollViewModal({
+        children: (
+          <View>
+            <Text style={[styles.markingHintText, { color: theme.screen.text }]}>
+              {translate(TranslationKeys.food_offer_contains_disliked_markings)}
+            </Text>
+            <Labels
+              foodDetails={foodItem}
+              offerId={item?.id}
+              foodOfferDetails={item}
+              color={foods_area_color}
+            />
+          </View>
+        ),
+      });
+    }, [showScrollViewModal, foodItem, item, foods_area_color, translate, theme.screen.text]);
 
     const updateRating = useCallback(
       async (rating: number | null) => {

@@ -8,6 +8,7 @@ import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
 import MyImage from '@/components/MyImage';
+import SettingsList from '@/components/SettingsList';
 
 interface FoodHeaderProps {
     foodDetails: any;
@@ -141,17 +142,15 @@ const FoodHeader = ({
                                 </View>
                             )}
                         </View>
-                        <View
-                            style={[
-                                styles.ratingContainer,
-                                { backgroundColor: theme.screen.iconBg },
-                                isLargeScreen ? null : styles.marginTopMedium
-                            ]}
-                        >
-                            <Text style={[styles.rateUs, { color: theme.screen.text }]}>
-                                {translate(TranslationKeys.RATE_FOOD)}
-                            </Text>
-                            {renderRatingStars()}
+                        <View style={isLargeScreen ? null : styles.marginTopMedium}>
+                            <SettingsList
+                                leftIcon={<MaterialIcons name="star" size={22} />}
+                                iconBgColor={foodsAreaColor}
+                                title={translate(TranslationKeys.RATE_FOOD)}
+                                rightElement={renderRatingStars()}
+                                showSeparator={false}
+                                groupPosition="single"
+                            />
                         </View>
                     </View>
                 </View>
@@ -226,21 +225,15 @@ const FoodHeader = ({
             >
                 {foodDetails?.name}
             </Text>
-            <View
-                style={[
-                    styles.mobileRatingContainer,
-                    { backgroundColor: theme.screen.iconBg }
-                ]}
-            >
-                <Text
-                    style={[
-                        styles.mobileRateUs,
-                        { color: theme.screen.text }
-                    ]}
-                >
-                    {translate(TranslationKeys.RATE_FOOD)}
-                </Text>
-                {renderRatingStars()}
+            <View style={styles.marginTopMedium}>
+                <SettingsList
+                    leftIcon={<MaterialIcons name="star" size={22} />}
+                    iconBgColor={foodsAreaColor}
+                    title={translate(TranslationKeys.RATE_FOOD)}
+                    rightElement={renderRatingStars()}
+                    showSeparator={false}
+                    groupPosition="single"
+                />
             </View>
         </View>
     );

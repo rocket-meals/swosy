@@ -23,8 +23,10 @@ docker compose down
 log "Sichere .env nach $BACKUP_FILE"
 cp .env "$BACKUP_FILE"
 
-log "Hole neue Änderungen (git pull --ff-only)"
-git pull --ff-only
+log "Hole neue Änderungen (git fetch + reset)"
+git fetch origin
+BRANCH="$(git rev-parse --abbrev-ref HEAD)" || { log "Fehler: Aktuellen Branch konnte nicht ermittelt werden (detached HEAD?)" >&2; exit 1; }
+git reset --hard "origin/$BRANCH"
 
 log "Stelle .env aus Backup wieder her"
 cp "$BACKUP_FILE" .env

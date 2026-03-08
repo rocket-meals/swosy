@@ -1,23 +1,21 @@
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { SET_MARKING_DETAILS, UPDATE_PROFILE } from '@/redux/Types/types';
 import PermissionModal from '../PermissionModal/PermissionModal';
 import { useTheme } from '@/hooks/useTheme';
-import { isWeb } from '@/constants/Constants';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import MarkingIcon from '../MarkingIcon';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
 import { SettingsListProps } from '@/components/SettingsList/types';
+import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 
 export interface SettingsListMarkingLabelProps {
 	markingId: string;
@@ -37,13 +35,9 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const { translate } = useLanguage();
 	const [warning, setWarning] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
-	const primaryColor = useAppSelector(state => state.settings.primaryColor);
 	const language = useAppSelector(state => state.settings.language);
-	const appSettings = useAppSelector(state => state.settings.appSettings);
-
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 	const markings = useAppSelector(state => state.food.markings);
 	const marking = markings?.find((mark: any) => mark.id === markingId);
 	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
@@ -66,7 +60,6 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	if (!marking) return null;
 
 	const markingText = getTextFromTranslation(marking?.translations, language);
-	const iconSize = isWeb ? 24 : 22;
 
 	const handleAnonymousMarking = (like: boolean) => {
 		const profileData = { ...profile };
@@ -210,62 +203,15 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 
 	const rightElement = (
 		<View style={styles.rightRow}>
-			<Tooltip
-				placement="top"
-				trigger={triggerProps => (
-					<Pressable
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-						{...triggerProps}
-						onPress={() => handleUpdateMarking(true)}
-						style={{ padding: 8 }}
-					>
-						{likeLoading ? (
-							<ActivityIndicator size={iconSize} color={foods_area_color} />
-						) : (
-							<MaterialCommunityIcons
-								name={ownMarking?.like ? 'thumb-up' : 'thumb-up-outline'}
-								size={iconSize}
-								color={ownMarking?.like ? foods_area_color : theme.screen.icon}
-							/>
-						)}
-					</Pressable>
-				)}
-			>
-				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{`${translate(TranslationKeys.i_like_that)}: ${translate(ownMarking?.like ? TranslationKeys.active : TranslationKeys.inactive)}: ${translate(TranslationKeys.markings)}: ${markingText}`}
-					</TooltipText>
-				</TooltipContent>
-			</Tooltip>
-			<Tooltip
-				placement="top"
-				trigger={triggerProps => (
-					<Pressable
-						onHoverIn={() => setShowTooltip(true)}
-						onHoverOut={() => setShowTooltip(false)}
-						{...triggerProps}
-						onPress={() => handleUpdateMarking(false)}
-						style={{ padding: 8 }}
-					>
-						{dislikeLoading ? (
-							<ActivityIndicator size={iconSize} color={foods_area_color} />
-						) : (
-							<MaterialCommunityIcons
-								name={ownMarking?.like === false ? 'thumb-down' : 'thumb-down-outline'}
-								size={iconSize}
-								color={ownMarking?.like === false ? foods_area_color : theme.screen.icon}
-							/>
-						)}
-					</Pressable>
-				)}
-			>
-				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{`${translate(TranslationKeys.i_dislike_that)}: ${translate(ownMarking?.like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${translate(TranslationKeys.markings)}: ${markingText}`}
-					</TooltipText>
-				</TooltipContent>
-			</Tooltip>
+			<SettingsListLikeDislike
+				like={ownMarking?.like}
+				onPressLike={() => handleUpdateMarking(true)}
+				onPressDislike={() => handleUpdateMarking(false)}
+				likeTooltipText={`${translate(TranslationKeys.i_like_that)}: ${translate(ownMarking?.like ? TranslationKeys.active : TranslationKeys.inactive)}: ${translate(TranslationKeys.markings)}: ${markingText}`}
+				dislikeTooltipText={`${translate(TranslationKeys.i_dislike_that)}: ${translate(ownMarking?.like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${translate(TranslationKeys.markings)}: ${markingText}`}
+				likeLoading={likeLoading}
+				dislikeLoading={dislikeLoading}
+			/>
 			<PermissionModal isVisible={warning} setIsVisible={setWarning} />
 		</View>
 	);

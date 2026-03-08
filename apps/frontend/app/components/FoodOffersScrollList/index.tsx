@@ -16,6 +16,9 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useAppSelector } from '@/redux/hooks';
+import { useDispatch } from 'react-redux';
+import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
+import { SET_CANTEEN_FEEDBACK_LABELS } from '@/redux/Types/types';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
@@ -40,10 +43,12 @@ interface DayItem {
 
 const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
+const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const dispatch = useDispatch();
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
 	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
@@ -64,6 +69,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
+
+	useEffect(() => {
+		const fetchLabels = async () => {
+			try {
+				const labels = (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as DatabaseTypes.CanteensFeedbacksLabels[];
+				dispatch({ type: SET_CANTEEN_FEEDBACK_LABELS, payload: labels });
+			} catch (e) {
+				console.error('Error fetching canteen feedback labels', e);
+			}
+		};
+		fetchLabels();
+	}, [dispatch]);
 
 	const cacheKey = useMemo(
 		() => `${canteenId}_${format(new Date(startDate), 'yyyy-MM-dd')}`,
@@ -345,7 +362,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	};
 
 	const renderDay = ({ item }: { item: DayData }) => {
-		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
+		const feedbacks = canteenFeedbackLabels?.map((label, idx) => {
+			const total = canteenFeedbackLabels.length;
+			const groupPosition = total === 1 ? 'single' : idx === 0 ? 'top' : idx === total - 1 ? 'bottom' : 'middle';
+			return <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} groupPosition={groupPosition} />;
+		});
 		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
@@ -390,7 +411,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 										canteen={selectedCanteen as DatabaseTypes.Canteens}
 										handleMenuSheet={openSheet}
 										handleImageSheet={openManagementSheet}
-										handleEatingHabitsSheet={openSheet}
 										cardWidth={cardWidth}
 									/>
 								</View>
@@ -429,7 +449,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
 					</View>
 				)}
-				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
+				{feedbacks && feedbacks.length > 0 && (
+					<View style={styles.feebackContainer}>
+						<Text style={[styles.feedbackLabelsTitle, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.feedback_labels)}
+						</Text>
+						{feedbacks}
+					</View>
+				)}
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>

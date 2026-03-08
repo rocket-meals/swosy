@@ -5,7 +5,6 @@ import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
 import DebugView from '@/components/DebugView';
-import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
 import SettingsList from '@/components/SettingsList';
 import { getFoodOffer } from '@/constants/HelperFunctions';
@@ -39,7 +38,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
-	const { isDevMode } = useSelector((state: RootState) => state.authReducer);
+
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
 	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
@@ -124,11 +123,9 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
-			{foodMarkings?.map((marking: DatabaseTypes.Markings) => (
-				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
-			))}
+			<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
 
-			<DebugView title="Foodoffer Components" isVisible={isDevMode}>
+			<DebugView title="Foodoffer Components">
 			{foodofferComponents.map((component: any) => {
 				const componentFoodoffer = component?.component_foodoffers_id;
 				if (!componentFoodoffer) return null;
@@ -158,7 +155,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			)}
 		</DebugView>
 
-			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
+			<DebugView title="Foodoffer Markings Data">
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
 					{JSON.stringify(
 						{
@@ -172,7 +169,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 				</Text>
 			</DebugView>
 
-			<DebugView title="Foodoffer Markings Count" isVisible={isDevMode}>
+			<DebugView title="Foodoffer Markings Count">
 				<Text style={{ ...styles.body, color: theme.screen.text }}>{foodOfferDetails?.markings?.length ?? foodOffer?.markings?.length ?? 0}</Text>
 			</DebugView>
 

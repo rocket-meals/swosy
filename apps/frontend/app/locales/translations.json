@@ -5033,6 +5033,16 @@
     "tr": "Currently Not Planned Foods",
     "zh": "Currently Not Planned Foods"
   },
+  "food_offer_contains_disliked_markings": {
+    "de": "Diese Speise enthält Kennzeichnungen, welche ggf. nicht gewünscht sind.",
+    "en": "This dish contains markings that may not be desired.",
+    "ar": "يحتوي هذا الطبق على علامات قد لا تكون مرغوبة.",
+    "es": "Este plato contiene etiquetas que pueden no ser deseadas.",
+    "fr": "Ce plat contient des marquages qui peuvent ne pas être souhaités.",
+    "ru": "Это блюдо содержит маркировки, которые могут быть нежелательны.",
+    "tr": "Bu yemek istenmeyen işaretler içerebilir.",
+    "zh": "该菜肴包含可能不受欢迎的标记。"
+  },
   "offered_on": {
     "de": "Angeboten am",
     "en": "Offered on",
@@ -5042,5 +5052,15 @@
     "ru": "Offered on",
     "tr": "Offered on",
     "zh": "Offered on"
+  },
+  "account_required_example": {
+    "de": "Account Required Beispiel",
+    "en": "Account Required Example",
+    "ar": "Account Required Example",
+    "es": "Account Required Example",
+    "fr": "Account Required Example",
+    "ru": "Account Required Example",
+    "tr": "Account Required Example",
+    "zh": "Account Required Example"
   }
 }

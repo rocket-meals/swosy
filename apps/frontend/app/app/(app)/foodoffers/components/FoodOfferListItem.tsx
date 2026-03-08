@@ -17,7 +17,6 @@ interface FoodOfferListItemProps {
     selectedCanteen: DatabaseTypes.Canteens | null;
     handleMenuSheet: (sheet: any, props?: any) => void;
     handleImageSheet: (food: DatabaseTypes.Foods) => void;
-    handleEatingHabitsSheet: (sheet: any) => void;
     getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: any; popup_button_text?: any; popup_content?: any; } | null;
     itemGap?: number;
     previousFeedback?: any;
@@ -42,7 +41,6 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
     selectedCanteen,
     handleMenuSheet,
     handleImageSheet,
-    handleEatingHabitsSheet,
     getInfoItemContent,
     itemGap,
     previousFeedback,
@@ -72,7 +70,6 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
                     key={item.foodoffer.id || `food-item-${index}`}
                     handleMenuSheet={handleMenuSheet}
                     handleImageSheet={handleImageSheet}
-                    handleEatingHabitsSheet={handleEatingHabitsSheet}
                     cardWidth={cardWidth}
                     previousFeedback={previousFeedback}
                     language={language}
@@ -113,7 +110,6 @@ export default memo(FoodOfferListItem, (prev, next) => {
         prev.selectedCanteen === next.selectedCanteen &&
         prev.handleMenuSheet === next.handleMenuSheet &&
         prev.handleImageSheet === next.handleImageSheet &&
-        prev.handleEatingHabitsSheet === next.handleEatingHabitsSheet &&
         prev.getInfoItemContent === next.getInfoItemContent &&
         prev.itemGap === next.itemGap &&
         prev.previousFeedback === next.previousFeedback &&
