@@ -160,7 +160,7 @@ const FoodOfferDetailsContent: React.FC<FoodOfferDetailsContentProps> = ({ offer
             handleMenuSheet={openMenuSheet}
             color={foods_area_color}
         />
-    ), [foodDetails, offerId, openMenuSheet, foods_area_color]);
+    ), [foodDetails, offerId, foodOfferDetails, openMenuSheet, foods_area_color]);
 
     useEffect(() => {
         getFoodDetails();

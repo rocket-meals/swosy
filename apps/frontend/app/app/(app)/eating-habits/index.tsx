@@ -20,7 +20,6 @@ import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
-import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsList from '@/components/SettingsList';
@@ -34,7 +33,7 @@ const Index = () => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate, language } = useLanguage();
-	const { markings } = useAppSelector((state) => state.food);
+	const { markings, markingGroups } = useAppSelector((state) => state.food);
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
@@ -46,24 +45,7 @@ const Index = () => {
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const [isActive, setIsActive] = useState(false);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
-	const markingGroupsHelper = useMemo(() => new MarkingGroupsHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
-
-	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
-
-	useEffect(() => {
-		const fetchMarkingGroups = async () => {
-			try {
-				const result = await markingGroupsHelper.fetchMarkingGroups({});
-				if (result) {
-					setMarkingGroups(result as DatabaseTypes.MarkingsGroups[]);
-				}
-			} catch (error) {
-				console.error('Error fetching marking groups:', error);
-			}
-		};
-		fetchMarkingGroups();
-	}, [markingGroupsHelper]);
 
 	const markingsSections = useMemo(() => {
 		if (!markings || markings.length === 0) return [];
