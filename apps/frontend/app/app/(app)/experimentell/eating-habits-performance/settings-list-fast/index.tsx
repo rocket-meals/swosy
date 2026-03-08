@@ -9,8 +9,8 @@
  * Purpose: confirm whether removing tooltips resolves the render delay seen
  * in the "settings-list" variant.
  */
-import { SafeAreaView, ScrollView, View } from 'react-native';
-import React, { useMemo, useRef } from 'react';
+import { FlatList, SafeAreaView } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -45,24 +45,30 @@ const EatingHabitsSettingsListFast = () => {
 
 	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
 
+	const renderItem = useCallback(({ item, index }: { item: string; index: number }) => {
+		const total = markingIds.length;
+		const groupPosition: SettingsListProps['groupPosition'] =
+			total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+		return <SettingsListMarkingLabelFast markingId={item} groupPosition={groupPosition} />;
+	}, [markingIds.length]);
+
+	const keyExtractor = useCallback((id: string) => id, []);
+
+	const ListHeaderComponent = useMemo(
+		() => <DebugView title="SettingsListFast: Image, Name & Like/Dislike (no tooltips)" logs={debugLogs} isVisible />,
+		[debugLogs]
+	);
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
-			<ScrollView
+			<FlatList
+				data={markingIds}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				ListHeaderComponent={ListHeaderComponent}
+				contentContainerStyle={{ padding: 16, backgroundColor: theme.screen.background }}
 				style={{ backgroundColor: theme.screen.background }}
-				contentContainerStyle={{ padding: 16 }}
-			>
-				<DebugView title="SettingsListFast: Image, Name & Like/Dislike (no tooltips)" logs={debugLogs} isVisible />
-				<View>
-					{markingIds.map((id: string, index: number) => {
-						const total = markingIds.length;
-						const groupPosition: SettingsListProps['groupPosition'] =
-							total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
-						return (
-							<SettingsListMarkingLabelFast key={id} markingId={id} groupPosition={groupPosition} />
-						);
-					})}
-				</View>
-			</ScrollView>
+			/>
 		</SafeAreaView>
 	);
 };

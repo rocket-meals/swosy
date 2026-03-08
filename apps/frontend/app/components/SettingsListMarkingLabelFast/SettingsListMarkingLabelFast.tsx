@@ -14,6 +14,8 @@ import { SettingsListProps } from '@/components/SettingsList/types';
 import SettingsListLikeDislikeFast from '@/components/SettingsListLikeDislikeFast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { createSelector } from 'reselect';
+import { RootState } from '@/redux/reducer';
 
 export interface SettingsListMarkingLabelFastProps {
 	markingId: string;
@@ -21,6 +23,18 @@ export interface SettingsListMarkingLabelFastProps {
 	size?: number;
 	groupPosition?: SettingsListProps['groupPosition'];
 }
+
+const makeSelectMarking = (markingId: string) =>
+	createSelector(
+		[(state: RootState) => state.food.markings],
+		markings => markings?.find((m: any) => m.id === markingId)
+	);
+
+const makeSelectOwnMarking = (markingId: string) =>
+	createSelector(
+		[(state: RootState) => state.authReducer.profile?.markings],
+		profileMarkings => profileMarkings?.find((m: any) => m.markings_id === markingId)
+	);
 
 const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> = ({
 	markingId,
@@ -34,30 +48,39 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	const language = useAppSelector(state => state.settings.language);
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
-	const markings = useAppSelector(state => state.food.markings);
-	const marking = markings?.find((mark: any) => mark.id === markingId);
-	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
+
+	const selectMarking = useMemo(() => makeSelectMarking(markingId), [markingId]);
+	const selectOwnMarking = useMemo(() => makeSelectOwnMarking(markingId), [markingId]);
+	const marking = useAppSelector(selectMarking);
+	const ownMarking = useAppSelector(selectOwnMarking);
+
 	const [likeLoading, setLikeLoading] = useState(false);
 	const [dislikeLoading, setDislikeLoading] = useState(false);
 	const profileHelper = useMemo(() => new ProfileHelper(), []);
-	const isAnonymousUser = UserHelper.isAnonymousUser(user);
+	const isAnonymousUser = useMemo(() => UserHelper.isAnonymousUser(user), [user]);
 
-	const openMarkingLabel = (marking: DatabaseTypes.Markings) => {
+	const openMarkingLabel = useCallback((markingItem: DatabaseTypes.Markings) => {
 		if (handleMenuSheet) {
 			dispatch({
 				type: SET_MARKING_DETAILS,
-				payload: marking,
+				payload: markingItem,
 			});
 			handleMenuSheet();
 		}
-	};
+	}, [dispatch, handleMenuSheet]);
 
-	// Early return AFTER all hooks have been called
-	if (!marking) return null;
+	const fetchProfile = useCallback(async () => {
+		try {
+			const fetchedProfile = (await profileHelper.fetchProfileById(user?.profile, {})) as DatabaseTypes.Profiles;
+			if (fetchedProfile) {
+				dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
+			}
+		} catch (error) {
+			console.error('Error fetching profiles:', error);
+		}
+	}, [profileHelper, user?.profile, dispatch]);
 
-	const markingText = getTextFromTranslation(marking?.translations, language);
-
-	const handleAnonymousMarking = (like: boolean) => {
+	const handleAnonymousMarking = useCallback((like: boolean) => {
 		const profileData = { ...profile };
 		let markingFound = false;
 
@@ -83,18 +106,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 		}
 
 		dispatch({ type: UPDATE_PROFILE, payload: profileData });
-	};
-
-	const fetchProfile = async () => {
-		try {
-			const profile = (await profileHelper.fetchProfileById(user?.profile, {})) as DatabaseTypes.Profiles;
-			if (profile) {
-				dispatch({ type: UPDATE_PROFILE, payload: profile });
-			}
-		} catch (error) {
-			console.error('Error fetching profiles:', error);
-		}
-	};
+	}, [profile, ownMarking, markingId, dispatch]);
 
 	const handleUpdateMarking = useCallback(
 		async (like: boolean) => {
@@ -160,33 +172,44 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 				}
 			}
 		},
-		[user?.id, profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile]
+		[user?.id, profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile, isAnonymousUser, handleAnonymousMarking]
 	);
 
-	const leftIconComponent = (
+	const handlePressLike = useCallback(() => handleUpdateMarking(true), [handleUpdateMarking]);
+	const handlePressDislike = useCallback(() => handleUpdateMarking(false), [handleUpdateMarking]);
+
+	const markingText = useMemo(
+		() => getTextFromTranslation(marking?.translations, language),
+		[marking?.translations, language]
+	);
+
+	const leftIconComponent = useMemo(() => (
 		<View style={styles.leftIconWrapper}>
-			{handleMenuSheet ? (
+			{handleMenuSheet && marking ? (
 				<Pressable onPress={() => openMarkingLabel(marking)}>
 					<MarkingIcon marking={marking} size={size} />
 				</Pressable>
-			) : (
+			) : marking ? (
 				<MarkingIcon marking={marking} size={size} />
-			)}
+			) : null}
 		</View>
-	);
+	), [marking, size, handleMenuSheet, openMarkingLabel]);
 
-	const rightElement = (
+	const rightElement = useMemo(() => (
 		<View style={styles.rightRow}>
 			<SettingsListLikeDislikeFast
 				like={ownMarking?.like}
-				onPressLike={() => handleUpdateMarking(true)}
-				onPressDislike={() => handleUpdateMarking(false)}
+				onPressLike={handlePressLike}
+				onPressDislike={handlePressDislike}
 				likeLoading={likeLoading}
 				dislikeLoading={dislikeLoading}
 			/>
 			<PermissionModal isVisible={warning} setIsVisible={setWarning} />
 		</View>
-	);
+	), [ownMarking?.like, handlePressLike, handlePressDislike, likeLoading, dislikeLoading, warning]);
+
+	// Early return AFTER all hooks have been called
+	if (!marking) return null;
 
 	return (
 		<SettingsList
@@ -198,7 +221,7 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 	);
 };
 
-export default SettingsListMarkingLabelFast;
+export default React.memo(SettingsListMarkingLabelFast);
 
 const styles = StyleSheet.create({
 	leftIconWrapper: {

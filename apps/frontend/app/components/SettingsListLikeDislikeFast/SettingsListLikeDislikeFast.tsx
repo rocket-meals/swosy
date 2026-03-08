@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
@@ -28,13 +28,20 @@ const SettingsListLikeDislikeFast: React.FC<SettingsListLikeDislikeProps> = ({
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	const iconSize = isWeb ? 24 : 22;
 
+	const likeButtonStyle = useMemo(
+		() => [styles.likeButton, like ? { backgroundColor: foods_area_color } : undefined],
+		[like, foods_area_color]
+	);
+
+	const dislikeButtonStyle = useMemo(
+		() => [styles.dislikeButton, like === false ? { backgroundColor: foods_area_color } : undefined],
+		[like, foods_area_color]
+	);
+
 	return (
 		<View style={styles.row}>
 			<Pressable
-				style={{
-					...styles.likeButton,
-					backgroundColor: like ? foods_area_color : undefined,
-				}}
+				style={likeButtonStyle}
 				onPress={onPressLike}
 			>
 				{likeLoading ? (
@@ -52,10 +59,7 @@ const SettingsListLikeDislikeFast: React.FC<SettingsListLikeDislikeProps> = ({
 			</Pressable>
 
 			<Pressable
-				style={{
-					...styles.dislikeButton,
-					backgroundColor: like === false ? foods_area_color : undefined,
-				}}
+				style={dislikeButtonStyle}
 				onPress={onPressDislike}
 			>
 				{dislikeLoading ? (
@@ -75,7 +79,7 @@ const SettingsListLikeDislikeFast: React.FC<SettingsListLikeDislikeProps> = ({
 	);
 };
 
-export default SettingsListLikeDislikeFast;
+export default React.memo(SettingsListLikeDislikeFast);
 
 const styles = StyleSheet.create({
 	row: {
