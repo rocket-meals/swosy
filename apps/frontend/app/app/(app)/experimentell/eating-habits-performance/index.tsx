@@ -65,6 +65,12 @@ const EatingHabitsPerformanceIndex = () => {
 			leftIcon: <MaterialCommunityIcons name="format-list-bulleted" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/eating-habits-performance/plain-component-full'),
 		},
+		{
+			key: 'settings-list',
+			label: translate(TranslationKeys.eating_habits_performance_settings_list),
+			leftIcon: <MaterialCommunityIcons name="view-list" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance/settings-list'),
+		},
 	];
 
 	return (

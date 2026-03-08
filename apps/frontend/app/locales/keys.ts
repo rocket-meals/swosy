@@ -511,6 +511,7 @@ export enum TranslationKeys {
 	eating_habits_performance_plain_each_component = 'eating_habits_performance_plain_each_component',
 	eating_habits_performance_plain_component_with_image = 'eating_habits_performance_plain_component_with_image',
 	eating_habits_performance_plain_component_full = 'eating_habits_performance_plain_component_full',
+	eating_habits_performance_settings_list = 'eating_habits_performance_settings_list',
 	eating_habits_debug_mount_time = 'eating_habits_debug_mount_time',
 	eating_habits_debug_animation_time = 'eating_habits_debug_animation_time',
 	eating_habits_debug_content_time = 'eating_habits_debug_content_time',
