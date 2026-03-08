@@ -1,0 +1,70 @@
+/**
+ * Eating Habits Performance Variant: SettingsListFast (no gluestack tooltips)
+ *
+ * Uses SettingsListMarkingLabelFast for each marking – functionally identical
+ * to the production eating-habits screen (icon, name, like/dislike with
+ * dispatch) but without gluestack CustomTooltip wrappers which are the
+ * suspected rendering bottleneck on web.
+ *
+ * Purpose: confirm whether removing tooltips resolves the render delay seen
+ * in the "settings-list" variant.
+ */
+import { SafeAreaView, ScrollView, View } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import { useAppSelector } from '@/redux/hooks';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { DatabaseTypes } from 'repo-depkit-common';
+import DebugView from '@/components/DebugView';
+import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
+import { SettingsListProps } from '@/components/SettingsList/types';
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+const EatingHabitsSettingsListFast = () => {
+	useSetPageTitle(TranslationKeys.eating_habits_performance_settings_list_fast);
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const { markings } = useAppSelector((state) => state.food);
+
+	const mountTimeRef = useRef<number>(performance.now());
+	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markings]);
+
+	const totalMarkingsCount = useMemo(() => markings?.length ?? 0, [markings]);
+
+	const debugLogs = useMemo(
+		() => [
+			`${translate(TranslationKeys.eating_habits_debug_markings_count)}: ${totalMarkingsCount}`,
+			`Render time (useMemo): ${renderMs}ms`,
+		],
+		[totalMarkingsCount, renderMs, translate]
+	);
+
+	const markingIds = useMemo(() => (markings ?? []).map((m: DatabaseTypes.Markings) => m.id), [markings]);
+
+	return (
+		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
+			<ScrollView
+				style={{ backgroundColor: theme.screen.background }}
+				contentContainerStyle={{ padding: 16 }}
+			>
+				<DebugView title="SettingsListFast: Image, Name & Like/Dislike (no tooltips)" logs={debugLogs} isVisible />
+				<View>
+					{markingIds.map((id: string, index: number) => {
+						const total = markingIds.length;
+						const groupPosition: SettingsListProps['groupPosition'] =
+							total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListMarkingLabelFast key={id} markingId={id} groupPosition={groupPosition} />
+						);
+					})}
+				</View>
+			</ScrollView>
+		</SafeAreaView>
+	);
+};
+
+export default EatingHabitsSettingsListFast;

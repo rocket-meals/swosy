@@ -5173,6 +5173,16 @@
         "tr": "SettingsList: Image, Name & Like Status",
         "zh": "SettingsList: Image, Name & Like Status"
     },
+    "eating_habits_performance_settings_list_fast": {
+        "de": "SettingsListFast: Ohne Tooltips (schnell)",
+        "en": "SettingsListFast: No Tooltips (fast)",
+        "ar": "SettingsListFast: No Tooltips (fast)",
+        "es": "SettingsListFast: No Tooltips (fast)",
+        "fr": "SettingsListFast: No Tooltips (fast)",
+        "ru": "SettingsListFast: No Tooltips (fast)",
+        "tr": "SettingsListFast: No Tooltips (fast)",
+        "zh": "SettingsListFast: No Tooltips (fast)"
+    },
     "eating_habits_debug_mount_time": {
         "de": "Screen-Mount-Zeit",
         "en": "Screen mount time",
