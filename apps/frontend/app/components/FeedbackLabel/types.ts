@@ -9,4 +9,5 @@ export interface FeedbackLabelProps {
         foodId: string;
         offerId?: string;
         groupPosition?: SettingsListProps['groupPosition'];
+        isAccountRequired?: boolean;
 }
