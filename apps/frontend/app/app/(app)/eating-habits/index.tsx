@@ -28,6 +28,11 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 
+// Module-level cache so the expensive color-replacement deep-copy only runs once
+// per primaryColor value across all navigations, even when the screen is unmounted.
+let _cachedAnimationJson: any = null;
+let _cachedPrimaryColor: string | null = null;
+
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
 	const { theme } = useTheme();
@@ -93,12 +98,23 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
+			// Cache hit: set the processed animation immediately, no need to wait for
+			// interactions to finish, making re-entry essentially instant.
+			if (_cachedAnimationJson && _cachedPrimaryColor === primaryColor) {
+				setAmimationJson(_cachedAnimationJson);
+				return;
+			}
+
+			// Cache miss (first visit or primaryColor changed): defer the expensive
+			// deep-copy + color-replacement until after the navigation animation so it
+			// never blocks the transition.
 			const task = InteractionManager.runAfterInteractions(() => {
-				setAmimationJson(replaceLottieColors(animation, primaryColor));
+				_cachedAnimationJson = replaceLottieColors(animation, primaryColor);
+				_cachedPrimaryColor = primaryColor;
+				setAmimationJson(_cachedAnimationJson);
 			});
 			return () => {
 				task.cancel();
-				setAmimationJson(null);
 			};
 		}, [primaryColor])
 	);
@@ -109,7 +125,6 @@ const Index = () => {
 
 			return () => {
 				setAutoPlay(false); // Reset when leaving
-				setAmimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);
