@@ -5163,6 +5163,16 @@
         "tr": "Plain: Full Component with Like State",
         "zh": "Plain: Full Component with Like State"
     },
+    "eating_habits_performance_settings_list": {
+        "de": "SettingsList: Bild, Name & Like-Status",
+        "en": "SettingsList: Image, Name & Like Status",
+        "ar": "SettingsList: Image, Name & Like Status",
+        "es": "SettingsList: Image, Name & Like Status",
+        "fr": "SettingsList: Image, Name & Like Status",
+        "ru": "SettingsList: Image, Name & Like Status",
+        "tr": "SettingsList: Image, Name & Like Status",
+        "zh": "SettingsList: Image, Name & Like Status"
+    },
     "eating_habits_debug_mount_time": {
         "de": "Screen-Mount-Zeit",
         "en": "Screen mount time",
