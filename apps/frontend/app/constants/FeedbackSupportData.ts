@@ -16,7 +16,7 @@ export const feedbackData = [
 	},
 	{
 		key: 'positive',
-		icon: 'like1',
+		icon: 'thumb-up-outline',
 		title: 'like_status',
 		extraIcons: ['thumb-up-outline', 'thumb-down-outline'],
 	},

@@ -501,6 +501,7 @@ export enum TranslationKeys {
 	guess_more_expensive_dish = 'guess_more_expensive_dish',
 	food_offer_contains_disliked_markings = 'food_offer_contains_disliked_markings',
 	account_required_example = 'account_required_example',
+	optional_device_data_description = 'optional_device_data_description',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',

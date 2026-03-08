@@ -5053,6 +5053,16 @@
     "tr": "Offered on",
     "zh": "Offered on"
   },
+  "optional_device_data_description": {
+    "de": "Optionale Gerätedaten – können angepasst werden, helfen aber bei der Lösung der Anfrage.",
+    "en": "Optional device data – can be adjusted, but help resolve the request.",
+    "ar": "بيانات الجهاز الاختيارية – يمكن تعديلها، لكنها تساعد في حل الطلب.",
+    "es": "Datos opcionales del dispositivo – pueden ajustarse, pero ayudan a resolver la solicitud.",
+    "fr": "Données optionnelles de l'appareil – modifiables, mais utiles pour résoudre la demande.",
+    "ru": "Необязательные данные устройства – можно изменить, но они помогают решить запрос.",
+    "tr": "İsteğe bağlı cihaz verileri – ayarlanabilir, ancak talebi çözmeye yardımcı olur.",
+    "zh": "可选设备数据 – 可以调整，但有助于解决请求。"
+  },
   "account_required_example": {
     "de": "Account Required Beispiel",
     "en": "Account Required Example",
