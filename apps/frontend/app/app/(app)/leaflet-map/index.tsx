@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Platform, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
 import { getDefaultIconAnchor, MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
-import { MapMarker } from '@/components/MyMap/model';
+import { LeafletWebViewEvent, MapMarker } from '@/components/MyMap/model';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -20,6 +20,8 @@ const POSITION_BUNDESTAG = {
 	lng: 13.376281624711964,
 };
 
+const MAX_LOG_ENTRIES = 50;
+
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
@@ -30,6 +32,15 @@ const LeafletMap = () => {
 
 	const [markerIconSrc, setMarkerIconSrc] = useState<string | null>(null);
 	const [markerError, setMarkerError] = useState<string | null>(null);
+	const [logEntries, setLogEntries] = useState<string[]>([]);
+	const logScrollRef = useRef<ScrollView>(null);
+
+	const addLog = useCallback((entry: string) => {
+		setLogEntries((prev) => {
+			const next = [...prev, `${new Date().toLocaleTimeString()}: ${entry}`];
+			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
+		});
+	}, []);
 
 	// Load marker asset asynchronously
 	useEffect(() => {
@@ -102,6 +113,8 @@ const LeafletMap = () => {
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
 
+			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+
 			show({
 				title,
 				onClose: close,
@@ -116,7 +129,20 @@ const LeafletMap = () => {
 				),
 			});
 		},
-		[buildings, show, close, theme.screen.text],
+		[buildings, show, close, theme.screen.text, addLog],
+	);
+
+	const handleMapEvent = useCallback(
+		(e: LeafletWebViewEvent) => {
+			if (e.tag === 'onZoomEnd') {
+				addLog(`Zoom: ${e.zoom ?? 'unknown'}`);
+			} else if (e.tag === 'MapComponentMounted' || e.tag === 'MapReady') {
+				addLog(e.tag);
+			} else if (e.tag === 'DebugMessage') {
+				addLog(`Debug: ${e.message}`);
+			}
+		},
+		[addLog],
 	);
 
 	if (!markerIconSrc && !markerError) {
@@ -124,11 +150,43 @@ const LeafletMap = () => {
 	}
 
 	return (
-		<View style={{ flex: 1 }}>
+		<View style={styles.container}>
 			{markerError && <Text selectable>{markerError}</Text>}
-			<MyMap mapCenterPosition={centerPosition} mapMarkers={buildingMarkers} onMarkerClick={handleMarkerClick} onMapEvent={(e) => console.log('map event', e.tag)} />
+			<MyMap mapCenterPosition={centerPosition} mapMarkers={buildingMarkers} onMarkerClick={handleMarkerClick} onMapEvent={handleMapEvent} />
+			<ScrollView
+				ref={logScrollRef}
+				style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
+				onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
+			>
+				{logEntries.map((entry, i) => (
+					<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+						{entry}
+					</Text>
+				))}
+				{logEntries.length === 0 && (
+					<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+				)}
+			</ScrollView>
 		</View>
 	);
 };
 
 export default LeafletMap;
+
+const styles = StyleSheet.create({
+	container: { flex: 1 },
+	logContainer: {
+		maxHeight: 120,
+		borderTopWidth: 1,
+	},
+	logEntry: {
+		fontSize: 11,
+		paddingHorizontal: 8,
+		paddingVertical: 1,
+	},
+	logPlaceholder: {
+		fontSize: 11,
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+	},
+});
