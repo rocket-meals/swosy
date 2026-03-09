@@ -5,6 +5,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import MyMap from '@/components/MyMap/MyMap';
 import { MapLayer, MapMarker } from '@/components/MyMap/model';
+import { MyMapMarkerIcons } from '@/components/MyMap/markerUtils';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -127,7 +128,7 @@ const MapVariantsPage: React.FC = () => {
 			})
 			.map((b) => {
 				const coords = (b.coordinates as BuildingCoordinates)!.coordinates!;
-				const icon = markerIconSrc ? `<img src='${markerIconSrc}' style='width:32px;height:32px;object-fit:contain;'>` : undefined;
+				const icon = markerIconSrc ? MyMapMarkerIcons.getIconForWebByLocalPathUri(markerIconSrc) : undefined;
 				return {
 					id: `bld-${b.id}`,
 					position: { lat: Number(coords[1]), lng: Number(coords[0]) },
