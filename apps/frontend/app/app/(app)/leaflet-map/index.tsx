@@ -11,6 +11,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { LeafletWebViewEvent, MapMarker } from '@/components/MyMap/model';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
+import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { DatabaseTypes } from 'repo-depkit-common';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
@@ -21,6 +22,9 @@ const POSITION_BUNDESTAG = {
 };
 
 const MAX_LOG_ENTRIES = 50;
+
+const MAX_ZOOM = 18;
+const DEFAULT_ZOOM = 13;
 
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
@@ -34,6 +38,11 @@ const LeafletMap = () => {
 	const [markerError, setMarkerError] = useState<string | null>(null);
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
+
+	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
+	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
+	// Override center position set on cluster click (null = follow centerPosition)
+	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
 
 	const addLog = useCallback((entry: string) => {
 		setLogEntries((prev) => {
@@ -103,8 +112,28 @@ const LeafletMap = () => {
 			});
 	}, [buildings, markerIconSrc]);
 
+	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
+	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
+
+	// Reset the centre override when the selected canteen changes so the map
+	// returns to the canteen's building position.
+	useEffect(() => {
+		setMapCenterOverride(null);
+	}, [centerPosition]);
+
 	const handleMarkerClick = useCallback(
 		(id: string) => {
+			// Cluster click: zoom in and centre on the cluster instead of opening a modal
+			if (id.startsWith('cluster:')) {
+				const cluster = clusteredBuildingMarkers.find((m) => m.id === id);
+				if (cluster) {
+					setMapCenterOverride(cluster.position);
+					setMapZoom((prev) => Math.min(prev + 2, MAX_ZOOM));
+				}
+				addLog(`Cluster clicked: ${id}`);
+				return;
+			}
+
 			const buildingId = id.startsWith('building-') ? id.slice('building-'.length) : null;
 			const building = buildingId ? (buildings as DatabaseTypes.Buildings[]).find((b) => b.id === buildingId) : null;
 
@@ -129,12 +158,13 @@ const LeafletMap = () => {
 				),
 			});
 		},
-		[buildings, show, close, theme.screen.text, addLog],
+		[buildings, clusteredBuildingMarkers, show, close, theme.screen.text, addLog],
 	);
 
 	const handleMapEvent = useCallback(
 		(e: LeafletWebViewEvent) => {
 			if (e.tag === 'onZoomEnd') {
+				setMapZoom(e.zoom);
 				addLog(`Zoom: ${e.zoom ?? 'unknown'}`);
 			} else if (e.tag === 'MapComponentMounted' || e.tag === 'MapReady') {
 				addLog(e.tag);
@@ -152,7 +182,13 @@ const LeafletMap = () => {
 	return (
 		<View style={styles.container}>
 			{markerError && <Text selectable>{markerError}</Text>}
-			<MyMap mapCenterPosition={centerPosition} mapMarkers={buildingMarkers} onMarkerClick={handleMarkerClick} onMapEvent={handleMapEvent} />
+			<MyMap
+				mapCenterPosition={mapCenterOverride ?? centerPosition}
+				zoom={mapZoom}
+				mapMarkers={buildingMarkers}
+				onMarkerClick={handleMarkerClick}
+				onMapEvent={handleMapEvent}
+			/>
 			<ScrollView
 				ref={logScrollRef}
 				style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
