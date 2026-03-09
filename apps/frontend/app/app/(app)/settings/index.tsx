@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { Languages, PriceGroupKey } from './types';
 import { AntDesign, Entypo, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
-import { isWeb } from '@/constants/Constants';
+import { horizontalScreenPadding, isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
@@ -432,203 +432,298 @@ const Settings = () => {
                 collectibleSettingsModalRef.current = openCollectibleSettingsModal;
         }, [openCollectibleSettingsModal]);
 
-	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
-			<ScrollView
-				style={styles.container}
-				contentContainerStyle={{
-					...styles.contentContainer,
-					backgroundColor: theme.screen.background,
-				}}
-			>
-				<View
-					style={{
-						...styles.settingContainer,
-						width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
-					}}
-				>
+
+	const listData = useMemo(() => {
+		const rows: Array<{ key: string; element: React.ReactElement }> = [];
+		const sectionStyle = { gap: 10 } as const;
+		const groupStyle = { gap: 0 } as const;
+
+		// === Account & Personalization ===
+		rows.push({
+			key: 'section-account',
+			element: (
+				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_account_personalization)}</SettingsGroupTitle>
-					{/* Account & Nickname */}
-					<View style={{ gap: 0 }}>
+					<View style={groupStyle}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="top" />
-						{/* NickName */}
 						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
 							label={translate(TranslationKeys.nickname)}
 							value={profile?.id ? profile?.nickname ?? undefined : nickNameLocal}
-							handleFunction={() => {
-								openNicknameSheet();
-							}}
+							handleFunction={openNicknameSheet}
 							groupPosition="middle"
 						/>
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="middle" />
-                                                {isRegisteredUser ? (
-                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
-                                                ) : null}
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="middle" />
+						{isRegisteredUser ? (
+							<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
+						) : null}
 						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="language" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.language)} value={languageName} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={() => openLanguageModal()} groupPosition="bottom" />
 					</View>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
-					{/* Canteen */}
-					<View style={{ gap: 0 }}>
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen)} value={excerpt(String(selectedCanteen?.alias), 30)} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={openCanteenSheet} groupPosition="top" />
-                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/price-group')} groupPosition="middle" />
-                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
-                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
-                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
-                                        </View>
-					<SettingsGroupTitle>{translate(TranslationKeys.group_app_settings)}</SettingsGroupTitle>
-					{/* color Scheme */}
-					<View style={{ gap: 0 }}>
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={selectedTheme === 'systematic' ? translate(TranslationKeys.color_scheme_system) : selectedTheme === 'dark' ? translate(TranslationKeys.color_scheme_dark) : translate(TranslationKeys.color_scheme_light)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
-                                        </View>
-                                        {appSettings?.housing_enabled && (
-                                                <>
-                                                        <SettingsGroupTitle>{translate(TranslationKeys.housing)}</SettingsGroupTitle>
-                                                        <View style={{ gap: 0 }}>
-                                                                <SettingsList
-                                                                        iconBgColor={housing_area_color}
-                                                                        leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
-                                                                        label={translate(TranslationKeys.sort)}
-                                                                        value={housingSortingLabel}
-                                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-                                                                        handleFunction={openHousingSortingModal}
-                                                                        groupPosition="single"
-                                                                />
-                                                        </View>
-                                                </>
-                                        )}
-                                        {appSettings?.campus_enabled && (
-                                                <>
-                                                        <SettingsGroupTitle>{translate(TranslationKeys.campus)}</SettingsGroupTitle>
-                                                        <View style={{ gap: 0 }}>
-                                                                <SettingsList
-                                                                        iconBgColor={campus_area_color}
-                                                                        leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
-                                                                        label={translate(TranslationKeys.sort)}
-                                                                        value={campusSortingLabel}
-                                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-                                                                        handleFunction={openCampusSortingModal}
-                                                                        groupPosition="single"
-                                                                />
-                                                        </View>
-                                                </>
-                                        )}
-					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
-					<View style={{ gap: 0 }}>
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
-                                                <SettingsList
-                                                        iconBgColor={primaryColor}
-                                                        leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
-                                                        label={translate(TranslationKeys.collectible_events)}
-                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-                                                        handleFunction={() => router.navigate('/collectible-events')}
-                                                        groupPosition="middle"
-                                                />
-                                                <SettingsList
-                                                        iconBgColor={primaryColor}
-                                                        leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
-                                                        label={translate(TranslationKeys.collectible_event_settings)}
-                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
-                                                        handleFunction={openCollectibleSettingsModal}
-                                                        groupPosition="middle"
-                                                />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
-                                                {/* Terms & Conditions */}
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate ?? undefined} handleFunction={() => {}} groupPosition="bottom" />
-                                        </View>
-                                        <TouchableOpacity
-                                                style={styles.footer}
-                                                onPress={() => {
-                                                        if (isManagement) {
-                                                                dispatch({ type: UPDATE_DEVELOPER_MODE, payload: false });
-								dispatch({ type: UPDATE_MANAGEMENT, payload: false });
-							} else {
-								dispatch({ type: UPDATE_DEVELOPER_MODE, payload: true });
-								dispatch({ type: UPDATE_MANAGEMENT, payload: true });
-							}
-						}}
-					>
-						<View style={styles.logoContainer}>
-							<MyImage
-								remote_image_url={getImageUrl(serverInfo?.info?.project?.project_logo)}
-								style={styles.logo}
-							/>
-						</View>
-						<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
-					</TouchableOpacity>
-					<DebugView
-						title={translate(TranslationKeys.debug_mode)}
-						showInDevMode={true}
-					>
-						<Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>
-						<View style={{ gap: 0 }}>
-                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
-							<SettingsListBoolean
-								iconBgColor={primaryColor}
-								leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />}
-								label="Use WebP images"
-								isEnabled={useWebpForAssets}
-								onToggle={toggleWebpForAssets}
-								groupPosition="middle"
-							/>
-							<SettingsListBoolean
-								iconBgColor={primaryColor}
-								leftIcon={<MaterialCommunityIcons name="bank-transfer" size={24} color={theme.screen.icon} />}
-								label={translate(TranslationKeys.debug_mode)}
-								isEnabled={debugMode}
-								onToggle={toggleDebugMode}
-								groupPosition="middle"
-							/>
-							<SettingsListBoolean
-								iconBgColor={primaryColor}
-								leftIcon={<MaterialCommunityIcons name="update" size={24} color={theme.screen.icon} />}
-								label={translate(TranslationKeys.simulate_expo_update_available)}
-								isEnabled={simulateExpoUpdateAvailable}
-								onToggle={toggleSimulateExpoUpdate}
-								groupPosition="bottom"
-							/>
-						</View>
-					</DebugView>
-					<SettingsList
-						iconBgColor={primaryColor}
-						leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />}
-						label="Version"
-						value={getVersionInternalForAppsettingsScreen().toString()}
-						handleFunction={() => {}}
-						groupPosition="single"
-					/>
-					<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings} />
 				</View>
-                        </ScrollView>
+			),
+		});
+
+		// === Canteen Usage ===
+		rows.push({
+			key: 'section-canteen',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen)} value={excerpt(String(selectedCanteen?.alias), 30)} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={openCanteenSheet} groupPosition="top" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/price-group')} groupPosition="middle" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
+					</View>
+				</View>
+			),
+		});
+
+		// === App Settings ===
+		rows.push({
+			key: 'section-app-settings',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.group_app_settings)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={selectedTheme === 'systematic' ? translate(TranslationKeys.color_scheme_system) : selectedTheme === 'dark' ? translate(TranslationKeys.color_scheme_dark) : translate(TranslationKeys.color_scheme_light)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
+					</View>
+				</View>
+			),
+		});
+
+		// === Housing (conditional) ===
+		if (appSettings?.housing_enabled) {
+			rows.push({
+				key: 'section-housing',
+				element: (
+					<View style={sectionStyle}>
+						<SettingsGroupTitle>{translate(TranslationKeys.housing)}</SettingsGroupTitle>
+						<View style={groupStyle}>
+							<SettingsList
+								iconBgColor={housing_area_color}
+								leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.sort)}
+								value={housingSortingLabel}
+								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								handleFunction={openHousingSortingModal}
+								groupPosition="single"
+							/>
+						</View>
+					</View>
+				),
+			});
+		}
+
+		// === Campus (conditional) ===
+		if (appSettings?.campus_enabled) {
+			rows.push({
+				key: 'section-campus',
+				element: (
+					<View style={sectionStyle}>
+						<SettingsGroupTitle>{translate(TranslationKeys.campus)}</SettingsGroupTitle>
+						<View style={groupStyle}>
+							<SettingsList
+								iconBgColor={campus_area_color}
+								leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.sort)}
+								value={campusSortingLabel}
+								rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+								handleFunction={openCampusSortingModal}
+								groupPosition="single"
+							/>
+						</View>
+					</View>
+				),
+			});
+		}
+
+		// === App Management ===
+		rows.push({
+			key: 'section-management',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.dataAccess)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/data-access')} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="event" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.events)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/events')} groupPosition="middle" />
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.collectible_events)}
+							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+							handleFunction={() => router.navigate('/collectible-events')}
+							groupPosition="middle"
+						/>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="trophy-outline" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.collectible_event_settings)}
+							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+							handleFunction={openCollectibleSettingsModal}
+							groupPosition="middle"
+						/>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="support-agent" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.feedback_support_faq)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/support-FAQ')} groupPosition="middle" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="license" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.license_information)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/licenseInformation')} groupPosition="middle" />
+						{/* Terms & Conditions */}
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="file-document-check" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date)} value={termsAndPrivacyConsentAcceptedDate ?? undefined} handleFunction={() => {}} groupPosition="bottom" />
+					</View>
+				</View>
+			),
+		});
+
+		// === Footer ===
+		rows.push({
+			key: 'footer',
+			element: (
+				<TouchableOpacity
+					style={styles.footer}
+					onPress={() => {
+						if (isManagement) {
+							dispatch({ type: UPDATE_DEVELOPER_MODE, payload: false });
+							dispatch({ type: UPDATE_MANAGEMENT, payload: false });
+						} else {
+							dispatch({ type: UPDATE_DEVELOPER_MODE, payload: true });
+							dispatch({ type: UPDATE_MANAGEMENT, payload: true });
+						}
+					}}
+				>
+					<View style={styles.logoContainer}>
+						<MyImage
+							remote_image_url={getImageUrl(serverInfo?.info?.project?.project_logo)}
+							style={styles.logo}
+						/>
+					</View>
+					<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
+				</TouchableOpacity>
+			),
+		});
+
+		// === Debug View ===
+		rows.push({
+			key: 'debug-view',
+			element: (
+				<DebugView
+					title={translate(TranslationKeys.debug_mode)}
+					showInDevMode={true}
+				>
+					<Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>
+					<View style={groupStyle}>
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
+						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
+						<SettingsListBoolean
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />}
+							label="Use WebP images"
+							isEnabled={useWebpForAssets}
+							onToggle={toggleWebpForAssets}
+							groupPosition="middle"
+						/>
+						<SettingsListBoolean
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="bank-transfer" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.debug_mode)}
+							isEnabled={debugMode}
+							onToggle={toggleDebugMode}
+							groupPosition="middle"
+						/>
+						<SettingsListBoolean
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="update" size={24} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.simulate_expo_update_available)}
+							isEnabled={simulateExpoUpdateAvailable}
+							onToggle={toggleSimulateExpoUpdate}
+							groupPosition="bottom"
+						/>
+					</View>
+				</DebugView>
+			),
+		});
+
+		// === Version ===
+		rows.push({
+			key: 'version',
+			element: (
+				<SettingsList
+					iconBgColor={primaryColor}
+					leftIcon={<MaterialCommunityIcons name="numeric" size={24} color={theme.screen.icon} />}
+					label="Version"
+					value={getVersionInternalForAppsettingsScreen().toString()}
+					handleFunction={() => {}}
+					groupPosition="single"
+				/>
+			),
+		});
+
+		// === Collectible Spot ===
+		rows.push({
+			key: 'collectible-spot',
+			element: <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings} />,
+		});
+
+		return rows;
+	}, [
+		translate, primaryColor, theme, isRegisteredUser, user?.id, profile, nickNameLocal,
+		logoutButtonLabel, logoutButtonHandler, openNicknameSheet, openLanguageModal, languageName,
+		handleDeleteAccount, foods_area_color, selectedCanteen?.alias, priceGroups, openCanteenSheet,
+		openFoodofferSortingModal, sortingLabel, openColorSchemeSheet, openMenuPositionModal,
+		openCardColumnsModal, openFirstDayOfWeekModal, selectedTheme, drawerPosition,
+		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, housing_area_color,
+		housingSortingLabel, openHousingSortingModal, appSettings?.campus_enabled, campus_area_color,
+		campusSortingLabel, openCampusSortingModal, handleCheckForUpdates, openCollectibleSettingsModal,
+		termsAndPrivacyConsentAcceptedDate, isManagement, dispatch, serverInfo, selectedCustomerDisplayName,
+		foodOffersNextDayThreshold, useWebpForAssets, debugMode, simulateExpoUpdateAvailable,
+		openServerSheet, openFoodOffersTimeSheet, toggleWebpForAssets, toggleDebugMode,
+		toggleSimulateExpoUpdate,
+	]);
+
+	return (
+		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
+			<FlatList
+				data={listData}
+				keyExtractor={(item) => item.key}
+				renderItem={({ item }) => item.element}
+				style={[
+					styles.container,
+					{
+						width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
+						alignSelf: 'center',
+					},
+				]}
+				contentContainerStyle={{
+					paddingHorizontal: horizontalScreenPadding,
+					paddingVertical: 40,
+					backgroundColor: theme.screen.background,
+				}}
+				ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+			/>
 			{isActive && (
 				<>
-                                        <BaseBottomSheet
-                                                ref={canteenSheetRef}
-                                                index={-1}
-                                                backgroundStyle={{
-                                                        ...styles.sheetBackground,
-                                                        backgroundColor: theme.sheet.sheetBg,
-                                                }}
-                                                enablePanDownToClose
-                                                handleComponent={null}
-                                                onClose={closeCanteenSheet}
-                                        >
-                                                <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
-                                        </BaseBottomSheet>
-                                        <BaseBottomSheet
-                                                ref={foodOffersTimeSheetRef}
-                                                index={-1}
-                                                backgroundStyle={{
-                                                        ...styles.sheetBackground,
+					<BaseBottomSheet
+						ref={canteenSheetRef}
+						index={-1}
+						backgroundStyle={{
+							...styles.sheetBackground,
+							backgroundColor: theme.sheet.sheetBg,
+						}}
+						enablePanDownToClose
+						handleComponent={null}
+						onClose={closeCanteenSheet}
+					>
+						<CanteenSelectionSheet closeSheet={closeCanteenSheet} />
+					</BaseBottomSheet>
+					<BaseBottomSheet
+						ref={foodOffersTimeSheetRef}
+						index={-1}
+						backgroundStyle={{
+							...styles.sheetBackground,
 							backgroundColor: theme.sheet.sheetBg,
 						}}
 						enablePanDownToClose
@@ -638,19 +733,18 @@ const Settings = () => {
 						<FoodOffersNextDayTimeSheet
 							closeSheet={closeFoodOffersTimeSheet}
 							initialValue={foodOffersNextDayThreshold}
-                                                                onSave={value => {
-                                                                        dispatch({
-                                                                                type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
-                                                                                payload: value,
-                                                                        });
+							onSave={value => {
+								dispatch({
+									type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
+									payload: value,
+								});
 								closeFoodOffersTimeSheet();
-                                                        }}
-                                                />
-                                        </BaseBottomSheet>
-                                </>
-                        )}
-                </SafeAreaView>
-        );
+							}}
+						/>
+					</BaseBottomSheet>
+				</>
+			)}
+		</SafeAreaView>
+	);
 };
-
 export default Settings;
