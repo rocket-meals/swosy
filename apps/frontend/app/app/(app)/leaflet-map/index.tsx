@@ -43,7 +43,7 @@ const LeafletMap = () => {
 					setMarkerIconSrc(asset.uri);
 				} else if (asset.localUri) {
 					const content = await FileSystem.readAsStringAsync(asset.localUri, {
-						encoding: (FileSystem as any).EncodingType.Base64,
+						encoding: FileSystem.EncodingType.Base64,
 					});
 					// Prepend data URL prefix so the HTML <img src=...> works on native WebView
 					setMarkerIconSrc(`data:image/png;base64,${content}`);
