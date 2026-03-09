@@ -25,8 +25,8 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMa
 			const iconAsset = Asset.fromModule(require('@/assets/map/marker-icon-2x.png'));
 			await Promise.all([htmlAsset.downloadAsync(), iconAsset.downloadAsync()]);
 			const [htmlContent, iconContent] = await Promise.all([
-				new FileSystem.File(htmlAsset.localUri!).text(),
-				new FileSystem.File(iconAsset.localUri!).base64(),
+				FileSystem.readAsStringAsync(htmlAsset.localUri!),
+				FileSystem.readAsStringAsync(iconAsset.localUri!, { encoding: FileSystem.EncodingType.Base64 }),
 			]);
 			if (isMounted) {
 				setHtml(htmlContent);
