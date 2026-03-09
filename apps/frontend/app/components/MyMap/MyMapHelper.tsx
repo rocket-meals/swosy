@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { LeafletWebViewEvent, MapMarker } from './model';
+import type { LeafletWebViewEvent, MapLayer, MapMarker } from './model';
 
 export interface Position {
 	lat: number;
@@ -11,6 +11,7 @@ export interface MyMapProps {
 	mapCenterPosition: Position;
 	zoom?: number;
 	mapMarkers?: MapMarker[];
+	mapLayers?: MapLayer[];
 	onMarkerClick?: (id: string) => void;
 	onMapEvent?: (event: LeafletWebViewEvent) => void;
 	renderMarkerModal?: (markerId: string, onClose: () => void) => React.ReactNode;

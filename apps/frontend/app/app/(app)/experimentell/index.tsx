@@ -52,6 +52,12 @@ const Index = () => {
 				}),
 		},
 		{
+			key: 'map-variants',
+			label: translate(TranslationKeys.map_variants),
+			leftIcon: <MaterialCommunityIcons name="map-legend" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/map-variants'),
+		},
+		{
 			key: 'vertical-image-scroll',
 			label: translate(TranslationKeys.vertical_image_scroll),
 			leftIcon: <MaterialCommunityIcons name="image-multiple" size={24} color={theme.screen.icon} />,
