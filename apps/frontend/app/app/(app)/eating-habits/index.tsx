@@ -53,6 +53,16 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
+			if (!isAnonymousUser && user?.profile) {
+				profileHelper.fetchProfileById(user.profile, {}).then((fetchedProfile) => {
+					if (fetchedProfile) {
+						dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
+					}
+				}).catch((error) => {
+					console.error('Error fetching profile on focus:', error);
+				});
+			}
+
 			const timer = setTimeout(() => {
 				setIsActive(true);
 			}, 100);
@@ -60,7 +70,7 @@ const Index = () => {
 				clearTimeout(timer);
 				setIsActive(false);
 			};
-		}, [])
+		}, [isAnonymousUser, user?.profile, profileHelper, dispatch])
 	);
 
 	useEffect(() => {

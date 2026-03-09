@@ -62,31 +62,26 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const markingText = getTextFromTranslation(marking?.translations, language);
 
 	const handleAnonymousMarking = (like: boolean) => {
-		const profileData = { ...profile };
-		let markingFound = false;
+		const markingsCopy = [...(profile?.markings ?? [])];
+		const existingIndex = markingsCopy.findIndex((m: any) => m.markings_id === markingId);
 
-		profileData?.markings?.forEach((profileMarkings: any, index: number) => {
-			if (profileMarkings?.markings_id === markingId) {
-				const likeStats = profileMarkings?.like === like ? null : like;
-				markingFound = true;
-				if (likeStats === null) {
-					profileData?.markings.splice(index, 1);
-				} else {
-					profileData.markings[index] = { ...ownMarking, like: like };
-				}
+		if (existingIndex >= 0) {
+			const likeStats = markingsCopy[existingIndex].like === like ? null : like;
+			if (likeStats === null) {
+				markingsCopy.splice(existingIndex, 1);
+			} else {
+				markingsCopy[existingIndex] = { ...markingsCopy[existingIndex], like };
 			}
-		});
-
-		if (!markingFound) {
-			profileData?.markings?.push({
+		} else {
+			markingsCopy.push({
 				...ownMarking,
-				like: like,
+				like,
 				markings_id: markingId,
-				profiles_id: profileData?.id,
+				profiles_id: profile?.id,
 			});
 		}
 
-		dispatch({ type: UPDATE_PROFILE, payload: profileData });
+		dispatch({ type: UPDATE_PROFILE, payload: { ...profile, markings: markingsCopy } });
 	};
 
 	const fetchProfile = async () => {
