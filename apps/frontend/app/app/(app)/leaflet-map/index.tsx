@@ -107,7 +107,7 @@ const LeafletMap = () => {
 					icon: markerIconSrc,
 					size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
 					iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
-					title: building.alias ?? building.id,
+	
 				};
 			});
 	}, [buildings, markerIconSrc]);
