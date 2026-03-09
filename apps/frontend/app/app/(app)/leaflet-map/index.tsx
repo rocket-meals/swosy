@@ -1,18 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
-import { getDefaultIconAnchor, MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
+import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { LeafletWebViewEvent, MapMarker } from '@/components/MyMap/model';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useTheme } from '@/hooks/useTheme';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { DatabaseTypes } from 'repo-depkit-common';
+import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -24,18 +22,33 @@ const POSITION_BUNDESTAG = {
 const MAX_LOG_ENTRIES = 50;
 
 const MAX_ZOOM = 18;
-const DEFAULT_ZOOM = 13;
+const DEFAULT_ZOOM = 17;
+
+const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
+const BUILDING_MARKER_COLOR = '#1565c0';
+const MAX_BUILDING_LABEL_CHARS = 3;
+
+function createBuildingMarkerSvg(externalIdentifier?: string | null): string {
+	const size = BUILDING_MARKER_SIZE;
+	const cx = size / 2;
+	const cy = size / 2;
+	const r = cx - 2;
+	const label = externalIdentifier ? externalIdentifier.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${BUILDING_MARKER_COLOR}" stroke="white" stroke-width="2" opacity="0.9"/>`;
+	const textEl = label
+		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
+		: '';
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
+}
 
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
 	const { buildings } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
-	const { show, close } = useMyScrollViewModal();
+	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
 
-	const [markerIconSrc, setMarkerIconSrc] = useState<string | null>(null);
-	const [markerError, setMarkerError] = useState<string | null>(null);
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
 
@@ -51,34 +64,6 @@ const LeafletMap = () => {
 		});
 	}, []);
 
-	// Load marker asset asynchronously
-	useEffect(() => {
-		const loadMarkerIcon = async () => {
-			try {
-				const mapMarkerIcon = require('@/assets/map/marker-icon-2x.png');
-				const asset = await Asset.fromModule(mapMarkerIcon);
-				await asset.downloadAsync();
-
-				if (Platform.OS === 'web') {
-					setMarkerIconSrc(asset.uri);
-				} else if (asset.localUri) {
-					const content = await FileSystem.readAsStringAsync(asset.localUri, {
-						encoding: FileSystem.EncodingType.Base64,
-					});
-					// Prepend data URL prefix so the HTML <img src=...> works on native WebView
-					setMarkerIconSrc(`data:image/png;base64,${content}`);
-				} else {
-					setMarkerError('marker asset missing localUri');
-				}
-			} catch (error) {
-				console.error('Error loading marker icon:', error);
-				setMarkerError(String(error));
-			}
-		};
-
-		loadMarkerIcon();
-	}, []);
-
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
 			const building = buildings.find((b: DatabaseTypes.Buildings) => b.id === selectedCanteen.building);
@@ -92,7 +77,6 @@ const LeafletMap = () => {
 
 	// Build markers for all buildings that have valid coordinates
 	const buildingMarkers = useMemo((): MapMarker[] => {
-		if (!markerIconSrc) return [];
 		return (buildings as DatabaseTypes.Buildings[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
@@ -104,13 +88,12 @@ const LeafletMap = () => {
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
-					icon: markerIconSrc,
-					size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
-					iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
-	
+					icon: createBuildingMarkerSvg(building.external_identifier),
+					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
+					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, markerIconSrc]);
+	}, [buildings]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
@@ -144,21 +127,11 @@ const LeafletMap = () => {
 
 			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
 
-			show({
-				title,
-				onClose: close,
-				children: (
-					<View style={{ padding: 16 }}>
-						{lat !== null && lng !== null && (
-							<Text style={{ color: theme.screen.text, textAlign: 'center' }}>
-								{lat}, {lng}
-							</Text>
-						)}
-					</View>
-				),
-			});
+			if (buildingId) {
+				openBuildingDetailsModal(buildingId);
+			}
 		},
-		[buildings, clusteredBuildingMarkers, show, close, theme.screen.text, addLog],
+		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
 	const handleMapEvent = useCallback(
@@ -175,13 +148,8 @@ const LeafletMap = () => {
 		[addLog],
 	);
 
-	if (!markerIconSrc && !markerError) {
-		return null;
-	}
-
 	return (
 		<View style={styles.container}>
-			{markerError && <Text selectable>{markerError}</Text>}
 			<MyMap
 				mapCenterPosition={mapCenterOverride ?? centerPosition}
 				zoom={mapZoom}
