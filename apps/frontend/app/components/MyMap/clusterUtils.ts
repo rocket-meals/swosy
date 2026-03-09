@@ -4,6 +4,7 @@ const CLUSTER_ICON_SIZE = 40;
 // Desired cluster radius in screen pixels; used to derive a geographic cell size per zoom level.
 const CLUSTER_PIXEL_RADIUS = 60;
 const MAX_CLUSTER_ZOOM = 20;
+const DEFAULT_ZOOM_LEVEL = 13;
 
 // Colour thresholds for the cluster badge
 const SMALL_CLUSTER_THRESHOLD = 10;
@@ -36,11 +37,14 @@ function getGridCell(lat: number, lng: number, zoom: number): string {
 export function clusterMarkers(markers: MapMarker[], zoom: number): MapMarker[] {
 	if (!markers || markers.length === 0) return markers;
 
-	if (zoom >= MAX_CLUSTER_ZOOM) return markers;
+	// Guard against undefined/NaN zoom (e.g. if the map hasn't reported its zoom yet)
+	const safeZoom = typeof zoom === 'number' && isFinite(zoom) ? zoom : DEFAULT_ZOOM_LEVEL;
+
+	if (safeZoom >= MAX_CLUSTER_ZOOM) return markers;
 
 	const cells = new Map<string, MapMarker[]>();
 	for (const marker of markers) {
-		const key = getGridCell(marker.position.lat, marker.position.lng, zoom);
+		const key = getGridCell(marker.position.lat, marker.position.lng, safeZoom);
 		const cell = cells.get(key);
 		if (cell) {
 			cell.push(marker);
