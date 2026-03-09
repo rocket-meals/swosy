@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { LeafletWebViewEvent } from './model';
@@ -6,14 +6,11 @@ import { MyMapProps } from '@/components/MyMap/MyMapHelper';
 import DEFAULT_TILE_LAYER from './defaultTileLayer';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
-import { clusterMarkers } from './clusterUtils';
 
 const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
 	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
-	const [currentZoom, setCurrentZoom] = useState<number>(zoom ?? 13);
-	const mapMountedRef = useRef(false);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -35,42 +32,24 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 		onMarkerSelectionChange?.(selectedMarker);
 	}, [selectedMarker, onMarkerSelectionChange]);
 
-	const clusteredMarkers = useMemo(() => clusterMarkers(mapMarkers ?? [], currentZoom), [mapMarkers, currentZoom]);
-
-	const injectMessage = useCallback(
-		(message: object) => {
-			const json = JSON.stringify(message);
-			webViewRef.current?.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`);
-		},
-		[],
-	);
-
 	const sendMapData = useCallback(() => {
-		injectMessage({
+		const message = {
 			mapCenterPosition,
 			zoom: zoom ?? 13,
 			mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
-			mapMarkers: clusteredMarkers,
-		});
-	}, [injectMessage, mapCenterPosition, zoom, mapLayers, clusteredMarkers]);
-
-	// Re-send clustered markers whenever they change (triggered by zoom or marker data changes)
-	useEffect(() => {
-		if (!mapMountedRef.current) return;
-		injectMessage({ mapMarkers: clusteredMarkers });
-	}, [clusteredMarkers, injectMessage]);
+			mapMarkers: mapMarkers ?? [],
+		};
+		const json = JSON.stringify(message);
+		webViewRef.current?.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`);
+	}, [mapCenterPosition, zoom, mapLayers, mapMarkers]);
 
 	const handleMessage = useCallback(
 		(event: WebViewMessageEvent) => {
 			try {
 				const data: LeafletWebViewEvent = JSON.parse(event.nativeEvent.data);
 				if (data.tag === 'MapComponentMounted') {
-					mapMountedRef.current = true;
 					sendMapData();
 					return;
-				}
-				if (data.tag === 'onZoomEnd') {
-					setCurrentZoom(data.zoom);
 				}
 				if (data.tag === 'onMapMarkerClicked') {
 					onMarkerClick?.(data.mapMarkerId);
