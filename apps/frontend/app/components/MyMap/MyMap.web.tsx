@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import DEFAULT_TILE_LAYER from './defaultTileLayer';
 import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
+import { clusterMarkers } from './clusterUtils';
 
 const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const { theme } = useTheme();
@@ -11,6 +12,7 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 	const html = require('@/assets/leaflet/index.html');
 
 	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+	const [currentZoom, setCurrentZoom] = useState<number>(zoom ?? 13);
 
 	useEffect(() => {
 		onMarkerSelectionChange?.(selectedMarker);
@@ -18,15 +20,16 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 
 	const sendCoordinates = useCallback(() => {
 		if (iframeRef.current && iframeRef.current.contentWindow) {
+			const clustered = clusterMarkers(mapMarkers ?? [], currentZoom);
 			const message = {
 				mapCenterPosition,
 				zoom: zoom ?? 13,
 				mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
-				mapMarkers: mapMarkers ?? [],
+				mapMarkers: clustered,
 			};
 			iframeRef.current.contentWindow.postMessage(message, window.location.origin);
 		}
-	}, [mapCenterPosition, zoom, mapLayers, mapMarkers]);
+	}, [mapCenterPosition, zoom, mapLayers, mapMarkers, currentZoom]);
 
 	useEffect(() => {
 		sendCoordinates();
@@ -38,6 +41,10 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 				const data: LeafletWebViewEvent = JSON.parse(event.data);
 				if (data.tag === 'MapComponentMounted') {
 					sendCoordinates();
+					return;
+				}
+				if (data.tag === 'onZoomEnd') {
+					setCurrentZoom(data.zoom);
 					return;
 				}
 				if (data.tag === 'onMapMarkerClicked') {
