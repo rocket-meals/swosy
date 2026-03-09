@@ -5,7 +5,7 @@ import { Platform, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
-import { getDefaultIconAnchor, MARKER_DEFAULT_SIZE, MyMapMarkerIcons } from '@/components/MyMap/markerUtils';
+import { getDefaultIconAnchor, MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { MapMarker } from '@/components/MyMap/model';
@@ -84,7 +84,7 @@ const LeafletMap = () => {
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
-					icon: MyMapMarkerIcons.getIconForWebByLocalPathUri(markerIconSrc),
+					icon: markerIconSrc,
 					size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
 					iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 					title: building.alias ?? building.id,
