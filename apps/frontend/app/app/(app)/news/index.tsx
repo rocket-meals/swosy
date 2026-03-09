@@ -1,5 +1,5 @@
-import { ActivityIndicator, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, SafeAreaView, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
@@ -11,7 +11,6 @@ import { useAppSelector } from '@/redux/hooks';
 import { SET_NEWS } from '@/redux/Types/types';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
@@ -62,44 +61,50 @@ const Index = () => {
 		}
 	}, []);
 
+	const filteredNews = useMemo(
+		() => (news ?? []).filter((item: DatabaseTypes.News) => (item?.translations?.length ?? 0) > 1),
+		[news]
+	);
+
+	const renderItem = useCallback(({ item }: { item: DatabaseTypes.News }) => {
+		return <NewsItem news={item} />;
+	}, []);
+
+	const keyExtractor = useCallback((item: DatabaseTypes.News) => String(item?.id ?? ''), []);
+
+	const ItemSeparatorComponent = useCallback(() => <View style={{ height: 20 }} />, []);
+
+	const ListHeaderComponent = useMemo(
+		() => <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_news} />,
+		[]
+	);
+
+	const ListEmptyComponent = useMemo(
+		() =>
+			loading ? (
+				<View style={{ height: 200, width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+					<ActivityIndicator size={30} color={theme.screen.text} />
+				</View>
+			) : null,
+		[loading, theme.screen.text]
+	);
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
-			<ScrollView
-				style={{
-					...styles.newsContainer,
-					backgroundColor: theme.screen.background,
-				}}
-				contentContainerStyle={{
-					...styles.newsContentContainer,
-					paddingHorizontal: isWeb ? 30 : 5,
-				}}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-			>
-				<View style={styles.newsListContainer}>
-					<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_news} />
-					{loading ? (
-						<View
-							style={{
-								height: 200,
-								width: '100%',
-								justifyContent: 'center',
-								alignItems: 'center',
-							}}
-						>
-							<ActivityIndicator size={30} color={theme.screen.text} />
-						</View>
-					) : (
-                                                news &&
-                                                news?.map((item: DatabaseTypes.News, index: number) => {
-                                                        if (item?.translations?.length > 1) {
-                                                                return <NewsItem key={item?.id} news={item} />;
-                                                        }
-                                                })
-                                        )}
-                                </View>
-                        </ScrollView>
-                </SafeAreaView>
-        );
+			<FlatList
+				data={filteredNews}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				ListHeaderComponent={ListHeaderComponent}
+				ListEmptyComponent={ListEmptyComponent}
+				ItemSeparatorComponent={ItemSeparatorComponent}
+				contentContainerStyle={[styles.flatListContent, { paddingHorizontal: isWeb ? 30 : 5 }]}
+				style={[styles.newsContainer, { backgroundColor: theme.screen.background }]}
+				refreshing={refreshing}
+				onRefresh={onRefresh}
+			/>
+		</SafeAreaView>
+	);
 };
 
 export default Index;
