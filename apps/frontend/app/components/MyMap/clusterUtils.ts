@@ -68,7 +68,6 @@ export function clusterMarkers(markers: MapMarker[], zoom: number): MapMarker[] 
 				icon: createClusterSvg(cellMarkers.length),
 				size: [CLUSTER_ICON_SIZE, CLUSTER_ICON_SIZE] as [number, number],
 				iconAnchor: [CLUSTER_ICON_SIZE / 2, CLUSTER_ICON_SIZE / 2],
-				title: String(cellMarkers.length),
 			});
 		}
 	}
