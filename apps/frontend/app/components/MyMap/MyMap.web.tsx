@@ -5,7 +5,7 @@ import DEFAULT_TILE_LAYER from './defaultTileLayer';
 import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const { theme } = useTheme();
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const html = require('@/assets/leaflet/index.html');
@@ -21,12 +21,12 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMa
 			const message = {
 				mapCenterPosition,
 				zoom: zoom ?? 13,
-				mapLayers: [DEFAULT_TILE_LAYER],
+				mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
 				mapMarkers: mapMarkers ?? [],
 			};
 			iframeRef.current.contentWindow.postMessage(message, window.location.origin);
 		}
-	}, [mapCenterPosition, zoom, mapMarkers]);
+	}, [mapCenterPosition, zoom, mapLayers, mapMarkers]);
 
 	useEffect(() => {
 		sendCoordinates();

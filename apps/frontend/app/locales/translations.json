@@ -5232,5 +5232,15 @@
         "ru": "Markings count",
         "tr": "Markings count",
         "zh": "Markings count"
+    },
+    "map_variants": {
+        "de": "Karten-Varianten",
+        "en": "Map Variants",
+        "ar": "متغيرات الخريطة",
+        "es": "Variantes de Mapa",
+        "fr": "Variantes de Carte",
+        "ru": "Варианты Карты",
+        "tr": "Harita Varyantları",
+        "zh": "地图变体"
     }
 }

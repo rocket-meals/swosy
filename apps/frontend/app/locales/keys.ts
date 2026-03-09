@@ -303,6 +303,7 @@ export enum TranslationKeys {
 	map = 'map',
 	leaflet_map = 'leaflet_map',
 	leaflet_test = 'leaflet_test',
+	map_variants = 'map_variants',
 	news = 'news',
 	food_offers = 'food_offers',
 	read_more = 'read_more',
