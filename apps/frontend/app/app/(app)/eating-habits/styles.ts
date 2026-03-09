@@ -4,21 +4,6 @@ export default StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-	contentContainer: {
-		width: '100%',
-		alignItems: 'center',
-		padding: 10,
-	},
-	gifContainer: {
-		width: 200,
-		height: 200,
-		marginVertical: 40,
-	},
-	gif: {
-		width: '100%',
-		height: '100%',
-		resizeMode: 'contain',
-	},
 	eatingHabitsContainer: {
 		width: '100%',
 	},
@@ -57,5 +42,11 @@ export default StyleSheet.create({
 	sheetBackground: {
 		borderTopRightRadius: 30,
 		borderTopLeftRadius: 30,
+	},
+	flatListContent: {
+		padding: 16,
+	},
+	markingsTopSpacer: {
+		height: 16,
 	},
 });

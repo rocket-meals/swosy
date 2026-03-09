@@ -8,22 +8,22 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { CanteenFeedbackLabelEntryHelper } from '@/redux/actions/CanteenFeedbackLabelEntries/CanteenFeedbackLabelEntries';
 import { isSameDay } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import SettingsList from '@/components/SettingsList';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 
-const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, date, groupPosition }) => {
+const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, date, groupPosition, isAccountRequired }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
-	const { openRatingPermissionModal } = useRatingPermissionModal();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const [showTooltip, setShowTooltip] = useState(false);
 	const { language } = useAppSelector((state) => state.settings);
 	const [count, setCount] = useState({ likes: 0, dislikes: 0 });
@@ -39,7 +39,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	// Function to handle updating the entry
 	const handleUpdateEntry = async (isLike: boolean | null) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 		if (!selectedCanteen?.id) return;
@@ -61,7 +61,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 			});
 		} catch (error) {
 			if ((error as any)?.status === 403) {
-				openRatingPermissionModal();
+				openAccountRequiredModal();
 			} else {
 				console.error('Failed to update canteen feedback label entry:', error);
 			}
@@ -90,7 +90,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
 				trigger={triggerProps => (
@@ -117,7 +117,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 						{labelText}
 					</TooltipText>
 				</TooltipContent>
-			</Tooltip>
+			</CustomTooltip>
 		</View>
 	);
 
@@ -139,6 +139,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 			title={labelText || ''}
 			rightElement={rightElement}
 			groupPosition={groupPosition}
+			isAccountRequired={isAccountRequired}
 		/>
 	);
 };

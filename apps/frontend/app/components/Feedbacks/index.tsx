@@ -19,7 +19,7 @@ import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import { RootState } from '@/redux/reducer';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const loadingState = {
 	submitLoading: false,
@@ -43,7 +43,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
-	const { openRatingPermissionModal } = useRatingPermissionModal();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
 	// Optimized Selectors
@@ -67,7 +67,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const submitCommentFeedback = async (string: string | null) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 
@@ -107,7 +107,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const handleTextChange = (text: string) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 
@@ -199,11 +199,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				const total = labels.length;
 				const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
 				return (
-					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} />
+					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} isAccountRequired={!user?.id} />
 				);
 			})}
 			{commentType !== 'disabled' && commentType !== 'read' && (
-				<View style={styles.ratingSummaryContainer}>
+				<View style={styles.commentSectionContainer}>
 					<SettingsListTextInput
 						label={translate(TranslationKeys.your_comment)}
 						value={comment || translate(TranslationKeys.write_a_comment)}
@@ -217,6 +217,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 						groupPosition="single"
 						saveLabel={translate(TranslationKeys.save_comment)}
 						checkTextInput={(value) => ({ isValid: value.length <= 120, value })}
+						isAccountRequired={!user?.id}
 					/>
 				</View>
 			)}

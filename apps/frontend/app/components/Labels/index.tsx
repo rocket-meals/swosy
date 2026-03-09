@@ -13,7 +13,6 @@ import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
-import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
@@ -28,6 +27,7 @@ interface LabelsProps {
 }
 
 const selectMarkings = (state: RootState) => state.food.markings;
+const selectMarkingGroups = (state: RootState) => state.food.markingGroups;
 
 export const selectFoodOffer = (offerId?: string) =>
 	createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
@@ -48,34 +48,15 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	};
 
 	const markings = useSelector(selectMarkings);
+	const markingGroups = useSelector(selectMarkingGroups);
 	const foodOfferSelector = useMemo(
 		() => (offerId ? selectFoodOffer(offerId) : () => undefined),
 		[offerId]
 	);
 	const foodOffer = useSelector(foodOfferSelector as (state: RootState) => DatabaseTypes.Foodoffers | undefined);
 
-	// State for marking groups
-	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
-
 	// State for foodoffer components
 	const [foodofferComponents, setFoodofferComponents] = useState<any[]>([]);
-
-	// Fetch marking groups
-	useEffect(() => {
-		const fetchMarkingGroups = async () => {
-			try {
-				const markingGroupsHelper = new MarkingGroupsHelper();
-				const result = await markingGroupsHelper.fetchMarkingGroups({});
-				if (result) {
-					setMarkingGroups(result);
-				}
-			} catch (error) {
-				console.error('Error fetching marking groups:', error);
-			}
-		};
-
-		fetchMarkingGroups();
-	}, []);
 
 	// Fetch foodoffer components when offerId is available
 	useEffect(() => {

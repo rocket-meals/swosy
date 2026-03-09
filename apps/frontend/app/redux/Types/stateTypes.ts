@@ -69,6 +69,7 @@ export type FoodState = {
 	ownFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[];
 	ownfoodFeedbackLabelEntries: DatabaseTypes.FoodsFeedbacksLabelsEntries[];
 	markings: DatabaseTypes.Markings[];
+	markingGroups: DatabaseTypes.MarkingsGroups[];
 	selectedFoodMarkings: DatabaseTypes.FoodoffersMarkings[];
 	foodCategories: DatabaseTypes.FoodsCategories[];
 	foodOfferCategories: DatabaseTypes.FoodoffersCategories[];

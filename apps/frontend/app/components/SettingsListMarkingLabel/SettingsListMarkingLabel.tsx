@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import MarkingIcon from '../MarkingIcon';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -43,7 +43,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const ownMarking = profile?.markings?.find((mark: any) => mark.markings_id === markingId);
 	const [likeLoading, setLikeLoading] = useState(false);
 	const [dislikeLoading, setDislikeLoading] = useState(false);
-	const profileHelper = new ProfileHelper();
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
 	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 
 	const openMarkingLabel = (marking: DatabaseTypes.Markings) => {
@@ -169,7 +169,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>
-			<Tooltip
+			<CustomTooltip
 				placement="top"
 				trigger={triggerProps =>
 					handleMenuSheet ? (
@@ -197,7 +197,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 						{`${markingText}`}
 					</TooltipText>
 				</TooltipContent>
-			</Tooltip>
+			</CustomTooltip>
 		</View>
 	);
 

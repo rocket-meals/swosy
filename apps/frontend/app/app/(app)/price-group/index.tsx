@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { View, InteractionManager } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -21,6 +21,11 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import SettingsList from '@/components/SettingsList';
+
+// Module-level cache so the expensive color-replacement deep-copy only runs once
+// per primaryColor value across all navigations, even when the screen is unmounted.
+let _cachedAnimationJson: any = null;
+let _cachedPrimaryColor: string | null = null;
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.price_group);
@@ -57,11 +62,23 @@ const Index = () => {
 
 	useFocusEffect(
 		useCallback(() => {
-			setAmimationJson(replaceLottieColors(animation, primaryColor));
+			// Cache hit: set the processed animation immediately without blocking.
+			if (_cachedAnimationJson && _cachedPrimaryColor === primaryColor) {
+				setAmimationJson(_cachedAnimationJson);
+				return;
+			}
+
+			// Cache miss: defer the expensive deep-copy + color-replacement until after
+			// the navigation animation so it never blocks the transition.
+			const task = InteractionManager.runAfterInteractions(() => {
+				_cachedAnimationJson = replaceLottieColors(animation, primaryColor);
+				_cachedPrimaryColor = primaryColor;
+				setAmimationJson(_cachedAnimationJson);
+			});
 			return () => {
-				setAmimationJson(null);
+				task.cancel();
 			};
-		}, [])
+		}, [primaryColor])
 	);
 
 	useFocusEffect(
@@ -70,7 +87,6 @@ const Index = () => {
 
 			return () => {
 				setAutoPlay(false); // Reset when leaving
-				setAmimationJson(null);
 			};
 		}, [appSettings?.animations_auto_start])
 	);
