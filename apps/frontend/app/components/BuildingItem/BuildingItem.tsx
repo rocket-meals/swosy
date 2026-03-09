@@ -5,13 +5,13 @@ import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useTheme } from '@/hooks/useTheme';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 import useMyScrollviewModalDistanceInformation from '@/hooks/useMyScrollviewModalDistanceInformation';
+import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import IconButton from '../UI/IconButton';
@@ -47,18 +47,15 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({
 	const { translate } = useLanguage();
 	const { openLinkCoordinateModal } = useLinkCoordinateModal();
 	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
+	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 
 	const defaultImage = useMemo(() => getImageUrl(projectLogo ?? ''), [projectLogo]);
 	const campus_area_color = campusAreaColor ? campusAreaColor : primaryColor;
 	const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
 
 	const handleNavigation = useCallback(
-		(id: string) =>
-			router.push({
-				pathname: '/(app)/campus/details',
-				params: { id },
-			}),
-		[]
+		(id: string) => openBuildingDetailsModal(id),
+		[openBuildingDetailsModal]
 	);
 
 	const handleOpenNavigation = useCallback(() => {
