@@ -170,7 +170,7 @@ const POSITION_BUNDESTAG = {
 
 const MAX_LOG_ENTRIES = 50;
 
-const MAX_ZOOM = 18;
+const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
 const VIRTUAL_ZOOM_MAX_NATIVE_ZOOM = 17;
 
@@ -240,7 +240,7 @@ const LeafletMap = () => {
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
 		if (useVirtualZoom) {
-			return { ...layer, maxNativeZoom: VIRTUAL_ZOOM_MAX_NATIVE_ZOOM };
+			return { ...layer, maxNativeZoom: VIRTUAL_ZOOM_MAX_NATIVE_ZOOM, maxZoom: MAX_ZOOM };
 		}
 		return layer;
 	}, [selectedTileVariantKey, useVirtualZoom]);
