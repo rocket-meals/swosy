@@ -15,7 +15,8 @@ import SettingsList from '@/components/SettingsList/SettingsList';
 import LeafletMapHeader from './components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -115,7 +116,7 @@ const LeafletMap = () => {
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
-	const { show, close } = useMyScrollViewModal();
+	const { show, closeAll } = useMyScrollViewModal();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
@@ -152,46 +153,24 @@ const LeafletMap = () => {
 		show({
 			title: 'Kartenmaterial',
 			children: (
-				<View>
-					{TILE_VARIANTS.map((variant, index) => {
-						const isSelected = variant.key === selectedTileVariantKey;
-						const groupPosition =
-							TILE_VARIANTS.length === 1
-								? 'single'
-								: index === 0
-								? 'top'
-								: index === TILE_VARIANTS.length - 1
-								? 'bottom'
-								: 'middle';
-						return (
-							<SettingsList
-								key={variant.key}
-								title={variant.label}
-								rightIcon={
-									isSelected ? (
-										<MaterialCommunityIcons name="check" size={20} color={theme.screen.icon} />
-									) : undefined
-								}
-								onPress={() => {
-									setSelectedTileVariantKey(variant.key);
-									close();
-								}}
-								showSeparator={index < TILE_VARIANTS.length - 1}
-								groupPosition={groupPosition}
-								noIconIndent
-							/>
-						);
-					})}
-				</View>
+				<SettingsListSelectOption
+					options={TILE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
+					selectedOption={selectedTileVariantKey}
+					onSelect={(option) => {
+						setSelectedTileVariantKey(option.id);
+						closeAll();
+					}}
+					noIconIndent
+				/>
 			),
 		});
-	}, [show, close, selectedTileVariantKey, theme]);
+	}, [show, closeAll, selectedTileVariantKey]);
 
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
 			children: (
-				<View style={settingsModalStyles.container}>
+				<>
 					<SettingsList
 						title="Kartenmaterial"
 						value={(TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).label}
@@ -212,7 +191,7 @@ const LeafletMap = () => {
 						showSeparator={false}
 						noIconIndent
 					/>
-				</View>
+				</>
 			),
 		});
 	}, [show, openTileSelectorModal, selectedTileVariantKey, useFlyAnimation, theme]);
@@ -385,13 +364,6 @@ const LeafletMap = () => {
 };
 
 export default LeafletMap;
-
-const settingsModalStyles = StyleSheet.create({
-	container: {
-		paddingHorizontal: 16,
-		paddingVertical: 8,
-	},
-});
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
