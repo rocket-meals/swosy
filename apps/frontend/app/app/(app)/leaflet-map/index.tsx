@@ -21,17 +21,9 @@ import { useDispatch } from 'react-redux';
 import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useLanguage } from '@/hooks/useLanguage';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
-
-/** Extended building shape that may include optional organisation relation fields. */
-type BuildingWithOrganisations = DatabaseTypes.Buildings & {
-	/** Single organisation FK (e.g. `organisation_id` or `organisation`). */
-	organisation_id?: string | null;
-	organisation?: string | null;
-	/** Many-to-many relation: each entry is either the FK string or an object with an id field. */
-	organisations?: Array<string | { organisations_id?: string; id?: string }> | null;
-};
 
 type TileVariant = {
 	key: string;
@@ -285,18 +277,14 @@ function getContrastColor(hexColor: string): string {
 }
 
 /**
- * Returns the first organisation ID linked to the building, or null if none.
- *
- * Priority order:
- *  1. `building.organisations` many-to-many array (junction table entries)
- *  2. `building.organisation_id` / `building.organisation` single FK
+ * Returns the first organisation linked to the building from the pre-computed dict, or null if none.
  */
-function getFirstOrganisationId(building: BuildingWithOrganisations): string | null {
-	if (Array.isArray(building.organisations) && building.organisations.length > 0) {
-		const first = building.organisations[0];
-		return typeof first === 'string' ? first : (first?.organisations_id ?? first?.id ?? null);
-	}
-	return building.organisation_id ?? building.organisation ?? null;
+function getFirstOrganisationFromDict(
+	buildingId: string,
+	buildingIdToOrgsDict: Record<string, DatabaseTypes.Organizations[]>
+): DatabaseTypes.Organizations | null {
+	const orgs = buildingIdToOrgsDict[buildingId];
+	return orgs && orgs.length > 0 ? orgs[0] : null;
 }
 
 /**
@@ -337,7 +325,7 @@ const MAX_SEARCH_RESULTS = 3;
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
-	const { buildings, organisations } = useAppSelector((state) => state.canteenReducer);
+	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
@@ -360,6 +348,15 @@ const LeafletMap = () => {
 			{}
 		),
 		[organisations]
+	);
+
+	// Dict: buildingId → Organizations[] derived from the buildings_organizations join table
+	const buildingIdToOrgsDict = useMemo(
+		() => BuildingsHelper.getBuildingIdToOrganizationsDict(
+			buildingsOrganizations,
+			organisationsDict
+		),
+		[buildingsOrganizations, organisationsDict]
 	);
 
 	// Contrast label colour to use as the default marker text colour when no explicit colour is set
@@ -479,23 +476,13 @@ const LeafletMap = () => {
 	// Build markers for all buildings that have valid coordinates,
 	// filtered by liked organisations when any are selected.
 	const buildingMarkers = useMemo((): MapMarker[] => {
-		return (buildings as BuildingWithOrganisations[])
+		return (buildings as DatabaseTypes.Buildings[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 				if (!coords || coords.length !== 2) return false;
 				// Apply organisation filter only when at least one org is liked
 				if (likedOrganisationIds.length > 0) {
-					const buildingWithOrgs = building as BuildingWithOrganisations;
-					// Support both a single organisation FK and a many-to-many organisations array
-					const singleOrgId: string | null | undefined =
-						buildingWithOrgs.organisation_id ?? buildingWithOrgs.organisation;
-					const orgIds: string[] = Array.isArray(buildingWithOrgs.organisations)
-						? buildingWithOrgs.organisations.map((o) =>
-								typeof o === 'string' ? o : (o?.organisations_id ?? o?.id ?? '')
-							).filter(Boolean)
-						: singleOrgId
-						? [singleOrgId]
-						: [];
+					const orgIds = (buildingIdToOrgsDict[building.id] ?? []).map((org) => org.id);
 					// Buildings with no organisation link bypass the filter and are always shown
 					if (orgIds.length === 0) return true;
 					return orgIds.some((id) => likedOrganisationIds.includes(id));
@@ -506,8 +493,7 @@ const LeafletMap = () => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
 				const [lng, lat] = coords;
 				// Resolve the first linked organisation for style fallback
-				const firstOrgId = getFirstOrganisationId(building);
-				const firstOrg = firstOrgId ? organisationsDict[firstOrgId] : null;
+				const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
@@ -525,7 +511,7 @@ const LeafletMap = () => {
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, likedOrganisationIds, organisationsDict, primaryColor, primaryColorContrastColor]);
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
