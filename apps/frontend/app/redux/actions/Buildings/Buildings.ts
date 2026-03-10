@@ -1,6 +1,9 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper, Query } from '@/helper/collectionHelper';
 
+/** A Directus foreign-key field may be returned as a raw ID (string or number) or a full nested object. */
+type DirectusForeignKey = string | number | { id?: string | number | null } | null | undefined;
+
 export class BuildingsOrganizationsHelper extends CollectionHelper<DatabaseTypes.BuildingsOrganizations> {
 	constructor(client?: any) {
 		super('buildings_organizations', client);
@@ -35,6 +38,22 @@ export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 	}
 
 	/**
+	 * Normalizes a foreign-key field that Directus may return as a string ID,
+	 * a numeric ID, or a full nested object. Always returns the ID as a string,
+	 * or undefined when the value is absent.
+	 */
+	private static resolveId(value: DirectusForeignKey): string | undefined {
+		if (typeof value === 'string') return value;
+		if (typeof value === 'number') return String(value);
+		if (value != null && typeof value === 'object') {
+			const id = value.id;
+			if (typeof id === 'string') return id;
+			if (typeof id === 'number') return String(id);
+		}
+		return undefined;
+	}
+
+	/**
 	 * Converts the buildings_organizations join table into a dict keyed by building ID.
 	 * Each value is the list of full Organizations objects linked to that building.
 	 *
@@ -48,10 +67,8 @@ export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 	): Record<string, DatabaseTypes.Organizations[]> {
 		const result: Record<string, DatabaseTypes.Organizations[]> = {};
 		for (const entry of buildingsOrganizations) {
-			const buildingId =
-				typeof entry.buildings_id === 'string' ? entry.buildings_id : (entry.buildings_id as DatabaseTypes.Buildings | null)?.id;
-			const orgId =
-				typeof entry.organizations_id === 'string' ? entry.organizations_id : (entry.organizations_id as DatabaseTypes.Organizations | null)?.id;
+			const buildingId = BuildingsHelper.resolveId(entry.buildings_id as DirectusForeignKey);
+			const orgId = BuildingsHelper.resolveId(entry.organizations_id as DirectusForeignKey);
 			if (buildingId && orgId) {
 				const org = organizationsDict[orgId];
 				if (org) {

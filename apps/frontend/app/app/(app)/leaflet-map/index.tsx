@@ -415,6 +415,28 @@ const LeafletMap = () => {
 		});
 	}, []);
 
+	// Log organisationsDict whenever it changes (init + updates)
+	useEffect(() => {
+		const entries = Object.entries(organisationsDict);
+		addLog(
+			`organisationsDict (${entries.length}): ` +
+			(entries.length > 0
+				? entries.map(([id, org]) => `${id}=${org.alias ?? 'n/a'}`).join(', ')
+				: '(empty)')
+		);
+	}, [organisationsDict, addLog]);
+
+	// Log buildingIdToOrgsDict whenever it changes (init + updates)
+	useEffect(() => {
+		const entries = Object.entries(buildingIdToOrgsDict);
+		addLog(
+			`buildingIdToOrgsDict (${entries.length} buildings): ` +
+			(entries.length > 0
+				? entries.map(([bid, orgs]) => `${bid}→[${orgs.map((o) => o.id).join(',')}]`).join(', ')
+				: '(empty)')
+		);
+	}, [buildingIdToOrgsDict, addLog]);
+
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
 		if (useVirtualZoom) {
