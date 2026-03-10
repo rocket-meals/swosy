@@ -392,7 +392,7 @@ const MapScreen = () => {
 						onMarkerClick={handleMarkerClick}
 						onMapEvent={handleMapEvent}
 					/>
-					<DebugView showInDevMode title="Map Log">
+					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
 							style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
