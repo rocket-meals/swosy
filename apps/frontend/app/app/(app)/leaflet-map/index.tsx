@@ -24,6 +24,15 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
+/** Extended building shape that may include optional organisation relation fields. */
+type BuildingWithOrganisations = DatabaseTypes.Buildings & {
+	/** Single organisation FK (e.g. `organisation_id` or `organisation`). */
+	organisation_id?: string | null;
+	organisation?: string | null;
+	/** Many-to-many relation: each entry is either the FK string or an object with an id field. */
+	organisations?: Array<string | { organisations_id?: string; id?: string }> | null;
+};
+
 type TileVariant = {
 	key: string;
 	label: string;
@@ -178,14 +187,20 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 }) => {
 	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
 
+	// Sync local state if initialLikes reference changes (e.g. modal re-renders with updated parent state)
+	useEffect(() => {
+		setLocalLikes(initialLikes);
+	}, [initialLikes]);
+
 	const handlePressLike = useCallback(
 		(orgId: string) => {
 			setLocalLikes((prev) => {
 				const current = prev[orgId];
 				const next = current === true ? null : true;
 				if (next === null) {
-					const { [orgId]: _, ...rest } = prev;
-					return rest;
+					const updated = { ...prev };
+					delete updated[orgId];
+					return updated;
 				}
 				return { ...prev, [orgId]: next };
 			});
@@ -200,8 +215,9 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 				const current = prev[orgId];
 				const next = current === false ? null : false;
 				if (next === null) {
-					const { [orgId]: _, ...rest } = prev;
-					return rest;
+					const updated = { ...prev };
+					delete updated[orgId];
+					return updated;
 				}
 				return { ...prev, [orgId]: next };
 			});
@@ -302,8 +318,9 @@ const LeafletMap = () => {
 			const current = prev[orgId];
 			const next = current === like ? null : like;
 			if (next === null) {
-				const { [orgId]: _, ...rest } = prev;
-				return rest;
+				const updated = { ...prev };
+				delete updated[orgId];
+				return updated;
 			}
 			return { ...prev, [orgId]: next };
 		});
@@ -402,24 +419,25 @@ const LeafletMap = () => {
 	// Build markers for all buildings that have valid coordinates,
 	// filtered by liked organisations when any are selected.
 	const buildingMarkers = useMemo((): MapMarker[] => {
-		return (buildings as DatabaseTypes.Buildings[])
+		return (buildings as BuildingWithOrganisations[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 				if (!coords || coords.length !== 2) return false;
 				// Apply organisation filter only when at least one org is liked
 				if (likedOrganisationIds.length > 0) {
-					const buildingAny = building as any;
-					// Support both a single organisation_id and a many-to-many organisations array
-					const orgId: string | undefined =
-						buildingAny.organisation_id ?? buildingAny.organisation ?? null;
-					const orgIds: string[] = Array.isArray(buildingAny.organisations)
-						? buildingAny.organisations.map((o: any) =>
-								typeof o === 'string' ? o : o?.organisations_id ?? o?.id
-							)
-						: orgId
-						? [orgId]
+					const buildingWithOrgs = building as BuildingWithOrganisations;
+					// Support both a single organisation FK and a many-to-many organisations array
+					const singleOrgId: string | null | undefined =
+						buildingWithOrgs.organisation_id ?? buildingWithOrgs.organisation;
+					const orgIds: string[] = Array.isArray(buildingWithOrgs.organisations)
+						? buildingWithOrgs.organisations.map((o) =>
+								typeof o === 'string' ? o : (o?.organisations_id ?? o?.id ?? '')
+							).filter(Boolean)
+						: singleOrgId
+						? [singleOrgId]
 						: [];
-					if (orgIds.length === 0) return true; // no org link → always show
+					// Buildings with no organisation link bypass the filter and are always shown
+					if (orgIds.length === 0) return true;
 					return orgIds.some((id) => likedOrganisationIds.includes(id));
 				}
 				return true;
