@@ -309,8 +309,9 @@ function createBuildingMarkerSvg(
 	const cx = size / 2;
 	const cy = size / 2;
 	const r = cx - 2;
-	const fillColor = markerColor ?? orgMarkerColor ?? fallbackColor ?? BUILDING_MARKER_COLOR;
-	const textColor = markerLabelColor ?? orgMarkerLabelColor ?? fallbackLabelColor ?? 'white';
+	// Use || instead of ?? so that empty strings also fall back to the next value in the chain
+	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
+	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
 	const rawLabel = markerLabel ?? externalIdentifier;
 	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
@@ -516,6 +517,15 @@ const LeafletMap = () => {
 				const [lng, lat] = coords;
 				// Resolve the first linked organisation for style fallback
 				const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
+				const resolvedColor = building.map_marker_color || firstOrg?.map_marker_color || primaryColor || BUILDING_MARKER_COLOR;
+				console.log('[LeafletMap] Building marker:', {
+					id: building.id,
+					alias: building.alias,
+					buildingColor: building.map_marker_color,
+					firstOrgId: firstOrg?.id,
+					orgColor: firstOrg?.map_marker_color,
+					resolvedColor,
+				});
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
