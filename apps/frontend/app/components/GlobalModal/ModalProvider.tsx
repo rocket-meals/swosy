@@ -200,6 +200,9 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // This is the deterministic counterpart to isClosingRef for the "pop + re-expand" path.
         // Also clears the safety timeout that was set as a fallback in case this handler
         // never fires (e.g. sheet was already at 0 on a backdrop-click dismissal).
+        // When the sheet reaches -1 but items remain in the stack (e.g. pressBehavior='close'
+        // closed the sheet while a nested modal was being dismissed), re-expand to show the
+        // remaining item.
         const handleSheetChange = useCallback((index: number) => {
                 if (index >= 0) {
                         isClosingRef.current = false;
@@ -207,6 +210,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                 clearTimeout(closeTimeoutRef.current);
                                 closeTimeoutRef.current = null;
                         }
+                } else if (index === -1 && modalStackRef.current.length > 0) {
+                        sheetRef.current?.expand?.();
                 }
         }, []);
 
@@ -275,7 +280,6 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                                  enablePanDownToClose
                                                  onClose={close}
                                                  onChange={handleSheetChange}
-                                                 backdropPressBehavior="none"
                                                  headerBackgroundColor={screenBackgroundColor}
                                                  backgroundStyle={currentItem.backgroundStyle}
                                          >
