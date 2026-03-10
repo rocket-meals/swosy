@@ -37,6 +37,7 @@ export type MapLayer = {
 	id?: string;
 	layerType?: MapLayerType;
 	maxNativeZoom?: number;
+	maxZoom?: number;
 	opacity?: number;
 	pane?: string;
 	subLayer?: string;
