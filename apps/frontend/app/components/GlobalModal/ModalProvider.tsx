@@ -264,6 +264,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                                  enablePanDownToClose
                                                  onClose={close}
                                                  onChange={handleSheetChange}
+                                                 backdropPressBehavior="none"
                                                  headerBackgroundColor={screenBackgroundColor}
                                                  backgroundStyle={currentItem.backgroundStyle}
                                          >
