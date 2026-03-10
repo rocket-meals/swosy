@@ -253,7 +253,7 @@ const POSITION_BUNDESTAG = {
 	lng: 13.376281624711964,
 };
 
-const MAX_LOG_ENTRIES = 50;
+const MAX_LOG_ENTRIES = 200;
 
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
@@ -437,6 +437,35 @@ const LeafletMap = () => {
 				: '(empty)')
 		);
 	}, [buildingIdToOrgsDict, addLog]);
+
+	// Log per-marker color resolution to the DebugView whenever the relevant data changes
+	useEffect(() => {
+		const buildingsWithCoords = (buildings as DatabaseTypes.Buildings[]).filter((building) => {
+			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
+			return coords && coords.length === 2;
+		});
+		if (buildingsWithCoords.length === 0) return;
+		addLog(`--- Marker colors (${buildingsWithCoords.length}) ---`);
+		buildingsWithCoords.forEach((building) => {
+			const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
+			const resolvedColor =
+				building.map_marker_color ||
+				firstOrg?.map_marker_color ||
+				primaryColor ||
+				BUILDING_MARKER_COLOR;
+			const colorSource = building.map_marker_color
+				? 'building'
+				: firstOrg?.map_marker_color
+				? `org(${firstOrg.alias ?? firstOrg.id})`
+				: primaryColor
+				? 'primary'
+				: 'default';
+			const rawLabel = building.map_marker_label ?? building.external_identifier;
+			const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+			const displayName = building.alias ?? rawLabel ?? building.id;
+			addLog(`  ${displayName} | lbl=${label ?? '-'} | color=${resolvedColor} [${colorSource}]`);
+		});
+	}, [buildings, buildingIdToOrgsDict, primaryColor, addLog]);
 
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
