@@ -17,6 +17,7 @@ interface LeafletMapHeaderProps {
 	query: string;
 	onQueryChange: (text: string) => void;
 	onSettingsPress?: () => void;
+	onFilterPress?: () => void;
 }
 
 const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
@@ -24,6 +25,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 	query,
 	onQueryChange,
 	onSettingsPress,
+	onFilterPress,
 }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -78,7 +80,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 					trigger={triggerProps => (
 						<IconButton
 							{...triggerProps}
-							onPress={() => {}}
+							onPress={() => onFilterPress?.()}
 							style={styles.iconButton}
 						>
 							<Ionicons name="filter" size={24} color={theme.header.text} />

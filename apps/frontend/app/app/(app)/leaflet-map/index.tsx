@@ -19,6 +19,8 @@ import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
 import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
+import { useLanguage } from '@/hooks/useLanguage';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -163,6 +165,74 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	);
 };
 
+type LeafletFilterContentProps = {
+	organisations: DatabaseTypes.Organizations[];
+	initialLikes: Record<string, boolean | null>;
+	onLikeChange: (organisationId: string, like: boolean) => void;
+};
+
+const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
+	organisations,
+	initialLikes,
+	onLikeChange,
+}) => {
+	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
+
+	const handlePressLike = useCallback(
+		(orgId: string) => {
+			setLocalLikes((prev) => {
+				const current = prev[orgId];
+				const next = current === true ? null : true;
+				if (next === null) {
+					const { [orgId]: _, ...rest } = prev;
+					return rest;
+				}
+				return { ...prev, [orgId]: next };
+			});
+			onLikeChange(orgId, true);
+		},
+		[onLikeChange]
+	);
+
+	const handlePressDislike = useCallback(
+		(orgId: string) => {
+			setLocalLikes((prev) => {
+				const current = prev[orgId];
+				const next = current === false ? null : false;
+				if (next === null) {
+					const { [orgId]: _, ...rest } = prev;
+					return rest;
+				}
+				return { ...prev, [orgId]: next };
+			});
+			onLikeChange(orgId, false);
+		},
+		[onLikeChange]
+	);
+
+	if (organisations.length === 0) return null;
+
+	return (
+		<>
+			{organisations.map((org, index) => {
+				const total = organisations.length;
+				const groupPosition =
+					total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				return (
+					<SettingsListOrganisationFast
+						key={org.id}
+						organisationId={org.id}
+						like={localLikes[org.id] ?? null}
+						onPressLike={handlePressLike}
+						onPressDislike={handlePressDislike}
+						groupPosition={groupPosition}
+					/>
+				);
+			})}
+		</>
+	);
+};
+
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
 	lng: 13.376281624711964,
@@ -204,7 +274,7 @@ const MAX_SEARCH_RESULTS = 3;
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
-	const { buildings } = useAppSelector((state) => state.canteenReducer);
+	const { buildings, organisations } = useAppSelector((state) => state.canteenReducer);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
@@ -214,12 +284,38 @@ const LeafletMap = () => {
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
 	const { show } = useMyScrollViewModal();
+	const { translate } = useLanguage();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
+
+	// Organisation filter state: orgId → true (liked) | false (disliked) | null (neutral)
+	const [organisationLikes, setOrganisationLikes] = useState<Record<string, boolean | null>>({});
+	// Ref so the stable modal callback always reads the latest handler
+	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
+
+	const handleOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		setOrganisationLikes((prev) => {
+			const current = prev[orgId];
+			const next = current === like ? null : like;
+			if (next === null) {
+				const { [orgId]: _, ...rest } = prev;
+				return rest;
+			}
+			return { ...prev, [orgId]: next };
+		});
+	}, []);
+
+	// Keep ref up to date so the modal callback is never stale
+	handleOrganisationLikeChangeRef.current = handleOrganisationLikeChange;
+
+	// Stable callback passed to modal – delegates via ref to avoid stale closures
+	const stableOnOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		handleOrganisationLikeChangeRef.current(orgId, like);
+	}, []);
 
 	const setSelectedTileVariantKey = useCallback((key: string) => {
 		dispatch({ type: SET_MAP_TILE_VARIANT_KEY, payload: key });
@@ -270,6 +366,19 @@ const LeafletMap = () => {
 		});
 	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
 
+	const openFilterModal = useCallback(() => {
+		show({
+			title: translate(TranslationKeys.organisations),
+			children: (
+				<LeafletFilterContent
+					organisations={organisations as DatabaseTypes.Organizations[]}
+					initialLikes={organisationLikes}
+					onLikeChange={stableOnOrganisationLikeChange}
+				/>
+			),
+		});
+	}, [show, translate, organisations, organisationLikes, stableOnOrganisationLikeChange]);
+
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
 			const building = buildings.find((b: DatabaseTypes.Buildings) => b.id === selectedCanteen.building);
@@ -281,12 +390,39 @@ const LeafletMap = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// Build markers for all buildings that have valid coordinates
+	// IDs of organisations the user has liked
+	const likedOrganisationIds = useMemo(
+		() =>
+			Object.entries(organisationLikes)
+				.filter(([, v]) => v === true)
+				.map(([k]) => k),
+		[organisationLikes]
+	);
+
+	// Build markers for all buildings that have valid coordinates,
+	// filtered by liked organisations when any are selected.
 	const buildingMarkers = useMemo((): MapMarker[] => {
 		return (buildings as DatabaseTypes.Buildings[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-				return coords && coords.length === 2;
+				if (!coords || coords.length !== 2) return false;
+				// Apply organisation filter only when at least one org is liked
+				if (likedOrganisationIds.length > 0) {
+					const buildingAny = building as any;
+					// Support both a single organisation_id and a many-to-many organisations array
+					const orgId: string | undefined =
+						buildingAny.organisation_id ?? buildingAny.organisation ?? null;
+					const orgIds: string[] = Array.isArray(buildingAny.organisations)
+						? buildingAny.organisations.map((o: any) =>
+								typeof o === 'string' ? o : o?.organisations_id ?? o?.id
+							)
+						: orgId
+						? [orgId]
+						: [];
+					if (orgIds.length === 0) return true; // no org link → always show
+					return orgIds.some((id) => likedOrganisationIds.includes(id));
+				}
+				return true;
 			})
 			.map((building) => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
@@ -304,7 +440,7 @@ const LeafletMap = () => {
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings]);
+	}, [buildings, likedOrganisationIds]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
@@ -392,6 +528,7 @@ const LeafletMap = () => {
 				query={searchQuery}
 				onQueryChange={setSearchQuery}
 				onSettingsPress={openSettingsModal}
+				onFilterPress={openFilterModal}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
