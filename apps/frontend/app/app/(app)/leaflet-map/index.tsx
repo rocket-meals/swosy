@@ -316,6 +316,11 @@ const LeafletMap = () => {
 
 			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
 
+			if (coords && coords.length === 2) {
+				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
+				setMapZoom(DEFAULT_ZOOM);
+			}
+
 			if (buildingId) {
 				openBuildingDetailsModal(buildingId);
 			}
