@@ -9,10 +9,11 @@ import styles from './styles';
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
         onClose?: () => void;
         headerBackgroundColor?: string;
+        backdropPressBehavior?: 'close' | 'none' | 'collapse' | number;
 }
 
-const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, ...props }, ref) => {
-        const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} />, [onClose]);
+const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, backdropPressBehavior, ...props }, ref) => {
+        const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} pressBehavior={backdropPressBehavior ?? 'close'} />, [onClose, backdropPressBehavior]);
         const { theme } = useTheme();
         useAppSelector((state) => state.settings); // ensure theme subscription
         const snapPoints = useMemo(() => ['80%'], []);
