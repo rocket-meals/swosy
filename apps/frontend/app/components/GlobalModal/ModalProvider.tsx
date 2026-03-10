@@ -165,12 +165,20 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                         modalStackRef.current = modalStackRef.current.slice(0, -1);
                         setModalStack([...modalStackRef.current]);
                         // Re-expand the sheet in case a swipe-down gesture had already started closing it.
-                        // isClosingRef is reset deterministically in handleSheetChange once the sheet
-                        // transitions back to an expanded snap index (>= 0), so no arbitrary timeouts.
+                        // Always reset isClosingRef after expand so that if the sheet was already at index 0
+                        // (e.g. the inner modal was dismissed via backdrop click rather than a swipe-down),
+                        // handleSheetChange never fires and the guard would otherwise remain stuck as true,
+                        // preventing subsequent close() calls from working.
                         if (typeof requestAnimationFrame !== 'undefined') {
-                                requestAnimationFrame(() => sheetRef.current?.expand?.());
+                                requestAnimationFrame(() => {
+                                        sheetRef.current?.expand?.();
+                                        isClosingRef.current = false;
+                                });
                         } else {
-                                setTimeout(() => sheetRef.current?.expand?.(), 16);
+                                setTimeout(() => {
+                                        sheetRef.current?.expand?.();
+                                        isClosingRef.current = false;
+                                }, 16);
                         }
                 }
 
