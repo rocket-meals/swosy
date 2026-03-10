@@ -202,6 +202,7 @@ export type Buildings = {
   map_marker_label?: string | null;
   map_marker_label_color?: string | null;
   map_marker_style?: string | null;
+  organizations: any[] | BuildingsOrganizations[];
   sort?: number | null;
   status?: string | null;
   translations: any[] | BuildingsTranslations[];
@@ -224,6 +225,12 @@ export type BuildingsBusinesshours = {
   buildings_id?: string | Buildings | null;
   businesshours_id?: string | Businesshours | null;
   id: number;
+};
+
+export type BuildingsOrganizations = {
+  buildings_id?: string | Buildings | null;
+  id: number;
+  organizations_id?: string | Organizations | null;
 };
 
 export type BuildingsTranslations = {
@@ -1624,6 +1631,7 @@ export type NewsTranslations = {
 
 export type Organizations = {
   alias?: string | null;
+  buildings: any[] | BuildingsOrganizations[];
   date_created?: string | null;
   date_updated?: string | null;
   id: string;
@@ -1913,6 +1921,7 @@ export type CustomDirectusTypes = {
   buildings: Buildings[];
   buildings_attributes: BuildingsAttributes[];
   buildings_businesshours: BuildingsBusinesshours[];
+  buildings_organizations: BuildingsOrganizations[];
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
   businesshours_groups: BusinesshoursGroups[];
