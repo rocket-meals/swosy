@@ -627,6 +627,13 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="map/index"
+					options={{
+						headerShown: false,
+						title: translate(TranslationKeys.map),
+					}}
+				/>
+				<Drawer.Screen
 					name="leaflet-map/index"
 					options={{
 						headerShown: false,
