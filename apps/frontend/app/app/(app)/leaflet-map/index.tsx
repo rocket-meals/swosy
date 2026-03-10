@@ -178,15 +178,23 @@ const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 3;
 
-function createBuildingMarkerSvg(externalIdentifier?: string | null): string {
+function createBuildingMarkerSvg(
+	externalIdentifier?: string | null,
+	markerColor?: string | null,
+	markerLabel?: string | null,
+	markerLabelColor?: string | null,
+): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
 	const cy = size / 2;
 	const r = cx - 2;
-	const label = externalIdentifier ? externalIdentifier.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
-	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${BUILDING_MARKER_COLOR}" stroke="white" stroke-width="2" opacity="0.9"/>`;
+	const fillColor = markerColor ?? BUILDING_MARKER_COLOR;
+	const textColor = markerLabelColor ?? 'white';
+	const rawLabel = markerLabel ?? externalIdentifier;
+	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	const textEl = label
-		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
+		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
 		: '';
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
@@ -286,7 +294,12 @@ const LeafletMap = () => {
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
-					icon: createBuildingMarkerSvg(building.external_identifier),
+					icon: createBuildingMarkerSvg(
+						building.external_identifier,
+						building.map_marker_color,
+						building.map_marker_label,
+						building.map_marker_label_color,
+					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
