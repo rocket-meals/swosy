@@ -186,6 +186,7 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	onLikeChange,
 }) => {
 	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
+	const { translate } = useLanguage();
 
 	// Sync local state if initialLikes reference changes (e.g. modal re-renders with updated parent state)
 	useEffect(() => {
@@ -226,7 +227,13 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 		[onLikeChange]
 	);
 
-	if (organisations.length === 0) return null;
+	if (organisations.length === 0) {
+		return (
+			<View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+				<Text style={{ color: '#888' }}>{translate(TranslationKeys.no_data_found)}</Text>
+			</View>
+		);
+	}
 
 	return (
 		<>
