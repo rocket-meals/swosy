@@ -1,32 +1,40 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import DEFAULT_TILE_LAYER from './defaultTileLayer';
 import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
+import { clusterMarkers } from './clusterUtils';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const { theme } = useTheme();
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const html = require('@/assets/leaflet/index.html');
 
 	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+	const [currentZoom, setCurrentZoom] = useState(zoom ?? 13);
+
+	useEffect(() => {
+		setCurrentZoom(zoom ?? 13);
+	}, [zoom]);
 
 	useEffect(() => {
 		onMarkerSelectionChange?.(selectedMarker);
 	}, [selectedMarker, onMarkerSelectionChange]);
+
+	const clusteredMarkers = useMemo(() => clusterMarkers(mapMarkers ?? [], currentZoom), [mapMarkers, currentZoom]);
 
 	const sendCoordinates = useCallback(() => {
 		if (iframeRef.current && iframeRef.current.contentWindow) {
 			const message = {
 				mapCenterPosition,
 				zoom: zoom ?? 13,
-				mapLayers: [DEFAULT_TILE_LAYER],
-				mapMarkers: mapMarkers ?? [],
+				mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
+				mapMarkers: clusteredMarkers,
 			};
 			iframeRef.current.contentWindow.postMessage(message, window.location.origin);
 		}
-	}, [mapCenterPosition, zoom, mapMarkers]);
+	}, [mapCenterPosition, zoom, mapLayers, clusteredMarkers]);
 
 	useEffect(() => {
 		sendCoordinates();
@@ -39,6 +47,9 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMa
 				if (data.tag === 'MapComponentMounted') {
 					sendCoordinates();
 					return;
+				}
+				if (data.tag === 'onZoomEnd') {
+					setCurrentZoom(data.zoom);
 				}
 				if (data.tag === 'onMapMarkerClicked') {
 					onMarkerClick?.(data.mapMarkerId);

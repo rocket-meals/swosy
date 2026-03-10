@@ -1,153 +1,196 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
-import { getDefaultIconAnchor, MARKER_DEFAULT_SIZE, MyMapMarkerIcons } from '@/components/MyMap/markerUtils';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
-import { MapMarker } from '@/components/MyMap/model';
+import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
+import { LeafletWebViewEvent, MapMarker } from '@/components/MyMap/model';
+import { useTheme } from '@/hooks/useTheme';
+import { clusterMarkers } from '@/components/MyMap/clusterUtils';
+import { DatabaseTypes } from 'repo-depkit-common';
+import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
+
+type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
 	lng: 13.376281624711964,
 };
 
-const getMarkerPosition = (index: number) => {
-	const offset = index * 0.001; // Adjust the offset for each marker
-	return {
-		lat: POSITION_BUNDESTAG.lat + offset,
-		lng: POSITION_BUNDESTAG.lng,
-	};
-};
+const MAX_LOG_ENTRIES = 50;
 
-const LOCAL_BASE64_MARKER = 'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=';
+const MAX_ZOOM = 18;
+const DEFAULT_ZOOM = 17;
 
-const EXTERNAL_MARKER_URL = 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/map-marker-512.png';
+const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
+const BUILDING_MARKER_COLOR = '#1565c0';
+const MAX_BUILDING_LABEL_CHARS = 3;
+
+function createBuildingMarkerSvg(externalIdentifier?: string | null): string {
+	const size = BUILDING_MARKER_SIZE;
+	const cx = size / 2;
+	const cy = size / 2;
+	const r = cx - 2;
+	const label = externalIdentifier ? externalIdentifier.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${BUILDING_MARKER_COLOR}" stroke="white" stroke-width="2" opacity="0.9"/>`;
+	const textEl = label
+		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
+		: '';
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
+}
 
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
 	const { buildings } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
+	const { openBuildingDetailsModal } = useBuildingDetailsModal();
+	const { theme } = useTheme();
 
-	const [markerIconSrc, setMarkerIconSrc] = useState<string | null>(null);
-	const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
-	const [modalVisible, setModalVisible] = useState(false);
-	const [markerError, setMarkerError] = useState<string | null>(null);
+	const [logEntries, setLogEntries] = useState<string[]>([]);
+	const logScrollRef = useRef<ScrollView>(null);
 
-	// Load marker asset asynchronously
-	useEffect(() => {
-		const loadMarkerIcon = async () => {
-			try {
-				const mapMarkerIcon = require('@/assets/map/marker-icon-2x.png');
-				const asset = await Asset.fromModule(mapMarkerIcon);
-				await asset.downloadAsync();
+	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
+	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
+	// Override center position set on cluster click (null = follow centerPosition)
+	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
 
-				if (Platform.OS === 'web') {
-					setMarkerIconSrc(asset.uri);
-				} else if (asset.localUri) {
-					const content = await FileSystem.readAsStringAsync(asset.localUri, {
-						encoding: (FileSystem as any).EncodingType.Base64,
-					});
-					setMarkerIconSrc(content);
-				} else {
-					setMarkerError('marker asset missing localUri');
-				}
-			} catch (error) {
-				console.error('Error loading marker icon:', error);
-				setMarkerError(String(error));
-			}
-		};
-
-		loadMarkerIcon();
+	const addLog = useCallback((entry: string) => {
+		setLogEntries((prev) => {
+			const next = [...prev, `${new Date().toLocaleTimeString()}: ${entry}`];
+			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
+		});
 	}, []);
 
-	const selectedCanteenPosition = useMemo(() => {
+	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
-			const building = buildings.find(b => b.id === selectedCanteen.building);
-			const coords = (building as any)?.coordinates?.coordinates;
+			const building = buildings.find((b: DatabaseTypes.Buildings) => b.id === selectedCanteen.building);
+			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 			if (coords && coords.length === 2) {
 				return { lat: Number(coords[1]), lng: Number(coords[0]) };
 			}
 		}
-		return undefined;
+		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	const centerPosition = selectedCanteenPosition || POSITION_BUNDESTAG;
+	// Build markers for all buildings that have valid coordinates
+	const buildingMarkers = useMemo((): MapMarker[] => {
+		return (buildings as DatabaseTypes.Buildings[])
+			.filter((building) => {
+				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
+				return coords && coords.length === 2;
+			})
+			.map((building) => {
+				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
+				const [lng, lat] = coords;
+				return {
+					id: `building-${building.id}`,
+					position: { lat: Number(lat), lng: Number(lng) },
+					icon: createBuildingMarkerSvg(building.external_identifier),
+					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
+					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
+				};
+			});
+	}, [buildings]);
 
-	if (!markerIconSrc && !markerError) {
-		// Optional: Add a loading spinner or placeholder here
-		return null;
-	}
+	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
+	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
 
-	const markers: MapMarker[] = [
-		...(markerIconSrc
-			? [
-					{
-						id: 'example',
-						position: getMarkerPosition(1),
-						icon: MyMapMarkerIcons.getIconForWebByLocalPathUri(markerIconSrc),
-						size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
-						iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
-					},
-				]
-			: []),
-		{
-			id: 'img-marker',
-			position: getMarkerPosition(2),
-			icon: MyMapMarkerIcons.getIconForWebByExternalUri(EXTERNAL_MARKER_URL),
-			size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
-			iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
+	// Reset the centre override when the selected canteen changes so the map
+	// returns to the canteen's building position.
+	useEffect(() => {
+		setMapCenterOverride(null);
+	}, [centerPosition]);
+
+	const handleMarkerClick = useCallback(
+		(id: string) => {
+			// Cluster click: zoom in and centre on the cluster instead of opening a modal
+			if (id.startsWith('cluster:')) {
+				const cluster = clusteredBuildingMarkers.find((m) => m.id === id);
+				if (cluster) {
+					setMapCenterOverride(cluster.position);
+					setMapZoom((prev) => Math.min(prev + 2, MAX_ZOOM));
+				}
+				addLog(`Cluster clicked: ${id}`);
+				return;
+			}
+
+			const buildingId = id.startsWith('building-') ? id.slice('building-'.length) : null;
+			const building = buildingId ? (buildings as DatabaseTypes.Buildings[]).find((b) => b.id === buildingId) : null;
+
+			const title = building?.alias ?? id;
+			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
+			const lat = coords ? Number(coords[1]).toFixed(5) : null;
+			const lng = coords ? Number(coords[0]).toFixed(5) : null;
+
+			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+
+			if (buildingId) {
+				openBuildingDetailsModal(buildingId);
+			}
 		},
-		{
-			id: 'img-marker-base64',
-			position: getMarkerPosition(3),
-			icon: MyMapMarkerIcons.getIconForWebByBase64(LOCAL_BASE64_MARKER),
-			size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE] as [number, number],
-			iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
+		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
+	);
+
+	const handleMapEvent = useCallback(
+		(e: LeafletWebViewEvent) => {
+			if (e.tag === 'onZoomEnd') {
+				setMapZoom(e.zoom);
+				addLog(`Zoom: ${e.zoom ?? 'unknown'}`);
+			} else if (e.tag === 'MapComponentMounted' || e.tag === 'MapReady') {
+				addLog(e.tag);
+			} else if (e.tag === 'DebugMessage') {
+				addLog(`Debug: ${e.message}`);
+			}
 		},
-	];
-
-	const handleMarkerClick = (id: string) => {
-		console.log('marker clicked', id);
-		setSelectedMarkerId(id);
-	};
-
-	const handleSelectionChange = (id: string | null) => {
-		setModalVisible(id !== null);
-		setSelectedMarkerId(id);
-	};
-
-	const renderMarkerModal = (id: string, onClose: () => void) => <Text onPress={onClose}>{id}</Text>;
+		[addLog],
+	);
 
 	return (
-		<View style={{ flex: 1 }}>
-			{markerError && (
-				<View
-					style={{
-						position: 'absolute',
-						bottom: 0,
-						left: 0,
-						right: 0,
-						height: '40%',
-					}}
-				>
-					<ScrollView>
-						<Text selectable>{markerError}</Text>
-					</ScrollView>
-				</View>
-			)}
-			<View style={{ flex: 1 }}>
-				<Text>
-					Selected: {selectedMarkerId ?? 'none'} Visible: {String(modalVisible)}
-				</Text>
-				<MyMap mapCenterPosition={centerPosition} mapMarkers={markers} onMarkerClick={handleMarkerClick} onMapEvent={e => console.log('map event', e.tag)} renderMarkerModal={renderMarkerModal} onMarkerSelectionChange={handleSelectionChange} />
-			</View>
+		<View style={styles.container}>
+			<MyMap
+				mapCenterPosition={mapCenterOverride ?? centerPosition}
+				zoom={mapZoom}
+				mapMarkers={buildingMarkers}
+				onMarkerClick={handleMarkerClick}
+				onMapEvent={handleMapEvent}
+			/>
+			<ScrollView
+				ref={logScrollRef}
+				style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
+				onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
+			>
+				{logEntries.map((entry, i) => (
+					<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+						{entry}
+					</Text>
+				))}
+				{logEntries.length === 0 && (
+					<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+				)}
+			</ScrollView>
 		</View>
 	);
 };
 
 export default LeafletMap;
+
+const styles = StyleSheet.create({
+	container: { flex: 1 },
+	logContainer: {
+		maxHeight: 120,
+		borderTopWidth: 1,
+	},
+	logEntry: {
+		fontSize: 11,
+		paddingHorizontal: 8,
+		paddingVertical: 1,
+	},
+	logPlaceholder: {
+		fontSize: 11,
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+	},
+});

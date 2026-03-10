@@ -1,90 +1,100 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useTheme } from '@/hooks/useTheme';
-import type { LeafletWebViewEvent, MapMarker } from './model';
-import { LatLng, LeafletView, MapMarker as LeafletViewMapMarkers, WebviewLeafletMessage } from 'react-native-leaflet-view';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { TranslationKeys } from '@/locales/keys';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
+import DEFAULT_TILE_LAYER from './defaultTileLayer';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
+import { clusterMarkers } from './clusterUtils';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
-	const { theme } = useTheme();
-
-	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
-
-	useSetPageTitle(TranslationKeys.leaflet_map);
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
-	const [icon, setIcon] = useState<string | null>(null);
+	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+	const [currentZoom, setCurrentZoom] = useState(zoom ?? 13);
+
+	useEffect(() => {
+		setCurrentZoom(zoom ?? 13);
+	}, [zoom]);
 
 	useEffect(() => {
 		let isMounted = true;
-		const loadAssets = async () => {
-			const htmlAsset = Asset.fromModule(require('@/assets/leaflet.html'));
-			const iconAsset = Asset.fromModule(require('@/assets/map/marker-icon-2x.png'));
-			await Promise.all([htmlAsset.downloadAsync(), iconAsset.downloadAsync()]);
-			const [htmlContent, iconContent] = await Promise.all([
-				new FileSystem.File(htmlAsset.localUri!).text(),
-				new FileSystem.File(iconAsset.localUri!).base64(),
-			]);
+		const loadHtml = async () => {
+			const htmlAsset = Asset.fromModule(require('@/assets/leaflet/index.html'));
+			await htmlAsset.downloadAsync();
+			const htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
 			if (isMounted) {
 				setHtml(htmlContent);
-				setIcon(iconContent);
 			}
 		};
-		loadAssets();
+		loadHtml();
 		return () => {
 			isMounted = false;
 		};
 	}, []);
 
-	if (!html || !icon) {
-		return <ActivityIndicator />;
-	}
+	useEffect(() => {
+		onMarkerSelectionChange?.(selectedMarker);
+	}, [selectedMarker, onMarkerSelectionChange]);
 
-	let finalMapMarkers: LeafletViewMapMarkers[] = [];
-	if (mapMarkers) {
-		finalMapMarkers = mapMarkers.map((marker: MapMarker) => ({
-			id: marker.id,
-			position: marker.position as LatLng,
-			icon: marker.icon,
-			size: marker.size || [32, 32],
-		}));
-	}
-	finalMapMarkers.push({
-		id: 'berlin-icon',
-		position: mapCenterPosition,
-		icon: `<img src='data:image/png;base64,${icon}' style='width:32px;height:32px;' />`,
-		size: [32, 32],
-	});
+	const clusteredMarkers = useMemo(() => clusterMarkers(mapMarkers ?? [], currentZoom), [mapMarkers, currentZoom]);
 
-	const handler = (webviewLeafletMessage: WebviewLeafletMessage) => {
-		try {
-			let event: MessageEvent = webviewLeafletMessage?.event;
-			const data: LeafletWebViewEvent = JSON.parse(event.data);
-			if (data.tag === 'onMapMarkerClicked') {
-				onMarkerClick?.(data.mapMarkerId);
-				onMarkerSelectionChange?.(data.mapMarkerId);
-				if (renderMarkerModal) {
-					setSelectedMarker(data.mapMarkerId);
+	const sendMapData = useCallback(() => {
+		const message = {
+			mapCenterPosition,
+			zoom: zoom ?? 13,
+			mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
+			mapMarkers: clusteredMarkers,
+		};
+		const json = JSON.stringify(message);
+		webViewRef.current?.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`);
+	}, [mapCenterPosition, zoom, mapLayers, clusteredMarkers]);
+
+	useEffect(() => {
+		sendMapData();
+	}, [sendMapData]);
+
+	const handleMessage = useCallback(
+		(event: WebViewMessageEvent) => {
+			try {
+				const data: LeafletWebViewEvent = JSON.parse(event.nativeEvent.data);
+				if (data.tag === 'MapComponentMounted') {
+					sendMapData();
+					return;
 				}
+				if (data.tag === 'onZoomEnd') {
+					setCurrentZoom(data.zoom);
+				}
+				if (data.tag === 'onMapMarkerClicked') {
+					onMarkerClick?.(data.mapMarkerId);
+					onMarkerSelectionChange?.(data.mapMarkerId);
+					if (renderMarkerModal) {
+						setSelectedMarker(data.mapMarkerId);
+					}
+				}
+				onMapEvent?.(data);
+			} catch {
+				// ignore malformed messages
 			}
-			onMapEvent?.(data);
-		} catch {
-			// ignore malformed messages
-		}
-	};
+		},
+		[sendMapData, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange],
+	);
+
+	if (!html) {
+		return null;
+	}
 
 	return (
 		<View style={styles.container}>
-			<LeafletView
-				mapCenterPosition={mapCenterPosition}
-				onMessageReceived={handler}
-				zoom={13}
+			<WebView
+				ref={webViewRef}
 				source={{ html }}
-				mapMarkers={finalMapMarkers}
-				webviewStyle={{ style: styles.map }}
+				onMessage={handleMessage}
+				style={styles.map}
+				javaScriptEnabled={true}
+				domStorageEnabled={true}
+				originWhitelist={['*']}
 			/>
 		</View>
 	);
@@ -97,7 +107,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		width: '100%',
 		height: '100%',
-		backgroundColor: 'red',
 	},
 	map: {
 		flex: 1,
