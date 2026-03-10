@@ -3004,7 +3004,7 @@
         "zh": "请选择您的食堂"
     },
     "map": {
-        "de": "Karte",
+        "de": "Lageplan",
         "en": "Map",
         "ar": "خريطة",
         "es": "Mapa",
@@ -3782,6 +3782,16 @@
         "ru": "Детали здания",
         "tr": "Bina Detayları",
         "zh": "建筑细节"
+    },
+    "organisations": {
+        "de": "Organisationen",
+        "en": "Organisations",
+        "ar": "المنظمات",
+        "es": "Organizaciones",
+        "fr": "Organisations",
+        "ru": "Организации",
+        "tr": "Organizasyonlar",
+        "zh": "组织"
     },
     "apartment_details": {
         "de": "Wohnungsdetails",

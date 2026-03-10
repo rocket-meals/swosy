@@ -7,7 +7,8 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import { SET_BUILDINGS, SET_CANTEENS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
+import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations';
+import { SET_BUILDINGS, SET_CANTEENS, SET_ORGANISATIONS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
@@ -25,6 +26,7 @@ const Home = () => {
 	const { translate } = useLanguage();
 	const canteenHelper = new CanteenHelper();
 	const buildingsHelper = new BuildingsHelper();
+	const organizationsHelper = new OrganizationsHelper();
 	const { serverInfo } = useAppSelector(state => state.settings);
 	const { isManagement } = useAppSelector(state => state.authReducer);
 	const [loading, setLoading] = useState(false);
@@ -54,6 +56,9 @@ const Home = () => {
 			}, {});
 
 			dispatch({ type: SET_BUILDINGS, payload: buildings });
+
+			const organisationsData = (await organizationsHelper.fetchOrganizations({})) as DatabaseTypes.Organizations[];
+			dispatch({ type: SET_ORGANISATIONS, payload: organisationsData || [] });
 
 			const canteensData = (await canteenHelper.fetchCanteens({})) as DatabaseTypes.Canteens[];
 

@@ -389,6 +389,7 @@ export enum TranslationKeys {
 	canteens = 'canteens',
 	buildings = 'buildings',
 	building_details = 'building_details',
+	organisations = 'organisations',
 	apartment_details = 'apartment_details',
 	campus = 'campus',
 	housing = 'housing',
