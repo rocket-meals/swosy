@@ -11,7 +11,7 @@ export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
 	// Fetch all buildings with optional query overrides
 	async fetchBuildings(queryOverride?: Query<DatabaseTypes.Buildings>) {
 		const defaultQuery = {
-			fields: ['*', 'translations.*'],
+			fields: ['*', 'translations.*', 'organisations.*'],
 			limit: -1, // Fetch all
 		};
 
