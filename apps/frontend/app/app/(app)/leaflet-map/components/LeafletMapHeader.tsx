@@ -5,7 +5,7 @@ import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomT
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation, useRouter } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
@@ -16,16 +16,17 @@ interface LeafletMapHeaderProps {
 	drawerPosition: 'left' | 'right' | 'system' | undefined;
 	query: string;
 	onQueryChange: (text: string) => void;
+	onSettingsPress?: () => void;
 }
 
 const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 	drawerPosition,
 	query,
 	onQueryChange,
+	onSettingsPress,
 }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const router = useRouter();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
 	const isRTL = drawerPosition === 'right';
@@ -97,7 +98,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 					trigger={triggerProps => (
 						<IconButton
 							{...triggerProps}
-							onPress={() => router.navigate('/settings')}
+							onPress={() => onSettingsPress?.()}
 							style={styles.iconButton}
 						>
 							<Ionicons name="settings-outline" size={24} color={theme.header.text} />

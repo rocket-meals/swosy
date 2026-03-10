@@ -1,20 +1,82 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
 import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
-import { LeafletWebViewEvent, MapMarker } from '@/components/MyMap/model';
+import { LeafletWebViewEvent, MapLayer, MapMarker } from '@/components/MyMap/model';
 import { useTheme } from '@/hooks/useTheme';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { DatabaseTypes } from 'repo-depkit-common';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import LeafletMapHeader from './components/LeafletMapHeader';
+import DebugView from '@/components/DebugView';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
+
+type TileVariant = {
+	key: string;
+	label: string;
+	layer: MapLayer;
+};
+
+const TILE_VARIANTS: TileVariant[] = [
+	{
+		key: 'osm',
+		label: 'OpenStreetMap',
+		layer: {
+			layerType: 'TileLayer',
+			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			baseLayerName: 'OpenStreetMap',
+			baseLayerIsChecked: true,
+		},
+	},
+	{
+		key: 'otm',
+		label: 'OpenTopoMap',
+		layer: {
+			layerType: 'TileLayer',
+			url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+			baseLayerName: 'OpenTopoMap',
+			baseLayerIsChecked: true,
+		},
+	},
+	{
+		key: 'carto-light',
+		label: 'CartoDB Light',
+		layer: {
+			layerType: 'TileLayer',
+			url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+			baseLayerName: 'CartoDB Light',
+			baseLayerIsChecked: true,
+		},
+	},
+	{
+		key: 'carto-dark',
+		label: 'CartoDB Dark',
+		layer: {
+			layerType: 'TileLayer',
+			url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+			baseLayerName: 'CartoDB Dark',
+			baseLayerIsChecked: true,
+		},
+	},
+	{
+		key: 'osm-hot',
+		label: 'OSM Humanitarian',
+		layer: {
+			layerType: 'TileLayer',
+			url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+			baseLayerName: 'OSM Humanitarian',
+			baseLayerIsChecked: true,
+		},
+	},
+];
 
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
@@ -53,12 +115,21 @@ const LeafletMap = () => {
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
+	const { show, close } = useMyScrollViewModal();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
+
+	// Selected tile layer (map material)
+	const [selectedTileVariantKey, setSelectedTileVariantKey] = useState<string>(TILE_VARIANTS[0].key);
+
+	// Fly animation toggle (false = jump/instant, true = fly/animated)
+	// Stored as a preference; passed to MyMap so the map can use flyTo vs setView
+	// (the Leaflet HTML needs to be updated to honour this flag)
+	const [useFlyAnimation, setUseFlyAnimation] = useState(true);
 
 	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
@@ -71,6 +142,80 @@ const LeafletMap = () => {
 			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
 		});
 	}, []);
+
+	const selectedTileLayer = useMemo(
+		() => (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer,
+		[selectedTileVariantKey],
+	);
+
+	const openTileSelectorModal = useCallback(() => {
+		show({
+			title: 'Kartenmaterial',
+			children: (
+				<View>
+					{TILE_VARIANTS.map((variant, index) => {
+						const isSelected = variant.key === selectedTileVariantKey;
+						const groupPosition =
+							TILE_VARIANTS.length === 1
+								? 'single'
+								: index === 0
+								? 'top'
+								: index === TILE_VARIANTS.length - 1
+								? 'bottom'
+								: 'middle';
+						return (
+							<SettingsList
+								key={variant.key}
+								title={variant.label}
+								rightIcon={
+									isSelected ? (
+										<MaterialCommunityIcons name="check" size={20} color={theme.screen.icon} />
+									) : undefined
+								}
+								onPress={() => {
+									setSelectedTileVariantKey(variant.key);
+									close();
+								}}
+								showSeparator={index < TILE_VARIANTS.length - 1}
+								groupPosition={groupPosition}
+								noIconIndent
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [show, close, selectedTileVariantKey, theme]);
+
+	const openSettingsModal = useCallback(() => {
+		show({
+			title: 'Karten Einstellungen',
+			children: (
+				<View style={settingsModalStyles.container}>
+					<SettingsList
+						title="Kartenmaterial"
+						value={(TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).label}
+						rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+						onPress={openTileSelectorModal}
+						groupPosition="top"
+						noIconIndent
+					/>
+					<SettingsList
+						title="Sanfte Kamera-Bewegung"
+						rightElement={
+							<Switch
+								value={useFlyAnimation}
+								onValueChange={setUseFlyAnimation}
+							/>
+						}
+						groupPosition="bottom"
+						showSeparator={false}
+						noIconIndent
+					/>
+				</View>
+			),
+		});
+	}, [show, openTileSelectorModal, selectedTileVariantKey, useFlyAnimation, theme]);
 
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
@@ -128,6 +273,7 @@ const LeafletMap = () => {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
 			}
 			setSearchQuery('');
+			Keyboard.dismiss();
 		},
 		[],
 	);
@@ -182,6 +328,7 @@ const LeafletMap = () => {
 				drawerPosition={drawerPosition}
 				query={searchQuery}
 				onQueryChange={setSearchQuery}
+				onSettingsPress={openSettingsModal}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
@@ -189,23 +336,26 @@ const LeafletMap = () => {
 						mapCenterPosition={mapCenterOverride ?? centerPosition}
 						zoom={mapZoom}
 						mapMarkers={buildingMarkers}
+						mapLayers={[selectedTileLayer]}
 						onMarkerClick={handleMarkerClick}
 						onMapEvent={handleMapEvent}
 					/>
-					<ScrollView
-						ref={logScrollRef}
-						style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
-						onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
-					>
-						{logEntries.map((entry, i) => (
-							<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
-								{entry}
-							</Text>
-						))}
-						{logEntries.length === 0 && (
-							<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
-						)}
-					</ScrollView>
+					<DebugView showInDevMode title="Map Log">
+						<ScrollView
+							ref={logScrollRef}
+							style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
+							onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
+						>
+							{logEntries.map((entry, i) => (
+								<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+									{entry}
+								</Text>
+							))}
+							{logEntries.length === 0 && (
+								<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+							)}
+						</ScrollView>
+					</DebugView>
 				</View>
 				{searchResults.length > 0 && (
 					<View style={[styles.searchResultsContainer, { backgroundColor: theme.screen.background }]}>
@@ -235,6 +385,13 @@ const LeafletMap = () => {
 };
 
 export default LeafletMap;
+
+const settingsModalStyles = StyleSheet.create({
+	container: {
+		paddingHorizontal: 16,
+		paddingVertical: 8,
+	},
+});
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
