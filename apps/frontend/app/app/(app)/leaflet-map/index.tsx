@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
@@ -11,6 +11,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { DatabaseTypes } from 'repo-depkit-common';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
+import SettingsList from '@/components/SettingsList/SettingsList';
+import LeafletMapHeader from './components/LeafletMapHeader';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -41,16 +43,22 @@ function createBuildingMarkerSvg(externalIdentifier?: string | null): string {
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
+const MAX_SEARCH_RESULTS = 3;
+
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
 	const { buildings } = useAppSelector((state) => state.canteenReducer);
+	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
+
+	// Search state
+	const [searchQuery, setSearchQuery] = useState('');
 
 	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
@@ -104,6 +112,26 @@ const LeafletMap = () => {
 		setMapCenterOverride(null);
 	}, [centerPosition]);
 
+	// Search results: up to 3 buildings matching the query
+	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
+		const q = searchQuery.trim().toLowerCase();
+		if (!q) return [];
+		return (buildings as DatabaseTypes.Buildings[])
+			.filter((b) => (b.alias ?? '').toLowerCase().includes(q))
+			.slice(0, MAX_SEARCH_RESULTS);
+	}, [buildings, searchQuery]);
+
+	const handleSearchResultSelect = useCallback(
+		(building: DatabaseTypes.Buildings) => {
+			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
+			if (coords && coords.length === 2) {
+				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
+			}
+			setSearchQuery('');
+		},
+		[],
+	);
+
 	const handleMarkerClick = useCallback(
 		(id: string) => {
 			// Cluster click: zoom in and centre on the cluster instead of opening a modal
@@ -149,36 +177,77 @@ const LeafletMap = () => {
 	);
 
 	return (
-		<View style={styles.container}>
-			<MyMap
-				mapCenterPosition={mapCenterOverride ?? centerPosition}
-				zoom={mapZoom}
-				mapMarkers={buildingMarkers}
-				onMarkerClick={handleMarkerClick}
-				onMapEvent={handleMapEvent}
+		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
+			<LeafletMapHeader
+				drawerPosition={drawerPosition}
+				query={searchQuery}
+				onQueryChange={setSearchQuery}
 			/>
-			<ScrollView
-				ref={logScrollRef}
-				style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
-				onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
-			>
-				{logEntries.map((entry, i) => (
-					<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
-						{entry}
-					</Text>
-				))}
-				{logEntries.length === 0 && (
-					<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+			<View style={styles.contentArea}>
+				<View style={styles.container}>
+					<MyMap
+						mapCenterPosition={mapCenterOverride ?? centerPosition}
+						zoom={mapZoom}
+						mapMarkers={buildingMarkers}
+						onMarkerClick={handleMarkerClick}
+						onMapEvent={handleMapEvent}
+					/>
+					<ScrollView
+						ref={logScrollRef}
+						style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
+						onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
+					>
+						{logEntries.map((entry, i) => (
+							<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+								{entry}
+							</Text>
+						))}
+						{logEntries.length === 0 && (
+							<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+						)}
+					</ScrollView>
+				</View>
+				{searchResults.length > 0 && (
+					<View style={[styles.searchResultsContainer, { backgroundColor: theme.screen.background }]}>
+						{searchResults.map((building, index) => (
+							<SettingsList
+								key={building.id ?? index}
+								title={building.alias ?? ''}
+								onPress={() => handleSearchResultSelect(building)}
+								showSeparator={index < searchResults.length - 1}
+								groupPosition={
+									searchResults.length === 1
+										? 'single'
+										: index === 0
+										? 'top'
+										: index === searchResults.length - 1
+										? 'bottom'
+										: 'middle'
+								}
+								noIconIndent
+							/>
+						))}
+					</View>
 				)}
-			</ScrollView>
-		</View>
+			</View>
+		</SafeAreaView>
 	);
 };
 
 export default LeafletMap;
 
 const styles = StyleSheet.create({
+	safeArea: { flex: 1 },
+	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
+	searchResultsContainer: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		zIndex: 10,
+		elevation: 10,
+	},
 	logContainer: {
 		maxHeight: 120,
 		borderTopWidth: 1,
