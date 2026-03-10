@@ -171,14 +171,14 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                         modalStackRef.current = modalStackRef.current.slice(0, -1);
                         setModalStack([...modalStackRef.current]);
                         // Do NOT call expand() here. If the sheet was dismissed via a swipe-down
-                        // gesture or backdrop press, it will naturally reach index -1 and
-                        // handleSheetChange will re-expand it. If the close button was pressed,
-                        // the sheet is already at index 0 and the new content is shown via the
-                        // React state update above — calling expand() on an already-open sheet on
-                        // native triggers spurious onChange(0)→onChange(-1) events that can fire
-                        // after isClosingRef is reset and accidentally close the remaining modal.
+                        // gesture, it will naturally reach index -1 and handleSheetChange will
+                        // re-expand it. If the close button or backdrop was pressed, the sheet is
+                        // already at index 0 and the new content is shown via the React state
+                        // update above — calling expand() on an already-open sheet on native
+                        // triggers spurious onChange(0)→onChange(-1) events that can fire after
+                        // isClosingRef is reset and accidentally close the remaining modal.
                         // Safety timeout: reset the guard in case no onChange fires (e.g. close-
-                        // button path where the sheet stays at index 0).
+                        // button / backdrop path where the sheet stays at index 0).
                         clearCloseTimeout();
                         closeTimeoutRef.current = setTimeout(() => {
                                 isClosingRef.current = false;
@@ -197,17 +197,16 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
         // Reset the re-entrancy guard as soon as the sheet reaches an expanded position.
         // Also clears the safety timeout that was set as a fallback in case this handler
-        // never fires (e.g. sheet was already at 0 on a close-button dismissal).
-        // When the sheet reaches -1 but items remain in the stack (e.g. swipe-down or
-        // backdrop-press while a nested modal was visible), re-expand to show the
-        // remaining item.
+        // never fires (e.g. sheet was already at 0 on a close-button or backdrop dismissal).
+        // When the sheet reaches -1 but items remain in the stack (swipe-down while a
+        // nested modal was visible), re-expand to show the remaining item.
         const handleSheetChange = useCallback((index: number) => {
                 if (index >= 0) {
                         // Sheet has reached an expanded position — reset the close guard.
                         // Clear any existing timeout (safety timeout or previous delay).
                         clearCloseTimeout();
                         if (isClosingRef.current) {
-                                // Pop-and-expand path (swipe-down or backdrop on a nested modal):
+                                // Pop-and-expand path (swipe-down on a nested modal):
                                 // On native, @gorhom/bottom-sheet can fire a spurious onChange(-1)
                                 // AFTER onChange(0) during the expand animation.  Keep the guard
                                 // active for CLOSE_GUARD_RESET_DELAY_MS so that spurious event
@@ -218,8 +217,8 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                 }, CLOSE_GUARD_RESET_DELAY_MS);
                         }
                 } else if (index === -1 && modalStackRef.current.length > 0) {
-                        // Sheet was physically closed (swipe-down or backdrop pressBehavior='close')
-                        // but more modals remain — re-expand to show the previous one.
+                        // Sheet was physically closed via swipe-down but more modals remain —
+                        // re-expand to show the previous one.
                         sheetRef.current?.expand?.();
                 }
         }, []);
