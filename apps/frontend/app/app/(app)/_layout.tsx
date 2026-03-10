@@ -629,7 +629,7 @@ export default function Layout() {
 				<Drawer.Screen
 					name="leaflet-map/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.leaflet_map)} key={'LeafletMap'} />,
+						headerShown: false,
 						title: translate(TranslationKeys.leaflet_map),
 					}}
 				/>
