@@ -37,6 +37,12 @@ const ModalContext = createContext<ModalContextType | null>(null);
 // sheet's close animation duration so the sheet has finished animating before unmounting.
 const SHEET_CLOSE_ANIMATION_MS = 300;
 
+// On native, @gorhom/bottom-sheet can fire onChange(-1) AFTER onChange(0) during an expand
+// animation (sequence: -1 → 0 → -1). When re-expanding after a nested-modal pop (pop-and-expand
+// path), we must keep isClosingRef=true until this spurious trailing event has had time to arrive
+// and be blocked.  150 ms is long enough for the spurious event but short enough to be imperceptible.
+const CLOSE_GUARD_RESET_DELAY_MS = 150;
+
 export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const [modalStack, setModalStack] = useState<ModalStackItem[]>([]);
         // Ref mirror of the stack for use inside callbacks (avoids stale closure issues)
@@ -198,10 +204,19 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const handleSheetChange = useCallback((index: number) => {
                 if (index >= 0) {
                         // Sheet has reached an expanded position — reset the close guard.
-                        // Clear both the safety timeout (close-button path) and, on native,
-                        // any CLOSE_GUARD_RESET_DELAY timeout that may be pending.
+                        // Clear any existing timeout (safety timeout or previous delay).
                         clearCloseTimeout();
-                        isClosingRef.current = false;
+                        if (isClosingRef.current) {
+                                // Pop-and-expand path (swipe-down or backdrop on a nested modal):
+                                // On native, @gorhom/bottom-sheet can fire a spurious onChange(-1)
+                                // AFTER onChange(0) during the expand animation.  Keep the guard
+                                // active for CLOSE_GUARD_RESET_DELAY_MS so that spurious event
+                                // is blocked and cannot pop an additional modal.
+                                closeTimeoutRef.current = setTimeout(() => {
+                                        isClosingRef.current = false;
+                                        clearCloseTimeout();
+                                }, CLOSE_GUARD_RESET_DELAY_MS);
+                        }
                 } else if (index === -1 && modalStackRef.current.length > 0) {
                         // Sheet was physically closed (swipe-down or backdrop pressBehavior='close')
                         // but more modals remain — re-expand to show the previous one.
