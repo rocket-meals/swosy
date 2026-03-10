@@ -268,6 +268,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                         });
                 }
 
+                if (appSettings?.map_enabled || isDevMode) {
+                        menuItems.push({
+                                label: translate(TranslationKeys.map),
+                                iconName: 'map-outline',
+                                iconLibName: Ionicons,
+                                activeKey: 'map/index',
+                                route: 'map/index',
+                                position: 7.5,
+                        });
+                }
+
                 if (isManagement) {
                         menuItems.push({
                                 label: translate(TranslationKeys.role_management),
