@@ -37,6 +37,11 @@ const ModalContext = createContext<ModalContextType | null>(null);
 // sheet's close animation duration so the sheet has finished animating before unmounting.
 const SHEET_CLOSE_ANIMATION_MS = 300;
 
+// After the sheet reaches index >= 0 during a pop-and-expand, delay resetting isClosingRef
+// by this many ms to absorb any trailing spurious onChange(-1) that @gorhom/bottom-sheet
+// fires on native when expand() is called on a sheet that was already at index 0.
+const CLOSE_GUARD_RESET_DELAY_MS = 150;
+
 export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const [modalStack, setModalStack] = useState<ModalStackItem[]>([]);
         // Ref mirror of the stack for use inside callbacks (avoids stale closure issues)
@@ -203,12 +208,27 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // When the sheet reaches -1 but items remain in the stack (e.g. pressBehavior='close'
         // closed the sheet while a nested modal was being dismissed), re-expand to show the
         // remaining item.
+        //
+        // IMPORTANT: when we were in a pop-and-expand close (isClosingRef=true) and the sheet
+        // reaches index 0, do NOT reset isClosingRef immediately. On native, calling expand()
+        // on a sheet that is already at index 0 (e.g. close-button press) can cause the sheet
+        // to fire onChange(0) first and then a spurious onChange(-1) shortly after. If we reset
+        // isClosingRef at onChange(0), the guard is gone when the spurious -1 arrives, and the
+        // BaseBottomSheet handleChange calls onClose() again → close() executes → all modals
+        // are dismissed. Delaying the reset by 150 ms keeps isClosingRef=true long enough to
+        // swallow that spurious -1 without affecting the user-visible behaviour.
         const handleSheetChange = useCallback((index: number) => {
                 if (index >= 0) {
-                        isClosingRef.current = false;
-                        if (closeTimeoutRef.current) {
-                                clearTimeout(closeTimeoutRef.current);
-                                closeTimeoutRef.current = null;
+                        if (isClosingRef.current) {
+                                // Pop-and-expand path: delay resetting the guard so any trailing
+                                // spurious onChange(-1) from the native expand animation is still blocked.
+                                clearCloseTimeout();
+                                closeTimeoutRef.current = setTimeout(() => {
+                                        isClosingRef.current = false;
+                                        clearCloseTimeout();
+                                }, CLOSE_GUARD_RESET_DELAY_MS);
+                        } else {
+                                clearCloseTimeout();
                         }
                 } else if (index === -1 && modalStackRef.current.length > 0) {
                         sheetRef.current?.expand?.();
