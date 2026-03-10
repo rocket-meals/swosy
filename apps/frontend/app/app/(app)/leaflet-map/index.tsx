@@ -79,6 +79,69 @@ const TILE_VARIANTS: TileVariant[] = [
 	},
 ];
 
+type LeafletSettingsContentProps = {
+	initialSelectedTileKey: string;
+	initialUseFlyAnimation: boolean;
+	onSelectedTileChange: (key: string) => void;
+	onFlyAnimationChange: (value: boolean) => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
+	initialSelectedTileKey,
+	initialUseFlyAnimation,
+	onSelectedTileChange,
+	onFlyAnimationChange,
+	theme,
+}) => {
+	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
+	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
+	const [showingTileSelector, setShowingTileSelector] = useState(false);
+
+	if (showingTileSelector) {
+		return (
+			<SettingsListSelectOption
+				options={TILE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
+				selectedOption={selectedTileKey}
+				onSelect={(option) => {
+					setSelectedTileKey(option.id);
+					onSelectedTileChange(option.id);
+					setShowingTileSelector(false);
+				}}
+				noIconIndent
+			/>
+		);
+	}
+
+	return (
+		<>
+			<SettingsList
+				title="Kartenmaterial"
+				value={(TILE_VARIANTS.find((v) => v.key === selectedTileKey) ?? TILE_VARIANTS[0]).label}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={() => setShowingTileSelector(true)}
+				groupPosition="top"
+				noIconIndent
+			/>
+			<SettingsList
+				title="Sanfte Kamera-Bewegung"
+				rightElement={
+					<Switch
+						value={localFlyAnimation}
+						onValueChange={(value) => {
+							setLocalFlyAnimation(value);
+							onFlyAnimationChange(value);
+						}}
+					/>
+				}
+				groupPosition="bottom"
+				showSeparator={false}
+				noIconIndent
+			/>
+		</>
+	);
+};
+
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
 	lng: 13.376281624711964,
@@ -116,7 +179,7 @@ const LeafletMap = () => {
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
-	const { show, closeAll } = useMyScrollViewModal();
+	const { show } = useMyScrollViewModal();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
@@ -149,52 +212,20 @@ const LeafletMap = () => {
 		[selectedTileVariantKey],
 	);
 
-	const openTileSelectorModal = useCallback(() => {
-		show({
-			title: 'Kartenmaterial',
-			children: (
-				<SettingsListSelectOption
-					options={TILE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
-					selectedOption={selectedTileVariantKey}
-					onSelect={(option) => {
-						setSelectedTileVariantKey(option.id);
-						closeAll();
-					}}
-					noIconIndent
-				/>
-			),
-		});
-	}, [show, closeAll, selectedTileVariantKey]);
-
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
 			children: (
-				<>
-					<SettingsList
-						title="Kartenmaterial"
-						value={(TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).label}
-						rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-						onPress={openTileSelectorModal}
-						groupPosition="top"
-						noIconIndent
-					/>
-					<SettingsList
-						title="Sanfte Kamera-Bewegung"
-						rightElement={
-							<Switch
-								value={useFlyAnimation}
-								onValueChange={setUseFlyAnimation}
-							/>
-						}
-						groupPosition="bottom"
-						showSeparator={false}
-						noIconIndent
-					/>
-				</>
+				<LeafletSettingsContent
+					initialSelectedTileKey={selectedTileVariantKey}
+					initialUseFlyAnimation={useFlyAnimation}
+					onSelectedTileChange={setSelectedTileVariantKey}
+					onFlyAnimationChange={setUseFlyAnimation}
+					theme={theme}
+				/>
 			),
 		});
-	}, [show, openTileSelectorModal, selectedTileVariantKey, useFlyAnimation, theme]);
+	}, [show, selectedTileVariantKey, useFlyAnimation, theme]);
 
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
