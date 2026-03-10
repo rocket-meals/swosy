@@ -8,7 +8,7 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { clusterMarkers } from './clusterUtils';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
 	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
@@ -46,10 +46,11 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 			zoom: zoom ?? 13,
 			mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
 			mapMarkers: clusteredMarkers,
+			useFlyAnimation: useFlyAnimation !== false,
 		};
 		const json = JSON.stringify(message);
 		webViewRef.current?.injectJavaScript(`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`);
-	}, [mapCenterPosition, zoom, mapLayers, clusteredMarkers]);
+	}, [mapCenterPosition, zoom, mapLayers, clusteredMarkers, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();

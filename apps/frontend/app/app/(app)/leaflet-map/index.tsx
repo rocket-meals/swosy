@@ -17,6 +17,8 @@ import DebugView from '@/components/DebugView';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
+import { useDispatch } from 'react-redux';
+import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -176,6 +178,9 @@ const LeafletMap = () => {
 
 	const { buildings } = useAppSelector((state) => state.canteenReducer);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
+	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
+	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
+	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
@@ -187,13 +192,13 @@ const LeafletMap = () => {
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
 
-	// Selected tile layer (map material)
-	const [selectedTileVariantKey, setSelectedTileVariantKey] = useState<string>(TILE_VARIANTS[0].key);
+	const setSelectedTileVariantKey = useCallback((key: string) => {
+		dispatch({ type: SET_MAP_TILE_VARIANT_KEY, payload: key });
+	}, [dispatch]);
 
-	// Fly animation toggle (false = jump/instant, true = fly/animated)
-	// Stored as a preference; passed to MyMap so the map can use flyTo vs setView
-	// (the Leaflet HTML needs to be updated to honour this flag)
-	const [useFlyAnimation, setUseFlyAnimation] = useState(true);
+	const setUseFlyAnimation = useCallback((value: boolean) => {
+		dispatch({ type: SET_MAP_USE_FLY_ANIMATION, payload: value });
+	}, [dispatch]);
 
 	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
@@ -347,6 +352,7 @@ const LeafletMap = () => {
 						zoom={mapZoom}
 						mapMarkers={buildingMarkers}
 						mapLayers={[selectedTileLayer]}
+						useFlyAnimation={useFlyAnimation}
 						onMarkerClick={handleMarkerClick}
 						onMapEvent={handleMapEvent}
 					/>

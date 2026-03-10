@@ -12,6 +12,7 @@ export interface MyMapProps {
 	zoom?: number;
 	mapMarkers?: MapMarker[];
 	mapLayers?: MapLayer[];
+	useFlyAnimation?: boolean;
 	onMarkerClick?: (id: string) => void;
 	onMapEvent?: (event: LeafletWebViewEvent) => void;
 	renderMarkerModal?: (markerId: string, onClose: () => void) => React.ReactNode;
