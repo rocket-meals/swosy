@@ -564,7 +564,33 @@ const LeafletMap = () => {
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
 
-			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+			addLog(`Building clicked: ${title} (id=${buildingId ?? 'unknown'})${lat !== null ? ` @ ${lat}, ${lng}` : ''}`);
+
+			if (buildingId) {
+				// Log which buildings_organizations entries are linked to this building
+				const matchedBuildingOrgs = (buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[]).filter((entry) => {
+					const entryBuildingId =
+						typeof entry.buildings_id === 'string'
+							? entry.buildings_id
+							: (entry.buildings_id as DatabaseTypes.Buildings | null)?.id;
+					return entryBuildingId === buildingId;
+				});
+				addLog(
+					`buildings_organizations found: ${matchedBuildingOrgs.length}` +
+					(matchedBuildingOrgs.length > 0
+						? ` [${matchedBuildingOrgs.map((e) => `bo.id=${e.id} org=${typeof e.organizations_id === 'string' ? e.organizations_id : (e.organizations_id as DatabaseTypes.Organizations | null)?.id ?? '?'}`).join(', ')}]`
+						: '')
+				);
+
+				// Log which organizations were resolved for this building
+				const resolvedOrgs = buildingIdToOrgsDict[buildingId] ?? [];
+				addLog(
+					`Resolved organizations: ${resolvedOrgs.length}` +
+					(resolvedOrgs.length > 0
+						? ` [${resolvedOrgs.map((o) => `id=${o.id} color=${o.map_marker_color ?? 'none'}`).join(', ')}]`
+						: '')
+				);
+			}
 
 			if (coords && coords.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
@@ -575,7 +601,7 @@ const LeafletMap = () => {
 				openBuildingDetailsModal(buildingId);
 			}
 		},
-		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
+		[buildings, buildingsOrganizations, buildingIdToOrgsDict, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
 	const handleMapEvent = useCallback(
