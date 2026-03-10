@@ -264,18 +264,58 @@ const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 3;
 
+/** Returns black or white based on the luminance of the given hex background color. */
+function getContrastColor(hexColor: string): string {
+	const hex = hexColor.replace('#', '');
+	if (hex.length !== 6) return '#ffffff';
+	const r = parseInt(hex.slice(0, 2), 16) / 255;
+	const g = parseInt(hex.slice(2, 4), 16) / 255;
+	const b = parseInt(hex.slice(4, 6), 16) / 255;
+	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	// WCAG relative-luminance midpoint: colours above this threshold are considered "light"
+	const WCAG_LIGHT_THRESHOLD = 0.179;
+	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
+}
+
+/**
+ * Returns the first organisation ID linked to the building, or null if none.
+ *
+ * Priority order:
+ *  1. `building.organisations` many-to-many array (junction table entries)
+ *  2. `building.organisation_id` / `building.organisation` single FK
+ */
+function getFirstOrganisationId(building: BuildingWithOrganisations): string | null {
+	if (Array.isArray(building.organisations) && building.organisations.length > 0) {
+		const first = building.organisations[0];
+		return typeof first === 'string' ? first : (first?.organisations_id ?? first?.id ?? null);
+	}
+	return building.organisation_id ?? building.organisation ?? null;
+}
+
+/**
+ * Creates an SVG circle marker for a building.
+ *
+ * Colour fallback priority (per field):
+ *   1. Building's own `markerColor` / `markerLabelColor`
+ *   2. First organisation's `orgMarkerColor` / `orgMarkerLabelColor`
+ *   3. Project default: `fallbackColor` (project colour) / `fallbackLabelColor` (contrast of project colour)
+ */
 function createBuildingMarkerSvg(
 	externalIdentifier?: string | null,
 	markerColor?: string | null,
 	markerLabel?: string | null,
 	markerLabelColor?: string | null,
+	orgMarkerColor?: string | null,
+	orgMarkerLabelColor?: string | null,
+	fallbackColor?: string | null,
+	fallbackLabelColor?: string | null,
 ): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
 	const cy = size / 2;
 	const r = cx - 2;
-	const fillColor = markerColor ?? BUILDING_MARKER_COLOR;
-	const textColor = markerLabelColor ?? 'white';
+	const fillColor = markerColor ?? orgMarkerColor ?? fallbackColor ?? BUILDING_MARKER_COLOR;
+	const textColor = markerLabelColor ?? orgMarkerLabelColor ?? fallbackLabelColor ?? 'white';
 	const rawLabel = markerLabel ?? externalIdentifier;
 	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
@@ -291,6 +331,7 @@ const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
 	const { buildings, organisations } = useAppSelector((state) => state.canteenReducer);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
@@ -304,6 +345,18 @@ const LeafletMap = () => {
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
+
+	// Fast lookup dict for organisations – keyed by organisation ID
+	const organisationsDict = useMemo(
+		() => (organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
+			(acc, org) => { acc[org.id] = org; return acc; },
+			{}
+		),
+		[organisations]
+	);
+
+	// Contrast label colour to use as the default marker text colour when no explicit colour is set
+	const primaryColorContrastColor = useMemo(() => getContrastColor(primaryColor), [primaryColor]);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
@@ -445,6 +498,9 @@ const LeafletMap = () => {
 			.map((building) => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
 				const [lng, lat] = coords;
+				// Resolve the first linked organisation for style fallback
+				const firstOrgId = getFirstOrganisationId(building);
+				const firstOrg = firstOrgId ? organisationsDict[firstOrgId] : null;
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
@@ -453,12 +509,16 @@ const LeafletMap = () => {
 						building.map_marker_color,
 						building.map_marker_label,
 						building.map_marker_label_color,
+						firstOrg?.map_marker_color ?? null,
+						firstOrg?.map_marker_label_color ?? null,
+						primaryColor,
+						primaryColorContrastColor,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, likedOrganisationIds]);
+	}, [buildings, likedOrganisationIds, organisationsDict, primaryColor, primaryColorContrastColor]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
