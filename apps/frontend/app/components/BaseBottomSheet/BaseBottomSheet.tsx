@@ -1,6 +1,6 @@
-import React, { forwardRef, useCallback, useMemo } from 'react';
-import { Pressable, StyleSheet as RNStyleSheet, TouchableOpacity, View } from 'react-native';
-import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import React, { forwardRef, useCallback, useMemo, useState } from 'react';
+import { Platform, Pressable, StyleSheet as RNStyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import BottomSheet, { type BottomSheetBackdropProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
 import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
@@ -16,18 +16,33 @@ interface CustomBackdropProps extends BottomSheetBackdropProps {
 }
 
 const CustomBackdrop: React.FC<CustomBackdropProps> = ({ animatedIndex, style, onPress }) => {
-        const containerAnimatedStyle = useAnimatedStyle(() => ({
-                opacity: interpolate(animatedIndex.value, [-1, 0], [0, 1], Extrapolation.CLAMP),
-        }));
+	const containerAnimatedStyle = useAnimatedStyle(() => ({
+		opacity: interpolate(animatedIndex.value, [-1, 0], [0, 1], Extrapolation.CLAMP),
+	}));
 
-        return (
-                <Animated.View
-                        style={[style, containerAnimatedStyle, backdropStyles.container]}
-                        pointerEvents="box-none"
-                >
-                        <Pressable style={RNStyleSheet.absoluteFillObject} onPress={onPress} />
-                </Animated.View>
-        );
+	// On web, CSS elements with opacity:0 still intercept pointer events (unlike native).
+	// Track whether the backdrop is meaningfully visible and only mount the Pressable then,
+	// so an invisible backdrop never blocks interactions behind the sheet.
+	const [isPressableActive, setIsPressableActive] = useState(() => animatedIndex.value > -0.5);
+	useAnimatedReaction(
+		() => animatedIndex.value > -0.5,
+		(isActive, prev) => {
+			if (isActive !== prev) {
+				runOnJS(setIsPressableActive)(isActive);
+			}
+		},
+	);
+
+	return (
+		<Animated.View
+			style={[style, containerAnimatedStyle, backdropStyles.container]}
+			pointerEvents="box-none"
+		>
+			{(Platform.OS !== 'web' || isPressableActive) && (
+				<Pressable style={RNStyleSheet.absoluteFillObject} onPress={onPress} />
+			)}
+		</Animated.View>
+	);
 };
 
 const backdropStyles = RNStyleSheet.create({
