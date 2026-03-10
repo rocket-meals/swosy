@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
 import DEFAULT_TILE_LAYER from './defaultTileLayer';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { clusterMarkers } from './clusterUtils';
+import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 
 const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const webViewRef = useRef<WebView>(null);
@@ -56,6 +58,17 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 		sendMapData();
 	}, [sendMapData]);
 
+	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
+		const url = request.url;
+		// Allow the initial blank page load that React Native WebView uses for inline HTML
+		if (!url || url === 'about:blank' || url === 'about:srcdoc') {
+			return true;
+		}
+		// Open all other navigation requests (e.g. Leaflet attribution links) externally
+		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
+		return false;
+	}, []);
+
 	const handleMessage = useCallback(
 		(event: WebViewMessageEvent) => {
 			try {
@@ -92,6 +105,7 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 				ref={webViewRef}
 				source={{ html }}
 				onMessage={handleMessage}
+				onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 				style={styles.map}
 				javaScriptEnabled={true}
 				domStorageEnabled={true}
