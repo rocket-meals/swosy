@@ -36,6 +36,7 @@ export type MapLayer = {
 	bounds?: LatLngBoundsLiteral;
 	id?: string;
 	layerType?: MapLayerType;
+	maxNativeZoom?: number;
 	opacity?: number;
 	pane?: string;
 	subLayer?: string;

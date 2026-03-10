@@ -18,7 +18,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
-import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -84,20 +84,25 @@ const TILE_VARIANTS: TileVariant[] = [
 type LeafletSettingsContentProps = {
 	initialSelectedTileKey: string;
 	initialUseFlyAnimation: boolean;
+	initialUseVirtualZoom: boolean;
 	onSelectedTileChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
+	onVirtualZoomChange: (value: boolean) => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
 const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	initialSelectedTileKey,
 	initialUseFlyAnimation,
+	initialUseVirtualZoom,
 	onSelectedTileChange,
 	onFlyAnimationChange,
+	onVirtualZoomChange,
 	theme,
 }) => {
 	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
+	const [localVirtualZoom, setLocalVirtualZoom] = useState(initialUseVirtualZoom);
 	const [showingTileSelector, setShowingTileSelector] = useState(false);
 
 	if (showingTileSelector) {
@@ -136,6 +141,20 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 						}}
 					/>
 				}
+				groupPosition="middle"
+				noIconIndent
+			/>
+			<SettingsList
+				title="Virtueller Zoom (ab Zoom 17)"
+				rightElement={
+					<Switch
+						value={localVirtualZoom}
+						onValueChange={(value) => {
+							setLocalVirtualZoom(value);
+							onVirtualZoomChange(value);
+						}}
+					/>
+				}
 				groupPosition="bottom"
 				showSeparator={false}
 				noIconIndent
@@ -153,6 +172,7 @@ const MAX_LOG_ENTRIES = 50;
 
 const MAX_ZOOM = 18;
 const DEFAULT_ZOOM = 17;
+const VIRTUAL_ZOOM_MAX_NATIVE_ZOOM = 17;
 
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
@@ -180,6 +200,7 @@ const LeafletMap = () => {
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
+	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
@@ -200,6 +221,10 @@ const LeafletMap = () => {
 		dispatch({ type: SET_MAP_USE_FLY_ANIMATION, payload: value });
 	}, [dispatch]);
 
+	const setUseVirtualZoom = useCallback((value: boolean) => {
+		dispatch({ type: SET_MAP_VIRTUAL_ZOOM, payload: value });
+	}, [dispatch]);
+
 	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	// Override center position set on cluster click (null = follow centerPosition)
@@ -212,10 +237,13 @@ const LeafletMap = () => {
 		});
 	}, []);
 
-	const selectedTileLayer = useMemo(
-		() => (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer,
-		[selectedTileVariantKey],
-	);
+	const selectedTileLayer = useMemo(() => {
+		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
+		if (useVirtualZoom) {
+			return { ...layer, maxNativeZoom: VIRTUAL_ZOOM_MAX_NATIVE_ZOOM };
+		}
+		return layer;
+	}, [selectedTileVariantKey, useVirtualZoom]);
 
 	const openSettingsModal = useCallback(() => {
 		show({
@@ -224,13 +252,15 @@ const LeafletMap = () => {
 				<LeafletSettingsContent
 					initialSelectedTileKey={selectedTileVariantKey}
 					initialUseFlyAnimation={useFlyAnimation}
+					initialUseVirtualZoom={useVirtualZoom}
 					onSelectedTileChange={setSelectedTileVariantKey}
 					onFlyAnimationChange={setUseFlyAnimation}
+					onVirtualZoomChange={setUseVirtualZoom}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedTileVariantKey, useFlyAnimation, theme]);
+	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
 
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
@@ -353,7 +383,7 @@ const LeafletMap = () => {
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
 					<MyMap
-						key={selectedTileVariantKey}
+						key={`${selectedTileVariantKey}-${useVirtualZoom}`}
 						mapCenterPosition={mapCenterOverride ?? centerPosition}
 						zoom={mapZoom}
 						mapMarkers={buildingMarkers}
