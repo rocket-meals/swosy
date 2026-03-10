@@ -3215,6 +3215,18 @@
     "presets": null,
     "validation": null,
     "action": "read",
+    "collection": "organizations",
+    "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
+    "_syncId": "01876221-6973-4b0d-bacf-592ec45419e1"
+  },
+  {
+    "fields": [
+      "*"
+    ],
+    "permissions": null,
+    "presets": null,
+    "validation": null,
+    "action": "read",
     "collection": "popup_events_canteens",
     "policy": "edf04ec1-3c5f-4ac7-8c88-b7c1a62ea615",
     "_syncId": "6bf8bb56-c88d-46ce-bd10-4a358ae91b2f"

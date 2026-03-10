@@ -196,6 +196,12 @@ export type Buildings = {
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  map_marker_cluster_exclude?: boolean | null;
+  map_marker_color?: string | null;
+  map_marker_is_visible?: boolean | null;
+  map_marker_label?: string | null;
+  map_marker_label_color?: string | null;
+  map_marker_style?: string | null;
   sort?: number | null;
   status?: string | null;
   translations: any[] | BuildingsTranslations[];
@@ -1616,6 +1622,22 @@ export type NewsTranslations = {
   translation_settings: string;
 };
 
+export type Organizations = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  image_remote_url?: string | null;
+  map_marker_color?: string | null;
+  map_marker_label_color?: string | null;
+  map_marker_style?: string | null;
+  sort?: number | null;
+  status: string;
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type PopupEvents = {
   alias?: string | null;
   canteens: any[] | PopupEventsCanteens[];
@@ -1985,6 +2007,7 @@ export type CustomDirectusTypes = {
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];
+  organizations: Organizations[];
   popup_events: PopupEvents[];
   popup_events_canteens: PopupEventsCanteens[];
   popup_events_translations: PopupEventsTranslations[];

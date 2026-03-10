@@ -1,10 +1,10 @@
 [
   {
+    "position_x": 33,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 3,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -28,11 +28,11 @@
     "_syncId": "00692485-9cc4-417d-a431-4c8e1ccd387d"
   },
   {
+    "position_x": 70,
     "show_header": true,
     "height": 10,
     "width": 23,
     "position_y": 79,
-    "position_x": 70,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -57,11 +57,11 @@
     "_syncId": "0083416e-3891-478b-b647-f6f21bfd43dc"
   },
   {
+    "position_x": 24,
     "show_header": true,
     "height": 5,
     "width": 23,
     "position_y": 79,
-    "position_x": 24,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -90,11 +90,11 @@
     "_syncId": "012851df-3ac6-4d56-a378-93a07c7c134f"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 74,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -146,11 +146,11 @@
     "_syncId": "0255e43c-e8b0-42de-9d1c-7fffd9a017e9"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 9,
-    "position_x": 17,
     "note": null,
     "options": {
       "collection": "washingmachines",
@@ -174,11 +174,11 @@
     "_syncId": "03934103-b35a-4f69-a72e-30b9835606b6"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 15,
     "width": 30,
     "position_y": 118,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -204,11 +204,11 @@
     "_syncId": "04615a3f-5f88-4fa1-870d-25691aae02c1"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 65,
     "position_y": 69,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -235,11 +235,11 @@
     "_syncId": "0472759f-f4c1-416f-a9f7-f80f32d34726"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 55,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -257,11 +257,11 @@
     "_syncId": "0554b6a2-1649-4fcd-818c-bf57c156d51f"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 128,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -279,11 +279,11 @@
     "_syncId": "05561ef0-80d8-414e-9e2a-5b321f0dc986"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 9,
     "width": 25,
     "position_y": 140,
-    "position_x": 1,
     "note": "Prüfen, ob das gleiche wie beim linken Panel?",
     "options": {
       "collection": "directus_files",
@@ -300,11 +300,11 @@
     "_syncId": "059e0e07-1942-4924-968e-1b959e36f8a0"
   },
   {
+    "position_x": 15,
     "show_header": true,
     "height": 6,
     "width": 14,
     "position_y": 11,
-    "position_x": 15,
     "note": null,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_END",
@@ -321,11 +321,11 @@
     "_syncId": "05a1c237-a632-4d8c-a005-f1d4ad1628d6"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 65,
     "position_y": 99,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -344,11 +344,11 @@
     "_syncId": "0621281a-6b2a-4a13-b2ef-ab0e38a6806e"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 104,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -366,11 +366,11 @@
     "_syncId": "0756d748-3008-402c-aa80-d1642404cff6"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 33,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -402,11 +402,11 @@
     "_syncId": "0b28d61d-019c-4d37-8479-e26f81863561"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 60,
     "position_y": 76,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "utilizations_entries",
@@ -451,11 +451,11 @@
     "_syncId": "0f66d1a5-84ee-4def-be22-1a26555c4e18"
   },
   {
+    "position_x": 2,
     "show_header": true,
     "height": 5,
     "width": 15,
     "position_y": 13,
-    "position_x": 2,
     "note": null,
     "options": {
       "collection": "foods",
@@ -471,11 +471,11 @@
     "_syncId": "10385b18-5d59-4354-9e8d-26ad97f30e6c"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 32,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -497,11 +497,11 @@
     "_syncId": "10b8cdaa-a479-4028-b50a-eea2c3d5f60b"
   },
   {
+    "position_x": 47,
     "show_header": true,
     "height": 15,
     "width": 16,
     "position_y": 59,
-    "position_x": 47,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -548,11 +548,11 @@
     "_syncId": "10e6a9c1-14ad-4f60-92df-9395355119cd"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 61,
     "position_y": 190,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -570,11 +570,11 @@
     "_syncId": "11c2d375-988d-45d6-b27e-53cba2243945"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 65,
     "position_y": 119,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -593,11 +593,11 @@
     "_syncId": "11ff223c-28f4-49de-a3d7-32ec6c2ac2cb"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 6,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -625,11 +625,11 @@
     "_syncId": "120d5523-4049-4e11-b014-96f50201dc70"
   },
   {
+    "position_x": 43,
     "show_header": true,
     "height": 19,
     "width": 39,
     "position_y": 171,
-    "position_x": 43,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -655,11 +655,11 @@
     "_syncId": "1499db05-9b7d-4cb6-8367-1e62f3a52f19"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 99,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -716,11 +716,11 @@
     "_syncId": "17968fbd-6eb7-491a-8c22-f763fd5e04ae"
   },
   {
+    "position_x": 38,
     "show_header": true,
     "height": 5,
     "width": 29,
     "position_y": 23,
-    "position_x": 38,
     "note": null,
     "options": {
       "collection": "directus_users",
@@ -756,11 +756,11 @@
     "_syncId": "192f4fe6-bb52-4616-9a28-79878f06f1d7"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 16,
     "width": 66,
     "position_y": 107,
-    "position_x": 1,
     "note": null,
     "options": {
       "linkToItem": true,
@@ -790,11 +790,11 @@
     "_syncId": "1a89a1bd-ce89-49e8-832e-947100552f02"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 99,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -851,11 +851,11 @@
     "_syncId": "1aeb553e-41b9-4ac3-b42a-dcaa0b53e7c0"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 13,
-    "position_x": 17,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -871,11 +871,11 @@
     "_syncId": "1cc63e66-9b68-49d1-bf08-ca24838ca17f"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 15,
     "width": 30,
     "position_y": 103,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -901,11 +901,11 @@
     "_syncId": "1ecd9ebe-e79f-43f8-8a44-82bb1c6c4184"
   },
   {
+    "position_x": 62,
     "show_header": true,
     "height": 8,
     "width": 44,
     "position_y": 63,
-    "position_x": 62,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_CANTEEN_ID",
@@ -921,11 +921,11 @@
     "_syncId": "1efaf9a9-2b84-4e7d-858f-b0240f205980"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 7,
     "width": 60,
     "position_y": 126,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_PRECISION",
@@ -962,11 +962,11 @@
     "_syncId": "204a7cad-d54d-474d-a09e-37573e03383a"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 28,
     "position_y": 51,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "utilizations_groups",
@@ -990,11 +990,11 @@
     "_syncId": "231ec424-c8c1-46ae-ac3f-36b11cc55608"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 22,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -1022,11 +1022,11 @@
     "_syncId": "233c03f9-9604-4605-9189-9cc54d19c146"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 83,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -1083,11 +1083,11 @@
     "_syncId": "234a2594-c578-403e-a4c5-b983130435ad"
   },
   {
+    "position_x": 27,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 84,
-    "position_x": 27,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -1130,11 +1130,11 @@
     "_syncId": "243c4ef9-0066-4810-a600-6be6a199d190"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 103,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -1191,11 +1191,11 @@
     "_syncId": "2465589c-fd5a-42fc-8dc9-7b40e812d651"
   },
   {
+    "position_x": 81,
     "show_header": true,
     "height": 6,
     "width": 25,
     "position_y": 71,
-    "position_x": 81,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -1242,11 +1242,11 @@
     "_syncId": "24a3ec6b-f627-4254-b32f-47ea04743898"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 20,
     "position_y": 54,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foods",
@@ -1271,11 +1271,11 @@
     "_syncId": "251737db-ac44-4482-bbd6-b256e8ef75cd"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 67,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -1294,11 +1294,11 @@
     "_syncId": "2544dd39-acb1-4f24-b011-20697e29d5f6"
   },
   {
+    "position_x": 18,
     "show_header": true,
     "height": 9,
     "width": 49,
     "position_y": 4,
-    "position_x": 18,
     "note": null,
     "options": {
       "collection": "app_feedbacks",
@@ -1317,11 +1317,11 @@
     "_syncId": "261ce990-c5d7-4630-96d9-734b5e559f7e"
   },
   {
+    "position_x": 38,
     "show_header": true,
     "height": 16,
     "width": 29,
     "position_y": 1,
-    "position_x": 38,
     "note": null,
     "options": {
       "collection": "directus_users",
@@ -1342,11 +1342,11 @@
     "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 7,
     "width": 60,
     "position_y": 12,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_UTILIZATION_GROUP_ID",
@@ -1362,11 +1362,11 @@
     "_syncId": "2a2ca4df-1b17-4999-a4e5-95ed053cef75"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 104,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -1388,11 +1388,11 @@
     "_syncId": "2b47d9c5-e270-4a40-a88a-5830ebfd0b51"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 16,
     "width": 30,
     "position_y": 28,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -1430,11 +1430,11 @@
     "_syncId": "2b89cb36-5e3a-4383-81ae-9baa333a1204"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 127,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -1454,11 +1454,11 @@
     "_syncId": "2d853452-bbe6-489c-8fad-8cb60a69eba9"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 16,
     "width": 30,
     "position_y": 3,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -1496,11 +1496,11 @@
     "_syncId": "2e9e593d-840e-4a1d-8164-711198973eb5"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 56,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -1521,11 +1521,11 @@
     "_syncId": "309cec2f-964e-4a82-ba09-6a3fb8e3bc03"
   },
   {
+    "position_x": 41,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 84,
-    "position_x": 41,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -1568,11 +1568,11 @@
     "_syncId": "32858d7b-2149-4f4c-bc5c-9d3ac1f6f129"
   },
   {
+    "position_x": 14,
     "show_header": true,
     "height": 6,
     "width": 13,
     "position_y": 23,
-    "position_x": 14,
     "note": null,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END",
@@ -1588,11 +1588,11 @@
     "_syncId": "348c52b8-bff3-4c8e-8d62-2bdf51900cad"
   },
   {
+    "position_x": 41,
     "show_header": true,
     "height": 5,
     "width": 25,
     "position_y": 11,
-    "position_x": 41,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -1617,11 +1617,11 @@
     "_syncId": "36879a56-20b4-4b54-9f30-1633da11171f"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 18,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -1650,11 +1650,11 @@
     "_syncId": "3735c850-1661-4307-9d83-f3821b33ba08"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 18,
     "width": 30,
     "position_y": 133,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -1706,11 +1706,11 @@
     "_syncId": "3db93980-d807-42ce-89de-1a8d5cbe66fd"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 65,
     "position_y": 17,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -1747,11 +1747,11 @@
     "_syncId": "3dc1e080-34d5-4ede-9266-7e51b65df623"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 29,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -1787,11 +1787,11 @@
     "_syncId": "3f1723b8-aa2a-4acb-8c02-c88f21810a8a"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 91,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -1811,11 +1811,11 @@
     "_syncId": "3f36650c-12ef-49a6-9145-4a01bfdaa056"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 79,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -1872,11 +1872,11 @@
     "_syncId": "3f55a030-4ba0-4a38-ba8d-4b01c5eedfa0"
   },
   {
+    "position_x": 47,
     "show_header": true,
     "height": 6,
     "width": 24,
     "position_y": 9,
-    "position_x": 47,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -1909,11 +1909,11 @@
     "_syncId": "3f7e8c26-ac22-4cc1-9bcb-16f8a2e0a112"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 8,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -1961,11 +1961,11 @@
     "_syncId": "3ff302e3-84c5-45d9-9b08-52990c7f8fda"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 164,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -1983,11 +1983,11 @@
     "_syncId": "4216a7d3-b287-4c57-8ade-abf3c65d81e5"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 16,
     "width": 66,
     "position_y": 84,
-    "position_x": 1,
     "note": null,
     "options": {
       "linkToItem": true,
@@ -2023,11 +2023,11 @@
     "_syncId": "4290d517-f505-43ed-9c72-6bf0a69cc884"
   },
   {
+    "position_x": 16,
     "show_header": true,
     "height": 6,
     "width": 13,
     "position_y": 24,
-    "position_x": 16,
     "note": null,
     "options": {
       "field": "CUSTOM_MAILS_DATE_END",
@@ -2043,11 +2043,11 @@
     "_syncId": "43b0ffd3-0042-4af2-baec-d64ead28ae70"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 40,
     "position_y": 23,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foods",
@@ -2081,11 +2081,11 @@
     "_syncId": "440768e2-3239-4fe0-981b-75f3b6d6d8d9"
   },
   {
+    "position_x": 2,
     "show_header": true,
     "height": 9,
     "width": 16,
     "position_y": 24,
-    "position_x": 2,
     "note": null,
     "options": {
       "collection": "push_notifications",
@@ -2100,11 +2100,11 @@
     "_syncId": "450eb909-aa3c-47a4-8563-ac180e95d659"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 6,
     "width": 28,
     "position_y": 57,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "utilizations_groups",
@@ -2128,11 +2128,11 @@
     "_syncId": "45698157-1f16-454e-9b8f-246d5078868a"
   },
   {
+    "position_x": 45,
     "show_header": true,
     "height": 5,
     "width": 22,
     "position_y": 49,
-    "position_x": 45,
     "note": null,
     "options": {
       "collection": "foods",
@@ -2148,11 +2148,11 @@
     "_syncId": "45ea3eee-841b-45b7-9f60-169806189a56"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 95,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -2209,11 +2209,11 @@
     "_syncId": "4626573e-7dfe-4e9f-90c4-d1af8ad03ff3"
   },
   {
+    "position_x": 18,
     "show_header": true,
     "height": 9,
     "width": 49,
     "position_y": 13,
-    "position_x": 18,
     "note": null,
     "options": {
       "collection": "app_feedbacks",
@@ -2241,11 +2241,11 @@
     "_syncId": "4926166b-f196-431c-b20a-34bea642114e"
   },
   {
+    "position_x": 37,
     "show_header": true,
     "height": 6,
     "width": 26,
     "position_y": 79,
-    "position_x": 37,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_CANTEEN_ID",
@@ -2261,11 +2261,11 @@
     "_syncId": "4a8a6d5d-b012-4047-a622-9aa4e37c8dda"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 16,
     "position_y": 15,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -2280,11 +2280,11 @@
     "_syncId": "4cc34d1c-cab1-4aa0-a4d2-c6be4a6facee"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 25,
     "position_y": 1,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "workflows_runs",
@@ -2299,11 +2299,11 @@
     "_syncId": "4d01c30d-e26e-4287-b27d-99f6ac4c008f"
   },
   {
+    "position_x": 34,
     "show_header": true,
     "height": 22,
     "width": 13,
     "position_y": 171,
-    "position_x": 34,
     "note": null,
     "options": {
       "collection": "canteens",
@@ -2321,11 +2321,11 @@
     "_syncId": "4f040455-7a6a-410f-a019-f2afaa906ca0"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 13,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -2378,11 +2378,11 @@
     "_syncId": "50961912-3ae9-47d0-9c36-6f38d3bd2279"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 43,
     "width": 65,
     "position_y": 24,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -2411,11 +2411,11 @@
     "_syncId": "50c956d0-f1d2-4272-b295-a9fdf2183ff5"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 15,
-    "position_x": 17,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -2431,11 +2431,11 @@
     "_syncId": "51d4fab2-8ea5-400f-beef-767862e13fd5"
   },
   {
+    "position_x": 81,
     "show_header": true,
     "height": 5,
     "width": 25,
     "position_y": 77,
-    "position_x": 81,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -2494,11 +2494,11 @@
     "_syncId": "54964c9f-c887-4723-ae95-453c25265560"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 6,
     "width": 13,
     "position_y": 24,
-    "position_x": 3,
     "note": null,
     "options": {
       "field": "CUSTOM_MAILS_DATE_START",
@@ -2514,11 +2514,11 @@
     "_syncId": "564f99a3-e32d-4ea2-a6f8-710279723a60"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 2,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -2546,11 +2546,11 @@
     "_syncId": "582f4221-1ae5-41b5-a02f-8ad91dc8d35b"
   },
   {
+    "position_x": 41,
     "show_header": true,
     "height": 13,
     "width": 26,
     "position_y": 23,
-    "position_x": 41,
     "note": null,
     "options": {
       "collection": "foods",
@@ -2575,11 +2575,11 @@
     "_syncId": "5a227cab-b387-439f-9ecf-cffa7ea52299"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 61,
     "position_y": 203,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -2597,11 +2597,11 @@
     "_syncId": "5b1dd6a4-9e55-4e7c-a160-86fefb23d01f"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 66,
     "position_y": 63,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -2627,11 +2627,11 @@
     "_syncId": "5e967127-45c6-4bec-8da1-53185ebb5173"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 61,
     "position_y": 177,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -2649,11 +2649,11 @@
     "_syncId": "5ecac9b4-a981-402e-b316-b222f98cf0a1"
   },
   {
+    "position_x": 25,
     "show_header": true,
     "height": 11,
     "width": 21,
     "position_y": 8,
-    "position_x": 25,
     "note": null,
     "options": {
       "collection": "devices",
@@ -2674,11 +2674,11 @@
     "_syncId": "5ff8fd06-4963-4114-89df-182d7d722eed"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 4,
     "width": 16,
     "position_y": 74,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foods",
@@ -2710,11 +2710,11 @@
     "_syncId": "6141a971-7802-49d4-ad22-016dec6f34a9"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 3,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -2762,11 +2762,11 @@
     "_syncId": "61f071fe-5665-4d86-85fc-0ec059bf8352"
   },
   {
+    "position_x": 47,
     "show_header": true,
     "height": 4,
     "width": 16,
     "position_y": 74,
-    "position_x": 47,
     "note": null,
     "options": {
       "collection": "foods",
@@ -2798,11 +2798,11 @@
     "_syncId": "620ad5bd-6dd8-463f-980d-1de0113a5a6c"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 49,
-    "position_x": 31,
     "note": null,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END",
@@ -2820,11 +2820,11 @@
     "_syncId": "627b2065-a5c3-4062-890a-df853a67f0f6"
   },
   {
+    "position_x": 14,
     "show_header": true,
     "height": 5,
     "width": 13,
     "position_y": 84,
-    "position_x": 14,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -2867,11 +2867,11 @@
     "_syncId": "63184507-10c2-4b90-9cc7-0ee8c3079246"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 116,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -2889,11 +2889,11 @@
     "_syncId": "655289bc-9023-4d9f-aabf-1b9e48b6fc9c"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 4,
     "width": 14,
     "position_y": 74,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods",
@@ -2936,11 +2936,11 @@
     "_syncId": "66799e3d-bc2a-411d-84a7-bd1a0a996e71"
   },
   {
+    "position_x": 35,
     "show_header": true,
     "height": 19,
     "width": 32,
     "position_y": 65,
-    "position_x": 35,
     "note": null,
     "options": {
       "collection": "foods_feedbacks",
@@ -2976,11 +2976,11 @@
     "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 17,
     "width": 60,
     "position_y": 151,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -3038,11 +3038,11 @@
     "_syncId": "67bdb532-05ca-444c-9585-18380d85e3d1"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 14,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -3070,11 +3070,11 @@
     "_syncId": "6a774279-8c13-42d4-bb4d-b9d43d83141a"
   },
   {
+    "position_x": 29,
     "show_header": true,
     "height": 6,
     "width": 13,
     "position_y": 11,
-    "position_x": 29,
     "note": null,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
@@ -3119,11 +3119,11 @@
     "_syncId": "6ad39cd0-2103-4469-ae1c-471d7ef525f7"
   },
   {
+    "position_x": 2,
     "show_header": true,
     "height": 9,
     "width": 16,
     "position_y": 4,
-    "position_x": 2,
     "note": null,
     "options": {
       "collection": "app_feedbacks",
@@ -3139,11 +3139,11 @@
     "_syncId": "6d3eeebe-7f47-414c-8a57-78f480a78bf6"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 27,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -3172,11 +3172,11 @@
     "_syncId": "6da128de-e845-49e7-b2d6-a2e51a972087"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 1,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -3193,11 +3193,11 @@
     "_syncId": "6e7cce59-88a3-4ece-a3d3-c6b1b0f7ea4e"
   },
   {
+    "position_x": 3,
     "show_header": false,
     "height": 4,
     "width": 60,
     "position_y": 21,
-    "position_x": 3,
     "note": null,
     "options": {
       "text": "Speise Feedback Labels"
@@ -3210,11 +3210,11 @@
     "_syncId": "6eeee775-fde2-4d87-8bd1-57a6e61fb2ca"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 13,
     "position_y": 23,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START",
@@ -3230,11 +3230,11 @@
     "_syncId": "6f87c11a-0612-42fa-9a62-0c565d4a4b87"
   },
   {
+    "position_x": 3,
     "show_header": false,
     "height": 17,
     "width": 60,
     "position_y": 85,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -3270,11 +3270,11 @@
     "_syncId": "6fbb5857-fccb-46cf-97b7-cbced968326b"
   },
   {
+    "position_x": 45,
     "show_header": true,
     "height": 5,
     "width": 22,
     "position_y": 54,
-    "position_x": 45,
     "note": null,
     "options": {
       "collection": "foods",
@@ -3302,11 +3302,11 @@
     "_syncId": "6fc09a6e-0a98-47d7-ac0b-b1fbccb6e32d"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 60,
     "position_y": 19,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_PRECISION",
@@ -3351,11 +3351,11 @@
     "_syncId": "71c79dd0-80a7-4957-a096-1e6439ad62be"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 32,
     "position_y": 57,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_Y_MAX",
@@ -3374,11 +3374,11 @@
     "_syncId": "7352d4e0-b02d-4494-b1f4-17c906c15bc0"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 8,
     "width": 60,
     "position_y": 55,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID",
@@ -3394,11 +3394,11 @@
     "_syncId": "74bea7a1-26fc-417d-8d1a-a7e0ed60b778"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 16,
     "width": 31,
     "position_y": 106,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles_markings",
@@ -3424,11 +3424,11 @@
     "_syncId": "75a638eb-d006-429f-9ec6-42181ba44e81"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 53,
-    "position_x": 3,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_LEFT_FOOD_ID",
@@ -3444,11 +3444,11 @@
     "_syncId": "7938243f-23ca-48cc-b190-8e9fe9693bb6"
   },
   {
+    "position_x": 19,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 69,
-    "position_x": 19,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -3498,11 +3498,11 @@
     "_syncId": "7a1ff15a-106e-41ea-b569-3d65219f66e3"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 29,
     "position_y": 123,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -3536,11 +3536,11 @@
     "_syncId": "7cf30283-cc2a-4de9-be54-781db630fd40"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 39,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -3575,11 +3575,11 @@
     "_syncId": "7da5a85b-7f0c-4230-97bc-243a4b904056"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 115,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -3616,11 +3616,11 @@
     "_syncId": "7eb0c329-2a4c-4bf7-a282-862e59235bfd"
   },
   {
+    "position_x": 81,
     "show_header": true,
     "height": 5,
     "width": 25,
     "position_y": 82,
-    "position_x": 81,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -3679,11 +3679,11 @@
     "_syncId": "80485bb9-0f2f-4195-bfa9-2a11033e4d49"
   },
   {
+    "position_x": 47,
     "show_header": true,
     "height": 6,
     "width": 24,
     "position_y": 3,
-    "position_x": 47,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -3716,11 +3716,11 @@
     "_syncId": "816d767f-c7bc-488f-8cc1-61c4ae197c10"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 44,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -3742,11 +3742,11 @@
     "_syncId": "82fb9eb8-1b59-48b7-92d3-db78c89df122"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 14,
     "position_y": 11,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_START",
@@ -3763,11 +3763,11 @@
     "_syncId": "83aaceb2-405a-44cb-a216-c67c56e7f0cd"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 19,
     "width": 34,
     "position_y": 65,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -3790,11 +3790,11 @@
     "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 10,
     "width": 60,
     "position_y": 1,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -3812,11 +3812,11 @@
     "_syncId": "855f9109-4666-47aa-a111-e03e36eff123"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 65,
     "position_y": 104,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -3833,11 +3833,11 @@
     "_syncId": "856b62e4-a569-488b-92a1-2d114da32caf"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 60,
     "position_y": 63,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "utilizations_entries",
@@ -3882,11 +3882,11 @@
     "_syncId": "8732d44d-f792-4701-a203-d12cf550ae4c"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 18,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -3914,11 +3914,11 @@
     "_syncId": "8b44fc71-f7f0-4660-871e-c62b047f8aec"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 30,
-    "position_x": 17,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -3934,11 +3934,11 @@
     "_syncId": "8bc98a74-5cb9-4d3d-aa04-2442d143e4f9"
   },
   {
+    "position_x": 25,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 3,
-    "position_x": 25,
     "note": null,
     "options": {
       "collection": "devices",
@@ -3954,11 +3954,11 @@
     "_syncId": "8bf14f79-1baa-40f2-a5c1-aa5df34f8f16"
   },
   {
+    "position_x": 38,
     "show_header": true,
     "height": 5,
     "width": 29,
     "position_y": 18,
-    "position_x": 38,
     "note": null,
     "options": {
       "collection": "directus_users",
@@ -3994,11 +3994,11 @@
     "_syncId": "8c27ad7c-a327-44a7-ad1f-2388966c7a21"
   },
   {
+    "position_x": 21,
     "show_header": true,
     "height": 5,
     "width": 24,
     "position_y": 54,
-    "position_x": 21,
     "note": null,
     "options": {
       "collection": "foods",
@@ -4026,11 +4026,11 @@
     "_syncId": "8e1a3004-5d21-4405-b7fe-aa27fd45cefc"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 18,
     "width": 30,
     "position_y": 107,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -4085,11 +4085,11 @@
     "_syncId": "91148c24-97f4-4bb1-99e4-ab0e9b01c8e9"
   },
   {
+    "position_x": 27,
     "show_header": true,
     "height": 6,
     "width": 14,
     "position_y": 23,
-    "position_x": 27,
     "note": null,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION",
@@ -4134,11 +4134,11 @@
     "_syncId": "916a4dc7-4816-4974-a827-a0e5edb8f2ac"
   },
   {
+    "position_x": 1,
     "show_header": false,
     "height": 4,
     "width": 60,
     "position_y": 2,
-    "position_x": 1,
     "note": null,
     "options": {
       "text": "Mensa Auslatungen"
@@ -4151,11 +4151,11 @@
     "_syncId": "91fbb879-388f-4d40-a219-b9c1b3a895d4"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 80,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -4171,11 +4171,11 @@
     "_syncId": "92c7f736-3560-4c31-b580-530f21df584e"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 103,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -4232,11 +4232,11 @@
     "_syncId": "9387d9c7-e5ff-4e15-98c8-84c9fb1b50be"
   },
   {
+    "position_x": 47,
     "show_header": true,
     "height": 5,
     "width": 20,
     "position_y": 79,
-    "position_x": 47,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -4263,11 +4263,11 @@
     "_syncId": "94a71a98-8dfa-4cd6-93b3-1e64b8267883"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 37,
     "position_y": 50,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -4284,11 +4284,11 @@
     "_syncId": "95b31311-bf5a-4e78-a988-cc02778f7975"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 21,
     "width": 35,
     "position_y": 1,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "mails",
@@ -4309,11 +4309,11 @@
     "_syncId": "95be62f7-c99c-4a0b-a6fe-e4331d4ddfb8"
   },
   {
+    "position_x": 3,
     "show_header": false,
     "height": 6,
     "width": 14,
     "position_y": 79,
-    "position_x": 3,
     "note": null,
     "options": {
       "text": "Speiseplan"
@@ -4326,11 +4326,11 @@
     "_syncId": "9668f83a-b937-4f81-be16-2a2bcf6ba4f1"
   },
   {
+    "position_x": 18,
     "show_header": true,
     "height": 9,
     "width": 49,
     "position_y": 24,
-    "position_x": 18,
     "note": null,
     "options": {
       "collection": "push_notifications",
@@ -4346,11 +4346,11 @@
     "_syncId": "98c39a02-dc47-4b41-89da-c3694c6007c8"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 11,
     "width": 66,
     "position_y": 93,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -4381,11 +4381,11 @@
     "_syncId": "9b4cc0ef-cfaf-47c1-a5c7-9d2a425f84c8"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 69,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -4437,11 +4437,11 @@
     "_syncId": "9b8bd53c-5247-43ef-a662-49c46df250e3"
   },
   {
+    "position_x": 35,
     "show_header": true,
     "height": 6,
     "width": 32,
     "position_y": 59,
-    "position_x": 35,
     "note": null,
     "options": {
       "collection": "foods_feedbacks",
@@ -4466,11 +4466,11 @@
     "_syncId": "9c422335-e73b-401c-b89c-5519f3ba490e"
   },
   {
+    "position_x": 41,
     "show_header": true,
     "height": 5,
     "width": 25,
     "position_y": 6,
-    "position_x": 41,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -4486,11 +4486,11 @@
     "_syncId": "9df430e2-ad90-467e-9216-05f617658693"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 20,
     "position_y": 4,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters",
@@ -4506,11 +4506,11 @@
     "_syncId": "9e5b18d2-6d30-4fa1-a77b-874d12481b54"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 26,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -4538,11 +4538,11 @@
     "_syncId": "9e76146b-23e2-46f0-bbce-0554bdf7ae28"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 32,
     "position_y": 89,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -4574,11 +4574,11 @@
     "_syncId": "9edef408-767d-4468-90b6-8e59bffec4d7"
   },
   {
+    "position_x": 1,
     "show_header": false,
     "height": 4,
     "width": 60,
     "position_y": 45,
-    "position_x": 1,
     "note": null,
     "options": {
       "text": "Rückmeldungen Mensa"
@@ -4591,11 +4591,11 @@
     "_syncId": "9f906dce-5b58-4b72-a237-bb6f2b1fcd94"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 15,
     "width": 30,
     "position_y": 103,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -4612,11 +4612,11 @@
     "_syncId": "a038739e-1d44-4788-96c9-0aedb323226e"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 16,
     "width": 30,
     "position_y": 63,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -4666,11 +4666,11 @@
     "_syncId": "a1bfc777-ceb3-4d10-9a67-d736cfb1db55"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 37,
     "position_y": 37,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -4687,11 +4687,11 @@
     "_syncId": "a283da30-5245-4dbf-8dae-1f2254935b11"
   },
   {
+    "position_x": 2,
     "show_header": true,
     "height": 9,
     "width": 16,
     "position_y": 13,
-    "position_x": 2,
     "note": null,
     "options": {
       "collection": "app_feedbacks",
@@ -4716,11 +4716,11 @@
     "_syncId": "a36d923f-d148-43c7-849e-e633121dd44b"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 18,
     "width": 30,
     "position_y": 107,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -4775,11 +4775,11 @@
     "_syncId": "a54544e1-8c26-4c83-ab74-9856b052fc60"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 68,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -4799,11 +4799,11 @@
     "_syncId": "a549ef8d-025e-490a-a734-fc0a3c32d2e9"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 12,
     "width": 63,
     "position_y": 30,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "mails",
@@ -4839,11 +4839,11 @@
     "_syncId": "a68efab1-5ff5-4184-805e-59b71b9025b2"
   },
   {
+    "position_x": 41,
     "show_header": true,
     "height": 6,
     "width": 25,
     "position_y": 23,
-    "position_x": 41,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -4877,11 +4877,11 @@
     "_syncId": "a6dfabe0-e891-4347-b1a1-a5307d7686ac"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 91,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -4938,11 +4938,11 @@
     "_syncId": "a905ecb4-8b03-46f2-9ea9-dfa813688946"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 176,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -4960,11 +4960,11 @@
     "_syncId": "a99204d8-c8f8-476c-8989-3d2a6f6a1bc9"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 23,
     "position_y": 79,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -4993,11 +4993,11 @@
     "_syncId": "ac2b9638-3eec-4404-b0c3-0c2874db0e5f"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 79,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -5017,11 +5017,11 @@
     "_syncId": "ae41294b-9f15-4fdb-94c2-1ef7a01049f9"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 34,
     "position_y": 59,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -5037,11 +5037,11 @@
     "_syncId": "b1d797c9-921c-4845-a342-e79fd85aef80"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 69,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -5091,11 +5091,11 @@
     "_syncId": "b2395b37-bc31-47f5-b28c-fac4db60f38d"
   },
   {
+    "position_x": 37,
     "show_header": true,
     "height": 5,
     "width": 17,
     "position_y": 1,
-    "position_x": 37,
     "note": null,
     "options": {
       "collection": "mails",
@@ -5111,11 +5111,11 @@
     "_syncId": "b2463e48-ebda-4268-acf8-0ce686b1dfed"
   },
   {
+    "position_x": 19,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 59,
-    "position_x": 19,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -5154,11 +5154,11 @@
     "_syncId": "b2884c57-b7be-4d99-ade7-508433e2c4eb"
   },
   {
+    "position_x": 19,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 64,
-    "position_x": 19,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -5209,11 +5209,11 @@
     "_syncId": "b35402a4-7323-4500-a07c-af1214e7026a"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 60,
     "position_y": 38,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "utilizations_entries",
@@ -5257,11 +5257,11 @@
     "_syncId": "b480128d-d8db-4b86-8110-412fdab6e677"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 92,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -5278,11 +5278,11 @@
     "_syncId": "b58ce19e-d32e-4011-b190-5a2fb591262b"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 20,
-    "position_x": 17,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -5299,11 +5299,11 @@
     "_syncId": "b6838b93-5c54-43d9-851d-8edfdfd27c09"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 40,
     "position_y": 36,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foods",
@@ -5337,11 +5337,11 @@
     "_syncId": "b832f73c-4f21-4039-874c-e59dd9f7a646"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 34,
     "position_y": 101,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foods_feedbacks",
@@ -5370,11 +5370,11 @@
     "_syncId": "ba217fdd-7194-4e86-851f-45659c093dce"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 103,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -5410,11 +5410,11 @@
     "_syncId": "bc5e99aa-3c87-47ba-a371-2d920ea45d8f"
   },
   {
+    "position_x": 2,
     "show_header": true,
     "height": 17,
     "width": 58,
     "position_y": 35,
-    "position_x": 2,
     "note": null,
     "options": {
       "collection": "app_feedbacks",
@@ -5433,11 +5433,11 @@
     "_syncId": "bc967e07-2ace-466a-b569-3dae1170802c"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 34,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -5472,11 +5472,11 @@
     "_syncId": "bce9d8cd-a9f1-4fcf-a223-fd4066239e91"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 8,
     "width": 60,
     "position_y": 25,
-    "position_x": 3,
     "note": null,
     "options": {
       "field": "CUSTOM_FOODS_FEEDBACKS_SELECTED_FOOD_FEEDBACK_LABEL_ID",
@@ -5492,11 +5492,11 @@
     "_syncId": "bd0bdf66-443f-42d8-a082-4152ace30b80"
   },
   {
+    "position_x": 34,
     "show_header": true,
     "height": 10,
     "width": 32,
     "position_y": 1,
-    "position_x": 34,
     "note": null,
     "options": {
       "collection": "foods_feedbacks",
@@ -5532,11 +5532,11 @@
     "_syncId": "bda1a89a-8a7a-4cfd-9655-529519d4346a"
   },
   {
+    "position_x": 19,
     "show_header": true,
     "height": 4,
     "width": 14,
     "position_y": 74,
-    "position_x": 19,
     "note": null,
     "options": {
       "collection": "foods",
@@ -5579,11 +5579,11 @@
     "_syncId": "bf156257-dee9-4192-9544-731f9eae4dac"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 43,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "cashregisters_transactions",
@@ -5602,11 +5602,11 @@
     "_syncId": "bffb93fe-9ffb-47b1-a59e-6eba69337454"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 49,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START",
@@ -5624,11 +5624,11 @@
     "_syncId": "c2173f69-94e0-4d2c-bf38-115541c2f194"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 91,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -5685,11 +5685,11 @@
     "_syncId": "c2a9c985-adb7-4c7f-96a9-fe0051be740c"
   },
   {
+    "position_x": 37,
     "show_header": false,
     "height": 13,
     "width": 16,
     "position_y": 15,
-    "position_x": 37,
     "note": null,
     "options": {
       "collection": "workflows_runs",
@@ -5706,11 +5706,11 @@
     "_syncId": "c2df8b69-f5b8-4ac2-8779-890b15483d44"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 5,
     "width": 21,
     "position_y": 25,
-    "position_x": 17,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -5726,11 +5726,11 @@
     "_syncId": "c2df9a8e-88a6-4b73-a338-6f3b78c4c3fb"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 18,
     "width": 30,
     "position_y": 133,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -5782,11 +5782,11 @@
     "_syncId": "c35ae794-c1d0-4a2d-83fc-b3d063343b4b"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 6,
-    "position_x": 1,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_DATE_START",
@@ -5804,11 +5804,11 @@
     "_syncId": "c3da2c98-fa7d-4be2-b055-d96e48d7ec3b"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 80,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -5830,11 +5830,11 @@
     "_syncId": "c425a49b-ab97-4db4-8bd2-516bca633547"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 16,
     "width": 30,
     "position_y": 33,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -5874,11 +5874,11 @@
     "_syncId": "c4f728de-746e-4529-9c93-6babe073b559"
   },
   {
+    "position_x": 41,
     "show_header": true,
     "height": 5,
     "width": 26,
     "position_y": 13,
-    "position_x": 41,
     "note": null,
     "options": {
       "collection": "foods_feedbacks",
@@ -5907,11 +5907,11 @@
     "_syncId": "c6fa058b-f8a9-4de7-9da9-f0390ff81058"
   },
   {
+    "position_x": 32,
     "show_header": true,
     "height": 16,
     "width": 31,
     "position_y": 106,
-    "position_x": 32,
     "note": null,
     "options": {
       "collection": "profiles_markings",
@@ -5937,11 +5937,11 @@
     "_syncId": "c7dd7f74-84b1-433d-9911-b6b7fece5307"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 92,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -5963,11 +5963,11 @@
     "_syncId": "c8284bcd-5818-499b-a754-f71eaa9ae139"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 39,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -6011,11 +6011,11 @@
     "_syncId": "c8a32ede-f718-44a8-8e85-a36ed7eb7259"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 32,
     "position_y": 51,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "utilizations_groups",
@@ -6039,11 +6039,11 @@
     "_syncId": "ceaa6c1c-1af8-48b3-b554-a8206cabcb15"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 16,
     "position_y": 9,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines",
@@ -6060,11 +6060,11 @@
     "_syncId": "cfa01879-865a-4598-b635-0da14d5bbd50"
   },
   {
+    "position_x": 62,
     "show_header": false,
     "height": 4,
     "width": 44,
     "position_y": 59,
-    "position_x": 62,
     "note": null,
     "options": {
       "text": "Mensa Spezifisch"
@@ -6077,11 +6077,11 @@
     "_syncId": "cfbb25c9-2c9b-4538-8f47-01d4735c6a96"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 66,
     "position_y": 50,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -6098,11 +6098,11 @@
     "_syncId": "d0518aea-e3b8-4493-ac41-70357cfe0242"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 95,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6159,11 +6159,11 @@
     "_syncId": "d132f5e6-0e93-481c-97fb-5532f0a694a8"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 65,
     "position_y": 124,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -6180,11 +6180,11 @@
     "_syncId": "d31f445f-36f1-4e12-9e7a-fa02b55b5346"
   },
   {
+    "position_x": 39,
     "show_header": true,
     "height": 4,
     "width": 21,
     "position_y": 10,
-    "position_x": 39,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -6212,11 +6212,11 @@
     "_syncId": "d4a410a4-4811-4150-8f0d-7e3e6cc862cf"
   },
   {
+    "position_x": 55,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 84,
-    "position_x": 55,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -6254,11 +6254,11 @@
     "_syncId": "d71b1374-1846-4585-9aa9-7dc2a4fdec14"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 65,
     "position_y": 83,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "devices",
@@ -6285,11 +6285,11 @@
     "_syncId": "dc0be0a4-5972-448e-b956-5b689bee1b06"
   },
   {
+    "position_x": 42,
     "show_header": true,
     "height": 6,
     "width": 24,
     "position_y": 11,
-    "position_x": 42,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -6323,11 +6323,11 @@
     "_syncId": "dd226a90-36f5-453f-a68a-cfb0711210cb"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 63,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6367,11 +6367,11 @@
     "_syncId": "deecb988-5196-484f-8e80-5eed5d9b0f45"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 19,
     "width": 21,
     "position_y": 7,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -6395,11 +6395,11 @@
     "_syncId": "df2e0b13-5835-4a00-a7f4-23404e5975c6"
   },
   {
+    "position_x": 3,
     "show_header": true,
     "height": 15,
     "width": 16,
     "position_y": 59,
-    "position_x": 3,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -6446,11 +6446,11 @@
     "_syncId": "e3c45ea3-7ed8-4f2f-9392-cdf340095a68"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 61,
     "position_y": 164,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -6468,11 +6468,11 @@
     "_syncId": "e4e238eb-fcf2-4bc7-ab8c-12b436307330"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 28,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6494,11 +6494,11 @@
     "_syncId": "e66fba62-bec2-4c98-a3f8-b04b9b42adb2"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 65,
     "position_y": 116,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -6520,11 +6520,11 @@
     "_syncId": "e89beb42-3d57-43e8-abb4-0598bc98e16c"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 87,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6581,11 +6581,11 @@
     "_syncId": "e99bbe32-5185-4ebc-af46-68065ab707cf"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 53,
-    "position_x": 33,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_RIGHT_FOOD_ID",
@@ -6601,11 +6601,11 @@
     "_syncId": "ea37ac4c-87fa-433e-9a47-769085199b1d"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 83,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6662,11 +6662,11 @@
     "_syncId": "eb659e53-9486-4576-92e1-aaee48715101"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 34,
     "position_y": 9,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "workflows_runs",
@@ -6691,11 +6691,11 @@
     "_syncId": "ebe5c947-5c35-4bd9-8f24-793318e8a896"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 14,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -6732,11 +6732,11 @@
     "_syncId": "ec6bb61c-4e77-4812-ba51-34797115bcfd"
   },
   {
+    "position_x": 43,
     "show_header": true,
     "height": 6,
     "width": 23,
     "position_y": 24,
-    "position_x": 43,
     "note": null,
     "options": {
       "collection": "mails",
@@ -6770,11 +6770,11 @@
     "_syncId": "ecf8b5aa-aab6-45a6-9a29-d82cf6ad87f2"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 152,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -6792,11 +6792,11 @@
     "_syncId": "ee075b66-cbd7-483d-8936-066f89f591f4"
   },
   {
+    "position_x": 62,
     "show_header": true,
     "height": 16,
     "width": 19,
     "position_y": 71,
-    "position_x": 62,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6853,11 +6853,11 @@
     "_syncId": "ef4c54e2-9f9b-4c41-8711-a763dddb65bb"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 87,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -6914,11 +6914,11 @@
     "_syncId": "f0d0c3d3-551c-48c5-9b93-fc1073871509"
   },
   {
+    "position_x": 27,
     "show_header": true,
     "height": 13,
     "width": 32,
     "position_y": 1,
-    "position_x": 27,
     "note": null,
     "options": {
       "collection": "workflows_runs",
@@ -6934,11 +6934,11 @@
     "_syncId": "f1587229-e0a1-4c96-864d-a483c5de1b42"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 44,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -6982,11 +6982,11 @@
     "_syncId": "f17f5334-ae54-4bdb-90d3-f3f028b5df14"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 59,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -7025,11 +7025,11 @@
     "_syncId": "f3ff9aa5-870f-411f-9bd3-29d6c69a5f91"
   },
   {
+    "position_x": 29,
     "show_header": true,
     "height": 6,
     "width": 14,
     "position_y": 24,
-    "position_x": 29,
     "note": null,
     "options": {
       "field": "CUSTOM_MAILS_PRECISION",
@@ -7074,11 +7074,11 @@
     "_syncId": "f51ef2cb-66b6-4b25-a641-27790d582996"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 12,
     "width": 61,
     "position_y": 140,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "washingmachines_jobs",
@@ -7096,11 +7096,11 @@
     "_syncId": "f5784795-036b-4130-b609-52eaf697b0b0"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 14,
     "position_y": 64,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
@@ -7151,11 +7151,11 @@
     "_syncId": "f57e218c-d31d-4709-bec8-abed2556e1d4"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 6,
     "width": 30,
     "position_y": 6,
-    "position_x": 31,
     "note": null,
     "options": {
       "field": "CUSTOM_SELECTED_DATE_END",
@@ -7173,11 +7173,11 @@
     "_syncId": "f5cd4559-9a08-4ec6-8d21-b332875b5cb9"
   },
   {
+    "position_x": 31,
     "show_header": true,
     "height": 4,
     "width": 30,
     "position_y": 79,
-    "position_x": 31,
     "note": null,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
@@ -7234,11 +7234,11 @@
     "_syncId": "f74e0dba-e962-4ca5-878e-d6c1c100c5b2"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 14,
     "width": 66,
     "position_y": 36,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "directus_activity",
@@ -7268,11 +7268,11 @@
     "_syncId": "f8a26906-3282-4bbb-aea9-88d569127084"
   },
   {
+    "position_x": 17,
     "show_header": true,
     "height": 6,
     "width": 20,
     "position_y": 79,
-    "position_x": 17,
     "note": null,
     "options": {
       "field": "CUSTOM_FOODOFFERS_SELECTED_DATE_START",
@@ -7290,11 +7290,11 @@
     "_syncId": "f9c4757c-30c3-43a1-b5b9-e412603ac320"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 60,
     "position_y": 25,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "utilizations_entries",
@@ -7338,11 +7338,11 @@
     "_syncId": "fa26a0f3-3523-40eb-87ce-3bebc6da22ea"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 13,
     "width": 61,
     "position_y": 151,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "foodoffers",
@@ -7359,11 +7359,11 @@
     "_syncId": "fbbe153c-df1f-486f-b94e-d5c4ccc8546e"
   },
   {
+    "position_x": 3,
     "show_header": false,
     "height": 4,
     "width": 60,
     "position_y": 49,
-    "position_x": 3,
     "note": null,
     "options": {
       "text": "Speisen Spezifisch"
@@ -7376,11 +7376,11 @@
     "_syncId": "fd23c3c4-908a-45f9-a2f5-3c2adbc01d34"
   },
   {
+    "position_x": 1,
     "show_header": true,
     "height": 5,
     "width": 13,
     "position_y": 84,
-    "position_x": 1,
     "note": null,
     "options": {
       "collection": "profiles",
@@ -7423,11 +7423,11 @@
     "_syncId": "fd6b34ff-59c3-4ab2-96bb-67dc5afc5898"
   },
   {
+    "position_x": 2,
     "show_header": true,
     "height": 10,
     "width": 32,
     "position_y": 1,
-    "position_x": 2,
     "note": null,
     "options": {
       "collection": "foods_feedbacks",
@@ -7445,11 +7445,11 @@
     "_syncId": "fddaa55a-8dce-4ad1-b969-5cfffefe3d26"
   },
   {
+    "position_x": 33,
     "show_header": true,
     "height": 5,
     "width": 30,
     "position_y": 9,
-    "position_x": 33,
     "note": null,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
