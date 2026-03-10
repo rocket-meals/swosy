@@ -6,7 +6,7 @@ import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
 import { clusterMarkers } from './clusterUtils';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const { theme } = useTheme();
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const html = require('@/assets/leaflet/index.html');
@@ -31,10 +31,11 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 				zoom: zoom ?? 13,
 				mapLayers: mapLayers ?? [DEFAULT_TILE_LAYER],
 				mapMarkers: clusteredMarkers,
+				useFlyAnimation: useFlyAnimation !== false,
 			};
 			iframeRef.current.contentWindow.postMessage(message, window.location.origin);
 		}
-	}, [mapCenterPosition, zoom, mapLayers, clusteredMarkers]);
+	}, [mapCenterPosition, zoom, mapLayers, clusteredMarkers, useFlyAnimation]);
 
 	useEffect(() => {
 		sendCoordinates();
