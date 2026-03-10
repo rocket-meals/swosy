@@ -9,7 +9,7 @@ import { Redirect, useGlobalSearchParams } from 'expo-router';
 import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {AppScreens, DatabaseTypes, filterPopupEvents, sortBySortField, sortMarkingsByGroup} from 'repo-depkit-common';
-import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_NEWS, SET_COLLECTIBLE_EVENTS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUILDINGS, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_NEWS, SET_COLLECTIBLE_EVENTS, SET_ORGANISATIONS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
 import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/FoodFeedbacksLabel';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { FoodFeedbackLabelEntryHelper } from '@/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries';
@@ -44,6 +44,8 @@ import { shouldFetch } from '@/helper/shouldFetch';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
 import { format } from 'date-fns';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
+import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/Buildings/Buildings';
+import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations';
 // TODO: replace HashHelper with expo-crypto once packages can be installed
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
@@ -77,6 +79,9 @@ export default function Layout() {
 	const collectionLastUpdateHelper = useMemo(() => new CollectionLastUpdateHelper(), []);
 	const foodFeedbackLabelEntryHelper = useMemo(() => new FoodFeedbackLabelEntryHelper(), []);
 	const canteenFeedbackLabelEntryHelper = useMemo(() => new CanteenFeedbackLabelEntryHelper(), []);
+	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
+	const buildingsOrganizationsHelper = useMemo(() => new BuildingsOrganizationsHelper(), []);
+	const organizationsHelper = useMemo(() => new OrganizationsHelper(), []);
 	const { popupEvents } = useAppSelector((state) => state.food);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
@@ -433,6 +438,39 @@ export default function Layout() {
 		}
 	};
 
+	const getBuildings = async () => {
+		try {
+			const result = (await buildingsHelper.fetchBuildings({})) as DatabaseTypes.Buildings[];
+			if (result) {
+				dispatch({ type: SET_BUILDINGS, payload: result });
+			}
+		} catch (error) {
+			console.error('Error fetching buildings:', error);
+		}
+	};
+
+	const getBuildingsOrganizations = async () => {
+		try {
+			const result = (await buildingsOrganizationsHelper.fetchBuildingsOrganizations({})) as DatabaseTypes.BuildingsOrganizations[];
+			if (result) {
+				dispatch({ type: SET_BUILDINGS_ORGANIZATIONS, payload: result });
+			}
+		} catch (error) {
+			console.error('Error fetching buildings organizations:', error);
+		}
+	};
+
+	const getOrganizations = async () => {
+		try {
+			const result = (await organizationsHelper.fetchOrganizations({})) as DatabaseTypes.Organizations[];
+			if (result) {
+				dispatch({ type: SET_ORGANISATIONS, payload: result });
+			}
+		} catch (error) {
+			console.error('Error fetching organizations:', error);
+		}
+	};
+
 	const fetchConfig: { key: string | string[]; action: () => Promise<void> }[] = [
 		{ key: CollectionKeys.APP_ELEMENTS, action: getAllAppElements },
 		// refresh markings when any of the related tables change
@@ -473,6 +511,12 @@ export default function Layout() {
 			action: getAllFoodAttributesGroups,
 		},
 		{ key: CollectionKeys.FOODS_ATTRIBUTES, action: getAllFoodAttributes },
+		{
+			key: [CollectionKeys.BUILDINGS, CollectionKeys.BUILDINGS_TRANSLATIONS],
+			action: getBuildings,
+		},
+		{ key: CollectionKeys.BUILDINGS_ORGANIZATIONS, action: getBuildingsOrganizations },
+		{ key: CollectionKeys.ORGANIZATIONS, action: getOrganizations },
 	];
 
 	const getAllCollectionDatesLastUpdate = async () => {
