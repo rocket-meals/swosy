@@ -165,19 +165,24 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                         modalStackRef.current = modalStackRef.current.slice(0, -1);
                         setModalStack([...modalStackRef.current]);
                         // Re-expand the sheet in case a swipe-down gesture had already started closing it.
-                        // Always reset isClosingRef after expand so that if the sheet was already at index 0
-                        // (e.g. the inner modal was dismissed via backdrop click rather than a swipe-down),
-                        // handleSheetChange never fires and the guard would otherwise remain stuck as true,
-                        // preventing subsequent close() calls from working.
+                        // Keep isClosingRef=true until handleSheetChange resets it when the sheet reaches
+                        // index >= 0. This blocks spurious onChange(-1) events that @gorhom/bottom-sheet
+                        // fires on native during the expand animation from index -1, which would otherwise
+                        // trigger another close() and dismiss the parent modal immediately.
+                        // Safety fallback: if the sheet was already at index 0 (e.g. backdrop-click
+                        // dismissal), handleSheetChange won't fire, so reset the guard via a timeout.
+                        clearCloseTimeout();
+                        closeTimeoutRef.current = setTimeout(() => {
+                                isClosingRef.current = false;
+                                clearCloseTimeout();
+                        }, SHEET_CLOSE_ANIMATION_MS);
                         if (typeof requestAnimationFrame !== 'undefined') {
                                 requestAnimationFrame(() => {
                                         sheetRef.current?.expand?.();
-                                        isClosingRef.current = false;
                                 });
                         } else {
                                 setTimeout(() => {
                                         sheetRef.current?.expand?.();
-                                        isClosingRef.current = false;
                                 }, 16);
                         }
                 }
@@ -193,9 +198,15 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
         // Reset the re-entrancy guard as soon as the sheet reaches an expanded position.
         // This is the deterministic counterpart to isClosingRef for the "pop + re-expand" path.
+        // Also clears the safety timeout that was set as a fallback in case this handler
+        // never fires (e.g. sheet was already at 0 on a backdrop-click dismissal).
         const handleSheetChange = useCallback((index: number) => {
                 if (index >= 0) {
                         isClosingRef.current = false;
+                        if (closeTimeoutRef.current) {
+                                clearTimeout(closeTimeoutRef.current);
+                                closeTimeoutRef.current = null;
+                        }
                 }
         }, []);
 
