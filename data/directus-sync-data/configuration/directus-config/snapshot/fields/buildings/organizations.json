@@ -1,0 +1,32 @@
+{
+  "collection": "buildings",
+  "field": "organizations",
+  "type": "alias",
+  "meta": {
+    "collection": "buildings",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{organizations_id.alias}} ({{organizations_id.id}})"
+    },
+    "field": "organizations",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": {
+      "enableLink": true,
+      "template": "{{organizations_id.alias}} ({{organizations_id.id}})"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 25,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "collection": "buildings_organizations",
+  "field": "organizations_id",
+  "related_collection": "organizations",
+  "meta": {
+    "junction_field": "buildings_id",
+    "many_collection": "buildings_organizations",
+    "many_field": "organizations_id",
+    "one_allowed_collections": null,
+    "one_collection": "organizations",
+    "one_collection_field": null,
+    "one_deselect_action": "delete",
+    "one_field": "buildings",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "buildings_organizations",
+    "column": "organizations_id",
+    "foreign_key_table": "organizations",
+    "foreign_key_column": "id",
+    "constraint_name": "buildings_organizations_organizations_id_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "CASCADE"
+  }
+}
