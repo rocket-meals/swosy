@@ -1,4 +1,4 @@
-import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import LocationInformation from '@/components/LocationInformation/LocationInformation';
@@ -14,6 +14,12 @@ import DetailsHeader from '@/app/(app)/campus/details/components/DetailsHeader';
 import DetailsTabs from '@/app/(app)/campus/details/components/DetailsTabs';
 import { shallowEqual } from 'react-redux';
 import styles from '@/app/(app)/campus/details/styles';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
+import { DatabaseTypes } from 'repo-depkit-common';
+import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle/SettingsGroupTitle';
+import DebugView from '@/components/DebugView';
+import { TranslationKeys } from '@/locales/keys';
 
 export interface BuildingDetailsContentProps {
     id?: string;
@@ -35,6 +41,25 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
         if (!id) return null;
         return state.campus.campusesDict[String(id)] || null;
     }, shallowEqual);
+
+    const { buildingsOrganizations, organisations } = useAppSelector((state) => ({
+        buildingsOrganizations: state.canteenReducer.buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[],
+        organisations: state.canteenReducer.organisations as DatabaseTypes.Organizations[],
+    }), shallowEqual);
+
+    const organisationsDict = useMemo(
+        () => organisations.reduce<Record<string, DatabaseTypes.Organizations>>(
+            (acc, org) => { if (org.id) acc[org.id] = org; return acc; },
+            {}
+        ),
+        [organisations]
+    );
+
+    const buildingOrganisations = useMemo(() => {
+        if (!id) return [];
+        const dict = BuildingsHelper.getBuildingIdToOrganizationsDict(buildingsOrganizations, organisationsDict);
+        return dict[id] ?? [];
+    }, [id, buildingsOrganizations, organisationsDict]);
 
     const { width: screenWidth } = useWindowDimensions();
 
@@ -118,6 +143,36 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
                         {renderContent}
                     </DetailsTabs>
                 </View>
+
+                {buildingOrganisations.length > 0 && (
+                    <View style={{ width: '100%' }}>
+                        <SettingsGroupTitle>{translate(TranslationKeys.organisations)}</SettingsGroupTitle>
+                        {buildingOrganisations.map((org, index) => {
+                            const total = buildingOrganisations.length;
+                            const groupPosition =
+                                total === 1
+                                    ? 'single'
+                                    : index === 0
+                                    ? 'top'
+                                    : index === total - 1
+                                    ? 'bottom'
+                                    : 'middle';
+                            return (
+                                <SettingsList
+                                    key={org.id}
+                                    title={org.alias ?? org.id ?? ''}
+                                    groupPosition={groupPosition}
+                                    showSeparator={index < total - 1}
+                                    noIconIndent
+                                />
+                            );
+                        })}
+                    </View>
+                )}
+
+                <DebugView title="Building">
+                    <Text style={{ color: theme.screen.text }}>{JSON.stringify(campusDetails, null, 2)}</Text>
+                </DebugView>
             </View>
         </ScrollView>
     );
