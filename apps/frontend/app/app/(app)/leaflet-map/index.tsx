@@ -348,6 +348,7 @@ const LeafletMap = () => {
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
 					<MyMap
+						key={selectedTileVariantKey}
 						mapCenterPosition={mapCenterOverride ?? centerPosition}
 						zoom={mapZoom}
 						mapMarkers={buildingMarkers}
