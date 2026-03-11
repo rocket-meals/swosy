@@ -1632,6 +1632,7 @@ export type NewsTranslations = {
 export type Organizations = {
   alias?: string | null;
   buildings: any[] | BuildingsOrganizations[];
+  child_organizations: any[] | Organizations[];
   date_created?: string | null;
   date_updated?: string | null;
   id: string;
@@ -1639,6 +1640,7 @@ export type Organizations = {
   map_marker_color?: string | null;
   map_marker_label_color?: string | null;
   map_marker_style?: string | null;
+  parent_organization?: string | Organizations | null;
   sort?: number | null;
   status: string;
   url?: string | null;
