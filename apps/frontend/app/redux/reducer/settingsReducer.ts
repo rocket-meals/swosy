@@ -27,7 +27,7 @@ const initialState = {
         collectibleRandomPosition: false,
         mapTileVariantKey: 'osm',
         mapUseFlyAnimation: true,
-        mapVirtualZoom: false,
+        mapVirtualZoom: 18 as number | null,
         mapOrganisationFilter: {} as Record<string, boolean>,
 };
 

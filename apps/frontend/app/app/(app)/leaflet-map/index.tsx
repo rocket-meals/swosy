@@ -9,6 +9,7 @@ import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { LeafletWebViewEvent, MapLayer, MapMarker } from '@/components/MyMap/model';
 import { useTheme } from '@/hooks/useTheme';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
+import { VIRTUAL_ZOOM_NONE_KEY, VIRTUAL_ZOOM_OPTIONS } from '@/components/MyMap/mapSettingsUtils';
 import { DatabaseTypes } from 'repo-depkit-common';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import SettingsList from '@/components/SettingsList/SettingsList';
@@ -87,10 +88,10 @@ const TILE_VARIANTS: TileVariant[] = [
 type LeafletSettingsContentProps = {
 	initialSelectedTileKey: string;
 	initialUseFlyAnimation: boolean;
-	initialUseVirtualZoom: boolean;
+	initialUseVirtualZoom: number | null;
 	onSelectedTileChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
-	onVirtualZoomChange: (value: boolean) => void;
+	onVirtualZoomChange: (value: number | null) => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -105,8 +106,9 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 }) => {
 	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
-	const [localVirtualZoom, setLocalVirtualZoom] = useState(initialUseVirtualZoom);
+	const [localVirtualZoom, setLocalVirtualZoom] = useState<number | null>(initialUseVirtualZoom);
 	const [showingTileSelector, setShowingTileSelector] = useState(false);
+	const [showingVirtualZoomSelector, setShowingVirtualZoomSelector] = useState(false);
 
 	if (showingTileSelector) {
 		return (
@@ -122,6 +124,27 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 			/>
 		);
 	}
+
+	if (showingVirtualZoomSelector) {
+		return (
+			<SettingsListSelectOption
+				options={VIRTUAL_ZOOM_OPTIONS}
+				selectedOption={localVirtualZoom === null ? VIRTUAL_ZOOM_NONE_KEY : String(localVirtualZoom)}
+				onSelect={(option) => {
+					const value = option.id === VIRTUAL_ZOOM_NONE_KEY ? null : Number(option.id);
+					setLocalVirtualZoom(value);
+					onVirtualZoomChange(value);
+					setShowingVirtualZoomSelector(false);
+				}}
+				noIconIndent
+			/>
+		);
+	}
+
+	const virtualZoomLabel =
+		localVirtualZoom === null
+			? 'Kein Virtueller Zoom'
+			: String(localVirtualZoom);
 
 	return (
 		<>
@@ -148,16 +171,10 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 				noIconIndent
 			/>
 			<SettingsList
-				title="Virtueller Zoom (ab Zoom 17)"
-				rightElement={
-					<Switch
-						value={localVirtualZoom}
-						onValueChange={(value) => {
-							setLocalVirtualZoom(value);
-							onVirtualZoomChange(value);
-						}}
-					/>
-				}
+				title="Virtueller Zoom"
+				value={virtualZoomLabel}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={() => setShowingVirtualZoomSelector(true)}
 				groupPosition="bottom"
 				showSeparator={false}
 				noIconIndent
@@ -271,7 +288,6 @@ const MAX_LOG_ENTRIES = 200;
 
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
-const VIRTUAL_ZOOM_MAX_NATIVE_ZOOM = 17;
 
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
@@ -425,7 +441,7 @@ const LeafletMap = () => {
 		dispatch({ type: SET_MAP_USE_FLY_ANIMATION, payload: value });
 	}, [dispatch]);
 
-	const setUseVirtualZoom = useCallback((value: boolean) => {
+	const setUseVirtualZoom = useCallback((value: number | null) => {
 		dispatch({ type: SET_MAP_VIRTUAL_ZOOM, payload: value });
 	}, [dispatch]);
 
@@ -494,8 +510,8 @@ const LeafletMap = () => {
 
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
-		if (useVirtualZoom) {
-			return { ...layer, maxNativeZoom: VIRTUAL_ZOOM_MAX_NATIVE_ZOOM, maxZoom: MAX_ZOOM };
+		if (useVirtualZoom !== null) {
+			return { ...layer, maxNativeZoom: useVirtualZoom, maxZoom: MAX_ZOOM };
 		}
 		return layer;
 	}, [selectedTileVariantKey, useVirtualZoom]);

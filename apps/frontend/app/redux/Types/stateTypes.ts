@@ -66,7 +66,7 @@ export type SettingsState = {
         collectibleRandomPosition: boolean;
         mapTileVariantKey: string;
         mapUseFlyAnimation: boolean;
-        mapVirtualZoom: boolean;
+        mapVirtualZoom: number | null;
         mapOrganisationFilter: Record<string, boolean>;
 }
 
