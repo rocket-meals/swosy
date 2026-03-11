@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
@@ -19,7 +19,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
-import { SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
@@ -95,9 +95,11 @@ type LeafletSettingsContentProps = {
 	initialSelectedTileKey: string;
 	initialUseFlyAnimation: boolean;
 	initialUseVirtualZoom: number | null;
+	initialClusterPixelRadius: number;
 	onSelectedTileChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onVirtualZoomChange: (value: number | null) => void;
+	onClusterPixelRadiusChange: (value: number) => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -105,14 +107,17 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	initialSelectedTileKey,
 	initialUseFlyAnimation,
 	initialUseVirtualZoom,
+	initialClusterPixelRadius,
 	onSelectedTileChange,
 	onFlyAnimationChange,
 	onVirtualZoomChange,
+	onClusterPixelRadiusChange,
 	theme,
 }) => {
 	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localVirtualZoom, setLocalVirtualZoom] = useState<number | null>(initialUseVirtualZoom);
+	const [localClusterPixelRadius, setLocalClusterPixelRadius] = useState(String(initialClusterPixelRadius));
 	const [showingTileSelector, setShowingTileSelector] = useState(false);
 	const [showingVirtualZoomSelector, setShowingVirtualZoomSelector] = useState(false);
 
@@ -163,6 +168,25 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingTileSelector(true)}
 				groupPosition="top"
+				noIconIndent
+			/>
+			<SettingsList
+				title="Cluster-Abstand (px)"
+				rightElement={
+					<TextInput
+						value={localClusterPixelRadius}
+						onChangeText={(text) => {
+							setLocalClusterPixelRadius(text);
+							const num = parseInt(text, 10);
+							if (!isNaN(num) && num >= MIN_CLUSTER_PIXEL_RADIUS) {
+								onClusterPixelRadiusChange(num);
+							}
+						}}
+						keyboardType="numeric"
+						style={{ color: theme.screen.text, textAlign: 'right', minWidth: 60, fontSize: 15 }}
+					/>
+				}
+				groupPosition="middle"
 				noIconIndent
 			/>
 			<SettingsList
@@ -300,7 +324,9 @@ const DEFAULT_ZOOM = 17;
 
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
-const MAX_BUILDING_LABEL_CHARS = 3;
+const MAX_BUILDING_LABEL_CHARS = 8;
+// Minimum cluster pixel radius – values below this would create excessively tight clusters
+const MIN_CLUSTER_PIXEL_RADIUS = 10;
 
 /** Returns black or white based on the luminance of the given hex background color. */
 function getContrastColor(hexColor: string): string {
@@ -354,9 +380,20 @@ function createBuildingMarkerSvg(
 	const rawLabel = markerLabel ?? externalIdentifier;
 	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
-	const textEl = label
-		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
-		: '';
+	let textEl = '';
+	if (label) {
+		if (label.length >= 4) {
+			const mid = Math.ceil(label.length / 2);
+			const line1 = label.slice(0, mid);
+			const line2 = label.slice(mid);
+			textEl = `<text text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
+				`<tspan x="${cx}" dy="${cy - 6}">${line1}</tspan>` +
+				`<tspan x="${cx}" dy="13">${line2}</tspan>` +
+				`</text>`;
+		} else {
+			textEl = `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`;
+		}
+	}
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
@@ -371,6 +408,7 @@ const LeafletMap = () => {
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
 	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
+	const clusterPixelRadius = useAppSelector((state) => state.settings.mapClusterPixelRadius ?? 60);
 	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
@@ -454,6 +492,10 @@ const LeafletMap = () => {
 		dispatch({ type: SET_MAP_VIRTUAL_ZOOM, payload: value });
 	}, [dispatch]);
 
+	const setClusterPixelRadius = useCallback((value: number) => {
+		dispatch({ type: SET_MAP_CLUSTER_PIXEL_RADIUS, payload: value });
+	}, [dispatch]);
+
 	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	// Override center position set on cluster click (null = follow centerPosition)
@@ -533,14 +575,16 @@ const LeafletMap = () => {
 					initialSelectedTileKey={selectedTileVariantKey}
 					initialUseFlyAnimation={useFlyAnimation}
 					initialUseVirtualZoom={useVirtualZoom}
+					initialClusterPixelRadius={clusterPixelRadius}
 					onSelectedTileChange={setSelectedTileVariantKey}
 					onFlyAnimationChange={setUseFlyAnimation}
 					onVirtualZoomChange={setUseVirtualZoom}
+					onClusterPixelRadiusChange={setClusterPixelRadius}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
+	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, clusterPixelRadius, theme]);
 
 	const openFilterModal = useCallback(() => {
 		show({
@@ -640,7 +684,7 @@ const LeafletMap = () => {
 	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
-	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
+	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom, clusterPixelRadius), [buildingMarkers, mapZoom, clusterPixelRadius]);
 
 	// Reset the centre override when the selected canteen changes so the map
 	// returns to the canteen's building position.
