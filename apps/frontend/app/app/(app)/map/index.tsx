@@ -14,7 +14,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_BUILDING_MARKERS, SET_OSM_VECTOR_MAP_SHOW_CLUSTERS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_MARKER_LABELS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
-import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
+import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
@@ -369,46 +369,12 @@ function getContrastColor(hexColor: string): string {
 	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
 }
 
-/**
- * Derives a short label from a building alias when no explicit marker_label or external_identifier is set.
- * Rules (in priority order):
- *  1. If alias is ≤ 4 chars → use as-is
- *  2. If alias contains a number → use that number
- *  3. If alias has multiple words → use initials of each word
- *  4. If alias is a single word → use first 4 chars
- *  5. Fallback → "?"
- */
-function getMarkerLabelFromBuildingAlias(alias?: string | null): string {
-	if (!alias) return '?';
-	const trimmed = alias.trim();
-	if (!trimmed) return '?';
-	if (trimmed.length <= 4) return trimmed;
-	const numberMatch = trimmed.match(/\d+/);
-	if (numberMatch) return numberMatch[0];
-	const words = trimmed.split(/\s+/).filter((w) => w.length > 0);
-	if (words.length > 1) return words.map((w) => w[0].toUpperCase()).join('');
-	return trimmed.slice(0, 4);
-}
-
 function getFirstOrganisationFromDict(
 	buildingId: string,
 	buildingIdToOrgsDict: Record<string, DatabaseTypes.Organizations[]>,
 ): DatabaseTypes.Organizations | null {
 	const orgs = buildingIdToOrgsDict[buildingId];
 	return orgs && orgs.length > 0 ? orgs[0] : null;
-}
-
-/** Creates an SVG for the user location marker. */
-function createUserLocationMarkerSvg(): string {
-	const size = 28;
-	const cx = size / 2;
-	const cy = size / 2;
-	return (
-		`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">` +
-		`<circle cx="${cx}" cy="${cy}" r="${cx - 2}" fill="#1a73e8" stroke="white" stroke-width="3" opacity="0.95"/>` +
-		`<circle cx="${cx}" cy="${cy}" r="${cx + 4}" fill="#1a73e8" opacity="0.15"/>` +
-		`</svg>`
-	);
 }
 
 function createBuildingMarkerSvg(
@@ -890,7 +856,8 @@ const OsmVectorMapScreen: React.FC = () => {
 			setMapCenterOverride({ lat: latitude, lng: longitude });
 			pendingNavigateRef.current = true;
 			addLog(`Standort: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
-		} catch {
+		} catch (error) {
+			console.error('Location error:', error);
 			Alert.alert('Standort', 'Standort konnte nicht ermittelt werden.');
 		}
 	}, [addLog]);
