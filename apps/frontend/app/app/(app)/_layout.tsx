@@ -691,6 +691,13 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="experimentell/osm-vector-map/index"
+					options={{
+						headerShown: false,
+						title: translate(TranslationKeys.osm_vector_map),
+					}}
+				/>
+				<Drawer.Screen
 					name="vertical-image-scroll/index"
 					options={{
 						header: () => <CustomStackHeader label={translate(TranslationKeys.vertical_image_scroll)} key={'vertical_image_scroll'} />,
