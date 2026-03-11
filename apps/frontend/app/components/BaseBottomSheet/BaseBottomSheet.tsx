@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useMemo, useState } from 'react';
-import { Platform, Pressable, StyleSheet as RNStyleSheet, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet as RNStyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import BottomSheet, { type BottomSheetBackdropProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
 import { AntDesign } from '@expo/vector-icons';
@@ -21,8 +21,9 @@ const CustomBackdrop: React.FC<CustomBackdropProps> = ({ animatedIndex, style, o
 	}));
 
 	// On web, CSS elements with opacity:0 still intercept pointer events (unlike native).
-	// Track whether the backdrop is meaningfully visible and only mount the Pressable then,
-	// so an invisible backdrop never blocks interactions behind the sheet.
+	// On native (e.g. Android), an always-mounted Pressable with opacity:0 also blocks all
+	// touch events behind the sheet. Track whether the backdrop is meaningfully visible and
+	// only mount the Pressable then, so an invisible backdrop never blocks interactions.
 	const [isPressableActive, setIsPressableActive] = useState(() => animatedIndex.value > -0.5);
 	useAnimatedReaction(
 		() => animatedIndex.value > -0.5,
@@ -38,7 +39,7 @@ const CustomBackdrop: React.FC<CustomBackdropProps> = ({ animatedIndex, style, o
 			style={[style, containerAnimatedStyle, backdropStyles.container]}
 			pointerEvents="box-none"
 		>
-			{(Platform.OS !== 'web' || isPressableActive) && (
+			{isPressableActive && (
 				<Pressable style={RNStyleSheet.absoluteFillObject} onPress={onPress} />
 			)}
 		</Animated.View>
