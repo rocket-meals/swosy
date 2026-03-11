@@ -252,6 +252,7 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	);
 };
 
+const MAX_LOG_ENTRIES = 50;
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
 const VIRTUAL_ZOOM_MAX_NATIVE_ZOOM = 17;
