@@ -104,7 +104,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 						onChangeText={(text) => {
 							setLocalClusterDistance(text);
 							const num = parseInt(text, 10);
-							if (!isNaN(num) && num > 0) {
+							if (!isNaN(num) && num >= 10) {
 								onClusterDistanceChange(num);
 							}
 						}}
