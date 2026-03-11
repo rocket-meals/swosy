@@ -30,12 +30,14 @@ type TileVariant = {
 	key: string;
 	label: string;
 	layer: MapLayer;
+	defaultVirtualZoom: number;
 };
 
 const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'osm',
 		label: 'OpenStreetMap',
+		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -46,6 +48,7 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'otm',
 		label: 'OpenTopoMap',
+		defaultVirtualZoom: 17,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
@@ -56,6 +59,7 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'carto-light',
 		label: 'CartoDB Light',
+		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
@@ -66,6 +70,7 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'carto-dark',
 		label: 'CartoDB Dark',
+		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
@@ -76,6 +81,7 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'osm-hot',
 		label: 'OSM Humanitarian',
+		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
@@ -116,8 +122,11 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 				options={TILE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
 				selectedOption={selectedTileKey}
 				onSelect={(option) => {
+					const variant = TILE_VARIANTS.find((v) => v.key === option.id) ?? TILE_VARIANTS[0];
 					setSelectedTileKey(option.id);
 					onSelectedTileChange(option.id);
+					setLocalVirtualZoom(variant.defaultVirtualZoom);
+					onVirtualZoomChange(variant.defaultVirtualZoom);
 					setShowingTileSelector(false);
 				}}
 				noIconIndent
