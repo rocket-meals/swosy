@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import SettingsList from '@/components/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { languages } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
@@ -27,11 +28,14 @@ const styles = StyleSheet.create({
         flagText: {
                 fontSize: 22,
         },
+        separatorContainer: {
+                marginTop: 16,
+        },
 });
 
 export const useLanguageModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-        const { translate, setLanguageMode, language } = useLanguage();
+        const { translate, setLanguageMode, language, pirateLanguage, togglePirateLanguage } = useLanguage();
         const { theme } = useTheme();
         const { primaryColor } = useAppSelector((state) => state.settings);
 
@@ -95,12 +99,27 @@ export const useLanguageModal = () => {
                                                                 index={index}
                                                         />
                                                 ))}
+                                                <View style={styles.separatorContainer}>
+                                                        <SettingsListBoolean
+                                                                leftIcon={
+                                                                        <View style={styles.flagWrapper}>
+                                                                                <Text style={styles.flagText}>🏴‍☠️</Text>
+                                                                        </View>
+                                                                }
+                                                                iconBgColor="transparent"
+                                                                label={translate(TranslationKeys.pirate_language)}
+                                                                isEnabled={pirateLanguage}
+                                                                onToggle={() => togglePirateLanguage(!pirateLanguage)}
+                                                                groupPosition="single"
+                                                                showSeparator={false}
+                                                        />
+                                                </View>
                                         </View>
                                 ),
                         },
                         {}
                 );
-        }, [LanguageOption, showScrollViewModal, translate]);
+        }, [LanguageOption, showScrollViewModal, translate, pirateLanguage, togglePirateLanguage]);
 
         return { openLanguageModal };
 };
