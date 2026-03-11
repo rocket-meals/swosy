@@ -12,7 +12,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PITCH, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -42,24 +42,43 @@ const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
 	{ key: 'dark-matter', label: 'Dark Matter (Dunkel)', url: 'https://tiles.openfreemap.org/styles/dark-matter' },
 ];
 
+type OsmPitchVariant = {
+	key: string;
+	label: string;
+	pitch: number;
+};
+
+const OSM_PITCH_VARIANTS: OsmPitchVariant[] = [
+	{ key: '90', label: '90° (Draufsicht)', pitch: 0 },
+	{ key: '70', label: '70°', pitch: 20 },
+	{ key: '45', label: '45°', pitch: 45 },
+	{ key: '30', label: '30° (3D)', pitch: 60 },
+];
+
 type OsmSettingsContentProps = {
 	initialSelectedStyleKey: string;
 	initialUseFlyAnimation: boolean;
+	initialPitchKey: string;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
+	onPitchChange: (key: string) => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
 const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialSelectedStyleKey,
 	initialUseFlyAnimation,
+	initialPitchKey,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
+	onPitchChange,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
+	const [selectedPitchKey, setSelectedPitchKey] = useState(initialPitchKey);
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
+	const [showingPitchSelector, setShowingPitchSelector] = useState(false);
 
 	if (showingStyleSelector) {
 		return (
@@ -76,6 +95,21 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 		);
 	}
 
+	if (showingPitchSelector) {
+		return (
+			<SettingsListSelectOption
+				options={OSM_PITCH_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
+				selectedOption={selectedPitchKey}
+				onSelect={(option) => {
+					setSelectedPitchKey(option.id);
+					onPitchChange(option.id);
+					setShowingPitchSelector(false);
+				}}
+				noIconIndent
+			/>
+		);
+	}
+
 	return (
 		<>
 			<SettingsList
@@ -84,6 +118,14 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingStyleSelector(true)}
 				groupPosition="top"
+				noIconIndent
+			/>
+			<SettingsList
+				title="Kamera-Neigung"
+				value={(OSM_PITCH_VARIANTS.find((v) => v.key === selectedPitchKey) ?? OSM_PITCH_VARIANTS[0]).label}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={() => setShowingPitchSelector(true)}
+				groupPosition="middle"
 				noIconIndent
 			/>
 			<SettingsList
@@ -268,6 +310,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedStyleKey = useAppSelector((state) => (state.settings as any).osmVectorMapStyleKey ?? 'liberty');
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
+	const pitchKey = useAppSelector((state) => (state.settings as any).osmVectorMapPitch ?? '90');
 	const organisationLikes = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapOrganisationFilter ?? {}) as Record<string, boolean | null>,
 	);
@@ -344,6 +387,13 @@ const OsmVectorMapScreen: React.FC = () => {
 	const setSelectedStyleKey = useCallback(
 		(key: string) => {
 			dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key });
+		},
+		[dispatch],
+	);
+
+	const setPitchKeyDispatch = useCallback(
+		(key: string) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_PITCH, payload: key });
 		},
 		[dispatch],
 	);
@@ -449,6 +499,11 @@ const OsmVectorMapScreen: React.FC = () => {
 		[selectedStyleKey],
 	);
 
+	const selectedPitch = useMemo(
+		() => (OSM_PITCH_VARIANTS.find((v) => v.key === pitchKey) ?? OSM_PITCH_VARIANTS[0]).pitch,
+		[pitchKey],
+	);
+
 	const sendMapData = useCallback(() => {
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
 		const message = JSON.stringify({
@@ -457,11 +512,12 @@ const OsmVectorMapScreen: React.FC = () => {
 			mapMarkers: clusteredBuildingMarkers,
 			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
+			pitch: selectedPitch,
 		});
 		webViewRef.current?.injectJavaScript(
 			`window.dispatchEvent(new MessageEvent('message',{data:${message}}));true;`,
 		);
-	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation]);
+	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation, selectedPitch]);
 
 	useEffect(() => {
 		sendMapData();
@@ -554,13 +610,15 @@ const OsmVectorMapScreen: React.FC = () => {
 				<OsmSettingsContent
 					initialSelectedStyleKey={selectedStyleKey}
 					initialUseFlyAnimation={useFlyAnimation}
+					initialPitchKey={pitchKey}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
+					onPitchChange={setPitchKeyDispatch}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, theme, setSelectedStyleKey, setUseFlyAnimationDispatch]);
+	}, [show, selectedStyleKey, useFlyAnimation, pitchKey, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setPitchKeyDispatch]);
 
 	const openFilterModal = useCallback(() => {
 		show({
