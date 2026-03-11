@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Alert, Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
-import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
+import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { LeafletWebViewEvent, MapLayer, MapMarker } from '@/components/MyMap/model';
 import { useTheme } from '@/hooks/useTheme';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
@@ -13,17 +13,16 @@ import { VIRTUAL_ZOOM_NONE_KEY, VIRTUAL_ZOOM_OPTIONS } from '@/components/MyMap/
 import { DatabaseTypes } from 'repo-depkit-common';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import SettingsList from '@/components/SettingsList/SettingsList';
-import LeafletMapHeader from './components/LeafletMapHeader';
+import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
-import { SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useLanguage } from '@/hooks/useLanguage';
-import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import * as Location from 'expo-location';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -31,14 +30,12 @@ type TileVariant = {
 	key: string;
 	label: string;
 	layer: MapLayer;
-	defaultVirtualZoom: number;
 };
 
 const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'osm',
 		label: 'OpenStreetMap',
-		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -49,7 +46,6 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'otm',
 		label: 'OpenTopoMap',
-		defaultVirtualZoom: 17,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
@@ -60,7 +56,6 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'carto-light',
 		label: 'CartoDB Light',
-		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
@@ -71,7 +66,6 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'carto-dark',
 		label: 'CartoDB Dark',
-		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
@@ -82,7 +76,6 @@ const TILE_VARIANTS: TileVariant[] = [
 	{
 		key: 'osm-hot',
 		label: 'OSM Humanitarian',
-		defaultVirtualZoom: 18,
 		layer: {
 			layerType: 'TileLayer',
 			url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
@@ -96,11 +89,9 @@ type LeafletSettingsContentProps = {
 	initialSelectedTileKey: string;
 	initialUseFlyAnimation: boolean;
 	initialUseVirtualZoom: number | null;
-	initialClusterPixelRadius: number;
 	onSelectedTileChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onVirtualZoomChange: (value: number | null) => void;
-	onClusterPixelRadiusChange: (value: number) => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -108,17 +99,14 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	initialSelectedTileKey,
 	initialUseFlyAnimation,
 	initialUseVirtualZoom,
-	initialClusterPixelRadius,
 	onSelectedTileChange,
 	onFlyAnimationChange,
 	onVirtualZoomChange,
-	onClusterPixelRadiusChange,
 	theme,
 }) => {
 	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localVirtualZoom, setLocalVirtualZoom] = useState<number | null>(initialUseVirtualZoom);
-	const [localClusterPixelRadius, setLocalClusterPixelRadius] = useState(String(initialClusterPixelRadius));
 	const [showingTileSelector, setShowingTileSelector] = useState(false);
 	const [showingVirtualZoomSelector, setShowingVirtualZoomSelector] = useState(false);
 
@@ -128,11 +116,8 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 				options={TILE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
 				selectedOption={selectedTileKey}
 				onSelect={(option) => {
-					const variant = TILE_VARIANTS.find((v) => v.key === option.id) ?? TILE_VARIANTS[0];
 					setSelectedTileKey(option.id);
 					onSelectedTileChange(option.id);
-					setLocalVirtualZoom(variant.defaultVirtualZoom);
-					onVirtualZoomChange(variant.defaultVirtualZoom);
 					setShowingTileSelector(false);
 				}}
 				noIconIndent
@@ -166,33 +151,13 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 			<SettingsList
 				title="Kartenmaterial"
 				value={(TILE_VARIANTS.find((v) => v.key === selectedTileKey) ?? TILE_VARIANTS[0]).label}
-				leftIcon={<MaterialIcons name="layers" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingTileSelector(true)}
 				groupPosition="top"
-			/>
-			<SettingsList
-				title="Cluster-Abstand (px)"
-				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} color={theme.screen.icon} />}
-				rightElement={
-					<TextInput
-						value={localClusterPixelRadius}
-						onChangeText={(text) => {
-							setLocalClusterPixelRadius(text);
-							const num = parseInt(text, 10);
-							if (!isNaN(num) && num >= MIN_CLUSTER_PIXEL_RADIUS) {
-								onClusterPixelRadiusChange(num);
-							}
-						}}
-						keyboardType="numeric"
-						style={{ color: theme.screen.text, textAlign: 'right', minWidth: 60, fontSize: 15 }}
-					/>
-				}
-				groupPosition="middle"
+				noIconIndent
 			/>
 			<SettingsList
 				title="Sanfte Kamera-Bewegung"
-				leftIcon={<MaterialIcons name="animation" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<Switch
 						value={localFlyAnimation}
@@ -203,18 +168,24 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 					/>
 				}
 				groupPosition="middle"
+				noIconIndent
 			/>
 			<SettingsList
 				title="Virtueller Zoom"
 				value={virtualZoomLabel}
-				leftIcon={<MaterialIcons name="zoom-in" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingVirtualZoomSelector(true)}
 				groupPosition="bottom"
 				showSeparator={false}
+				noIconIndent
 			/>
 		</>
 	);
+};
+
+const POSITION_BUNDESTAG = {
+	lat: 52.518594247456804,
+	lng: 13.376281624711964,
 };
 
 type LeafletFilterContentProps = {
@@ -233,7 +204,6 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
 	const { translate } = useLanguage();
 
-	// Sync local state if initialLikes reference changes (e.g. modal re-renders with updated parent state)
 	useEffect(() => {
 		setLocalLikes(initialLikes);
 	}, [initialLikes]);
@@ -313,23 +283,13 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	);
 };
 
-
-
-const POSITION_BUNDESTAG = {
-	lat: 52.518594247456804,
-	lng: 13.376281624711964,
-};
-
-const MAX_LOG_ENTRIES = 200;
-
+const MAX_LOG_ENTRIES = 50;
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
 
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
-const MAX_BUILDING_LABEL_CHARS = 8;
-// Minimum cluster pixel radius – values below this would create excessively tight clusters
-const MIN_CLUSTER_PIXEL_RADIUS = 10;
+const MAX_BUILDING_LABEL_CHARS = 3;
 
 /** Returns black or white based on the luminance of the given hex background color. */
 function getContrastColor(hexColor: string): string {
@@ -339,7 +299,6 @@ function getContrastColor(hexColor: string): string {
 	const g = parseInt(hex.slice(2, 4), 16) / 255;
 	const b = parseInt(hex.slice(4, 6), 16) / 255;
 	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-	// WCAG relative-luminance midpoint: colours above this threshold are considered "light"
 	const WCAG_LIGHT_THRESHOLD = 0.179;
 	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
 }
@@ -362,11 +321,6 @@ function getFirstOrganisationFromDict(
  *   1. Building's own `markerColor` / `markerLabelColor`
  *   2. First organisation's `orgMarkerColor` / `orgMarkerLabelColor`
  *   3. Project default: `fallbackColor` (project colour) / `fallbackLabelColor` (contrast of project colour)
- *
- * Label fallback priority:
- *   1. Explicit `markerLabel`
- *   2. `externalIdentifier`
- *   3. Derived from `alias` via `getMarkerLabelFromBuildingAlias`
  */
 function createBuildingMarkerSvg(
 	externalIdentifier?: string | null,
@@ -377,8 +331,6 @@ function createBuildingMarkerSvg(
 	orgMarkerLabelColor?: string | null,
 	fallbackColor?: string | null,
 	fallbackLabelColor?: string | null,
-	alias?: string | null,
-	showLabel?: boolean,
 ): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
@@ -387,33 +339,19 @@ function createBuildingMarkerSvg(
 	// Use || instead of ?? so that empty strings also fall back to the next value in the chain
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
 	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
-	let rawLabel: string | null = markerLabel || externalIdentifier || null;
-	if (!rawLabel && alias) {
-		rawLabel = getMarkerLabelFromBuildingAlias(alias);
-	}
-	const label = (showLabel !== false && rawLabel) ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	const rawLabel = markerLabel ?? externalIdentifier;
+	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
-	let textEl = '';
-	if (label) {
-		if (label.length >= 4) {
-			const mid = Math.ceil(label.length / 2);
-			const line1 = label.slice(0, mid);
-			const line2 = label.slice(mid);
-			textEl = `<text text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
-				`<tspan x="${cx}" dy="${cy - 6}">${line1}</tspan>` +
-				`<tspan x="${cx}" dy="13">${line2}</tspan>` +
-				`</text>`;
-		} else {
-			textEl = `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`;
-		}
-	}
+	const textEl = label
+		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
+		: '';
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
 const MAX_SEARCH_RESULTS = 3;
 
-const LeafletMap = () => {
-	useSetPageTitle(TranslationKeys.leaflet_map);
+const MapScreen = () => {
+	useSetPageTitle(TranslationKeys.map);
 
 	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
@@ -421,7 +359,6 @@ const LeafletMap = () => {
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
 	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
-	const clusterPixelRadius = useAppSelector((state) => state.settings.mapClusterPixelRadius ?? 60);
 	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
@@ -432,30 +369,6 @@ const LeafletMap = () => {
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
-
-	// User location state
-	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-
-	// Fast lookup dict for organisations – keyed by organisation ID
-	const organisationsDict = useMemo(
-		() => (organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
-			(acc, org) => { acc[org.id] = org; return acc; },
-			{}
-		),
-		[organisations]
-	);
-
-	// Dict: buildingId → Organizations[] derived from the buildings_organizations join table
-	const buildingIdToOrgsDict = useMemo(
-		() => BuildingsHelper.getBuildingIdToOrganizationsDict(
-			buildingsOrganizations,
-			organisationsDict
-		),
-		[buildingsOrganizations, organisationsDict]
-	);
-
-	// Contrast label colour to use as the default marker text colour when no explicit colour is set
-	const primaryColorContrastColor = useMemo(() => getContrastColor(primaryColor), [primaryColor]);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
@@ -476,10 +389,8 @@ const LeafletMap = () => {
 		dispatch({ type: SET_MAP_ORGANISATION_FILTER, payload: updated });
 	}, [dispatch, organisationLikes]);
 
-	// Keep ref up to date so the modal callback is never stale
 	handleOrganisationLikeChangeRef.current = handleOrganisationLikeChange;
 
-	// Stable callback passed to modal – delegates via ref to avoid stale closures
 	const stableOnOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
 		handleOrganisationLikeChangeRef.current(orgId, like);
 	}, []);
@@ -508,10 +419,6 @@ const LeafletMap = () => {
 		dispatch({ type: SET_MAP_VIRTUAL_ZOOM, payload: value });
 	}, [dispatch]);
 
-	const setClusterPixelRadius = useCallback((value: number) => {
-		dispatch({ type: SET_MAP_CLUSTER_PIXEL_RADIUS, payload: value });
-	}, [dispatch]);
-
 	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	// Override center position set on cluster click (null = follow centerPosition)
@@ -524,56 +431,26 @@ const LeafletMap = () => {
 		});
 	}, []);
 
-	// Log organisationsDict whenever it changes (init + updates)
-	useEffect(() => {
-		const entries = Object.entries(organisationsDict);
-		addLog(
-			`organisationsDict (${entries.length}): ` +
-			(entries.length > 0
-				? entries.map(([id, org]) => `${id}=${org.alias ?? 'n/a'}`).join(', ')
-				: '(empty)')
-		);
-	}, [organisationsDict, addLog]);
+	// Fast lookup dict for organisations – keyed by organisation ID
+	const organisationsDict = useMemo(
+		() => (organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
+			(acc, org) => { acc[org.id] = org; return acc; },
+			{}
+		),
+		[organisations]
+	);
 
-	// Log buildingIdToOrgsDict whenever it changes (init + updates)
-	useEffect(() => {
-		const entries = Object.entries(buildingIdToOrgsDict);
-		addLog(
-			`buildingIdToOrgsDict (${entries.length} buildings): ` +
-			(entries.length > 0
-				? entries.map(([bid, orgs]) => `${bid}→[${orgs.map((o) => o.id).join(',')}]`).join(', ')
-				: '(empty)')
-		);
-	}, [buildingIdToOrgsDict, addLog]);
+	// Dict: buildingId → Organizations[] derived from the buildings_organizations join table
+	const buildingIdToOrgsDict = useMemo(
+		() => BuildingsHelper.getBuildingIdToOrganizationsDict(
+			buildingsOrganizations,
+			organisationsDict
+		),
+		[buildingsOrganizations, organisationsDict]
+	);
 
-	// Log per-marker color resolution to the DebugView whenever the relevant data changes
-	useEffect(() => {
-		const buildingsWithCoords = (buildings as DatabaseTypes.Buildings[]).filter((building) => {
-			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-			return coords && coords.length === 2;
-		});
-		if (buildingsWithCoords.length === 0) return;
-		addLog(`--- Marker colors (${buildingsWithCoords.length}) ---`);
-		buildingsWithCoords.forEach((building) => {
-			const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
-			const resolvedColor =
-				building.map_marker_color ||
-				firstOrg?.map_marker_color ||
-				primaryColor ||
-				BUILDING_MARKER_COLOR;
-			const colorSource = building.map_marker_color
-				? 'building'
-				: firstOrg?.map_marker_color
-				? `org(${firstOrg.alias ?? firstOrg.id})`
-				: primaryColor
-				? 'primary'
-				: 'default';
-			const rawLabel = building.map_marker_label ?? building.external_identifier;
-			const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
-			const displayName = building.alias ?? rawLabel ?? building.id;
-			addLog(`  ${displayName} | lbl=${label ?? '-'} | color=${resolvedColor} [${colorSource}]`);
-		});
-	}, [buildings, buildingIdToOrgsDict, primaryColor, addLog]);
+	// Contrast label colour to use as the default marker text colour when no explicit colour is set
+	const primaryColorContrastColor = useMemo(() => getContrastColor(primaryColor), [primaryColor]);
 
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
@@ -591,16 +468,14 @@ const LeafletMap = () => {
 					initialSelectedTileKey={selectedTileVariantKey}
 					initialUseFlyAnimation={useFlyAnimation}
 					initialUseVirtualZoom={useVirtualZoom}
-					initialClusterPixelRadius={clusterPixelRadius}
 					onSelectedTileChange={setSelectedTileVariantKey}
 					onFlyAnimationChange={setUseFlyAnimation}
 					onVirtualZoomChange={setUseVirtualZoom}
-					onClusterPixelRadiusChange={setClusterPixelRadius}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, clusterPixelRadius, theme]);
+	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
 
 	const openFilterModal = useCallback(() => {
 		show({
@@ -669,17 +544,7 @@ const LeafletMap = () => {
 			.map((building) => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
 				const [lng, lat] = coords;
-				// Resolve the first linked organisation for style fallback
 				const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
-				const resolvedColor = building.map_marker_color || firstOrg?.map_marker_color || primaryColor || BUILDING_MARKER_COLOR;
-				console.log('[LeafletMap] Building marker:', {
-					id: building.id,
-					alias: building.alias,
-					buildingColor: building.map_marker_color,
-					firstOrgId: firstOrg?.id,
-					orgColor: firstOrg?.map_marker_color,
-					resolvedColor,
-				});
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
@@ -692,8 +557,6 @@ const LeafletMap = () => {
 						firstOrg?.map_marker_label_color ?? null,
 						primaryColor,
 						primaryColorContrastColor,
-						building.alias,
-						true,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
@@ -701,14 +564,14 @@ const LeafletMap = () => {
 			});
 	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
+	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
+	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
+
 	// Reset the centre override when the selected canteen changes so the map
 	// returns to the canteen's building position.
 	useEffect(() => {
 		setMapCenterOverride(null);
 	}, [centerPosition]);
-
-	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
-	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom, clusterPixelRadius), [buildingMarkers, mapZoom, clusterPixelRadius]);
 
 	// Search results: up to 3 buildings matching the query
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
@@ -752,32 +615,37 @@ const LeafletMap = () => {
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
 
-			addLog(`Building clicked: ${title} (id=${buildingId ?? 'unknown'})${lat !== null ? ` @ ${lat}, ${lng}` : ''}`);
+			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+
+			if (building) {
+				// Log all building fields
+				addLog(`  id=${building.id}`);
+				addLog(`  external_identifier=${building.external_identifier ?? 'null'}`);
+				addLog(`  alias=${building.alias ?? 'null'}`);
+				addLog(`  map_marker_color=${building.map_marker_color ?? 'null'}`);
+				addLog(`  map_marker_label=${building.map_marker_label ?? 'null'}`);
+				addLog(`  map_marker_label_color=${building.map_marker_label_color ?? 'null'}`);
+				addLog(`  map_marker_style=${building.map_marker_style ?? 'null'}`);
+				addLog(`  map_marker_is_visible=${building.map_marker_is_visible ?? 'null'}`);
+				addLog(`  map_marker_cluster_exclude=${building.map_marker_cluster_exclude ?? 'null'}`);
+				addLog(`  status=${building.status ?? 'null'}`);
+				addLog(`  date_updated=${building.date_updated ?? 'null'}`);
+			}
 
 			if (buildingId) {
-				// Log which buildings_organizations entries are linked to this building
-				const matchedBuildingOrgs = (buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[]).filter((entry) => {
-					const entryBuildingId =
-						typeof entry.buildings_id === 'string'
-							? entry.buildings_id
-							: (entry.buildings_id as DatabaseTypes.Buildings | null)?.id;
-					return entryBuildingId === buildingId;
-				});
-				addLog(
-					`buildings_organizations found: ${matchedBuildingOrgs.length}` +
-					(matchedBuildingOrgs.length > 0
-						? ` [${matchedBuildingOrgs.map((e) => `bo.id=${e.id} org=${typeof e.organizations_id === 'string' ? e.organizations_id : (e.organizations_id as DatabaseTypes.Organizations | null)?.id ?? '?'}`).join(', ')}]`
-						: '')
-				);
-
 				// Log which organizations were resolved for this building
 				const resolvedOrgs = buildingIdToOrgsDict[buildingId] ?? [];
 				addLog(
-					`Resolved organizations: ${resolvedOrgs.length}` +
+					`  organizations: ${resolvedOrgs.length}` +
 					(resolvedOrgs.length > 0
 						? ` [${resolvedOrgs.map((o) => `id=${o.id} color=${o.map_marker_color ?? 'none'}`).join(', ')}]`
 						: '')
 				);
+				// Log resolved color
+				const firstOrg = resolvedOrgs[0] ?? null;
+				const resolvedColor = building?.map_marker_color || firstOrg?.map_marker_color || primaryColor || BUILDING_MARKER_COLOR;
+				const colorSource = building?.map_marker_color ? 'building' : firstOrg?.map_marker_color ? `org(${firstOrg.alias ?? firstOrg.id})` : primaryColor ? 'primary' : 'default';
+				addLog(`  resolved_color=${resolvedColor} [${colorSource}]`);
 			}
 
 			if (coords && coords.length === 2) {
@@ -789,7 +657,7 @@ const LeafletMap = () => {
 				openBuildingDetailsModal(buildingId);
 			}
 		},
-		[buildings, buildingsOrganizations, buildingIdToOrgsDict, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
+		[buildings, buildingIdToOrgsDict, clusteredBuildingMarkers, primaryColor, openBuildingDetailsModal, addLog],
 	);
 
 	const handleMapEvent = useCallback(
@@ -806,44 +674,6 @@ const LeafletMap = () => {
 		[addLog],
 	);
 
-	// Compass: reset map view to center position (Leaflet always points north)
-	const handleCompassPress = useCallback(() => {
-		setMapCenterOverride({ ...centerPosition });
-		setMapZoom(DEFAULT_ZOOM);
-	}, [centerPosition]);
-
-	// Location: request permission and center map on user position
-	const handleLocationPress = useCallback(async () => {
-		try {
-			const { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
-				Alert.alert('Standort', 'Standortberechtigung wurde verweigert.');
-				return;
-			}
-			const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-			const { latitude, longitude } = location.coords;
-			setUserLocation({ lat: latitude, lng: longitude });
-			setMapCenterOverride({ lat: latitude, lng: longitude });
-			addLog(`Standort: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
-		} catch (error) {
-			console.error('Location error:', error);
-			Alert.alert('Standort', 'Standort konnte nicht ermittelt werden.');
-		}
-	}, [addLog]);
-
-	// User location marker (non-clustered)
-	const userLocationMarkers = useMemo((): MapMarker[] => {
-		if (!userLocation) return [];
-		const size = 28;
-		return [{
-			id: 'user-location',
-			position: userLocation,
-			icon: createUserLocationMarkerSvg(),
-			size: [size, size] as [number, number],
-			iconAnchor: [size / 2, size / 2] as [number, number],
-		}];
-	}, [userLocation]);
-
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
 			<LeafletMapHeader
@@ -852,7 +682,6 @@ const LeafletMap = () => {
 				onQueryChange={setSearchQuery}
 				onSettingsPress={openSettingsModal}
 				onFilterPress={openFilterModal}
-				isFilterActive={Object.keys(organisationLikes).length > 0}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
@@ -861,27 +690,11 @@ const LeafletMap = () => {
 						mapCenterPosition={mapCenterOverride ?? centerPosition}
 						zoom={mapZoom}
 						mapMarkers={buildingMarkers}
-						noClusterMarkers={userLocationMarkers}
 						mapLayers={[selectedTileLayer]}
 						useFlyAnimation={useFlyAnimation}
 						onMarkerClick={handleMarkerClick}
 						onMapEvent={handleMapEvent}
 					/>
-					{/* Map overlay buttons: compass and location */}
-					<View style={styles.mapOverlayButtons} pointerEvents="box-none">
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
-							onPress={handleCompassPress}
-						>
-							<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-							onPress={handleLocationPress}
-						>
-							<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
-						</TouchableOpacity>
-					</View>
 					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
@@ -926,32 +739,12 @@ const LeafletMap = () => {
 	);
 };
 
-export default LeafletMap;
+export default MapScreen;
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
-	mapOverlayButtons: {
-		position: 'absolute',
-		top: 16,
-		right: 12,
-		zIndex: 20,
-		elevation: 20,
-		alignItems: 'center',
-	},
-	mapOverlayButton: {
-		width: 44,
-		height: 44,
-		borderRadius: 8,
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.2,
-		shadowRadius: 3,
-		elevation: 3,
-	},
 	searchResultsContainer: {
 		position: 'absolute',
 		top: 0,

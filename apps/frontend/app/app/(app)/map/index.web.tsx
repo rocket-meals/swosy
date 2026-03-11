@@ -1,20 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
-import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
+import { Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
-import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
-import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
+import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
@@ -25,8 +20,7 @@ import SettingsListOrganisationFast from '@/components/SettingsListOrganisationF
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
-import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -92,14 +86,13 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 			<SettingsList
 				title="Kartenstil"
 				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
-				leftIcon={<MaterialIcons name="layers" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingStyleSelector(true)}
 				groupPosition="top"
+				noIconIndent
 			/>
 			<SettingsList
 				title="Cluster-Abstand (px)"
-				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<TextInput
 						value={localClusterDistance}
@@ -115,10 +108,10 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 					/>
 				}
 				groupPosition="middle"
+				noIconIndent
 			/>
 			<SettingsList
 				title="Sanfte Kamera-Bewegung"
-				leftIcon={<MaterialIcons name="animation" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<Switch
 						value={localFlyAnimation}
@@ -130,14 +123,15 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				}
 				groupPosition="middle"
 				showSeparator={true}
+				noIconIndent
 			/>
 			<SettingsList
-				title="Kartensteuerung"
-				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
+				title="Kartensteuerung anzeigen"
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={onShowControlsHint}
 				groupPosition="bottom"
 				showSeparator={false}
+				noIconIndent
 			/>
 		</>
 	);
@@ -331,8 +325,6 @@ function createBuildingMarkerSvg(
 	orgMarkerLabelColor?: string | null,
 	fallbackColor?: string | null,
 	fallbackLabelColor?: string | null,
-	alias?: string | null,
-	showLabel?: boolean,
 ): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
@@ -340,11 +332,8 @@ function createBuildingMarkerSvg(
 	const r = cx - 2;
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
 	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
-	let rawLabel: string | null = markerLabel || externalIdentifier || null;
-	if (!rawLabel && alias) {
-		rawLabel = getMarkerLabelFromBuildingAlias(alias);
-	}
-	const label = (showLabel !== false && rawLabel) ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	const rawLabel = markerLabel ?? externalIdentifier;
+	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	let textEl = '';
 	if (label) {
@@ -366,8 +355,8 @@ function createBuildingMarkerSvg(
 const OsmVectorMapScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.map);
 	const { theme } = useTheme();
-	const webViewRef = useRef<WebView>(null);
-	const [html, setHtml] = useState<string | null>(null);
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+	const htmlBase = require('@/assets/maplibre/index.html') as string;
 
 	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
@@ -376,9 +365,6 @@ const OsmVectorMapScreen: React.FC = () => {
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
-	const showBuildingMarkers = true;
-	const showClusters = true;
-	const showMarkerLabels = true;
 	const organisationLikes = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapOrganisationFilter ?? {}) as Record<string, boolean | null>,
 	);
@@ -393,13 +379,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
-	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
 	// pendingNavigateRef: true = include position in next sendMapData call
 	const pendingNavigateRef = useRef(true);
-
-	// Ref always pointing to the latest centerPosition for use in one-time HTML loading
-	const centerPositionRef = useRef<{ lat: number; lng: number }>(POSITION_BUNDESTAG);
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -491,10 +473,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// Keep centerPositionRef up to date so the one-time loadHtml can read the latest value
-	useEffect(() => {
-		centerPositionRef.current = centerPosition;
-	}, [centerPosition]);
+	// Compute the initial iframe src once (on first render) to avoid reloading the iframe on center changes.
+	// The URL search params tell the HTML to initialize at the correct canteen position immediately.
+	const iframeSrc = useMemo(() => {
+		const c = centerPosition;
+		return `${htmlBase}?lat=${c.lat}&lng=${c.lng}&zoom=${DEFAULT_ZOOM}`;
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // intentionally only computed once
 
 	useEffect(() => {
 		setMapCenterOverride(null);
@@ -549,44 +534,16 @@ const OsmVectorMapScreen: React.FC = () => {
 						firstOrg?.map_marker_label_color ?? null,
 						primaryColor,
 						primaryColorContrastColor,
-						building.alias,
-						showMarkerLabels,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor, showMarkerLabels]);
-
-	// Effective markers respecting display settings
-	const effectiveBuildingMarkers = useMemo(
-		() => showBuildingMarkers ? buildingMarkers : [],
-		[buildingMarkers, showBuildingMarkers],
-	);
-
-	const effectiveClusterDistance = showClusters ? clusterDistance : 0;
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
 	const clusteredBuildingMarkers = useMemo(
-		() => clusterMarkers(effectiveBuildingMarkers, mapZoom, effectiveClusterDistance),
-		[effectiveBuildingMarkers, mapZoom, effectiveClusterDistance],
-	);
-
-	// User location marker (non-clustered)
-	const userLocationMarker = useMemo((): MapMarker | null => {
-		if (!userLocation) return null;
-		const size = 28;
-		return {
-			id: 'user-location',
-			position: userLocation,
-			icon: createUserLocationMarkerSvg(),
-			size: [size, size] as [number, number],
-			iconAnchor: [size / 2, size / 2] as [number, number],
-		};
-	}, [userLocation]);
-
-	const allMarkers = useMemo(
-		() => userLocationMarker ? [...clusteredBuildingMarkers, userLocationMarker] : clusteredBuildingMarkers,
-		[clusteredBuildingMarkers, userLocationMarker],
+		() => clusterMarkers(buildingMarkers, mapZoom, clusterDistance),
+		[buildingMarkers, mapZoom, clusterDistance],
 	);
 
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
@@ -613,11 +570,12 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const sendMapData = useCallback(() => {
+		if (!iframeRef.current?.contentWindow) return;
 		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
 
 		const message: Record<string, unknown> = {
-			mapMarkers: allMarkers,
+			mapMarkers: clusteredBuildingMarkers,
 			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
 		};
@@ -630,38 +588,12 @@ const OsmVectorMapScreen: React.FC = () => {
 			setMapCenterOverride(null);
 		}
 
-		const messageStr = JSON.stringify(message);
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
-		);
-	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, selectedStyleUrl, useFlyAnimation]);
+		iframeRef.current.contentWindow.postMessage(message, '*');
+	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
 	}, [sendMapData]);
-
-	useEffect(() => {
-		let isMounted = true;
-		const loadHtml = async () => {
-			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
-			await htmlAsset.downloadAsync();
-			let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-			// Inject the initial center position so the map starts at the canteen position
-			// without showing the default Germany center while tiles are loading.
-			const c = centerPositionRef.current;
-			htmlContent = htmlContent.replace(
-				'initMap(null, null);',
-				`initMap([${c.lng}, ${c.lat}], null);`,
-			);
-			if (isMounted) {
-				setHtml(htmlContent);
-			}
-		};
-		loadHtml();
-		return () => {
-			isMounted = false;
-		};
-	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleMarkerClick = useCallback(
 		(id: string) => {
@@ -697,10 +629,10 @@ const OsmVectorMapScreen: React.FC = () => {
 		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
-	const handleMessage = useCallback(
-		(event: WebViewMessageEvent) => {
+	useEffect(() => {
+		const handler = (event: MessageEvent) => {
 			try {
-				const data = JSON.parse(event.nativeEvent.data);
+				const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 				if (data.tag === 'MapComponentMounted') {
 					pendingNavigateRef.current = true;
 					sendMapData();
@@ -717,18 +649,10 @@ const OsmVectorMapScreen: React.FC = () => {
 			} catch {
 				// ignore malformed messages
 			}
-		},
-		[sendMapData, handleMarkerClick, addLog],
-	);
-
-	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
-		const url = request.url;
-		if (!url || url === 'about:blank' || url === 'about:srcdoc') {
-			return true;
-		}
-		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
-		return false;
-	}, []);
+		};
+		window.addEventListener('message', handler);
+		return () => window.removeEventListener('message', handler);
+	}, [sendMapData, handleMarkerClick, addLog]);
 
 	const openControlsHintModal = useCallback(() => {
 		show({
@@ -763,33 +687,6 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
 
-	// Compass: reset map bearing to north
-	const handleCompassPress = useCallback(() => {
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:JSON.stringify({resetBearing:true})}));true;`,
-		);
-	}, []);
-
-	// Location: request permission and show user position marker
-	const handleLocationPress = useCallback(async () => {
-		try {
-			const { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
-				Alert.alert('Standort', 'Standortberechtigung wurde verweigert.');
-				return;
-			}
-			const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-			const { latitude, longitude } = location.coords;
-			setUserLocation({ lat: latitude, lng: longitude });
-			setMapCenterOverride({ lat: latitude, lng: longitude });
-			pendingNavigateRef.current = true;
-			addLog(`Standort: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
-		} catch (error) {
-			console.error('Location error:', error);
-			Alert.alert('Standort', 'Standort konnte nicht ermittelt werden.');
-		}
-	}, [addLog]);
-
 	const openFilterModal = useCallback(() => {
 		show({
 			title: translate(TranslationKeys.organisations),
@@ -806,10 +703,6 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
-	if (!html) {
-		return <View style={[styles.safeArea, { backgroundColor: theme.screen.background }]} />;
-	}
-
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
 			<LeafletMapHeader
@@ -822,39 +715,21 @@ const OsmVectorMapScreen: React.FC = () => {
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<WebView
-						ref={webViewRef}
-						style={styles.webView}
-						source={{ html }}
-						javaScriptEnabled={true}
-						domStorageEnabled={true}
-						originWhitelist={['*']}
-						onMessage={handleMessage}
-						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+					<iframe
+						ref={iframeRef}
+						src={iframeSrc}
+						style={{ width: '100%', height: '100%', border: 'none' }}
+						onLoad={sendMapData}
+						title="OSM Vector Map"
 					/>
-					{/* Map overlay buttons: compass, location, and controls hint */}
-					<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+					{showControlsHint && (
 						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
-							onPress={handleCompassPress}
+							style={styles.infoIconButton}
+							onPress={openControlsHintModal}
 						>
-							<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
+							<Ionicons name="help-circle-outline" size={32} color={theme.header.text} />
 						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-							onPress={handleLocationPress}
-						>
-							<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
-						</TouchableOpacity>
-						{showControlsHint && (
-							<TouchableOpacity
-								style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-								onPress={openControlsHintModal}
-							>
-								<MaterialIcons name="touch-app" size={26} color={theme.screen.icon} />
-							</TouchableOpacity>
-						)}
-					</View>
+					)}
 					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
@@ -903,26 +778,15 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
-	webView: { flex: 1 },
-	mapOverlayButtons: {
+	infoIconButton: {
 		position: 'absolute',
-		top: 16,
-		right: 12,
+		top: 8,
+		right: 8,
 		zIndex: 20,
 		elevation: 20,
-		alignItems: 'center',
-	},
-	mapOverlayButton: {
-		width: 44,
-		height: 44,
-		borderRadius: 8,
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.2,
-		shadowRadius: 3,
-		elevation: 3,
+		backgroundColor: 'rgba(0,0,0,0.35)',
+		borderRadius: 20,
+		padding: 4,
 	},
 	searchResultsContainer: {
 		position: 'absolute',

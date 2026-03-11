@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
@@ -18,6 +18,7 @@ interface LeafletMapHeaderProps {
 	onQueryChange: (text: string) => void;
 	onSettingsPress?: () => void;
 	onFilterPress?: () => void;
+	isFilterActive?: boolean;
 }
 
 const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
@@ -26,6 +27,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 	onQueryChange,
 	onSettingsPress,
 	onFilterPress,
+	isFilterActive,
 }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -58,21 +60,28 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 				</CustomTooltip>
 
 				{/* Search Bar */}
-				<TextInput
-					style={[
-						styles.searchInput,
-						{
-							color: theme.header.text,
-							borderColor: theme.header.text + '55',
-							backgroundColor: theme.header.text + '15',
-						},
-					]}
-					cursorColor={theme.header.text}
-					placeholderTextColor={theme.header.text + '88'}
-					value={query}
-					onChangeText={onQueryChange}
-					placeholder={translate(TranslationKeys.search)}
-				/>
+				<View style={[
+					styles.searchInputWrapper,
+					{
+						borderColor: theme.header.text + '55',
+						backgroundColor: theme.header.text + '15',
+					},
+				]}>
+					<MaterialIcons name="search" size={20} color={theme.header.text + '88'} style={styles.searchIcon} />
+					<TextInput
+						style={[
+							styles.searchInput,
+							{
+								color: theme.header.text,
+							},
+						]}
+						cursorColor={theme.header.text}
+						placeholderTextColor={theme.header.text + '88'}
+						value={query}
+						onChangeText={onQueryChange}
+						placeholder={translate(TranslationKeys.search)}
+					/>
+				</View>
 
 				{/* Filter Icon */}
 				<CustomTooltip
@@ -83,7 +92,10 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 							onPress={() => onFilterPress?.()}
 							style={styles.iconButton}
 						>
-							<FontAwesome name="filter" size={24} color={theme.header.text} />
+							<View style={styles.filterIconWrapper}>
+								<FontAwesome name="filter" size={24} color={theme.header.text} />
+								{isFilterActive && <View style={styles.filterBadge} />}
+							</View>
 						</IconButton>
 					)}
 				>
@@ -135,12 +147,33 @@ const styles = StyleSheet.create({
 	iconButton: {
 		padding: 8,
 	},
-	searchInput: {
+	filterIconWrapper: {
+		position: 'relative',
+	},
+	filterBadge: {
+		position: 'absolute',
+		top: -2,
+		right: -2,
+		width: 8,
+		height: 8,
+		borderRadius: 4,
+		backgroundColor: '#FF3B30',
+	},
+	searchInputWrapper: {
 		flex: 1,
 		height: 40,
 		borderRadius: 20,
-		paddingHorizontal: 16,
 		borderWidth: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 12,
+	},
+	searchIcon: {
+		marginRight: 6,
+	},
+	searchInput: {
+		flex: 1,
+		height: 40,
 		fontFamily: 'Poppins_400Regular',
 		fontSize: 15,
 	},

@@ -52,6 +52,12 @@ const Index = () => {
 				}),
 		},
 		{
+			key: 'tile-map',
+			label: translate(TranslationKeys.leaflet_map),
+			leftIcon: <MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/tile-map'),
+		},
+		{
 			key: 'vertical-image-scroll',
 			label: translate(TranslationKeys.vertical_image_scroll),
 			leftIcon: <MaterialCommunityIcons name="image-multiple" size={24} color={theme.screen.icon} />,

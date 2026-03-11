@@ -11,6 +11,7 @@ export interface MyMapProps {
 	mapCenterPosition: Position;
 	zoom?: number;
 	mapMarkers?: MapMarker[];
+	noClusterMarkers?: MapMarker[];
 	mapLayers?: MapLayer[];
 	useFlyAnimation?: boolean;
 	onMarkerClick?: (id: string) => void;

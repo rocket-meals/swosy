@@ -6,7 +6,7 @@ import type { LeafletWebViewEvent } from './model';
 import { MyMapProps } from '@/components/MyMap/MyMapHelper';
 import { clusterMarkers } from './clusterUtils';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, noClusterMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const { theme } = useTheme();
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const html = require('@/assets/leaflet/index.html');
@@ -22,7 +22,10 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 		onMarkerSelectionChange?.(selectedMarker);
 	}, [selectedMarker, onMarkerSelectionChange]);
 
-	const clusteredMarkers = useMemo(() => clusterMarkers(mapMarkers ?? [], currentZoom), [mapMarkers, currentZoom]);
+	const clusteredMarkers = useMemo(() => [
+		...clusterMarkers(mapMarkers ?? [], currentZoom),
+		...(noClusterMarkers ?? []),
+	], [mapMarkers, noClusterMarkers, currentZoom]);
 
 	const sendCoordinates = useCallback(() => {
 		if (iframeRef.current && iframeRef.current.contentWindow) {

@@ -10,7 +10,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { clusterMarkers } from './clusterUtils';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, noClusterMarkers, mapLayers, useFlyAnimation, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
 	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
 	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
@@ -40,7 +40,10 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 		onMarkerSelectionChange?.(selectedMarker);
 	}, [selectedMarker, onMarkerSelectionChange]);
 
-	const clusteredMarkers = useMemo(() => clusterMarkers(mapMarkers ?? [], currentZoom), [mapMarkers, currentZoom]);
+	const clusteredMarkers = useMemo(() => [
+		...clusterMarkers(mapMarkers ?? [], currentZoom),
+		...(noClusterMarkers ?? []),
+	], [mapMarkers, noClusterMarkers, currentZoom]);
 
 	const sendMapData = useCallback(() => {
 		const message = {
