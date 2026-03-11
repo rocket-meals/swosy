@@ -14,7 +14,21 @@ const setPirateLanguage = (enabled: boolean) => ({
 });
 
 const applyPirateTransformation = (text: string): string => {
-	return text.replace(/r/g, 'rrr').replace(/R/g, 'RRR').replace(/g/g, "'").replace(/G/g, "'");
+	let result = text;
+	// 1. Roll the R: r → rr, R → RR
+	result = result.replace(/r/g, 'rr').replace(/R/g, 'RR');
+	// 2. Vowel elongation: a → aa, o → oo
+	result = result.replace(/a/g, 'aa').replace(/A/g, 'AA');
+	result = result.replace(/o/g, 'oo').replace(/O/g, 'OO');
+	// 3. Consonant aspiration: b → bh, g → gh, t → th
+	result = result.replace(/b/g, 'bh').replace(/B/g, 'Bh');
+	result = result.replace(/g/g, 'gh').replace(/G/g, 'Gh');
+	result = result.replace(/t/g, 'th').replace(/T/g, 'Th');
+	// 4. Append "Arr!" for full sentences (ending with sentence-ending punctuation)
+	if (/[.!?]\s*$/.test(text.trim())) {
+		result = result + ' Arr!';
+	}
+	return result;
 };
 
 export const useLanguage = () => {
