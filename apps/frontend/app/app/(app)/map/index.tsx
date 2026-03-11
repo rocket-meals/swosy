@@ -12,7 +12,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_BUILDING_MARKERS, SET_OSM_VECTOR_MAP_SHOW_CLUSTERS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_MARKER_LABELS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -20,7 +20,6 @@ import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import SettingsList from '@/components/SettingsList/SettingsList';
-import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -55,7 +54,6 @@ type OsmSettingsContentProps = {
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
 	onShowControlsHint: () => void;
-	onOpenDisplaySettings: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -67,7 +65,6 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	onFlyAnimationChange,
 	onClusterDistanceChange,
 	onShowControlsHint,
-	onOpenDisplaySettings,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
@@ -139,13 +136,6 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={onShowControlsHint}
-				groupPosition="middle"
-			/>
-			<SettingsList
-				title="Anzeige"
-				leftIcon={<MaterialIcons name="visibility" size={20} color={theme.screen.icon} />}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-				onPress={onOpenDisplaySettings}
 				groupPosition="bottom"
 				showSeparator={false}
 			/>
@@ -300,51 +290,6 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 	);
 };
 
-type OsmDisplaySettingsContentProps = {
-	showBuildingMarkers: boolean;
-	showClusters: boolean;
-	showMarkerLabels: boolean;
-	onShowBuildingMarkersChange: (value: boolean) => void;
-	onShowClustersChange: (value: boolean) => void;
-	onShowMarkerLabelsChange: (value: boolean) => void;
-};
-
-const OsmDisplaySettingsContent: React.FC<OsmDisplaySettingsContentProps> = ({
-	showBuildingMarkers,
-	showClusters,
-	showMarkerLabels,
-	onShowBuildingMarkersChange,
-	onShowClustersChange,
-	onShowMarkerLabelsChange,
-}) => {
-	return (
-		<>
-			<SettingsListBoolean
-				title="Gebäude-Marker anzeigen"
-				leftIcon={<MaterialIcons name="place" size={20} />}
-				isEnabled={showBuildingMarkers}
-				onToggle={() => onShowBuildingMarkersChange(!showBuildingMarkers)}
-				groupPosition="top"
-			/>
-			<SettingsListBoolean
-				title="Cluster anzeigen"
-				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} />}
-				isEnabled={showClusters}
-				onToggle={() => onShowClustersChange(!showClusters)}
-				groupPosition="middle"
-			/>
-			<SettingsListBoolean
-				title="Marker-Beschriftung anzeigen"
-				leftIcon={<MaterialIcons name="label" size={20} />}
-				isEnabled={showMarkerLabels}
-				onToggle={() => onShowMarkerLabelsChange(!showMarkerLabels)}
-				groupPosition="bottom"
-				showSeparator={false}
-			/>
-		</>
-	);
-};
-
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
 	lng: 13.376281624711964,
@@ -431,9 +376,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
-	const showBuildingMarkers = useAppSelector((state) => (state.settings as any).osmVectorMapShowBuildingMarkers ?? true) as boolean;
-	const showClusters = useAppSelector((state) => (state.settings as any).osmVectorMapShowClusters ?? true) as boolean;
-	const showMarkerLabels = useAppSelector((state) => (state.settings as any).osmVectorMapShowMarkerLabels ?? true) as boolean;
+	const showBuildingMarkers = true;
+	const showClusters = true;
+	const showMarkerLabels = true;
 	const organisationLikes = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapOrganisationFilter ?? {}) as Record<string, boolean | null>,
 	);
@@ -800,22 +745,6 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [show, close, dispatch, theme]);
 
-	const openDisplaySettingsModal = useCallback(() => {
-		show({
-			title: 'Anzeige',
-			children: (
-				<OsmDisplaySettingsContent
-					showBuildingMarkers={showBuildingMarkers}
-					showClusters={showClusters}
-					showMarkerLabels={showMarkerLabels}
-					onShowBuildingMarkersChange={(v) => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_BUILDING_MARKERS, payload: v })}
-					onShowClustersChange={(v) => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_CLUSTERS, payload: v })}
-					onShowMarkerLabelsChange={(v) => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_MARKER_LABELS, payload: v })}
-				/>
-			),
-		});
-	}, [show, showBuildingMarkers, showClusters, showMarkerLabels, dispatch]);
-
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -828,12 +757,11 @@ const OsmVectorMapScreen: React.FC = () => {
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
 					onClusterDistanceChange={setClusterDistanceDispatch}
 					onShowControlsHint={openControlsHintModal}
-					onOpenDisplaySettings={openDisplaySettingsModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal, openDisplaySettingsModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
