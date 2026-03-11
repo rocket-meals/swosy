@@ -4073,6 +4073,106 @@
         "tr": "Arrr! Korrrsan gibi konuşurr!",
         "zh": "Arrr! 像海盗一样说话!"
     },
+    "backwards_language": {
+        "de": "Rückwärts",
+        "en": "Backwards",
+        "ar": "معكوس",
+        "es": "Al revés",
+        "fr": "À l'envers",
+        "ru": "Задом наперёд",
+        "tr": "Ters",
+        "zh": "反向"
+    },
+    "backwards_language_description": {
+        "de": "Texte werden rückwärts geschrieben",
+        "en": "Texts are written backwards",
+        "ar": "النصوص تُكتب بشكل معكوس",
+        "es": "Los textos se escriben al revés",
+        "fr": "Les textes sont écrits à l'envers",
+        "ru": "Тексты пишутся задом наперёд",
+        "tr": "Metinler ters yazılır",
+        "zh": "文字反向书写"
+    },
+    "leetspeak_language": {
+        "de": "Leetspeak",
+        "en": "Leetspeak",
+        "ar": "لغة اللِّيت",
+        "es": "Leetspeak",
+        "fr": "Leetspeak",
+        "ru": "Литспик",
+        "tr": "Leetspeak",
+        "zh": "黑客语"
+    },
+    "leetspeak_language_description": {
+        "de": "Buchstaben werden durch Zahlen ersetzt",
+        "en": "Letters are replaced by numbers",
+        "ar": "يتم استبدال الحروف بأرقام",
+        "es": "Las letras se reemplazan por números",
+        "fr": "Les lettres sont remplacées par des chiffres",
+        "ru": "Буквы заменяются цифрами",
+        "tr": "Harfler rakamlarla değiştirilir",
+        "zh": "字母被数字替换"
+    },
+    "alternating_language": {
+        "de": "Wechselschreibung",
+        "en": "Alternating Case",
+        "ar": "تبادل الحروف",
+        "es": "Mayúsculas alternadas",
+        "fr": "Casse alternée",
+        "ru": "Чередующийся регистр",
+        "tr": "Dönüşümlü Büyük/Küçük",
+        "zh": "交替大小写"
+    },
+    "alternating_language_description": {
+        "de": "Groß- und Kleinschreibung wechseln (Mocking Style)",
+        "en": "Alternating uppercase and lowercase (Mocking Style)",
+        "ar": "تبادل الحروف الكبيرة والصغيرة",
+        "es": "Mayúsculas y minúsculas alternadas (estilo burlón)",
+        "fr": "Majuscules et minuscules alternées (style moqueur)",
+        "ru": "Чередование прописных и строчных (стиль издёвки)",
+        "tr": "Büyük ve küçük harfler dönüşümlü (alay stili)",
+        "zh": "大小写交替（嘲讽风格）"
+    },
+    "typoglycemia_language": {
+        "de": "Typoglykämie",
+        "en": "Typoglycemia",
+        "ar": "تايبوغليسيميا",
+        "es": "Tipoglicemia",
+        "fr": "Typoglycémie",
+        "ru": "Типогликемия",
+        "tr": "Tipoglisemi",
+        "zh": "字母顺序错乱"
+    },
+    "typoglycemia_language_description": {
+        "de": "Erster und letzter Buchstabe bleiben, innere werden gemischt",
+        "en": "First and last letters stay, inner letters are shuffled",
+        "ar": "الحرف الأول والأخير يبقيان، والأحرف الداخلية تُخلط",
+        "es": "La primera y última letra permanecen, las internas se mezclan",
+        "fr": "La première et la dernière lettre restent, les intérieures sont mélangées",
+        "ru": "Первая и последняя буква остаются, внутренние перемешиваются",
+        "tr": "İlk ve son harf kalır, ortadakiler karıştırılır",
+        "zh": "首尾字母不变，中间字母打乱"
+    },
+    "glitch_language": {
+        "de": "Glitch",
+        "en": "Glitch",
+        "ar": "خلل",
+        "es": "Glitch",
+        "fr": "Glitch",
+        "ru": "Глитч",
+        "tr": "Glitch",
+        "zh": "故障"
+    },
+    "glitch_language_description": {
+        "de": "Matrix-Stil: Buchstaben werden zufällig neu angeordnet",
+        "en": "Matrix style: letters are randomly rearranged",
+        "ar": "أسلوب المصفوفة: يتم إعادة ترتيب الحروف عشوائياً",
+        "es": "Estilo Matrix: las letras se reordenan aleatoriamente",
+        "fr": "Style Matrix: les lettres sont réarrangées aléatoirement",
+        "ru": "Стиль Матрицы: буквы случайно переставляются",
+        "tr": "Matrix stili: harfler rastgele yeniden düzenlenir",
+        "zh": "黑客帝国风格：字母随机重新排列"
+    },
     "drawer_config_position": {
         "de": "Menüposition",
         "en": "Drawer Position",

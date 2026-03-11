@@ -29,6 +29,7 @@ interface FoodOffersListProps {
     // Optimization props
     language?: string;
     pirateLanguage?: boolean;
+    funLanguageMode?: string | null;
     serverInfo?: any;
     appSettings?: any;
     primaryColor?: string;
@@ -73,6 +74,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     feedbackMap,
     language,
     pirateLanguage,
+    funLanguageMode,
     serverInfo,
     appSettings,
     primaryColor,
@@ -105,6 +107,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 previousFeedback={previousFeedback}
                 language={language}
                 pirateLanguage={pirateLanguage}
+                funLanguageMode={funLanguageMode}
                 serverInfo={serverInfo}
                 appSettings={appSettings}
                 primaryColor={primaryColor}
@@ -117,7 +120,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 amountColumnsForcard={amountColumnsForcard}
             />
         );
-    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, getInfoItemContent, feedbackMap, language, pirateLanguage, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
+    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, getInfoItemContent, feedbackMap, language, pirateLanguage, funLanguageMode, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
 
     const keyExtractor = useCallback((item: DayItem, index: number) => {
         if (item.foodoffer && item.foodoffer.id) return `f-${item.foodoffer.id}`;
@@ -149,6 +152,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                         feedbackMap,
                         language,
                         pirateLanguage,
+                        funLanguageMode,
                         serverInfo,
                         appSettings,
                         primaryColor,
@@ -206,6 +210,7 @@ export default memo(FoodOffersList, (prev, next) => {
     return prev.ListFooterComponent === next.ListFooterComponent &&
            prev.language === next.language &&
            prev.pirateLanguage === next.pirateLanguage &&
+           prev.funLanguageMode === next.funLanguageMode &&
            prev.serverInfo === next.serverInfo &&
            prev.appSettings === next.appSettings &&
            prev.primaryColor === next.primaryColor &&

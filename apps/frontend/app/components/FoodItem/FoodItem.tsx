@@ -8,7 +8,7 @@ import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
-import { applyPirateTransformation } from '@/hooks/useLanguage';
+import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -49,6 +49,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     // Opt props
     language,
     pirateLanguage,
+    funLanguageMode,
     serverInfo,
     appSettings,
     primaryColor,
@@ -252,9 +253,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const foodDescription = useMemo(
       () => {
         const desc = getDescriptionFromTranslation(foodItem?.translations, language || 'de');
-        return pirateLanguage && desc ? applyPirateTransformation(desc) : desc;
+        if (!desc) return desc;
+        let result = desc;
+        if (pirateLanguage) result = applyPirateTransformation(result);
+        if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
+        return result;
       },
-      [foodItem?.translations, language, pirateLanguage]
+      [foodItem?.translations, language, pirateLanguage, funLanguageMode]
     );
 
     const foodName = useMemo(
@@ -263,9 +268,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           getTextFromTranslation(foodItem?.translations, language || 'de'),
           screenWidth > 1000 ? 120 : screenWidth > 700 ? 80 : screenWidth > 460 ? 60 : 40
         );
-        return pirateLanguage && name ? applyPirateTransformation(name) : name;
+        if (!name) return name;
+        let result = name;
+        if (pirateLanguage) result = applyPirateTransformation(result);
+        if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
+        return result;
       },
-      [foodItem?.translations, language, pirateLanguage, screenWidth]
+      [foodItem?.translations, language, pirateLanguage, funLanguageMode, screenWidth]
     );
 
     const priceLabel = useMemo(() => showFormatedPrice(showPrice(item, profile)), [item, profile]);
@@ -433,7 +442,11 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
             <TooltipText fontSize="$sm" color={theme.tooltip.text}>
               {(() => {
                 const tooltipText = getTextFromTranslation(foodItem?.translations, language || 'de');
-                return pirateLanguage && tooltipText ? applyPirateTransformation(tooltipText) : tooltipText;
+                if (!tooltipText) return tooltipText;
+                let result = tooltipText;
+                if (pirateLanguage) result = applyPirateTransformation(result);
+                if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
+                return result;
               })()}
             </TooltipText>
           </TooltipContent>
@@ -448,6 +461,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     prev.cardWidth === next.cardWidth &&
     prev.language === next.language &&
     prev.pirateLanguage === next.pirateLanguage &&
+    prev.funLanguageMode === next.funLanguageMode &&
     prev.serverInfo === next.serverInfo &&
     prev.appSettings === next.appSettings &&
     prev.primaryColor === next.primaryColor &&
@@ -465,6 +479,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     // Use props if available, otherwise fallback to selectors (for backward compatibility if used elsewhere)
     const language = props.language ?? useAppSelector((state) => state.settings.language);
     const pirateLanguage = props.pirateLanguage ?? useAppSelector((state) => state.settings.pirateLanguage);
+    const funLanguageMode = props.funLanguageMode ?? useAppSelector((state) => state.settings.funLanguageMode);
     const serverInfo = props.serverInfo ?? useAppSelector((state) => state.settings.serverInfo);
     const appSettings = props.appSettings ?? useAppSelector((state) => state.settings.appSettings);
     const primaryColor = props.primaryColor ?? useAppSelector((state) => state.settings.primaryColor);
@@ -507,6 +522,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
             previousFeedback={previousFeedback}
             language={language}
             pirateLanguage={pirateLanguage}
+            funLanguageMode={funLanguageMode}
             serverInfo={serverInfo}
             appSettings={appSettings}
             primaryColor={primaryColor}
