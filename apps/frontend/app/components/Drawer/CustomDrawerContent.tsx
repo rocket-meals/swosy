@@ -197,7 +197,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				iconLibName: Ionicons,
 				activeKey: 'foodoffers',
 				route: 'foodoffers',
-				position: 2,
+				position: 1,
 			});
 		}
 
@@ -219,7 +219,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				iconLibName: Octicons,
 				activeKey: 'campus',
 				route: 'campus',
-				position: 4,
+				position: 5,
 			});
 		}
 
@@ -230,7 +230,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				iconLibName: Octicons,
 				activeKey: 'housing',
 				route: 'housing',
-				position: 5,
+				position: 6,
 			});
 		}
 
@@ -241,7 +241,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				iconLibName: FontAwesome6,
 				activeKey: 'news/index',
 				route: 'news/index',
-				position: 6,
+				position: 7,
 			});
 		}
 
@@ -252,7 +252,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 iconLibName: MaterialCommunityIcons,
                                 activeKey: 'course-timetable/index',
                                 route: 'course-timetable/index',
-                                position: 7,
+                                position: 8,
                         });
                 }
 
@@ -263,7 +263,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 iconLibName: MaterialCommunityIcons,
                                 activeKey: 'collectible-event/index',
                                 route: 'collectible-event/index',
-                                position: 2.1,
+                                position: 2,
                                 hasUnread: true,
                         });
                 }
@@ -275,7 +275,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 iconLibName: Ionicons,
                                 activeKey: 'map/index',
                                 route: 'map/index',
-                                position: 3.5,
+                                position: 4,
                         });
                 }
 
@@ -294,7 +294,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				iconLibName: MaterialCommunityIcons,
 				activeKey: 'experimentell/index',
 				route: 'experimentell/index',
-				position: 9.5,
+				position: 10,
 			});
 		}
 
