@@ -8,7 +8,7 @@
     "collapse": "open",
     "collection": "organizations",
     "color": null,
-    "display_template": null,
+    "display_template": "{{alias}} ({{id}})",
     "group": "buildings",
     "hidden": false,
     "icon": "account_balance",

@@ -1,27 +1,25 @@
 {
   "collection": "organizations",
-  "field": "buildings",
+  "field": "child_organizations",
   "type": "alias",
   "meta": {
     "collection": "organizations",
     "conditions": null,
-    "display": "related-values",
-    "display_options": {
-      "template": "{{buildings_id.alias}} ({{buildings_id.id}})"
-    },
-    "field": "buildings",
+    "display": null,
+    "display_options": null,
+    "field": "child_organizations",
     "group": null,
     "hidden": false,
-    "interface": "list-m2m",
+    "interface": "list-o2m",
     "note": null,
     "options": {
-      "template": "{{buildings_id.alias}} ({{buildings_id.id}})"
+      "enableLink": true
     },
     "readonly": false,
     "required": false,
-    "sort": 15,
+    "sort": 16,
     "special": [
-      "m2m"
+      "o2m"
     ],
     "translations": null,
     "validation": null,
