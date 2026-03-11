@@ -21,17 +21,9 @@ import { useDispatch } from 'react-redux';
 import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useLanguage } from '@/hooks/useLanguage';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
-
-/** Extended building shape that may include optional organisation relation fields. */
-type BuildingWithOrganisations = DatabaseTypes.Buildings & {
-	/** Single organisation FK (e.g. `organisation_id` or `organisation`). */
-	organisation_id?: string | null;
-	organisation?: string | null;
-	/** Many-to-many relation: each entry is either the FK string or an object with an id field. */
-	organisations?: Array<string | { organisations_id?: string; id?: string }> | null;
-};
 
 type TileVariant = {
 	key: string;
@@ -186,6 +178,7 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	onLikeChange,
 }) => {
 	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
+	const { translate } = useLanguage();
 
 	// Sync local state if initialLikes reference changes (e.g. modal re-renders with updated parent state)
 	useEffect(() => {
@@ -226,7 +219,13 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 		[onLikeChange]
 	);
 
-	if (organisations.length === 0) return null;
+	if (organisations.length === 0) {
+		return (
+			<View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+				<Text style={{ color: '#888' }}>{translate(TranslationKeys.no_data_found)}</Text>
+			</View>
+		);
+	}
 
 	return (
 		<>
@@ -254,7 +253,7 @@ const POSITION_BUNDESTAG = {
 	lng: 13.376281624711964,
 };
 
-const MAX_LOG_ENTRIES = 50;
+const MAX_LOG_ENTRIES = 200;
 
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
@@ -264,18 +263,55 @@ const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 3;
 
+/** Returns black or white based on the luminance of the given hex background color. */
+function getContrastColor(hexColor: string): string {
+	const hex = hexColor.replace('#', '');
+	if (hex.length !== 6) return '#ffffff';
+	const r = parseInt(hex.slice(0, 2), 16) / 255;
+	const g = parseInt(hex.slice(2, 4), 16) / 255;
+	const b = parseInt(hex.slice(4, 6), 16) / 255;
+	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	// WCAG relative-luminance midpoint: colours above this threshold are considered "light"
+	const WCAG_LIGHT_THRESHOLD = 0.179;
+	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
+}
+
+/**
+ * Returns the first organisation linked to the building from the pre-computed dict, or null if none.
+ */
+function getFirstOrganisationFromDict(
+	buildingId: string,
+	buildingIdToOrgsDict: Record<string, DatabaseTypes.Organizations[]>
+): DatabaseTypes.Organizations | null {
+	const orgs = buildingIdToOrgsDict[buildingId];
+	return orgs && orgs.length > 0 ? orgs[0] : null;
+}
+
+/**
+ * Creates an SVG circle marker for a building.
+ *
+ * Colour fallback priority (per field):
+ *   1. Building's own `markerColor` / `markerLabelColor`
+ *   2. First organisation's `orgMarkerColor` / `orgMarkerLabelColor`
+ *   3. Project default: `fallbackColor` (project colour) / `fallbackLabelColor` (contrast of project colour)
+ */
 function createBuildingMarkerSvg(
 	externalIdentifier?: string | null,
 	markerColor?: string | null,
 	markerLabel?: string | null,
 	markerLabelColor?: string | null,
+	orgMarkerColor?: string | null,
+	orgMarkerLabelColor?: string | null,
+	fallbackColor?: string | null,
+	fallbackLabelColor?: string | null,
 ): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
 	const cy = size / 2;
 	const r = cx - 2;
-	const fillColor = markerColor ?? BUILDING_MARKER_COLOR;
-	const textColor = markerLabelColor ?? 'white';
+	// Use || instead of ?? so that empty strings also fall back to the next value in the chain
+	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
+	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
 	const rawLabel = markerLabel ?? externalIdentifier;
 	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
@@ -290,7 +326,8 @@ const MAX_SEARCH_RESULTS = 3;
 const LeafletMap = () => {
 	useSetPageTitle(TranslationKeys.leaflet_map);
 
-	const { buildings, organisations } = useAppSelector((state) => state.canteenReducer);
+	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
@@ -304,6 +341,27 @@ const LeafletMap = () => {
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
+
+	// Fast lookup dict for organisations – keyed by organisation ID
+	const organisationsDict = useMemo(
+		() => (organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
+			(acc, org) => { acc[org.id] = org; return acc; },
+			{}
+		),
+		[organisations]
+	);
+
+	// Dict: buildingId → Organizations[] derived from the buildings_organizations join table
+	const buildingIdToOrgsDict = useMemo(
+		() => BuildingsHelper.getBuildingIdToOrganizationsDict(
+			buildingsOrganizations,
+			organisationsDict
+		),
+		[buildingsOrganizations, organisationsDict]
+	);
+
+	// Contrast label colour to use as the default marker text colour when no explicit colour is set
+	const primaryColorContrastColor = useMemo(() => getContrastColor(primaryColor), [primaryColor]);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
@@ -357,6 +415,57 @@ const LeafletMap = () => {
 			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
 		});
 	}, []);
+
+	// Log organisationsDict whenever it changes (init + updates)
+	useEffect(() => {
+		const entries = Object.entries(organisationsDict);
+		addLog(
+			`organisationsDict (${entries.length}): ` +
+			(entries.length > 0
+				? entries.map(([id, org]) => `${id}=${org.alias ?? 'n/a'}`).join(', ')
+				: '(empty)')
+		);
+	}, [organisationsDict, addLog]);
+
+	// Log buildingIdToOrgsDict whenever it changes (init + updates)
+	useEffect(() => {
+		const entries = Object.entries(buildingIdToOrgsDict);
+		addLog(
+			`buildingIdToOrgsDict (${entries.length} buildings): ` +
+			(entries.length > 0
+				? entries.map(([bid, orgs]) => `${bid}→[${orgs.map((o) => o.id).join(',')}]`).join(', ')
+				: '(empty)')
+		);
+	}, [buildingIdToOrgsDict, addLog]);
+
+	// Log per-marker color resolution to the DebugView whenever the relevant data changes
+	useEffect(() => {
+		const buildingsWithCoords = (buildings as DatabaseTypes.Buildings[]).filter((building) => {
+			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
+			return coords && coords.length === 2;
+		});
+		if (buildingsWithCoords.length === 0) return;
+		addLog(`--- Marker colors (${buildingsWithCoords.length}) ---`);
+		buildingsWithCoords.forEach((building) => {
+			const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
+			const resolvedColor =
+				building.map_marker_color ||
+				firstOrg?.map_marker_color ||
+				primaryColor ||
+				BUILDING_MARKER_COLOR;
+			const colorSource = building.map_marker_color
+				? 'building'
+				: firstOrg?.map_marker_color
+				? `org(${firstOrg.alias ?? firstOrg.id})`
+				: primaryColor
+				? 'primary'
+				: 'default';
+			const rawLabel = building.map_marker_label ?? building.external_identifier;
+			const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+			const displayName = building.alias ?? rawLabel ?? building.id;
+			addLog(`  ${displayName} | lbl=${label ?? '-'} | color=${resolvedColor} [${colorSource}]`);
+		});
+	}, [buildings, buildingIdToOrgsDict, primaryColor, addLog]);
 
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
@@ -419,23 +528,13 @@ const LeafletMap = () => {
 	// Build markers for all buildings that have valid coordinates,
 	// filtered by liked organisations when any are selected.
 	const buildingMarkers = useMemo((): MapMarker[] => {
-		return (buildings as BuildingWithOrganisations[])
+		return (buildings as DatabaseTypes.Buildings[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 				if (!coords || coords.length !== 2) return false;
 				// Apply organisation filter only when at least one org is liked
 				if (likedOrganisationIds.length > 0) {
-					const buildingWithOrgs = building as BuildingWithOrganisations;
-					// Support both a single organisation FK and a many-to-many organisations array
-					const singleOrgId: string | null | undefined =
-						buildingWithOrgs.organisation_id ?? buildingWithOrgs.organisation;
-					const orgIds: string[] = Array.isArray(buildingWithOrgs.organisations)
-						? buildingWithOrgs.organisations.map((o) =>
-								typeof o === 'string' ? o : (o?.organisations_id ?? o?.id ?? '')
-							).filter(Boolean)
-						: singleOrgId
-						? [singleOrgId]
-						: [];
+					const orgIds = (buildingIdToOrgsDict[building.id] ?? []).map((org) => org.id);
 					// Buildings with no organisation link bypass the filter and are always shown
 					if (orgIds.length === 0) return true;
 					return orgIds.some((id) => likedOrganisationIds.includes(id));
@@ -445,6 +544,17 @@ const LeafletMap = () => {
 			.map((building) => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
 				const [lng, lat] = coords;
+				// Resolve the first linked organisation for style fallback
+				const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
+				const resolvedColor = building.map_marker_color || firstOrg?.map_marker_color || primaryColor || BUILDING_MARKER_COLOR;
+				console.log('[LeafletMap] Building marker:', {
+					id: building.id,
+					alias: building.alias,
+					buildingColor: building.map_marker_color,
+					firstOrgId: firstOrg?.id,
+					orgColor: firstOrg?.map_marker_color,
+					resolvedColor,
+				});
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
@@ -453,12 +563,16 @@ const LeafletMap = () => {
 						building.map_marker_color,
 						building.map_marker_label,
 						building.map_marker_label_color,
+						firstOrg?.map_marker_color ?? null,
+						firstOrg?.map_marker_label_color ?? null,
+						primaryColor,
+						primaryColorContrastColor,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, likedOrganisationIds]);
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
@@ -511,7 +625,33 @@ const LeafletMap = () => {
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
 
-			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
+			addLog(`Building clicked: ${title} (id=${buildingId ?? 'unknown'})${lat !== null ? ` @ ${lat}, ${lng}` : ''}`);
+
+			if (buildingId) {
+				// Log which buildings_organizations entries are linked to this building
+				const matchedBuildingOrgs = (buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[]).filter((entry) => {
+					const entryBuildingId =
+						typeof entry.buildings_id === 'string'
+							? entry.buildings_id
+							: (entry.buildings_id as DatabaseTypes.Buildings | null)?.id;
+					return entryBuildingId === buildingId;
+				});
+				addLog(
+					`buildings_organizations found: ${matchedBuildingOrgs.length}` +
+					(matchedBuildingOrgs.length > 0
+						? ` [${matchedBuildingOrgs.map((e) => `bo.id=${e.id} org=${typeof e.organizations_id === 'string' ? e.organizations_id : (e.organizations_id as DatabaseTypes.Organizations | null)?.id ?? '?'}`).join(', ')}]`
+						: '')
+				);
+
+				// Log which organizations were resolved for this building
+				const resolvedOrgs = buildingIdToOrgsDict[buildingId] ?? [];
+				addLog(
+					`Resolved organizations: ${resolvedOrgs.length}` +
+					(resolvedOrgs.length > 0
+						? ` [${resolvedOrgs.map((o) => `id=${o.id} color=${o.map_marker_color ?? 'none'}`).join(', ')}]`
+						: '')
+				);
+			}
 
 			if (coords && coords.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
@@ -522,7 +662,7 @@ const LeafletMap = () => {
 				openBuildingDetailsModal(buildingId);
 			}
 		},
-		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
+		[buildings, buildingsOrganizations, buildingIdToOrgsDict, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
 	const handleMapEvent = useCallback(

@@ -47,6 +47,7 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, mapL
 				const data: LeafletWebViewEvent = JSON.parse(event.data);
 				if (data.tag === 'MapComponentMounted') {
 					sendCoordinates();
+					onMapEvent?.(data);
 					return;
 				}
 				if (data.tag === 'onZoomEnd') {

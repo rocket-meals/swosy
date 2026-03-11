@@ -19,6 +19,7 @@ import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
 import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -178,15 +179,59 @@ const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 3;
 
-function createBuildingMarkerSvg(externalIdentifier?: string | null): string {
+/** Returns black or white based on the luminance of the given hex background color. */
+function getContrastColor(hexColor: string): string {
+	const hex = hexColor.replace('#', '');
+	if (hex.length !== 6) return '#ffffff';
+	const r = parseInt(hex.slice(0, 2), 16) / 255;
+	const g = parseInt(hex.slice(2, 4), 16) / 255;
+	const b = parseInt(hex.slice(4, 6), 16) / 255;
+	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	const WCAG_LIGHT_THRESHOLD = 0.179;
+	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
+}
+
+/**
+ * Returns the first organisation linked to the building from the pre-computed dict, or null if none.
+ */
+function getFirstOrganisationFromDict(
+	buildingId: string,
+	buildingIdToOrgsDict: Record<string, DatabaseTypes.Organizations[]>
+): DatabaseTypes.Organizations | null {
+	const orgs = buildingIdToOrgsDict[buildingId];
+	return orgs && orgs.length > 0 ? orgs[0] : null;
+}
+
+/**
+ * Creates an SVG circle marker for a building.
+ *
+ * Colour fallback priority (per field):
+ *   1. Building's own `markerColor` / `markerLabelColor`
+ *   2. First organisation's `orgMarkerColor` / `orgMarkerLabelColor`
+ *   3. Project default: `fallbackColor` (project colour) / `fallbackLabelColor` (contrast of project colour)
+ */
+function createBuildingMarkerSvg(
+	externalIdentifier?: string | null,
+	markerColor?: string | null,
+	markerLabel?: string | null,
+	markerLabelColor?: string | null,
+	orgMarkerColor?: string | null,
+	orgMarkerLabelColor?: string | null,
+	fallbackColor?: string | null,
+	fallbackLabelColor?: string | null,
+): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
 	const cy = size / 2;
 	const r = cx - 2;
-	const label = externalIdentifier ? externalIdentifier.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
-	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${BUILDING_MARKER_COLOR}" stroke="white" stroke-width="2" opacity="0.9"/>`;
+	// Use || instead of ?? so that empty strings also fall back to the next value in the chain
+	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
+	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
+	const rawLabel = markerLabel ?? externalIdentifier;
+	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	const textEl = label
-		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
+		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
 		: '';
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
@@ -196,7 +241,8 @@ const MAX_SEARCH_RESULTS = 3;
 const MapScreen = () => {
 	useSetPageTitle(TranslationKeys.map);
 
-	const { buildings } = useAppSelector((state) => state.canteenReducer);
+	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
@@ -236,6 +282,27 @@ const MapScreen = () => {
 			return next.length > MAX_LOG_ENTRIES ? next.slice(next.length - MAX_LOG_ENTRIES) : next;
 		});
 	}, []);
+
+	// Fast lookup dict for organisations – keyed by organisation ID
+	const organisationsDict = useMemo(
+		() => (organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
+			(acc, org) => { acc[org.id] = org; return acc; },
+			{}
+		),
+		[organisations]
+	);
+
+	// Dict: buildingId → Organizations[] derived from the buildings_organizations join table
+	const buildingIdToOrgsDict = useMemo(
+		() => BuildingsHelper.getBuildingIdToOrganizationsDict(
+			buildingsOrganizations,
+			organisationsDict
+		),
+		[buildingsOrganizations, organisationsDict]
+	);
+
+	// Contrast label colour to use as the default marker text colour when no explicit colour is set
+	const primaryColorContrastColor = useMemo(() => getContrastColor(primaryColor), [primaryColor]);
 
 	const selectedTileLayer = useMemo(() => {
 		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
@@ -283,15 +350,25 @@ const MapScreen = () => {
 			.map((building) => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
 				const [lng, lat] = coords;
+				const firstOrg = getFirstOrganisationFromDict(building.id, buildingIdToOrgsDict);
 				return {
 					id: `building-${building.id}`,
 					position: { lat: Number(lat), lng: Number(lng) },
-					icon: createBuildingMarkerSvg(building.external_identifier),
+					icon: createBuildingMarkerSvg(
+						building.external_identifier,
+						building.map_marker_color,
+						building.map_marker_label,
+						building.map_marker_label_color,
+						firstOrg?.map_marker_color ?? null,
+						firstOrg?.map_marker_label_color ?? null,
+						primaryColor,
+						primaryColorContrastColor,
+					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings]);
+	}, [buildings, buildingIdToOrgsDict, primaryColor, primaryColorContrastColor]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
@@ -346,6 +423,37 @@ const MapScreen = () => {
 
 			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
 
+			if (building) {
+				// Log all building fields
+				addLog(`  id=${building.id}`);
+				addLog(`  external_identifier=${building.external_identifier ?? 'null'}`);
+				addLog(`  alias=${building.alias ?? 'null'}`);
+				addLog(`  map_marker_color=${building.map_marker_color ?? 'null'}`);
+				addLog(`  map_marker_label=${building.map_marker_label ?? 'null'}`);
+				addLog(`  map_marker_label_color=${building.map_marker_label_color ?? 'null'}`);
+				addLog(`  map_marker_style=${building.map_marker_style ?? 'null'}`);
+				addLog(`  map_marker_is_visible=${building.map_marker_is_visible ?? 'null'}`);
+				addLog(`  map_marker_cluster_exclude=${building.map_marker_cluster_exclude ?? 'null'}`);
+				addLog(`  status=${building.status ?? 'null'}`);
+				addLog(`  date_updated=${building.date_updated ?? 'null'}`);
+			}
+
+			if (buildingId) {
+				// Log which organizations were resolved for this building
+				const resolvedOrgs = buildingIdToOrgsDict[buildingId] ?? [];
+				addLog(
+					`  organizations: ${resolvedOrgs.length}` +
+					(resolvedOrgs.length > 0
+						? ` [${resolvedOrgs.map((o) => `id=${o.id} color=${o.map_marker_color ?? 'none'}`).join(', ')}]`
+						: '')
+				);
+				// Log resolved color
+				const firstOrg = resolvedOrgs[0] ?? null;
+				const resolvedColor = building?.map_marker_color || firstOrg?.map_marker_color || primaryColor || BUILDING_MARKER_COLOR;
+				const colorSource = building?.map_marker_color ? 'building' : firstOrg?.map_marker_color ? `org(${firstOrg.alias ?? firstOrg.id})` : primaryColor ? 'primary' : 'default';
+				addLog(`  resolved_color=${resolvedColor} [${colorSource}]`);
+			}
+
 			if (coords && coords.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
 				setMapZoom(DEFAULT_ZOOM);
@@ -355,7 +463,7 @@ const MapScreen = () => {
 				openBuildingDetailsModal(buildingId);
 			}
 		},
-		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
+		[buildings, buildingIdToOrgsDict, clusteredBuildingMarkers, primaryColor, openBuildingDetailsModal, addLog],
 	);
 
 	const handleMapEvent = useCallback(

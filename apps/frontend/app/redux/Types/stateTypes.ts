@@ -30,6 +30,7 @@ export type CanteenWithImage = DatabaseTypes.Canteens & {
 export type CanteensState = {
 	canteens: CanteenWithImage[];
 	buildings: DatabaseTypes.Buildings[];
+	buildingsOrganizations: DatabaseTypes.BuildingsOrganizations[];
 	organisations: DatabaseTypes.Organizations[];
 	selectedCanteen: CanteenWithImage | null;
 	selectedCanteenFoodOffers: DatabaseTypes.Foodoffers[];
