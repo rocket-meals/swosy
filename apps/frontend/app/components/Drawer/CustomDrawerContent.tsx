@@ -275,7 +275,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 iconLibName: Ionicons,
                                 activeKey: 'map/index',
                                 route: 'map/index',
-                                position: 7.5,
+                                position: 3.5,
                         });
                 }
 
