@@ -365,7 +365,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
-	const { show } = useMyScrollViewModal();
+	const { show, close } = useMyScrollViewModal();
 	const { translate } = useLanguage();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
@@ -563,13 +563,14 @@ const OsmVectorMapScreen: React.FC = () => {
 			mapMarkers: clusteredBuildingMarkers,
 			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
-			pitch: INITIAL_PITCH,
 		};
 
 		if (shouldNavigate) {
 			message.mapCenterPosition = effectiveCenter;
 			message.zoom = mapZoom;
+			message.pitch = INITIAL_PITCH;
 			pendingNavigateRef.current = false;
+			setMapCenterOverride(null);
 		}
 
 		const messageStr = JSON.stringify(message);
@@ -672,12 +673,13 @@ const OsmVectorMapScreen: React.FC = () => {
 				<OsmControlsHintContent
 					onDontShowAgain={() => {
 						dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, payload: false });
+						close();
 					}}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, dispatch, theme]);
+	}, [show, close, dispatch, theme]);
 
 	const openSettingsModal = useCallback(() => {
 		show({
@@ -744,7 +746,7 @@ const OsmVectorMapScreen: React.FC = () => {
 							style={styles.infoIconButton}
 							onPress={openControlsHintModal}
 						>
-							<Ionicons name="information-circle-outline" size={32} color={theme.header.text} />
+							<Ionicons name="help-circle-outline" size={32} color={theme.header.text} />
 						</TouchableOpacity>
 					)}
 					<DebugView title="Map Log">
