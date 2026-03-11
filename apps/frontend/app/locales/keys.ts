@@ -417,6 +417,8 @@ export enum TranslationKeys {
 	image = 'image',
 	language = 'language',
 	language_system = 'language_system',
+	pirate_language = 'pirate_language',
+	pirate_language_description = 'pirate_language_description',
 	drawer_config_position = 'drawer_config_position',
 	drawer_config_position_left = 'drawer_config_position_left',
 	drawer_config_position_right = 'drawer_config_position_right',

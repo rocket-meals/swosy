@@ -4053,6 +4053,26 @@
         "tr": "Sistem Dili",
         "zh": "系统语言"
     },
+    "pirate_language": {
+        "de": "Piraten Sprache",
+        "en": "Pirate Language",
+        "ar": "لغة القراصنة",
+        "es": "Idioma Pirata",
+        "fr": "Langue Pirate",
+        "ru": "Язык пиратов",
+        "tr": "Korsan Dili",
+        "zh": "海盗语言"
+    },
+    "pirate_language_description": {
+        "de": "Arrr! Spricht wie ein Pirrrat!",
+        "en": "Arrr! Speaks like a Pirrrate!",
+        "ar": "أررر! يتكلم مثل قررصان!",
+        "es": "¡Arrr! ¡Habla como un Pirrrata!",
+        "fr": "Arrr! Parle comme un Pirrrate!",
+        "ru": "Аррр! Говоррит как Пирррат!",
+        "tr": "Arrr! Korrrsan gibi konuşurr!",
+        "zh": "Arrr! 像海盗一样说话!"
+    },
     "drawer_config_position": {
         "de": "Menüposition",
         "en": "Drawer Position",
