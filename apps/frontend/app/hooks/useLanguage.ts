@@ -13,7 +13,7 @@ const setPirateLanguage = (enabled: boolean) => ({
 	payload: enabled,
 });
 
-const applyPirateTransformation = (text: string): string => {
+export const applyPirateTransformation = (text: string): string => {
 	let result = text;
 	// 1. Roll the R: r → rr, R → RR
 	result = result.replace(/r/g, 'rr').replace(/R/g, 'RR');
@@ -64,7 +64,17 @@ export const useLanguage = () => {
 		return () => unsubscribe();
 	}, []);
 
+	const translateDynamic = useMemo(() => {
+		return (text: string) => {
+			if (!text) return text;
+			if (pirateLanguage) {
+				return applyPirateTransformation(text);
+			}
+			return text;
+		};
+	}, [pirateLanguage]);
+
 	const specialLanguageOptions = useMemo(() => ({ pirate_language: pirateLanguage }), [pirateLanguage]);
 
-	return { language, setLanguageMode, translate, pirateLanguage, togglePirateLanguage, specialLanguageOptions };
+	return { language, setLanguageMode, translate, translateDynamic, pirateLanguage, togglePirateLanguage, specialLanguageOptions };
 };

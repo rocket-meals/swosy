@@ -16,14 +16,14 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 const Index = () => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, translateDynamic } = useLanguage();
 	const [wiki, setWiki] = useState<DatabaseTypes.Wikis>();
 	const [loading, setLoading] = useState(true);
 	const { wikis, language, primaryColor } = useAppSelector((state) => state.settings);
 	const { deviceMock } = useGlobalSearchParams();
 	const { custom_id, id } = useLocalSearchParams();
 	//Set Page Title
-	const title = wiki?.translations ? getTitleFromTranslation(wiki?.translations, language) : 'Wikis';
+	const title = wiki?.translations ? translateDynamic(getTitleFromTranslation(wiki?.translations, language)) : 'Wikis';
 	useSetPageTitle(title);
 
 	const filterWiki = () => {
@@ -65,7 +65,7 @@ const Index = () => {
 						<TouchableOpacity onPress={() => router.navigate(('/(app)/' + AppScreens.FOOD_OFFERS) as any)} style={{ padding: 10 }}>
 							<Ionicons name="arrow-back" size={24} color={theme.header.text} />
 						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text }}>{wiki?.translations && getTitleFromTranslation(wiki?.translations, language)}</Text>
+						<Text style={{ ...styles.heading, color: theme.header.text }}>{wiki?.translations && translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
 					</View>
 				</View>
 			</View>
@@ -82,7 +82,7 @@ const Index = () => {
 						<ActivityIndicator size={30} color={theme.screen.text} />
 					</View>
 				) : wiki?.translations && getTextFromTranslation(wiki.translations, language)?.trim() ? (
-					<CustomMarkdown content={getTextFromTranslation(wiki.translations, language)} backgroundColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} />
+					<CustomMarkdown content={translateDynamic(getTextFromTranslation(wiki.translations, language))} backgroundColor={wiki?.color || primaryColor} imageWidth={'100%'} imageHeight={400} />
 				) : (
 					<Text style={{ color: theme.screen.text, padding: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
 				)}

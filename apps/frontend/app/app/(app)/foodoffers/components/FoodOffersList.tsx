@@ -28,6 +28,7 @@ interface FoodOffersListProps {
     feedbackMap: Map<string, any>;
     // Optimization props
     language?: string;
+    pirateLanguage?: boolean;
     serverInfo?: any;
     appSettings?: any;
     primaryColor?: string;
@@ -71,6 +72,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
     ListEmptyComponent,
     feedbackMap,
     language,
+    pirateLanguage,
     serverInfo,
     appSettings,
     primaryColor,
@@ -102,6 +104,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 itemGap={10}
                 previousFeedback={previousFeedback}
                 language={language}
+                pirateLanguage={pirateLanguage}
                 serverInfo={serverInfo}
                 appSettings={appSettings}
                 primaryColor={primaryColor}
@@ -114,7 +117,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                 amountColumnsForcard={amountColumnsForcard}
             />
         );
-    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, getInfoItemContent, feedbackMap, language, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
+    }, [cardWidth, selectedCanteen, handleMenuSheet, handleImageSheet, getInfoItemContent, feedbackMap, language, pirateLanguage, serverInfo, appSettings, primaryColor, user, isManagement, profile, markings, screenWidth, theme, amountColumnsForcard]);
 
     const keyExtractor = useCallback((item: DayItem, index: number) => {
         if (item.foodoffer && item.foodoffer.id) return `f-${item.foodoffer.id}`;
@@ -145,6 +148,7 @@ const FoodOffersList: React.FC<FoodOffersListProps> = ({
                         selectedCanteen,
                         feedbackMap,
                         language,
+                        pirateLanguage,
                         serverInfo,
                         appSettings,
                         primaryColor,
@@ -201,6 +205,7 @@ export default memo(FoodOffersList, (prev, next) => {
     // If list has items, check if footer changed
     return prev.ListFooterComponent === next.ListFooterComponent &&
            prev.language === next.language &&
+           prev.pirateLanguage === next.pirateLanguage &&
            prev.serverInfo === next.serverInfo &&
            prev.appSettings === next.appSettings &&
            prev.primaryColor === next.primaryColor &&

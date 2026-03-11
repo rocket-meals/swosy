@@ -8,6 +8,7 @@ import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
+import { applyPirateTransformation } from '@/hooks/useLanguage';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -47,6 +48,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     previousFeedback,
     // Opt props
     language,
+    pirateLanguage,
     serverInfo,
     appSettings,
     primaryColor,
@@ -248,17 +250,22 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     const handlePriceChange = useCallback(() => router.navigate('/price-group'), []);
 
     const foodDescription = useMemo(
-      () => getDescriptionFromTranslation(foodItem?.translations, language || 'de'),
-      [foodItem?.translations, language]
+      () => {
+        const desc = getDescriptionFromTranslation(foodItem?.translations, language || 'de');
+        return pirateLanguage && desc ? applyPirateTransformation(desc) : desc;
+      },
+      [foodItem?.translations, language, pirateLanguage]
     );
 
     const foodName = useMemo(
-      () =>
-        excerpt(
+      () => {
+        const name = excerpt(
           getTextFromTranslation(foodItem?.translations, language || 'de'),
           screenWidth > 1000 ? 120 : screenWidth > 700 ? 80 : screenWidth > 460 ? 60 : 40
-        ),
-      [foodItem?.translations, language, screenWidth]
+        );
+        return pirateLanguage && name ? applyPirateTransformation(name) : name;
+      },
+      [foodItem?.translations, language, pirateLanguage, screenWidth]
     );
 
     const priceLabel = useMemo(() => showFormatedPrice(showPrice(item, profile)), [item, profile]);
@@ -424,7 +431,10 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
         >
           <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
             <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-              {getTextFromTranslation(foodItem?.translations, language || 'de')}
+              {(() => {
+                const tooltipText = getTextFromTranslation(foodItem?.translations, language || 'de');
+                return pirateLanguage && tooltipText ? applyPirateTransformation(tooltipText) : tooltipText;
+              })()}
             </TooltipText>
           </TooltipContent>
         </CustomTooltip>
@@ -437,6 +447,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     prev.canteen === next.canteen &&
     prev.cardWidth === next.cardWidth &&
     prev.language === next.language &&
+    prev.pirateLanguage === next.pirateLanguage &&
     prev.serverInfo === next.serverInfo &&
     prev.appSettings === next.appSettings &&
     prev.primaryColor === next.primaryColor &&
@@ -453,6 +464,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const { item } = props;
     // Use props if available, otherwise fallback to selectors (for backward compatibility if used elsewhere)
     const language = props.language ?? useAppSelector((state) => state.settings.language);
+    const pirateLanguage = props.pirateLanguage ?? useAppSelector((state) => state.settings.pirateLanguage);
     const serverInfo = props.serverInfo ?? useAppSelector((state) => state.settings.serverInfo);
     const appSettings = props.appSettings ?? useAppSelector((state) => state.settings.appSettings);
     const primaryColor = props.primaryColor ?? useAppSelector((state) => state.settings.primaryColor);
@@ -494,6 +506,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
             {...props}
             previousFeedback={previousFeedback}
             language={language}
+            pirateLanguage={pirateLanguage}
             serverInfo={serverInfo}
             appSettings={appSettings}
             primaryColor={primaryColor}

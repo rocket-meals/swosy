@@ -22,6 +22,7 @@ interface FoodOfferListItemProps {
     previousFeedback?: any;
     // Optimization props
     language?: string;
+    pirateLanguage?: boolean;
     serverInfo?: any;
     appSettings?: any;
     primaryColor?: string;
@@ -45,6 +46,7 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
     itemGap,
     previousFeedback,
     language,
+    pirateLanguage,
     serverInfo,
     appSettings,
     primaryColor,
@@ -73,6 +75,7 @@ const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({
                     cardWidth={cardWidth}
                     previousFeedback={previousFeedback}
                     language={language}
+                    pirateLanguage={pirateLanguage}
                     serverInfo={serverInfo}
                     appSettings={appSettings}
                     primaryColor={primaryColor}
@@ -114,6 +117,7 @@ export default memo(FoodOfferListItem, (prev, next) => {
         prev.itemGap === next.itemGap &&
         prev.previousFeedback === next.previousFeedback &&
         prev.language === next.language &&
+        prev.pirateLanguage === next.pirateLanguage &&
         prev.serverInfo === next.serverInfo &&
         prev.appSettings === next.appSettings &&
         prev.primaryColor === next.primaryColor &&

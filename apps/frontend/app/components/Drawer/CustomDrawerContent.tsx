@@ -55,7 +55,7 @@ interface MenuItemProps {
 }
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
-	const { translate } = useLanguage();
+	const { translate, translateDynamic } = useLanguage();
 	const toast = useToast();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -315,7 +315,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 					}
 
 					return {
-						label: getTitleFromTranslation(wiki?.translations, language),
+						label: translateDynamic(getTitleFromTranslation(wiki?.translations, language)),
 						iconName,
 						iconLibName: iconLib,
 						activeKey: 'faq-food/index',
@@ -428,7 +428,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 												})
 											}
 										>
-											<Text style={{ ...styles.link, color: theme.drawer.link }}>{getTitleFromTranslation(wiki?.translations, language)}</Text>
+											<Text style={{ ...styles.link, color: theme.drawer.link }}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
 										</TouchableOpacity>
 										{index + 1 < wikis?.length - 1 && <Text style={{ ...styles.bar, color: theme.drawer.link }}>|</Text>}
 									</React.Fragment>
