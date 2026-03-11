@@ -1,5 +1,5 @@
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
-import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import LocationInformation from '@/components/LocationInformation/LocationInformation';
 import BuildingDescription from '@/components/BuildingDescription';
@@ -12,7 +12,7 @@ import useLinkCoordinateModal from '@/hooks/useLinkCoordinateModal';
 import DetailsImage from '@/app/(app)/campus/details/components/DetailsImage';
 import DetailsHeader from '@/app/(app)/campus/details/components/DetailsHeader';
 import DetailsTabs from '@/app/(app)/campus/details/components/DetailsTabs';
-import { shallowEqual, useDispatch, useStore } from 'react-redux';
+import { shallowEqual } from 'react-redux';
 import styles from '@/app/(app)/campus/details/styles';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -20,8 +20,6 @@ import SettingsList from '@/components/SettingsList/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle/SettingsGroupTitle';
 import DebugView from '@/components/DebugView';
 import { TranslationKeys } from '@/locales/keys';
-import { SET_CAMPUSES_DICT } from '@/redux/Types/types';
-import { RootState } from '@/redux/reducer';
 
 export interface BuildingDetailsContentProps {
     id?: string;
@@ -31,9 +29,6 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
     const { theme } = useTheme();
     const { translate } = useLanguage();
     const { openLinkCoordinateModal } = useLinkCoordinateModal();
-    const dispatch = useDispatch();
-    const store = useStore();
-    const buildingsHelper = useRef(new BuildingsHelper()).current;
 
     const { serverInfo, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => ({
         serverInfo: state.settings.serverInfo,
@@ -46,35 +41,6 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
         if (!id) return null;
         return state.campus.campusesDict[String(id)] || null;
     }, shallowEqual);
-
-    const buildingFromStore = useAppSelector((state) => {
-        if (!id) return null;
-        const buildings = state.canteenReducer.buildings as DatabaseTypes.Buildings[];
-        return buildings.find((b) => String(b.id) === String(id)) || null;
-    }, shallowEqual);
-
-    // Fetch the full building details (including businesshours) and update campusesDict
-    // when the building is not yet available in the campus cache.
-    useEffect(() => {
-        if (!id || campusDetails) return;
-        let cancelled = false;
-        buildingsHelper.fetchBuildingById(String(id)).then((result) => {
-            if (cancelled || !result) return;
-            const building = result as DatabaseTypes.Buildings;
-            const currentDict = (store.getState() as RootState).campus.campusesDict as Record<string, DatabaseTypes.Buildings>;
-            dispatch({
-                type: SET_CAMPUSES_DICT,
-                payload: { ...currentDict, [String(building.id)]: building },
-            });
-        }).catch((e) => {
-            console.warn('BuildingDetailsContent: failed to fetch building', e);
-        });
-        return () => { cancelled = true; };
-    }, [id, campusDetails, buildingsHelper, dispatch, store]);
-
-    // Use campusesDict entry when available; fall back to the pre-loaded buildings list
-    // so names are visible immediately even before the campus screen is visited.
-    const effectiveCampusDetails = campusDetails ?? buildingFromStore;
 
     const { buildingsOrganizations, organisations } = useAppSelector((state) => ({
         buildingsOrganizations: state.canteenReducer.buildingsOrganizations as DatabaseTypes.BuildingsOrganizations[],
@@ -105,12 +71,12 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
     const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
 
     const imageSource = useMemo(() => {
-        if (!effectiveCampusDetails) return { uri: defaultImage };
-        if (effectiveCampusDetails?.image_remote_url || effectiveCampusDetails?.image) {
-            return { uri: (effectiveCampusDetails?.image_remote_url as string) || getImageUrl(String(effectiveCampusDetails?.image)) };
+        if (!campusDetails) return { uri: defaultImage };
+        if (campusDetails?.image_remote_url || campusDetails?.image) {
+            return { uri: (campusDetails?.image_remote_url as string) || getImageUrl(String(campusDetails?.image)) };
         }
         return { uri: defaultImage };
-    }, [effectiveCampusDetails, defaultImage]);
+    }, [campusDetails, defaultImage]);
 
     useEffect(() => {
         if (imageSource?.uri) {
@@ -119,8 +85,8 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
     }, [imageSource]);
 
     const handleOpenNavigation = useCallback(() => {
-        if (!effectiveCampusDetails) return;
-        const point = effectiveCampusDetails.coordinates as { coordinates?: [number, number] } | undefined | null;
+        if (!campusDetails) return;
+        const point = campusDetails.coordinates as { coordinates?: [number, number] } | undefined | null;
         const coordinates = Array.isArray(point?.coordinates) ? point?.coordinates : undefined;
         if (!coordinates || coordinates.length !== 2) {
             console.error('Invalid coordinates');
@@ -130,13 +96,13 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
         openLinkCoordinateModal({
             latlon: { latitude, longitude },
         });
-    }, [effectiveCampusDetails, openLinkCoordinateModal]);
+    }, [campusDetails, openLinkCoordinateModal]);
 
     const renderContent = useMemo(() => {
-        if (activeTab === 'information') return <LocationInformation campusDetails={effectiveCampusDetails} />;
-        if (activeTab === 'description') return <BuildingDescription campusDetails={effectiveCampusDetails} />;
+        if (activeTab === 'information') return <LocationInformation campusDetails={campusDetails} />;
+        if (activeTab === 'description') return <BuildingDescription campusDetails={campusDetails} />;
         return null;
-    }, [activeTab, effectiveCampusDetails]);
+    }, [activeTab, campusDetails]);
 
     const themeStyles = useMemo(
         () => ({
@@ -158,7 +124,7 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
 
                 <View style={{ ...styles.detailsContainer, width: '100%' }}>
                     <DetailsHeader
-                        alias={effectiveCampusDetails?.alias}
+                        alias={campusDetails?.alias}
                         screenWidth={screenWidth}
                         theme={theme}
                         translate={translate}
@@ -205,7 +171,7 @@ const BuildingDetailsContent: React.FC<BuildingDetailsContentProps> = ({ id }) =
                 )}
 
                 <DebugView title="Building">
-                    <Text style={{ color: theme.screen.text }}>{JSON.stringify(effectiveCampusDetails, null, 2)}</Text>
+                    <Text style={{ color: theme.screen.text }}>{JSON.stringify(campusDetails, null, 2)}</Text>
                 </DebugView>
             </View>
         </ScrollView>
