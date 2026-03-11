@@ -1,159 +1,118 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAppSelector } from '@/redux/hooks';
-import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
-import MyMap from '@/components/MyMap/MyMap';
-import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
-import { LeafletWebViewEvent, MapLayer, MapMarker } from '@/components/MyMap/model';
+import { Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useTheme } from '@/hooks/useTheme';
-import { clusterMarkers } from '@/components/MyMap/clusterUtils';
-import { VIRTUAL_ZOOM_NONE_KEY, VIRTUAL_ZOOM_OPTIONS } from '@/components/MyMap/mapSettingsUtils';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { TranslationKeys } from '@/locales/keys';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
+import { useAppSelector } from '@/redux/hooks';
+import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
-import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
-import SettingsList from '@/components/SettingsList/SettingsList';
+import { useDispatch } from 'react-redux';
+import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { clusterMarkers } from '@/components/MyMap/clusterUtils';
+import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
+import { MapMarker } from '@/components/MyMap/model';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import { Entypo } from '@expo/vector-icons';
+import SettingsList from '@/components/SettingsList/SettingsList';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
-import { useDispatch } from 'react-redux';
-import { SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
-import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
+import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
-type TileVariant = {
+type OsmStyleVariant = {
 	key: string;
 	label: string;
-	layer: MapLayer;
+	url: string;
 };
 
-const TILE_VARIANTS: TileVariant[] = [
-	{
-		key: 'osm',
-		label: 'OpenStreetMap',
-		layer: {
-			layerType: 'TileLayer',
-			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-			baseLayerName: 'OpenStreetMap',
-			baseLayerIsChecked: true,
-		},
-	},
-	{
-		key: 'otm',
-		label: 'OpenTopoMap',
-		layer: {
-			layerType: 'TileLayer',
-			url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-			baseLayerName: 'OpenTopoMap',
-			baseLayerIsChecked: true,
-		},
-	},
-	{
-		key: 'carto-light',
-		label: 'CartoDB Light',
-		layer: {
-			layerType: 'TileLayer',
-			url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-			baseLayerName: 'CartoDB Light',
-			baseLayerIsChecked: true,
-		},
-	},
-	{
-		key: 'carto-dark',
-		label: 'CartoDB Dark',
-		layer: {
-			layerType: 'TileLayer',
-			url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-			baseLayerName: 'CartoDB Dark',
-			baseLayerIsChecked: true,
-		},
-	},
-	{
-		key: 'osm-hot',
-		label: 'OSM Humanitarian',
-		layer: {
-			layerType: 'TileLayer',
-			url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-			baseLayerName: 'OSM Humanitarian',
-			baseLayerIsChecked: true,
-		},
-	},
+const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
+	{ key: 'liberty', label: 'Liberty (Standard)', url: 'https://tiles.openfreemap.org/styles/liberty' },
+	{ key: 'bright', label: 'Bright', url: 'https://tiles.openfreemap.org/styles/bright' },
+	{ key: 'positron', label: 'Positron (Hell)', url: 'https://tiles.openfreemap.org/styles/positron' },
+	{ key: 'dark-matter', label: 'Dark Matter (Dunkel)', url: 'https://tiles.openfreemap.org/styles/dark-matter' },
 ];
 
-type LeafletSettingsContentProps = {
-	initialSelectedTileKey: string;
+// MapLibre pitch value for 70° viewing angle (pitch = degrees from vertical)
+const INITIAL_PITCH = 20;
+
+type OsmSettingsContentProps = {
+	initialSelectedStyleKey: string;
 	initialUseFlyAnimation: boolean;
-	initialUseVirtualZoom: number | null;
-	onSelectedTileChange: (key: string) => void;
+	initialClusterDistance: number;
+	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
-	onVirtualZoomChange: (value: number | null) => void;
+	onClusterDistanceChange: (value: number) => void;
+	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
-const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
-	initialSelectedTileKey,
+const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
+	initialSelectedStyleKey,
 	initialUseFlyAnimation,
-	initialUseVirtualZoom,
-	onSelectedTileChange,
+	initialClusterDistance,
+	onSelectedStyleChange,
 	onFlyAnimationChange,
-	onVirtualZoomChange,
+	onClusterDistanceChange,
+	onShowControlsHint,
 	theme,
 }) => {
-	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
+	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
-	const [localVirtualZoom, setLocalVirtualZoom] = useState<number | null>(initialUseVirtualZoom);
-	const [showingTileSelector, setShowingTileSelector] = useState(false);
-	const [showingVirtualZoomSelector, setShowingVirtualZoomSelector] = useState(false);
+	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
+	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
 
-	if (showingTileSelector) {
+	if (showingStyleSelector) {
 		return (
 			<SettingsListSelectOption
-				options={TILE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
-				selectedOption={selectedTileKey}
+				options={OSM_STYLE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
+				selectedOption={selectedStyleKey}
 				onSelect={(option) => {
-					setSelectedTileKey(option.id);
-					onSelectedTileChange(option.id);
-					setShowingTileSelector(false);
+					setSelectedStyleKey(option.id);
+					onSelectedStyleChange(option.id);
+					setShowingStyleSelector(false);
 				}}
 				noIconIndent
 			/>
 		);
 	}
-
-	if (showingVirtualZoomSelector) {
-		return (
-			<SettingsListSelectOption
-				options={VIRTUAL_ZOOM_OPTIONS}
-				selectedOption={localVirtualZoom === null ? VIRTUAL_ZOOM_NONE_KEY : String(localVirtualZoom)}
-				onSelect={(option) => {
-					const value = option.id === VIRTUAL_ZOOM_NONE_KEY ? null : Number(option.id);
-					setLocalVirtualZoom(value);
-					onVirtualZoomChange(value);
-					setShowingVirtualZoomSelector(false);
-				}}
-				noIconIndent
-			/>
-		);
-	}
-
-	const virtualZoomLabel =
-		localVirtualZoom === null
-			? 'Kein Virtueller Zoom'
-			: String(localVirtualZoom);
 
 	return (
 		<>
 			<SettingsList
-				title="Kartenmaterial"
-				value={(TILE_VARIANTS.find((v) => v.key === selectedTileKey) ?? TILE_VARIANTS[0]).label}
+				title="Kartenstil"
+				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-				onPress={() => setShowingTileSelector(true)}
+				onPress={() => setShowingStyleSelector(true)}
 				groupPosition="top"
+				noIconIndent
+			/>
+			<SettingsList
+				title="Cluster-Abstand (px)"
+				rightElement={
+					<TextInput
+						value={localClusterDistance}
+						onChangeText={(text) => {
+							setLocalClusterDistance(text);
+							const num = parseInt(text, 10);
+							if (!isNaN(num) && num >= 10) {
+								onClusterDistanceChange(num);
+							}
+						}}
+						keyboardType="numeric"
+						style={{ color: theme.screen.text, textAlign: 'right', minWidth: 60, fontSize: 15 }}
+					/>
+				}
+				groupPosition="middle"
 				noIconIndent
 			/>
 			<SettingsList
@@ -168,13 +127,13 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 					/>
 				}
 				groupPosition="middle"
+				showSeparator={true}
 				noIconIndent
 			/>
 			<SettingsList
-				title="Virtueller Zoom"
-				value={virtualZoomLabel}
+				title="Kartensteuerung anzeigen"
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-				onPress={() => setShowingVirtualZoomSelector(true)}
+				onPress={onShowControlsHint}
 				groupPosition="bottom"
 				showSeparator={false}
 				noIconIndent
@@ -183,19 +142,66 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	);
 };
 
-const POSITION_BUNDESTAG = {
-	lat: 52.518594247456804,
-	lng: 13.376281624711964,
+type OsmControlsHintContentProps = {
+	onDontShowAgain: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
 };
 
-type LeafletFilterContentProps = {
+const OsmControlsHintContent: React.FC<OsmControlsHintContentProps> = ({ onDontShowAgain, theme }) => {
+	const isWeb = Platform.OS === 'web';
+	return (
+		<View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+			{isWeb ? (
+				<>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'🖱️ Linke Maustaste halten: Karte verschieben'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'🖱️ Rechte Maustaste halten: Neigung ändern'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'🖱️ Mausrad: Zoomen'}
+					</Text>
+				</>
+			) : (
+				<>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'👌 Zwei Finger spreizen / zusammenführen: Zoomen'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'☝️☝️ Zwei Finger hoch / runter: Neigung ändern'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'☝️ Ein Finger bewegen: Karte verschieben'}
+					</Text>
+				</>
+			)}
+			<Text style={{ color: theme.screen.text + '99', fontSize: 13, marginTop: 8, marginBottom: 16 }}>
+				{'Dieser Hinweis kann über die Einstellungen jederzeit aufgerufen werden.'}
+			</Text>
+			<TouchableOpacity
+				onPress={onDontShowAgain}
+				style={{
+					backgroundColor: theme.screen.iconBg,
+					borderRadius: 8,
+					paddingVertical: 12,
+					alignItems: 'center',
+				}}
+			>
+				<Text style={{ color: theme.screen.text, fontSize: 15 }}>Diesen Hinweis nicht mehr anzeigen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+};
+
+type OsmFilterContentProps = {
 	organisations: DatabaseTypes.Organizations[];
 	initialLikes: Record<string, boolean | null>;
 	onLikeChange: (organisationId: string, like: boolean) => void;
 	onResetAll: () => void;
 };
 
-const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
+const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 	organisations,
 	initialLikes,
 	onLikeChange,
@@ -222,7 +228,7 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 			});
 			onLikeChange(orgId, true);
 		},
-		[onLikeChange]
+		[onLikeChange],
 	);
 
 	const handlePressDislike = useCallback(
@@ -239,7 +245,7 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 			});
 			onLikeChange(orgId, false);
 		},
-		[onLikeChange]
+		[onLikeChange],
 	);
 
 	const handleResetAll = useCallback(() => {
@@ -283,15 +289,19 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	);
 };
 
+const POSITION_BUNDESTAG = {
+	lat: 52.518594247456804,
+	lng: 13.376281624711964,
+};
+
 const MAX_LOG_ENTRIES = 50;
 const MAX_ZOOM = 20;
-const DEFAULT_ZOOM = 17;
-
+const DEFAULT_ZOOM = 16;
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 3;
+const MAX_SEARCH_RESULTS = 3;
 
-/** Returns black or white based on the luminance of the given hex background color. */
 function getContrastColor(hexColor: string): string {
 	const hex = hexColor.replace('#', '');
 	if (hex.length !== 6) return '#ffffff';
@@ -303,25 +313,14 @@ function getContrastColor(hexColor: string): string {
 	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
 }
 
-/**
- * Returns the first organisation linked to the building from the pre-computed dict, or null if none.
- */
 function getFirstOrganisationFromDict(
 	buildingId: string,
-	buildingIdToOrgsDict: Record<string, DatabaseTypes.Organizations[]>
+	buildingIdToOrgsDict: Record<string, DatabaseTypes.Organizations[]>,
 ): DatabaseTypes.Organizations | null {
 	const orgs = buildingIdToOrgsDict[buildingId];
 	return orgs && orgs.length > 0 ? orgs[0] : null;
 }
 
-/**
- * Creates an SVG circle marker for a building.
- *
- * Colour fallback priority (per field):
- *   1. Building's own `markerColor` / `markerLabelColor`
- *   2. First organisation's `orgMarkerColor` / `orgMarkerLabelColor`
- *   3. Project default: `fallbackColor` (project colour) / `fallbackLabelColor` (contrast of project colour)
- */
 function createBuildingMarkerSvg(
 	externalIdentifier?: string | null,
 	markerColor?: string | null,
@@ -336,7 +335,6 @@ function createBuildingMarkerSvg(
 	const cx = size / 2;
 	const cy = size / 2;
 	const r = cx - 2;
-	// Use || instead of ?? so that empty strings also fall back to the next value in the chain
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
 	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
 	const rawLabel = markerLabel ?? externalIdentifier;
@@ -348,81 +346,39 @@ function createBuildingMarkerSvg(
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
-const MAX_SEARCH_RESULTS = 3;
-
-const MapScreen = () => {
+const OsmVectorMapScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.map);
+	const { theme } = useTheme();
+	const webViewRef = useRef<WebView>(null);
+	const [html, setHtml] = useState<string | null>(null);
 
 	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
-	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
-	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
-	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
-	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
+	const selectedStyleKey = useAppSelector((state) => (state.settings as any).osmVectorMapStyleKey ?? 'liberty');
+	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
+	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
+	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
+	const organisationLikes = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapOrganisationFilter ?? {}) as Record<string, boolean | null>,
+	);
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
-	const { theme } = useTheme();
-	const { show } = useMyScrollViewModal();
+	const { show, close } = useMyScrollViewModal();
 	const { translate } = useLanguage();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
-
-	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
-
-	// Organisation filter is persisted in Redux: orgId → true (liked) | false (disliked); absent key = neutral
-	// Ref so the stable modal callback always reads the latest handler
-	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
-
-	const handleOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
-		const current = organisationLikes[orgId];
-		const next = current === like ? null : like;
-		const updated = { ...organisationLikes };
-		if (next === null) {
-			delete updated[orgId];
-		} else {
-			updated[orgId] = next;
-		}
-		dispatch({ type: SET_MAP_ORGANISATION_FILTER, payload: updated });
-	}, [dispatch, organisationLikes]);
-
-	handleOrganisationLikeChangeRef.current = handleOrganisationLikeChange;
-
-	const stableOnOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
-		handleOrganisationLikeChangeRef.current(orgId, like);
-	}, []);
-
-	const handleResetAllFiltersRef = useRef<() => void>(() => {});
-
-	const handleResetAllFilters = useCallback(() => {
-		dispatch({ type: SET_MAP_ORGANISATION_FILTER, payload: {} });
-	}, [dispatch]);
-
-	handleResetAllFiltersRef.current = handleResetAllFilters;
-
-	const stableOnResetAllFilters = useCallback(() => {
-		handleResetAllFiltersRef.current();
-	}, []);
-
-	const setSelectedTileVariantKey = useCallback((key: string) => {
-		dispatch({ type: SET_MAP_TILE_VARIANT_KEY, payload: key });
-	}, [dispatch]);
-
-	const setUseFlyAnimation = useCallback((value: boolean) => {
-		dispatch({ type: SET_MAP_USE_FLY_ANIMATION, payload: value });
-	}, [dispatch]);
-
-	const setUseVirtualZoom = useCallback((value: number | null) => {
-		dispatch({ type: SET_MAP_VIRTUAL_ZOOM, payload: value });
-	}, [dispatch]);
-
-	// Tracked zoom level – updated when the Leaflet map reports onZoomEnd
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
-	// Override center position set on cluster click (null = follow centerPosition)
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
+
+	// pendingNavigateRef: true = include position in next sendMapData call
+	const pendingNavigateRef = useRef(true);
+
+	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
+	const handleResetAllFiltersRef = useRef<() => void>(() => {});
 
 	const addLog = useCallback((entry: string) => {
 		setLogEntries((prev) => {
@@ -431,65 +387,74 @@ const MapScreen = () => {
 		});
 	}, []);
 
-	// Fast lookup dict for organisations – keyed by organisation ID
 	const organisationsDict = useMemo(
-		() => (organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
-			(acc, org) => { acc[org.id] = org; return acc; },
-			{}
-		),
-		[organisations]
+		() =>
+			(organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
+				(acc, org) => {
+					acc[org.id] = org;
+					return acc;
+				},
+				{},
+			),
+		[organisations],
 	);
 
-	// Dict: buildingId → Organizations[] derived from the buildings_organizations join table
 	const buildingIdToOrgsDict = useMemo(
-		() => BuildingsHelper.getBuildingIdToOrganizationsDict(
-			buildingsOrganizations,
-			organisationsDict
-		),
-		[buildingsOrganizations, organisationsDict]
+		() => BuildingsHelper.getBuildingIdToOrganizationsDict(buildingsOrganizations, organisationsDict),
+		[buildingsOrganizations, organisationsDict],
 	);
 
-	// Contrast label colour to use as the default marker text colour when no explicit colour is set
 	const primaryColorContrastColor = useMemo(() => getContrastColor(primaryColor), [primaryColor]);
 
-	const selectedTileLayer = useMemo(() => {
-		const layer = (TILE_VARIANTS.find((v) => v.key === selectedTileVariantKey) ?? TILE_VARIANTS[0]).layer;
-		if (useVirtualZoom !== null) {
-			return { ...layer, maxNativeZoom: useVirtualZoom, maxZoom: MAX_ZOOM };
-		}
-		return layer;
-	}, [selectedTileVariantKey, useVirtualZoom]);
+	const handleOrganisationLikeChange = useCallback(
+		(orgId: string, like: boolean) => {
+			const current = organisationLikes[orgId];
+			const next = current === like ? null : like;
+			const updated = { ...organisationLikes };
+			if (next === null) {
+				delete updated[orgId];
+			} else {
+				updated[orgId] = next;
+			}
+			dispatch({ type: SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, payload: updated });
+		},
+		[dispatch, organisationLikes],
+	);
+	handleOrganisationLikeChangeRef.current = handleOrganisationLikeChange;
 
-	const openSettingsModal = useCallback(() => {
-		show({
-			title: 'Karten Einstellungen',
-			children: (
-				<LeafletSettingsContent
-					initialSelectedTileKey={selectedTileVariantKey}
-					initialUseFlyAnimation={useFlyAnimation}
-					initialUseVirtualZoom={useVirtualZoom}
-					onSelectedTileChange={setSelectedTileVariantKey}
-					onFlyAnimationChange={setUseFlyAnimation}
-					onVirtualZoomChange={setUseVirtualZoom}
-					theme={theme}
-				/>
-			),
-		});
-	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
+	const stableOnOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		handleOrganisationLikeChangeRef.current(orgId, like);
+	}, []);
 
-	const openFilterModal = useCallback(() => {
-		show({
-			title: translate(TranslationKeys.organisations),
-			children: (
-				<LeafletFilterContent
-					organisations={organisations as DatabaseTypes.Organizations[]}
-					initialLikes={organisationLikes}
-					onLikeChange={stableOnOrganisationLikeChange}
-					onResetAll={stableOnResetAllFilters}
-				/>
-			),
-		});
-	}, [show, translate, organisations, organisationLikes, stableOnOrganisationLikeChange, stableOnResetAllFilters]);
+	const handleResetAllFilters = useCallback(() => {
+		dispatch({ type: SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, payload: {} });
+	}, [dispatch]);
+	handleResetAllFiltersRef.current = handleResetAllFilters;
+
+	const stableOnResetAllFilters = useCallback(() => {
+		handleResetAllFiltersRef.current();
+	}, []);
+
+	const setSelectedStyleKey = useCallback(
+		(key: string) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key });
+		},
+		[dispatch],
+	);
+
+	const setUseFlyAnimationDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, payload: value });
+		},
+		[dispatch],
+	);
+
+	const setClusterDistanceDispatch = useCallback(
+		(value: number) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, payload: value });
+		},
+		[dispatch],
+	);
 
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
@@ -502,39 +467,37 @@ const MapScreen = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// IDs of organisations the user has liked
+	useEffect(() => {
+		setMapCenterOverride(null);
+		pendingNavigateRef.current = true;
+	}, [centerPosition]);
+
 	const likedOrganisationIds = useMemo(
 		() =>
 			Object.entries(organisationLikes)
 				.filter(([, v]) => v === true)
 				.map(([k]) => k),
-		[organisationLikes]
+		[organisationLikes],
 	);
 
-	// IDs of organisations the user has disliked
 	const dislikedOrganisationIds = useMemo(
 		() =>
 			Object.entries(organisationLikes)
 				.filter(([, v]) => v === false)
 				.map(([k]) => k),
-		[organisationLikes]
+		[organisationLikes],
 	);
 
-	// Build markers for all buildings that have valid coordinates,
-	// filtered by liked/disliked organisations when any are selected.
 	const buildingMarkers = useMemo((): MapMarker[] => {
 		return (buildings as DatabaseTypes.Buildings[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 				if (!coords || coords.length !== 2) return false;
 				const orgIds = (buildingIdToOrgsDict[building.id] ?? []).map((org) => org.id);
-				// Apply positive filter: show only buildings with at least one liked org
 				if (likedOrganisationIds.length > 0) {
-					// Buildings with no organisation link bypass the positive filter and are always shown
 					if (orgIds.length === 0) return true;
 					if (!orgIds.some((id) => likedOrganisationIds.includes(id))) return false;
 				}
-				// Apply negative filter: hide buildings where ALL orgs are disliked
 				if (dislikedOrganisationIds.length > 0 && orgIds.length > 0) {
 					const nonDislikedOrgIds = orgIds.filter((id) => !dislikedOrganisationIds.includes(id));
 					if (nonDislikedOrgIds.length === 0) return false;
@@ -564,16 +527,11 @@ const MapScreen = () => {
 			});
 	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
-	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
-	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
+	const clusteredBuildingMarkers = useMemo(
+		() => clusterMarkers(buildingMarkers, mapZoom, clusterDistance),
+		[buildingMarkers, mapZoom, clusterDistance],
+	);
 
-	// Reset the centre override when the selected canteen changes so the map
-	// returns to the canteen's building position.
-	useEffect(() => {
-		setMapCenterOverride(null);
-	}, [centerPosition]);
-
-	// Search results: up to 3 buildings matching the query
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return [];
@@ -582,26 +540,73 @@ const MapScreen = () => {
 			.slice(0, MAX_SEARCH_RESULTS);
 	}, [buildings, searchQuery]);
 
-	const handleSearchResultSelect = useCallback(
-		(building: DatabaseTypes.Buildings) => {
-			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-			if (coords && coords.length === 2) {
-				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
-			}
-			setSearchQuery('');
-			Keyboard.dismiss();
-		},
-		[],
+	const handleSearchResultSelect = useCallback((building: DatabaseTypes.Buildings) => {
+		const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
+		if (coords && coords.length === 2) {
+			setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
+			pendingNavigateRef.current = true;
+		}
+		setSearchQuery('');
+		Keyboard.dismiss();
+	}, []);
+
+	const selectedStyleUrl = useMemo(
+		() => (OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).url,
+		[selectedStyleKey],
 	);
+
+	const sendMapData = useCallback(() => {
+		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
+		const effectiveCenter = mapCenterOverride ?? centerPosition;
+
+		const message: Record<string, unknown> = {
+			mapMarkers: clusteredBuildingMarkers,
+			mapStyle: selectedStyleUrl,
+			useFlyAnimation,
+		};
+
+		if (shouldNavigate) {
+			message.mapCenterPosition = effectiveCenter;
+			message.zoom = mapZoom;
+			message.pitch = INITIAL_PITCH;
+			pendingNavigateRef.current = false;
+			setMapCenterOverride(null);
+		}
+
+		const messageStr = JSON.stringify(message);
+		webViewRef.current?.injectJavaScript(
+			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
+		);
+	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation]);
+
+	useEffect(() => {
+		sendMapData();
+	}, [sendMapData]);
+
+	useEffect(() => {
+		let isMounted = true;
+		const loadHtml = async () => {
+			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
+			await htmlAsset.downloadAsync();
+			const htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
+			if (isMounted) {
+				setHtml(htmlContent);
+			}
+		};
+		loadHtml();
+		return () => {
+			isMounted = false;
+		};
+	}, []);
 
 	const handleMarkerClick = useCallback(
 		(id: string) => {
-			// Cluster click: zoom in and centre on the cluster instead of opening a modal
 			if (id.startsWith('cluster:')) {
 				const cluster = clusteredBuildingMarkers.find((m) => m.id === id);
 				if (cluster) {
 					setMapCenterOverride(cluster.position);
 					setMapZoom((prev) => Math.min(prev + 2, MAX_ZOOM));
+					pendingNavigateRef.current = true;
 				}
 				addLog(`Cluster clicked: ${id}`);
 				return;
@@ -609,70 +614,110 @@ const MapScreen = () => {
 
 			const buildingId = id.startsWith('building-') ? id.slice('building-'.length) : null;
 			const building = buildingId ? (buildings as DatabaseTypes.Buildings[]).find((b) => b.id === buildingId) : null;
-
 			const title = building?.alias ?? id;
 			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
 			const lng = coords ? Number(coords[0]).toFixed(5) : null;
-
 			addLog(`Marker clicked: ${title}${lat !== null ? ` (${lat}, ${lng})` : ''}`);
-
-			if (building) {
-				// Log all building fields
-				addLog(`  id=${building.id}`);
-				addLog(`  external_identifier=${building.external_identifier ?? 'null'}`);
-				addLog(`  alias=${building.alias ?? 'null'}`);
-				addLog(`  map_marker_color=${building.map_marker_color ?? 'null'}`);
-				addLog(`  map_marker_label=${building.map_marker_label ?? 'null'}`);
-				addLog(`  map_marker_label_color=${building.map_marker_label_color ?? 'null'}`);
-				addLog(`  map_marker_style=${building.map_marker_style ?? 'null'}`);
-				addLog(`  map_marker_is_visible=${building.map_marker_is_visible ?? 'null'}`);
-				addLog(`  map_marker_cluster_exclude=${building.map_marker_cluster_exclude ?? 'null'}`);
-				addLog(`  status=${building.status ?? 'null'}`);
-				addLog(`  date_updated=${building.date_updated ?? 'null'}`);
-			}
-
-			if (buildingId) {
-				// Log which organizations were resolved for this building
-				const resolvedOrgs = buildingIdToOrgsDict[buildingId] ?? [];
-				addLog(
-					`  organizations: ${resolvedOrgs.length}` +
-					(resolvedOrgs.length > 0
-						? ` [${resolvedOrgs.map((o) => `id=${o.id} color=${o.map_marker_color ?? 'none'}`).join(', ')}]`
-						: '')
-				);
-				// Log resolved color
-				const firstOrg = resolvedOrgs[0] ?? null;
-				const resolvedColor = building?.map_marker_color || firstOrg?.map_marker_color || primaryColor || BUILDING_MARKER_COLOR;
-				const colorSource = building?.map_marker_color ? 'building' : firstOrg?.map_marker_color ? `org(${firstOrg.alias ?? firstOrg.id})` : primaryColor ? 'primary' : 'default';
-				addLog(`  resolved_color=${resolvedColor} [${colorSource}]`);
-			}
 
 			if (coords && coords.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
 				setMapZoom(DEFAULT_ZOOM);
+				pendingNavigateRef.current = true;
 			}
 
 			if (buildingId) {
 				openBuildingDetailsModal(buildingId);
 			}
 		},
-		[buildings, buildingIdToOrgsDict, clusteredBuildingMarkers, primaryColor, openBuildingDetailsModal, addLog],
+		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
-	const handleMapEvent = useCallback(
-		(e: LeafletWebViewEvent) => {
-			if (e.tag === 'onZoomEnd') {
-				setMapZoom(e.zoom);
-				addLog(`Zoom: ${e.zoom ?? 'unknown'}`);
-			} else if (e.tag === 'MapComponentMounted' || e.tag === 'MapReady') {
-				addLog(e.tag);
-			} else if (e.tag === 'DebugMessage') {
-				addLog(`Debug: ${e.message}`);
+	const handleMessage = useCallback(
+		(event: WebViewMessageEvent) => {
+			try {
+				const data = JSON.parse(event.nativeEvent.data);
+				if (data.tag === 'MapComponentMounted') {
+					pendingNavigateRef.current = true;
+					sendMapData();
+					addLog('MapComponentMounted');
+					return;
+				}
+				if (data.tag === 'onZoomEnd') {
+					setMapZoom(data.zoom);
+					addLog(`Zoom: ${data.zoom ?? 'unknown'}`);
+				}
+				if (data.tag === 'onMapMarkerClicked') {
+					handleMarkerClick(data.mapMarkerId);
+				}
+			} catch {
+				// ignore malformed messages
 			}
 		},
-		[addLog],
+		[sendMapData, handleMarkerClick, addLog],
 	);
+
+	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
+		const url = request.url;
+		if (!url || url === 'about:blank' || url === 'about:srcdoc') {
+			return true;
+		}
+		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
+		return false;
+	}, []);
+
+	const openControlsHintModal = useCallback(() => {
+		show({
+			title: 'Kartensteuerung',
+			children: (
+				<OsmControlsHintContent
+					onDontShowAgain={() => {
+						dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, payload: false });
+						close();
+					}}
+					theme={theme}
+				/>
+			),
+		});
+	}, [show, close, dispatch, theme]);
+
+	const openSettingsModal = useCallback(() => {
+		show({
+			title: 'Karten Einstellungen',
+			children: (
+				<OsmSettingsContent
+					initialSelectedStyleKey={selectedStyleKey}
+					initialUseFlyAnimation={useFlyAnimation}
+					initialClusterDistance={clusterDistance}
+					onSelectedStyleChange={setSelectedStyleKey}
+					onFlyAnimationChange={setUseFlyAnimationDispatch}
+					onClusterDistanceChange={setClusterDistanceDispatch}
+					onShowControlsHint={openControlsHintModal}
+					theme={theme}
+				/>
+			),
+		});
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
+
+	const openFilterModal = useCallback(() => {
+		show({
+			title: translate(TranslationKeys.organisations),
+			children: (
+				<OsmFilterContent
+					organisations={organisations as DatabaseTypes.Organizations[]}
+					initialLikes={organisationLikes}
+					onLikeChange={stableOnOrganisationLikeChange}
+					onResetAll={stableOnResetAllFilters}
+				/>
+			),
+		});
+	}, [show, translate, organisations, organisationLikes, stableOnOrganisationLikeChange, stableOnResetAllFilters]);
+
+	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
+
+	if (!html) {
+		return <View style={[styles.safeArea, { backgroundColor: theme.screen.background }]} />;
+	}
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
@@ -682,19 +727,28 @@ const MapScreen = () => {
 				onQueryChange={setSearchQuery}
 				onSettingsPress={openSettingsModal}
 				onFilterPress={openFilterModal}
+				isFilterActive={isFilterActive}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<MyMap
-						key={`${selectedTileVariantKey}-${useVirtualZoom}`}
-						mapCenterPosition={mapCenterOverride ?? centerPosition}
-						zoom={mapZoom}
-						mapMarkers={buildingMarkers}
-						mapLayers={[selectedTileLayer]}
-						useFlyAnimation={useFlyAnimation}
-						onMarkerClick={handleMarkerClick}
-						onMapEvent={handleMapEvent}
+					<WebView
+						ref={webViewRef}
+						style={styles.webView}
+						source={{ html }}
+						javaScriptEnabled={true}
+						domStorageEnabled={true}
+						originWhitelist={['*']}
+						onMessage={handleMessage}
+						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 					/>
+					{showControlsHint && (
+						<TouchableOpacity
+							style={styles.infoIconButton}
+							onPress={openControlsHintModal}
+						>
+							<Ionicons name="help-circle-outline" size={32} color={theme.header.text} />
+						</TouchableOpacity>
+					)}
 					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
@@ -739,12 +793,21 @@ const MapScreen = () => {
 	);
 };
 
-export default MapScreen;
-
 const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
+	webView: { flex: 1 },
+	infoIconButton: {
+		position: 'absolute',
+		top: 8,
+		right: 8,
+		zIndex: 20,
+		elevation: 20,
+		backgroundColor: 'rgba(0,0,0,0.35)',
+		borderRadius: 20,
+		padding: 4,
+	},
 	searchResultsContainer: {
 		position: 'absolute',
 		top: 0,
@@ -768,3 +831,5 @@ const styles = StyleSheet.create({
 		paddingVertical: 4,
 	},
 });
+
+export default OsmVectorMapScreen;
