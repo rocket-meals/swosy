@@ -3023,6 +3023,16 @@
         "tr": "Leaflet Haritası",
         "zh": "Leaflet 地图"
     },
+    "osm_vector_map": {
+        "de": "OSM Vektor-Karte",
+        "en": "OSM Vector Map",
+        "ar": "خريطة متجهة OSM",
+        "es": "Mapa Vectorial OSM",
+        "fr": "Carte Vectorielle OSM",
+        "ru": "Векторная карта OSM",
+        "tr": "OSM Vektör Haritası",
+        "zh": "OSM 矢量地图"
+    },
     "leaflet_test": {
         "de": "Leaflet Test",
         "en": "Leaflet Test",
