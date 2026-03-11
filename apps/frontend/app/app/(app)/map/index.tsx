@@ -18,8 +18,10 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import { Entypo } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
-import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
+import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
+import { useLanguage } from '@/hooks/useLanguage';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -169,8 +171,102 @@ const POSITION_BUNDESTAG = {
 	lng: 13.376281624711964,
 };
 
-const MAX_LOG_ENTRIES = 50;
+type LeafletFilterContentProps = {
+	organisations: DatabaseTypes.Organizations[];
+	initialLikes: Record<string, boolean | null>;
+	onLikeChange: (organisationId: string, like: boolean) => void;
+	onResetAll: () => void;
+};
 
+const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
+	organisations,
+	initialLikes,
+	onLikeChange,
+	onResetAll,
+}) => {
+	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
+	const { translate } = useLanguage();
+
+	useEffect(() => {
+		setLocalLikes(initialLikes);
+	}, [initialLikes]);
+
+	const handlePressLike = useCallback(
+		(orgId: string) => {
+			setLocalLikes((prev) => {
+				const current = prev[orgId];
+				const next = current === true ? null : true;
+				if (next === null) {
+					const updated = { ...prev };
+					delete updated[orgId];
+					return updated;
+				}
+				return { ...prev, [orgId]: next };
+			});
+			onLikeChange(orgId, true);
+		},
+		[onLikeChange]
+	);
+
+	const handlePressDislike = useCallback(
+		(orgId: string) => {
+			setLocalLikes((prev) => {
+				const current = prev[orgId];
+				const next = current === false ? null : false;
+				if (next === null) {
+					const updated = { ...prev };
+					delete updated[orgId];
+					return updated;
+				}
+				return { ...prev, [orgId]: next };
+			});
+			onLikeChange(orgId, false);
+		},
+		[onLikeChange]
+	);
+
+	const handleResetAll = useCallback(() => {
+		setLocalLikes({});
+		onResetAll();
+	}, [onResetAll]);
+
+	if (organisations.length === 0) {
+		return (
+			<View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+				<Text style={{ color: '#888' }}>{translate(TranslationKeys.no_data_found)}</Text>
+			</View>
+		);
+	}
+
+	return (
+		<>
+			<SettingsList
+				label={translate(TranslationKeys.reset_rating)}
+				handleFunction={handleResetAll}
+				groupPosition="single"
+				noIconIndent
+			/>
+			<View style={{ height: 16 }} />
+			{organisations.map((org, index) => {
+				const total = organisations.length;
+				const groupPosition =
+					total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				return (
+					<SettingsListOrganisationFast
+						key={org.id}
+						organisationId={org.id}
+						like={localLikes[org.id] ?? null}
+						onPressLike={handlePressLike}
+						onPressDislike={handlePressDislike}
+						groupPosition={groupPosition}
+					/>
+				);
+			})}
+		</>
+	);
+};
+
+const MAX_LOG_ENTRIES = 50;
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
 const VIRTUAL_ZOOM_MAX_NATIVE_ZOOM = 17;
@@ -247,17 +343,53 @@ const MapScreen = () => {
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
 	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
+	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
 	const { show } = useMyScrollViewModal();
+	const { translate } = useLanguage();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
+
+	// Organisation filter is persisted in Redux: orgId → true (liked) | false (disliked); absent key = neutral
+	// Ref so the stable modal callback always reads the latest handler
+	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
+
+	const handleOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		const current = organisationLikes[orgId];
+		const next = current === like ? null : like;
+		const updated = { ...organisationLikes };
+		if (next === null) {
+			delete updated[orgId];
+		} else {
+			updated[orgId] = next;
+		}
+		dispatch({ type: SET_MAP_ORGANISATION_FILTER, payload: updated });
+	}, [dispatch, organisationLikes]);
+
+	handleOrganisationLikeChangeRef.current = handleOrganisationLikeChange;
+
+	const stableOnOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		handleOrganisationLikeChangeRef.current(orgId, like);
+	}, []);
+
+	const handleResetAllFiltersRef = useRef<() => void>(() => {});
+
+	const handleResetAllFilters = useCallback(() => {
+		dispatch({ type: SET_MAP_ORGANISATION_FILTER, payload: {} });
+	}, [dispatch]);
+
+	handleResetAllFiltersRef.current = handleResetAllFilters;
+
+	const stableOnResetAllFilters = useCallback(() => {
+		handleResetAllFiltersRef.current();
+	}, []);
 
 	const setSelectedTileVariantKey = useCallback((key: string) => {
 		dispatch({ type: SET_MAP_TILE_VARIANT_KEY, payload: key });
@@ -329,6 +461,20 @@ const MapScreen = () => {
 		});
 	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
 
+	const openFilterModal = useCallback(() => {
+		show({
+			title: translate(TranslationKeys.organisations),
+			children: (
+				<LeafletFilterContent
+					organisations={organisations as DatabaseTypes.Organizations[]}
+					initialLikes={organisationLikes}
+					onLikeChange={stableOnOrganisationLikeChange}
+					onResetAll={stableOnResetAllFilters}
+				/>
+			),
+		});
+	}, [show, translate, organisations, organisationLikes, stableOnOrganisationLikeChange, stableOnResetAllFilters]);
+
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
 			const building = buildings.find((b: DatabaseTypes.Buildings) => b.id === selectedCanteen.building);
@@ -340,12 +486,44 @@ const MapScreen = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// Build markers for all buildings that have valid coordinates
+	// IDs of organisations the user has liked
+	const likedOrganisationIds = useMemo(
+		() =>
+			Object.entries(organisationLikes)
+				.filter(([, v]) => v === true)
+				.map(([k]) => k),
+		[organisationLikes]
+	);
+
+	// IDs of organisations the user has disliked
+	const dislikedOrganisationIds = useMemo(
+		() =>
+			Object.entries(organisationLikes)
+				.filter(([, v]) => v === false)
+				.map(([k]) => k),
+		[organisationLikes]
+	);
+
+	// Build markers for all buildings that have valid coordinates,
+	// filtered by liked/disliked organisations when any are selected.
 	const buildingMarkers = useMemo((): MapMarker[] => {
 		return (buildings as DatabaseTypes.Buildings[])
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
-				return coords && coords.length === 2;
+				if (!coords || coords.length !== 2) return false;
+				const orgIds = (buildingIdToOrgsDict[building.id] ?? []).map((org) => org.id);
+				// Apply positive filter: show only buildings with at least one liked org
+				if (likedOrganisationIds.length > 0) {
+					// Buildings with no organisation link bypass the positive filter and are always shown
+					if (orgIds.length === 0) return true;
+					if (!orgIds.some((id) => likedOrganisationIds.includes(id))) return false;
+				}
+				// Apply negative filter: hide buildings where ALL orgs are disliked
+				if (dislikedOrganisationIds.length > 0 && orgIds.length > 0) {
+					const nonDislikedOrgIds = orgIds.filter((id) => !dislikedOrganisationIds.includes(id));
+					if (nonDislikedOrgIds.length === 0) return false;
+				}
+				return true;
 			})
 			.map((building) => {
 				const coords = (building.coordinates as BuildingCoordinates)!.coordinates!;
@@ -368,7 +546,7 @@ const MapScreen = () => {
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, buildingIdToOrgsDict, primaryColor, primaryColorContrastColor]);
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
 	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
@@ -487,6 +665,7 @@ const MapScreen = () => {
 				query={searchQuery}
 				onQueryChange={setSearchQuery}
 				onSettingsPress={openSettingsModal}
+				onFilterPress={openFilterModal}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>

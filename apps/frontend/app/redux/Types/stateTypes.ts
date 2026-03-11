@@ -64,6 +64,10 @@ export type SettingsState = {
         simulateExpoUpdateAvailable: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
+        mapTileVariantKey: string;
+        mapUseFlyAnimation: boolean;
+        mapVirtualZoom: boolean;
+        mapOrganisationFilter: Record<string, boolean>;
 }
 
 export type FoodState = {
