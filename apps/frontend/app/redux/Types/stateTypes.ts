@@ -30,6 +30,7 @@ export type CanteenWithImage = DatabaseTypes.Canteens & {
 export type CanteensState = {
 	canteens: CanteenWithImage[];
 	buildings: DatabaseTypes.Buildings[];
+	buildingsOrganizations: DatabaseTypes.BuildingsOrganizations[];
 	organisations: DatabaseTypes.Organizations[];
 	selectedCanteen: CanteenWithImage | null;
 	selectedCanteenFoodOffers: DatabaseTypes.Foodoffers[];
@@ -63,6 +64,10 @@ export type SettingsState = {
         simulateExpoUpdateAvailable: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
+        mapTileVariantKey: string;
+        mapUseFlyAnimation: boolean;
+        mapVirtualZoom: boolean;
+        mapOrganisationFilter: Record<string, boolean>;
 }
 
 export type FoodState = {

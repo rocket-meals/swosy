@@ -12,12 +12,75 @@ const DEFAULT_ZOOM_LEVEL = 13;
 // Minimum number of markers in a cell required to form a cluster
 export const MIN_MARKERS_FOR_CLUSTER = 3;
 
-// Colour thresholds for the cluster badge
-const SMALL_CLUSTER_THRESHOLD = 10;
-const MEDIUM_CLUSTER_THRESHOLD = 100;
-const SMALL_CLUSTER_COLOR = '#3388ff';
-const MEDIUM_CLUSTER_COLOR = '#ff8800';
-const LARGE_CLUSTER_COLOR = '#e03030';
+// Fixed colour palette for cluster badges — from cool (small) to warm (large)
+const CLUSTER_STEP_COLORS = [
+	'#60A5FA', // blue   – smallest clusters
+	'#34D399', // green
+	'#A3E635', // lime
+	'#FACC15', // yellow
+	'#FB923C', // orange
+	'#F87171', // light red
+	'#EF4444', // red
+	'#A855F7', // purple – largest clusters
+];
+
+/**
+ * Generate threshold steps using the 1–2–5 progression (e.g. 3, 5, 10, 20, 50, …)
+ * starting at minCount and stopping at maxCount (inclusive).
+ */
+function generateClusterSteps(minCount: number, maxCount: number): number[] {
+	const steps: number[] = [minCount];
+	const multipliers = [1, 2, 5];
+	let magnitude = 1;
+
+	outer: while (true) {
+		for (const m of multipliers) {
+			const value = m * magnitude;
+			if (value > minCount && value <= maxCount) {
+				steps.push(value);
+			} else if (value > maxCount) {
+				break outer;
+			}
+		}
+		magnitude *= 10;
+	}
+	return steps;
+}
+
+/**
+ * Build a threshold → colour mapping for the given marker count range.
+ * The colours are distributed evenly across the generated step thresholds.
+ * @param minCount Minimum number of markers required to form a cluster (e.g. 3)
+ * @param maxCount Maximum number of markers observed (drives how many steps are created)
+ */
+export function buildClusterColorMap(minCount: number, maxCount: number): Record<number, string> {
+	const steps = generateClusterSteps(minCount, Math.max(minCount, maxCount));
+	const colors = CLUSTER_STEP_COLORS;
+	const result: Record<number, string> = {};
+
+	steps.forEach((step, i) => {
+		const colorIndex =
+			steps.length <= 1
+				? 0
+				: Math.round((i / (steps.length - 1)) * (colors.length - 1));
+		result[step] = colors[Math.min(colorIndex, colors.length - 1)];
+	});
+
+	return result;
+}
+
+/** Look up the colour for a given cluster count using a pre-built colour map. */
+function getClusterColor(count: number, colorMap: Record<number, string>): string {
+	const thresholds = Object.keys(colorMap)
+		.map(Number)
+		.sort((a, b) => b - a);
+	for (const threshold of thresholds) {
+		if (count >= threshold) {
+			return colorMap[threshold];
+		}
+	}
+	return CLUSTER_STEP_COLORS[0];
+}
 
 // Step-based display labels for cluster counts: 3+, 5+, 10+, 20+, 50+, 100+, 200+, 500+, 1k+
 function getClusterLabel(count: number): string {
@@ -32,12 +95,12 @@ function getClusterLabel(count: number): string {
 	return '3+';
 }
 
-function createClusterSvg(count: number): string {
+function createClusterSvg(count: number, colorMap: Record<number, string>): string {
 	const cx = CLUSTER_SVG_SIZE / 2;
 	const cy = CLUSTER_SVG_SIZE / 2;
 	const r = CLUSTER_ICON_SIZE / 2 - 2;
 	const haloR = r + CLUSTER_HALO_PADDING;
-	const fill = count < SMALL_CLUSTER_THRESHOLD ? SMALL_CLUSTER_COLOR : count < MEDIUM_CLUSTER_THRESHOLD ? MEDIUM_CLUSTER_COLOR : LARGE_CLUSTER_COLOR;
+	const fill = getClusterColor(count, colorMap);
 	const label = getClusterLabel(count);
 	return (
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${CLUSTER_SVG_SIZE}" height="${CLUSTER_SVG_SIZE}">` +
@@ -76,6 +139,17 @@ export function clusterMarkers(markers: MapMarker[], zoom: number): MapMarker[] 
 		}
 	}
 
+	// Determine the largest cluster size so the colour map reflects the actual data range
+	let maxClusterSize = MIN_MARKERS_FOR_CLUSTER;
+	for (const cellMarkers of cells.values()) {
+		if (cellMarkers.length > maxClusterSize) {
+			maxClusterSize = cellMarkers.length;
+		}
+	}
+
+	// Build the colour map once for this zoom/data snapshot
+	const colorMap = buildClusterColorMap(MIN_MARKERS_FOR_CLUSTER, maxClusterSize);
+
 	const result: MapMarker[] = [];
 	for (const [key, cellMarkers] of cells.entries()) {
 		if (cellMarkers.length < MIN_MARKERS_FOR_CLUSTER) {
@@ -88,7 +162,7 @@ export function clusterMarkers(markers: MapMarker[], zoom: number): MapMarker[] 
 			result.push({
 				id: `cluster:${key}`,
 				position: { lat: lat / cellMarkers.length, lng: lng / cellMarkers.length },
-				icon: createClusterSvg(cellMarkers.length),
+				icon: createClusterSvg(cellMarkers.length, colorMap),
 				size: [CLUSTER_SVG_SIZE, CLUSTER_SVG_SIZE] as [number, number],
 				iconAnchor: [CLUSTER_SVG_SIZE / 2, CLUSTER_SVG_SIZE / 2],
 			});
