@@ -346,7 +346,7 @@ const LeafletMap = () => {
 	const selectedTileVariantKey = useAppSelector((state) => state.settings.mapTileVariantKey);
 	const useFlyAnimation = useAppSelector((state) => state.settings.mapUseFlyAnimation);
 	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
-	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter) as Record<string, boolean | null>;
+	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
