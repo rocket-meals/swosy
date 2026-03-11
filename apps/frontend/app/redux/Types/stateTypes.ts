@@ -68,6 +68,7 @@ export type SettingsState = {
         mapUseFlyAnimation: boolean;
         mapVirtualZoom: number | null;
         mapOrganisationFilter: Record<string, boolean>;
+        mapClusterPixelRadius: number;
 }
 
 export type FoodState = {

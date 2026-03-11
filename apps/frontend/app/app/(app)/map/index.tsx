@@ -39,7 +39,7 @@ const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
 	{ key: 'liberty', label: 'Liberty (Standard)', url: 'https://tiles.openfreemap.org/styles/liberty' },
 	{ key: 'bright', label: 'Bright', url: 'https://tiles.openfreemap.org/styles/bright' },
 	{ key: 'positron', label: 'Positron (Hell)', url: 'https://tiles.openfreemap.org/styles/positron' },
-	{ key: 'dark-matter', label: 'Dark Matter (Dunkel)', url: 'https://tiles.openfreemap.org/styles/dark-matter' },
+	{ key: 'dark-matter', label: 'Dark Matter (Dunkel)', url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json' },
 ];
 
 // MapLibre pitch value for 70° viewing angle (pitch = degrees from vertical)
@@ -299,7 +299,7 @@ const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 16;
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
-const MAX_BUILDING_LABEL_CHARS = 3;
+const MAX_BUILDING_LABEL_CHARS = 8;
 const MAX_SEARCH_RESULTS = 3;
 
 function getContrastColor(hexColor: string): string {
@@ -340,9 +340,20 @@ function createBuildingMarkerSvg(
 	const rawLabel = markerLabel ?? externalIdentifier;
 	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
-	const textEl = label
-		? `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`
-		: '';
+	let textEl = '';
+	if (label) {
+		if (label.length >= 4) {
+			const mid = Math.ceil(label.length / 2);
+			const line1 = label.slice(0, mid);
+			const line2 = label.slice(mid);
+			textEl = `<text text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
+				`<tspan x="${cx}" dy="${cy - 6}">${line1}</tspan>` +
+				`<tspan x="${cx}" dy="13">${line2}</tspan>` +
+				`</text>`;
+		} else {
+			textEl = `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`;
+		}
+	}
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">${circleEl}${textEl}</svg>`;
 }
 
@@ -376,6 +387,9 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// pendingNavigateRef: true = include position in next sendMapData call
 	const pendingNavigateRef = useRef(true);
+
+	// Ref always pointing to the latest centerPosition for use in one-time HTML loading
+	const centerPositionRef = useRef<{ lat: number; lng: number }>(POSITION_BUNDESTAG);
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -466,6 +480,11 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
+
+	// Keep centerPositionRef up to date so the one-time loadHtml can read the latest value
+	useEffect(() => {
+		centerPositionRef.current = centerPosition;
+	}, [centerPosition]);
 
 	useEffect(() => {
 		setMapCenterOverride(null);
@@ -588,7 +607,14 @@ const OsmVectorMapScreen: React.FC = () => {
 		const loadHtml = async () => {
 			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
 			await htmlAsset.downloadAsync();
-			const htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
+			let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
+			// Inject the initial center position so the map starts at the canteen position
+			// without showing the default Germany center while tiles are loading.
+			const c = centerPositionRef.current;
+			htmlContent = htmlContent.replace(
+				'initMap(null, null);',
+				`initMap([${c.lng}, ${c.lat}], null);`,
+			);
 			if (isMounted) {
 				setHtml(htmlContent);
 			}
@@ -597,7 +623,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleMarkerClick = useCallback(
 		(id: string) => {
