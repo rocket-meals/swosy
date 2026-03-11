@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { Asset } from 'expo-asset';
@@ -12,7 +12,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PITCH, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -25,7 +25,7 @@ import SettingsListOrganisationFast from '@/components/SettingsListOrganisationF
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -42,43 +42,34 @@ const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
 	{ key: 'dark-matter', label: 'Dark Matter (Dunkel)', url: 'https://tiles.openfreemap.org/styles/dark-matter' },
 ];
 
-type OsmPitchVariant = {
-	key: string;
-	label: string;
-	pitch: number;
-};
-
-const OSM_PITCH_VARIANTS: OsmPitchVariant[] = [
-	{ key: '90', label: '90° (Draufsicht)', pitch: 0 },
-	{ key: '70', label: '70°', pitch: 20 },
-	{ key: '45', label: '45°', pitch: 45 },
-	{ key: '30', label: '30° (3D)', pitch: 60 },
-];
+// MapLibre pitch value for 70° viewing angle (pitch = degrees from vertical)
+const INITIAL_PITCH = 20;
 
 type OsmSettingsContentProps = {
 	initialSelectedStyleKey: string;
 	initialUseFlyAnimation: boolean;
-	initialPitchKey: string;
+	initialClusterDistance: number;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
-	onPitchChange: (key: string) => void;
+	onClusterDistanceChange: (value: number) => void;
+	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
 const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialSelectedStyleKey,
 	initialUseFlyAnimation,
-	initialPitchKey,
+	initialClusterDistance,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
-	onPitchChange,
+	onClusterDistanceChange,
+	onShowControlsHint,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
-	const [selectedPitchKey, setSelectedPitchKey] = useState(initialPitchKey);
+	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
-	const [showingPitchSelector, setShowingPitchSelector] = useState(false);
 
 	if (showingStyleSelector) {
 		return (
@@ -89,21 +80,6 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 					setSelectedStyleKey(option.id);
 					onSelectedStyleChange(option.id);
 					setShowingStyleSelector(false);
-				}}
-				noIconIndent
-			/>
-		);
-	}
-
-	if (showingPitchSelector) {
-		return (
-			<SettingsListSelectOption
-				options={OSM_PITCH_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
-				selectedOption={selectedPitchKey}
-				onSelect={(option) => {
-					setSelectedPitchKey(option.id);
-					onPitchChange(option.id);
-					setShowingPitchSelector(false);
 				}}
 				noIconIndent
 			/>
@@ -121,10 +97,21 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				noIconIndent
 			/>
 			<SettingsList
-				title="Kamera-Neigung"
-				value={(OSM_PITCH_VARIANTS.find((v) => v.key === selectedPitchKey) ?? OSM_PITCH_VARIANTS[0]).label}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-				onPress={() => setShowingPitchSelector(true)}
+				title="Cluster-Abstand (px)"
+				rightElement={
+					<TextInput
+						value={localClusterDistance}
+						onChangeText={(text) => {
+							setLocalClusterDistance(text);
+							const num = parseInt(text, 10);
+							if (!isNaN(num) && num > 0) {
+								onClusterDistanceChange(num);
+							}
+						}}
+						keyboardType="numeric"
+						style={{ color: theme.screen.text, textAlign: 'right', minWidth: 60, fontSize: 15 }}
+					/>
+				}
 				groupPosition="middle"
 				noIconIndent
 			/>
@@ -139,11 +126,71 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 						}}
 					/>
 				}
+				groupPosition="middle"
+				showSeparator={true}
+				noIconIndent
+			/>
+			<SettingsList
+				title="Kartensteuerung anzeigen"
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={onShowControlsHint}
 				groupPosition="bottom"
 				showSeparator={false}
 				noIconIndent
 			/>
 		</>
+	);
+};
+
+type OsmControlsHintContentProps = {
+	onDontShowAgain: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+const OsmControlsHintContent: React.FC<OsmControlsHintContentProps> = ({ onDontShowAgain, theme }) => {
+	const isWeb = Platform.OS === 'web';
+	return (
+		<View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+			{isWeb ? (
+				<>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'🖱️ Linke Maustaste halten: Karte verschieben'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'🖱️ Rechte Maustaste halten: Neigung ändern'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'🖱️ Mausrad: Zoomen'}
+					</Text>
+				</>
+			) : (
+				<>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'👌 Zwei Finger spreizen / zusammenführen: Zoomen'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'☝️☝️ Zwei Finger hoch / runter: Neigung ändern'}
+					</Text>
+					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+						{'☝️ Ein Finger bewegen: Karte verschieben'}
+					</Text>
+				</>
+			)}
+			<Text style={{ color: theme.screen.text + '99', fontSize: 13, marginTop: 8, marginBottom: 16 }}>
+				{'Dieser Hinweis kann über die Einstellungen jederzeit aufgerufen werden.'}
+			</Text>
+			<TouchableOpacity
+				onPress={onDontShowAgain}
+				style={{
+					backgroundColor: theme.screen.iconBg,
+					borderRadius: 8,
+					paddingVertical: 12,
+					alignItems: 'center',
+				}}
+			>
+				<Text style={{ color: theme.screen.text, fontSize: 15 }}>Diesen Hinweis nicht mehr anzeigen</Text>
+			</TouchableOpacity>
+		</View>
 	);
 };
 
@@ -249,7 +296,7 @@ const POSITION_BUNDESTAG = {
 
 const MAX_LOG_ENTRIES = 50;
 const MAX_ZOOM = 20;
-const DEFAULT_ZOOM = 17;
+const DEFAULT_ZOOM = 16;
 const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 3;
@@ -310,7 +357,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedStyleKey = useAppSelector((state) => (state.settings as any).osmVectorMapStyleKey ?? 'liberty');
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
-	const pitchKey = useAppSelector((state) => (state.settings as any).osmVectorMapPitch ?? '90');
+	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
+	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
 	const organisationLikes = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapOrganisationFilter ?? {}) as Record<string, boolean | null>,
 	);
@@ -325,6 +373,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
+
+	// pendingNavigateRef: true = include position in next sendMapData call
+	const pendingNavigateRef = useRef(true);
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -391,16 +442,16 @@ const OsmVectorMapScreen: React.FC = () => {
 		[dispatch],
 	);
 
-	const setPitchKeyDispatch = useCallback(
-		(key: string) => {
-			dispatch({ type: SET_OSM_VECTOR_MAP_PITCH, payload: key });
+	const setUseFlyAnimationDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, payload: value });
 		},
 		[dispatch],
 	);
 
-	const setUseFlyAnimationDispatch = useCallback(
-		(value: boolean) => {
-			dispatch({ type: SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION, payload: value });
+	const setClusterDistanceDispatch = useCallback(
+		(value: number) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, payload: value });
 		},
 		[dispatch],
 	);
@@ -418,6 +469,7 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	useEffect(() => {
 		setMapCenterOverride(null);
+		pendingNavigateRef.current = true;
 	}, [centerPosition]);
 
 	const likedOrganisationIds = useMemo(
@@ -475,7 +527,10 @@ const OsmVectorMapScreen: React.FC = () => {
 			});
 	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
-	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom), [buildingMarkers, mapZoom]);
+	const clusteredBuildingMarkers = useMemo(
+		() => clusterMarkers(buildingMarkers, mapZoom, clusterDistance),
+		[buildingMarkers, mapZoom, clusterDistance],
+	);
 
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
 		const q = searchQuery.trim().toLowerCase();
@@ -489,6 +544,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 		if (coords && coords.length === 2) {
 			setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
+			pendingNavigateRef.current = true;
 		}
 		setSearchQuery('');
 		Keyboard.dismiss();
@@ -499,25 +555,28 @@ const OsmVectorMapScreen: React.FC = () => {
 		[selectedStyleKey],
 	);
 
-	const selectedPitch = useMemo(
-		() => (OSM_PITCH_VARIANTS.find((v) => v.key === pitchKey) ?? OSM_PITCH_VARIANTS[0]).pitch,
-		[pitchKey],
-	);
-
 	const sendMapData = useCallback(() => {
+		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
-		const message = JSON.stringify({
-			mapCenterPosition: effectiveCenter,
-			zoom: mapZoom,
+
+		const message: Record<string, unknown> = {
 			mapMarkers: clusteredBuildingMarkers,
 			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
-			pitch: selectedPitch,
-		});
+			pitch: INITIAL_PITCH,
+		};
+
+		if (shouldNavigate) {
+			message.mapCenterPosition = effectiveCenter;
+			message.zoom = mapZoom;
+			pendingNavigateRef.current = false;
+		}
+
+		const messageStr = JSON.stringify(message);
 		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:${message}}));true;`,
+			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
 		);
-	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation, selectedPitch]);
+	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
@@ -546,6 +605,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (cluster) {
 					setMapCenterOverride(cluster.position);
 					setMapZoom((prev) => Math.min(prev + 2, MAX_ZOOM));
+					pendingNavigateRef.current = true;
 				}
 				addLog(`Cluster clicked: ${id}`);
 				return;
@@ -562,6 +622,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			if (coords && coords.length === 2) {
 				setMapCenterOverride({ lat: Number(coords[1]), lng: Number(coords[0]) });
 				setMapZoom(DEFAULT_ZOOM);
+				pendingNavigateRef.current = true;
 			}
 
 			if (buildingId) {
@@ -576,6 +637,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			try {
 				const data = JSON.parse(event.nativeEvent.data);
 				if (data.tag === 'MapComponentMounted') {
+					pendingNavigateRef.current = true;
 					sendMapData();
 					addLog('MapComponentMounted');
 					return;
@@ -603,6 +665,20 @@ const OsmVectorMapScreen: React.FC = () => {
 		return false;
 	}, []);
 
+	const openControlsHintModal = useCallback(() => {
+		show({
+			title: 'Kartensteuerung',
+			children: (
+				<OsmControlsHintContent
+					onDontShowAgain={() => {
+						dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, payload: false });
+					}}
+					theme={theme}
+				/>
+			),
+		});
+	}, [show, dispatch, theme]);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -610,15 +686,16 @@ const OsmVectorMapScreen: React.FC = () => {
 				<OsmSettingsContent
 					initialSelectedStyleKey={selectedStyleKey}
 					initialUseFlyAnimation={useFlyAnimation}
-					initialPitchKey={pitchKey}
+					initialClusterDistance={clusterDistance}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
-					onPitchChange={setPitchKeyDispatch}
+					onClusterDistanceChange={setClusterDistanceDispatch}
+					onShowControlsHint={openControlsHintModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, pitchKey, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setPitchKeyDispatch]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
 
 	const openFilterModal = useCallback(() => {
 		show({
@@ -662,6 +739,14 @@ const OsmVectorMapScreen: React.FC = () => {
 						onMessage={handleMessage}
 						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 					/>
+					{showControlsHint && (
+						<TouchableOpacity
+							style={styles.infoIconButton}
+							onPress={openControlsHintModal}
+						>
+							<Ionicons name="information-circle-outline" size={32} color={theme.header.text} />
+						</TouchableOpacity>
+					)}
 					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
@@ -711,6 +796,16 @@ const styles = StyleSheet.create({
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
 	webView: { flex: 1 },
+	infoIconButton: {
+		position: 'absolute',
+		top: 8,
+		right: 8,
+		zIndex: 20,
+		elevation: 20,
+		backgroundColor: 'rgba(0,0,0,0.35)',
+		borderRadius: 20,
+		padding: 4,
+	},
 	searchResultsContainer: {
 		position: 'absolute',
 		top: 0,
