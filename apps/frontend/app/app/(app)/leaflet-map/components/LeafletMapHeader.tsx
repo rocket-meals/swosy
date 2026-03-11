@@ -18,6 +18,7 @@ interface LeafletMapHeaderProps {
 	onQueryChange: (text: string) => void;
 	onSettingsPress?: () => void;
 	onFilterPress?: () => void;
+	isFilterActive?: boolean;
 }
 
 const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
@@ -26,6 +27,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 	onQueryChange,
 	onSettingsPress,
 	onFilterPress,
+	isFilterActive,
 }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -83,7 +85,10 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 							onPress={() => onFilterPress?.()}
 							style={styles.iconButton}
 						>
-							<FontAwesome name="filter" size={24} color={theme.header.text} />
+							<View style={styles.filterIconWrapper}>
+								<FontAwesome name="filter" size={24} color={theme.header.text} />
+								{isFilterActive && <View style={styles.filterBadge} />}
+							</View>
 						</IconButton>
 					)}
 				>
@@ -134,6 +139,18 @@ const styles = StyleSheet.create({
 	},
 	iconButton: {
 		padding: 8,
+	},
+	filterIconWrapper: {
+		position: 'relative',
+	},
+	filterBadge: {
+		position: 'absolute',
+		top: -2,
+		right: -2,
+		width: 8,
+		height: 8,
+		borderRadius: 4,
+		backgroundColor: '#FF3B30',
 	},
 	searchInput: {
 		flex: 1,

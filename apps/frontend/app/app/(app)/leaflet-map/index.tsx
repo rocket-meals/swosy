@@ -727,6 +727,7 @@ const LeafletMap = () => {
 				onQueryChange={setSearchQuery}
 				onSettingsPress={openSettingsModal}
 				onFilterPress={openFilterModal}
+				isFilterActive={Object.keys(organisationLikes).length > 0}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
