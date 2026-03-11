@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
@@ -60,21 +60,28 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 				</CustomTooltip>
 
 				{/* Search Bar */}
-				<TextInput
-					style={[
-						styles.searchInput,
-						{
-							color: theme.header.text,
-							borderColor: theme.header.text + '55',
-							backgroundColor: theme.header.text + '15',
-						},
-					]}
-					cursorColor={theme.header.text}
-					placeholderTextColor={theme.header.text + '88'}
-					value={query}
-					onChangeText={onQueryChange}
-					placeholder={translate(TranslationKeys.search)}
-				/>
+				<View style={[
+					styles.searchInputWrapper,
+					{
+						borderColor: theme.header.text + '55',
+						backgroundColor: theme.header.text + '15',
+					},
+				]}>
+					<MaterialIcons name="search" size={20} color={theme.header.text + '88'} style={styles.searchIcon} />
+					<TextInput
+						style={[
+							styles.searchInput,
+							{
+								color: theme.header.text,
+							},
+						]}
+						cursorColor={theme.header.text}
+						placeholderTextColor={theme.header.text + '88'}
+						value={query}
+						onChangeText={onQueryChange}
+						placeholder={translate(TranslationKeys.search)}
+					/>
+				</View>
 
 				{/* Filter Icon */}
 				<CustomTooltip
@@ -152,12 +159,21 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		backgroundColor: '#FF3B30',
 	},
-	searchInput: {
+	searchInputWrapper: {
 		flex: 1,
 		height: 40,
 		borderRadius: 20,
-		paddingHorizontal: 16,
 		borderWidth: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 12,
+	},
+	searchIcon: {
+		marginRight: 6,
+	},
+	searchInput: {
+		flex: 1,
+		height: 40,
 		fontFamily: 'Poppins_400Regular',
 		fontSize: 15,
 	},

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Alert, Keyboard, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import MyMap from '@/components/MyMap/MyMap';
-import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
+import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { LeafletWebViewEvent, MapLayer, MapMarker } from '@/components/MyMap/model';
 import { useTheme } from '@/hooks/useTheme';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
@@ -13,16 +13,18 @@ import { VIRTUAL_ZOOM_NONE_KEY, VIRTUAL_ZOOM_OPTIONS } from '@/components/MyMap/
 import { DatabaseTypes } from 'repo-depkit-common';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import LeafletMapHeader from './components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
-import { SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_SHOW_BUILDING_MARKERS, SET_MAP_SHOW_CLUSTERS, SET_MAP_SHOW_MARKER_LABELS, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
+import * as Location from 'expo-location';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -96,10 +98,17 @@ type LeafletSettingsContentProps = {
 	initialUseFlyAnimation: boolean;
 	initialUseVirtualZoom: number | null;
 	initialClusterPixelRadius: number;
+	initialShowBuildingMarkers: boolean;
+	initialShowClusters: boolean;
+	initialShowMarkerLabels: boolean;
 	onSelectedTileChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onVirtualZoomChange: (value: number | null) => void;
 	onClusterPixelRadiusChange: (value: number) => void;
+	onShowBuildingMarkersChange: (value: boolean) => void;
+	onShowClustersChange: (value: boolean) => void;
+	onShowMarkerLabelsChange: (value: boolean) => void;
+	onOpenDisplaySettings: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -108,10 +117,17 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	initialUseFlyAnimation,
 	initialUseVirtualZoom,
 	initialClusterPixelRadius,
+	initialShowBuildingMarkers,
+	initialShowClusters,
+	initialShowMarkerLabels,
 	onSelectedTileChange,
 	onFlyAnimationChange,
 	onVirtualZoomChange,
 	onClusterPixelRadiusChange,
+	onShowBuildingMarkersChange,
+	onShowClustersChange,
+	onShowMarkerLabelsChange,
+	onOpenDisplaySettings,
 	theme,
 }) => {
 	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
@@ -165,13 +181,14 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 			<SettingsList
 				title="Kartenmaterial"
 				value={(TILE_VARIANTS.find((v) => v.key === selectedTileKey) ?? TILE_VARIANTS[0]).label}
+				leftIcon={<MaterialIcons name="layers" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingTileSelector(true)}
 				groupPosition="top"
-				noIconIndent
 			/>
 			<SettingsList
 				title="Cluster-Abstand (px)"
+				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<TextInput
 						value={localClusterPixelRadius}
@@ -187,10 +204,10 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 					/>
 				}
 				groupPosition="middle"
-				noIconIndent
 			/>
 			<SettingsList
 				title="Sanfte Kamera-Bewegung"
+				leftIcon={<MaterialIcons name="animation" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<Switch
 						value={localFlyAnimation}
@@ -201,16 +218,22 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 					/>
 				}
 				groupPosition="middle"
-				noIconIndent
 			/>
 			<SettingsList
 				title="Virtueller Zoom"
 				value={virtualZoomLabel}
+				leftIcon={<MaterialIcons name="zoom-in" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingVirtualZoomSelector(true)}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				title="Anzeige"
+				leftIcon={<MaterialIcons name="visibility" size={20} color={theme.screen.icon} />}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={onOpenDisplaySettings}
 				groupPosition="bottom"
 				showSeparator={false}
-				noIconIndent
 			/>
 		</>
 	);
@@ -312,6 +335,51 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	);
 };
 
+type LeafletDisplaySettingsContentProps = {
+	showBuildingMarkers: boolean;
+	showClusters: boolean;
+	showMarkerLabels: boolean;
+	onShowBuildingMarkersChange: (value: boolean) => void;
+	onShowClustersChange: (value: boolean) => void;
+	onShowMarkerLabelsChange: (value: boolean) => void;
+};
+
+const LeafletDisplaySettingsContent: React.FC<LeafletDisplaySettingsContentProps> = ({
+	showBuildingMarkers,
+	showClusters,
+	showMarkerLabels,
+	onShowBuildingMarkersChange,
+	onShowClustersChange,
+	onShowMarkerLabelsChange,
+}) => {
+	return (
+		<>
+			<SettingsListBoolean
+				title="Gebäude-Marker anzeigen"
+				leftIcon={<MaterialIcons name="place" size={20} />}
+				isEnabled={showBuildingMarkers}
+				onToggle={() => onShowBuildingMarkersChange(!showBuildingMarkers)}
+				groupPosition="top"
+			/>
+			<SettingsListBoolean
+				title="Cluster anzeigen"
+				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} />}
+				isEnabled={showClusters}
+				onToggle={() => onShowClustersChange(!showClusters)}
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				title="Marker-Beschriftung anzeigen"
+				leftIcon={<MaterialIcons name="label" size={20} />}
+				isEnabled={showMarkerLabels}
+				onToggle={() => onShowMarkerLabelsChange(!showMarkerLabels)}
+				groupPosition="bottom"
+				showSeparator={false}
+			/>
+		</>
+	);
+};
+
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
 	lng: 13.376281624711964,
@@ -359,6 +427,11 @@ function getFirstOrganisationFromDict(
  *   1. Building's own `markerColor` / `markerLabelColor`
  *   2. First organisation's `orgMarkerColor` / `orgMarkerLabelColor`
  *   3. Project default: `fallbackColor` (project colour) / `fallbackLabelColor` (contrast of project colour)
+ *
+ * Label fallback priority:
+ *   1. Explicit `markerLabel`
+ *   2. `externalIdentifier`
+ *   3. Derived from `alias` via `getMarkerLabelFromBuildingAlias`
  */
 function createBuildingMarkerSvg(
 	externalIdentifier?: string | null,
@@ -369,6 +442,8 @@ function createBuildingMarkerSvg(
 	orgMarkerLabelColor?: string | null,
 	fallbackColor?: string | null,
 	fallbackLabelColor?: string | null,
+	alias?: string | null,
+	showLabel?: boolean,
 ): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
@@ -377,8 +452,11 @@ function createBuildingMarkerSvg(
 	// Use || instead of ?? so that empty strings also fall back to the next value in the chain
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
 	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
-	const rawLabel = markerLabel ?? externalIdentifier;
-	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	let rawLabel: string | null = markerLabel || externalIdentifier || null;
+	if (!rawLabel && alias) {
+		rawLabel = getMarkerLabelFromBuildingAlias(alias);
+	}
+	const label = (showLabel !== false && rawLabel) ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	let textEl = '';
 	if (label) {
@@ -410,6 +488,9 @@ const LeafletMap = () => {
 	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
 	const clusterPixelRadius = useAppSelector((state) => state.settings.mapClusterPixelRadius ?? 60);
 	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
+	const showBuildingMarkers = useAppSelector((state) => (state.settings as any).mapShowBuildingMarkers ?? true) as boolean;
+	const showClusters = useAppSelector((state) => (state.settings as any).mapShowClusters ?? true) as boolean;
+	const showMarkerLabels = useAppSelector((state) => (state.settings as any).mapShowMarkerLabels ?? true) as boolean;
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
@@ -419,6 +500,9 @@ const LeafletMap = () => {
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
+
+	// User location state
+	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
 	// Fast lookup dict for organisations – keyed by organisation ID
 	const organisationsDict = useMemo(
@@ -567,6 +651,22 @@ const LeafletMap = () => {
 		return layer;
 	}, [selectedTileVariantKey, useVirtualZoom]);
 
+	const openDisplaySettingsModal = useCallback(() => {
+		show({
+			title: 'Anzeige',
+			children: (
+				<LeafletDisplaySettingsContent
+					showBuildingMarkers={showBuildingMarkers}
+					showClusters={showClusters}
+					showMarkerLabels={showMarkerLabels}
+					onShowBuildingMarkersChange={(v) => dispatch({ type: SET_MAP_SHOW_BUILDING_MARKERS, payload: v })}
+					onShowClustersChange={(v) => dispatch({ type: SET_MAP_SHOW_CLUSTERS, payload: v })}
+					onShowMarkerLabelsChange={(v) => dispatch({ type: SET_MAP_SHOW_MARKER_LABELS, payload: v })}
+				/>
+			),
+		});
+	}, [show, showBuildingMarkers, showClusters, showMarkerLabels, dispatch]);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -576,15 +676,22 @@ const LeafletMap = () => {
 					initialUseFlyAnimation={useFlyAnimation}
 					initialUseVirtualZoom={useVirtualZoom}
 					initialClusterPixelRadius={clusterPixelRadius}
+					initialShowBuildingMarkers={showBuildingMarkers}
+					initialShowClusters={showClusters}
+					initialShowMarkerLabels={showMarkerLabels}
 					onSelectedTileChange={setSelectedTileVariantKey}
 					onFlyAnimationChange={setUseFlyAnimation}
 					onVirtualZoomChange={setUseVirtualZoom}
 					onClusterPixelRadiusChange={setClusterPixelRadius}
+					onShowBuildingMarkersChange={(v) => dispatch({ type: SET_MAP_SHOW_BUILDING_MARKERS, payload: v })}
+					onShowClustersChange={(v) => dispatch({ type: SET_MAP_SHOW_CLUSTERS, payload: v })}
+					onShowMarkerLabelsChange={(v) => dispatch({ type: SET_MAP_SHOW_MARKER_LABELS, payload: v })}
+					onOpenDisplaySettings={openDisplaySettingsModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, clusterPixelRadius, theme]);
+	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, clusterPixelRadius, showBuildingMarkers, showClusters, showMarkerLabels, theme, openDisplaySettingsModal]);
 
 	const openFilterModal = useCallback(() => {
 		show({
@@ -676,21 +783,32 @@ const LeafletMap = () => {
 						firstOrg?.map_marker_label_color ?? null,
 						primaryColor,
 						primaryColorContrastColor,
+						building.alias,
+						showMarkerLabels,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
-
-	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
-	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom, clusterPixelRadius), [buildingMarkers, mapZoom, clusterPixelRadius]);
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor, showMarkerLabels]);
 
 	// Reset the centre override when the selected canteen changes so the map
 	// returns to the canteen's building position.
 	useEffect(() => {
 		setMapCenterOverride(null);
 	}, [centerPosition]);
+
+	// Effective building markers: empty if showBuildingMarkers is disabled
+	const effectiveBuildingMarkers = useMemo(
+		() => showBuildingMarkers ? buildingMarkers : [],
+		[buildingMarkers, showBuildingMarkers]
+	);
+
+	// Effective cluster radius: 0 disables clustering when showClusters is false
+	const effectiveClusterPixelRadius = showClusters ? clusterPixelRadius : 0;
+
+	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
+	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(effectiveBuildingMarkers, mapZoom, effectiveClusterPixelRadius), [effectiveBuildingMarkers, mapZoom, effectiveClusterPixelRadius]);
 
 	// Search results: up to 3 buildings matching the query
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
@@ -788,6 +906,44 @@ const LeafletMap = () => {
 		[addLog],
 	);
 
+	// Compass: reset map view to center position (Leaflet always points north)
+	const handleCompassPress = useCallback(() => {
+		setMapCenterOverride({ ...centerPosition });
+		setMapZoom(DEFAULT_ZOOM);
+	}, [centerPosition]);
+
+	// Location: request permission and center map on user position
+	const handleLocationPress = useCallback(async () => {
+		try {
+			const { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				Alert.alert('Standort', 'Standortberechtigung wurde verweigert.');
+				return;
+			}
+			const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+			const { latitude, longitude } = location.coords;
+			setUserLocation({ lat: latitude, lng: longitude });
+			setMapCenterOverride({ lat: latitude, lng: longitude });
+			addLog(`Standort: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+		} catch (error) {
+			console.error('Location error:', error);
+			Alert.alert('Standort', 'Standort konnte nicht ermittelt werden.');
+		}
+	}, [addLog]);
+
+	// User location marker (non-clustered)
+	const userLocationMarkers = useMemo((): MapMarker[] => {
+		if (!userLocation) return [];
+		const size = 28;
+		return [{
+			id: 'user-location',
+			position: userLocation,
+			icon: createUserLocationMarkerSvg(),
+			size: [size, size] as [number, number],
+			iconAnchor: [size / 2, size / 2] as [number, number],
+		}];
+	}, [userLocation]);
+
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
 			<LeafletMapHeader
@@ -804,12 +960,28 @@ const LeafletMap = () => {
 						key={`${selectedTileVariantKey}-${useVirtualZoom}`}
 						mapCenterPosition={mapCenterOverride ?? centerPosition}
 						zoom={mapZoom}
-						mapMarkers={buildingMarkers}
+						mapMarkers={effectiveBuildingMarkers}
+						noClusterMarkers={userLocationMarkers}
 						mapLayers={[selectedTileLayer]}
 						useFlyAnimation={useFlyAnimation}
 						onMarkerClick={handleMarkerClick}
 						onMapEvent={handleMapEvent}
 					/>
+					{/* Map overlay buttons: compass and location */}
+					<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+						<TouchableOpacity
+							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
+							onPress={handleCompassPress}
+						>
+							<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+							onPress={handleLocationPress}
+						>
+							<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
+						</TouchableOpacity>
+					</View>
 					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
@@ -860,6 +1032,26 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
+	mapOverlayButtons: {
+		position: 'absolute',
+		top: 16,
+		right: 12,
+		zIndex: 20,
+		elevation: 20,
+		alignItems: 'center',
+	},
+	mapOverlayButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		elevation: 3,
+	},
 	searchResultsContainer: {
 		position: 'absolute',
 		top: 0,

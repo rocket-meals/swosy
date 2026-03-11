@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { Asset } from 'expo-asset';
@@ -12,20 +12,22 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_BUILDING_MARKERS, SET_OSM_VECTOR_MAP_SHOW_CLUSTERS, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_SHOW_MARKER_LABELS, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
-import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
+import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
-import { Entypo, Ionicons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -53,6 +55,7 @@ type OsmSettingsContentProps = {
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
 	onShowControlsHint: () => void;
+	onOpenDisplaySettings: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -64,6 +67,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	onFlyAnimationChange,
 	onClusterDistanceChange,
 	onShowControlsHint,
+	onOpenDisplaySettings,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
@@ -91,13 +95,14 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 			<SettingsList
 				title="Kartenstil"
 				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
+				leftIcon={<MaterialIcons name="layers" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingStyleSelector(true)}
 				groupPosition="top"
-				noIconIndent
 			/>
 			<SettingsList
 				title="Cluster-Abstand (px)"
+				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<TextInput
 						value={localClusterDistance}
@@ -113,10 +118,10 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 					/>
 				}
 				groupPosition="middle"
-				noIconIndent
 			/>
 			<SettingsList
 				title="Sanfte Kamera-Bewegung"
+				leftIcon={<MaterialIcons name="animation" size={20} color={theme.screen.icon} />}
 				rightElement={
 					<Switch
 						value={localFlyAnimation}
@@ -128,15 +133,21 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				}
 				groupPosition="middle"
 				showSeparator={true}
-				noIconIndent
 			/>
 			<SettingsList
-				title="Kartensteuerung anzeigen"
+				title="Kartensteuerung"
+				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={onShowControlsHint}
+				groupPosition="middle"
+			/>
+			<SettingsList
+				title="Anzeige"
+				leftIcon={<MaterialIcons name="visibility" size={20} color={theme.screen.icon} />}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={onOpenDisplaySettings}
 				groupPosition="bottom"
 				showSeparator={false}
-				noIconIndent
 			/>
 		</>
 	);
@@ -289,6 +300,51 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 	);
 };
 
+type OsmDisplaySettingsContentProps = {
+	showBuildingMarkers: boolean;
+	showClusters: boolean;
+	showMarkerLabels: boolean;
+	onShowBuildingMarkersChange: (value: boolean) => void;
+	onShowClustersChange: (value: boolean) => void;
+	onShowMarkerLabelsChange: (value: boolean) => void;
+};
+
+const OsmDisplaySettingsContent: React.FC<OsmDisplaySettingsContentProps> = ({
+	showBuildingMarkers,
+	showClusters,
+	showMarkerLabels,
+	onShowBuildingMarkersChange,
+	onShowClustersChange,
+	onShowMarkerLabelsChange,
+}) => {
+	return (
+		<>
+			<SettingsListBoolean
+				title="Gebäude-Marker anzeigen"
+				leftIcon={<MaterialIcons name="place" size={20} />}
+				isEnabled={showBuildingMarkers}
+				onToggle={() => onShowBuildingMarkersChange(!showBuildingMarkers)}
+				groupPosition="top"
+			/>
+			<SettingsListBoolean
+				title="Cluster anzeigen"
+				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} />}
+				isEnabled={showClusters}
+				onToggle={() => onShowClustersChange(!showClusters)}
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				title="Marker-Beschriftung anzeigen"
+				leftIcon={<MaterialIcons name="label" size={20} />}
+				isEnabled={showMarkerLabels}
+				onToggle={() => onShowMarkerLabelsChange(!showMarkerLabels)}
+				groupPosition="bottom"
+				showSeparator={false}
+			/>
+		</>
+	);
+};
+
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
 	lng: 13.376281624711964,
@@ -330,6 +386,8 @@ function createBuildingMarkerSvg(
 	orgMarkerLabelColor?: string | null,
 	fallbackColor?: string | null,
 	fallbackLabelColor?: string | null,
+	alias?: string | null,
+	showLabel?: boolean,
 ): string {
 	const size = BUILDING_MARKER_SIZE;
 	const cx = size / 2;
@@ -337,8 +395,11 @@ function createBuildingMarkerSvg(
 	const r = cx - 2;
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
 	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
-	const rawLabel = markerLabel ?? externalIdentifier;
-	const label = rawLabel ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
+	let rawLabel: string | null = markerLabel || externalIdentifier || null;
+	if (!rawLabel && alias) {
+		rawLabel = getMarkerLabelFromBuildingAlias(alias);
+	}
+	const label = (showLabel !== false && rawLabel) ? rawLabel.slice(0, MAX_BUILDING_LABEL_CHARS) : null;
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	let textEl = '';
 	if (label) {
@@ -370,6 +431,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
+	const showBuildingMarkers = useAppSelector((state) => (state.settings as any).osmVectorMapShowBuildingMarkers ?? true) as boolean;
+	const showClusters = useAppSelector((state) => (state.settings as any).osmVectorMapShowClusters ?? true) as boolean;
+	const showMarkerLabels = useAppSelector((state) => (state.settings as any).osmVectorMapShowMarkerLabels ?? true) as boolean;
 	const organisationLikes = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapOrganisationFilter ?? {}) as Record<string, boolean | null>,
 	);
@@ -384,6 +448,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
+	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
 	// pendingNavigateRef: true = include position in next sendMapData call
 	const pendingNavigateRef = useRef(true);
@@ -539,16 +604,44 @@ const OsmVectorMapScreen: React.FC = () => {
 						firstOrg?.map_marker_label_color ?? null,
 						primaryColor,
 						primaryColorContrastColor,
+						building.alias,
+						showMarkerLabels,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor, showMarkerLabels]);
+
+	// Effective markers respecting display settings
+	const effectiveBuildingMarkers = useMemo(
+		() => showBuildingMarkers ? buildingMarkers : [],
+		[buildingMarkers, showBuildingMarkers],
+	);
+
+	const effectiveClusterDistance = showClusters ? clusterDistance : 0;
 
 	const clusteredBuildingMarkers = useMemo(
-		() => clusterMarkers(buildingMarkers, mapZoom, clusterDistance),
-		[buildingMarkers, mapZoom, clusterDistance],
+		() => clusterMarkers(effectiveBuildingMarkers, mapZoom, effectiveClusterDistance),
+		[effectiveBuildingMarkers, mapZoom, effectiveClusterDistance],
+	);
+
+	// User location marker (non-clustered)
+	const userLocationMarker = useMemo((): MapMarker | null => {
+		if (!userLocation) return null;
+		const size = 28;
+		return {
+			id: 'user-location',
+			position: userLocation,
+			icon: createUserLocationMarkerSvg(),
+			size: [size, size] as [number, number],
+			iconAnchor: [size / 2, size / 2] as [number, number],
+		};
+	}, [userLocation]);
+
+	const allMarkers = useMemo(
+		() => userLocationMarker ? [...clusteredBuildingMarkers, userLocationMarker] : clusteredBuildingMarkers,
+		[clusteredBuildingMarkers, userLocationMarker],
 	);
 
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
@@ -579,7 +672,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
 
 		const message: Record<string, unknown> = {
-			mapMarkers: clusteredBuildingMarkers,
+			mapMarkers: allMarkers,
 			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
 		};
@@ -596,7 +689,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		webViewRef.current?.injectJavaScript(
 			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
 		);
-	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation]);
+	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
@@ -707,6 +800,22 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [show, close, dispatch, theme]);
 
+	const openDisplaySettingsModal = useCallback(() => {
+		show({
+			title: 'Anzeige',
+			children: (
+				<OsmDisplaySettingsContent
+					showBuildingMarkers={showBuildingMarkers}
+					showClusters={showClusters}
+					showMarkerLabels={showMarkerLabels}
+					onShowBuildingMarkersChange={(v) => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_BUILDING_MARKERS, payload: v })}
+					onShowClustersChange={(v) => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_CLUSTERS, payload: v })}
+					onShowMarkerLabelsChange={(v) => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_MARKER_LABELS, payload: v })}
+				/>
+			),
+		});
+	}, [show, showBuildingMarkers, showClusters, showMarkerLabels, dispatch]);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -719,11 +828,39 @@ const OsmVectorMapScreen: React.FC = () => {
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
 					onClusterDistanceChange={setClusterDistanceDispatch}
 					onShowControlsHint={openControlsHintModal}
+					onOpenDisplaySettings={openDisplaySettingsModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal, openDisplaySettingsModal]);
+
+	// Compass: reset map bearing to north
+	const handleCompassPress = useCallback(() => {
+		webViewRef.current?.injectJavaScript(
+			`window.dispatchEvent(new MessageEvent('message',{data:JSON.stringify({resetBearing:true})}));true;`,
+		);
+	}, []);
+
+	// Location: request permission and show user position marker
+	const handleLocationPress = useCallback(async () => {
+		try {
+			const { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				Alert.alert('Standort', 'Standortberechtigung wurde verweigert.');
+				return;
+			}
+			const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+			const { latitude, longitude } = location.coords;
+			setUserLocation({ lat: latitude, lng: longitude });
+			setMapCenterOverride({ lat: latitude, lng: longitude });
+			pendingNavigateRef.current = true;
+			addLog(`Standort: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+		} catch (error) {
+			console.error('Location error:', error);
+			Alert.alert('Standort', 'Standort konnte nicht ermittelt werden.');
+		}
+	}, [addLog]);
 
 	const openFilterModal = useCallback(() => {
 		show({
@@ -767,14 +904,29 @@ const OsmVectorMapScreen: React.FC = () => {
 						onMessage={handleMessage}
 						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 					/>
-					{showControlsHint && (
+					{/* Map overlay buttons: compass, location, and controls hint */}
+					<View style={styles.mapOverlayButtons} pointerEvents="box-none">
 						<TouchableOpacity
-							style={styles.infoIconButton}
-							onPress={openControlsHintModal}
+							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
+							onPress={handleCompassPress}
 						>
-							<Ionicons name="help-circle-outline" size={32} color={theme.header.text} />
+							<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
 						</TouchableOpacity>
-					)}
+						<TouchableOpacity
+							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+							onPress={handleLocationPress}
+						>
+							<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
+						</TouchableOpacity>
+						{showControlsHint && (
+							<TouchableOpacity
+								style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+								onPress={openControlsHintModal}
+							>
+								<MaterialIcons name="touch-app" size={26} color={theme.screen.icon} />
+							</TouchableOpacity>
+						)}
+					</View>
 					<DebugView title="Map Log">
 						<ScrollView
 							ref={logScrollRef}
@@ -824,15 +976,25 @@ const styles = StyleSheet.create({
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
 	webView: { flex: 1 },
-	infoIconButton: {
+	mapOverlayButtons: {
 		position: 'absolute',
-		top: 8,
-		right: 8,
+		top: 16,
+		right: 12,
 		zIndex: 20,
 		elevation: 20,
-		backgroundColor: 'rgba(0,0,0,0.35)',
-		borderRadius: 20,
-		padding: 4,
+		alignItems: 'center',
+	},
+	mapOverlayButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		elevation: 3,
 	},
 	searchResultsContainer: {
 		position: 'absolute',
