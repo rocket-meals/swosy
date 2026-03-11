@@ -1,15 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
-import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
-import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
@@ -347,10 +342,10 @@ function createBuildingMarkerSvg(
 }
 
 const OsmVectorMapScreen: React.FC = () => {
-	useSetPageTitle(TranslationKeys.osm_vector_map);
+	useSetPageTitle(TranslationKeys.map);
 	const { theme } = useTheme();
-	const webViewRef = useRef<WebView>(null);
-	const [html, setHtml] = useState<string | null>(null);
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+	const html = require('@/assets/maplibre/index.html');
 
 	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
@@ -556,6 +551,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const sendMapData = useCallback(() => {
+		if (!iframeRef.current?.contentWindow) return;
 		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
 
@@ -573,31 +569,12 @@ const OsmVectorMapScreen: React.FC = () => {
 			setMapCenterOverride(null);
 		}
 
-		const messageStr = JSON.stringify(message);
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
-		);
+		iframeRef.current.contentWindow.postMessage(message, '*');
 	}, [mapCenterOverride, centerPosition, mapZoom, clusteredBuildingMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
 	}, [sendMapData]);
-
-	useEffect(() => {
-		let isMounted = true;
-		const loadHtml = async () => {
-			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
-			await htmlAsset.downloadAsync();
-			const htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-			if (isMounted) {
-				setHtml(htmlContent);
-			}
-		};
-		loadHtml();
-		return () => {
-			isMounted = false;
-		};
-	}, []);
 
 	const handleMarkerClick = useCallback(
 		(id: string) => {
@@ -633,10 +610,10 @@ const OsmVectorMapScreen: React.FC = () => {
 		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
-	const handleMessage = useCallback(
-		(event: WebViewMessageEvent) => {
+	useEffect(() => {
+		const handler = (event: MessageEvent) => {
 			try {
-				const data = JSON.parse(event.nativeEvent.data);
+				const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 				if (data.tag === 'MapComponentMounted') {
 					pendingNavigateRef.current = true;
 					sendMapData();
@@ -653,18 +630,10 @@ const OsmVectorMapScreen: React.FC = () => {
 			} catch {
 				// ignore malformed messages
 			}
-		},
-		[sendMapData, handleMarkerClick, addLog],
-	);
-
-	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
-		const url = request.url;
-		if (!url || url === 'about:blank' || url === 'about:srcdoc') {
-			return true;
-		}
-		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
-		return false;
-	}, []);
+		};
+		window.addEventListener('message', handler);
+		return () => window.removeEventListener('message', handler);
+	}, [sendMapData, handleMarkerClick, addLog]);
 
 	const openControlsHintModal = useCallback(() => {
 		show({
@@ -715,10 +684,6 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
-	if (!html) {
-		return <View style={[styles.safeArea, { backgroundColor: theme.screen.background }]} />;
-	}
-
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
 			<LeafletMapHeader
@@ -731,15 +696,12 @@ const OsmVectorMapScreen: React.FC = () => {
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<WebView
-						ref={webViewRef}
-						style={styles.webView}
-						source={{ html }}
-						javaScriptEnabled={true}
-						domStorageEnabled={true}
-						originWhitelist={['*']}
-						onMessage={handleMessage}
-						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+					<iframe
+						ref={iframeRef}
+						src={html}
+						style={{ width: '100%', height: '100%', border: 'none' }}
+						onLoad={sendMapData}
+						title="OSM Vector Map"
 					/>
 					{showControlsHint && (
 						<TouchableOpacity
@@ -797,7 +759,6 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
-	webView: { flex: 1 },
 	infoIconButton: {
 		position: 'absolute',
 		top: 8,

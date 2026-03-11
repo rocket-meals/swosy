@@ -52,10 +52,10 @@ const Index = () => {
 				}),
 		},
 		{
-			key: 'osm-vector-map',
-			label: translate(TranslationKeys.osm_vector_map),
+			key: 'tile-map',
+			label: translate(TranslationKeys.leaflet_map),
 			leftIcon: <MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/osm-vector-map'),
+			onPress: () => router.push('/experimentell/tile-map'),
 		},
 		{
 			key: 'vertical-image-scroll',

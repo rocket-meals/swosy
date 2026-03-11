@@ -691,10 +691,10 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
-					name="experimentell/osm-vector-map/index"
+					name="experimentell/tile-map/index"
 					options={{
 						headerShown: false,
-						title: translate(TranslationKeys.osm_vector_map),
+						title: translate(TranslationKeys.map),
 					}}
 				/>
 				<Drawer.Screen
