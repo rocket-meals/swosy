@@ -13,14 +13,13 @@ import { VIRTUAL_ZOOM_NONE_KEY, VIRTUAL_ZOOM_OPTIONS } from '@/components/MyMap/
 import { DatabaseTypes } from 'repo-depkit-common';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import SettingsList from '@/components/SettingsList/SettingsList';
-import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import LeafletMapHeader from './components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { useDispatch } from 'react-redux';
-import { SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_SHOW_BUILDING_MARKERS, SET_MAP_SHOW_CLUSTERS, SET_MAP_SHOW_MARKER_LABELS, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
+import { SET_MAP_CLUSTER_PIXEL_RADIUS, SET_MAP_ORGANISATION_FILTER, SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
@@ -98,17 +97,10 @@ type LeafletSettingsContentProps = {
 	initialUseFlyAnimation: boolean;
 	initialUseVirtualZoom: number | null;
 	initialClusterPixelRadius: number;
-	initialShowBuildingMarkers: boolean;
-	initialShowClusters: boolean;
-	initialShowMarkerLabels: boolean;
 	onSelectedTileChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onVirtualZoomChange: (value: number | null) => void;
 	onClusterPixelRadiusChange: (value: number) => void;
-	onShowBuildingMarkersChange: (value: boolean) => void;
-	onShowClustersChange: (value: boolean) => void;
-	onShowMarkerLabelsChange: (value: boolean) => void;
-	onOpenDisplaySettings: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -117,17 +109,10 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 	initialUseFlyAnimation,
 	initialUseVirtualZoom,
 	initialClusterPixelRadius,
-	initialShowBuildingMarkers,
-	initialShowClusters,
-	initialShowMarkerLabels,
 	onSelectedTileChange,
 	onFlyAnimationChange,
 	onVirtualZoomChange,
 	onClusterPixelRadiusChange,
-	onShowBuildingMarkersChange,
-	onShowClustersChange,
-	onShowMarkerLabelsChange,
-	onOpenDisplaySettings,
 	theme,
 }) => {
 	const [selectedTileKey, setSelectedTileKey] = useState(initialSelectedTileKey);
@@ -225,13 +210,6 @@ const LeafletSettingsContent: React.FC<LeafletSettingsContentProps> = ({
 				leftIcon={<MaterialIcons name="zoom-in" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingVirtualZoomSelector(true)}
-				groupPosition="middle"
-			/>
-			<SettingsList
-				title="Anzeige"
-				leftIcon={<MaterialIcons name="visibility" size={20} color={theme.screen.icon} />}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-				onPress={onOpenDisplaySettings}
 				groupPosition="bottom"
 				showSeparator={false}
 			/>
@@ -335,50 +313,7 @@ const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
 	);
 };
 
-type LeafletDisplaySettingsContentProps = {
-	showBuildingMarkers: boolean;
-	showClusters: boolean;
-	showMarkerLabels: boolean;
-	onShowBuildingMarkersChange: (value: boolean) => void;
-	onShowClustersChange: (value: boolean) => void;
-	onShowMarkerLabelsChange: (value: boolean) => void;
-};
 
-const LeafletDisplaySettingsContent: React.FC<LeafletDisplaySettingsContentProps> = ({
-	showBuildingMarkers,
-	showClusters,
-	showMarkerLabels,
-	onShowBuildingMarkersChange,
-	onShowClustersChange,
-	onShowMarkerLabelsChange,
-}) => {
-	return (
-		<>
-			<SettingsListBoolean
-				title="Gebäude-Marker anzeigen"
-				leftIcon={<MaterialIcons name="place" size={20} />}
-				isEnabled={showBuildingMarkers}
-				onToggle={() => onShowBuildingMarkersChange(!showBuildingMarkers)}
-				groupPosition="top"
-			/>
-			<SettingsListBoolean
-				title="Cluster anzeigen"
-				leftIcon={<MaterialCommunityIcons name="dots-grid" size={20} />}
-				isEnabled={showClusters}
-				onToggle={() => onShowClustersChange(!showClusters)}
-				groupPosition="middle"
-			/>
-			<SettingsListBoolean
-				title="Marker-Beschriftung anzeigen"
-				leftIcon={<MaterialIcons name="label" size={20} />}
-				isEnabled={showMarkerLabels}
-				onToggle={() => onShowMarkerLabelsChange(!showMarkerLabels)}
-				groupPosition="bottom"
-				showSeparator={false}
-			/>
-		</>
-	);
-};
 
 const POSITION_BUNDESTAG = {
 	lat: 52.518594247456804,
@@ -488,9 +423,6 @@ const LeafletMap = () => {
 	const useVirtualZoom = useAppSelector((state) => state.settings.mapVirtualZoom);
 	const clusterPixelRadius = useAppSelector((state) => state.settings.mapClusterPixelRadius ?? 60);
 	const organisationLikes = useAppSelector((state) => state.settings.mapOrganisationFilter ?? {}) as Record<string, boolean | null>;
-	const showBuildingMarkers = useAppSelector((state) => (state.settings as any).mapShowBuildingMarkers ?? true) as boolean;
-	const showClusters = useAppSelector((state) => (state.settings as any).mapShowClusters ?? true) as boolean;
-	const showMarkerLabels = useAppSelector((state) => (state.settings as any).mapShowMarkerLabels ?? true) as boolean;
 	const dispatch = useDispatch();
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
@@ -651,22 +583,6 @@ const LeafletMap = () => {
 		return layer;
 	}, [selectedTileVariantKey, useVirtualZoom]);
 
-	const openDisplaySettingsModal = useCallback(() => {
-		show({
-			title: 'Anzeige',
-			children: (
-				<LeafletDisplaySettingsContent
-					showBuildingMarkers={showBuildingMarkers}
-					showClusters={showClusters}
-					showMarkerLabels={showMarkerLabels}
-					onShowBuildingMarkersChange={(v) => dispatch({ type: SET_MAP_SHOW_BUILDING_MARKERS, payload: v })}
-					onShowClustersChange={(v) => dispatch({ type: SET_MAP_SHOW_CLUSTERS, payload: v })}
-					onShowMarkerLabelsChange={(v) => dispatch({ type: SET_MAP_SHOW_MARKER_LABELS, payload: v })}
-				/>
-			),
-		});
-	}, [show, showBuildingMarkers, showClusters, showMarkerLabels, dispatch]);
-
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -676,22 +592,15 @@ const LeafletMap = () => {
 					initialUseFlyAnimation={useFlyAnimation}
 					initialUseVirtualZoom={useVirtualZoom}
 					initialClusterPixelRadius={clusterPixelRadius}
-					initialShowBuildingMarkers={showBuildingMarkers}
-					initialShowClusters={showClusters}
-					initialShowMarkerLabels={showMarkerLabels}
 					onSelectedTileChange={setSelectedTileVariantKey}
 					onFlyAnimationChange={setUseFlyAnimation}
 					onVirtualZoomChange={setUseVirtualZoom}
 					onClusterPixelRadiusChange={setClusterPixelRadius}
-					onShowBuildingMarkersChange={(v) => dispatch({ type: SET_MAP_SHOW_BUILDING_MARKERS, payload: v })}
-					onShowClustersChange={(v) => dispatch({ type: SET_MAP_SHOW_CLUSTERS, payload: v })}
-					onShowMarkerLabelsChange={(v) => dispatch({ type: SET_MAP_SHOW_MARKER_LABELS, payload: v })}
-					onOpenDisplaySettings={openDisplaySettingsModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, clusterPixelRadius, showBuildingMarkers, showClusters, showMarkerLabels, theme, openDisplaySettingsModal]);
+	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, clusterPixelRadius, theme]);
 
 	const openFilterModal = useCallback(() => {
 		show({
@@ -784,13 +693,13 @@ const LeafletMap = () => {
 						primaryColor,
 						primaryColorContrastColor,
 						building.alias,
-						showMarkerLabels,
+						true,
 					),
 					size: [BUILDING_MARKER_SIZE, BUILDING_MARKER_SIZE] as [number, number],
 					iconAnchor: [BUILDING_MARKER_SIZE / 2, BUILDING_MARKER_SIZE / 2] as [number, number],
 				};
 			});
-	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor, showMarkerLabels]);
+	}, [buildings, buildingIdToOrgsDict, likedOrganisationIds, dislikedOrganisationIds, primaryColor, primaryColorContrastColor]);
 
 	// Reset the centre override when the selected canteen changes so the map
 	// returns to the canteen's building position.
@@ -798,17 +707,8 @@ const LeafletMap = () => {
 		setMapCenterOverride(null);
 	}, [centerPosition]);
 
-	// Effective building markers: empty if showBuildingMarkers is disabled
-	const effectiveBuildingMarkers = useMemo(
-		() => showBuildingMarkers ? buildingMarkers : [],
-		[buildingMarkers, showBuildingMarkers]
-	);
-
-	// Effective cluster radius: 0 disables clustering when showClusters is false
-	const effectiveClusterPixelRadius = showClusters ? clusterPixelRadius : 0;
-
 	// Pre-computed clustered markers at the current zoom – reused for cluster click handling
-	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(effectiveBuildingMarkers, mapZoom, effectiveClusterPixelRadius), [effectiveBuildingMarkers, mapZoom, effectiveClusterPixelRadius]);
+	const clusteredBuildingMarkers = useMemo(() => clusterMarkers(buildingMarkers, mapZoom, clusterPixelRadius), [buildingMarkers, mapZoom, clusterPixelRadius]);
 
 	// Search results: up to 3 buildings matching the query
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
@@ -960,7 +860,7 @@ const LeafletMap = () => {
 						key={`${selectedTileVariantKey}-${useVirtualZoom}`}
 						mapCenterPosition={mapCenterOverride ?? centerPosition}
 						zoom={mapZoom}
-						mapMarkers={effectiveBuildingMarkers}
+						mapMarkers={buildingMarkers}
 						noClusterMarkers={userLocationMarkers}
 						mapLayers={[selectedTileLayer]}
 						useFlyAnimation={useFlyAnimation}
