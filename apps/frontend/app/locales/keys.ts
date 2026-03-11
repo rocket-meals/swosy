@@ -505,6 +505,7 @@ export enum TranslationKeys {
 	pull_down_to_close = 'pull_down_to_close',
 	group_app_management = 'group_app_management',
 	game_ideas = 'game_ideas',
+	map_play = 'map_play',
 	food_wishlist = 'food_wishlist',
 	food_wishlist_planned = 'food_wishlist_planned',
 	food_wishlist_not_planned = 'food_wishlist_not_planned',
