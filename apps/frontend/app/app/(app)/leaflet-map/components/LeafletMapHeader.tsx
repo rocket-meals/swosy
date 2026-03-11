@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
@@ -83,7 +83,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 							onPress={() => onFilterPress?.()}
 							style={styles.iconButton}
 						>
-							<Ionicons name="filter" size={24} color={theme.header.text} />
+							<FontAwesome name="filter" size={24} color={theme.header.text} />
 						</IconButton>
 					)}
 				>

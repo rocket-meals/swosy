@@ -20,6 +20,8 @@ import SettingsListSelectOption from '@/components/SettingsListSelectOption/Sett
 import { useDispatch } from 'react-redux';
 import { SET_MAP_TILE_VARIANT_KEY, SET_MAP_USE_FLY_ANIMATION, SET_MAP_VIRTUAL_ZOOM } from '@/redux/Types/types';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
+import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
+import { useLanguage } from '@/hooks/useLanguage';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -169,7 +171,86 @@ const POSITION_BUNDESTAG = {
 	lng: 13.376281624711964,
 };
 
-const MAX_LOG_ENTRIES = 50;
+type LeafletFilterContentProps = {
+	organisations: DatabaseTypes.Organizations[];
+	initialLikes: Record<string, boolean | null>;
+	onLikeChange: (organisationId: string, like: boolean) => void;
+};
+
+const LeafletFilterContent: React.FC<LeafletFilterContentProps> = ({
+	organisations,
+	initialLikes,
+	onLikeChange,
+}) => {
+	const [localLikes, setLocalLikes] = useState<Record<string, boolean | null>>(initialLikes);
+	const { translate } = useLanguage();
+
+	useEffect(() => {
+		setLocalLikes(initialLikes);
+	}, [initialLikes]);
+
+	const handlePressLike = useCallback(
+		(orgId: string) => {
+			setLocalLikes((prev) => {
+				const current = prev[orgId];
+				const next = current === true ? null : true;
+				if (next === null) {
+					const updated = { ...prev };
+					delete updated[orgId];
+					return updated;
+				}
+				return { ...prev, [orgId]: next };
+			});
+			onLikeChange(orgId, true);
+		},
+		[onLikeChange]
+	);
+
+	const handlePressDislike = useCallback(
+		(orgId: string) => {
+			setLocalLikes((prev) => {
+				const current = prev[orgId];
+				const next = current === false ? null : false;
+				if (next === null) {
+					const updated = { ...prev };
+					delete updated[orgId];
+					return updated;
+				}
+				return { ...prev, [orgId]: next };
+			});
+			onLikeChange(orgId, false);
+		},
+		[onLikeChange]
+	);
+
+	if (organisations.length === 0) {
+		return (
+			<View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+				<Text style={{ color: '#888' }}>{translate(TranslationKeys.no_data_found)}</Text>
+			</View>
+		);
+	}
+
+	return (
+		<>
+			{organisations.map((org, index) => {
+				const total = organisations.length;
+				const groupPosition =
+					total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				return (
+					<SettingsListOrganisationFast
+						key={org.id}
+						organisationId={org.id}
+						like={localLikes[org.id] ?? null}
+						onPressLike={handlePressLike}
+						onPressDislike={handlePressDislike}
+						groupPosition={groupPosition}
+					/>
+				);
+			})}
+		</>
+	);
+};
 
 const MAX_ZOOM = 20;
 const DEFAULT_ZOOM = 17;
@@ -252,12 +333,36 @@ const MapScreen = () => {
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { theme } = useTheme();
 	const { show } = useMyScrollViewModal();
+	const { translate } = useLanguage();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
 
 	// Search state
 	const [searchQuery, setSearchQuery] = useState('');
+
+	// Organisation filter state: orgId → true (liked) | false (disliked) | null (neutral)
+	const [organisationLikes, setOrganisationLikes] = useState<Record<string, boolean | null>>({});
+	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
+
+	const handleOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		setOrganisationLikes((prev) => {
+			const current = prev[orgId];
+			const next = current === like ? null : like;
+			if (next === null) {
+				const updated = { ...prev };
+				delete updated[orgId];
+				return updated;
+			}
+			return { ...prev, [orgId]: next };
+		});
+	}, []);
+
+	handleOrganisationLikeChangeRef.current = handleOrganisationLikeChange;
+
+	const stableOnOrganisationLikeChange = useCallback((orgId: string, like: boolean) => {
+		handleOrganisationLikeChangeRef.current(orgId, like);
+	}, []);
 
 	const setSelectedTileVariantKey = useCallback((key: string) => {
 		dispatch({ type: SET_MAP_TILE_VARIANT_KEY, payload: key });
@@ -328,6 +433,19 @@ const MapScreen = () => {
 			),
 		});
 	}, [show, selectedTileVariantKey, useFlyAnimation, useVirtualZoom, theme]);
+
+	const openFilterModal = useCallback(() => {
+		show({
+			title: translate(TranslationKeys.organisations),
+			children: (
+				<LeafletFilterContent
+					organisations={organisations as DatabaseTypes.Organizations[]}
+					initialLikes={organisationLikes}
+					onLikeChange={stableOnOrganisationLikeChange}
+				/>
+			),
+		});
+	}, [show, translate, organisations, organisationLikes, stableOnOrganisationLikeChange]);
 
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
@@ -487,6 +605,7 @@ const MapScreen = () => {
 				query={searchQuery}
 				onQueryChange={setSearchQuery}
 				onSettingsPress={openSettingsModal}
+				onFilterPress={openFilterModal}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
