@@ -1011,6 +1011,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const handleMarkerClick = useCallback(
+		(id: string) => {
 			if (id.startsWith('cluster:')) {
 				const cluster = clusteredBuildingMarkers.find((m) => m.id === id);
 				if (cluster) {
