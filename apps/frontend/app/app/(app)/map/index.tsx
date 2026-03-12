@@ -590,6 +590,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	gameMapReadyRef.current = gameMapReady;
 	const mapZoomRef = useRef(mapZoom);
 	mapZoomRef.current = mapZoom;
+	// Tracks whether the WebView has fired MapComponentMounted at least once
+	const mapMountedRef = useRef(false);
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -702,6 +704,21 @@ const OsmVectorMapScreen: React.FC = () => {
 			setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
 			setHeadingUpMode(true);
 			setGameMapReady(false);
+			// If the WebView has already loaded, immediately init game without waiting for MapComponentMounted
+			if (mapMountedRef.current) {
+				sendGameInitDataRef.current();
+				setGameMapReady(true);
+			}
+		} else {
+			setGameMapReady(false);
+			// Re-enable map interaction and navigate back to normal view when leaving game mode
+			sendToMapRef.current({
+				enableInteraction: true,
+				mapCenterPosition: centerPositionRef.current,
+				zoom: DEFAULT_ZOOM,
+				pitch: INITIAL_PITCH,
+				useFlyAnimation: false,
+			});
 		}
 	}, [gameMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -871,8 +888,12 @@ const OsmVectorMapScreen: React.FC = () => {
 			mapMarkers: buildingMarkersRef.current,
 			vehicleMarker: null,
 			mapStyle: selectedStyleUrl,
+			disableInteraction: true,
 		});
 	}, [sendToMap, selectedStyleUrl]);
+
+	const sendGameInitDataRef = useRef(sendGameInitData);
+	sendGameInitDataRef.current = sendGameInitData;
 
 	// Re-send building markers when they change while in game mode
 	useEffect(() => {
@@ -1005,6 +1026,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			try {
 				const data = JSON.parse(event.nativeEvent.data);
 				if (data.tag === 'MapComponentMounted') {
+					mapMountedRef.current = true;
 					if (gameModeRef.current) {
 						setGameMapReady(true);
 						sendGameInitData();
