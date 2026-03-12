@@ -1010,6 +1010,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		[headingUpMode, vehicleHeading],
 	);
 
+	// Squish the airplane vertically based on camera pitch (cos(pitch) ≈ perspective compression).
+	// At pitch = 0° (top-down) scaleY = 1 (no squish); at pitch = 70° scaleY ≈ 0.34 (strong squish).
+	const airplaneScaleY = useMemo(
+		() => Math.cos(degToRad(gameMode ? GAME_MODE_PITCH : INITIAL_PITCH)),
+		[gameMode],
+	);
+
 	const handleMarkerClick = useCallback(
 		(id: string) => {
 			if (id.startsWith('cluster:')) {
@@ -1186,7 +1193,7 @@ const OsmVectorMapScreen: React.FC = () => {
 						<>
 							{/* Vehicle overlay – airplane centered on screen */}
 							<View style={styles.vehicleOverlay} pointerEvents="none">
-								<View style={{ transform: [{ rotate: airplaneEmojiRotation }] }}>
+								<View style={{ transform: [{ rotate: airplaneEmojiRotation }, { scaleY: airplaneScaleY }] }}>
 									<Text style={{ fontSize: airplaneSize }} accessibilityLabel="Flugzeug">✈️</Text>
 								</View>
 							</View>
