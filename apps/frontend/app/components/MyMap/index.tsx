@@ -17,6 +17,10 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch
 			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
 			await htmlAsset.downloadAsync();
 			let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
+			// Patch the initMap call to start at the provided center position and optional pitch.
+			// This avoids an initial flash at the default Germany position while tiles load.
+			// NOTE: depends on the HTML containing exactly 'initMap(null, null);' – update
+			// this pattern if the HTML asset signature changes.
 			const pitch = initialPitch !== undefined ? `, ${initialPitch}` : '';
 			htmlContent = htmlContent.replace(
 				'initMap(null, null);',
@@ -30,6 +34,8 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch
 		return () => {
 			isMounted = false;
 		};
+		// initialCenter and initialPitch are intentionally excluded: the HTML is loaded only
+		// once on mount. Subsequent position/style updates are sent via sendToMap() messages.
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const sendToMap = useCallback((data: object) => {

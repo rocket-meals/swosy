@@ -9,6 +9,9 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, onMessage },
 	const htmlBase = require('@/assets/maplibre/index.html') as string;
 
 	const iframeSrc = useMemo(
+		// Computed only once: the iframe src is set on mount with the initial map position.
+		// Subsequent position/marker updates are sent via sendToMap() messages so the iframe
+		// doesn't reload. Changes to initialCenter after mount are intentionally ignored here.
 		() => `${htmlBase}?lat=${initialCenter.lat}&lng=${initialCenter.lng}&zoom=${DEFAULT_ZOOM}`,
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
