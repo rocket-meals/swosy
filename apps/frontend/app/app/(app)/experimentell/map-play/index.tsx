@@ -35,7 +35,7 @@ const GAME_TICK_MS = 100;
 const METERS_PER_LAT_DEG = 111320; // metres per degree of latitude (approx)
 const TICKS_PER_SECOND = 1000 / GAME_TICK_MS; // 10 ticks/s
 /** Convert km/h to degrees-per-tick (latitude-equivalent distance). */
-const KMH_TO_DEG_PER_TICK = 1 / (3.6 * (METERS_PER_LAT_DEG / 1000) * TICKS_PER_SECOND);
+const KMH_TO_DEG_PER_TICK = 1 / (3.6 * METERS_PER_LAT_DEG * TICKS_PER_SECOND);
 
 const AIRPLANE_DEFAULT_SPEED_KMH = 300; // km/h
 const AIRPLANE_SPEED_STEP_SMALL = 10; // km/h per button press
