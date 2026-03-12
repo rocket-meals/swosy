@@ -31,21 +31,23 @@ const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 
 const GAME_TICK_MS = 100;
 
-// Airplane
-const AIRPLANE_DEFAULT_SPEED = 0.00008; // degrees per tick
-const AIRPLANE_SPEED_STEP = 0.00002;
-const AIRPLANE_MAX_SPEED = 0.00035;
-const AIRPLANE_MIN_SPEED = 0.00001;
+// Airplane – speed is stored and displayed in km/h
+const METERS_PER_LAT_DEG = 111320; // metres per degree of latitude (approx)
+const TICKS_PER_SECOND = 1000 / GAME_TICK_MS; // 10 ticks/s
+/** Convert km/h to degrees-per-tick (latitude-equivalent distance). */
+const KMH_TO_DEG_PER_TICK = 1 / (3.6 * (METERS_PER_LAT_DEG / 1000) * TICKS_PER_SECOND);
+
+const AIRPLANE_DEFAULT_SPEED_KMH = 300; // km/h
+const AIRPLANE_SPEED_STEP_SMALL = 10; // km/h per button press
+const AIRPLANE_SPEED_STEP_LARGE = 100; // km/h per button press
+const AIRPLANE_MIN_SPEED_KMH = 10; // km/h
 const AIRPLANE_TURN_DEG = 5; // degrees per tick while turn button is held
 const AIRPLANE_DEFAULT_SIZE = 56; // px
 const AIRPLANE_SIZE_STEP = 8;
-const AIRPLANE_MAX_SIZE = 96;
 const AIRPLANE_MIN_SIZE = 24;
 
 // UI / visual constants
 const MAX_BUILDING_LABEL_LENGTH = 4;
-const SPEED_DISPLAY_MIN = 1;
-const SPEED_DISPLAY_MAX = 10;
 
 // ─── SVG Generators ───────────────────────────────────────────────────────────
 
@@ -96,12 +98,17 @@ function degToRad(deg: number): number {
 /**
  * Move a lat/lng position by heading (0=North, 90=East) and a distance in
  * degree-units (small values ~0.00001–0.001 work well for map navigation).
+ *
+ * The longitude component is divided by cos(lat) so that the visual movement
+ * angle on the map matches the actual heading at all latitudes, not just at
+ * the cardinal directions (0°/90°/180°/270°).
  */
 function moveByHeading(pos: Position, headingDeg: number, distanceDeg: number): Position {
 	const rad = degToRad(headingDeg);
+	const cosLat = Math.cos(degToRad(pos.lat));
 	return {
 		lat: pos.lat + distanceDeg * Math.cos(rad),
-		lng: pos.lng + distanceDeg * Math.sin(rad),
+		lng: pos.lng + (distanceDeg * Math.sin(rad)) / cosLat,
 	};
 }
 
@@ -175,7 +182,9 @@ type AirplaneControlsProps = {
 	onTurnRightStart: () => void;
 	onTurnRightEnd: () => void;
 	onSpeedUp: () => void;
+	onSpeedUpLarge: () => void;
 	onSpeedDown: () => void;
+	onSpeedDownLarge: () => void;
 };
 
 const AirplaneControls: React.FC<AirplaneControlsProps> = ({
@@ -184,7 +193,9 @@ const AirplaneControls: React.FC<AirplaneControlsProps> = ({
 	onTurnRightStart,
 	onTurnRightEnd,
 	onSpeedUp,
+	onSpeedUpLarge,
 	onSpeedDown,
+	onSpeedDownLarge,
 }) => (
 	<View style={controlStyles.airplaneLayout}>
 		{/* Turn buttons */}
@@ -204,19 +215,31 @@ const AirplaneControls: React.FC<AirplaneControlsProps> = ({
 				size="lg"
 			/>
 		</View>
-		{/* Throttle buttons */}
+		{/* Throttle buttons: +100, +10, -10, -100 */}
 		<View style={controlStyles.throttleColumn}>
 			<ControlButton
-				onPress={onSpeedUp}
-				label="🔼"
+				onPress={onSpeedUpLarge}
+				label="+100"
 				color="rgba(46,125,50,0.85)"
-				size="md"
+				size="sm"
+			/>
+			<ControlButton
+				onPress={onSpeedUp}
+				label="+10"
+				color="rgba(46,125,50,0.85)"
+				size="sm"
 			/>
 			<ControlButton
 				onPress={onSpeedDown}
-				label="🔽"
+				label="-10"
 				color="rgba(183,28,28,0.85)"
-				size="md"
+				size="sm"
+			/>
+			<ControlButton
+				onPress={onSpeedDownLarge}
+				label="-100"
+				color="rgba(183,28,28,0.85)"
+				size="sm"
 			/>
 		</View>
 	</View>
@@ -258,7 +281,7 @@ const MapPlay = () => {
 	// is updated directly from the game loop via sendToMapRef.
 
 	const [vehicleHeading, setVehicleHeading] = useState(0); // 0 = North
-	const [airplaneSpeed, setAirplaneSpeed] = useState(AIRPLANE_DEFAULT_SPEED);
+	const [airplaneSpeedKmh, setAirplaneSpeedKmh] = useState(AIRPLANE_DEFAULT_SPEED_KMH);
 	const [airplaneSize, setAirplaneSize] = useState(AIRPLANE_DEFAULT_SIZE);
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	const [headingUpMode, setHeadingUpMode] = useState(true);
@@ -267,8 +290,8 @@ const MapPlay = () => {
 	const vehicleHeadingRef = useRef(vehicleHeading);
 	vehicleHeadingRef.current = vehicleHeading;
 
-	const airplaneSpeedRef = useRef(airplaneSpeed);
-	airplaneSpeedRef.current = airplaneSpeed;
+	const airplaneSpeedRef = useRef(airplaneSpeedKmh);
+	airplaneSpeedRef.current = airplaneSpeedKmh;
 
 	const mapZoomRef = useRef(mapZoom);
 	mapZoomRef.current = mapZoom;
@@ -460,7 +483,7 @@ const MapPlay = () => {
 			}
 			// Move forward using the latest heading and speed from refs
 			const heading = vehicleHeadingRef.current;
-			const speed = airplaneSpeedRef.current;
+			const speed = airplaneSpeedRef.current * KMH_TO_DEG_PER_TICK;
 			const newPos = moveByHeading(vehiclePosRef.current, heading, speed);
 			vehiclePosRef.current = newPos;
 			// Send camera update directly – bypasses React state to eliminate stutter
@@ -490,10 +513,16 @@ const MapPlay = () => {
 	}, []);
 
 	const handleAirplaneSpeedUp = useCallback(() => {
-		setAirplaneSpeed((s) => Math.min(s + AIRPLANE_SPEED_STEP, AIRPLANE_MAX_SPEED));
+		setAirplaneSpeedKmh((s) => s + AIRPLANE_SPEED_STEP_SMALL);
+	}, []);
+	const handleAirplaneSpeedUpLarge = useCallback(() => {
+		setAirplaneSpeedKmh((s) => s + AIRPLANE_SPEED_STEP_LARGE);
 	}, []);
 	const handleAirplaneSpeedDown = useCallback(() => {
-		setAirplaneSpeed((s) => Math.max(s - AIRPLANE_SPEED_STEP, AIRPLANE_MIN_SPEED));
+		setAirplaneSpeedKmh((s) => Math.max(s - AIRPLANE_SPEED_STEP_SMALL, AIRPLANE_MIN_SPEED_KMH));
+	}, []);
+	const handleAirplaneSpeedDownLarge = useCallback(() => {
+		setAirplaneSpeedKmh((s) => Math.max(s - AIRPLANE_SPEED_STEP_LARGE, AIRPLANE_MIN_SPEED_KMH));
 	}, []);
 
 	// ── Zoom controls ─────────────────────────────────────────────────────────────
@@ -513,7 +542,7 @@ const MapPlay = () => {
 	// ── Airplane size controls ────────────────────────────────────────────────────
 
 	const handleAirplaneSizeUp = useCallback(() => {
-		setAirplaneSize((s) => Math.min(s + AIRPLANE_SIZE_STEP, AIRPLANE_MAX_SIZE));
+		setAirplaneSize((s) => s + AIRPLANE_SIZE_STEP);
 	}, []);
 
 	const handleAirplaneSizeDown = useCallback(() => {
@@ -538,18 +567,15 @@ const MapPlay = () => {
 	const handleReset = useCallback(() => {
 		vehiclePosRef.current = centerPosition;
 		setVehicleHeading(0);
-		setAirplaneSpeed(AIRPLANE_DEFAULT_SPEED);
+		setAirplaneSpeedKmh(AIRPLANE_DEFAULT_SPEED_KMH);
 		setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
 	}, [centerPosition]);
 
 	// ── Speed label for airplane ──────────────────────────────────────────────────
 
 	const speedLabel = useMemo(() => {
-		// Map internal speed to a SPEED_DISPLAY_MIN–SPEED_DISPLAY_MAX scale for display
-		const normalized = (airplaneSpeed - AIRPLANE_MIN_SPEED) / (AIRPLANE_MAX_SPEED - AIRPLANE_MIN_SPEED);
-		const display = Math.round(SPEED_DISPLAY_MIN + normalized * (SPEED_DISPLAY_MAX - SPEED_DISPLAY_MIN));
-		return `Speed ${display}/${SPEED_DISPLAY_MAX}`;
-	}, [airplaneSpeed]);
+		return `${Math.round(airplaneSpeedKmh)} km/h`;
+	}, [airplaneSpeedKmh]);
 
 	// ── Render ────────────────────────────────────────────────────────────────────
 
@@ -666,7 +692,9 @@ const MapPlay = () => {
 					onTurnRightStart={handleAirplaneTurnRightStart}
 					onTurnRightEnd={handleAirplaneTurnRightEnd}
 					onSpeedUp={handleAirplaneSpeedUp}
+					onSpeedUpLarge={handleAirplaneSpeedUpLarge}
 					onSpeedDown={handleAirplaneSpeedDown}
+					onSpeedDownLarge={handleAirplaneSpeedDownLarge}
 				/>
 			</View>
 		</SafeAreaView>
