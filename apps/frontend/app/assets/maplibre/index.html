@@ -255,13 +255,13 @@
         parseAndHandle(e.data);
       });
 
-      function initMap(initialCenter, initialZoom) {
+      function initMap(initialCenter, initialZoom, initialPitch) {
         map = new maplibregl.Map({
           container: 'map',
           style: 'https://tiles.openfreemap.org/styles/liberty',
           center: initialCenter || [10.0, 51.3],
           zoom: initialZoom != null ? initialZoom : 16,
-          pitch: 20,
+          pitch: initialPitch != null ? initialPitch : 20,
           attributionControl: { compact: true },
         });
 

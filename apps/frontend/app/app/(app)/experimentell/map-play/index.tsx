@@ -545,8 +545,9 @@ const MapPlay = () => {
 			const asset = Asset.fromModule(require('@/assets/maplibre/index.html'));
 			await asset.downloadAsync();
 			let content = await FileSystem.readAsStringAsync(asset.localUri!);
-			// Patch the default pitch to MAP_PITCH so the map opens in 3D immediately
-			content = content.replace('pitch: 20,', `pitch: ${MAP_PITCH},`);
+			// Inject MAP_PITCH as the third argument of initMap so the map opens in
+			// 3D immediately; 'initMap(null, null)' is unique in the HTML file.
+			content = content.replace('initMap(null, null);', `initMap(null, null, ${MAP_PITCH});`);
 			if (isMounted) setHtml(content);
 		})();
 		return () => { isMounted = false; };
