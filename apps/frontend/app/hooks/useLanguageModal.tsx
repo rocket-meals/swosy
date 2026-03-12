@@ -46,8 +46,8 @@ const PirateLanguageToggle: React.FC = () => {
                                 label={translate(TranslationKeys.pirate_language)}
                                 isEnabled={pirateLanguage}
                                 onToggle={() => togglePirateLanguage(!pirateLanguage)}
-                                groupPosition="single"
-                                showSeparator={false}
+                                groupPosition="top"
+                                showSeparator={true}
                         />
                 </View>
         );
@@ -65,7 +65,7 @@ const FunLanguageModeToggles: React.FC = () => {
         ];
 
         return (
-                <View style={styles.separatorContainer}>
+                <View>
                         {modes.map((mode, index) => (
                                 <SettingsListBoolean
                                         key={mode.key}
@@ -79,13 +79,9 @@ const FunLanguageModeToggles: React.FC = () => {
                                         isEnabled={funLanguageMode === mode.key}
                                         onToggle={() => toggleFunLanguageMode(funLanguageMode === mode.key ? null : mode.key)}
                                         groupPosition={
-                                                modes.length === 1
-                                                        ? 'single'
-                                                        : index === 0
-                                                                ? 'top'
-                                                                : index === modes.length - 1
-                                                                        ? 'bottom'
-                                                                        : 'middle'
+                                                index === modes.length - 1
+                                                        ? 'bottom'
+                                                        : 'middle'
                                         }
                                         showSeparator={index !== modes.length - 1}
                                 />
