@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import SettingsList from '@/components/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import { languages } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
 
@@ -156,6 +157,7 @@ export const useLanguageModal = () => {
                                                                 index={index}
                                                         />
                                                 ))}
+                                                <SettingsGroupTitle>{translate(TranslationKeys.group_fun)}</SettingsGroupTitle>
                                                 <PirateLanguageToggle />
                                                 <FunLanguageModeToggles />
                                         </View>

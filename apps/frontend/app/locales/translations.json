@@ -4943,6 +4943,16 @@
         "tr": "Uygulama yönetimi",
         "zh": "应用管理"
     },
+    "group_fun": {
+        "de": "Spaß",
+        "en": "Fun",
+        "ar": "متعة",
+        "es": "Diversión",
+        "fr": "Amusement",
+        "ru": "Развлечения",
+        "tr": "Eğlence",
+        "zh": "趣味"
+    },
     "game_ideas": {
         "de": "Spielideen",
         "en": "Game Ideas",
