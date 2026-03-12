@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { SvgXml } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useTheme } from '@/hooks/useTheme';
@@ -80,23 +79,6 @@ function moveByHeading(pos: GamePosition, headingDeg: number, distanceDeg: numbe
 
 function normalizeHeading(h: number): number {
 	return ((h % 360) + 360) % 360;
-}
-
-function createAirplaneSvg(heading: number, size: number = AIRPLANE_DEFAULT_SIZE): string {
-	const cx = size / 2;
-	const cy = size / 2;
-	const scale = size / AIRPLANE_DEFAULT_SIZE;
-	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-    <g transform="translate(${cx},${cy}) rotate(${heading}) scale(${scale})">
-      <ellipse cx="3" cy="15" rx="11" ry="5" fill="rgba(0,0,0,0.18)"/>
-      <path d="M0,-4 L-15,6 L-15,8.5 L-2,4Z" fill="#1565c0" stroke="white" stroke-width="0.8"/>
-      <path d="M0,-4 L15,6 L15,8.5 L2,4Z" fill="#1565c0" stroke="white" stroke-width="0.8"/>
-      <path d="M-1,11 L-8,18 L-8,20 L-1,13Z" fill="#0d47a1" stroke="white" stroke-width="0.5"/>
-      <path d="M1,11 L8,18 L8,20 L1,13Z" fill="#0d47a1" stroke="white" stroke-width="0.5"/>
-      <path d="M0,-20 C2,-13 2,-5 2,0 L2,13 L0,15 L-2,13 L-2,0 C-2,-5 -2,-13 0,-20Z" fill="#1a73e8" stroke="white" stroke-width="1"/>
-      <ellipse cx="0" cy="-14" rx="2.5" ry="4" fill="#bbdefb" opacity="0.9"/>
-    </g>
-  </svg>`;
 }
 
 type ControlButtonProps = {
@@ -961,6 +943,13 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
+	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
+	// Transform is applied to a wrapping View (not the Text) so rotation works on native.
+	const airplaneEmojiRotation = useMemo(
+		() => `${(headingUpMode ? 0 : vehicleHeading) - 45}deg`,
+		[headingUpMode, vehicleHeading],
+	);
+
 	useEffect(() => {
 		let isMounted = true;
 		const loadHtml = async () => {
@@ -1177,11 +1166,9 @@ const OsmVectorMapScreen: React.FC = () => {
 						<>
 							{/* Vehicle overlay – airplane centered on screen */}
 							<View style={styles.vehicleOverlay} pointerEvents="none">
-								<SvgXml
-									xml={createAirplaneSvg(headingUpMode ? 0 : vehicleHeading, airplaneSize)}
-									width={airplaneSize}
-									height={airplaneSize}
-								/>
+								<View style={{ transform: [{ rotate: airplaneEmojiRotation }] }}>
+									<Text style={{ fontSize: airplaneSize }} accessibilityLabel="Flugzeug">✈️</Text>
+								</View>
 							</View>
 
 							{/* Top bar: reset + speed/heading info */}
