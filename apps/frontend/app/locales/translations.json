@@ -1329,6 +1329,16 @@
         "tr": "Değerlendirmeyi sıfırla",
         "zh": "重置评分"
     },
+    "reset_filter": {
+        "de": "Filter zurücksetzen",
+        "en": "Reset Filter",
+        "ar": "إعادة تعيين الفلتر",
+        "es": "Restablecer filtro",
+        "fr": "Réinitialiser le filtre",
+        "ru": "Сбросить фильтр",
+        "tr": "Filtreyi sıfırla",
+        "zh": "重置筛选"
+    },
     "set_rating_to": {
         "de": "Bewertung auf",
         "en": "Set Rating to",
