@@ -38,26 +38,6 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/expo-update-test'),
 		},
 		{
-			key: 'leaflet-map',
-			label: translate(TranslationKeys.leaflet_map),
-			leftIcon: <MaterialCommunityIcons name="map" size={24} color={theme.screen.icon} />,
-			onPress: () =>
-				router.push({
-					pathname: '/leaflet-map',
-					params: {
-						lat: String(buildingPosition?.lat ?? '52.275'),
-						lng: String(buildingPosition?.lng ?? '7.4584'),
-						zoom: '16',
-					},
-				}),
-		},
-		{
-			key: 'tile-map',
-			label: translate(TranslationKeys.leaflet_map),
-			leftIcon: <MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/tile-map'),
-		},
-		{
 			key: 'vertical-image-scroll',
 			label: translate(TranslationKeys.vertical_image_scroll),
 			leftIcon: <MaterialCommunityIcons name="image-multiple" size={24} color={theme.screen.icon} />,

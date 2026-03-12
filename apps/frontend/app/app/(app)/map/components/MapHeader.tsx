@@ -12,7 +12,7 @@ import { isWeb } from '@/constants/Constants';
 
 type RootDrawerParamList = Record<string, undefined>;
 
-interface LeafletMapHeaderProps {
+interface MapHeaderProps {
 	drawerPosition: 'left' | 'right' | 'system' | undefined;
 	query: string;
 	onQueryChange: (text: string) => void;
@@ -21,7 +21,7 @@ interface LeafletMapHeaderProps {
 	isFilterActive?: boolean;
 }
 
-const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
+const MapHeader: React.FC<MapHeaderProps> = ({
 	drawerPosition,
 	query,
 	onQueryChange,
@@ -130,7 +130,7 @@ const LeafletMapHeader: React.FC<LeafletMapHeaderProps> = ({
 	);
 };
 
-export default memo(LeafletMapHeader);
+export default memo(MapHeader);
 
 const styles = StyleSheet.create({
 	header: {

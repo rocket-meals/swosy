@@ -1,15 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
-import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
-import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
@@ -17,7 +12,7 @@ import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
+import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
@@ -28,6 +23,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import MyMap from '@/components/MyMap';
+import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -542,8 +539,7 @@ function createBuildingMarkerSvg(
 const OsmVectorMapScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.map);
 	const { theme } = useTheme();
-	const webViewRef = useRef<WebView>(null);
-	const [html, setHtml] = useState<string | null>(null);
+	const myMapRef = useRef<MyMapHandle>(null);
 
 	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
@@ -601,7 +597,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	gameMapReadyRef.current = gameMapReady;
 	const mapZoomRef = useRef(mapZoom);
 	mapZoomRef.current = mapZoom;
-	// Tracks whether the WebView has fired MapComponentMounted at least once
+	// Tracks whether the map has fired MapComponentMounted at least once
 	const mapMountedRef = useRef(false);
 
 	// ── Auto-Rotate Mode (Auto-Rotate Modus) state ───────────────────────────────
@@ -702,7 +698,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// Keep centerPositionRef up to date so the one-time loadHtml can read the latest value
+	// Keep centerPositionRef up to date for use in game mode and other ref-based access
 	useEffect(() => {
 		centerPositionRef.current = centerPosition;
 	}, [centerPosition]);
@@ -723,7 +719,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
 			setHeadingUpMode(true);
 			setGameMapReady(false);
-			// If the WebView has already loaded, immediately init game without waiting for MapComponentMounted
+			// If the map has already loaded, immediately init game without waiting for MapComponentMounted
 			if (mapMountedRef.current) {
 				sendGameInitDataRef.current();
 				setGameMapReady(true);
@@ -871,10 +867,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			setMapCenterOverride(null);
 		}
 
-		const messageStr = JSON.stringify(message);
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
-		);
+		myMapRef.current?.sendToMap(message);
 	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
@@ -884,10 +877,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	// ── Game mode helpers ─────────────────────────────────────────────────────────
 
 	const sendToMap = useCallback((data: object) => {
-		const json = JSON.stringify(data);
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`,
-		);
+		myMapRef.current?.sendToMap(data);
 	}, []);
 
 	const sendToMapRef = useRef(sendToMap);
@@ -1020,34 +1010,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		[headingUpMode, vehicleHeading],
 	);
 
-	useEffect(() => {
-		let isMounted = true;
-		const loadHtml = async () => {
-			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
-			await htmlAsset.downloadAsync();
-			let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-			// Inject the initial center position so the map starts at the canteen position
-			// without showing the default Germany center while tiles are loading.
-			const c = centerPositionRef.current;
-			const pitch = gameModeRef.current ? GAME_MODE_PITCH : undefined;
-			htmlContent = htmlContent.replace(
-				'initMap(null, null);',
-				pitch !== undefined
-					? `initMap([${c.lng}, ${c.lat}], null, ${pitch});`
-					: `initMap([${c.lng}, ${c.lat}], null);`,
-			);
-			if (isMounted) {
-				setHtml(htmlContent);
-			}
-		};
-		loadHtml();
-		return () => {
-			isMounted = false;
-		};
-	}, []); // eslint-disable-line react-hooks/exhaustive-deps
-
 	const handleMarkerClick = useCallback(
-		(id: string) => {
 			if (id.startsWith('cluster:')) {
 				const cluster = clusteredBuildingMarkers.find((m) => m.id === id);
 				if (cluster) {
@@ -1081,45 +1044,32 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const handleMessage = useCallback(
-		(event: WebViewMessageEvent) => {
-			try {
-				const data = JSON.parse(event.nativeEvent.data);
-				if (data.tag === 'MapComponentMounted') {
-					mapMountedRef.current = true;
-					if (gameModeRef.current) {
-						setGameMapReady(true);
-						sendGameInitData();
-					} else {
-						pendingNavigateRef.current = true;
-						sendMapData();
-					}
-					addLog('MapComponentMounted');
-					return;
+		(data: object) => {
+			const d = data as any;
+			if (d.tag === 'MapComponentMounted') {
+				mapMountedRef.current = true;
+				if (gameModeRef.current) {
+					setGameMapReady(true);
+					sendGameInitData();
+				} else {
+					pendingNavigateRef.current = true;
+					sendMapData();
 				}
-				if (data.tag === 'onZoomEnd') {
-					setMapZoom(data.zoom);
-					if (!gameModeRef.current) {
-						addLog(`Zoom: ${data.zoom ?? 'unknown'}`);
-					}
+				addLog('MapComponentMounted');
+				return;
+			}
+			if (d.tag === 'onZoomEnd') {
+				setMapZoom(d.zoom);
+				if (!gameModeRef.current) {
+					addLog(`Zoom: ${d.zoom ?? 'unknown'}`);
 				}
-				if (data.tag === 'onMapMarkerClicked' && !gameModeRef.current) {
-					handleMarkerClick(data.mapMarkerId);
-				}
-			} catch {
-				// ignore malformed messages
+			}
+			if (d.tag === 'onMapMarkerClicked' && !gameModeRef.current) {
+				handleMarkerClick(d.mapMarkerId);
 			}
 		},
 		[sendMapData, sendGameInitData, handleMarkerClick, addLog],
 	);
-
-	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
-		const url = request.url;
-		if (!url || url === 'about:blank' || url === 'about:srcdoc') {
-			return true;
-		}
-		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
-		return false;
-	}, []);
 
 	const openControlsHintModal = useCallback(() => {
 		show({
@@ -1174,9 +1124,7 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:JSON.stringify({resetBearing:true})}));true;`,
-		);
+		myMapRef.current?.sendToMap({ resetBearing: true });
 	}, []);
 
 	// Location: request permission and show user position marker
@@ -1215,13 +1163,9 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
-	if (!html) {
-		return <View style={[styles.safeArea, { backgroundColor: theme.screen.background }]} />;
-	}
-
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
-			<LeafletMapHeader
+			<MapHeader
 				drawerPosition={drawerPosition}
 				query={gameMode ? '' : searchQuery}
 				onQueryChange={gameMode ? noop : setSearchQuery}
@@ -1231,15 +1175,11 @@ const OsmVectorMapScreen: React.FC = () => {
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<WebView
-						ref={webViewRef}
-						style={styles.webView}
-						source={{ html }}
-						javaScriptEnabled={true}
-						domStorageEnabled={true}
-						originWhitelist={['*']}
+					<MyMap
+						ref={myMapRef}
+						initialCenter={centerPosition}
+						initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
 						onMessage={handleMessage}
-						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 					/>
 					{gameMode ? (
 						<>
@@ -1397,7 +1337,6 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
-	webView: { flex: 1 },
 	mapOverlayButtons: {
 		position: 'absolute',
 		top: 16,
