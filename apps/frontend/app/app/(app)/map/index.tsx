@@ -12,7 +12,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -20,6 +20,7 @@ import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
 import DebugView from '@/components/DebugView';
 import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -61,6 +62,11 @@ const AIRPLANE_TURN_DEG = 5;
 const AIRPLANE_DEFAULT_SIZE = 56;
 const AIRPLANE_SIZE_STEP = 8;
 const AIRPLANE_MIN_SIZE = 24;
+
+// ─── Auto-Rotate Mode (Auto-Rotate Modus) constants ──────────────────────────
+
+const AUTO_ROTATE_TICK_MS = 100;
+const AUTO_ROTATE_SPEED_STEP = 5; // degrees/second per button press
 
 type GamePosition = { lat: number; lng: number };
 
@@ -177,10 +183,12 @@ type OsmSettingsContentProps = {
 	initialUseFlyAnimation: boolean;
 	initialClusterDistance: number;
 	initialGameMode: boolean;
+	initialAutoRotateMode: boolean;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
 	onGameModeChange: (value: boolean) => void;
+	onAutoRotateModeChange: (value: boolean) => void;
 	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
@@ -190,10 +198,12 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialUseFlyAnimation,
 	initialClusterDistance,
 	initialGameMode,
+	initialAutoRotateMode,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
 	onClusterDistanceChange,
 	onGameModeChange,
+	onAutoRotateModeChange,
 	onShowControlsHint,
 	theme,
 }) => {
@@ -201,6 +211,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
 	const [localGameMode, setLocalGameMode] = useState(initialGameMode);
+	const [localAutoRotateMode, setLocalAutoRotateMode] = useState(initialAutoRotateMode);
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
 
 	if (showingStyleSelector) {
@@ -220,6 +231,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 
 	return (
 		<>
+			<SettingsGroupTitle>Karten Einstellungen</SettingsGroupTitle>
 			<SettingsList
 				title="Kartenstil"
 				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
@@ -267,9 +279,10 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={onShowControlsHint}
-				groupPosition="middle"
-				showSeparator={true}
+				groupPosition="bottom"
+				showSeparator={false}
 			/>
+			<SettingsGroupTitle>Spaß Einstellungen</SettingsGroupTitle>
 			<SettingsList
 				title="Spiel Modus"
 				leftIcon={<MaterialIcons name="sports-esports" size={20} color={theme.screen.icon} />}
@@ -279,6 +292,21 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 						onValueChange={(value) => {
 							setLocalGameMode(value);
 							onGameModeChange(value);
+						}}
+					/>
+				}
+				groupPosition="top"
+				showSeparator={true}
+			/>
+			<SettingsList
+				title="Auto-Rotate Modus"
+				leftIcon={<MaterialIcons name="360" size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={localAutoRotateMode}
+						onValueChange={(value) => {
+							setLocalAutoRotateMode(value);
+							onAutoRotateModeChange(value);
 						}}
 					/>
 				}
@@ -525,6 +553,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
 	const gameMode = useAppSelector((state) => (state.settings as any).osmVectorMapGameMode ?? false);
+	const autoRotateMode = useAppSelector((state) => (state.settings as any).osmVectorMapAutoRotateMode ?? false);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -574,6 +603,14 @@ const OsmVectorMapScreen: React.FC = () => {
 	mapZoomRef.current = mapZoom;
 	// Tracks whether the WebView has fired MapComponentMounted at least once
 	const mapMountedRef = useRef(false);
+
+	// ── Auto-Rotate Mode (Auto-Rotate Modus) state ───────────────────────────────
+	const [autoRotateSpeed, setAutoRotateSpeed] = useState(0); // degrees/second
+	const autoRotateSpeedRef = useRef(autoRotateSpeed);
+	autoRotateSpeedRef.current = autoRotateSpeed;
+	const autoRotateBearingRef = useRef(0); // current auto-rotate bearing
+	const autoRotateModeRef = useRef(autoRotateMode);
+	autoRotateModeRef.current = autoRotateMode;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -941,6 +978,39 @@ const OsmVectorMapScreen: React.FC = () => {
 		setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
 	}, []);
 
+	// ── Auto-Rotate Mode (Auto-Rotate Modus) logic ───────────────────────────────
+
+	// Reset speed and bearing when auto-rotate mode is activated or deactivated
+	useEffect(() => {
+		setAutoRotateSpeed(0);
+		autoRotateSpeedRef.current = 0;
+		autoRotateBearingRef.current = 0;
+	}, [autoRotateMode]);
+
+	// Auto-rotate interval – runs always, but only acts when mode is on and not in game mode
+	useEffect(() => {
+		const id = setInterval(() => {
+			if (!autoRotateModeRef.current || gameModeRef.current) return;
+			if (autoRotateSpeedRef.current === 0) return;
+			const deltaDeg = autoRotateSpeedRef.current * (AUTO_ROTATE_TICK_MS / 1000);
+			autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current + deltaDeg);
+			sendToMapRef.current({
+				bearing: autoRotateBearingRef.current,
+				easeAnimation: true,
+				easeDuration: AUTO_ROTATE_TICK_MS,
+			});
+		}, AUTO_ROTATE_TICK_MS);
+		return () => clearInterval(id);
+	}, []); // No dependencies – all values read via refs // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Auto-rotate speed controls
+	const handleAutoRotateSpeedLeft = useCallback(() => {
+		setAutoRotateSpeed((s) => s - AUTO_ROTATE_SPEED_STEP);
+	}, []);
+	const handleAutoRotateSpeedRight = useCallback(() => {
+		setAutoRotateSpeed((s) => s + AUTO_ROTATE_SPEED_STEP);
+	}, []);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1073,6 +1143,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		[dispatch],
 	);
 
+	const setAutoRotateModeDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -1082,16 +1159,18 @@ const OsmVectorMapScreen: React.FC = () => {
 					initialUseFlyAnimation={useFlyAnimation}
 					initialClusterDistance={clusterDistance}
 					initialGameMode={gameMode}
+					initialAutoRotateMode={autoRotateMode}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
 					onClusterDistanceChange={setClusterDistanceDispatch}
 					onGameModeChange={setGameModeDispatch}
+					onAutoRotateModeChange={setAutoRotateModeDispatch}
 					onShowControlsHint={openControlsHintModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, openControlsHintModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
@@ -1240,6 +1319,25 @@ const OsmVectorMapScreen: React.FC = () => {
 								>
 									<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
 								</TouchableOpacity>
+								{autoRotateMode && (
+									<>
+										<TouchableOpacity
+											style={[styles.mapOverlayButton, { backgroundColor: autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background, marginTop: 8 }]}
+											onPress={handleAutoRotateSpeedLeft}
+										>
+											<MaterialIcons name="rotate-left" size={26} color={autoRotateSpeed < 0 ? 'white' : theme.screen.icon} />
+										</TouchableOpacity>
+										<View style={{ alignItems: 'center', paddingVertical: 2 }}>
+											<Text style={{ color: theme.screen.text, fontSize: 10 }}>{`${autoRotateSpeed}°/s`}</Text>
+										</View>
+										<TouchableOpacity
+											style={[styles.mapOverlayButton, { backgroundColor: autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background }]}
+											onPress={handleAutoRotateSpeedRight}
+										>
+											<MaterialIcons name="rotate-right" size={26} color={autoRotateSpeed > 0 ? 'white' : theme.screen.icon} />
+										</TouchableOpacity>
+									</>
+								)}
 								{showControlsHint && (
 									<TouchableOpacity
 										style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
