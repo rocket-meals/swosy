@@ -429,10 +429,10 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 	return (
 		<>
 			<SettingsList
-				label={translate(TranslationKeys.reset_rating)}
+				label={translate(TranslationKeys.reset_filter)}
+				leftIcon={<MaterialCommunityIcons name="broom" size={22} />}
 				handleFunction={handleResetAll}
 				groupPosition="single"
-				noIconIndent
 			/>
 			<View style={{ height: 16 }} />
 			{organisations.map((org, index) => {

@@ -128,6 +128,7 @@ export enum TranslationKeys {
 	food_feedbacks = 'food_feedbacks',
 	to_the_forum = 'to_the_forum',
 	reset_rating = 'reset_rating',
+	reset_filter = 'reset_filter',
 	set_rating_to = 'set_rating_to',
 	set_rate_as_favorite = 'set_rate_as_favorite',
 	set_rate_as_not_favorite = 'set_rate_as_not_favorite',
