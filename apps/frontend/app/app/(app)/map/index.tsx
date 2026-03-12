@@ -7,7 +7,7 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -181,11 +181,15 @@ type OsmSettingsContentProps = {
 	initialClusterDistance: number;
 	initialGameMode: boolean;
 	initialAutoRotateMode: boolean;
+	initialPeopleMode: boolean;
+	isFullscreen: boolean;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
 	onGameModeChange: (value: boolean) => void;
 	onAutoRotateModeChange: (value: boolean) => void;
+	onPeopleModeChange: (value: boolean) => void;
+	onToggleFullscreen: () => void;
 	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
@@ -196,11 +200,15 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialClusterDistance,
 	initialGameMode,
 	initialAutoRotateMode,
+	initialPeopleMode,
+	isFullscreen,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
 	onClusterDistanceChange,
 	onGameModeChange,
 	onAutoRotateModeChange,
+	onPeopleModeChange,
+	onToggleFullscreen,
 	onShowControlsHint,
 	theme,
 }) => {
@@ -209,6 +217,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
 	const [localGameMode, setLocalGameMode] = useState(initialGameMode);
 	const [localAutoRotateMode, setLocalAutoRotateMode] = useState(initialAutoRotateMode);
+	const [localPeopleMode, setLocalPeopleMode] = useState(initialPeopleMode);
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
 
 	if (showingStyleSelector) {
@@ -272,6 +281,18 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				showSeparator={true}
 			/>
 			<SettingsList
+				title="Vollbild"
+				leftIcon={<MaterialIcons name={isFullscreen ? 'fullscreen-exit' : 'fullscreen'} size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={isFullscreen}
+						onValueChange={onToggleFullscreen}
+					/>
+				}
+				groupPosition="middle"
+				showSeparator={true}
+			/>
+			<SettingsList
 				title="Kartensteuerung"
 				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
@@ -304,6 +325,21 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 						onValueChange={(value) => {
 							setLocalAutoRotateMode(value);
 							onAutoRotateModeChange(value);
+						}}
+					/>
+				}
+				groupPosition="middle"
+				showSeparator={true}
+			/>
+			<SettingsList
+				title="Menschen-Modus"
+				leftIcon={<MaterialIcons name="people" size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={localPeopleMode}
+						onValueChange={(value) => {
+							setLocalPeopleMode(value);
+							onPeopleModeChange(value);
 						}}
 					/>
 				}
@@ -550,6 +586,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
 	const gameMode = useAppSelector((state) => (state.settings as any).osmVectorMapGameMode ?? false);
 	const autoRotateMode = useAppSelector((state) => (state.settings as any).osmVectorMapAutoRotateMode ?? false);
+	const peopleMode = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleMode ?? false);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -569,6 +606,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
 	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 	const [isFullscreen, setIsFullscreen] = useState(false);
+	const isFullscreenRef = useRef(isFullscreen);
+	isFullscreenRef.current = isFullscreen;
 
 	// pendingNavigateRef: true = include position in next sendMapData call
 	const pendingNavigateRef = useRef(true);
@@ -610,6 +649,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const autoRotateBearingRef = useRef(0); // current auto-rotate bearing
 	const autoRotateModeRef = useRef(autoRotateMode);
 	autoRotateModeRef.current = autoRotateMode;
+	const peopleModeRef = useRef(peopleMode);
+	peopleModeRef.current = peopleMode;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1020,6 +1061,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		setIsFullscreen((prev) => !prev);
 	}, []);
 
+	// Send people mode to the map when it changes and the map is ready
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ peopleMode: peopleMode });
+		}
+	}, [peopleMode]);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1083,6 +1131,9 @@ const OsmVectorMapScreen: React.FC = () => {
 					pendingNavigateRef.current = true;
 					sendMapData();
 				}
+				if (peopleModeRef.current) {
+					sendToMapRef.current({ peopleMode: true });
+				}
 				addLog('MapComponentMounted');
 				return;
 			}
@@ -1097,6 +1148,9 @@ const OsmVectorMapScreen: React.FC = () => {
 			}
 			if (d.tag === 'onMapMarkerClicked' && !gameModeRef.current) {
 				handleMarkerClick(d.mapMarkerId);
+			}
+			if (d.tag === 'MapTapped' && isFullscreenRef.current) {
+				setIsFullscreen(false);
 			}
 		},
 		[sendMapData, sendGameInitData, handleMarkerClick, addLog],
@@ -1131,6 +1185,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		[dispatch],
 	);
 
+	const setPeopleModeDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_PEOPLE_MODE, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -1141,17 +1202,21 @@ const OsmVectorMapScreen: React.FC = () => {
 					initialClusterDistance={clusterDistance}
 					initialGameMode={gameMode}
 					initialAutoRotateMode={autoRotateMode}
+					initialPeopleMode={peopleMode}
+					isFullscreen={isFullscreen}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
 					onClusterDistanceChange={setClusterDistanceDispatch}
 					onGameModeChange={setGameModeDispatch}
 					onAutoRotateModeChange={setAutoRotateModeDispatch}
+					onPeopleModeChange={setPeopleModeDispatch}
+					onToggleFullscreen={handleToggleFullscreen}
 					onShowControlsHint={openControlsHintModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, openControlsHintModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, handleToggleFullscreen, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
@@ -1215,21 +1280,11 @@ const OsmVectorMapScreen: React.FC = () => {
 						onMessage={handleMessage}
 					/>
 
-					{/* Fullscreen toggle button – always visible */}
-					<View style={styles.fullscreenButtonOverlay} pointerEvents="box-none">
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: isFullscreen ? 'rgba(26,115,232,0.9)' : theme.screen.background }]}
-							onPress={handleToggleFullscreen}
-						>
-							<MaterialIcons name={isFullscreen ? 'fullscreen-exit' : 'fullscreen'} size={26} color={isFullscreen ? 'white' : theme.screen.icon} />
-						</TouchableOpacity>
-					</View>
-
 					{!isFullscreen && (gameMode ? (
 						<>
 							{/* Vehicle overlay – airplane centered on screen */}
 							<View style={styles.vehicleOverlay} pointerEvents="none">
-								<View style={{ transform: [{ rotate: airplaneEmojiRotation }, { scaleY: airplaneScaleY }] }}>
+								<View style={{ transform: [{ scaleY: airplaneScaleY }, { rotate: airplaneEmojiRotation }] }}>
 									<Text style={{ fontSize: airplaneSize }} accessibilityLabel="Flugzeug">✈️</Text>
 								</View>
 							</View>
@@ -1320,18 +1375,7 @@ const OsmVectorMapScreen: React.FC = () => {
 										>
 											<MaterialIcons name="rotate-right" size={26} color={autoRotateSpeed > 0 ? 'white' : theme.screen.icon} />
 										</TouchableOpacity>
-										<TouchableOpacity
-											style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-											onPress={handleManualRotateLeft1}
-										>
-											<Text style={[styles.rotationButtonText, { color: theme.screen.text }]}>-1°</Text>
-										</TouchableOpacity>
-										<TouchableOpacity
-											style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
-											onPress={handleManualRotateRight1}
-										>
-											<Text style={[styles.rotationButtonText, { color: theme.screen.text }]}>+1°</Text>
-										</TouchableOpacity>
+
 									</>
 								)}
 								{showControlsHint && (
@@ -1393,13 +1437,6 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
-	fullscreenButtonOverlay: {
-		position: 'absolute',
-		bottom: 16,
-		left: 16,
-		zIndex: 40,
-		elevation: 40,
-	},
 	mapOverlayButtons: {
 		position: 'absolute',
 		top: 16,
