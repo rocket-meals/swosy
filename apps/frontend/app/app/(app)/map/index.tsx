@@ -581,6 +581,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [airplaneSize, setAirplaneSize] = useState(AIRPLANE_DEFAULT_SIZE);
 	const [headingUpMode, setHeadingUpMode] = useState(true);
 	const [gameMapReady, setGameMapReady] = useState(false);
+	// currentPitch is null until the first pitchend event fires; scaleY=1 until then.
+	const [currentPitch, setCurrentPitch] = useState<number | null>(null);
 
 	const vehicleHeadingRef = useRef(vehicleHeading);
 	vehicleHeadingRef.current = vehicleHeading;
@@ -712,6 +714,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	// When game mode changes, trigger a navigation with the correct pitch
 	useEffect(() => {
 		pendingNavigateRef.current = true;
+		// Reset pitch tracking so scaleY stays at 1 until the camera completes its first correcting pitch.
+		setCurrentPitch(null);
 		if (gameMode) {
 			vehiclePosRef.current = centerPositionRef.current;
 			setVehicleHeading(0);
@@ -1010,11 +1014,12 @@ const OsmVectorMapScreen: React.FC = () => {
 		[headingUpMode, vehicleHeading],
 	);
 
-	// Squish the airplane vertically based on camera pitch (cos(pitch) ≈ perspective compression).
+	// Squish the airplane vertically based on the actual camera pitch (cos(pitch) ≈ perspective compression).
+	// currentPitch is null until the first pitchend event fires; use scaleY=1 (no squish) until then.
 	// At pitch = 0° (top-down) scaleY = 1 (no squish); at pitch = 70° scaleY ≈ 0.34 (strong squish).
 	const airplaneScaleY = useMemo(
-		() => Math.cos(degToRad(gameMode ? GAME_MODE_PITCH : INITIAL_PITCH)),
-		[gameMode],
+		() => (currentPitch !== null ? Math.cos(degToRad(currentPitch)) : 1),
+		[currentPitch],
 	);
 
 	const handleMarkerClick = useCallback(
@@ -1071,6 +1076,9 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (!gameModeRef.current) {
 					addLog(`Zoom: ${d.zoom ?? 'unknown'}`);
 				}
+			}
+			if (d.tag === 'onPitchEnd') {
+				setCurrentPitch(d.pitch);
 			}
 			if (d.tag === 'onMapMarkerClicked' && !gameModeRef.current) {
 				handleMarkerClick(d.mapMarkerId);
