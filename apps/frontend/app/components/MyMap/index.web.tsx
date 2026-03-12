@@ -1,0 +1,57 @@
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
+import type { MyMapHandle, MyMapProps } from './MyMapHelper';
+
+const DEFAULT_ZOOM = 16;
+
+const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, onMessage }, ref) => {
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+	const htmlBase = require('@/assets/maplibre/index.html') as string;
+
+	const iframeSrc = useMemo(
+		() => `${htmlBase}?lat=${initialCenter.lat}&lng=${initialCenter.lng}&zoom=${DEFAULT_ZOOM}`,
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+
+	const sendToMap = useCallback((data: object) => {
+		if (iframeRef.current?.contentWindow) {
+			iframeRef.current.contentWindow.postMessage(data, '*');
+		}
+	}, []);
+
+	useImperativeHandle(ref, () => ({ sendToMap }), [sendToMap]);
+
+	useEffect(() => {
+		const handler = (event: MessageEvent) => {
+			try {
+				const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+				onMessage(data);
+			} catch {
+				// ignore malformed messages
+			}
+		};
+		window.addEventListener('message', handler);
+		return () => window.removeEventListener('message', handler);
+	}, [onMessage]);
+
+	return (
+		<View style={styles.container}>
+			<iframe
+				ref={iframeRef}
+				src={iframeSrc}
+				style={{ width: '100%', height: '100%', border: 'none' }}
+				title="OSM Vector Map"
+			/>
+		</View>
+	);
+});
+
+export default MyMap;
+export type { MyMapHandle, MyMapProps };
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+});
