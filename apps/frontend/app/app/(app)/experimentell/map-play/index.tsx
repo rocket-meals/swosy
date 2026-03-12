@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SvgXml } from 'react-native-svg';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import MyMap from '@/components/MyMap/MyMap';
@@ -20,7 +21,7 @@ type Position = { lat: number; lng: number };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TILT_DEG = 30;
+const TILT_DEG = 70;
 const DEFAULT_ZOOM = 17;
 const POSITION_BUNDESTAG: Position = { lat: 52.518594247456804, lng: 13.376281624711964 };
 const BUILDING_MARKER_COLOR = '#1565c0';
@@ -41,7 +42,7 @@ const CAR_TURN_DEG = 10; // degrees per button tap
 
 // UI / visual constants
 const MAX_BUILDING_LABEL_LENGTH = 4;
-const PERSPECTIVE_VALUE = 900;
+const PERSPECTIVE_VALUE = 1200;
 const SPEED_DISPLAY_MIN = 1;
 const SPEED_DISPLAY_MAX = 10;
 
@@ -527,26 +528,6 @@ const MapPlay = () => {
 			});
 	}, [buildings, buildingIdToOrgsDict, primaryColor]);
 
-	// ── Vehicle marker ────────────────────────────────────────────────────────────
-
-	const vehicleMarkers = useMemo((): MapMarker[] => {
-		if (gameMode === 'selector') return [];
-		const isAirplane = gameMode === 'airplane';
-		const size = isAirplane ? 56 : 44;
-		const icon = isAirplane
-			? createAirplaneSvg(vehicleHeading)
-			: createCarSvg(vehicleHeading);
-		return [
-			{
-				id: 'vehicle',
-				position: vehiclePos,
-				icon,
-				size: [size, size] as [number, number],
-				iconAnchor: [size / 2, size / 2] as [number, number],
-			},
-		];
-	}, [gameMode, vehiclePos, vehicleHeading]);
-
 	// ── Airplane game loop ────────────────────────────────────────────────────────
 
 	useEffect(() => {
@@ -637,7 +618,7 @@ const MapPlay = () => {
 
 	return (
 		<SafeAreaView style={styles.root}>
-			{/* Tilted map container – 30° perspective tilt */}
+			{/* Tilted map container – 70° perspective tilt for 3D camera angle */}
 			<View style={styles.mapWrapper}>
 				<View style={styles.tiltContainer}>
 					<MyMap
@@ -645,12 +626,21 @@ const MapPlay = () => {
 						mapCenterPosition={vehiclePos}
 						zoom={mapZoom}
 						mapMarkers={buildingMarkers}
-						noClusterMarkers={vehicleMarkers}
+						noClusterMarkers={[]}
 						mapLayers={[DEFAULT_TILE_LAYER]}
 						useFlyAnimation={false}
 						onMapEvent={(e) => {
 							if (e.tag === 'onZoomEnd') setMapZoom(e.zoom);
 						}}
+					/>
+				</View>
+
+				{/* Vehicle rendered absolutely (centered) to avoid perspective distortion */}
+				<View style={styles.vehicleOverlay} pointerEvents="none">
+					<SvgXml
+						xml={isAirplane ? createAirplaneSvg(vehicleHeading) : createCarSvg(vehicleHeading)}
+						width={isAirplane ? 56 : 44}
+						height={isAirplane ? 56 : 44}
 					/>
 				</View>
 			</View>
@@ -714,11 +704,22 @@ const styles = StyleSheet.create({
 	},
 	tiltContainer: {
 		flex: 1,
-		// 30° perspective tilt simulating a pseudo-3D camera angle
+		// 70° perspective tilt for a 3D birds-eye camera angle
 		transform: [
 			{ perspective: PERSPECTIVE_VALUE },
 			{ rotateX: `${TILT_DEG}deg` },
 		],
+	},
+	vehicleOverlay: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		justifyContent: 'center',
+		alignItems: 'center',
+		zIndex: 20,
+		elevation: 20,
 	},
 	topBar: {
 		position: 'absolute',
