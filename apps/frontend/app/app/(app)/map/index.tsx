@@ -568,6 +568,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
 	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+	const [isFullscreen, setIsFullscreen] = useState(false);
 
 	// pendingNavigateRef: true = include position in next sendMapData call
 	const pendingNavigateRef = useRef(true);
@@ -1001,6 +1002,20 @@ const OsmVectorMapScreen: React.FC = () => {
 		setAutoRotateSpeed((s) => s + AUTO_ROTATE_SPEED_STEP);
 	}, []);
 
+	const handleManualRotateLeft1 = useCallback(() => {
+		autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current - 1);
+		sendToMapRef.current({ bearing: autoRotateBearingRef.current, easeAnimation: true, easeDuration: 200 });
+	}, []);
+
+	const handleManualRotateRight1 = useCallback(() => {
+		autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current + 1);
+		sendToMapRef.current({ bearing: autoRotateBearingRef.current, easeAnimation: true, easeDuration: 200 });
+	}, []);
+
+	const handleToggleFullscreen = useCallback(() => {
+		setIsFullscreen((prev) => !prev);
+	}, []);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1172,15 +1187,17 @@ const OsmVectorMapScreen: React.FC = () => {
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
 	return (
-		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
-			<MapHeader
-				drawerPosition={drawerPosition}
-				query={gameMode ? '' : searchQuery}
-				onQueryChange={gameMode ? noop : setSearchQuery}
-				onSettingsPress={openSettingsModal}
-				onFilterPress={gameMode ? undefined : openFilterModal}
-				isFilterActive={!gameMode && isFilterActive}
-			/>
+		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>
+			{!isFullscreen && (
+				<MapHeader
+					drawerPosition={drawerPosition}
+					query={gameMode ? '' : searchQuery}
+					onQueryChange={gameMode ? noop : setSearchQuery}
+					onSettingsPress={openSettingsModal}
+					onFilterPress={gameMode ? undefined : openFilterModal}
+					isFilterActive={!gameMode && isFilterActive}
+				/>
+			)}
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
 					<MyMap
@@ -1189,7 +1206,18 @@ const OsmVectorMapScreen: React.FC = () => {
 						initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
 						onMessage={handleMessage}
 					/>
-					{gameMode ? (
+
+					{/* Fullscreen toggle button – always visible */}
+					<View style={styles.fullscreenButtonOverlay} pointerEvents="box-none">
+						<TouchableOpacity
+							style={[styles.mapOverlayButton, { backgroundColor: isFullscreen ? 'rgba(26,115,232,0.9)' : theme.screen.background }]}
+							onPress={handleToggleFullscreen}
+						>
+							<MaterialIcons name={isFullscreen ? 'fullscreen-exit' : 'fullscreen'} size={26} color={isFullscreen ? 'white' : theme.screen.icon} />
+						</TouchableOpacity>
+					</View>
+
+					{!isFullscreen && (gameMode ? (
 						<>
 							{/* Vehicle overlay – airplane centered on screen */}
 							<View style={styles.vehicleOverlay} pointerEvents="none">
@@ -1284,6 +1312,18 @@ const OsmVectorMapScreen: React.FC = () => {
 										>
 											<MaterialIcons name="rotate-right" size={26} color={autoRotateSpeed > 0 ? 'white' : theme.screen.icon} />
 										</TouchableOpacity>
+										<TouchableOpacity
+											style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+											onPress={handleManualRotateLeft1}
+										>
+											<Text style={[styles.rotationButtonText, { color: theme.screen.text }]}>-1°</Text>
+										</TouchableOpacity>
+										<TouchableOpacity
+											style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
+											onPress={handleManualRotateRight1}
+										>
+											<Text style={[styles.rotationButtonText, { color: theme.screen.text }]}>+1°</Text>
+										</TouchableOpacity>
 									</>
 								)}
 								{showControlsHint && (
@@ -1312,9 +1352,9 @@ const OsmVectorMapScreen: React.FC = () => {
 								</ScrollView>
 							</DebugView>
 						</>
-					)}
+					))}
 				</View>
-				{!gameMode && searchResults.length > 0 && (
+				{!gameMode && !isFullscreen && searchResults.length > 0 && (
 					<View style={[styles.searchResultsContainer, { backgroundColor: theme.screen.background }]}>
 						{searchResults.map((building, index) => (
 							<SettingsList
@@ -1345,6 +1385,13 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
+	fullscreenButtonOverlay: {
+		position: 'absolute',
+		bottom: 16,
+		left: 16,
+		zIndex: 40,
+		elevation: 40,
+	},
 	mapOverlayButtons: {
 		position: 'absolute',
 		top: 16,
@@ -1474,6 +1521,10 @@ const styles = StyleSheet.create({
 		right: 16,
 		zIndex: 30,
 		elevation: 30,
+	},
+	rotationButtonText: {
+		fontSize: 11,
+		fontWeight: 'bold',
 	},
 });
 
