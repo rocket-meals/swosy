@@ -12,6 +12,8 @@ export interface FoodItemProps {
 	previousFeedback?: any;
 	// Optimization props
 	language?: string;
+	pirateLanguage?: boolean;
+	funLanguageMode?: string | null;
 	serverInfo?: any;
 	appSettings?: any;
 	primaryColor?: string;

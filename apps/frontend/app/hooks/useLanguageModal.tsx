@@ -3,13 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 
-import { useLanguage } from '@/hooks/useLanguage';
+import { FUN_LANGUAGE_MODES, useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import SettingsList from '@/components/SettingsList';
+import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { languages } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 
 const styles = StyleSheet.create({
         optionsContainer: {
@@ -27,7 +27,72 @@ const styles = StyleSheet.create({
         flagText: {
                 fontSize: 22,
         },
+        separatorContainer: {
+                marginTop: 16,
+        },
 });
+
+const PirateLanguageToggle: React.FC = () => {
+        const { translate, pirateLanguage, togglePirateLanguage } = useLanguage();
+        return (
+                <View style={styles.separatorContainer}>
+                        <SettingsListBoolean
+                                leftIcon={
+                                        <View style={styles.flagWrapper}>
+                                                <Text style={styles.flagText}>🏴‍☠️</Text>
+                                        </View>
+                                }
+                                iconBgColor="transparent"
+                                label={translate(TranslationKeys.pirate_language)}
+                                isEnabled={pirateLanguage}
+                                onToggle={() => togglePirateLanguage(!pirateLanguage)}
+                                groupPosition="single"
+                                showSeparator={false}
+                        />
+                </View>
+        );
+};
+
+const FunLanguageModeToggles: React.FC = () => {
+        const { translate, funLanguageMode, toggleFunLanguageMode } = useLanguage();
+
+        const modes: { key: string; emoji: string; labelKey: TranslationKeys }[] = [
+                { key: FUN_LANGUAGE_MODES.BACKWARDS, emoji: '🔄', labelKey: TranslationKeys.backwards_language },
+                { key: FUN_LANGUAGE_MODES.LEETSPEAK, emoji: '🔢', labelKey: TranslationKeys.leetspeak_language },
+                { key: FUN_LANGUAGE_MODES.ALTERNATING, emoji: '🔀', labelKey: TranslationKeys.alternating_language },
+                { key: FUN_LANGUAGE_MODES.TYPOGLYCEMIA, emoji: '🔤', labelKey: TranslationKeys.typoglycemia_language },
+                { key: FUN_LANGUAGE_MODES.GLITCH, emoji: '👾', labelKey: TranslationKeys.glitch_language },
+        ];
+
+        return (
+                <View style={styles.separatorContainer}>
+                        {modes.map((mode, index) => (
+                                <SettingsListBoolean
+                                        key={mode.key}
+                                        leftIcon={
+                                                <View style={styles.flagWrapper}>
+                                                        <Text style={styles.flagText}>{mode.emoji}</Text>
+                                                </View>
+                                        }
+                                        iconBgColor="transparent"
+                                        label={translate(mode.labelKey)}
+                                        isEnabled={funLanguageMode === mode.key}
+                                        onToggle={() => toggleFunLanguageMode(funLanguageMode === mode.key ? null : mode.key)}
+                                        groupPosition={
+                                                modes.length === 1
+                                                        ? 'single'
+                                                        : index === 0
+                                                                ? 'top'
+                                                                : index === modes.length - 1
+                                                                        ? 'bottom'
+                                                                        : 'middle'
+                                        }
+                                        showSeparator={index !== modes.length - 1}
+                                />
+                        ))}
+                </View>
+        );
+};
 
 export const useLanguageModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -95,6 +160,8 @@ export const useLanguageModal = () => {
                                                                 index={index}
                                                         />
                                                 ))}
+                                                <PirateLanguageToggle />
+                                                <FunLanguageModeToggles />
                                         </View>
                                 ),
                         },
