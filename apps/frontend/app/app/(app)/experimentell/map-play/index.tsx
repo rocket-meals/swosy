@@ -37,6 +37,10 @@ const AIRPLANE_SPEED_STEP = 0.00002;
 const AIRPLANE_MAX_SPEED = 0.00035;
 const AIRPLANE_MIN_SPEED = 0.00001;
 const AIRPLANE_TURN_DEG = 5; // degrees per tick while turn button is held
+const AIRPLANE_DEFAULT_SIZE = 56; // px
+const AIRPLANE_SIZE_STEP = 8;
+const AIRPLANE_MAX_SIZE = 96;
+const AIRPLANE_MIN_SIZE = 24;
 
 // UI / visual constants
 const MAX_BUILDING_LABEL_LENGTH = 4;
@@ -46,12 +50,12 @@ const SPEED_DISPLAY_MAX = 10;
 // ─── SVG Generators ───────────────────────────────────────────────────────────
 
 /** Airplane top-down marker with heading rotation and altitude shadow. */
-function createAirplaneSvg(heading: number): string {
-	const size = 56;
+function createAirplaneSvg(heading: number, size: number = AIRPLANE_DEFAULT_SIZE): string {
 	const cx = size / 2;
 	const cy = size / 2;
+	const scale = size / AIRPLANE_DEFAULT_SIZE;
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-    <g transform="translate(${cx},${cy}) rotate(${heading})">
+    <g transform="translate(${cx},${cy}) rotate(${heading}) scale(${scale})">
       <!-- Ground shadow indicates altitude above buildings -->
       <ellipse cx="3" cy="15" rx="11" ry="5" fill="rgba(0,0,0,0.18)"/>
       <!-- Left wing -->
@@ -255,7 +259,9 @@ const MapPlay = () => {
 
 	const [vehicleHeading, setVehicleHeading] = useState(0); // 0 = North
 	const [airplaneSpeed, setAirplaneSpeed] = useState(AIRPLANE_DEFAULT_SPEED);
+	const [airplaneSize, setAirplaneSize] = useState(AIRPLANE_DEFAULT_SIZE);
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
+	const [headingUpMode, setHeadingUpMode] = useState(true);
 
 	// Refs so the game loop always reads the latest values without recreating the interval
 	const vehicleHeadingRef = useRef(vehicleHeading);
@@ -266,6 +272,9 @@ const MapPlay = () => {
 
 	const mapZoomRef = useRef(mapZoom);
 	mapZoomRef.current = mapZoom;
+
+	const headingUpModeRef = useRef(headingUpMode);
+	headingUpModeRef.current = headingUpMode;
 
 	// vehiclePos ref – position changes bypass React state to prevent re-renders
 	const vehiclePosRef = useRef<Position>(POSITION_BUNDESTAG);
@@ -457,6 +466,7 @@ const MapPlay = () => {
 			// Send camera update directly – bypasses React state to eliminate stutter
 			sendToMapRef.current({
 				mapCenterPosition: newPos,
+				bearing: headingUpModeRef.current ? heading : 0,
 				easeAnimation: true,
 				easeDuration: GAME_TICK_MS,
 			});
@@ -500,12 +510,36 @@ const MapPlay = () => {
 		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
 	}, []);
 
+	// ── Airplane size controls ────────────────────────────────────────────────────
+
+	const handleAirplaneSizeUp = useCallback(() => {
+		setAirplaneSize((s) => Math.min(s + AIRPLANE_SIZE_STEP, AIRPLANE_MAX_SIZE));
+	}, []);
+
+	const handleAirplaneSizeDown = useCallback(() => {
+		setAirplaneSize((s) => Math.max(s - AIRPLANE_SIZE_STEP, AIRPLANE_MIN_SIZE));
+	}, []);
+
+	// ── Compass / heading-up mode ─────────────────────────────────────────────────
+
+	const handleCompassToggle = useCallback(() => {
+		setHeadingUpMode((prev) => {
+			const next = !prev;
+			// Immediately reset bearing to north when switching to north-up
+			if (!next) {
+				sendToMapRef.current({ resetBearing: true });
+			}
+			return next;
+		});
+	}, []);
+
 	// ── Reset to start position ───────────────────────────────────────────────────
 
 	const handleReset = useCallback(() => {
 		vehiclePosRef.current = centerPosition;
 		setVehicleHeading(0);
 		setAirplaneSpeed(AIRPLANE_DEFAULT_SPEED);
+		setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
 	}, [centerPosition]);
 
 	// ── Speed label for airplane ──────────────────────────────────────────────────
@@ -544,9 +578,15 @@ const MapPlay = () => {
 			{/* Vehicle overlay – rendered natively outside the WebView so the map
 			    doesn't re-render on every heading/position tick.
 			    The map always stays centred on the vehicle position, so placing the
-			    icon at the screen centre is equivalent to pinning it to the map. */}
+			    icon at the screen centre is equivalent to pinning it to the map.
+			    In heading-up mode the map bearing matches the airplane heading, so
+			    the overlay is always "pointing up" (heading=0). */}
 			<View style={styles.vehicleOverlay} pointerEvents="none">
-				<SvgXml xml={createAirplaneSvg(vehicleHeading)} width={56} height={56} />
+				<SvgXml
+					xml={createAirplaneSvg(headingUpMode ? 0 : vehicleHeading, airplaneSize)}
+					width={airplaneSize}
+					height={airplaneSize}
+				/>
 			</View>
 
 			{/* Top bar: reset button + mode info */}
@@ -567,7 +607,7 @@ const MapPlay = () => {
 				</View>
 			</View>
 
-			{/* Zoom buttons (left side) */}
+			{/* Zoom + airplane size buttons (left side) */}
 			<View style={styles.zoomButtons} pointerEvents="box-none">
 				<ControlButton
 					onPress={handleZoomIn}
@@ -581,6 +621,41 @@ const MapPlay = () => {
 					color="rgba(0,0,0,0.65)"
 					size="md"
 				/>
+				<View style={styles.zoomDivider} />
+				<ControlButton
+					onPress={handleAirplaneSizeUp}
+					icon={<MaterialIcons name="zoom-in" size={22} color="white" />}
+					color="rgba(26,115,232,0.75)"
+					size="md"
+				/>
+				<ControlButton
+					onPress={handleAirplaneSizeDown}
+					icon={<MaterialIcons name="zoom-out" size={22} color="white" />}
+					color="rgba(26,115,232,0.75)"
+					size="md"
+				/>
+			</View>
+
+			{/* Compass button (top-right) – toggles heading-up / north-up mode */}
+			<View style={styles.compassButton} pointerEvents="box-none">
+				<TouchableOpacity
+					style={[
+						styles.compassTouchable,
+						{
+							backgroundColor: headingUpMode
+								? 'rgba(26,115,232,0.9)'
+								: (theme.screen.background + 'ee'),
+						},
+					]}
+					onPress={handleCompassToggle}
+					activeOpacity={0.75}
+				>
+					<MaterialIcons
+						name="explore"
+						size={26}
+						color={headingUpMode ? 'white' : theme.screen.icon}
+					/>
+				</TouchableOpacity>
 			</View>
 
 			{/* Airplane controls overlay (bottom-right) */}
@@ -674,6 +749,30 @@ const styles = StyleSheet.create({
 		zIndex: 30,
 		elevation: 30,
 		gap: 8,
+	},
+	zoomDivider: {
+		height: 1,
+		backgroundColor: 'rgba(255,255,255,0.3)',
+		marginVertical: 2,
+	},
+	compassButton: {
+		position: 'absolute',
+		top: 16,
+		right: 16,
+		zIndex: 30,
+		elevation: 30,
+	},
+	compassTouchable: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 4,
+		elevation: 5,
 	},
 	vehicleOverlay: {
 		position: 'absolute',
