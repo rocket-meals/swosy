@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { Asset } from 'expo-asset';
@@ -50,31 +49,6 @@ const AIRPLANE_MIN_SIZE = 24;
 const MAX_BUILDING_LABEL_LENGTH = 4;
 
 // ─── SVG Generators ───────────────────────────────────────────────────────────
-
-/** Airplane top-down marker with heading rotation and altitude shadow. */
-function createAirplaneSvg(heading: number, size: number = AIRPLANE_DEFAULT_SIZE): string {
-	const cx = size / 2;
-	const cy = size / 2;
-	const scale = size / AIRPLANE_DEFAULT_SIZE;
-	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-    <g transform="translate(${cx},${cy}) rotate(${heading}) scale(${scale})">
-      <!-- Ground shadow indicates altitude above buildings -->
-      <ellipse cx="3" cy="15" rx="11" ry="5" fill="rgba(0,0,0,0.18)"/>
-      <!-- Left wing -->
-      <path d="M0,-4 L-15,6 L-15,8.5 L-2,4Z" fill="#1565c0" stroke="white" stroke-width="0.8"/>
-      <!-- Right wing -->
-      <path d="M0,-4 L15,6 L15,8.5 L2,4Z" fill="#1565c0" stroke="white" stroke-width="0.8"/>
-      <!-- Left tail fin -->
-      <path d="M-1,11 L-8,18 L-8,20 L-1,13Z" fill="#0d47a1" stroke="white" stroke-width="0.5"/>
-      <!-- Right tail fin -->
-      <path d="M1,11 L8,18 L8,20 L1,13Z" fill="#0d47a1" stroke="white" stroke-width="0.5"/>
-      <!-- Fuselage body -->
-      <path d="M0,-20 C2,-13 2,-5 2,0 L2,13 L0,15 L-2,13 L-2,0 C-2,-5 -2,-13 0,-20Z" fill="#1a73e8" stroke="white" stroke-width="1"/>
-      <!-- Cockpit window -->
-      <ellipse cx="0" cy="-14" rx="2.5" ry="4" fill="#bbdefb" opacity="0.9"/>
-    </g>
-  </svg>`;
-}
 
 /** Building map marker (simplified circle with label). */
 function createBuildingMarkerSvg(color: string, label: string): string {
@@ -577,6 +551,12 @@ const MapPlay = () => {
 		return `${Math.round(airplaneSpeedKmh)} km/h`;
 	}, [airplaneSpeedKmh]);
 
+	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
+	const airplaneEmojiStyle = useMemo(() => ({
+		fontSize: airplaneSize,
+		transform: [{ rotate: `${(headingUpMode ? 0 : vehicleHeading) - 45}deg` }],
+	}), [airplaneSize, headingUpMode, vehicleHeading]);
+
 	// ── Render ────────────────────────────────────────────────────────────────────
 
 	return (
@@ -608,11 +588,9 @@ const MapPlay = () => {
 			    In heading-up mode the map bearing matches the airplane heading, so
 			    the overlay is always "pointing up" (heading=0). */}
 			<View style={styles.vehicleOverlay} pointerEvents="none">
-				<SvgXml
-					xml={createAirplaneSvg(headingUpMode ? 0 : vehicleHeading, airplaneSize)}
-					width={airplaneSize}
-					height={airplaneSize}
-				/>
+				<Text style={airplaneEmojiStyle} accessibilityLabel="Flugzeug">
+					✈️
+				</Text>
 			</View>
 
 			{/* Top bar: reset button + mode info */}
