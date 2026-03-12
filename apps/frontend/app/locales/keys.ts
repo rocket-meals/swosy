@@ -504,6 +504,7 @@ export enum TranslationKeys {
 	group_app_settings = 'group_app_settings',
 	pull_down_to_close = 'pull_down_to_close',
 	group_app_management = 'group_app_management',
+	group_fun = 'group_fun',
 	game_ideas = 'game_ideas',
 	map_play = 'map_play',
 	food_wishlist = 'food_wishlist',
