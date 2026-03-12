@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+import { SvgXml } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { useTheme } from '@/hooks/useTheme';
@@ -12,7 +13,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -45,14 +46,159 @@ const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
 
 // MapLibre pitch value for 70° viewing angle (pitch = degrees from vertical)
 const INITIAL_PITCH = 20;
+const GAME_MODE_PITCH = 70;
+
+// ─── Game Mode (Spiel Modus) constants ───────────────────────────────────────
+
+const GAME_TICK_MS = 100;
+const METERS_PER_LAT_DEG = 111320;
+const TICKS_PER_SECOND = 1000 / GAME_TICK_MS;
+const KMH_TO_DEG_PER_TICK = 1 / (3.6 * METERS_PER_LAT_DEG * TICKS_PER_SECOND);
+const AIRPLANE_DEFAULT_SPEED_KMH = 300;
+const AIRPLANE_SPEED_STEP_SMALL = 10;
+const AIRPLANE_SPEED_STEP_LARGE = 100;
+const AIRPLANE_MIN_SPEED_KMH = 10;
+const AIRPLANE_TURN_DEG = 5;
+const AIRPLANE_DEFAULT_SIZE = 56;
+const AIRPLANE_SIZE_STEP = 8;
+const AIRPLANE_MIN_SIZE = 24;
+
+type GamePosition = { lat: number; lng: number };
+
+function degToRad(deg: number): number {
+	return (deg * Math.PI) / 180;
+}
+
+function moveByHeading(pos: GamePosition, headingDeg: number, distanceDeg: number): GamePosition {
+	const rad = degToRad(headingDeg);
+	const cosLat = Math.cos(degToRad(pos.lat));
+	return {
+		lat: pos.lat + distanceDeg * Math.cos(rad),
+		lng: pos.lng + (distanceDeg * Math.sin(rad)) / cosLat,
+	};
+}
+
+function normalizeHeading(h: number): number {
+	return ((h % 360) + 360) % 360;
+}
+
+function createAirplaneSvg(heading: number, size: number = AIRPLANE_DEFAULT_SIZE): string {
+	const cx = size / 2;
+	const cy = size / 2;
+	const scale = size / AIRPLANE_DEFAULT_SIZE;
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+    <g transform="translate(${cx},${cy}) rotate(${heading}) scale(${scale})">
+      <ellipse cx="3" cy="15" rx="11" ry="5" fill="rgba(0,0,0,0.18)"/>
+      <path d="M0,-4 L-15,6 L-15,8.5 L-2,4Z" fill="#1565c0" stroke="white" stroke-width="0.8"/>
+      <path d="M0,-4 L15,6 L15,8.5 L2,4Z" fill="#1565c0" stroke="white" stroke-width="0.8"/>
+      <path d="M-1,11 L-8,18 L-8,20 L-1,13Z" fill="#0d47a1" stroke="white" stroke-width="0.5"/>
+      <path d="M1,11 L8,18 L8,20 L1,13Z" fill="#0d47a1" stroke="white" stroke-width="0.5"/>
+      <path d="M0,-20 C2,-13 2,-5 2,0 L2,13 L0,15 L-2,13 L-2,0 C-2,-5 -2,-13 0,-20Z" fill="#1a73e8" stroke="white" stroke-width="1"/>
+      <ellipse cx="0" cy="-14" rx="2.5" ry="4" fill="#bbdefb" opacity="0.9"/>
+    </g>
+  </svg>`;
+}
+
+type ControlButtonProps = {
+	onPressIn?: () => void;
+	onPressOut?: () => void;
+	onPress?: () => void;
+	label?: string;
+	icon?: React.ReactNode;
+	color?: string;
+	size?: 'sm' | 'md' | 'lg';
+};
+
+const ControlButton: React.FC<ControlButtonProps> = ({
+	onPressIn,
+	onPressOut,
+	onPress,
+	label,
+	icon,
+	color = 'rgba(0,0,0,0.65)',
+	size = 'md',
+}) => {
+	const dim = size === 'sm' ? 38 : size === 'lg' ? 58 : 48;
+	return (
+		<TouchableOpacity
+			style={{
+				width: dim,
+				height: dim,
+				borderRadius: dim / 2,
+				backgroundColor: color,
+				alignItems: 'center',
+				justifyContent: 'center',
+				margin: 3,
+				shadowColor: '#000',
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.4,
+				shadowRadius: 4,
+				elevation: 5,
+			}}
+			onPressIn={onPressIn}
+			onPressOut={onPressOut}
+			onPress={onPress}
+			activeOpacity={0.7}
+		>
+			{icon ?? (
+				<Text style={{ color: 'white', fontSize: size === 'sm' ? 14 : 18, fontWeight: 'bold' }}>
+					{label}
+				</Text>
+			)}
+		</TouchableOpacity>
+	);
+};
+
+type AirplaneControlsProps = {
+	onTurnLeftStart: () => void;
+	onTurnLeftEnd: () => void;
+	onTurnRightStart: () => void;
+	onTurnRightEnd: () => void;
+	onSpeedUp: () => void;
+	onSpeedUpLarge: () => void;
+	onSpeedDown: () => void;
+	onSpeedDownLarge: () => void;
+};
+
+const AirplaneControls: React.FC<AirplaneControlsProps> = ({
+	onTurnLeftStart,
+	onTurnLeftEnd,
+	onTurnRightStart,
+	onTurnRightEnd,
+	onSpeedUp,
+	onSpeedUpLarge,
+	onSpeedDown,
+	onSpeedDownLarge,
+}) => (
+	<View style={gameModeStyles.airplaneLayout}>
+		<View style={gameModeStyles.turnColumn}>
+			<ControlButton onPressIn={onTurnLeftStart} onPressOut={onTurnLeftEnd} label="◀" color="rgba(26,115,232,0.85)" size="lg" />
+			<ControlButton onPressIn={onTurnRightStart} onPressOut={onTurnRightEnd} label="▶" color="rgba(26,115,232,0.85)" size="lg" />
+		</View>
+		<View style={gameModeStyles.throttleColumn}>
+			<ControlButton onPress={onSpeedUpLarge} label="+100" color="rgba(46,125,50,0.85)" size="sm" />
+			<ControlButton onPress={onSpeedUp} label="+10" color="rgba(46,125,50,0.85)" size="sm" />
+			<ControlButton onPress={onSpeedDown} label="-10" color="rgba(183,28,28,0.85)" size="sm" />
+			<ControlButton onPress={onSpeedDownLarge} label="-100" color="rgba(183,28,28,0.85)" size="sm" />
+		</View>
+	</View>
+);
+
+const gameModeStyles = StyleSheet.create({
+	airplaneLayout: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+	turnColumn: { flexDirection: 'row', gap: 6 },
+	throttleColumn: { flexDirection: 'column', gap: 6 },
+});
 
 type OsmSettingsContentProps = {
 	initialSelectedStyleKey: string;
 	initialUseFlyAnimation: boolean;
 	initialClusterDistance: number;
+	initialGameMode: boolean;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
+	onGameModeChange: (value: boolean) => void;
 	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
@@ -61,15 +207,18 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialSelectedStyleKey,
 	initialUseFlyAnimation,
 	initialClusterDistance,
+	initialGameMode,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
 	onClusterDistanceChange,
+	onGameModeChange,
 	onShowControlsHint,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
+	const [localGameMode, setLocalGameMode] = useState(initialGameMode);
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
 
 	if (showingStyleSelector) {
@@ -136,6 +285,21 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
 				onPress={onShowControlsHint}
+				groupPosition="middle"
+				showSeparator={true}
+			/>
+			<SettingsList
+				title="Spiel Modus"
+				leftIcon={<MaterialIcons name="sports-esports" size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={localGameMode}
+						onValueChange={(value) => {
+							setLocalGameMode(value);
+							onGameModeChange(value);
+						}}
+					/>
+				}
 				groupPosition="bottom"
 				showSeparator={false}
 			/>
@@ -303,6 +467,8 @@ const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 8;
 const MAX_SEARCH_RESULTS = 3;
 
+const noop = () => {};
+
 function getContrastColor(hexColor: string): string {
 	const hex = hexColor.replace('#', '');
 	if (hex.length !== 6) return '#ffffff';
@@ -376,6 +542,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
+	const gameMode = useAppSelector((state) => (state.settings as any).osmVectorMapGameMode ?? false);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -400,6 +567,29 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// Ref always pointing to the latest centerPosition for use in one-time HTML loading
 	const centerPositionRef = useRef<{ lat: number; lng: number }>(POSITION_BUNDESTAG);
+
+	// ── Game mode (Spiel Modus) state ────────────────────────────────────────────
+	const [vehicleHeading, setVehicleHeading] = useState(0);
+	const [airplaneSpeedKmh, setAirplaneSpeedKmh] = useState(AIRPLANE_DEFAULT_SPEED_KMH);
+	const [airplaneSize, setAirplaneSize] = useState(AIRPLANE_DEFAULT_SIZE);
+	const [headingUpMode, setHeadingUpMode] = useState(true);
+	const [gameMapReady, setGameMapReady] = useState(false);
+
+	const vehicleHeadingRef = useRef(vehicleHeading);
+	vehicleHeadingRef.current = vehicleHeading;
+	const airplaneSpeedRef = useRef(airplaneSpeedKmh);
+	airplaneSpeedRef.current = airplaneSpeedKmh;
+	const headingUpModeRef = useRef(headingUpMode);
+	headingUpModeRef.current = headingUpMode;
+	const vehiclePosRef = useRef<GamePosition>(POSITION_BUNDESTAG);
+	const turnLeftRef = useRef(false);
+	const turnRightRef = useRef(false);
+	const gameModeRef = useRef(gameMode);
+	gameModeRef.current = gameMode;
+	const gameMapReadyRef = useRef(gameMapReady);
+	gameMapReadyRef.current = gameMapReady;
+	const mapZoomRef = useRef(mapZoom);
+	mapZoomRef.current = mapZoom;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -499,7 +689,21 @@ const OsmVectorMapScreen: React.FC = () => {
 	useEffect(() => {
 		setMapCenterOverride(null);
 		pendingNavigateRef.current = true;
+		vehiclePosRef.current = centerPosition;
 	}, [centerPosition]);
+
+	// When game mode changes, trigger a navigation with the correct pitch
+	useEffect(() => {
+		pendingNavigateRef.current = true;
+		if (gameMode) {
+			vehiclePosRef.current = centerPositionRef.current;
+			setVehicleHeading(0);
+			setAirplaneSpeedKmh(AIRPLANE_DEFAULT_SPEED_KMH);
+			setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
+			setHeadingUpMode(true);
+			setGameMapReady(false);
+		}
+	}, [gameMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const likedOrganisationIds = useMemo(
 		() =>
@@ -613,6 +817,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const sendMapData = useCallback(() => {
+		if (gameModeRef.current) return; // game loop handles map updates in game mode
 		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
 
@@ -640,6 +845,101 @@ const OsmVectorMapScreen: React.FC = () => {
 		sendMapData();
 	}, [sendMapData]);
 
+	// ── Game mode helpers ─────────────────────────────────────────────────────────
+
+	const sendToMap = useCallback((data: object) => {
+		const json = JSON.stringify(data);
+		webViewRef.current?.injectJavaScript(
+			`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`,
+		);
+	}, []);
+
+	const sendToMapRef = useRef(sendToMap);
+	sendToMapRef.current = sendToMap;
+
+	const buildingMarkersRef = useRef(buildingMarkers);
+	buildingMarkersRef.current = buildingMarkers;
+
+	const sendGameInitData = useCallback(() => {
+		const pos = vehiclePosRef.current;
+		sendToMap({
+			mapCenterPosition: pos,
+			zoom: DEFAULT_ZOOM,
+			pitch: GAME_MODE_PITCH,
+			animate: false,
+			useFlyAnimation: false,
+			mapMarkers: buildingMarkersRef.current,
+			vehicleMarker: null,
+			mapStyle: selectedStyleUrl,
+		});
+	}, [sendToMap, selectedStyleUrl]);
+
+	// Re-send building markers when they change while in game mode
+	useEffect(() => {
+		if (!gameMode || !gameMapReady) return;
+		sendToMap({ mapMarkers: buildingMarkers });
+	}, [gameMode, gameMapReady, buildingMarkers, sendToMap]);
+
+	// Game loop
+	useEffect(() => {
+		const id = setInterval(() => {
+			if (!gameModeRef.current || !gameMapReadyRef.current) return;
+			if (turnLeftRef.current) {
+				setVehicleHeading((h) => normalizeHeading(h - AIRPLANE_TURN_DEG));
+			} else if (turnRightRef.current) {
+				setVehicleHeading((h) => normalizeHeading(h + AIRPLANE_TURN_DEG));
+			}
+			const heading = vehicleHeadingRef.current;
+			const speed = airplaneSpeedRef.current * KMH_TO_DEG_PER_TICK;
+			const newPos = moveByHeading(vehiclePosRef.current, heading, speed);
+			vehiclePosRef.current = newPos;
+			sendToMapRef.current({
+				mapCenterPosition: newPos,
+				bearing: headingUpModeRef.current ? heading : 0,
+				easeAnimation: true,
+				easeDuration: GAME_TICK_MS,
+			});
+		}, GAME_TICK_MS);
+		return () => clearInterval(id);
+	}, []); // No dependencies – all values read via refs // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Game mode controls
+	const handleGameTurnLeftStart = useCallback(() => { turnLeftRef.current = true; }, []);
+	const handleGameTurnLeftEnd = useCallback(() => { turnLeftRef.current = false; }, []);
+	const handleGameTurnRightStart = useCallback(() => { turnRightRef.current = true; }, []);
+	const handleGameTurnRightEnd = useCallback(() => { turnRightRef.current = false; }, []);
+	const handleGameSpeedUp = useCallback(() => { setAirplaneSpeedKmh((s) => s + AIRPLANE_SPEED_STEP_SMALL); }, []);
+	const handleGameSpeedUpLarge = useCallback(() => { setAirplaneSpeedKmh((s) => s + AIRPLANE_SPEED_STEP_LARGE); }, []);
+	const handleGameSpeedDown = useCallback(() => { setAirplaneSpeedKmh((s) => Math.max(s - AIRPLANE_SPEED_STEP_SMALL, AIRPLANE_MIN_SPEED_KMH)); }, []);
+	const handleGameSpeedDownLarge = useCallback(() => { setAirplaneSpeedKmh((s) => Math.max(s - AIRPLANE_SPEED_STEP_LARGE, AIRPLANE_MIN_SPEED_KMH)); }, []);
+	const handleGameZoomIn = useCallback(() => {
+		const newZoom = Math.min((mapZoomRef.current ?? DEFAULT_ZOOM) + 0.5, 22);
+		setMapZoom(newZoom);
+		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
+	}, []);
+	const handleGameZoomOut = useCallback(() => {
+		const newZoom = Math.max((mapZoomRef.current ?? DEFAULT_ZOOM) - 0.5, 1);
+		setMapZoom(newZoom);
+		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
+	}, []);
+	const handleGameAirplaneSizeUp = useCallback(() => { setAirplaneSize((s) => s + AIRPLANE_SIZE_STEP); }, []);
+	const handleGameAirplaneSizeDown = useCallback(() => { setAirplaneSize((s) => Math.max(s - AIRPLANE_SIZE_STEP, AIRPLANE_MIN_SIZE)); }, []);
+	const handleGameCompassToggle = useCallback(() => {
+		setHeadingUpMode((prev) => {
+			const next = !prev;
+			if (!next) sendToMapRef.current({ resetBearing: true });
+			return next;
+		});
+	}, []);
+	const handleGameReset = useCallback(() => {
+		vehiclePosRef.current = centerPositionRef.current;
+		setVehicleHeading(0);
+		setAirplaneSpeedKmh(AIRPLANE_DEFAULT_SPEED_KMH);
+		setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
+	}, []);
+
+	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
+
 	useEffect(() => {
 		let isMounted = true;
 		const loadHtml = async () => {
@@ -649,9 +949,12 @@ const OsmVectorMapScreen: React.FC = () => {
 			// Inject the initial center position so the map starts at the canteen position
 			// without showing the default Germany center while tiles are loading.
 			const c = centerPositionRef.current;
+			const pitch = gameModeRef.current ? GAME_MODE_PITCH : undefined;
 			htmlContent = htmlContent.replace(
 				'initMap(null, null);',
-				`initMap([${c.lng}, ${c.lat}], null);`,
+				pitch !== undefined
+					? `initMap([${c.lng}, ${c.lat}], null, ${pitch});`
+					: `initMap([${c.lng}, ${c.lat}], null);`,
 			);
 			if (isMounted) {
 				setHtml(htmlContent);
@@ -702,23 +1005,30 @@ const OsmVectorMapScreen: React.FC = () => {
 			try {
 				const data = JSON.parse(event.nativeEvent.data);
 				if (data.tag === 'MapComponentMounted') {
-					pendingNavigateRef.current = true;
-					sendMapData();
+					if (gameModeRef.current) {
+						setGameMapReady(true);
+						sendGameInitData();
+					} else {
+						pendingNavigateRef.current = true;
+						sendMapData();
+					}
 					addLog('MapComponentMounted');
 					return;
 				}
 				if (data.tag === 'onZoomEnd') {
 					setMapZoom(data.zoom);
-					addLog(`Zoom: ${data.zoom ?? 'unknown'}`);
+					if (!gameModeRef.current) {
+						addLog(`Zoom: ${data.zoom ?? 'unknown'}`);
+					}
 				}
-				if (data.tag === 'onMapMarkerClicked') {
+				if (data.tag === 'onMapMarkerClicked' && !gameModeRef.current) {
 					handleMarkerClick(data.mapMarkerId);
 				}
 			} catch {
 				// ignore malformed messages
 			}
 		},
-		[sendMapData, handleMarkerClick, addLog],
+		[sendMapData, sendGameInitData, handleMarkerClick, addLog],
 	);
 
 	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
@@ -745,6 +1055,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [show, close, dispatch, theme]);
 
+	const setGameModeDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_GAME_MODE, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -753,15 +1070,17 @@ const OsmVectorMapScreen: React.FC = () => {
 					initialSelectedStyleKey={selectedStyleKey}
 					initialUseFlyAnimation={useFlyAnimation}
 					initialClusterDistance={clusterDistance}
+					initialGameMode={gameMode}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
 					onClusterDistanceChange={setClusterDistanceDispatch}
+					onGameModeChange={setGameModeDispatch}
 					onShowControlsHint={openControlsHintModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
@@ -814,11 +1133,11 @@ const OsmVectorMapScreen: React.FC = () => {
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
 			<LeafletMapHeader
 				drawerPosition={drawerPosition}
-				query={searchQuery}
-				onQueryChange={setSearchQuery}
+				query={gameMode ? '' : searchQuery}
+				onQueryChange={gameMode ? noop : setSearchQuery}
 				onSettingsPress={openSettingsModal}
-				onFilterPress={openFilterModal}
-				isFilterActive={isFilterActive}
+				onFilterPress={gameMode ? undefined : openFilterModal}
+				isFilterActive={!gameMode && isFilterActive}
 			/>
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
@@ -832,47 +1151,115 @@ const OsmVectorMapScreen: React.FC = () => {
 						onMessage={handleMessage}
 						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 					/>
-					{/* Map overlay buttons: compass, location, and controls hint */}
-					<View style={styles.mapOverlayButtons} pointerEvents="box-none">
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
-							onPress={handleCompassPress}
-						>
-							<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-							onPress={handleLocationPress}
-						>
-							<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
-						</TouchableOpacity>
-						{showControlsHint && (
-							<TouchableOpacity
-								style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-								onPress={openControlsHintModal}
-							>
-								<MaterialIcons name="touch-app" size={26} color={theme.screen.icon} />
-							</TouchableOpacity>
-						)}
-					</View>
-					<DebugView title="Map Log">
-						<ScrollView
-							ref={logScrollRef}
-							style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
-							onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
-						>
-							{logEntries.map((entry, i) => (
-								<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
-									{entry}
-								</Text>
-							))}
-							{logEntries.length === 0 && (
-								<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
-							)}
-						</ScrollView>
-					</DebugView>
+					{gameMode ? (
+						<>
+							{/* Vehicle overlay – airplane centered on screen */}
+							<View style={styles.vehicleOverlay} pointerEvents="none">
+								<SvgXml
+									xml={createAirplaneSvg(headingUpMode ? 0 : vehicleHeading, airplaneSize)}
+									width={airplaneSize}
+									height={airplaneSize}
+								/>
+							</View>
+
+							{/* Top bar: reset + speed/heading info */}
+							<View style={styles.gameTopBar} pointerEvents="box-none">
+								<TouchableOpacity
+									style={[styles.gameTopBarButton, { backgroundColor: theme.screen.background }]}
+									onPress={handleGameReset}
+								>
+									<MaterialIcons name="my-location" size={22} color={theme.screen.icon} />
+								</TouchableOpacity>
+								<View style={[styles.gameTopBarInfo, { backgroundColor: theme.screen.background + 'dd' }]}>
+									<Text style={[styles.gameTopBarTitle, { color: theme.screen.text }]}>✈️ Flugzeug</Text>
+									<Text style={[styles.gameTopBarSub, { color: theme.screen.text + 'aa' }]}>
+										{`${speedLabel} · Richtung ${Math.round(vehicleHeading)}°`}
+									</Text>
+								</View>
+							</View>
+
+							{/* Zoom + airplane size buttons (left side) */}
+							<View style={styles.gameZoomButtons} pointerEvents="box-none">
+								<ControlButton onPress={handleGameZoomIn} icon={<MaterialIcons name="add" size={22} color="white" />} color="rgba(0,0,0,0.65)" size="md" />
+								<ControlButton onPress={handleGameZoomOut} icon={<MaterialIcons name="remove" size={22} color="white" />} color="rgba(0,0,0,0.65)" size="md" />
+								<View style={styles.gameZoomDivider} />
+								<ControlButton onPress={handleGameAirplaneSizeUp} icon={<MaterialIcons name="zoom-in" size={22} color="white" />} color="rgba(26,115,232,0.75)" size="md" />
+								<ControlButton onPress={handleGameAirplaneSizeDown} icon={<MaterialIcons name="zoom-out" size={22} color="white" />} color="rgba(26,115,232,0.75)" size="md" />
+							</View>
+
+							{/* Compass button (top-right) */}
+							<View style={styles.gameCompassButton} pointerEvents="box-none">
+								<TouchableOpacity
+									style={[
+										styles.gameCompassTouchable,
+										{ backgroundColor: headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee') },
+									]}
+									onPress={handleGameCompassToggle}
+									activeOpacity={0.75}
+								>
+									<MaterialIcons name="explore" size={26} color={headingUpMode ? 'white' : theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+
+							{/* Airplane controls overlay (bottom-right) */}
+							<View style={styles.gameControlsOverlay} pointerEvents="box-none">
+								<AirplaneControls
+									onTurnLeftStart={handleGameTurnLeftStart}
+									onTurnLeftEnd={handleGameTurnLeftEnd}
+									onTurnRightStart={handleGameTurnRightStart}
+									onTurnRightEnd={handleGameTurnRightEnd}
+									onSpeedUp={handleGameSpeedUp}
+									onSpeedUpLarge={handleGameSpeedUpLarge}
+									onSpeedDown={handleGameSpeedDown}
+									onSpeedDownLarge={handleGameSpeedDownLarge}
+								/>
+							</View>
+						</>
+					) : (
+						<>
+							{/* Normal map overlay buttons: compass, location, and controls hint */}
+							<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+								<TouchableOpacity
+									style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
+									onPress={handleCompassPress}
+								>
+									<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+									onPress={handleLocationPress}
+								>
+									<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
+								</TouchableOpacity>
+								{showControlsHint && (
+									<TouchableOpacity
+										style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+										onPress={openControlsHintModal}
+									>
+										<MaterialIcons name="touch-app" size={26} color={theme.screen.icon} />
+									</TouchableOpacity>
+								)}
+							</View>
+							<DebugView title="Map Log">
+								<ScrollView
+									ref={logScrollRef}
+									style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
+									onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
+								>
+									{logEntries.map((entry, i) => (
+										<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+											{entry}
+										</Text>
+									))}
+									{logEntries.length === 0 && (
+										<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+									)}
+								</ScrollView>
+							</DebugView>
+						</>
+					)}
 				</View>
-				{searchResults.length > 0 && (
+				{!gameMode && searchResults.length > 0 && (
 					<View style={[styles.searchResultsContainer, { backgroundColor: theme.screen.background }]}>
 						{searchResults.map((building, index) => (
 							<SettingsList
@@ -945,6 +1332,94 @@ const styles = StyleSheet.create({
 		fontSize: 11,
 		paddingHorizontal: 8,
 		paddingVertical: 4,
+	},
+	// ── Game mode styles ─────────────────────────────────────────────────────────
+	vehicleOverlay: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		alignItems: 'center',
+		justifyContent: 'center',
+		zIndex: 20,
+		elevation: 20,
+	},
+	gameTopBar: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		flexDirection: 'row',
+		alignItems: 'center',
+		padding: 12,
+		gap: 10,
+		zIndex: 30,
+		elevation: 30,
+	},
+	gameTopBarButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		elevation: 3,
+	},
+	gameTopBarInfo: {
+		flex: 1,
+		borderRadius: 12,
+		paddingHorizontal: 14,
+		paddingVertical: 6,
+	},
+	gameTopBarTitle: {
+		fontSize: 15,
+		fontWeight: 'bold',
+	},
+	gameTopBarSub: {
+		fontSize: 12,
+	},
+	gameZoomButtons: {
+		position: 'absolute',
+		bottom: 32,
+		left: 16,
+		zIndex: 30,
+		elevation: 30,
+		gap: 8,
+	},
+	gameZoomDivider: {
+		height: 1,
+		backgroundColor: 'rgba(255,255,255,0.3)',
+		marginVertical: 2,
+	},
+	gameCompassButton: {
+		position: 'absolute',
+		top: 16,
+		right: 16,
+		zIndex: 30,
+		elevation: 30,
+	},
+	gameCompassTouchable: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	gameControlsOverlay: {
+		position: 'absolute',
+		bottom: 32,
+		right: 16,
+		zIndex: 30,
+		elevation: 30,
 	},
 });
 
