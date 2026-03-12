@@ -137,12 +137,6 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/game-ideas'),
 		},
 		{
-			key: 'map-play',
-			label: translate(TranslationKeys.map_play),
-			leftIcon: <MaterialCommunityIcons name="airplane" size={24} color={theme.screen.icon} />,
-			onPress: () => router.push('/experimentell/map-play'),
-		},
-		{
 			key: 'food-wishlist',
 			label: translate(TranslationKeys.food_wishlist),
 			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
