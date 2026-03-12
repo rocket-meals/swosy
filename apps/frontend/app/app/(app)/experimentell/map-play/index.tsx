@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
-import MyMap from '@/components/MyMap/MyMap';
-import { MapLayer, MapMarker } from '@/components/MyMap/model';
+import { MapMarker } from '@/components/MyMap/model';
 import { useTheme } from '@/hooks/useTheme';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { MARKER_DEFAULT_SIZE } from '@/components/MyMap/markerUtils';
@@ -11,6 +14,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
+import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -20,7 +24,7 @@ type Position = { lat: number; lng: number };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TILT_DEG = 30;
+const MAP_PITCH = 70; // MapLibre native pitch – degrees from horizontal (0=top-down)
 const DEFAULT_ZOOM = 17;
 const POSITION_BUNDESTAG: Position = { lat: 52.518594247456804, lng: 13.376281624711964 };
 const BUILDING_MARKER_COLOR = '#1565c0';
@@ -41,16 +45,8 @@ const CAR_TURN_DEG = 10; // degrees per button tap
 
 // UI / visual constants
 const MAX_BUILDING_LABEL_LENGTH = 4;
-const PERSPECTIVE_VALUE = 900;
 const SPEED_DISPLAY_MIN = 1;
 const SPEED_DISPLAY_MAX = 10;
-
-const DEFAULT_TILE_LAYER: MapLayer = {
-	layerType: 'TileLayer',
-	url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-	baseLayerName: 'OpenStreetMap',
-	baseLayerIsChecked: true,
-};
 
 // ─── SVG Generators ───────────────────────────────────────────────────────────
 
@@ -444,9 +440,23 @@ const MapPlay = () => {
 	const airplaneSpeedRef = useRef(airplaneSpeed);
 	airplaneSpeedRef.current = airplaneSpeed;
 
+	// Refs for stable MapLibre callbacks (always read the latest state)
+	const vehiclePosRef = useRef(vehiclePos);
+	vehiclePosRef.current = vehiclePos;
+	const gameModeRef = useRef(gameMode);
+	gameModeRef.current = gameMode;
+	const buildingMarkersRef = useRef(buildingMarkers);
+	buildingMarkersRef.current = buildingMarkers;
+
 	// Refs for held-button state (continuous turning)
 	const turnLeftRef = useRef(false);
 	const turnRightRef = useRef(false);
+
+	// ── MapLibre WebView state ────────────────────────────────────────────────────
+
+	const webViewRef = useRef<WebView>(null);
+	const [html, setHtml] = useState<string | null>(null);
+	const [mapReady, setMapReady] = useState(false);
 
 	// ── Center position: selected canteen building or Bundestag ─────────────────
 
@@ -527,25 +537,99 @@ const MapPlay = () => {
 			});
 	}, [buildings, buildingIdToOrgsDict, primaryColor]);
 
-	// ── Vehicle marker ────────────────────────────────────────────────────────────
+	// ── Load MapLibre HTML ────────────────────────────────────────────────────────
 
-	const vehicleMarkers = useMemo((): MapMarker[] => {
-		if (gameMode === 'selector') return [];
+	useEffect(() => {
+		let isMounted = true;
+		(async () => {
+			const asset = Asset.fromModule(require('@/assets/maplibre/index.html'));
+			await asset.downloadAsync();
+			let content = await FileSystem.readAsStringAsync(asset.localUri!);
+			// Inject MAP_PITCH as the third argument of initMap so the map opens in
+			// 3D immediately; 'initMap(null, null)' is unique in the HTML file.
+			content = content.replace('initMap(null, null);', `initMap(null, null, ${MAP_PITCH});`);
+			if (isMounted) setHtml(content);
+		})();
+		return () => { isMounted = false; };
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+	// ── MapLibre message helpers ──────────────────────────────────────────────────
+
+	const sendToMap = useCallback((data: object) => {
+		const json = JSON.stringify(data);
+		webViewRef.current?.injectJavaScript(
+			`window.dispatchEvent(new MessageEvent('message',{data:${json}}));true;`,
+		);
+	}, []);
+
+	// Stable callback that reads from refs – used on MapComponentMounted to avoid
+	// stale-closure issues while keeping handleMessage stable.
+	const sendFullData = useCallback(() => {
+		const mode = gameModeRef.current;
+		const pos = vehiclePosRef.current;
+		const heading = vehicleHeadingRef.current;
+		const markers = buildingMarkersRef.current;
+		const isAirplane = mode === 'airplane';
+		const size = isAirplane ? 56 : 44;
+		sendToMap({
+			mapCenterPosition: pos,
+			zoom: DEFAULT_ZOOM,
+			pitch: MAP_PITCH,
+			animate: false,
+			useFlyAnimation: false,
+			mapMarkers: markers,
+			vehicleMarker: mode !== 'selector' ? {
+				position: pos,
+				icon: isAirplane ? createAirplaneSvg(heading) : createCarSvg(heading),
+				size: [size, size],
+			} : null,
+		});
+	}, [sendToMap]);
+
+	// Re-send building markers whenever they change after the map is ready
+	useEffect(() => {
+		if (!mapReady) return;
+		sendToMap({ mapMarkers: buildingMarkers });
+	}, [mapReady, buildingMarkers, sendToMap]);
+
+	// Update vehicle position and icon every tick (triggered by state changes)
+	useEffect(() => {
+		if (!mapReady || gameMode === 'selector') return;
 		const isAirplane = gameMode === 'airplane';
 		const size = isAirplane ? 56 : 44;
-		const icon = isAirplane
-			? createAirplaneSvg(vehicleHeading)
-			: createCarSvg(vehicleHeading);
-		return [
-			{
-				id: 'vehicle',
-				position: vehiclePos,
-				icon,
-				size: [size, size] as [number, number],
-				iconAnchor: [size / 2, size / 2] as [number, number],
-			},
-		];
-	}, [gameMode, vehiclePos, vehicleHeading]);
+		const icon = isAirplane ? createAirplaneSvg(vehicleHeading) : createCarSvg(vehicleHeading);
+		sendToMap({
+			vehicleMarker: { position: vehiclePos, icon, size: [size, size] },
+			mapCenterPosition: vehiclePos,
+			animate: false,
+			useFlyAnimation: false,
+		});
+	}, [mapReady, gameMode, vehiclePos, vehicleHeading, sendToMap]);
+
+	// ── MapLibre message handler ──────────────────────────────────────────────────
+
+	const handleMessage = useCallback((event: WebViewMessageEvent) => {
+		try {
+			const data = JSON.parse(event.nativeEvent.data);
+			if (data.tag === 'MapComponentMounted') {
+				setMapReady(true);
+				sendFullData();
+				return;
+			}
+			if (data.tag === 'onZoomEnd') {
+				setMapZoom(data.zoom);
+			}
+		} catch {
+			// ignore malformed messages
+		}
+	}, [sendFullData]);
+
+	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
+		const url = request.url;
+		if (!url || url === 'about:blank' || url === 'about:srcdoc') return true;
+		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
+		return false;
+	}, []);
 
 	// ── Airplane game loop ────────────────────────────────────────────────────────
 
@@ -610,6 +694,7 @@ const MapPlay = () => {
 
 	const handleReset = useCallback(() => {
 		setGameMode('selector');
+		setMapReady(false);
 	}, []);
 
 	// ── Speed label for airplane ──────────────────────────────────────────────────
@@ -637,22 +722,24 @@ const MapPlay = () => {
 
 	return (
 		<SafeAreaView style={styles.root}>
-			{/* Tilted map container – 30° perspective tilt */}
+			{/* MapLibre map with native 70° pitch – no CSS transforms needed */}
 			<View style={styles.mapWrapper}>
-				<View style={styles.tiltContainer}>
-					<MyMap
-						key={`map-play-${gameMode}`}
-						mapCenterPosition={vehiclePos}
-						zoom={mapZoom}
-						mapMarkers={buildingMarkers}
-						noClusterMarkers={vehicleMarkers}
-						mapLayers={[DEFAULT_TILE_LAYER]}
-						useFlyAnimation={false}
-						onMapEvent={(e) => {
-							if (e.tag === 'onZoomEnd') setMapZoom(e.zoom);
-						}}
+				{html ? (
+					<WebView
+						ref={webViewRef}
+						source={{ html }}
+						javaScriptEnabled={true}
+						domStorageEnabled={true}
+						originWhitelist={['*']}
+						onMessage={handleMessage}
+						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+						style={styles.map}
 					/>
-				</View>
+				) : (
+					<View style={styles.mapLoading}>
+						<Text style={styles.mapLoadingText}>Loading map…</Text>
+					</View>
+				)}
 			</View>
 
 			{/* Top bar: back button + mode info */}
@@ -710,15 +797,19 @@ const styles = StyleSheet.create({
 	},
 	mapWrapper: {
 		flex: 1,
-		overflow: 'hidden',
 	},
-	tiltContainer: {
+	map: {
 		flex: 1,
-		// 30° perspective tilt simulating a pseudo-3D camera angle
-		transform: [
-			{ perspective: PERSPECTIVE_VALUE },
-			{ rotateX: `${TILT_DEG}deg` },
-		],
+	},
+	mapLoading: {
+		flex: 1,
+		backgroundColor: '#111',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	mapLoadingText: {
+		color: '#fff',
+		fontSize: 14,
 	},
 	topBar: {
 		position: 'absolute',
