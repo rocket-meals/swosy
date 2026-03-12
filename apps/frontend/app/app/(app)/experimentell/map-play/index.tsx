@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SvgXml } from 'react-native-svg';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { Asset } from 'expo-asset';
@@ -443,8 +444,6 @@ const MapPlay = () => {
 	// Refs for stable MapLibre callbacks (always read the latest state)
 	const vehiclePosRef = useRef(vehiclePos);
 	vehiclePosRef.current = vehiclePos;
-	const gameModeRef = useRef(gameMode);
-	gameModeRef.current = gameMode;
 	const buildingMarkersRef = useRef(buildingMarkers);
 	buildingMarkersRef.current = buildingMarkers;
 
@@ -564,13 +563,11 @@ const MapPlay = () => {
 
 	// Stable callback that reads from refs – used on MapComponentMounted to avoid
 	// stale-closure issues while keeping handleMessage stable.
+	// Note: vehicleMarker is no longer sent to the map; the vehicle is rendered as
+	// a native React Native overlay for better performance.
 	const sendFullData = useCallback(() => {
-		const mode = gameModeRef.current;
 		const pos = vehiclePosRef.current;
-		const heading = vehicleHeadingRef.current;
 		const markers = buildingMarkersRef.current;
-		const isAirplane = mode === 'airplane';
-		const size = isAirplane ? 56 : 44;
 		sendToMap({
 			mapCenterPosition: pos,
 			zoom: DEFAULT_ZOOM,
@@ -578,11 +575,7 @@ const MapPlay = () => {
 			animate: false,
 			useFlyAnimation: false,
 			mapMarkers: markers,
-			vehicleMarker: mode !== 'selector' ? {
-				position: pos,
-				icon: isAirplane ? createAirplaneSvg(heading) : createCarSvg(heading),
-				size: [size, size],
-			} : null,
+			vehicleMarker: null,
 		});
 	}, [sendToMap]);
 
@@ -592,19 +585,17 @@ const MapPlay = () => {
 		sendToMap({ mapMarkers: buildingMarkers });
 	}, [mapReady, buildingMarkers, sendToMap]);
 
-	// Update vehicle position and icon every tick (triggered by state changes)
+	// Update map camera to follow the vehicle every tick.
+	// The vehicle itself is rendered as a native overlay (see vehicleOverlay below),
+	// so we no longer need to inject marker HTML into the WebView each tick.
 	useEffect(() => {
 		if (!mapReady || gameMode === 'selector') return;
-		const isAirplane = gameMode === 'airplane';
-		const size = isAirplane ? 56 : 44;
-		const icon = isAirplane ? createAirplaneSvg(vehicleHeading) : createCarSvg(vehicleHeading);
 		sendToMap({
-			vehicleMarker: { position: vehiclePos, icon, size: [size, size] },
 			mapCenterPosition: vehiclePos,
 			animate: false,
 			useFlyAnimation: false,
 		});
-	}, [mapReady, gameMode, vehiclePos, vehicleHeading, sendToMap]);
+	}, [mapReady, gameMode, vehiclePos, sendToMap]);
 
 	// ── MapLibre message handler ──────────────────────────────────────────────────
 
@@ -717,6 +708,8 @@ const MapPlay = () => {
 	}
 
 	const isAirplane = gameMode === 'airplane';
+	const vehicleSvgSize = isAirplane ? 56 : 44;
+	const vehicleSvgXml = isAirplane ? createAirplaneSvg(vehicleHeading) : createCarSvg(vehicleHeading);
 
 	// ── Render: Game Screen ───────────────────────────────────────────────────────
 
@@ -740,6 +733,14 @@ const MapPlay = () => {
 						<Text style={styles.mapLoadingText}>Loading map…</Text>
 					</View>
 				)}
+			</View>
+
+			{/* Vehicle overlay – rendered natively outside the WebView so the map
+			    doesn't re-render on every heading/position tick.
+			    The map always stays centred on the vehicle position, so placing the
+			    icon at the screen centre is equivalent to pinning it to the map. */}
+			<View style={styles.vehicleOverlay} pointerEvents="none">
+				<SvgXml xml={vehicleSvgXml} width={vehicleSvgSize} height={vehicleSvgSize} />
 			</View>
 
 			{/* Top bar: back button + mode info */}
@@ -854,5 +855,16 @@ const styles = StyleSheet.create({
 		right: 16,
 		zIndex: 30,
 		elevation: 30,
+	},
+	vehicleOverlay: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		alignItems: 'center',
+		justifyContent: 'center',
+		zIndex: 20,
+		elevation: 20,
 	},
 });
