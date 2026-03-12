@@ -1290,7 +1290,7 @@
     "zh": "未找到数据或当前正在计算。"
   },
   "food_data": {
-    "de": "Speisendaten",
+    "de": "Speisedaten",
     "en": "Food Data",
     "ar": "بيانات الطعام",
     "es": "Datos de alimentos",
@@ -1328,6 +1328,16 @@
     "ru": "Сбросить рейтинг",
     "tr": "Değerlendirmeyi sıfırla",
     "zh": "重置评分"
+  },
+  "reset_filter": {
+    "de": "Filter zurücksetzen",
+    "en": "Reset Filter",
+    "ar": "إعادة تعيين الفلتر",
+    "es": "Restablecer filtro",
+    "fr": "Réinitialiser le filtre",
+    "ru": "Сбросить фильтр",
+    "tr": "Filtreyi sıfırla",
+    "zh": "重置筛选"
   },
   "set_rating_to": {
     "de": "Bewertung auf",
@@ -3004,7 +3014,7 @@
     "zh": "请选择您的食堂"
   },
   "map": {
-    "de": "Karte",
+    "de": "Lageplan",
     "en": "Map",
     "ar": "خريطة",
     "es": "Mapa",
@@ -3022,6 +3032,16 @@
     "ru": "Карта Leaflet",
     "tr": "Leaflet Haritası",
     "zh": "Leaflet 地图"
+  },
+  "osm_vector_map": {
+    "de": "OSM Vektor-Karte",
+    "en": "OSM Vector Map",
+    "ar": "خريطة متجهة OSM",
+    "es": "Mapa Vectorial OSM",
+    "fr": "Carte Vectorielle OSM",
+    "ru": "Векторная карта OSM",
+    "tr": "OSM Vektör Haritası",
+    "zh": "OSM 矢量地图"
   },
   "leaflet_test": {
     "de": "Leaflet Test",
@@ -3783,6 +3803,16 @@
     "tr": "Bina Detayları",
     "zh": "建筑细节"
   },
+  "organisations": {
+    "de": "Organisationen",
+    "en": "Organisations",
+    "ar": "المنظمات",
+    "es": "Organizaciones",
+    "fr": "Organisations",
+    "ru": "Организации",
+    "tr": "Organizasyonlar",
+    "zh": "组织"
+  },
   "apartment_details": {
     "de": "Wohnungsdetails",
     "en": "Apartment Details",
@@ -4032,6 +4062,126 @@
     "ru": "Язык системы",
     "tr": "Sistem Dili",
     "zh": "系统语言"
+  },
+  "pirate_language": {
+    "de": "Piraten Sprache",
+    "en": "Pirate Language",
+    "ar": "لغة القراصنة",
+    "es": "Idioma Pirata",
+    "fr": "Langue Pirate",
+    "ru": "Язык пиратов",
+    "tr": "Korsan Dili",
+    "zh": "海盗语言"
+  },
+  "pirate_language_description": {
+    "de": "Arrr! Spricht wie ein Pirrrat!",
+    "en": "Arrr! Speaks like a Pirrrate!",
+    "ar": "أررر! يتكلم مثل قررصان!",
+    "es": "¡Arrr! ¡Habla como un Pirrrata!",
+    "fr": "Arrr! Parle comme un Pirrrate!",
+    "ru": "Аррр! Говоррит как Пирррат!",
+    "tr": "Arrr! Korrrsan gibi konuşurr!",
+    "zh": "Arrr! 像海盗一样说话!"
+  },
+  "backwards_language": {
+    "de": "Rückwärts",
+    "en": "Backwards",
+    "ar": "معكوس",
+    "es": "Al revés",
+    "fr": "À l'envers",
+    "ru": "Задом наперёд",
+    "tr": "Ters",
+    "zh": "反向"
+  },
+  "backwards_language_description": {
+    "de": "Texte werden rückwärts geschrieben",
+    "en": "Texts are written backwards",
+    "ar": "النصوص تُكتب بشكل معكوس",
+    "es": "Los textos se escriben al revés",
+    "fr": "Les textes sont écrits à l'envers",
+    "ru": "Тексты пишутся задом наперёд",
+    "tr": "Metinler ters yazılır",
+    "zh": "文字反向书写"
+  },
+  "leetspeak_language": {
+    "de": "Leetspeak",
+    "en": "Leetspeak",
+    "ar": "لغة اللِّيت",
+    "es": "Leetspeak",
+    "fr": "Leetspeak",
+    "ru": "Литспик",
+    "tr": "Leetspeak",
+    "zh": "黑客语"
+  },
+  "leetspeak_language_description": {
+    "de": "Buchstaben werden durch Zahlen ersetzt",
+    "en": "Letters are replaced by numbers",
+    "ar": "يتم استبدال الحروف بأرقام",
+    "es": "Las letras se reemplazan por números",
+    "fr": "Les lettres sont remplacées par des chiffres",
+    "ru": "Буквы заменяются цифрами",
+    "tr": "Harfler rakamlarla değiştirilir",
+    "zh": "字母被数字替换"
+  },
+  "alternating_language": {
+    "de": "Wechselschreibung",
+    "en": "Alternating Case",
+    "ar": "تبادل الحروف",
+    "es": "Mayúsculas alternadas",
+    "fr": "Casse alternée",
+    "ru": "Чередующийся регистр",
+    "tr": "Dönüşümlü Büyük/Küçük",
+    "zh": "交替大小写"
+  },
+  "alternating_language_description": {
+    "de": "Groß- und Kleinschreibung wechseln (Mocking Style)",
+    "en": "Alternating uppercase and lowercase (Mocking Style)",
+    "ar": "تبادل الحروف الكبيرة والصغيرة",
+    "es": "Mayúsculas y minúsculas alternadas (estilo burlón)",
+    "fr": "Majuscules et minuscules alternées (style moqueur)",
+    "ru": "Чередование прописных и строчных (стиль издёвки)",
+    "tr": "Büyük ve küçük harfler dönüşümlü (alay stili)",
+    "zh": "大小写交替（嘲讽风格）"
+  },
+  "typoglycemia_language": {
+    "de": "Typoglykämie",
+    "en": "Typoglycemia",
+    "ar": "تايبوغليسيميا",
+    "es": "Tipoglicemia",
+    "fr": "Typoglycémie",
+    "ru": "Типогликемия",
+    "tr": "Tipoglisemi",
+    "zh": "字母顺序错乱"
+  },
+  "typoglycemia_language_description": {
+    "de": "Erster und letzter Buchstabe bleiben, innere werden gemischt",
+    "en": "First and last letters stay, inner letters are shuffled",
+    "ar": "الحرف الأول والأخير يبقيان، والأحرف الداخلية تُخلط",
+    "es": "La primera y última letra permanecen, las internas se mezclan",
+    "fr": "La première et la dernière lettre restent, les intérieures sont mélangées",
+    "ru": "Первая и последняя буква остаются, внутренние перемешиваются",
+    "tr": "İlk ve son harf kalır, ortadakiler karıştırılır",
+    "zh": "首尾字母不变，中间字母打乱"
+  },
+  "glitch_language": {
+    "de": "Glitch",
+    "en": "Glitch",
+    "ar": "خلل",
+    "es": "Glitch",
+    "fr": "Glitch",
+    "ru": "Глитч",
+    "tr": "Glitch",
+    "zh": "故障"
+  },
+  "glitch_language_description": {
+    "de": "Matrix-Stil: Buchstaben werden zufällig neu angeordnet",
+    "en": "Matrix style: letters are randomly rearranged",
+    "ar": "أسلوب المصفوفة: يتم إعادة ترتيب الحروف عشوائياً",
+    "es": "Estilo Matrix: las letras se reordenan aleatoriamente",
+    "fr": "Style Matrix: les lettres sont réarrangées aléatoirement",
+    "ru": "Стиль Матрицы: буквы случайно переставляются",
+    "tr": "Matrix stili: harfler rastgele yeniden düzenlenir",
+    "zh": "黑客帝国风格：字母随机重新排列"
   },
   "drawer_config_position": {
     "de": "Menüposition",
@@ -4803,6 +4953,16 @@
     "tr": "Uygulama yönetimi",
     "zh": "应用管理"
   },
+  "group_fun": {
+    "de": "Spaß",
+    "en": "Fun",
+    "ar": "متعة",
+    "es": "Diversión",
+    "fr": "Amusement",
+    "ru": "Развлечения",
+    "tr": "Eğlence",
+    "zh": "趣味"
+  },
   "game_ideas": {
     "de": "Spielideen",
     "en": "Game Ideas",
@@ -5033,6 +5193,16 @@
     "tr": "Currently Not Planned Foods",
     "zh": "Currently Not Planned Foods"
   },
+  "food_offer_contains_disliked_markings": {
+    "de": "Diese Speise enthält Kennzeichnungen, welche ggf. nicht gewünscht sind.",
+    "en": "This dish contains markings that may not be desired.",
+    "ar": "يحتوي هذا الطبق على علامات قد لا تكون مرغوبة.",
+    "es": "Este plato contiene etiquetas que pueden no ser deseadas.",
+    "fr": "Ce plat contient des marquages qui peuvent ne pas être souhaités.",
+    "ru": "Это блюдо содержит маркировки, которые могут быть нежелательны.",
+    "tr": "Bu yemek istenmeyen işaretler içerebilir.",
+    "zh": "该菜肴包含可能不受欢迎的标记。"
+  },
   "offered_on": {
     "de": "Angeboten am",
     "en": "Offered on",
@@ -5042,6 +5212,226 @@
     "ru": "Offered on",
     "tr": "Offered on",
     "zh": "Offered on"
+  },
+  "optional_device_data_description": {
+    "de": "Optionale Gerätedaten – können angepasst werden, helfen aber bei der Lösung der Anfrage.",
+    "en": "Optional device data – can be adjusted, but help resolve the request.",
+    "ar": "بيانات الجهاز الاختيارية – يمكن تعديلها، لكنها تساعد في حل الطلب.",
+    "es": "Datos opcionales del dispositivo – pueden ajustarse, pero ayudan a resolver la solicitud.",
+    "fr": "Données optionnelles de l'appareil – modifiables, mais utiles pour résoudre la demande.",
+    "ru": "Необязательные данные устройства – можно изменить, но они помогают решить запрос.",
+    "tr": "İsteğe bağlı cihaz verileri – ayarlanabilir, ancak talebi çözmeye yardımcı olur.",
+    "zh": "可选设备数据 – 可以调整，但有助于解决请求。"
+  },
+  "account_required_example": {
+    "de": "Account Required Beispiel",
+    "en": "Account Required Example",
+    "ar": "Account Required Example",
+    "es": "Account Required Example",
+    "fr": "Account Required Example",
+    "ru": "Account Required Example",
+    "tr": "Account Required Example",
+    "zh": "Account Required Example"
+  },
+  "eating_habits_performance": {
+    "de": "Essgewohnheiten Performance",
+    "en": "Eating Habits Performance",
+    "ar": "Eating Habits Performance",
+    "es": "Eating Habits Performance",
+    "fr": "Eating Habits Performance",
+    "ru": "Eating Habits Performance",
+    "tr": "Eating Habits Performance",
+    "zh": "Eating Habits Performance"
+  },
+  "eating_habits_performance_full": {
+    "de": "Vollständig (mit Debug)",
+    "en": "Full (with Debug)",
+    "ar": "Full (with Debug)",
+    "es": "Full (with Debug)",
+    "fr": "Full (with Debug)",
+    "ru": "Full (with Debug)",
+    "tr": "Full (with Debug)",
+    "zh": "Full (with Debug)"
+  },
+  "eating_habits_performance_no_lottie": {
+    "de": "Ohne Lottie-Animation",
+    "en": "Without Lottie Animation",
+    "ar": "Without Lottie Animation",
+    "es": "Without Lottie Animation",
+    "fr": "Without Lottie Animation",
+    "ru": "Without Lottie Animation",
+    "tr": "Without Lottie Animation",
+    "zh": "Without Lottie Animation"
+  },
+  "eating_habits_performance_no_defer": {
+    "de": "Ohne verzögertes Rendern",
+    "en": "Without Deferred Render",
+    "ar": "Without Deferred Render",
+    "es": "Without Deferred Render",
+    "fr": "Without Deferred Render",
+    "ru": "Without Deferred Render",
+    "tr": "Without Deferred Render",
+    "zh": "Without Deferred Render"
+  },
+  "eating_habits_performance_plain_text": {
+    "de": "Plain: Nur Text & Übersetzungen",
+    "en": "Plain: Text & Translations Only",
+    "ar": "Plain: Text & Translations Only",
+    "es": "Plain: Text & Translations Only",
+    "fr": "Plain: Text & Translations Only",
+    "ru": "Plain: Text & Translations Only",
+    "tr": "Plain: Text & Translations Only",
+    "zh": "Plain: Text & Translations Only"
+  },
+  "eating_habits_performance_plain_text_image": {
+    "de": "Plain: Text, Übersetzung & Bild",
+    "en": "Plain: Text, Translation & Image",
+    "ar": "Plain: Text, Translation & Image",
+    "es": "Plain: Text, Translation & Image",
+    "fr": "Plain: Text, Translation & Image",
+    "ru": "Plain: Text, Translation & Image",
+    "tr": "Plain: Text, Translation & Image",
+    "zh": "Plain: Text, Translation & Image"
+  },
+  "eating_habits_performance_plain_each_component": {
+    "de": "Plain: Jede Markierung als eigene Komponente",
+    "en": "Plain: Each Marking as Own Component",
+    "ar": "Plain: Each Marking as Own Component",
+    "es": "Plain: Each Marking as Own Component",
+    "fr": "Plain: Each Marking as Own Component",
+    "ru": "Plain: Each Marking as Own Component",
+    "tr": "Plain: Each Marking as Own Component",
+    "zh": "Plain: Each Marking as Own Component"
+  },
+  "eating_habits_performance_plain_component_with_image": {
+    "de": "Plain: Komponente mit Bild & Text",
+    "en": "Plain: Component with Image & Text",
+    "ar": "Plain: Component with Image & Text",
+    "es": "Plain: Component with Image & Text",
+    "fr": "Plain: Component with Image & Text",
+    "ru": "Plain: Component with Image & Text",
+    "tr": "Plain: Component with Image & Text",
+    "zh": "Plain: Component with Image & Text"
+  },
+  "eating_habits_performance_plain_component_full": {
+    "de": "Plain: Vollständige Komponente mit Like-Status",
+    "en": "Plain: Full Component with Like State",
+    "ar": "Plain: Full Component with Like State",
+    "es": "Plain: Full Component with Like State",
+    "fr": "Plain: Full Component with Like State",
+    "ru": "Plain: Full Component with Like State",
+    "tr": "Plain: Full Component with Like State",
+    "zh": "Plain: Full Component with Like State"
+  },
+  "eating_habits_performance_settings_list": {
+    "de": "SettingsList: Bild, Name & Like-Status",
+    "en": "SettingsList: Image, Name & Like Status",
+    "ar": "SettingsList: Image, Name & Like Status",
+    "es": "SettingsList: Image, Name & Like Status",
+    "fr": "SettingsList: Image, Name & Like Status",
+    "ru": "SettingsList: Image, Name & Like Status",
+    "tr": "SettingsList: Image, Name & Like Status",
+    "zh": "SettingsList: Image, Name & Like Status"
+  },
+  "eating_habits_performance_settings_list_fast": {
+    "de": "SettingsListFast: Ohne Tooltips (schnell)",
+    "en": "SettingsListFast: No Tooltips (fast)",
+    "ar": "SettingsListFast: No Tooltips (fast)",
+    "es": "SettingsListFast: No Tooltips (fast)",
+    "fr": "SettingsListFast: No Tooltips (fast)",
+    "ru": "SettingsListFast: No Tooltips (fast)",
+    "tr": "SettingsListFast: No Tooltips (fast)",
+    "zh": "SettingsListFast: No Tooltips (fast)"
+  },
+  "eating_habits_performance_settings_list_flash": {
+    "de": "SettingsListFlash: FlashList (kein ScrollView)",
+    "en": "SettingsListFlash: FlashList (no ScrollView)",
+    "ar": "SettingsListFlash: FlashList (no ScrollView)",
+    "es": "SettingsListFlash: FlashList (no ScrollView)",
+    "fr": "SettingsListFlash: FlashList (no ScrollView)",
+    "ru": "SettingsListFlash: FlashList (no ScrollView)",
+    "tr": "SettingsListFlash: FlashList (no ScrollView)",
+    "zh": "SettingsListFlash: FlashList (no ScrollView)"
+  },
+  "eating_habits_debug_mount_time": {
+    "de": "Screen-Mount-Zeit",
+    "en": "Screen mount time",
+    "ar": "Screen mount time",
+    "es": "Screen mount time",
+    "fr": "Screen mount time",
+    "ru": "Screen mount time",
+    "tr": "Screen mount time",
+    "zh": "Screen mount time"
+  },
+  "eating_habits_debug_animation_time": {
+    "de": "Animation bereit nach",
+    "en": "Animation ready after",
+    "ar": "Animation ready after",
+    "es": "Animation ready after",
+    "fr": "Animation ready after",
+    "ru": "Animation ready after",
+    "tr": "Animation ready after",
+    "zh": "Animation ready after"
+  },
+  "eating_habits_debug_content_time": {
+    "de": "Markierungen sichtbar nach",
+    "en": "Markings visible after",
+    "ar": "Markings visible after",
+    "es": "Markings visible after",
+    "fr": "Markings visible after",
+    "ru": "Markings visible after",
+    "tr": "Markings visible after",
+    "zh": "Markings visible after"
+  },
+  "eating_habits_debug_markings_count": {
+    "de": "Anzahl Markierungen",
+    "en": "Markings count",
+    "ar": "Markings count",
+    "es": "Markings count",
+    "fr": "Markings count",
+    "ru": "Markings count",
+    "tr": "Markings count",
+    "zh": "Markings count"
+  },
+  "map_variants": {
+    "de": "Karten-Varianten",
+    "en": "Map Variants",
+    "ar": "متغيرات الخريطة",
+    "es": "Variantes de Mapa",
+    "fr": "Variantes de Carte",
+    "ru": "Варианты Карты",
+    "tr": "Harita Varyantları",
+    "zh": "地图变体"
+  },
+  "form_cache_download": {
+    "de": "Entwürfe herunterladen",
+    "en": "Download drafts",
+    "ar": "تنزيل المسودات",
+    "es": "Descargar borradores",
+    "fr": "Télécharger les brouillons",
+    "ru": "Скачать черновики",
+    "tr": "Taslakları indir",
+    "zh": "下载草稿"
+  },
+  "form_cache_downloaded": {
+    "de": "Heruntergeladen",
+    "en": "Downloaded",
+    "ar": "تم التنزيل",
+    "es": "Descargado",
+    "fr": "Téléchargé",
+    "ru": "Загружено",
+    "tr": "İndirildi",
+    "zh": "已下载"
+  },
+  "form_cache_downloading": {
+    "de": "Wird heruntergeladen…",
+    "en": "Downloading…",
+    "ar": "جارٍ التنزيل…",
+    "es": "Descargando…",
+    "fr": "Téléchargement…",
+    "ru": "Загрузка…",
+    "tr": "İndiriliyor…",
+    "zh": "下载中…"
   },
   "form_queue": {
     "de": "Warteschlange",
@@ -5053,16 +5443,6 @@
     "tr": "Kuyruk",
     "zh": "队列"
   },
-  "form_queue_empty": {
-    "de": "Keine ausstehenden Formulare in der Warteschlange",
-    "en": "No pending forms in the queue",
-    "ar": "لا توجد نماذج معلقة في قائمة الانتظار",
-    "es": "No hay formularios pendientes en la cola",
-    "fr": "Aucun formulaire en attente dans la file",
-    "ru": "Нет ожидающих форм в очереди",
-    "tr": "Kuyrukta bekleyen form yok",
-    "zh": "队列中没有待处理的表单"
-  },
   "form_queue_add": {
     "de": "Zur Warteschlange hinzufügen",
     "en": "Add to Queue",
@@ -5072,6 +5452,26 @@
     "ru": "Добавить в очередь",
     "tr": "Kuyruğa ekle",
     "zh": "添加到队列"
+  },
+  "form_queue_added": {
+    "de": "Formular wurde zur Warteschlange hinzugefügt",
+    "en": "Form added to queue",
+    "ar": "تمت إضافة النموذج إلى قائمة الانتظار",
+    "es": "Formulario añadido a la cola",
+    "fr": "Formulaire ajouté à la file d'attente",
+    "ru": "Форма добавлена в очередь",
+    "tr": "Form kuyruğa eklendi",
+    "zh": "表单已添加到队列"
+  },
+  "form_queue_empty": {
+    "de": "Keine ausstehenden Formulare in der Warteschlange",
+    "en": "No pending forms in the queue",
+    "ar": "لا توجد نماذج معلقة في قائمة الانتظار",
+    "es": "No hay formularios pendientes en la cola",
+    "fr": "Aucun formulaire en attente dans la file",
+    "ru": "Нет ожидающих форм в очереди",
+    "tr": "Kuyrukta bekleyen form yok",
+    "zh": "队列中没有待处理的表单"
   },
   "form_queue_sync": {
     "de": "Synchronisieren",
@@ -5093,26 +5493,6 @@
     "tr": "Hepsini senkronize et",
     "zh": "全部同步"
   },
-  "form_queue_added": {
-    "de": "Formular wurde zur Warteschlange hinzugefügt",
-    "en": "Form added to queue",
-    "ar": "تمت إضافة النموذج إلى قائمة الانتظار",
-    "es": "Formulario añadido a la cola",
-    "fr": "Formulaire ajouté à la file d'attente",
-    "ru": "Форма добавлена в очередь",
-    "tr": "Form kuyruğa eklendi",
-    "zh": "表单已添加到队列"
-  },
-  "form_queue_synced": {
-    "de": "Formular erfolgreich synchronisiert",
-    "en": "Form synced successfully",
-    "ar": "تمت مزامنة النموذج بنجاح",
-    "es": "Formulario sincronizado exitosamente",
-    "fr": "Formulaire synchronisé avec succès",
-    "ru": "Форма успешно синхронизирована",
-    "tr": "Form başarıyla senkronize edildi",
-    "zh": "表单已成功同步"
-  },
   "form_queue_sync_failed": {
     "de": "Synchronisierung fehlgeschlagen. Formular bleibt in der Warteschlange.",
     "en": "Sync failed. Form remains in queue.",
@@ -5123,34 +5503,14 @@
     "tr": "Senkronizasyon başarısız. Form kuyrukta kalıyor.",
     "zh": "同步失败。表单仍在队列中。"
   },
-  "form_cache_download": {
-    "de": "Entwürfe herunterladen",
-    "en": "Download drafts",
-    "ar": "تنزيل المسودات",
-    "es": "Descargar borradores",
-    "fr": "Télécharger les brouillons",
-    "ru": "Скачать черновики",
-    "tr": "Taslakları indir",
-    "zh": "下载草稿"
-  },
-  "form_cache_downloading": {
-    "de": "Wird heruntergeladen…",
-    "en": "Downloading…",
-    "ar": "جارٍ التنزيل…",
-    "es": "Descargando…",
-    "fr": "Téléchargement…",
-    "ru": "Загрузка…",
-    "tr": "İndiriliyor…",
-    "zh": "下载中…"
-  },
-  "form_cache_downloaded": {
-    "de": "Heruntergeladen",
-    "en": "Downloaded",
-    "ar": "تم التنزيل",
-    "es": "Descargado",
-    "fr": "Téléchargé",
-    "ru": "Загружено",
-    "tr": "İndirildi",
-    "zh": "已下载"
+  "form_queue_synced": {
+    "de": "Formular erfolgreich synchronisiert",
+    "en": "Form synced successfully",
+    "ar": "تمت مزامنة النموذج بنجاح",
+    "es": "Formulario sincronizado exitosamente",
+    "fr": "Formulaire synchronisé avec succès",
+    "ru": "Форма успешно синхронизирована",
+    "tr": "Form başarıyla senkronize edildi",
+    "zh": "表单已成功同步"
   }
 }

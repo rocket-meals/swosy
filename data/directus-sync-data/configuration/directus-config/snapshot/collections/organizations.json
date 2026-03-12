@@ -1,35 +1,28 @@
 {
-  "collection": "businesshours",
+  "collection": "organizations",
   "meta": {
     "accountability": "all",
     "archive_app_filter": true,
     "archive_field": "status",
     "archive_value": "archived",
     "collapse": "open",
-    "collection": "businesshours",
+    "collection": "organizations",
     "color": null,
-    "display_template": null,
+    "display_template": "{{alias}} ({{id}})",
     "group": "buildings",
-    "hidden": true,
-    "icon": null,
+    "hidden": false,
+    "icon": "account_balance",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 2,
+    "sort": 1,
     "sort_field": "sort",
-    "translations": [
-      {
-        "language": "de-DE",
-        "plural": "Öffnungszeiten",
-        "singular": "Öffnungszeit",
-        "translation": "Öffnungszeiten"
-      }
-    ],
+    "translations": null,
     "unarchive_value": "draft",
     "versioning": false
   },
   "schema": {
-    "name": "businesshours"
+    "name": "organizations"
   }
 }
