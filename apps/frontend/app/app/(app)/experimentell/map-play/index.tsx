@@ -19,8 +19,6 @@ import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type GameMode = 'selector' | 'airplane' | 'car';
-
 type Position = { lat: number; lng: number };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -39,10 +37,6 @@ const AIRPLANE_SPEED_STEP = 0.00002;
 const AIRPLANE_MAX_SPEED = 0.00035;
 const AIRPLANE_MIN_SPEED = 0.00001;
 const AIRPLANE_TURN_DEG = 5; // degrees per tick while turn button is held
-
-// Car
-const CAR_MOVE_STEP = 0.00006; // degrees per button tap
-const CAR_TURN_DEG = 10; // degrees per button tap
 
 // UI / visual constants
 const MAX_BUILDING_LABEL_LENGTH = 4;
@@ -72,31 +66,6 @@ function createAirplaneSvg(heading: number): string {
       <path d="M0,-20 C2,-13 2,-5 2,0 L2,13 L0,15 L-2,13 L-2,0 C-2,-5 -2,-13 0,-20Z" fill="#1a73e8" stroke="white" stroke-width="1"/>
       <!-- Cockpit window -->
       <ellipse cx="0" cy="-14" rx="2.5" ry="4" fill="#bbdefb" opacity="0.9"/>
-    </g>
-  </svg>`;
-}
-
-/** Car top-down marker with heading rotation. */
-function createCarSvg(heading: number): string {
-	const size = 44;
-	const cx = size / 2;
-	const cy = size / 2;
-	return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
-    <g transform="translate(${cx},${cy}) rotate(${heading})">
-      <!-- Car body -->
-      <rect x="-8" y="-14" width="16" height="28" rx="4" fill="#e53935" stroke="white" stroke-width="1.5"/>
-      <!-- Windshield -->
-      <rect x="-6" y="-9" width="12" height="6" rx="2" fill="rgba(180,215,255,0.85)"/>
-      <!-- Rear window -->
-      <rect x="-6" y="5" width="12" height="5" rx="2" fill="rgba(180,215,255,0.7)"/>
-      <!-- Front-left wheel -->
-      <rect x="-11" y="-11" width="4" height="6" rx="1.5" fill="#333"/>
-      <!-- Front-right wheel -->
-      <rect x="7" y="-11" width="4" height="6" rx="1.5" fill="#333"/>
-      <!-- Rear-left wheel -->
-      <rect x="-11" y="5" width="4" height="6" rx="1.5" fill="#333"/>
-      <!-- Rear-right wheel -->
-      <rect x="7" y="5" width="4" height="6" rx="1.5" fill="#333"/>
     </g>
   </svg>`;
 }
@@ -135,100 +104,6 @@ function moveByHeading(pos: Position, headingDeg: number, distanceDeg: number): 
 function normalizeHeading(h: number): number {
 	return ((h % 360) + 360) % 360;
 }
-
-// ─── Mode Selector ────────────────────────────────────────────────────────────
-
-type ModeSelectorProps = {
-	onSelect: (mode: 'airplane' | 'car') => void;
-	theme: ReturnType<typeof useTheme>['theme'];
-};
-
-const ModeSelector: React.FC<ModeSelectorProps> = ({ onSelect, theme }) => (
-	<View style={[selectorStyles.container, { backgroundColor: theme.screen.background }]}>
-		<Text style={[selectorStyles.title, { color: theme.screen.text }]}>
-			🗺️ Map Play
-		</Text>
-		<Text style={[selectorStyles.subtitle, { color: theme.screen.text + 'aa' }]}>
-			Experimenteller Spielmodus – Wähle ein Fahrzeug
-		</Text>
-		<View style={selectorStyles.modeRow}>
-			<TouchableOpacity
-				style={[selectorStyles.modeCard, { backgroundColor: '#1a73e8' }]}
-				onPress={() => onSelect('airplane')}
-				activeOpacity={0.8}
-			>
-				<Text style={selectorStyles.modeEmoji}>✈️</Text>
-				<Text style={selectorStyles.modeLabel}>Flugzeug</Text>
-				<Text style={selectorStyles.modeDesc}>
-					Automatische Geschwindigkeit{'\n'}Throttle-Steuerung
-				</Text>
-			</TouchableOpacity>
-			<TouchableOpacity
-				style={[selectorStyles.modeCard, { backgroundColor: '#e53935' }]}
-				onPress={() => onSelect('car')}
-				activeOpacity={0.8}
-			>
-				<Text style={selectorStyles.modeEmoji}>🚗</Text>
-				<Text style={selectorStyles.modeLabel}>Auto</Text>
-				<Text style={selectorStyles.modeDesc}>
-					Manuelle Steuerung{'\n'}Gas & Lenkung
-				</Text>
-			</TouchableOpacity>
-		</View>
-	</View>
-);
-
-const selectorStyles = StyleSheet.create({
-	container: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		padding: 24,
-	},
-	title: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		marginBottom: 8,
-		textAlign: 'center',
-	},
-	subtitle: {
-		fontSize: 14,
-		marginBottom: 36,
-		textAlign: 'center',
-	},
-	modeRow: {
-		flexDirection: 'row',
-		gap: 16,
-		width: '100%',
-	},
-	modeCard: {
-		flex: 1,
-		borderRadius: 16,
-		padding: 20,
-		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.25,
-		shadowRadius: 8,
-		elevation: 6,
-	},
-	modeEmoji: {
-		fontSize: 44,
-		marginBottom: 10,
-	},
-	modeLabel: {
-		fontSize: 18,
-		fontWeight: 'bold',
-		color: 'white',
-		marginBottom: 6,
-	},
-	modeDesc: {
-		fontSize: 11,
-		color: 'rgba(255,255,255,0.85)',
-		textAlign: 'center',
-		lineHeight: 16,
-	},
-});
 
 // ─── Control Button ───────────────────────────────────────────────────────────
 
@@ -343,43 +218,6 @@ const AirplaneControls: React.FC<AirplaneControlsProps> = ({
 	</View>
 );
 
-// ─── Car Controls ─────────────────────────────────────────────────────────────
-
-type CarControlsProps = {
-	onForward: () => void;
-	onBackward: () => void;
-	onTurnLeft: () => void;
-	onTurnRight: () => void;
-};
-
-const CarControls: React.FC<CarControlsProps> = ({
-	onForward,
-	onBackward,
-	onTurnLeft,
-	onTurnRight,
-}) => (
-	<View style={controlStyles.carLayout}>
-		{/* Up */}
-		<View style={controlStyles.carRow}>
-			<View style={controlStyles.carSpacer} />
-			<ControlButton onPress={onForward} label="▲" color="rgba(229,57,53,0.85)" size="lg" />
-			<View style={controlStyles.carSpacer} />
-		</View>
-		{/* Middle row: left · center · right */}
-		<View style={controlStyles.carRow}>
-			<ControlButton onPress={onTurnLeft} label="◀" color="rgba(229,57,53,0.85)" size="lg" />
-			<View style={controlStyles.carCenter} />
-			<ControlButton onPress={onTurnRight} label="▶" color="rgba(229,57,53,0.85)" size="lg" />
-		</View>
-		{/* Down */}
-		<View style={controlStyles.carRow}>
-			<View style={controlStyles.carSpacer} />
-			<ControlButton onPress={onBackward} label="▼" color="rgba(100,100,100,0.85)" size="lg" />
-			<View style={controlStyles.carSpacer} />
-		</View>
-	</View>
-);
-
 const controlStyles = StyleSheet.create({
 	airplaneLayout: {
 		flexDirection: 'row',
@@ -393,22 +231,6 @@ const controlStyles = StyleSheet.create({
 	throttleColumn: {
 		flexDirection: 'column',
 		gap: 6,
-	},
-	carLayout: {
-		flexDirection: 'column',
-		alignItems: 'center',
-	},
-	carRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-	},
-	carSpacer: {
-		width: 64,
-	},
-	carCenter: {
-		width: 58,
-		height: 58,
-		margin: 3,
 	},
 });
 
@@ -426,10 +248,11 @@ const MapPlay = () => {
 	const selectedCanteen = useSelectedCanteen();
 	const { theme } = useTheme();
 
-	// ── Game state ──────────────────────────────────────────────────────────────
+	// ── Vehicle state ────────────────────────────────────────────────────────────
+	// vehicleHeading and airplaneSpeed are React state (needed for UI display).
+	// vehiclePosRef tracks position without triggering re-renders – the map camera
+	// is updated directly from the game loop via sendToMapRef.
 
-	const [gameMode, setGameMode] = useState<GameMode>('selector');
-	const [vehiclePos, setVehiclePos] = useState<Position>(POSITION_BUNDESTAG);
 	const [vehicleHeading, setVehicleHeading] = useState(0); // 0 = North
 	const [airplaneSpeed, setAirplaneSpeed] = useState(AIRPLANE_DEFAULT_SPEED);
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
@@ -441,11 +264,11 @@ const MapPlay = () => {
 	const airplaneSpeedRef = useRef(airplaneSpeed);
 	airplaneSpeedRef.current = airplaneSpeed;
 
-	// Refs for stable MapLibre callbacks (always read the latest state)
-	const vehiclePosRef = useRef(vehiclePos);
-	vehiclePosRef.current = vehiclePos;
-	const buildingMarkersRef = useRef(buildingMarkers);
-	buildingMarkersRef.current = buildingMarkers;
+	const mapZoomRef = useRef(mapZoom);
+	mapZoomRef.current = mapZoom;
+
+	// vehiclePos ref – position changes bypass React state to prevent re-renders
+	const vehiclePosRef = useRef<Position>(POSITION_BUNDESTAG);
 
 	// Refs for held-button state (continuous turning)
 	const turnLeftRef = useRef(false);
@@ -456,6 +279,8 @@ const MapPlay = () => {
 	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
 	const [mapReady, setMapReady] = useState(false);
+	const mapReadyRef = useRef(false);
+	mapReadyRef.current = mapReady;
 
 	// ── Center position: selected canteen building or Bundestag ─────────────────
 
@@ -472,17 +297,11 @@ const MapPlay = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// ── Start game mode ──────────────────────────────────────────────────────────
-
-	const handleSelectMode = useCallback(
-		(mode: 'airplane' | 'car') => {
-			setVehiclePos(centerPosition);
-			setVehicleHeading(0);
-			setAirplaneSpeed(AIRPLANE_DEFAULT_SPEED);
-			setGameMode(mode);
-		},
-		[centerPosition],
-	);
+	// Keep vehiclePosRef updated to the latest centerPosition so the map starts
+	// at the right location when it first loads.
+	useEffect(() => {
+		vehiclePosRef.current = centerPosition;
+	}, [centerPosition]);
 
 	// ── Building markers ─────────────────────────────────────────────────────────
 
@@ -536,6 +355,9 @@ const MapPlay = () => {
 			});
 	}, [buildings, buildingIdToOrgsDict, primaryColor]);
 
+	const buildingMarkersRef = useRef(buildingMarkers);
+	buildingMarkersRef.current = buildingMarkers;
+
 	// ── Load MapLibre HTML ────────────────────────────────────────────────────────
 
 	useEffect(() => {
@@ -561,16 +383,19 @@ const MapPlay = () => {
 		);
 	}, []);
 
+	// Stable ref to sendToMap – lets the game loop call it without stale closures
+	// and without adding sendToMap to the interval's dependency array.
+	const sendToMapRef = useRef(sendToMap);
+	sendToMapRef.current = sendToMap;
+
 	// Stable callback that reads from refs – used on MapComponentMounted to avoid
 	// stale-closure issues while keeping handleMessage stable.
-	// Note: vehicleMarker is no longer sent to the map; the vehicle is rendered as
-	// a native React Native overlay for better performance.
 	const sendFullData = useCallback(() => {
 		const pos = vehiclePosRef.current;
 		const markers = buildingMarkersRef.current;
 		sendToMap({
 			mapCenterPosition: pos,
-			zoom: DEFAULT_ZOOM,
+			zoom: mapZoomRef.current,
 			pitch: MAP_PITCH,
 			animate: false,
 			useFlyAnimation: false,
@@ -584,18 +409,6 @@ const MapPlay = () => {
 		if (!mapReady) return;
 		sendToMap({ mapMarkers: buildingMarkers });
 	}, [mapReady, buildingMarkers, sendToMap]);
-
-	// Update map camera to follow the vehicle every tick.
-	// The vehicle itself is rendered as a native overlay (see vehicleOverlay below),
-	// so we no longer need to inject marker HTML into the WebView each tick.
-	useEffect(() => {
-		if (!mapReady || gameMode === 'selector') return;
-		sendToMap({
-			mapCenterPosition: vehiclePos,
-			animate: false,
-			useFlyAnimation: false,
-		});
-	}, [mapReady, gameMode, vehiclePos, sendToMap]);
 
 	// ── MapLibre message handler ──────────────────────────────────────────────────
 
@@ -623,23 +436,33 @@ const MapPlay = () => {
 	}, []);
 
 	// ── Airplane game loop ────────────────────────────────────────────────────────
+	// vehiclePosRef is updated each tick without React state to avoid re-renders.
+	// The camera update is sent directly to the map via sendToMapRef every tick,
+	// using easeTo with GAME_TICK_MS duration for smooth continuous animation.
 
 	useEffect(() => {
-		if (gameMode !== 'airplane') return;
 		const id = setInterval(() => {
+			if (!mapReadyRef.current) return;
 			// Continuous turning when turn buttons are held
 			if (turnLeftRef.current) {
 				setVehicleHeading((h) => normalizeHeading(h - AIRPLANE_TURN_DEG));
 			} else if (turnRightRef.current) {
 				setVehicleHeading((h) => normalizeHeading(h + AIRPLANE_TURN_DEG));
 			}
-			// Auto forward movement using the latest heading and speed from refs
+			// Move forward using the latest heading and speed from refs
 			const heading = vehicleHeadingRef.current;
 			const speed = airplaneSpeedRef.current;
-			setVehiclePos((pos) => moveByHeading(pos, heading, speed));
+			const newPos = moveByHeading(vehiclePosRef.current, heading, speed);
+			vehiclePosRef.current = newPos;
+			// Send camera update directly – bypasses React state to eliminate stutter
+			sendToMapRef.current({
+				mapCenterPosition: newPos,
+				easeAnimation: true,
+				easeDuration: GAME_TICK_MS,
+			});
 		}, GAME_TICK_MS);
 		return () => clearInterval(id);
-	}, [gameMode]); // Only depends on gameMode; heading/speed read via refs
+	}, []); // No dependencies – all values read via refs
 
 	// ── Airplane controls ─────────────────────────────────────────────────────────
 
@@ -663,30 +486,27 @@ const MapPlay = () => {
 		setAirplaneSpeed((s) => Math.max(s - AIRPLANE_SPEED_STEP, AIRPLANE_MIN_SPEED));
 	}, []);
 
-	// ── Car controls ──────────────────────────────────────────────────────────────
+	// ── Zoom controls ─────────────────────────────────────────────────────────────
 
-	const handleCarForward = useCallback(() => {
-		setVehiclePos((pos) => moveByHeading(pos, vehicleHeadingRef.current, CAR_MOVE_STEP));
+	const handleZoomIn = useCallback(() => {
+		const newZoom = Math.min(mapZoomRef.current + 0.5, 22);
+		setMapZoom(newZoom);
+		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
 	}, []);
 
-	const handleCarBackward = useCallback(() => {
-		setVehiclePos((pos) => moveByHeading(pos, vehicleHeadingRef.current + 180, CAR_MOVE_STEP));
+	const handleZoomOut = useCallback(() => {
+		const newZoom = Math.max(mapZoomRef.current - 0.5, 1);
+		setMapZoom(newZoom);
+		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
 	}, []);
 
-	const handleCarTurnLeft = useCallback(() => {
-		setVehicleHeading((h) => normalizeHeading(h - CAR_TURN_DEG));
-	}, []);
-
-	const handleCarTurnRight = useCallback(() => {
-		setVehicleHeading((h) => normalizeHeading(h + CAR_TURN_DEG));
-	}, []);
-
-	// ── Back to mode selector ─────────────────────────────────────────────────────
+	// ── Reset to start position ───────────────────────────────────────────────────
 
 	const handleReset = useCallback(() => {
-		setGameMode('selector');
-		setMapReady(false);
-	}, []);
+		vehiclePosRef.current = centerPosition;
+		setVehicleHeading(0);
+		setAirplaneSpeed(AIRPLANE_DEFAULT_SPEED);
+	}, [centerPosition]);
 
 	// ── Speed label for airplane ──────────────────────────────────────────────────
 
@@ -697,21 +517,7 @@ const MapPlay = () => {
 		return `Speed ${display}/${SPEED_DISPLAY_MAX}`;
 	}, [airplaneSpeed]);
 
-	// ── Render: Mode Selector ─────────────────────────────────────────────────────
-
-	if (gameMode === 'selector') {
-		return (
-			<SafeAreaView style={{ flex: 1 }}>
-				<ModeSelector onSelect={handleSelectMode} theme={theme} />
-			</SafeAreaView>
-		);
-	}
-
-	const isAirplane = gameMode === 'airplane';
-	const vehicleSvgSize = isAirplane ? 56 : 44;
-	const vehicleSvgXml = isAirplane ? createAirplaneSvg(vehicleHeading) : createCarSvg(vehicleHeading);
-
-	// ── Render: Game Screen ───────────────────────────────────────────────────────
+	// ── Render ────────────────────────────────────────────────────────────────────
 
 	return (
 		<SafeAreaView style={styles.root}>
@@ -740,48 +546,53 @@ const MapPlay = () => {
 			    The map always stays centred on the vehicle position, so placing the
 			    icon at the screen centre is equivalent to pinning it to the map. */}
 			<View style={styles.vehicleOverlay} pointerEvents="none">
-				<SvgXml xml={vehicleSvgXml} width={vehicleSvgSize} height={vehicleSvgSize} />
+				<SvgXml xml={createAirplaneSvg(vehicleHeading)} width={56} height={56} />
 			</View>
 
-			{/* Top bar: back button + mode info */}
+			{/* Top bar: reset button + mode info */}
 			<View style={styles.topBar} pointerEvents="box-none">
 				<TouchableOpacity
 					style={[styles.topBarButton, { backgroundColor: theme.screen.background }]}
 					onPress={handleReset}
 				>
-					<MaterialIcons name="arrow-back" size={22} color={theme.screen.icon} />
+					<MaterialIcons name="my-location" size={22} color={theme.screen.icon} />
 				</TouchableOpacity>
 				<View style={[styles.topBarInfo, { backgroundColor: theme.screen.background + 'dd' }]}>
 					<Text style={[styles.topBarTitle, { color: theme.screen.text }]}>
-						{isAirplane ? '✈️ Flugzeug' : '🚗 Auto'}
+						✈️ Flugzeug
 					</Text>
 					<Text style={[styles.topBarSub, { color: theme.screen.text + 'aa' }]}>
-						{isAirplane
-							? `${speedLabel} · Richtung ${Math.round(vehicleHeading)}°`
-							: `Richtung ${Math.round(vehicleHeading)}°`}
+						{`${speedLabel} · Richtung ${Math.round(vehicleHeading)}°`}
 					</Text>
 				</View>
 			</View>
 
-			{/* Controls overlay */}
+			{/* Zoom buttons (left side) */}
+			<View style={styles.zoomButtons} pointerEvents="box-none">
+				<ControlButton
+					onPress={handleZoomIn}
+					icon={<MaterialIcons name="add" size={22} color="white" />}
+					color="rgba(0,0,0,0.65)"
+					size="md"
+				/>
+				<ControlButton
+					onPress={handleZoomOut}
+					icon={<MaterialIcons name="remove" size={22} color="white" />}
+					color="rgba(0,0,0,0.65)"
+					size="md"
+				/>
+			</View>
+
+			{/* Airplane controls overlay (bottom-right) */}
 			<View style={styles.controlsOverlay} pointerEvents="box-none">
-				{isAirplane ? (
-					<AirplaneControls
-						onTurnLeftStart={handleAirplaneTurnLeftStart}
-						onTurnLeftEnd={handleAirplaneTurnLeftEnd}
-						onTurnRightStart={handleAirplaneTurnRightStart}
-						onTurnRightEnd={handleAirplaneTurnRightEnd}
-						onSpeedUp={handleAirplaneSpeedUp}
-						onSpeedDown={handleAirplaneSpeedDown}
-					/>
-				) : (
-					<CarControls
-						onForward={handleCarForward}
-						onBackward={handleCarBackward}
-						onTurnLeft={handleCarTurnLeft}
-						onTurnRight={handleCarTurnRight}
-					/>
-				)}
+				<AirplaneControls
+					onTurnLeftStart={handleAirplaneTurnLeftStart}
+					onTurnLeftEnd={handleAirplaneTurnLeftEnd}
+					onTurnRightStart={handleAirplaneTurnRightStart}
+					onTurnRightEnd={handleAirplaneTurnRightEnd}
+					onSpeedUp={handleAirplaneSpeedUp}
+					onSpeedDown={handleAirplaneSpeedDown}
+				/>
 			</View>
 		</SafeAreaView>
 	);
@@ -855,6 +666,14 @@ const styles = StyleSheet.create({
 		right: 16,
 		zIndex: 30,
 		elevation: 30,
+	},
+	zoomButtons: {
+		position: 'absolute',
+		bottom: 32,
+		left: 16,
+		zIndex: 30,
+		elevation: 30,
+		gap: 8,
 	},
 	vehicleOverlay: {
 		position: 'absolute',
