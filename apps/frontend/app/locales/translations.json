@@ -3053,6 +3053,16 @@
         "tr": "OSM Vektör Haritası",
         "zh": "OSM 矢量地图"
     },
+    "loading_vector_map": {
+        "de": "Vektorkarte wird geladen…",
+        "en": "Loading vector map…",
+        "ar": "جار تحميل الخريطة المتجهة…",
+        "es": "Cargando mapa vectorial…",
+        "fr": "Chargement de la carte vectorielle…",
+        "ru": "Загрузка векторной карты…",
+        "tr": "Vektör haritası yükleniyor…",
+        "zh": "正在加载矢量地图…"
+    },
     "leaflet_test": {
         "de": "Leaflet Test",
         "en": "Leaflet Test",

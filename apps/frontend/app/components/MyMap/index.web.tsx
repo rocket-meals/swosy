@@ -4,7 +4,7 @@ import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
 const DEFAULT_ZOOM = 16;
 
-const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, onMessage }, ref) => {
+const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, loadingText, onMessage }, ref) => {
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const htmlBase = require('@/assets/maplibre/index.html') as string;
 
@@ -12,7 +12,13 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, onMessage },
 		// Computed only once: the iframe src is set on mount with the initial map position.
 		// Subsequent position/marker updates are sent via sendToMap() messages so the iframe
 		// doesn't reload. Changes to initialCenter after mount are intentionally ignored here.
-		() => `${htmlBase}?lat=${initialCenter.lat}&lng=${initialCenter.lng}&zoom=${DEFAULT_ZOOM}`,
+		() => {
+			let src = `${htmlBase}?lat=${initialCenter.lat}&lng=${initialCenter.lng}&zoom=${DEFAULT_ZOOM}`;
+			if (loadingText) {
+				src += `&loadingText=${encodeURIComponent(loadingText)}`;
+			}
+			return src;
+		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
 	);

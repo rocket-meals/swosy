@@ -1410,6 +1410,7 @@ const OsmVectorMapScreen: React.FC = () => {
 						ref={myMapRef}
 						initialCenter={centerPosition}
 						initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
+						loadingText={translate(TranslationKeys.loading_vector_map)}
 						onMessage={handleMessage}
 					/>
 
