@@ -14,7 +14,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string }) => {
+const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offlineMode, folderHint }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; offlineMode?: boolean; folderHint?: string | null }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const formAnswersHelper = new FormAnswersHelper();
@@ -93,6 +93,11 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 	const deleteImage = async () => {
 		try {
 			if (!value?.name) {
+				// In offline mode, skip API calls — just clear the local value
+				if (offlineMode) {
+					onChange(id, null, custom_type);
+					return;
+				}
 				const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
 					fields: ['id', 'value_image'],
 				})) as DatabaseTypes.FormAnswers;
@@ -161,6 +166,11 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 					</TouchableOpacity>
 					<Image key={authToken || 'no-auth'} source={getImageSource(value)} style={styles.filePreview} />
 				</View>
+			)}
+		{folderHint != null && (
+				<Text style={{ ...styles.folderHint, color: theme.screen.text }}>
+					{`${translate(TranslationKeys.upload_folder_id)}: ${folderHint}`}
+				</Text>
 			)}
 		</View>
 	);

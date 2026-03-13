@@ -117,26 +117,38 @@ const Index = () => {
                                 console.error('Queue sync: image upload failed for field', fieldId, uploadError);
                                 updatedValueFields = {};
                             }
+                        } else if (value === null || value === undefined) {
+                            // Image/signature was cleared — explicitly set to null
+                            updatedValueFields = { value_image: null };
                         }
-                    } else if (custom_type === 'value_files' && Array.isArray(value)) {
-                        try {
-                            const uploadedIds = await Promise.all(
-                                value.filter((file: any) => !file?.edit).map(async (file: any) => {
-                                    const response = await fetch(file.image);
-                                    const arrayBuffer = await response.arrayBuffer();
-                                    const buffer = Buffer.from(arrayBuffer);
-                                    const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
-                                    return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
-                                })
-                            );
-                            updatedValueFields = {
-                                value_files: {
-                                    create: uploadedIds.filter(Boolean).map((fileId: any) => ({ directus_files_id: fileId })),
-                                },
-                            };
-                        } catch (uploadError) {
-                            console.error('Queue sync: file upload failed for field', fieldId, uploadError);
-                            updatedValueFields = {};
+                    } else if (custom_type === 'value_files') {
+                        if (Array.isArray(value) && value.length > 0) {
+                            try {
+                                const newFiles = value.filter((file: any) => !file?.edit);
+                                if (newFiles.length > 0) {
+                                    const uploadedIds = await Promise.all(
+                                        newFiles.map(async (file: any) => {
+                                            const response = await fetch(file.image);
+                                            const arrayBuffer = await response.arrayBuffer();
+                                            const buffer = Buffer.from(arrayBuffer);
+                                            const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
+                                            return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
+                                        })
+                                    );
+                                    updatedValueFields = {
+                                        value_files: {
+                                            create: uploadedIds.filter(Boolean).map((fileId: any) => ({ directus_files_id: fileId })),
+                                        },
+                                    };
+                                }
+                                // else: only existing files, no new uploads needed
+                            } catch (uploadError) {
+                                console.error('Queue sync: file upload failed for field', fieldId, uploadError);
+                                updatedValueFields = {};
+                            }
+                        } else {
+                            // All files cleared — explicitly set to empty
+                            updatedValueFields = { value_files: [] };
                         }
                     }
 

@@ -36,7 +36,7 @@ import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { filterOptions } from './constants';
 import EditFormSubmissionSheet from '@/components/EditFormSubmissionSheet/EditFormSubmissionSheet';
 import { SET_FORM_SUBMISSION, ADD_FORM_QUEUE_ENTRY, REMOVE_FORM_QUEUE_ENTRY } from '@/redux/Types/types';
-import { excerpt, getFileFromDirectus, getFormValueImageUrl, uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
+import { deleteDirectusFile, excerpt, getFileFromDirectus, getFormValueImageUrl, uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/SubmissionWarningSheet';
 import { format, isValid, parse, parseISO } from 'date-fns';
@@ -142,6 +142,8 @@ const Index = () => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+	const [imageFolderIdState, setImageFolderIdState] = useState<string | null>(null);
+	const [filesFolderIdState, setFilesFolderIdState] = useState<string | null>(null);
 
 	// Set Page Title
 	useSetPageTitle(formSubmission?.alias || TranslationKeys.form_submission);
@@ -591,15 +593,17 @@ const Index = () => {
 		setSubmissionLoading(true);
 		let hasError = false;
 
-		// Fetch folder IDs for value_image and value_files fields
-		let imageFolderId: string | null = null;
-		let filesFolderId: string | null = null;
-		try {
-			const formAnswerFields: any = await fetchSpecificField('form_answers');
-			imageFolderId = formAnswerFields?.value_image?.meta?.options?.folder ?? null;
-			filesFolderId = formAnswerFields?.value_files?.meta?.options?.folder ?? null;
-		} catch {
-			// silently ignore, upload without folder
+		// Use folder IDs already fetched at component mount; re-fetch if still null
+		let imageFolderId: string | null = imageFolderIdState;
+		let filesFolderId: string | null = filesFolderIdState;
+		if (imageFolderId === null && filesFolderId === null) {
+			try {
+				const formAnswerFields: any = await fetchSpecificField('form_answers');
+				imageFolderId = formAnswerFields?.value_image?.meta?.options?.folder ?? null;
+				filesFolderId = formAnswerFields?.value_files?.meta?.options?.folder ?? null;
+			} catch {
+				// silently ignore, upload without folder
+			}
 		}
 
 		const filteredFormAnswers = formAnswers.filter(answer => formData.hasOwnProperty(String(answer?.id)));
@@ -627,7 +631,7 @@ const Index = () => {
 					formateDate = formatDateForSubmission(fieldType, value);
 				}
 
-				let updatedValueFields = {};
+				let updatedValueFields: Record<string, any> = {};
 				if (custom_type === 'value_string') {
 					updatedValueFields = { value_string: value };
 				} else if (custom_type === 'value_number') {
@@ -644,18 +648,52 @@ const Index = () => {
 					updatedValueFields = { value_date: formateDate };
 				} else if (custom_type === 'value_image') {
 					if (value?.name) {
+						// New file: for signature fields delete the old Directus file first (online mode only)
+						if (custom_id === 'signature' && !offlineMode) {
+							const originalFileId = (answer as any)?.value_image;
+							if (originalFileId) {
+								try {
+									await deleteDirectusFile(String(originalFileId));
+								} catch (e) {
+									console.warn('Could not delete old signature file:', e);
+								}
+							}
+						}
 						const directusFileId = await getDirectusUploadId(value, imageFolderId);
 						updatedValueFields = { value_image: directusFileId };
+					} else if (value === null || value === undefined) {
+						// Image/signature cleared — explicitly set to null
+						if (custom_id === 'signature' && !offlineMode) {
+							const originalFileId = (answer as any)?.value_image;
+							if (originalFileId) {
+								try {
+									await deleteDirectusFile(String(originalFileId));
+								} catch (e) {
+									console.warn('Could not delete old signature file:', e);
+								}
+							}
+						}
+						updatedValueFields = { value_image: null };
 					}
-				} else if (custom_type === 'value_files' && Array.isArray(value)) {
-					const uploadedFileIds = await Promise.all(value.filter((file: any) => !file?.edit).map(async (file: any) => await getDirectusUploadId(file, filesFolderId)));
-					updatedValueFields = {
-						value_files: {
-							create: uploadedFileIds.filter(Boolean).map(fileId => ({
-								directus_files_id: fileId,
-							})),
-						},
-					};
+					// else: existing URL unchanged — no update needed
+				} else if (custom_type === 'value_files') {
+					if (Array.isArray(value) && value.length > 0) {
+						const newFiles = value.filter((file: any) => !file?.edit);
+						if (newFiles.length > 0) {
+							const uploadedFileIds = await Promise.all(newFiles.map(async (file: any) => await getDirectusUploadId(file, filesFolderId)));
+							updatedValueFields = {
+								value_files: {
+									create: uploadedFileIds.filter(Boolean).map(fileId => ({
+										directus_files_id: fileId,
+									})),
+								},
+							};
+						}
+						// else: only existing files, no new uploads needed
+					} else {
+						// All files cleared — explicitly set to empty
+						updatedValueFields = { value_files: [] };
+					}
 				}
 				return {
 					id: fieldId,
@@ -749,6 +787,20 @@ const Index = () => {
 		const subscription = Dimensions.addEventListener('change', handleResize);
 
 		return () => subscription?.remove();
+	}, []);
+
+	// Fetch folder IDs once at mount so they can be shown as hints and used during upload
+	useEffect(() => {
+		const fetchFolderIds = async () => {
+			try {
+				const formAnswerFields: any = await fetchSpecificField('form_answers');
+				setImageFolderIdState(formAnswerFields?.value_image?.meta?.options?.folder ?? null);
+				setFilesFolderIdState(formAnswerFields?.value_files?.meta?.options?.folder ?? null);
+			} catch {
+				// silently ignore
+			}
+		};
+		fetchFolderIds();
 	}, []);
 
 	return (
@@ -943,8 +995,8 @@ const Index = () => {
                                                                                                                 onlyTwo
                                                                                                         />
                                                                                                 )}
-											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
-											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
+											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} offlineMode={offlineMode} folderHint={filesFolderIdState} />}
+											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} offlineMode={offlineMode} folderHint={imageFolderIdState} />}
 											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
 											{custom_type === 'value_custom' && showInForm && <CollectionSelection id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} loading={loadingCollection} data={collectionData} custom_type={custom_type} />}
 										</View>

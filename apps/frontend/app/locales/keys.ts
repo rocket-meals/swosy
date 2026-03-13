@@ -551,6 +551,7 @@ export enum TranslationKeys {
 	form_offline_mode = 'form_offline_mode',
 	form_submission_not_found = 'form_submission_not_found',
 	form_submission_not_found_offline = 'form_submission_not_found_offline',
+	upload_folder_id = 'upload_folder_id',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',

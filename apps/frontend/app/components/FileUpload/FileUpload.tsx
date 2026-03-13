@@ -27,7 +27,7 @@ export enum ImagePickerMediaTypes {
 	LivePhotos = 'livePhotos',
 }
 
-const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string }) => {
+const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type, offlineMode, folderHint }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; offlineMode?: boolean; folderHint?: string | null }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector((state) => state.settings);
@@ -113,6 +113,11 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { i
 	const deleteFile = async (item: any) => {
 		try {
 			if (item?.edit) {
+				// In offline mode, skip API calls — just remove from local list
+				if (offlineMode) {
+					onChange(id, value ? value?.filter((file: any) => file.directus_files_id !== item?.directus_files_id) : [], custom_type);
+					return;
+				}
 				const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
 					fields: ['id', 'value_files.id', 'value_files.directus_files_id'],
 				})) as FormAnswer;
@@ -223,6 +228,11 @@ const FileUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { i
 						}
 					})}
 			</ScrollView>
+			{folderHint != null && (
+				<Text style={{ ...styles.folderHint, color: theme.screen.text }}>
+					{`${translate(TranslationKeys.upload_folder_id)}: ${folderHint}`}
+				</Text>
+			)}
 		</View>
 	);
 };

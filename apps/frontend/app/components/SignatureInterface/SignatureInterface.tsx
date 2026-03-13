@@ -24,11 +24,11 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		if (!isDisabled) {
 			if (Platform.OS === 'web') {
 				signatureRef.current?.clear();
-				onChange(id, null, '');
+				onChange(id, null, custom_type);
 			} else {
 				signatureRef.current?.clearSignature();
 				scrollViewRef.current.setNativeProps({ scrollEnabled: true });
-				onChange(id, null, '');
+				onChange(id, null, custom_type);
 			}
 		}
 	};
