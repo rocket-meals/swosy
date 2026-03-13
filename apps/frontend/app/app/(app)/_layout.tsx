@@ -684,20 +684,6 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
-					name="leaflet-map/index"
-					options={{
-						headerShown: false,
-						title: translate(TranslationKeys.leaflet_map),
-					}}
-				/>
-				<Drawer.Screen
-					name="experimentell/tile-map/index"
-					options={{
-						headerShown: false,
-						title: translate(TranslationKeys.map),
-					}}
-				/>
-				<Drawer.Screen
 					name="vertical-image-scroll/index"
 					options={{
 						header: () => <CustomStackHeader label={translate(TranslationKeys.vertical_image_scroll)} key={'vertical_image_scroll'} />,

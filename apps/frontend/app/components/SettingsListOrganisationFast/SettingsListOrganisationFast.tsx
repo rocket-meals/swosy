@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import { createSelector } from 'reselect';
 import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -45,16 +46,48 @@ const SettingsListOrganisationFast: React.FC<SettingsListOrganisationFastProps> 
 		[like, handlePressLike, handlePressDislike]
 	);
 
+	const leftIconComponent = useMemo(() => {
+		if (!organisation?.image_remote_url) return undefined;
+		return (
+			<View style={styles.imageWrapper}>
+				<Image
+					source={{ uri: organisation.image_remote_url }}
+					style={styles.image}
+					resizeMode="cover"
+				/>
+			</View>
+		);
+	}, [organisation?.image_remote_url]);
+
 	if (!organisation) return null;
 
 	return (
 		<SettingsList
 			title={organisation.alias ?? organisation.id}
+			leftIconComponent={leftIconComponent}
 			rightElement={rightElement}
 			groupPosition={groupPosition}
-			noIconIndent
+			noIconIndent={!leftIconComponent}
 		/>
 	);
 };
 
 export default React.memo(SettingsListOrganisationFast);
+
+const ICON_SIZE = 34;
+const ICON_BORDER_RADIUS = 8;
+const ICON_MARGIN_RIGHT = 10;
+
+const styles = StyleSheet.create({
+	imageWrapper: {
+		width: ICON_SIZE,
+		height: ICON_SIZE,
+		borderRadius: ICON_BORDER_RADIUS,
+		overflow: 'hidden',
+		marginRight: ICON_MARGIN_RIGHT,
+	},
+	image: {
+		width: ICON_SIZE,
+		height: ICON_SIZE,
+	},
+});

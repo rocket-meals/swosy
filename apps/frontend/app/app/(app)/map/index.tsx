@@ -1,25 +1,21 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Keyboard, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
-import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
-import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import LeafletMapHeader from '@/app/(app)/leaflet-map/components/LeafletMapHeader';
+import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
 import SettingsList from '@/components/SettingsList/SettingsList';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
@@ -27,6 +23,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+import MyMap from '@/components/MyMap';
+import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -45,14 +43,155 @@ const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
 
 // MapLibre pitch value for 70° viewing angle (pitch = degrees from vertical)
 const INITIAL_PITCH = 20;
+const GAME_MODE_PITCH = 70;
+
+// ─── Game Mode (Spiel Modus) constants ───────────────────────────────────────
+
+const GAME_TICK_MS = 100;
+const METERS_PER_LAT_DEG = 111320;
+const TICKS_PER_SECOND = 1000 / GAME_TICK_MS;
+const KMH_TO_DEG_PER_TICK = 1 / (3.6 * METERS_PER_LAT_DEG * TICKS_PER_SECOND);
+const AIRPLANE_DEFAULT_SPEED_KMH = 300;
+const AIRPLANE_SPEED_STEP_SMALL = 10;
+const AIRPLANE_SPEED_STEP_LARGE = 100;
+const AIRPLANE_MIN_SPEED_KMH = 10;
+const AIRPLANE_TURN_DEG = 5;
+const AIRPLANE_DEFAULT_SIZE = 56;
+const AIRPLANE_SIZE_STEP = 8;
+const AIRPLANE_MIN_SIZE = 24;
+
+// ─── Auto-Rotate Mode (Auto-Rotate Modus) constants ──────────────────────────
+
+const AUTO_ROTATE_TICK_MS = 100;
+const AUTO_ROTATE_SPEED_STEP = 5; // degrees/second per button press
+
+type GamePosition = { lat: number; lng: number };
+
+function degToRad(deg: number): number {
+	return (deg * Math.PI) / 180;
+}
+
+function moveByHeading(pos: GamePosition, headingDeg: number, distanceDeg: number): GamePosition {
+	const rad = degToRad(headingDeg);
+	const cosLat = Math.cos(degToRad(pos.lat));
+	return {
+		lat: pos.lat + distanceDeg * Math.cos(rad),
+		lng: pos.lng + (distanceDeg * Math.sin(rad)) / cosLat,
+	};
+}
+
+function normalizeHeading(h: number): number {
+	return ((h % 360) + 360) % 360;
+}
+
+type ControlButtonProps = {
+	onPressIn?: () => void;
+	onPressOut?: () => void;
+	onPress?: () => void;
+	label?: string;
+	icon?: React.ReactNode;
+	color?: string;
+	size?: 'sm' | 'md' | 'lg';
+};
+
+const ControlButton: React.FC<ControlButtonProps> = ({
+	onPressIn,
+	onPressOut,
+	onPress,
+	label,
+	icon,
+	color = 'rgba(0,0,0,0.65)',
+	size = 'md',
+}) => {
+	const dim = size === 'sm' ? 38 : size === 'lg' ? 58 : 48;
+	return (
+		<TouchableOpacity
+			style={{
+				width: dim,
+				height: dim,
+				borderRadius: dim / 2,
+				backgroundColor: color,
+				alignItems: 'center',
+				justifyContent: 'center',
+				margin: 3,
+				shadowColor: '#000',
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.4,
+				shadowRadius: 4,
+				elevation: 5,
+			}}
+			onPressIn={onPressIn}
+			onPressOut={onPressOut}
+			onPress={onPress}
+			activeOpacity={0.7}
+		>
+			{icon ?? (
+				<Text style={{ color: 'white', fontSize: size === 'sm' ? 14 : 18, fontWeight: 'bold' }}>
+					{label}
+				</Text>
+			)}
+		</TouchableOpacity>
+	);
+};
+
+type AirplaneControlsProps = {
+	onTurnLeftStart: () => void;
+	onTurnLeftEnd: () => void;
+	onTurnRightStart: () => void;
+	onTurnRightEnd: () => void;
+	onSpeedUp: () => void;
+	onSpeedUpLarge: () => void;
+	onSpeedDown: () => void;
+	onSpeedDownLarge: () => void;
+};
+
+const AirplaneControls: React.FC<AirplaneControlsProps> = ({
+	onTurnLeftStart,
+	onTurnLeftEnd,
+	onTurnRightStart,
+	onTurnRightEnd,
+	onSpeedUp,
+	onSpeedUpLarge,
+	onSpeedDown,
+	onSpeedDownLarge,
+}) => (
+	<View style={gameModeStyles.airplaneLayout}>
+		<View style={gameModeStyles.turnColumn}>
+			<ControlButton onPressIn={onTurnLeftStart} onPressOut={onTurnLeftEnd} label="◀" color="rgba(26,115,232,0.85)" size="lg" />
+			<ControlButton onPressIn={onTurnRightStart} onPressOut={onTurnRightEnd} label="▶" color="rgba(26,115,232,0.85)" size="lg" />
+		</View>
+		<View style={gameModeStyles.throttleColumn}>
+			<ControlButton onPress={onSpeedUpLarge} label="+100" color="rgba(46,125,50,0.85)" size="sm" />
+			<ControlButton onPress={onSpeedUp} label="+10" color="rgba(46,125,50,0.85)" size="sm" />
+			<ControlButton onPress={onSpeedDown} label="-10" color="rgba(183,28,28,0.85)" size="sm" />
+			<ControlButton onPress={onSpeedDownLarge} label="-100" color="rgba(183,28,28,0.85)" size="sm" />
+		</View>
+	</View>
+);
+
+const gameModeStyles = StyleSheet.create({
+	airplaneLayout: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+	turnColumn: { flexDirection: 'row', gap: 6 },
+	throttleColumn: { flexDirection: 'column', gap: 6 },
+});
 
 type OsmSettingsContentProps = {
 	initialSelectedStyleKey: string;
 	initialUseFlyAnimation: boolean;
 	initialClusterDistance: number;
+	initialGameMode: boolean;
+	initialAutoRotateMode: boolean;
+	initialPeopleMode: boolean;
+	initialIntelligentMovement: boolean;
+	isFullscreen: boolean;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
+	onGameModeChange: (value: boolean) => void;
+	onAutoRotateModeChange: (value: boolean) => void;
+	onPeopleModeChange: (value: boolean) => void;
+	onIntelligentMovementChange: (value: boolean) => void;
+	onToggleFullscreen: () => void;
 	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
@@ -61,15 +200,29 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialSelectedStyleKey,
 	initialUseFlyAnimation,
 	initialClusterDistance,
+	initialGameMode,
+	initialAutoRotateMode,
+	initialPeopleMode,
+	initialIntelligentMovement,
+	isFullscreen,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
 	onClusterDistanceChange,
+	onGameModeChange,
+	onAutoRotateModeChange,
+	onPeopleModeChange,
+	onIntelligentMovementChange,
+	onToggleFullscreen,
 	onShowControlsHint,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
+	const [localGameMode, setLocalGameMode] = useState(initialGameMode);
+	const [localAutoRotateMode, setLocalAutoRotateMode] = useState(initialAutoRotateMode);
+	const [localPeopleMode, setLocalPeopleMode] = useState(initialPeopleMode);
+	const [localIntelligentMovement, setLocalIntelligentMovement] = useState(initialIntelligentMovement);
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
 
 	if (showingStyleSelector) {
@@ -89,6 +242,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 
 	return (
 		<>
+			<SettingsGroupTitle>Karten Einstellungen</SettingsGroupTitle>
 			<SettingsList
 				title="Kartenstil"
 				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
@@ -132,6 +286,18 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				showSeparator={true}
 			/>
 			<SettingsList
+				title="Vollbild"
+				leftIcon={<MaterialIcons name={isFullscreen ? 'fullscreen-exit' : 'fullscreen'} size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={isFullscreen}
+						onValueChange={onToggleFullscreen}
+					/>
+				}
+				groupPosition="middle"
+				showSeparator={true}
+			/>
+			<SettingsList
 				title="Kartensteuerung"
 				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
 				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
@@ -139,6 +305,69 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				groupPosition="bottom"
 				showSeparator={false}
 			/>
+			<SettingsGroupTitle>Spaß Einstellungen</SettingsGroupTitle>
+			<SettingsList
+				title="Spiel Modus"
+				leftIcon={<MaterialIcons name="sports-esports" size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={localGameMode}
+						onValueChange={(value) => {
+							setLocalGameMode(value);
+							onGameModeChange(value);
+						}}
+					/>
+				}
+				groupPosition="top"
+				showSeparator={true}
+			/>
+			<SettingsList
+				title="Auto-Rotate Modus"
+				leftIcon={<MaterialIcons name="360" size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={localAutoRotateMode}
+						onValueChange={(value) => {
+							setLocalAutoRotateMode(value);
+							onAutoRotateModeChange(value);
+						}}
+					/>
+				}
+				groupPosition="middle"
+				showSeparator={true}
+			/>
+			<SettingsList
+				title="Fiktiver Mensch Modus"
+				leftIcon={<MaterialIcons name="people" size={20} color={theme.screen.icon} />}
+				rightElement={
+					<Switch
+						value={localPeopleMode}
+						onValueChange={(value) => {
+							setLocalPeopleMode(value);
+							onPeopleModeChange(value);
+						}}
+					/>
+				}
+				groupPosition={localPeopleMode ? 'middle' : 'bottom'}
+				showSeparator={localPeopleMode}
+			/>
+			{localPeopleMode && (
+				<SettingsList
+					title="Intelligente Bewegung"
+					leftIcon={<MaterialIcons name="directions-walk" size={20} color={theme.screen.icon} />}
+					rightElement={
+						<Switch
+							value={localIntelligentMovement}
+							onValueChange={(value) => {
+								setLocalIntelligentMovement(value);
+								onIntelligentMovementChange(value);
+							}}
+						/>
+					}
+					groupPosition="bottom"
+					showSeparator={false}
+				/>
+			)}
 		</>
 	);
 };
@@ -265,10 +494,10 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 	return (
 		<>
 			<SettingsList
-				label={translate(TranslationKeys.reset_rating)}
+				label={translate(TranslationKeys.reset_filter)}
+				leftIcon={<MaterialCommunityIcons name="broom" size={22} />}
 				handleFunction={handleResetAll}
 				groupPosition="single"
-				noIconIndent
 			/>
 			<View style={{ height: 16 }} />
 			{organisations.map((org, index) => {
@@ -302,6 +531,8 @@ const BUILDING_MARKER_SIZE = MARKER_DEFAULT_SIZE;
 const BUILDING_MARKER_COLOR = '#1565c0';
 const MAX_BUILDING_LABEL_CHARS = 8;
 const MAX_SEARCH_RESULTS = 3;
+
+const noop = () => {};
 
 function getContrastColor(hexColor: string): string {
 	const hex = hexColor.replace('#', '');
@@ -366,8 +597,7 @@ function createBuildingMarkerSvg(
 const OsmVectorMapScreen: React.FC = () => {
 	useSetPageTitle(TranslationKeys.map);
 	const { theme } = useTheme();
-	const webViewRef = useRef<WebView>(null);
-	const [html, setHtml] = useState<string | null>(null);
+	const myMapRef = useRef<MyMapHandle>(null);
 
 	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
@@ -376,6 +606,10 @@ const OsmVectorMapScreen: React.FC = () => {
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
+	const gameMode = useAppSelector((state) => (state.settings as any).osmVectorMapGameMode ?? false);
+	const autoRotateMode = useAppSelector((state) => (state.settings as any).osmVectorMapAutoRotateMode ?? false);
+	const peopleMode = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleMode ?? false);
+	const intelligentMovement = useAppSelector((state) => (state.settings as any).osmVectorMapIntelligentMovement ?? false);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -394,12 +628,54 @@ const OsmVectorMapScreen: React.FC = () => {
 	const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
 	const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
 	const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+	const [isFullscreen, setIsFullscreen] = useState(false);
+	const isFullscreenRef = useRef(isFullscreen);
+	isFullscreenRef.current = isFullscreen;
 
 	// pendingNavigateRef: true = include position in next sendMapData call
 	const pendingNavigateRef = useRef(true);
 
 	// Ref always pointing to the latest centerPosition for use in one-time HTML loading
 	const centerPositionRef = useRef<{ lat: number; lng: number }>(POSITION_BUNDESTAG);
+
+	// ── Game mode (Spiel Modus) state ────────────────────────────────────────────
+	const [vehicleHeading, setVehicleHeading] = useState(0);
+	const [airplaneSpeedKmh, setAirplaneSpeedKmh] = useState(AIRPLANE_DEFAULT_SPEED_KMH);
+	const [airplaneSize, setAirplaneSize] = useState(AIRPLANE_DEFAULT_SIZE);
+	const [headingUpMode, setHeadingUpMode] = useState(true);
+	const [gameMapReady, setGameMapReady] = useState(false);
+	// currentPitch is null until the first pitchend event fires; scaleY=1 until then.
+	const [currentPitch, setCurrentPitch] = useState<number | null>(null);
+
+	const vehicleHeadingRef = useRef(vehicleHeading);
+	vehicleHeadingRef.current = vehicleHeading;
+	const airplaneSpeedRef = useRef(airplaneSpeedKmh);
+	airplaneSpeedRef.current = airplaneSpeedKmh;
+	const headingUpModeRef = useRef(headingUpMode);
+	headingUpModeRef.current = headingUpMode;
+	const vehiclePosRef = useRef<GamePosition>(POSITION_BUNDESTAG);
+	const turnLeftRef = useRef(false);
+	const turnRightRef = useRef(false);
+	const gameModeRef = useRef(gameMode);
+	gameModeRef.current = gameMode;
+	const gameMapReadyRef = useRef(gameMapReady);
+	gameMapReadyRef.current = gameMapReady;
+	const mapZoomRef = useRef(mapZoom);
+	mapZoomRef.current = mapZoom;
+	// Tracks whether the map has fired MapComponentMounted at least once
+	const mapMountedRef = useRef(false);
+
+	// ── Auto-Rotate Mode (Auto-Rotate Modus) state ───────────────────────────────
+	const [autoRotateSpeed, setAutoRotateSpeed] = useState(0); // degrees/second
+	const autoRotateSpeedRef = useRef(autoRotateSpeed);
+	autoRotateSpeedRef.current = autoRotateSpeed;
+	const autoRotateBearingRef = useRef(0); // current auto-rotate bearing
+	const autoRotateModeRef = useRef(autoRotateMode);
+	autoRotateModeRef.current = autoRotateMode;
+	const peopleModeRef = useRef(peopleMode);
+	peopleModeRef.current = peopleMode;
+	const intelligentMovementRef = useRef(intelligentMovement);
+	intelligentMovementRef.current = intelligentMovement;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -491,7 +767,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		return POSITION_BUNDESTAG;
 	}, [selectedCanteen, buildings]);
 
-	// Keep centerPositionRef up to date so the one-time loadHtml can read the latest value
+	// Keep centerPositionRef up to date for use in game mode and other ref-based access
 	useEffect(() => {
 		centerPositionRef.current = centerPosition;
 	}, [centerPosition]);
@@ -499,7 +775,38 @@ const OsmVectorMapScreen: React.FC = () => {
 	useEffect(() => {
 		setMapCenterOverride(null);
 		pendingNavigateRef.current = true;
+		vehiclePosRef.current = centerPosition;
 	}, [centerPosition]);
+
+	// When game mode changes, trigger a navigation with the correct pitch
+	useEffect(() => {
+		pendingNavigateRef.current = true;
+		// Reset pitch tracking so scaleY stays at 1 until the camera completes its first correcting pitch.
+		setCurrentPitch(null);
+		if (gameMode) {
+			vehiclePosRef.current = centerPositionRef.current;
+			setVehicleHeading(0);
+			setAirplaneSpeedKmh(AIRPLANE_DEFAULT_SPEED_KMH);
+			setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
+			setHeadingUpMode(true);
+			setGameMapReady(false);
+			// If the map has already loaded, immediately init game without waiting for MapComponentMounted
+			if (mapMountedRef.current) {
+				sendGameInitDataRef.current();
+				setGameMapReady(true);
+			}
+		} else {
+			setGameMapReady(false);
+			// Re-enable map interaction and navigate back to normal view when leaving game mode
+			sendToMapRef.current({
+				enableInteraction: true,
+				mapCenterPosition: centerPositionRef.current,
+				zoom: DEFAULT_ZOOM,
+				pitch: INITIAL_PITCH,
+				useFlyAnimation: false,
+			});
+		}
+	}, [gameMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const likedOrganisationIds = useMemo(
 		() =>
@@ -613,6 +920,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const sendMapData = useCallback(() => {
+		if (gameModeRef.current) return; // game loop handles map updates in game mode
 		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
 		const effectiveCenter = mapCenterOverride ?? centerPosition;
 
@@ -630,38 +938,184 @@ const OsmVectorMapScreen: React.FC = () => {
 			setMapCenterOverride(null);
 		}
 
-		const messageStr = JSON.stringify(message);
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:${messageStr}}));true;`,
-		);
+		myMapRef.current?.sendToMap(message);
 	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
 	}, [sendMapData]);
 
+	// ── Game mode helpers ─────────────────────────────────────────────────────────
+
+	const sendToMap = useCallback((data: object) => {
+		myMapRef.current?.sendToMap(data);
+	}, []);
+
+	const sendToMapRef = useRef(sendToMap);
+	sendToMapRef.current = sendToMap;
+
+	const buildingMarkersRef = useRef(buildingMarkers);
+	buildingMarkersRef.current = buildingMarkers;
+
+	const sendGameInitData = useCallback(() => {
+		const pos = vehiclePosRef.current;
+		sendToMap({
+			mapCenterPosition: pos,
+			zoom: DEFAULT_ZOOM,
+			pitch: GAME_MODE_PITCH,
+			animate: false,
+			useFlyAnimation: false,
+			mapMarkers: buildingMarkersRef.current,
+			vehicleMarker: null,
+			mapStyle: selectedStyleUrl,
+			disableInteraction: true,
+		});
+	}, [sendToMap, selectedStyleUrl]);
+
+	const sendGameInitDataRef = useRef(sendGameInitData);
+	sendGameInitDataRef.current = sendGameInitData;
+
+	// Re-send building markers when they change while in game mode
 	useEffect(() => {
-		let isMounted = true;
-		const loadHtml = async () => {
-			const htmlAsset = Asset.fromModule(require('@/assets/maplibre/index.html'));
-			await htmlAsset.downloadAsync();
-			let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-			// Inject the initial center position so the map starts at the canteen position
-			// without showing the default Germany center while tiles are loading.
-			const c = centerPositionRef.current;
-			htmlContent = htmlContent.replace(
-				'initMap(null, null);',
-				`initMap([${c.lng}, ${c.lat}], null);`,
-			);
-			if (isMounted) {
-				setHtml(htmlContent);
+		if (!gameMode || !gameMapReady) return;
+		sendToMap({ mapMarkers: buildingMarkers });
+	}, [gameMode, gameMapReady, buildingMarkers, sendToMap]);
+
+	// Game loop
+	useEffect(() => {
+		const id = setInterval(() => {
+			if (!gameModeRef.current || !gameMapReadyRef.current) return;
+			if (turnLeftRef.current) {
+				setVehicleHeading((h) => normalizeHeading(h - AIRPLANE_TURN_DEG));
+			} else if (turnRightRef.current) {
+				setVehicleHeading((h) => normalizeHeading(h + AIRPLANE_TURN_DEG));
 			}
-		};
-		loadHtml();
-		return () => {
-			isMounted = false;
-		};
-	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+			const heading = vehicleHeadingRef.current;
+			const speed = airplaneSpeedRef.current * KMH_TO_DEG_PER_TICK;
+			const newPos = moveByHeading(vehiclePosRef.current, heading, speed);
+			vehiclePosRef.current = newPos;
+			sendToMapRef.current({
+				mapCenterPosition: newPos,
+				bearing: headingUpModeRef.current ? heading : 0,
+				easeAnimation: true,
+				easeDuration: GAME_TICK_MS,
+			});
+		}, GAME_TICK_MS);
+		return () => clearInterval(id);
+	}, []); // No dependencies – all values read via refs // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Game mode controls
+	const handleGameTurnLeftStart = useCallback(() => { turnLeftRef.current = true; }, []);
+	const handleGameTurnLeftEnd = useCallback(() => { turnLeftRef.current = false; }, []);
+	const handleGameTurnRightStart = useCallback(() => { turnRightRef.current = true; }, []);
+	const handleGameTurnRightEnd = useCallback(() => { turnRightRef.current = false; }, []);
+	const handleGameSpeedUp = useCallback(() => { setAirplaneSpeedKmh((s) => s + AIRPLANE_SPEED_STEP_SMALL); }, []);
+	const handleGameSpeedUpLarge = useCallback(() => { setAirplaneSpeedKmh((s) => s + AIRPLANE_SPEED_STEP_LARGE); }, []);
+	const handleGameSpeedDown = useCallback(() => { setAirplaneSpeedKmh((s) => Math.max(s - AIRPLANE_SPEED_STEP_SMALL, AIRPLANE_MIN_SPEED_KMH)); }, []);
+	const handleGameSpeedDownLarge = useCallback(() => { setAirplaneSpeedKmh((s) => Math.max(s - AIRPLANE_SPEED_STEP_LARGE, AIRPLANE_MIN_SPEED_KMH)); }, []);
+	const handleGameZoomIn = useCallback(() => {
+		const newZoom = Math.min((mapZoomRef.current ?? DEFAULT_ZOOM) + 0.5, 22);
+		setMapZoom(newZoom);
+		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
+	}, []);
+	const handleGameZoomOut = useCallback(() => {
+		const newZoom = Math.max((mapZoomRef.current ?? DEFAULT_ZOOM) - 0.5, 1);
+		setMapZoom(newZoom);
+		sendToMapRef.current({ zoomTo: newZoom, easeDuration: 300 });
+	}, []);
+	const handleGameAirplaneSizeUp = useCallback(() => { setAirplaneSize((s) => s + AIRPLANE_SIZE_STEP); }, []);
+	const handleGameAirplaneSizeDown = useCallback(() => { setAirplaneSize((s) => Math.max(s - AIRPLANE_SIZE_STEP, AIRPLANE_MIN_SIZE)); }, []);
+	const handleGameCompassToggle = useCallback(() => {
+		setHeadingUpMode((prev) => {
+			const next = !prev;
+			if (!next) sendToMapRef.current({ resetBearing: true });
+			return next;
+		});
+	}, []);
+	const handleGameReset = useCallback(() => {
+		vehiclePosRef.current = centerPositionRef.current;
+		setVehicleHeading(0);
+		setAirplaneSpeedKmh(AIRPLANE_DEFAULT_SPEED_KMH);
+		setAirplaneSize(AIRPLANE_DEFAULT_SIZE);
+	}, []);
+
+	// ── Auto-Rotate Mode (Auto-Rotate Modus) logic ───────────────────────────────
+
+	// Reset speed and bearing when auto-rotate mode is activated or deactivated
+	useEffect(() => {
+		setAutoRotateSpeed(0);
+		autoRotateSpeedRef.current = 0;
+		autoRotateBearingRef.current = 0;
+	}, [autoRotateMode]);
+
+	// Auto-rotate interval – runs always, but only acts when mode is on and not in game mode
+	useEffect(() => {
+		const id = setInterval(() => {
+			if (!autoRotateModeRef.current || gameModeRef.current) return;
+			if (autoRotateSpeedRef.current === 0) return;
+			const deltaDeg = autoRotateSpeedRef.current * (AUTO_ROTATE_TICK_MS / 1000);
+			autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current + deltaDeg);
+			sendToMapRef.current({
+				bearing: autoRotateBearingRef.current,
+				easeAnimation: true,
+				easeDuration: AUTO_ROTATE_TICK_MS,
+			});
+		}, AUTO_ROTATE_TICK_MS);
+		return () => clearInterval(id);
+	}, []); // No dependencies – all values read via refs // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Auto-rotate speed controls
+	const handleAutoRotateSpeedLeft = useCallback(() => {
+		setAutoRotateSpeed((s) => s - AUTO_ROTATE_SPEED_STEP);
+	}, []);
+	const handleAutoRotateSpeedRight = useCallback(() => {
+		setAutoRotateSpeed((s) => s + AUTO_ROTATE_SPEED_STEP);
+	}, []);
+
+	const handleManualRotateLeft1 = useCallback(() => {
+		autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current - 1);
+		sendToMapRef.current({ bearing: autoRotateBearingRef.current, easeAnimation: true, easeDuration: 200 });
+	}, []);
+
+	const handleManualRotateRight1 = useCallback(() => {
+		autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current + 1);
+		sendToMapRef.current({ bearing: autoRotateBearingRef.current, easeAnimation: true, easeDuration: 200 });
+	}, []);
+
+	const handleToggleFullscreen = useCallback(() => {
+		setIsFullscreen((prev) => !prev);
+	}, []);
+
+	// Send people mode to the map when it changes and the map is ready
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ peopleMode: peopleMode });
+		}
+	}, [peopleMode]);
+
+	// Send intelligent movement mode to the map when it changes and the map is ready
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ intelligentMovement: intelligentMovement });
+		}
+	}, [intelligentMovement]);
+
+	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
+
+	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
+	// Transform is applied to a wrapping View (not the Text) so rotation works on native.
+	const airplaneEmojiRotation = useMemo(
+		() => `${(headingUpMode ? 0 : vehicleHeading) - 45}deg`,
+		[headingUpMode, vehicleHeading],
+	);
+
+	// Squish the airplane vertically based on the actual camera pitch (cos(pitch) ≈ perspective compression).
+	// currentPitch is null until the first pitchend event fires; use scaleY=1 (no squish) until then.
+	// At pitch = 0° (top-down) scaleY = 1 (no squish); at pitch = 70° scaleY ≈ 0.34 (strong squish).
+	const airplaneScaleY = useMemo(
+		() => (currentPitch !== null ? Math.cos(degToRad(currentPitch)) : 1),
+		[currentPitch],
+	);
 
 	const handleMarkerClick = useCallback(
 		(id: string) => {
@@ -698,37 +1152,44 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const handleMessage = useCallback(
-		(event: WebViewMessageEvent) => {
-			try {
-				const data = JSON.parse(event.nativeEvent.data);
-				if (data.tag === 'MapComponentMounted') {
+		(data: object) => {
+			const d = data as any;
+			if (d.tag === 'MapComponentMounted') {
+				mapMountedRef.current = true;
+				if (gameModeRef.current) {
+					setGameMapReady(true);
+					sendGameInitData();
+				} else {
 					pendingNavigateRef.current = true;
 					sendMapData();
-					addLog('MapComponentMounted');
-					return;
 				}
-				if (data.tag === 'onZoomEnd') {
-					setMapZoom(data.zoom);
-					addLog(`Zoom: ${data.zoom ?? 'unknown'}`);
+				if (peopleModeRef.current) {
+					sendToMapRef.current({ peopleMode: true });
 				}
-				if (data.tag === 'onMapMarkerClicked') {
-					handleMarkerClick(data.mapMarkerId);
+				if (intelligentMovementRef.current) {
+					sendToMapRef.current({ intelligentMovement: true });
 				}
-			} catch {
-				// ignore malformed messages
+				addLog('MapComponentMounted');
+				return;
+			}
+			if (d.tag === 'onZoomEnd') {
+				setMapZoom(d.zoom);
+				if (!gameModeRef.current) {
+					addLog(`Zoom: ${d.zoom ?? 'unknown'}`);
+				}
+			}
+			if (d.tag === 'onPitchEnd') {
+				setCurrentPitch(d.pitch);
+			}
+			if (d.tag === 'onMapMarkerClicked' && !gameModeRef.current) {
+				handleMarkerClick(d.mapMarkerId);
+			}
+			if (d.tag === 'MapTapped' && isFullscreenRef.current) {
+				setIsFullscreen(false);
 			}
 		},
-		[sendMapData, handleMarkerClick, addLog],
+		[sendMapData, sendGameInitData, handleMarkerClick, addLog],
 	);
-
-	const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
-		const url = request.url;
-		if (!url || url === 'about:blank' || url === 'about:srcdoc') {
-			return true;
-		}
-		CommonSystemActionHelper.openExternalURL(url).catch(() => {});
-		return false;
-	}, []);
 
 	const openControlsHintModal = useCallback(() => {
 		show({
@@ -745,6 +1206,34 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [show, close, dispatch, theme]);
 
+	const setGameModeDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_GAME_MODE, payload: value });
+		},
+		[dispatch],
+	);
+
+	const setAutoRotateModeDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, payload: value });
+		},
+		[dispatch],
+	);
+
+	const setPeopleModeDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_PEOPLE_MODE, payload: value });
+		},
+		[dispatch],
+	);
+
+	const setIntelligentMovementDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -753,21 +1242,29 @@ const OsmVectorMapScreen: React.FC = () => {
 					initialSelectedStyleKey={selectedStyleKey}
 					initialUseFlyAnimation={useFlyAnimation}
 					initialClusterDistance={clusterDistance}
+					initialGameMode={gameMode}
+					initialAutoRotateMode={autoRotateMode}
+					initialPeopleMode={peopleMode}
+					initialIntelligentMovement={intelligentMovement}
+					isFullscreen={isFullscreen}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
 					onClusterDistanceChange={setClusterDistanceDispatch}
+					onGameModeChange={setGameModeDispatch}
+					onAutoRotateModeChange={setAutoRotateModeDispatch}
+					onPeopleModeChange={setPeopleModeDispatch}
+					onIntelligentMovementChange={setIntelligentMovementDispatch}
+					onToggleFullscreen={handleToggleFullscreen}
 					onShowControlsHint={openControlsHintModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, openControlsHintModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, handleToggleFullscreen, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
-		webViewRef.current?.injectJavaScript(
-			`window.dispatchEvent(new MessageEvent('message',{data:JSON.stringify({resetBearing:true})}));true;`,
-		);
+		myMapRef.current?.sendToMap({ resetBearing: true });
 	}, []);
 
 	// Location: request permission and show user position marker
@@ -806,73 +1303,154 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 
-	if (!html) {
-		return <View style={[styles.safeArea, { backgroundColor: theme.screen.background }]} />;
-	}
-
 	return (
-		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.header.background }]}>
-			<LeafletMapHeader
-				drawerPosition={drawerPosition}
-				query={searchQuery}
-				onQueryChange={setSearchQuery}
-				onSettingsPress={openSettingsModal}
-				onFilterPress={openFilterModal}
-				isFilterActive={isFilterActive}
-			/>
+		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>
+			{!isFullscreen && (
+				<MapHeader
+					drawerPosition={drawerPosition}
+					query={gameMode ? '' : searchQuery}
+					onQueryChange={gameMode ? noop : setSearchQuery}
+					onSettingsPress={openSettingsModal}
+					onFilterPress={gameMode ? undefined : openFilterModal}
+					isFilterActive={!gameMode && isFilterActive}
+				/>
+			)}
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<WebView
-						ref={webViewRef}
-						style={styles.webView}
-						source={{ html }}
-						javaScriptEnabled={true}
-						domStorageEnabled={true}
-						originWhitelist={['*']}
+					<MyMap
+						ref={myMapRef}
+						initialCenter={centerPosition}
+						initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
 						onMessage={handleMessage}
-						onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 					/>
-					{/* Map overlay buttons: compass, location, and controls hint */}
-					<View style={styles.mapOverlayButtons} pointerEvents="box-none">
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
-							onPress={handleCompassPress}
-						>
-							<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-							onPress={handleLocationPress}
-						>
-							<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
-						</TouchableOpacity>
-						{showControlsHint && (
-							<TouchableOpacity
-								style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
-								onPress={openControlsHintModal}
-							>
-								<MaterialIcons name="touch-app" size={26} color={theme.screen.icon} />
-							</TouchableOpacity>
-						)}
-					</View>
-					<DebugView title="Map Log">
-						<ScrollView
-							ref={logScrollRef}
-							style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
-							onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
-						>
-							{logEntries.map((entry, i) => (
-								<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
-									{entry}
-								</Text>
-							))}
-							{logEntries.length === 0 && (
-								<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
-							)}
-						</ScrollView>
-					</DebugView>
+
+					{!isFullscreen && (gameMode ? (
+						<>
+							{/* Vehicle overlay – airplane centered on screen */}
+							<View style={styles.vehicleOverlay} pointerEvents="none">
+								<View style={{ transform: [{ scaleY: airplaneScaleY }, { rotate: airplaneEmojiRotation }] }}>
+									<Text style={{ fontSize: airplaneSize }} accessibilityLabel="Flugzeug">✈️</Text>
+								</View>
+							</View>
+
+							{/* Top bar: reset + speed/heading info */}
+							<View style={styles.gameTopBar} pointerEvents="box-none">
+								<TouchableOpacity
+									style={[styles.gameTopBarButton, { backgroundColor: theme.screen.background }]}
+									onPress={handleGameReset}
+								>
+									<MaterialIcons name="my-location" size={22} color={theme.screen.icon} />
+								</TouchableOpacity>
+								<View style={[styles.gameTopBarInfo, { backgroundColor: theme.screen.background + 'dd' }]}>
+									<Text style={[styles.gameTopBarTitle, { color: theme.screen.text }]}>✈️ Flugzeug</Text>
+									<Text style={[styles.gameTopBarSub, { color: theme.screen.text + 'aa' }]}>
+										{`${speedLabel} · Richtung ${Math.round(vehicleHeading)}°`}
+									</Text>
+								</View>
+							</View>
+
+							{/* Zoom + airplane size buttons (left side) */}
+							<View style={styles.gameZoomButtons} pointerEvents="box-none">
+								<ControlButton onPress={handleGameZoomIn} icon={<MaterialIcons name="add" size={22} color="white" />} color="rgba(0,0,0,0.65)" size="md" />
+								<ControlButton onPress={handleGameZoomOut} icon={<MaterialIcons name="remove" size={22} color="white" />} color="rgba(0,0,0,0.65)" size="md" />
+								<View style={styles.gameZoomDivider} />
+								<ControlButton onPress={handleGameAirplaneSizeUp} icon={<MaterialIcons name="zoom-in" size={22} color="white" />} color="rgba(26,115,232,0.75)" size="md" />
+								<ControlButton onPress={handleGameAirplaneSizeDown} icon={<MaterialIcons name="zoom-out" size={22} color="white" />} color="rgba(26,115,232,0.75)" size="md" />
+							</View>
+
+							{/* Compass button (top-right) */}
+							<View style={styles.gameCompassButton} pointerEvents="box-none">
+								<TouchableOpacity
+									style={[
+										styles.gameCompassTouchable,
+										{ backgroundColor: headingUpMode ? 'rgba(26,115,232,0.9)' : (theme.screen.background + 'ee') },
+									]}
+									onPress={handleGameCompassToggle}
+									activeOpacity={0.75}
+								>
+									<MaterialIcons name="explore" size={26} color={headingUpMode ? 'white' : theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+
+							{/* Airplane controls overlay (bottom-right) */}
+							<View style={styles.gameControlsOverlay} pointerEvents="box-none">
+								<AirplaneControls
+									onTurnLeftStart={handleGameTurnLeftStart}
+									onTurnLeftEnd={handleGameTurnLeftEnd}
+									onTurnRightStart={handleGameTurnRightStart}
+									onTurnRightEnd={handleGameTurnRightEnd}
+									onSpeedUp={handleGameSpeedUp}
+									onSpeedUpLarge={handleGameSpeedUpLarge}
+									onSpeedDown={handleGameSpeedDown}
+									onSpeedDownLarge={handleGameSpeedDownLarge}
+								/>
+							</View>
+						</>
+					) : (
+						<>
+							{/* Normal map overlay buttons: compass, location, and controls hint */}
+							<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+								<TouchableOpacity
+									style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background }]}
+									onPress={handleCompassPress}
+								>
+									<MaterialIcons name="explore" size={26} color={theme.screen.icon} />
+								</TouchableOpacity>
+								<TouchableOpacity
+									style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+									onPress={handleLocationPress}
+								>
+									<MaterialIcons name="my-location" size={26} color={userLocation ? '#1a73e8' : theme.screen.icon} />
+								</TouchableOpacity>
+								{autoRotateMode && (
+									<>
+										<TouchableOpacity
+											style={[styles.mapOverlayButton, { backgroundColor: autoRotateSpeed < 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background, marginTop: 8 }]}
+											onPress={handleAutoRotateSpeedLeft}
+										>
+											<MaterialIcons name="rotate-left" size={26} color={autoRotateSpeed < 0 ? 'white' : theme.screen.icon} />
+										</TouchableOpacity>
+										<View style={{ alignItems: 'center', paddingVertical: 2 }}>
+											<Text style={{ color: theme.screen.text, fontSize: 10 }}>{`${autoRotateSpeed}°/s`}</Text>
+										</View>
+										<TouchableOpacity
+											style={[styles.mapOverlayButton, { backgroundColor: autoRotateSpeed > 0 ? 'rgba(26,115,232,0.9)' : theme.screen.background }]}
+											onPress={handleAutoRotateSpeedRight}
+										>
+											<MaterialIcons name="rotate-right" size={26} color={autoRotateSpeed > 0 ? 'white' : theme.screen.icon} />
+										</TouchableOpacity>
+
+									</>
+								)}
+								{showControlsHint && (
+									<TouchableOpacity
+										style={[styles.mapOverlayButton, { backgroundColor: theme.screen.background, marginTop: 8 }]}
+										onPress={openControlsHintModal}
+									>
+										<MaterialIcons name="touch-app" size={26} color={theme.screen.icon} />
+									</TouchableOpacity>
+								)}
+							</View>
+							<DebugView title="Map Log">
+								<ScrollView
+									ref={logScrollRef}
+									style={[styles.logContainer, { backgroundColor: theme.screen.background, borderTopColor: theme.screen.text + '33' }]}
+									onContentSizeChange={() => logScrollRef.current?.scrollToEnd({ animated: true })}
+								>
+									{logEntries.map((entry, i) => (
+										<Text key={i} style={[styles.logEntry, { color: theme.screen.text }]} selectable>
+											{entry}
+										</Text>
+									))}
+									{logEntries.length === 0 && (
+										<Text style={[styles.logPlaceholder, { color: theme.screen.text + '88' }]}>Map log…</Text>
+									)}
+								</ScrollView>
+							</DebugView>
+						</>
+					))}
 				</View>
-				{searchResults.length > 0 && (
+				{!gameMode && !isFullscreen && searchResults.length > 0 && (
 					<View style={[styles.searchResultsContainer, { backgroundColor: theme.screen.background }]}>
 						{searchResults.map((building, index) => (
 							<SettingsList
@@ -903,7 +1481,6 @@ const styles = StyleSheet.create({
 	safeArea: { flex: 1 },
 	contentArea: { flex: 1, position: 'relative' },
 	container: { flex: 1 },
-	webView: { flex: 1 },
 	mapOverlayButtons: {
 		position: 'absolute',
 		top: 16,
@@ -945,6 +1522,98 @@ const styles = StyleSheet.create({
 		fontSize: 11,
 		paddingHorizontal: 8,
 		paddingVertical: 4,
+	},
+	// ── Game mode styles ─────────────────────────────────────────────────────────
+	vehicleOverlay: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		alignItems: 'center',
+		justifyContent: 'center',
+		zIndex: 20,
+		elevation: 20,
+	},
+	gameTopBar: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		flexDirection: 'row',
+		alignItems: 'center',
+		padding: 12,
+		gap: 10,
+		zIndex: 30,
+		elevation: 30,
+	},
+	gameTopBarButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		elevation: 3,
+	},
+	gameTopBarInfo: {
+		flex: 1,
+		borderRadius: 12,
+		paddingHorizontal: 14,
+		paddingVertical: 6,
+	},
+	gameTopBarTitle: {
+		fontSize: 15,
+		fontWeight: 'bold',
+	},
+	gameTopBarSub: {
+		fontSize: 12,
+	},
+	gameZoomButtons: {
+		position: 'absolute',
+		bottom: 32,
+		left: 16,
+		zIndex: 30,
+		elevation: 30,
+		gap: 8,
+	},
+	gameZoomDivider: {
+		height: 1,
+		backgroundColor: 'rgba(255,255,255,0.3)',
+		marginVertical: 2,
+	},
+	gameCompassButton: {
+		position: 'absolute',
+		top: 16,
+		right: 16,
+		zIndex: 30,
+		elevation: 30,
+	},
+	gameCompassTouchable: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	gameControlsOverlay: {
+		position: 'absolute',
+		bottom: 32,
+		right: 16,
+		zIndex: 30,
+		elevation: 30,
+	},
+	rotationButtonText: {
+		fontSize: 11,
+		fontWeight: 'bold',
 	},
 });
 
