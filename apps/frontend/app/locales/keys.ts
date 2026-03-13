@@ -137,6 +137,7 @@ export enum TranslationKeys {
 	open_navitation_to_location = 'open_navitation_to_location',
 	open_in_google_maps = 'open_in_google_maps',
 	open_in_apple_maps = 'open_in_apple_maps',
+	open_in_google_or_apple_maps = 'open_in_google_or_apple_maps',
 	copy_coordinates = 'copy_coordinates',
 	distance_based_canteen_selection_or_if_asked_on_real_location = 'distance_based_canteen_selection_or_if_asked_on_real_location',
 	distance_based_on_selected_canteen = 'distance_based_on_selected_canteen',
