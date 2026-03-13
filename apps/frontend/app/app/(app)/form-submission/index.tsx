@@ -132,7 +132,7 @@ const Index = () => {
 	const [collectionData, setCollectionData] = useState<any>([]);
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
-	const { formSubmission, formQueue } = useAppSelector((state) => state.form);
+	const { formSubmission, formQueue, cachedFormData } = useAppSelector((state) => state.form);
 	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
@@ -241,7 +241,21 @@ const Index = () => {
 	};
 
 	const checkValidity = async () => {
-		const result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
+		// Try to find the submission in the local cache first
+		const cachedSubmission = Object.values(cachedFormData || {})
+			.flatMap(entry => entry.submissions || [])
+			.find(s => String(s.id) === String(form_submission_id));
+
+		let result: DatabaseTypes.FormSubmissions | null = cachedSubmission || null;
+
+		if (!result) {
+			try {
+				result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
+			} catch {
+				result = null;
+			}
+		}
+
 		if (result) {
 			dispatch({ type: SET_FORM_SUBMISSION, payload: result });
 			if (result?.user_locked_by && result?.user_locked_by !== user?.id) {
@@ -251,10 +265,14 @@ const Index = () => {
 					openWarningSheet();
 				}
 			} else {
-				const update = (await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), {
-					user_locked_by: String(user?.id),
-					date_started: new Date().toISOString(),
-				})) as DatabaseTypes.FormSubmissions;
+				try {
+					await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), {
+						user_locked_by: String(user?.id),
+						date_started: new Date().toISOString(),
+					});
+				} catch {
+					// update fails silently when offline
+				}
 			}
 		} else {
 			toast('Please reload the page', 'error');
@@ -281,9 +299,22 @@ const Index = () => {
 			setSelectedState(getNextState(formSubmissionPayload?.state));
 		}
 
-		const result = (await formAnswersHelper.fetchFormAnswers({
-			filter: { form_submission: { _eq: form_submission_id } },
-		})) as DatabaseTypes.FormAnswers[];
+		// Try to find the answers in the local cache first
+		const cachedAnswers = Object.values(cachedFormData || {})
+			.map(entry => (entry.answers || {})[String(form_submission_id)])
+			.find(answers => answers && answers.length > 0);
+
+		let result: DatabaseTypes.FormAnswers[] | null = cachedAnswers || null;
+
+		if (!result) {
+			try {
+				result = (await formAnswersHelper.fetchFormAnswers({
+					filter: { form_submission: { _eq: form_submission_id } },
+				})) as DatabaseTypes.FormAnswers[];
+			} catch {
+				result = null;
+			}
+		}
 
 		if (result) {
 			const sortedResult = result.sort((a, b) => {
@@ -350,9 +381,9 @@ const Index = () => {
 					setSelectedState(queueEntry.targetState);
 				}
 			}
-
-			setLoading(false);
 		}
+
+		setLoading(false);
 	};
 
 	const fetchCollection = async (collection: string) => {
