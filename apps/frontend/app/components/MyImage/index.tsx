@@ -11,6 +11,7 @@ export type MyImageProps = {
         directus_asset_id?: string | number | { id?: string | number } | null;
         defaultImage?: ImageSourcePropType;
         defaultImageUrl?: string | null;
+        useAccessTokenForWebAsParameter?: boolean;
 } & Omit<ExpoImageProps, 'source'>;
 
 const MyImage: React.FC<MyImageProps> = ({
@@ -18,6 +19,7 @@ const MyImage: React.FC<MyImageProps> = ({
         directus_asset_id,
         defaultImage,
         defaultImageUrl,
+        useAccessTokenForWebAsParameter = false,
         ...props
 }) => {
         const [authToken, setAuthToken] = useState<string | null>(null);
@@ -51,6 +53,13 @@ const MyImage: React.FC<MyImageProps> = ({
 
         const source = useMemo(() => {
                 if (remote_image_url) {
+                        if (useAccessTokenForWebAsParameter && Platform.OS === 'web' && authToken) {
+                                const isRemoteUrl = remote_image_url.startsWith('http://') || remote_image_url.startsWith('https://');
+                                if (isRemoteUrl) {
+                                        const separator = remote_image_url.includes('?') ? '&' : '?';
+                                        return { uri: `${remote_image_url}${separator}access_token=${encodeURIComponent(authToken)}` };
+                                }
+                        }
                         return { uri: remote_image_url };
                 }
 
@@ -59,10 +68,13 @@ const MyImage: React.FC<MyImageProps> = ({
                         if (!baseUrl) return { uri: undefined };
                         if (authToken) {
                                 if (Platform.OS === 'web') {
-                                        // On web, <img> tags cannot send custom headers in cross-origin (no-cors) requests,
-                                        // so we include the token as a query parameter. This is the standard Directus approach.
-                                        const separator = baseUrl.includes('?') ? '&' : '?';
-                                        return { uri: `${baseUrl}${separator}access_token=${encodeURIComponent(authToken)}` };
+                                        if (useAccessTokenForWebAsParameter) {
+                                                // On web, <img> tags cannot send custom headers in cross-origin requests,
+                                                // so we include the token as a query parameter. This is the standard Directus approach.
+                                                const separator = baseUrl.includes('?') ? '&' : '?';
+                                                return { uri: `${baseUrl}${separator}access_token=${encodeURIComponent(authToken)}` };
+                                        }
+                                        return { uri: baseUrl };
                                 }
                                 return { uri: baseUrl, headers: { Authorization: `Bearer ${authToken}` } };
                         }
@@ -75,7 +87,7 @@ const MyImage: React.FC<MyImageProps> = ({
 
                 // fallbackImage is usually a require() number or object. expo-image handles it.
                 return fallbackImage;
-        }, [authToken, defaultImageUrl, directusAssetId, fallbackImage, remote_image_url]);
+        }, [authToken, defaultImageUrl, directusAssetId, fallbackImage, remote_image_url, useAccessTokenForWebAsParameter]);
 
         if (!source) {
                 return null;

@@ -34,7 +34,14 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offl
 		if (!val) return undefined;
 		const uri = val?.image ? val.image : val;
 		if (typeof uri !== 'string') return undefined;
-		if (authToken && !uri.startsWith('file://') && !uri.startsWith('content://') && !uri.startsWith('ph://')) {
+		const isNonRemoteUri = uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('ph://') || uri.startsWith('blob:') || uri.startsWith('data:');
+		if (authToken && !isNonRemoteUri) {
+			if (isWeb) {
+				// On web, <img> tags cannot send custom headers in cross-origin requests,
+				// so we include the token as a query parameter. This is the standard Directus approach.
+				const separator = uri.includes('?') ? '&' : '?';
+				return { uri: `${uri}${separator}access_token=${encodeURIComponent(authToken)}` };
+			}
 			return { uri, headers: { Authorization: `Bearer ${authToken}` } };
 		}
 		return { uri };
