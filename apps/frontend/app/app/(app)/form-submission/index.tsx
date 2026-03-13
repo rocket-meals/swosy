@@ -855,7 +855,13 @@ const Index = () => {
 							},
 						]}
 					>
-						<TouchableOpacity onPress={() => router.back()} style={{ padding: 10 }}>
+						<TouchableOpacity onPress={() => {
+							if (router.canGoBack()) {
+								router.back();
+							} else {
+								router.navigate('/form-categories');
+							}
+						}} style={{ padding: 10 }}>
 							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
 						</TouchableOpacity>
 						<Text style={{ ...styles.heading, color: theme.header.text }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>

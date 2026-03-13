@@ -53,7 +53,8 @@ const MyImage: React.FC<MyImageProps> = ({
 
         const source = useMemo(() => {
                 if (remote_image_url) {
-                        if (useAccessTokenForWebAsParameter && Platform.OS === 'web' && authToken) {
+                        const isLocalhostUrl = remote_image_url.startsWith('http://localhost');
+                        if (Platform.OS === 'web' && authToken && (useAccessTokenForWebAsParameter || isLocalhostUrl)) {
                                 const isRemoteUrl = remote_image_url.startsWith('http://') || remote_image_url.startsWith('https://');
                                 if (isRemoteUrl) {
                                         const separator = remote_image_url.includes('?') ? '&' : '?';
@@ -68,9 +69,11 @@ const MyImage: React.FC<MyImageProps> = ({
                         if (!baseUrl) return { uri: undefined };
                         if (authToken) {
                                 if (Platform.OS === 'web') {
-                                        if (useAccessTokenForWebAsParameter) {
+                                        const isLocalhostUrl = baseUrl.startsWith('http://localhost');
+                                        if (useAccessTokenForWebAsParameter || isLocalhostUrl) {
                                                 // On web, <img> tags cannot send custom headers in cross-origin requests,
                                                 // so we include the token as a query parameter. This is the standard Directus approach.
+                                                // For localhost (development), token is added automatically since the connection is insecure (HTTP).
                                                 const separator = baseUrl.includes('?') ? '&' : '?';
                                                 return { uri: `${baseUrl}${separator}access_token=${encodeURIComponent(authToken)}` };
                                         }

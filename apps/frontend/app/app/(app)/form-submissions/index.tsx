@@ -53,6 +53,7 @@ const Index = () => {
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const { formQueue, cachedFormData } = useAppSelector((state) => state.form);
 	const [isShowingCachedData, setIsShowingCachedData] = useState(false);
+	const [hasLoadError, setHasLoadError] = useState(false);
 
 	const queueEntries = useMemo(
 		() => (formQueue || []).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
@@ -244,6 +245,7 @@ const Index = () => {
 		if (!form_id) return;
 		setLoading(true);
 		setIsShowingCachedData(false);
+		setHasLoadError(false);
 
 		// When offline mode is active, use cache directly without attempting API call
 		if (offlineMode) {
@@ -304,6 +306,7 @@ const Index = () => {
 				setIsShowingCachedData(true);
 			} else {
 				console.error('Error fetching form submissions', error);
+				setHasLoadError(true);
 			}
 		} finally {
 			setLoading(false);
@@ -450,7 +453,7 @@ const Index = () => {
 					>
 						<TouchableOpacity
 							onPress={() => {
-								if (currentPath.length > 0) {
+								if (!hasLoadError && currentPath.length > 0) {
 									setCurrentPath(prev => prev.slice(0, -1));
 								} else {
 									router.navigate('/form-categories');
