@@ -593,14 +593,14 @@ const Index = () => {
 		setSubmissionLoading(true);
 		let hasError = false;
 
-		// Use folder IDs already fetched at component mount; re-fetch if still null
+		// Use folder IDs already fetched at component mount; re-fetch if either is still null
 		let imageFolderId: string | null = imageFolderIdState;
 		let filesFolderId: string | null = filesFolderIdState;
-		if (imageFolderId === null && filesFolderId === null) {
+		if (imageFolderId === null || filesFolderId === null) {
 			try {
 				const formAnswerFields: any = await fetchSpecificField('form_answers');
-				imageFolderId = formAnswerFields?.value_image?.meta?.options?.folder ?? null;
-				filesFolderId = formAnswerFields?.value_files?.meta?.options?.folder ?? null;
+				imageFolderId = imageFolderId ?? formAnswerFields?.value_image?.meta?.options?.folder ?? null;
+				filesFolderId = filesFolderId ?? formAnswerFields?.value_files?.meta?.options?.folder ?? null;
 			} catch {
 				// silently ignore, upload without folder
 			}
@@ -679,17 +679,31 @@ const Index = () => {
 				} else if (custom_type === 'value_files') {
 					if (Array.isArray(value) && value.length > 0) {
 						const newFiles = value.filter((file: any) => !file?.edit);
-						if (newFiles.length > 0) {
-							const uploadedFileIds = await Promise.all(newFiles.map(async (file: any) => await getDirectusUploadId(file, filesFolderId)));
-							updatedValueFields = {
-								value_files: {
-									create: uploadedFileIds.filter(Boolean).map(fileId => ({
-										directus_files_id: fileId,
-									})),
-								},
-							};
+						const existingFileIds = value.filter((file: any) => file?.edit).map((file: any) => file.directus_files_id).filter(Boolean);
+
+						// Detect deleted relations by comparing current files with original answer files
+						const originalValueFiles: any[] = (answer as any).value_files || [];
+						const deletedRelationIds = originalValueFiles
+							.filter((orig: any) => orig?.directus_files_id && !existingFileIds.includes(orig.directus_files_id))
+							.map((orig: any) => orig.id)
+							.filter(Boolean);
+
+						if (newFiles.length > 0 || deletedRelationIds.length > 0) {
+							const uploadedFileIds = newFiles.length > 0
+								? await Promise.all(newFiles.map(async (file: any) => await getDirectusUploadId(file, filesFolderId)))
+								: [];
+
+							const valueFilesUpdate: Record<string, any> = {};
+							const validUploadIds = uploadedFileIds.filter(Boolean);
+							if (validUploadIds.length > 0) {
+								valueFilesUpdate.create = validUploadIds.map(fileId => ({ directus_files_id: fileId }));
+							}
+							if (deletedRelationIds.length > 0) {
+								valueFilesUpdate.delete = deletedRelationIds;
+							}
+							updatedValueFields = { value_files: valueFilesUpdate };
 						}
-						// else: only existing files, no new uploads needed
+						// else: only unchanged existing files, no action needed
 					} else {
 						// All files cleared — explicitly set to empty
 						updatedValueFields = { value_files: [] };
@@ -997,7 +1011,7 @@ const Index = () => {
                                                                                                 )}
 											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} offlineMode={offlineMode} folderHint={filesFolderIdState} />}
 											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} offlineMode={offlineMode} folderHint={imageFolderIdState} />}
-											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
+											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} folderHint={imageFolderIdState} />}
 											{custom_type === 'value_custom' && showInForm && <CollectionSelection id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} loading={loadingCollection} data={collectionData} custom_type={custom_type} />}
 										</View>
 									);

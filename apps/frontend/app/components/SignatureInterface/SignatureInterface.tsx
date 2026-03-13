@@ -13,7 +13,7 @@ import { TranslationKeys } from '@/locales/keys';
 // Import libraries based on platform
 const SignatureCanvas = Platform.OS === 'web' ? require('react-signature-canvas').default : require('react-native-signature-canvas').default;
 
-const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_type, scrollViewRef }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; scrollViewRef?: any }) => {
+const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_type, scrollViewRef, folderHint }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; scrollViewRef?: any; folderHint?: string | null }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor } = useAppSelector((state) => state.settings);
@@ -151,6 +151,11 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 					<Text style={{ ...styles.buttonText, color: theme.screen.text }}>{translate(TranslationKeys.clear)}</Text>
 				</TouchableOpacity>
 			</View>
+			{folderHint != null && (
+				<Text style={{ ...styles.folderHint, color: theme.screen.text }}>
+					{`${translate(TranslationKeys.upload_folder_id)}: ${folderHint}`}
+				</Text>
+			)}
 		</View>
 	);
 };
