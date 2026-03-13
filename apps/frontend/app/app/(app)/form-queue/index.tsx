@@ -18,6 +18,7 @@ import useToast from '@/hooks/useToast';
 import { format, isValid, parse } from 'date-fns';
 import { uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
 import { Buffer } from 'buffer';
+import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 
 const Index = () => {
     useSetPageTitle(TranslationKeys.form_queue);
@@ -37,11 +38,23 @@ const Index = () => {
     const syncQueueEntry = async (entry: FormQueueEntry) => {
         setSyncingId(entry.id);
         try {
+            // Fetch folder IDs for value_image and value_files fields
+            let imageFolderId: string | null = null;
+            let filesFolderId: string | null = null;
+            try {
+                const formAnswerFields: any = await fetchSpecificField('form_answers');
+                imageFolderId = formAnswerFields?.value_image?.meta?.options?.folder ?? null;
+                filesFolderId = formAnswerFields?.value_files?.meta?.options?.folder ?? null;
+            } catch (fieldError) {
+                console.warn('Queue sync: could not fetch field folder config:', fieldError);
+            }
+
             const answers = (await formAnswersHelper.fetchFormAnswers({
                 filter: { form_submission: { _eq: entry.form_submission_id } },
             })) as DatabaseTypes.FormAnswers[];
 
             if (!answers || answers.length === 0) {
+                console.error('Queue sync failed: no answers found for submission', entry.form_submission_id);
                 toast(translate(TranslationKeys.form_queue_sync_failed), 'error');
                 setSyncingId(null);
                 return;
@@ -98,9 +111,10 @@ const Index = () => {
                                 const arrayBuffer = await response.arrayBuffer();
                                 const buffer = Buffer.from(arrayBuffer);
                                 const fileData = { name: value.name, type: value.type, buffer: isWeb ? buffer : value.image, edit: true };
-                                const fileId = isWeb ? await uploadToDirectus(fileData) : await uploadToDirectusFromMobile(fileData);
+                                const fileId = isWeb ? await uploadToDirectus(fileData, imageFolderId) : await uploadToDirectusFromMobile(fileData, imageFolderId);
                                 updatedValueFields = { value_image: fileId };
-                            } catch {
+                            } catch (uploadError) {
+                                console.error('Queue sync: image upload failed for field', fieldId, uploadError);
                                 updatedValueFields = {};
                             }
                         }
@@ -112,7 +126,7 @@ const Index = () => {
                                     const arrayBuffer = await response.arrayBuffer();
                                     const buffer = Buffer.from(arrayBuffer);
                                     const fileData = { name: file.name, type: file.type, buffer: isWeb ? buffer : file.image, edit: true };
-                                    return isWeb ? uploadToDirectus(fileData) : uploadToDirectusFromMobile(fileData);
+                                    return isWeb ? uploadToDirectus(fileData, filesFolderId) : uploadToDirectusFromMobile(fileData, filesFolderId);
                                 })
                             );
                             updatedValueFields = {
@@ -120,7 +134,8 @@ const Index = () => {
                                     create: uploadedIds.filter(Boolean).map((fileId: any) => ({ directus_files_id: fileId })),
                                 },
                             };
-                        } catch {
+                        } catch (uploadError) {
+                            console.error('Queue sync: file upload failed for field', fieldId, uploadError);
                             updatedValueFields = {};
                         }
                     }
@@ -135,7 +150,8 @@ const Index = () => {
             dispatch({ type: REMOVE_FORM_QUEUE_ENTRY, payload: entry.id });
             toast(translate(TranslationKeys.form_queue_synced), 'success');
         } catch (error) {
-            console.error('Queue sync error:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('Queue sync error for entry', entry.id, ':', errorMessage, error);
             toast(translate(TranslationKeys.form_queue_sync_failed), 'error');
         } finally {
             setSyncingId(null);

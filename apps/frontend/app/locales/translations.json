@@ -5542,5 +5542,25 @@
     "ru": "Скачать всё",
     "tr": "Hepsini indir",
     "zh": "下载全部"
+  },
+  "form_submission_not_found": {
+    "de": "Einreichung nicht gefunden. Bitte Seite neu laden.",
+    "en": "Submission not found. Please reload the page.",
+    "ar": "لم يتم العثور على الإرسال. يرجى إعادة تحميل الصفحة.",
+    "es": "Envío no encontrado. Por favor, recarga la página.",
+    "fr": "Soumission introuvable. Veuillez recharger la page.",
+    "ru": "Заявка не найдена. Пожалуйста, перезагрузите страницу.",
+    "tr": "Gönderim bulunamadı. Lütfen sayfayı yenileyin.",
+    "zh": "未找到提交。请重新加载页面。"
+  },
+  "form_submission_not_found_offline": {
+    "de": "Einreichung nicht im Offline-Cache gefunden.",
+    "en": "Submission not found in offline cache.",
+    "ar": "لم يتم العثور على الإرسال في التخزين المؤقت للوضع غير المتصل.",
+    "es": "Envío no encontrado en la caché sin conexión.",
+    "fr": "Soumission introuvable dans le cache hors ligne.",
+    "ru": "Заявка не найдена в офлайн-кэше.",
+    "tr": "Gönderim çevrimdışı önbellekte bulunamadı.",
+    "zh": "在离线缓存中未找到提交。"
   }
 }

@@ -279,7 +279,11 @@ const Index = () => {
 				}
 			}
 		} else {
-			toast('Please reload the page', 'error');
+			if (offlineMode) {
+				toast(translate(TranslationKeys.form_submission_not_found_offline), 'error');
+			} else {
+				toast(translate(TranslationKeys.form_submission_not_found), 'error');
+			}
 		}
 		return result;
 	};

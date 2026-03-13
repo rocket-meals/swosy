@@ -19,7 +19,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 	const { theme } = useTheme();
 	const formAnswersHelper = new FormAnswersHelper();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const [authToken, setAuthToken] = useState<string | null>(null);
+	const [authToken, setAuthToken] = useState<string | null | undefined>(undefined);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -144,7 +144,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 					</TouchableOpacity>
 				)}
 			</View>
-			{value && (
+			{value && authToken !== undefined && (
 				<View
 					style={{
 						...styles.fileContainer,
@@ -159,7 +159,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 					>
 						<Ionicons name="close" size={18} color={'red'} />
 					</TouchableOpacity>
-					<Image source={getImageSource(value)} style={styles.filePreview} />
+					<Image key={authToken || 'no-auth'} source={getImageSource(value)} style={styles.filePreview} />
 				</View>
 			)}
 		</View>
