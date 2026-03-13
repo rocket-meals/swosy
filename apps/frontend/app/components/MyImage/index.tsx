@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
-import { ImageProps as RNImageProps, ImageSourcePropType } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ImageSourcePropType, Platform } from 'react-native';
 import { Image, ImageProps as ExpoImageProps } from 'expo-image';
 
 import { getHighResImageUrl } from '@/constants/HelperFunctions';
 import { getAppIconInsideExpoLocalSaved } from '@/config';
+import { ServerAPI } from '@/redux/actions';
 
 export type MyImageProps = {
         remote_image_url?: string | null;
@@ -19,6 +20,25 @@ const MyImage: React.FC<MyImageProps> = ({
         defaultImageUrl,
         ...props
 }) => {
+        const [authToken, setAuthToken] = useState<string | null>(null);
+        const mountedRef = useRef(true);
+
+        useEffect(() => {
+                mountedRef.current = true;
+                ServerAPI.getClient()
+                        .getToken()
+                        .then(token => {
+                                if (mountedRef.current) setAuthToken(token);
+                        })
+                        .catch(err => {
+                                console.error('MyImage: failed to retrieve auth token', err);
+                                if (mountedRef.current) setAuthToken(null);
+                        });
+                return () => {
+                        mountedRef.current = false;
+                };
+        }, []);
+
         const directusAssetId = useMemo(() => {
                 if (typeof directus_asset_id === 'object' && directus_asset_id !== null) {
                         return (directus_asset_id as any).id ?? directus_asset_id;
@@ -35,7 +55,18 @@ const MyImage: React.FC<MyImageProps> = ({
                 }
 
                 if (directusAssetId) {
-                        return { uri: getHighResImageUrl(String(directusAssetId)) || undefined };
+                        const baseUrl = getHighResImageUrl(String(directusAssetId));
+                        if (!baseUrl) return { uri: undefined };
+                        if (authToken) {
+                                if (Platform.OS === 'web') {
+                                        // On web, <img> tags cannot send custom headers in cross-origin (no-cors) requests,
+                                        // so we include the token as a query parameter. This is the standard Directus approach.
+                                        const separator = baseUrl.includes('?') ? '&' : '?';
+                                        return { uri: `${baseUrl}${separator}access_token=${encodeURIComponent(authToken)}` };
+                                }
+                                return { uri: baseUrl, headers: { Authorization: `Bearer ${authToken}` } };
+                        }
+                        return { uri: baseUrl };
                 }
 
                 if (defaultImageUrl) {
@@ -44,7 +75,7 @@ const MyImage: React.FC<MyImageProps> = ({
 
                 // fallbackImage is usually a require() number or object. expo-image handles it.
                 return fallbackImage;
-        }, [defaultImageUrl, directusAssetId, fallbackImage, remote_image_url]);
+        }, [authToken, defaultImageUrl, directusAssetId, fallbackImage, remote_image_url]);
 
         if (!source) {
                 return null;
