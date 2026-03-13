@@ -43,7 +43,7 @@ const SettingsListCoordinate: React.FC<SettingsListCoordinateProps> = ({
 	}, [hasLocation, location, openLinkCoordinateModal]);
 
 	const resolvedLabel = label ?? translate(TranslationKeys.location);
-	const resolvedValue = value ?? translate(TranslationKeys.show);
+	const resolvedValue = value ?? translate(TranslationKeys.open_in_google_or_apple_maps);
 	const resolvedLeftIcon = leftIcon ?? <Ionicons name="location-sharp" size={24} color={theme.screen.icon} />;
 	const resolvedRightIcon = rightIcon ?? <Entypo name="chevron-small-right" size={26} color={theme.screen.icon} />;
 
