@@ -9,6 +9,7 @@ import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import * as FileSystem from 'expo-file-system';
 import { TranslationKeys } from '@/locales/keys';
+import { ServerAPI } from '@/redux/actions';
 
 // Import libraries based on platform
 const SignatureCanvas = Platform.OS === 'web' ? require('react-signature-canvas').default : require('react-native-signature-canvas').default;
@@ -19,6 +20,23 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 	const { primaryColor } = useAppSelector((state) => state.settings);
 	const signatureRef = useRef<any>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const [authToken, setAuthToken] = useState<string | null | undefined>(undefined);
+
+	useEffect(() => {
+		let cancelled = false;
+		ServerAPI.getClient()
+			.getToken()
+			.then(token => { if (!cancelled) setAuthToken(token); })
+			.catch(() => { if (!cancelled) setAuthToken(null); });
+		return () => { cancelled = true; };
+	}, []);
+
+	const getImageSource = (uri: string) => {
+		if (authToken && !uri.startsWith('file://') && !uri.startsWith('content://') && !uri.startsWith('ph://')) {
+			return { uri, headers: { Authorization: `Bearer ${authToken}` } };
+		}
+		return { uri };
+	};
 
 	const handleClear = () => {
 		if (!isDisabled) {
@@ -103,13 +121,16 @@ const SignatureInterface = ({ id, value, onChange, error, isDisabled, custom_typ
 		<View style={{ ...styles.container, backgroundColor: theme.screen.iconBg }}>
 			{value && typeof value === 'string' && value?.startsWith('https') ? (
 				<View style={styles.fileContainer}>
-					<Image
-						source={{ uri: value }}
-						style={{
-							...styles.filePreview,
-							width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
-						}}
-					/>
+					{authToken !== undefined && (
+						<Image
+							key={authToken || 'no-auth'}
+							source={getImageSource(value)}
+							style={{
+								...styles.filePreview,
+								width: screenWidth > 768 ? screenWidth * 0.6 : screenWidth * 0.8,
+							}}
+						/>
+					)}
 				</View>
 			) : isWeb ? (
 				<SignatureCanvas

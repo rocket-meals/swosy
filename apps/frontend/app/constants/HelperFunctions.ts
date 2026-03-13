@@ -79,6 +79,17 @@ export const getFormValueImageUrl = (imageId: string) => {
 	return `${Server.ServerUrl}/assets/${imageId}${format}`;
 };
 
+const patchFileFolder = async (token: string | null, fileId: string, folderId: string): Promise<void> => {
+	await fetch(`${Server.ServerUrl}/files/${fileId}`, {
+		method: 'PATCH',
+		headers: {
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ folder: folderId }),
+	});
+};
+
 export const uploadToDirectus = async (image: any, folderId?: string | null) => {
 	try {
 		const token = await ServerAPI.getClient().getToken();
@@ -100,7 +111,15 @@ export const uploadToDirectus = async (image: any, folderId?: string | null) => 
 		});
 
 		const data = await uploadResponse.json();
-		return data.data?.id || null; // Return the Directus file ID
+		const fileId = data.data?.id || null;
+		if (fileId && folderId) {
+			try {
+				await patchFileFolder(token, fileId, folderId);
+			} catch (patchError) {
+				console.warn('Could not update folder for uploaded file:', patchError);
+			}
+		}
+		return fileId; // Return the Directus file ID
 	} catch (error) {
 		console.error('Directus Image Upload Error:', error);
 		return null;
@@ -130,7 +149,15 @@ export const uploadToDirectusFromMobile = async (image: any, folderId?: string |
 		});
 
 		const data = await uploadResponse.json();
-		return data.data?.id || null;
+		const fileId = data.data?.id || null;
+		if (fileId && folderId) {
+			try {
+				await patchFileFolder(token, fileId, folderId);
+			} catch (patchError) {
+				console.warn('Could not update folder for uploaded file:', patchError);
+			}
+		}
+		return fileId;
 	} catch (error) {
 		console.error('Directus Image Upload Error:', error);
 		return null;
