@@ -241,18 +241,21 @@ const Index = () => {
 	};
 
 	const checkValidity = async () => {
-		// Try to find the submission in the local cache first
-		const cachedSubmission = Object.values(cachedFormData || {})
-			.flatMap(entry => entry.submissions || [])
-			.find(s => String(s.id) === String(form_submission_id));
+		let result: DatabaseTypes.FormSubmissions | null = null;
 
-		let result: DatabaseTypes.FormSubmissions | null = cachedSubmission || null;
-
-		if (!result && !offlineMode) {
+		if (offlineMode) {
+			// In offline mode, use cache only
+			result = Object.values(cachedFormData || {})
+				.flatMap(entry => entry.submissions || [])
+				.find(s => String(s.id) === String(form_submission_id)) || null;
+		} else {
+			// In online mode, always fetch fresh from API; fall back to cache on network error
 			try {
 				result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
 			} catch {
-				result = null;
+				result = Object.values(cachedFormData || {})
+					.flatMap(entry => entry.submissions || [])
+					.find(s => String(s.id) === String(form_submission_id)) || null;
 			}
 		}
 
@@ -299,20 +302,23 @@ const Index = () => {
 			setSelectedState(getNextState(formSubmissionPayload?.state));
 		}
 
-		// Try to find the answers in the local cache first
-		const cachedAnswers = Object.values(cachedFormData || {})
-			.map(entry => (entry.answers || {})[String(form_submission_id)])
-			.find(answers => answers && answers.length > 0);
+		// In offline mode use cache; in online mode always fetch fresh from API
+		let result: DatabaseTypes.FormAnswers[] | null = null;
 
-		let result: DatabaseTypes.FormAnswers[] | null = cachedAnswers || null;
-
-		if (!result && !offlineMode) {
+		if (offlineMode) {
+			result = Object.values(cachedFormData || {})
+				.map(entry => (entry.answers || {})[String(form_submission_id)])
+				.find(answers => answers && answers.length > 0) || null;
+		} else {
 			try {
 				result = (await formAnswersHelper.fetchFormAnswers({
 					filter: { form_submission: { _eq: form_submission_id } },
 				})) as DatabaseTypes.FormAnswers[];
 			} catch {
-				result = null;
+				// Fall back to cache on network error
+				result = Object.values(cachedFormData || {})
+					.map(entry => (entry.answers || {})[String(form_submission_id)])
+					.find(answers => answers && answers.length > 0) || null;
 			}
 		}
 
@@ -649,6 +655,12 @@ const Index = () => {
 		}
 
 		if (finalAnswers.length > 0) {
+			// In offline mode, immediately add to queue without attempting upload
+			if (offlineMode) {
+				setSubmissionLoading(false);
+				handleAddToQueue();
+				return;
+			}
 			try {
 				await Promise.all(finalAnswers.map((answer: any) => formAnswersHelper.updateFormAnswers(answer.id, answer)));
 

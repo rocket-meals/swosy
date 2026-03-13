@@ -43,6 +43,16 @@ const Index = () => {
 	const getAllCategories = async () => {
 		setLoading(true);
 		setIsShowingCachedData(false);
+
+		if (offlineMode) {
+			// In offline mode, use cache only
+			const cached = cachedFormCategories || [];
+			setFormCategories(cached);
+			if (cached.length > 0) setIsShowingCachedData(true);
+			setLoading(false);
+			return;
+		}
+
 		try {
 			const result = (await formCategoriesHelper.fetchFormCategories({
 				filter: { status: { _eq: 'published' } },
@@ -165,7 +175,7 @@ const Index = () => {
 		useCallback(() => {
 			getAllCategories();
 			return () => {};
-		}, [])
+		}, [offlineMode])
 	);
 
 	useEffect(() => {
