@@ -2,7 +2,7 @@ import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, FontAwesome } from '@expo/vector-icons';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
@@ -15,7 +15,7 @@ import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useLanguage } from '@/hooks/useLanguage';
-import { SET_CACHED_FORM_DATA } from '@/redux/Types/types';
+import { SET_CACHED_FORM_DATA, SET_CACHED_FORMS } from '@/redux/Types/types';
 
 const CACHED_COLOR = '#22c55e';
 
@@ -25,6 +25,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
+	const [isShowingCachedData, setIsShowingCachedData] = useState(false);
 	const [downloadingIds, setDownloadingIds] = useState<Set<string>>(new Set());
 	const [isDownloadingAll, setIsDownloadingAll] = useState(false);
     const { category_id } = useLocalSearchParams();
@@ -34,16 +35,27 @@ const Index = () => {
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 	const formAnswersHelper = new FormAnswersHelper();
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { cachedFormData } = useAppSelector((state) => state.form);
+	const { cachedFormData, cachedForms } = useAppSelector((state) => state.form);
 
 	const getAllForms = async () => {
 		setLoading(true);
-		const result = (await formsHelper.fetchForms({
-			filter: { category: { _eq: category_id }, status: { _eq: 'published' } },
-		})) as DatabaseTypes.Forms[];
-		if (result) {
+		setIsShowingCachedData(false);
+		try {
+			const result = (await formsHelper.fetchForms({
+				filter: { category: { _eq: category_id }, status: { _eq: 'published' } },
+			})) as DatabaseTypes.Forms[];
+			if (result) {
+				setForms(result);
+				dispatch({ type: SET_CACHED_FORMS, payload: { category_id: String(category_id), forms: result } });
+			}
+		} catch {
+			const cached = (cachedForms || {})[String(category_id)] || [];
+			if (cached.length > 0) {
+				setForms(cached);
+				setIsShowingCachedData(true);
+			}
+		} finally {
 			setLoading(false);
-			setForms(result);
 		}
 	};
 
@@ -140,7 +152,7 @@ const Index = () => {
 					{isDownloadingAll ? (
 						<ActivityIndicator size={18} color={theme.screen.icon} />
 					) : (
-						<MaterialCommunityIcons name="download" size={20} color={theme.screen.icon} />
+						<FontAwesome name="cloud-download" size={20} color={theme.screen.icon} />
 					)}
 					<Text style={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 14 }}>
 						{isDownloadingAll ? translate(TranslationKeys.form_cache_downloading) : translate(TranslationKeys.form_cache_download)}
@@ -195,7 +207,7 @@ const Index = () => {
 											{isThisDownloading ? (
 												<ActivityIndicator size={16} color={CACHED_COLOR} />
 											) : isCached ? (
-												<MaterialCommunityIcons name="check-circle" size={18} color={CACHED_COLOR} />
+												<FontAwesome name="cloud-download" size={18} color={CACHED_COLOR} />
 											) : null}
 											<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
 										</View>

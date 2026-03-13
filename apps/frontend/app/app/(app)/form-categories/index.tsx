@@ -2,36 +2,51 @@ import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { FormCategoriesHelper } from '@/redux/actions/Forms/FormCategories';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
+import { useDispatch } from 'react-redux';
 import { getFromCategoryTranslation } from '@/helper/resourceHelper';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { RootState } from '@/redux/reducer';
+import { SET_CACHED_FORM_CATEGORIES } from '@/redux/Types/types';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_category);
 	const { theme } = useTheme();
+	const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
+    const [isShowingCachedData, setIsShowingCachedData] = useState(false);
     const { language } = useAppSelector((state) => state.settings);
     const [formCategories, setFormCategories] = useState<DatabaseTypes.FormCategories[]>([]);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const formCategoriesHelper = new FormCategoriesHelper();
+	const { cachedFormCategories } = useAppSelector((state) => state.form);
 
 	const getAllCategories = async () => {
 		setLoading(true);
-		const result = (await formCategoriesHelper.fetchFormCategories({
-			filter: { status: { _eq: 'published' } },
-		})) as DatabaseTypes.FormCategories[];
+		setIsShowingCachedData(false);
+		try {
+			const result = (await formCategoriesHelper.fetchFormCategories({
+				filter: { status: { _eq: 'published' } },
+			})) as DatabaseTypes.FormCategories[];
 
-		if (result) {
+			if (result) {
+				setFormCategories(result);
+				dispatch({ type: SET_CACHED_FORM_CATEGORIES, payload: result });
+			}
+		} catch {
+			// Network failed – fall back to locally cached data
+			const cached = cachedFormCategories || [];
+			if (cached.length > 0) {
+				setFormCategories(cached);
+				setIsShowingCachedData(true);
+			}
+		} finally {
 			setLoading(false);
-
-			setFormCategories(result);
 		}
 	};
 
@@ -98,7 +113,12 @@ const Index = () => {
 											{IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
 											<Text style={{ ...styles.body, color: theme.screen.text }}>{category?.translations ? getFromCategoryTranslation(category?.translations, language) : category?.alias}</Text>
 										</View>
-										<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+										<View style={styles.rowEnd}>
+											{isShowingCachedData && (
+												<MaterialCommunityIcons name="cached" size={18} color={theme.screen.icon} />
+											)}
+											<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+										</View>
 									</TouchableOpacity>
 								);
 							})}

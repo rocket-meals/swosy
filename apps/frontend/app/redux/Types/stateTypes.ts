@@ -113,6 +113,8 @@ export type FormState = {
 	formSubmission: DatabaseTypes.FormSubmissions;
 	formQueue: FormQueueEntry[];
 	cachedFormData: Record<string, CachedFormEntry>;
+	cachedFormCategories: DatabaseTypes.FormCategories[];
+	cachedForms: Record<string, DatabaseTypes.Forms[]>;
 }
 
 export type CampusState = {

@@ -5512,5 +5512,15 @@
     "ru": "Форма успешно синхронизирована",
     "tr": "Form başarıyla senkronize edildi",
     "zh": "表单已成功同步"
+  },
+  "form_offline_cached": {
+    "de": "Offline (zwischengespeichert)",
+    "en": "Offline (cached)",
+    "ar": "غير متصل (مخزن مؤقتاً)",
+    "es": "Sin conexión (en caché)",
+    "fr": "Hors ligne (en cache)",
+    "ru": "Офлайн (кэшировано)",
+    "tr": "Çevrimdışı (önbellekte)",
+    "zh": "离线（已缓存）"
   }
 }
