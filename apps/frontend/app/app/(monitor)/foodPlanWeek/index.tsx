@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
@@ -11,8 +11,7 @@ import { Switch } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useAppSelector } from '@/redux/hooks';
-import { useMyScrollviewModalCanteenSelection } from '@/hooks/useMyScrollviewModalCanteenSelection';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { useMyScrollviewModalSelectWeekPlanCanteen } from '@/hooks/useMyScrollviewModalSelectWeekPlanCanteen';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_week);
@@ -23,19 +22,7 @@ const Index = () => {
 	const { weekPlan } = useAppSelector((state) => state.management);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
-	const { openCanteenSelectionModal, closeCanteenSelectionModal } = useMyScrollviewModalCanteenSelection();
-
-	const openCanteenModal = useCallback(() => {
-		openCanteenSelectionModal({
-			onSelectCanteen: (canteen: DatabaseTypes.Canteens) => {
-				dispatch({
-					type: SET_WEEK_PLAN,
-					payload: { selectedCanteen: canteen },
-				});
-				closeCanteenSelectionModal();
-			},
-		});
-	}, [openCanteenSelectionModal, closeCanteenSelectionModal, dispatch]);
+	const { openSelectWeekPlanCanteenModal } = useMyScrollviewModalSelectWeekPlanCanteen();
 
 	const toggleMenuSwitch = () => {
 		dispatch({
@@ -73,7 +60,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={openCanteenModal}
+					onPress={openSelectWeekPlanCanteenModal}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />

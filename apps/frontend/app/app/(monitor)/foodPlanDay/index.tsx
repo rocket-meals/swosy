@@ -18,8 +18,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import type { CheckTextInput } from '@/components/SettingsListTextInput';
-import { useMyScrollviewModalCanteenSelection } from '@/hooks/useMyScrollviewModalCanteenSelection';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { useMyScrollviewModalSelectDayPlanCanteen } from '@/hooks/useMyScrollviewModalSelectDayPlanCanteen';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_day);
@@ -29,7 +28,7 @@ const Index = () => {
 	const { primaryColor: projectColor, appSettings } = useAppSelector((state) => state.settings);
 	const { dayPlan } = useAppSelector((state) => state.management);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { openCanteenSelectionModal, closeCanteenSelectionModal } = useMyScrollviewModalCanteenSelection();
+	const { openSelectDayPlanCanteenModal } = useMyScrollviewModalSelectDayPlanCanteen();
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
 	const canOpenBigScreen = Boolean(dayPlan?.selectedCanteen?.alias);
 	const toggleMenuSwitch = () => {
@@ -60,18 +59,6 @@ const Index = () => {
 			payload: { showMarkingsOnCard: !currentValue },
 		});
 	};
-
-	const openCanteenModal = useCallback(() => {
-		openCanteenSelectionModal({
-			onSelectCanteen: (canteen: DatabaseTypes.Canteens) => {
-				dispatch({
-					type: SET_DAY_PLAN,
-					payload: { selectedCanteen: canteen },
-				});
-				closeCanteenSelectionModal();
-			},
-		});
-	}, [openCanteenSelectionModal, closeCanteenSelectionModal, dispatch]);
 
 	const openFoodCategoryModal = useCallback(
 		(key: string, label: string) => {
@@ -110,7 +97,7 @@ const Index = () => {
 						label={translate(TranslationKeys.canteen)}
 						value={dayPlan?.selectedCanteen?.alias || ''}
 						rightIcon={<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />}
-						handleFunction={openCanteenModal}
+						handleFunction={openSelectDayPlanCanteenModal}
 						groupPosition="top"
 					/>
 					<SettingsList

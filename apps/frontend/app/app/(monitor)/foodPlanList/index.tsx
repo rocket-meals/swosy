@@ -19,7 +19,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { useAppSelector } from '@/redux/hooks';
-import { useMyScrollviewModalCanteenSelection } from '@/hooks/useMyScrollviewModalCanteenSelection';
+import { useMyScrollviewModalSelectFoodPlanCanteen } from '@/hooks/useMyScrollviewModalSelectFoodPlanCanteen';
 
 type FoodAttribute = {
 	id: string;
@@ -44,7 +44,7 @@ const Index = () => {
 	const intervalSheetRef = useRef<BottomSheet>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
-	const { openCanteenSelectionModal, closeCanteenSelectionModal } = useMyScrollviewModalCanteenSelection();
+	const { openSelectFoodPlanCanteenModal } = useMyScrollviewModalSelectFoodPlanCanteen();
 
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	const [selectedInterval, setSelectedInterval] = useState({
@@ -106,23 +106,8 @@ const Index = () => {
 		setFoodAttributes((prev: any) => prev.map((attr: any) => (attr.id === id ? { ...attr, selected: !attr.selected } : attr)));
 	};
 
-	const openCanteenModal = (option: string) => {
-		openCanteenSelectionModal({
-			onSelectCanteen: (canteen: DatabaseTypes.Canteens) => {
-				if (option === 'canteen') {
-					dispatch({
-						type: SET_FOOD_PLAN,
-						payload: { selectedCanteen: canteen },
-					});
-				} else {
-					dispatch({
-						type: SET_FOOD_PLAN,
-						payload: { additionalSelectedCanteen: canteen },
-					});
-				}
-				closeCanteenSelectionModal();
-			},
-		});
+	const openCanteenModal = (option: 'canteen' | 'additional') => {
+		openSelectFoodPlanCanteenModal(option);
 	};
 
 	const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
