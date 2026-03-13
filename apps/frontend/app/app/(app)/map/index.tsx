@@ -7,7 +7,7 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -183,6 +183,7 @@ type OsmSettingsContentProps = {
 	initialAutoRotateMode: boolean;
 	initialPeopleMode: boolean;
 	initialIntelligentMovement: boolean;
+	initialPeopleCount: number;
 	isFullscreen: boolean;
 	onSelectedStyleChange: (key: string) => void;
 	onFlyAnimationChange: (value: boolean) => void;
@@ -191,6 +192,7 @@ type OsmSettingsContentProps = {
 	onAutoRotateModeChange: (value: boolean) => void;
 	onPeopleModeChange: (value: boolean) => void;
 	onIntelligentMovementChange: (value: boolean) => void;
+	onPeopleCountChange: (value: number) => void;
 	onToggleFullscreen: () => void;
 	onShowControlsHint: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
@@ -204,6 +206,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	initialAutoRotateMode,
 	initialPeopleMode,
 	initialIntelligentMovement,
+	initialPeopleCount,
 	isFullscreen,
 	onSelectedStyleChange,
 	onFlyAnimationChange,
@@ -212,6 +215,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	onAutoRotateModeChange,
 	onPeopleModeChange,
 	onIntelligentMovementChange,
+	onPeopleCountChange,
 	onToggleFullscreen,
 	onShowControlsHint,
 	theme,
@@ -223,6 +227,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	const [localAutoRotateMode, setLocalAutoRotateMode] = useState(initialAutoRotateMode);
 	const [localPeopleMode, setLocalPeopleMode] = useState(initialPeopleMode);
 	const [localIntelligentMovement, setLocalIntelligentMovement] = useState(initialIntelligentMovement);
+	const [localPeopleCount, setLocalPeopleCount] = useState(String(initialPeopleCount));
 	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
 
 	if (showingStyleSelector) {
@@ -362,6 +367,28 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 								setLocalIntelligentMovement(value);
 								onIntelligentMovementChange(value);
 							}}
+						/>
+					}
+					groupPosition="middle"
+					showSeparator={true}
+				/>
+			)}
+			{localPeopleMode && (
+				<SettingsList
+					title="Anzahl simulierter Menschen"
+					leftIcon={<MaterialIcons name="person-add" size={20} color={theme.screen.icon} />}
+					rightElement={
+						<TextInput
+							value={localPeopleCount}
+							onChangeText={(text) => {
+								setLocalPeopleCount(text);
+								const num = parseInt(text, 10);
+								if (!isNaN(num) && num >= 1) {
+									onPeopleCountChange(num);
+								}
+							}}
+							keyboardType="numeric"
+							style={{ color: theme.screen.text, textAlign: 'right', minWidth: 60, fontSize: 15 }}
 						/>
 					}
 					groupPosition="bottom"
@@ -610,6 +637,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const autoRotateMode = useAppSelector((state) => (state.settings as any).osmVectorMapAutoRotateMode ?? false);
 	const peopleMode = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleMode ?? false);
 	const intelligentMovement = useAppSelector((state) => (state.settings as any).osmVectorMapIntelligentMovement ?? false);
+	const peopleCount = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleCount ?? 80);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -676,6 +704,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	peopleModeRef.current = peopleMode;
 	const intelligentMovementRef = useRef(intelligentMovement);
 	intelligentMovementRef.current = intelligentMovement;
+	const peopleCountRef = useRef(peopleCount);
+	peopleCountRef.current = peopleCount;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1100,6 +1130,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 	}, [intelligentMovement]);
 
+	// Send people count to the map when it changes and the map is ready
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ peopleCount: peopleCount });
+		}
+	}, [peopleCount]);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1163,6 +1200,7 @@ const OsmVectorMapScreen: React.FC = () => {
 					pendingNavigateRef.current = true;
 					sendMapData();
 				}
+				sendToMapRef.current({ peopleCount: peopleCountRef.current });
 				if (peopleModeRef.current) {
 					sendToMapRef.current({ peopleMode: true });
 				}
@@ -1234,6 +1272,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		[dispatch],
 	);
 
+	const setPeopleCountDispatch = useCallback(
+		(value: number) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_PEOPLE_COUNT, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -1246,6 +1291,7 @@ const OsmVectorMapScreen: React.FC = () => {
 					initialAutoRotateMode={autoRotateMode}
 					initialPeopleMode={peopleMode}
 					initialIntelligentMovement={intelligentMovement}
+					initialPeopleCount={peopleCount}
 					isFullscreen={isFullscreen}
 					onSelectedStyleChange={setSelectedStyleKey}
 					onFlyAnimationChange={setUseFlyAnimationDispatch}
@@ -1254,13 +1300,14 @@ const OsmVectorMapScreen: React.FC = () => {
 					onAutoRotateModeChange={setAutoRotateModeDispatch}
 					onPeopleModeChange={setPeopleModeDispatch}
 					onIntelligentMovementChange={setIntelligentMovementDispatch}
+					onPeopleCountChange={setPeopleCountDispatch}
 					onToggleFullscreen={handleToggleFullscreen}
 					onShowControlsHint={openControlsHintModal}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, handleToggleFullscreen, openControlsHintModal]);
+	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, handleToggleFullscreen, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
