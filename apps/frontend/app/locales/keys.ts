@@ -307,6 +307,7 @@ export enum TranslationKeys {
 	leaflet_test = 'leaflet_test',
 	map_variants = 'map_variants',
 	osm_vector_map = 'osm_vector_map',
+	loading_vector_map = 'loading_vector_map',
 	news = 'news',
 	food_offers = 'food_offers',
 	read_more = 'read_more',

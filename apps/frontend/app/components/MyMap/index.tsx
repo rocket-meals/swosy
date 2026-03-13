@@ -7,7 +7,16 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
-const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch, onMessage }, ref) => {
+function escapeHtml(text: string): string {
+	return text
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
+
+const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch, loadingText, onMessage }, ref) => {
 	const webViewRef = useRef<WebView>(null);
 	const [html, setHtml] = useState<string | null>(null);
 
@@ -26,6 +35,12 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch
 				'initMap(null, null);',
 				`initMap([${initialCenter.lng}, ${initialCenter.lat}], null${pitch});`,
 			);
+			if (loadingText) {
+				htmlContent = htmlContent.replace(
+					'<span id="loading-text">Loading vector map…</span>',
+					`<span id="loading-text">${escapeHtml(loadingText)}</span>`,
+				);
+			}
 			if (isMounted) {
 				setHtml(htmlContent);
 			}
