@@ -37,6 +37,7 @@ import { filterOptions } from './constants';
 import EditFormSubmissionSheet from '@/components/EditFormSubmissionSheet/EditFormSubmissionSheet';
 import { SET_FORM_SUBMISSION, ADD_FORM_QUEUE_ENTRY, REMOVE_FORM_QUEUE_ENTRY } from '@/redux/Types/types';
 import { excerpt, getFileFromDirectus, getFormValueImageUrl, uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
+import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/SubmissionWarningSheet';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { Buffer } from 'buffer';
@@ -267,14 +268,14 @@ const Index = () => {
 				} else {
 					openWarningSheet();
 				}
-			} else {
+			} else if (!offlineMode) {
 				try {
 					await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), {
 						user_locked_by: String(user?.id),
 						date_started: new Date().toISOString(),
 					});
 				} catch {
-					// update fails silently when offline
+					// update fails silently on network error
 				}
 			}
 		} else {
@@ -539,7 +540,7 @@ const Index = () => {
 		[formData]
 	);
 
-	const getDirectusUploadId = async (value: any) => {
+	const getDirectusUploadId = async (value: any, folderId?: string | null) => {
 		const response = await fetch(value.image);
 		const arrayBuffer = await response.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
@@ -551,9 +552,9 @@ const Index = () => {
 		};
 		let fileId;
 		if (isWeb) {
-			fileId = await uploadToDirectus(fileData);
+			fileId = await uploadToDirectus(fileData, folderId);
 		} else {
-			fileId = await uploadToDirectusFromMobile(fileData);
+			fileId = await uploadToDirectusFromMobile(fileData, folderId);
 		}
 		return fileId;
 	};
@@ -585,6 +586,17 @@ const Index = () => {
 	const handleFormSubmission = async () => {
 		setSubmissionLoading(true);
 		let hasError = false;
+
+		// Fetch folder IDs for value_image and value_files fields
+		let imageFolderId: string | null = null;
+		let filesFolderId: string | null = null;
+		try {
+			const formAnswerFields: any = await fetchSpecificField('form_answers');
+			imageFolderId = formAnswerFields?.value_image?.meta?.options?.folder ?? null;
+			filesFolderId = formAnswerFields?.value_files?.meta?.options?.folder ?? null;
+		} catch {
+			// silently ignore, upload without folder
+		}
 
 		const filteredFormAnswers = formAnswers.filter(answer => formData.hasOwnProperty(String(answer?.id)));
 
@@ -628,11 +640,11 @@ const Index = () => {
 					updatedValueFields = { value_date: formateDate };
 				} else if (custom_type === 'value_image') {
 					if (value?.name) {
-						const directusFileId = await getDirectusUploadId(value);
+						const directusFileId = await getDirectusUploadId(value, imageFolderId);
 						updatedValueFields = { value_image: directusFileId };
 					}
 				} else if (custom_type === 'value_files' && Array.isArray(value)) {
-					const uploadedFileIds = await Promise.all(value.filter((file: any) => !file?.edit).map(async (file: any) => await getDirectusUploadId(file)));
+					const uploadedFileIds = await Promise.all(value.filter((file: any) => !file?.edit).map(async (file: any) => await getDirectusUploadId(file, filesFolderId)));
 					updatedValueFields = {
 						value_files: {
 							create: uploadedFileIds.filter(Boolean).map(fileId => ({

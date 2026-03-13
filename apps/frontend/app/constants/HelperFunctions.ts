@@ -79,7 +79,7 @@ export const getFormValueImageUrl = (imageId: string) => {
 	return `${Server.ServerUrl}/assets/${imageId}${format}`;
 };
 
-export const uploadToDirectus = async (image: any) => {
+export const uploadToDirectus = async (image: any, folderId?: string | null) => {
 	try {
 		const token = await ServerAPI.getClient().getToken();
 
@@ -88,7 +88,7 @@ export const uploadToDirectus = async (image: any) => {
 		const formData = new FormData();
 		formData.append('file', blob, image.name);
 		formData.append('filename_download', image.name);
-		// formData.append('storage', folderId);
+		if (folderId) formData.append('folder', folderId);
 		formData.append('type', image.type);
 
 		const uploadResponse = await fetch(`${Server.ServerUrl}/files`, {
@@ -107,7 +107,7 @@ export const uploadToDirectus = async (image: any) => {
 	}
 };
 
-export const uploadToDirectusFromMobile = async (image: any) => {
+export const uploadToDirectusFromMobile = async (image: any, folderId?: string | null) => {
 	try {
 		const token = await ServerAPI.getClient().getToken();
 
@@ -118,6 +118,7 @@ export const uploadToDirectusFromMobile = async (image: any) => {
 			type: image.type || 'image/png',
 		} as any);
 		formData.append('filename_download', image.name);
+		if (folderId) formData.append('folder', folderId);
 		formData.append('type', image.type);
 
 		const uploadResponse = await fetch(`${Server.ServerUrl}/files`, {
