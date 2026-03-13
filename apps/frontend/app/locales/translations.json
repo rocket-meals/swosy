@@ -5523,6 +5523,16 @@
     "tr": "Çevrimdışı (önbellekte)",
     "zh": "离线（已缓存）"
   },
+  "form_offline_mode": {
+    "de": "Offline-Modus",
+    "en": "Offline mode",
+    "ar": "وضع عدم الاتصال",
+    "es": "Modo sin conexión",
+    "fr": "Mode hors ligne",
+    "ru": "Офлайн-режим",
+    "tr": "Çevrimdışı modu",
+    "zh": "离线模式"
+  },
   "form_download_all": {
     "de": "Alles herunterladen",
     "en": "Download all",

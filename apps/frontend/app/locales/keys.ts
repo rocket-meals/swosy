@@ -548,6 +548,7 @@ export enum TranslationKeys {
 	form_cache_downloaded = 'form_cache_downloaded',
 	form_download_all = 'form_download_all',
 	form_offline_cached = 'form_offline_cached',
+	form_offline_mode = 'form_offline_mode',
 	// NOT IN TRANSLATION
 	feedback_and_support = 'feedback_and_support',
 	Food_Plan_Week = 'FoodPlan:Week',

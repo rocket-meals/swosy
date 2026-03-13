@@ -59,7 +59,7 @@ const Index = () => {
 	const [formSubmissions, setFormSubmissions] = useState<DatabaseTypes.FormSubmissions[]>([]);
     const [selectedOption, setSelectedOption] = useState<string>('draft');
     const [sortOption, setSortOption] = useState<FormSubmissionSortOption>('alphabetical');
-    const { drawerPosition, language, primaryColor } = useAppSelector((state) => state.settings);
+    const { drawerPosition, language, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
     const [currentPath, setCurrentPath] = useState<string[]>([]);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const [showQueue, setShowQueue] = useState(false);
@@ -256,6 +256,27 @@ const Index = () => {
 		if (!form_id) return;
 		setLoading(true);
 		setIsShowingCachedData(false);
+
+		// When offline mode is active, use cache directly without attempting API call
+		if (offlineMode) {
+			const cached = (cachedFormData || {})[String(form_id)]?.submissions || [];
+			const filterState = selectedOption || 'draft';
+			const filterQuery = query ? query.trim().toLowerCase() : '';
+			const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
+				const stateMatch = s.state === filterState;
+				const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
+				return stateMatch && aliasMatch;
+			});
+			const sortedResult = sortFormSubmissions(filtered, sortOption);
+			if (append) {
+				setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
+			} else {
+				setFormSubmissions(sortedResult);
+			}
+			if (cached.length > 0) setIsShowingCachedData(true);
+			setLoading(false);
+			return;
+		}
 
 		try {
 			const result = (await formsSubmissionsHelper.fetchFormSubmissions({

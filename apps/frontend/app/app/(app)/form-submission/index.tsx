@@ -139,7 +139,7 @@ const Index = () => {
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { language, drawerPosition, primaryColor } = useAppSelector((state) => state.settings);
+	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 
 	// Set Page Title
@@ -248,7 +248,7 @@ const Index = () => {
 
 		let result: DatabaseTypes.FormSubmissions | null = cachedSubmission || null;
 
-		if (!result) {
+		if (!result && !offlineMode) {
 			try {
 				result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
 			} catch {
@@ -306,7 +306,7 @@ const Index = () => {
 
 		let result: DatabaseTypes.FormAnswers[] | null = cachedAnswers || null;
 
-		if (!result) {
+		if (!result && !offlineMode) {
 			try {
 				result = (await formAnswersHelper.fetchFormAnswers({
 					filter: { form_submission: { _eq: form_submission_id } },
