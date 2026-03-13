@@ -63,7 +63,8 @@ const Index = () => {
     const [currentPath, setCurrentPath] = useState<string[]>([]);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const [showQueue, setShowQueue] = useState(false);
-	const { formQueue } = useAppSelector((state) => state.form);
+	const { formQueue, cachedFormData } = useAppSelector((state) => state.form);
+	const [isShowingCachedData, setIsShowingCachedData] = useState(false);
 
 	const queueEntries = useMemo(
 		() => (formQueue || []).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
@@ -254,6 +255,7 @@ const Index = () => {
 	const loadFormSubmissions = async (pageNumber: number, append: boolean = false) => {
 		if (!form_id) return;
 		setLoading(true);
+		setIsShowingCachedData(false);
 
 		try {
 			const result = (await formsSubmissionsHelper.fetchFormSubmissions({
@@ -274,7 +276,26 @@ const Index = () => {
 				}
 			}
 		} catch (error) {
-			console.error('Error fetching form submissions', error);
+			// Network failed – fall back to locally cached submissions for this form
+			const cached = (cachedFormData || {})[String(form_id)]?.submissions || [];
+			if (cached.length > 0) {
+				const filterState = selectedOption || 'draft';
+				const filterQuery = query ? query.trim().toLowerCase() : '';
+				const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
+					const stateMatch = s.state === filterState;
+					const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
+					return stateMatch && aliasMatch;
+				});
+				const sortedResult = sortFormSubmissions(filtered, sortOption);
+				if (append) {
+					setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
+				} else {
+					setFormSubmissions(sortedResult);
+				}
+				setIsShowingCachedData(true);
+			} else {
+				console.error('Error fetching form submissions', error);
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -627,6 +648,11 @@ const Index = () => {
 						>
 							{`${translate(TranslationKeys.state)}: ${translate(selectedOption)}`}
 						</Text>
+						{isShowingCachedData && (
+							<View style={styles.cachedRow}>
+								<MaterialCommunityIcons name="cached" size={18} color={theme.screen.icon} />
+							</View>
+						)}
 					</View>
 					<View
 						style={{
