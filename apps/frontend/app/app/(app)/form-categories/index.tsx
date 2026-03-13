@@ -1,5 +1,5 @@
-import { ActivityIndicator, Dimensions, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +19,6 @@ import { SET_CACHED_FORM_CATEGORIES, SET_CACHED_FORMS, SET_CACHED_FORM_DATA, SET
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
-import { FormQueueEntry } from '@/redux/Types/stateTypes';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_category);
@@ -30,8 +29,7 @@ const Index = () => {
     const [loading, setLoading] = useState(false);
     const [isShowingCachedData, setIsShowingCachedData] = useState(false);
     const [isDownloadingAll, setIsDownloadingAll] = useState(false);
-    const [showQueue, setShowQueue] = useState(false);
-    const { language, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
+    const { language, offlineMode } = useAppSelector((state) => state.settings);
     const [formCategories, setFormCategories] = useState<DatabaseTypes.FormCategories[]>([]);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const formCategoriesHelper = new FormCategoriesHelper();
@@ -40,7 +38,7 @@ const Index = () => {
 	const formAnswersHelper = new FormAnswersHelper();
 	const { cachedFormCategories, cachedForms, formQueue } = useAppSelector((state) => state.form);
 
-	const allQueueEntries: FormQueueEntry[] = useMemo(() => formQueue || [], [formQueue]);
+	const queueCount = (formQueue || []).length;
 
 	const getAllCategories = async () => {
 		setLoading(true);
@@ -216,20 +214,20 @@ const Index = () => {
 
 					{/* Queue button */}
 					<TouchableOpacity
-						onPress={() => setShowQueue((prev) => !prev)}
+						onPress={() => router.push('/form-queue')}
 						style={{
 							padding: 10,
 							borderRadius: 20,
-							backgroundColor: showQueue ? primaryColor : theme.screen.iconBg,
+							backgroundColor: theme.screen.iconBg,
 						}}
 					>
 						<View>
 							<MaterialCommunityIcons
 								name="clock-outline"
 								size={22}
-								color={showQueue ? theme.screen.iconBg : theme.screen.icon}
+								color={theme.screen.icon}
 							/>
-							{allQueueEntries.length > 0 && (
+							{queueCount > 0 && (
 								<View
 									style={{
 										position: 'absolute',
@@ -244,7 +242,7 @@ const Index = () => {
 										paddingHorizontal: 2,
 									}}
 								>
-									<Text style={{ color: 'white', fontSize: 10, fontFamily: 'Poppins_700Bold' }}>{allQueueEntries.length}</Text>
+									<Text style={{ color: 'white', fontSize: 10, fontFamily: 'Poppins_700Bold' }}>{queueCount}</Text>
 								</View>
 							)}
 						</View>
@@ -260,59 +258,6 @@ const Index = () => {
 					title={translate(TranslationKeys.form_offline_mode)}
 					groupPosition="single"
 				/>
-
-				{/* Queue panel */}
-				{showQueue && (
-					<View style={{ width: '100%', marginTop: 10 }}>
-						<Text
-							style={{
-								color: theme.screen.text,
-								fontSize: 16,
-								fontFamily: 'Poppins_700Bold',
-								marginBottom: 8,
-							}}
-						>
-							{translate(TranslationKeys.form_queue)}
-						</Text>
-						{allQueueEntries.length === 0 ? (
-							<View style={{ padding: 16, alignItems: 'center' }}>
-								<Text style={{ color: theme.screen.text, fontSize: 14, fontFamily: 'Poppins_400Regular' }}>
-									{translate(TranslationKeys.form_queue_empty)}
-								</Text>
-							</View>
-						) : (
-							<FlatList
-								data={allQueueEntries}
-								keyExtractor={(item: FormQueueEntry) => item.id}
-								scrollEnabled={false}
-								renderItem={({ item }: { item: FormQueueEntry }) => (
-									<TouchableOpacity
-										style={{
-											...styles.formCategory,
-											backgroundColor: theme.screen.iconBg,
-											marginBottom: 6,
-										}}
-										onPress={() => {
-											router.push({
-												pathname: '/form-submission',
-												params: { form_submission_id: item.form_submission_id, queue_entry_id: item.id },
-											});
-										}}
-									>
-										<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-											<MaterialCommunityIcons name="clock-outline" size={18} color={theme.screen.icon} />
-											<Text style={{ ...styles.body, color: theme.screen.text, flex: 1 }} numberOfLines={1}>
-												{item.alias || item.form_submission_id}
-											</Text>
-										</View>
-										<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-									</TouchableOpacity>
-								)}
-								contentContainerStyle={{ paddingBottom: 4 }}
-							/>
-						)}
-					</View>
-				)}
 
 				{/* Category list */}
 				{loading ? (
@@ -360,7 +305,7 @@ const Index = () => {
 										</View>
 										<View style={styles.rowEnd}>
 											{cached && (
-												<FontAwesome name="cloud-download" size={16} color={theme.screen.icon} />
+												<FontAwesome name="cloud-download" size={16} color={offlineMode ? 'green' : theme.screen.icon} />
 											)}
 											{isShowingCachedData && (
 												<MaterialCommunityIcons name="cached" size={18} color={theme.screen.icon} />

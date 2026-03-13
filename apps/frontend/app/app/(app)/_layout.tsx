@@ -764,6 +764,12 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="form-queue/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.form_queue)} />,
+					}}
+				/>
+				<Drawer.Screen
 					name="image-full-screen"
 					options={{
 						headerShown: false,
