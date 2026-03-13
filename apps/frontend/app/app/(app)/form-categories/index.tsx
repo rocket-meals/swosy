@@ -65,9 +65,8 @@ const Index = () => {
 		if (isDownloadingAll) return;
 		setIsDownloadingAll(true);
 		try {
-			// 1. Fetch ALL form categories (published + draft, limit 1000)
+			// 1. Fetch ALL form categories (regardless of status), limit 1000
 			const allCategories = (await formCategoriesHelper.fetchFormCategories({
-				filter: { status: { _in: ['published', 'draft'] } },
 				limit: 1000,
 			})) as DatabaseTypes.FormCategories[];
 
@@ -77,7 +76,7 @@ const Index = () => {
 
 			const categoriesToProcess = allCategories || [];
 
-			// 2. For each category, fetch all forms (published + draft, limit 1000)
+			// 2. For each category, fetch ALL forms (regardless of status), limit 1000
 			const allForms: DatabaseTypes.Forms[] = [];
 			await Promise.allSettled(
 				categoriesToProcess.map(async (category) => {
@@ -85,7 +84,6 @@ const Index = () => {
 					const categoryForms = (await formsHelper.fetchForms({
 						filter: {
 							category: { _eq: categoryId },
-							status: { _in: ['published', 'draft'] },
 						},
 						limit: 1000,
 					})) as DatabaseTypes.Forms[];
@@ -97,7 +95,7 @@ const Index = () => {
 				})
 			);
 
-			// 3. For each form, fetch all submissions (published + draft, limit 1000) and bulk-fetch answers
+			// 3. For each form, fetch all submissions with state != 'closed', limit 1000, and bulk-fetch answers
 			await Promise.allSettled(
 				allForms.map(async (form) => {
 					const formId = String(form.id);
@@ -107,7 +105,7 @@ const Index = () => {
 							limit: 1000,
 							filter: {
 								form: { _eq: formId },
-								state: { _in: ['published', 'draft'] },
+								state: { _neq: 'closed' },
 							},
 						}) as Promise<DatabaseTypes.FormSubmissions[]>,
 					]);
