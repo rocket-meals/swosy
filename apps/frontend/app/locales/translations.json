@@ -5522,5 +5522,15 @@
     "ru": "Офлайн (кэшировано)",
     "tr": "Çevrimdışı (önbellekte)",
     "zh": "离线（已缓存）"
+  },
+  "form_download_all": {
+    "de": "Alles herunterladen",
+    "en": "Download all",
+    "ar": "تنزيل الكل",
+    "es": "Descargar todo",
+    "fr": "Tout télécharger",
+    "ru": "Скачать всё",
+    "tr": "Hepsini indir",
+    "zh": "下载全部"
   }
 }
