@@ -244,6 +244,13 @@ const Index = () => {
                                                 <MaterialCommunityIcons name="sync" size={22} color={theme.screen.icon} />
                                             )}
                                         </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => dispatch({ type: REMOVE_FORM_QUEUE_ENTRY, payload: item.id })}
+                                            style={{ padding: 8 }}
+                                            disabled={isSyncingAll || syncingId !== null}
+                                        >
+                                            <MaterialCommunityIcons name="trash-can-outline" size={22} color={theme.screen.icon} />
+                                        </TouchableOpacity>
                                         <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
                                     </View>
                                 </TouchableOpacity>
