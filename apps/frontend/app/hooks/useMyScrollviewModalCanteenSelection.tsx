@@ -69,7 +69,7 @@ const CanteenSelectionContent: React.FC<CanteenSelectionContentProps> = ({ onSel
 		};
 
 		fetchData();
-	}, [isManagement]);
+	}, [dispatch, isManagement]);
 
 	return (
 		<View>

@@ -106,7 +106,7 @@ const Index = () => {
 		setFoodAttributes((prev: any) => prev.map((attr: any) => (attr.id === id ? { ...attr, selected: !attr.selected } : attr)));
 	};
 
-	const openCanteenSheet = (option: string) => {
+	const openCanteenModal = (option: string) => {
 		openCanteenSelectionModal({
 			onSelectCanteen: (canteen: DatabaseTypes.Canteens) => {
 				if (option === 'canteen') {
@@ -180,7 +180,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={() => openCanteenSheet('canteen')}
+					onPress={() => openCanteenModal('canteen')}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
@@ -198,7 +198,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={() => openCanteenSheet('optional')}
+					onPress={() => openCanteenModal('optional')}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />

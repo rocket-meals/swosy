@@ -156,7 +156,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 				return;
 			}
 
-                        setSelectedSheet(sheet as any);
+                        setSelectedSheet(sheet as Exclude<typeof sheet, 'sort' | 'canteen'>);
                         setSheetProps(props);
 		},
 		[openFoodofferSortingModal, openChangeMyCanteenSelectionModal]

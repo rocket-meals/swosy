@@ -83,7 +83,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			openChangeMyCanteenSelectionModal();
 			return;
 		}
-		openSheetBase(sheet as any, props);
+		openSheetBase(sheet, props);
 	}, [openSheetBase, openChangeMyCanteenSelectionModal]);
 
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
