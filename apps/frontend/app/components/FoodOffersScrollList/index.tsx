@@ -12,6 +12,7 @@ import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
+import { useFocusEffect } from 'expo-router';
 
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
@@ -271,12 +272,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	useEffect(() => {
 		setDays(prev => {
 			const updated = prev.map(d => ({ ...d, offers: sortOffers(d.offers) }));
-			if (updated.length > 0) {
+			// Only update the cache if data has already been loaded for the current cacheKey.
+			// This prevents the sort effect from writing the previous canteen's data into the
+			// new canteen's cache key when the canteen changes (which would corrupt the cache
+			// before the fetch for the new canteen completes).
+			if (updated.length > 0 && daysCache[cacheKey] !== undefined) {
 				updateCache(updated);
 			}
 			return updated;
 		});
-	}, [sortOffers, updateCache]);
+	}, [sortOffers, updateCache, cacheKey]);
 
 	const loadDay = useCallback(
 		async (date: string) => {
@@ -329,9 +334,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		[init, openDirectusImageEditModal]
 	);
 
-	useEffect(() => {
-		init();
-	}, [init]);
+	// Re-run init whenever this screen gains focus (e.g. navigating back from wiki).
+	// This ensures that the correct canteen's data is always displayed after navigation.
+	useFocusEffect(
+		useCallback(() => {
+			init();
+		}, [init])
+	);
 
 	useEffect(() => {
 		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
