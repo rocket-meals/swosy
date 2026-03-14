@@ -17,7 +17,6 @@ import { Entypo, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons }
 import { RootDrawerParamList } from './types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
@@ -44,9 +43,9 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import IconButton from '@/components/UI/IconButton';
+import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 
 export const SHEET_COMPONENTS = {
-	canteen: CanteenSelectionSheet,
 	hours: HourSheet,
 	calendar: CalendarSheet,
 	aiGeneratedInfo: AIGeneratedHintSheet,
@@ -82,6 +81,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openUtilizationModal } = useUtilizationModal();
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
+	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 	const smartReadableDate = useSmartReadableDateMethod();
 
 	// Set Page Title
@@ -145,16 +145,21 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	);
 
 	const openSheet = useCallback(
-		(sheet: 'menu' | 'sort' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+		(sheet: 'menu' | 'sort' | 'canteen' | keyof typeof SHEET_COMPONENTS, props = {}) => {
 			if (sheet === 'sort') {
 				openFoodofferSortingModal();
 				return;
 			}
 
-                        setSelectedSheet(sheet);
+			if (sheet === 'canteen') {
+				openChangeMyCanteenSelectionModal();
+				return;
+			}
+
+                        setSelectedSheet(sheet as Exclude<typeof sheet, 'sort' | 'canteen'>);
                         setSheetProps(props);
 		},
-		[openFoodofferSortingModal]
+		[openFoodofferSortingModal, openChangeMyCanteenSelectionModal]
 	);
 
 
