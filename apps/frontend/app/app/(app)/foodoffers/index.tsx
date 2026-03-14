@@ -30,6 +30,7 @@ import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useMyScrollviewModalBusinessHours from '@/hooks/useMyScrollviewModalBusinessHours';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import { useSheetHandling, useNotifications } from './hooks';
@@ -77,14 +78,19 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	} = useSheetHandling(openFoodofferSortingModal);
 
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
 
 	const openSheet = useCallback((sheet: string, props = {}) => {
 		if (sheet === 'canteen') {
 			openChangeMyCanteenSelectionModal();
 			return;
 		}
+		if (sheet === 'hours') {
+			openBusinessHoursModal();
+			return;
+		}
 		openSheetBase(sheet, props);
-	}, [openSheetBase, openChangeMyCanteenSelectionModal]);
+	}, [openSheetBase, openChangeMyCanteenSelectionModal, openBusinessHoursModal]);
 
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 

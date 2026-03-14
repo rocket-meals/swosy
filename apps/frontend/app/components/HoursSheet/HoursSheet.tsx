@@ -35,7 +35,7 @@ const getSortedBusinessHoursGroups = (groups: { id: string; sort?: number | null
 	});
 };
 
-const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
+export const HoursSheetContent: React.FC = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	type GroupedHours = {
@@ -409,8 +409,8 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
                 });
         };
 
-        return (
-                <MyScrollViewModal title={translate(TranslationKeys.businesshours)} closeSheet={closeSheet}>
+	return (
+		<>
 			{loading ? (
 				<View
 					style={{
@@ -440,12 +440,12 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 								.filter(group => hours[group.id])
 								.map(group => {
 									const { name, entries } = hours[group.id];
-                                                                        return (
-                                                                                <View key={group.id} style={{ marginBottom: 20 }}>
-                                                                                        <SettingsGroupTitle>{name}</SettingsGroupTitle>
-                                                                                        {renderHours(group.id, entries)}
-                                                                                </View>
-                                                                        );
+									return (
+										<View key={group.id} style={{ marginBottom: 20 }}>
+											<SettingsGroupTitle>{name}</SettingsGroupTitle>
+											{renderHours(group.id, entries)}
+										</View>
+									);
 								})}
 						</View>
 					) : (
@@ -462,6 +462,15 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 					)}
 				</View>
 			)}
+		</>
+	);
+};
+
+const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
+	const { translate } = useLanguage();
+	return (
+		<MyScrollViewModal title={translate(TranslationKeys.businesshours)} closeSheet={closeSheet}>
+			<HoursSheetContent />
 		</MyScrollViewModal>
 	);
 };
