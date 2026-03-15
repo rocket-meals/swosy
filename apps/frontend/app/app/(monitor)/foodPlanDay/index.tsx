@@ -7,10 +7,8 @@ import { useDispatch } from 'react-redux';
 import styles from './styles';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import ManagementCanteensSheet from '@/components/ManagementCanteensSheet/ManagementCanteensSheet';
 import { SET_DAY_PLAN } from '@/redux/Types/types';
 import { ManagementFoodCategoryContent } from '@/components/ManagementFoodCategorySheet/ManagementFoodCategorySheet';
-import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useAppSelector } from '@/redux/hooks';
@@ -20,6 +18,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import type { CheckTextInput } from '@/components/SettingsListTextInput';
+import { useMyScrollviewModalSelectDayPlanCanteen } from '@/hooks/useMyScrollviewModalSelectDayPlanCanteen';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_day);
@@ -29,6 +28,7 @@ const Index = () => {
 	const { primaryColor: projectColor, appSettings } = useAppSelector((state) => state.settings);
 	const { dayPlan } = useAppSelector((state) => state.management);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
+	const { openSelectDayPlanCanteenModal } = useMyScrollviewModalSelectDayPlanCanteen();
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
 	const canOpenBigScreen = Boolean(dayPlan?.selectedCanteen?.alias);
 	const toggleMenuSwitch = () => {
@@ -59,22 +59,6 @@ const Index = () => {
 			payload: { showMarkingsOnCard: !currentValue },
 		});
 	};
-
-	const handleSelectCanteen = (canteen: CanteenProps) => {
-		dispatch({
-			type: SET_DAY_PLAN,
-			payload: { selectedCanteen: canteen },
-		});
-		closeScrollViewModal();
-	};
-
-	const openCanteenModal = useCallback(() => {
-		showScrollViewModal({
-			title: translate(TranslationKeys.canteen),
-			onClose: closeScrollViewModal,
-			children: <ManagementCanteensSheet closeSheet={closeScrollViewModal} handleSelectCanteen={handleSelectCanteen} />,
-		});
-	}, [closeScrollViewModal, handleSelectCanteen, showScrollViewModal, translate]);
 
 	const openFoodCategoryModal = useCallback(
 		(key: string, label: string) => {
@@ -113,7 +97,7 @@ const Index = () => {
 						label={translate(TranslationKeys.canteen)}
 						value={dayPlan?.selectedCanteen?.alias || ''}
 						rightIcon={<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />}
-						handleFunction={openCanteenModal}
+						handleFunction={openSelectDayPlanCanteenModal}
 						groupPosition="top"
 					/>
 					<SettingsList

@@ -24,7 +24,6 @@ import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
 import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -52,6 +51,7 @@ import useCardColumnsModal from '@/hooks/useCardColumnsModal';
 import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
+import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
@@ -61,7 +61,6 @@ const Settings = () => {
         const { theme, setThemeMode } = useTheme();
         const dispatch = useDispatch();
         const toast = useToast();
-        const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
         const { translate, language } = useLanguage();
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
@@ -81,6 +80,7 @@ const Settings = () => {
         const { openFirstDayOfWeekModal } = useFirstDayOfWeekModal();
         const { openHousingSortingModal } = useHousingSortingModal();
         const { openCampusSortingModal } = useCampusSortingModal();
+        const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
         const currentNickname = useMemo(
@@ -328,14 +328,6 @@ const Settings = () => {
 
         const logoutButtonHandler = useMemo(() => (isRegisteredUser ? handleLogout : handleLogin), [handleLogin, handleLogout, isRegisteredUser]);
 
-	const openCanteenSheet = () => {
-		canteenSheetRef?.current?.expand();
-	};
-
-	const closeCanteenSheet = () => {
-		canteenSheetRef?.current?.close();
-	};
-
 	const handleDeleteAccount = async () => {
 		router.navigate('/(user)/delete-user');
 	};
@@ -471,7 +463,7 @@ const Settings = () => {
 				<View style={sectionStyle}>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_canteen_usage)}</SettingsGroupTitle>
 					<View style={groupStyle}>
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen)} value={excerpt(String(selectedCanteen?.alias), 30)} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={openCanteenSheet} groupPosition="top" />
+						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen)} value={excerpt(String(selectedCanteen?.alias), 30)} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={openChangeMyCanteenSelectionModal} groupPosition="top" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/price-group')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
@@ -672,7 +664,7 @@ const Settings = () => {
 	}, [
 		translate, primaryColor, theme, isRegisteredUser, user?.id, profile, nickNameLocal,
 		logoutButtonLabel, logoutButtonHandler, openNicknameSheet, openLanguageModal, languageName,
-		handleDeleteAccount, foods_area_color, selectedCanteen?.alias, priceGroups, openCanteenSheet,
+		handleDeleteAccount, foods_area_color, selectedCanteen?.alias, priceGroups, openChangeMyCanteenSelectionModal,
 		openFoodofferSortingModal, sortingLabel, openColorSchemeSheet, openMenuPositionModal,
 		openCardColumnsModal, openFirstDayOfWeekModal, selectedTheme, drawerPosition,
 		amountColumnsForcard, firstDayOfTheWeek, appSettings?.housing_enabled, housing_area_color,
@@ -705,44 +697,29 @@ const Settings = () => {
 				ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
 			/>
 			{isActive && (
-				<>
-					<BaseBottomSheet
-						ref={canteenSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
+				<BaseBottomSheet
+					ref={foodOffersTimeSheetRef}
+					index={-1}
+					backgroundStyle={{
+						...styles.sheetBackground,
+						backgroundColor: theme.sheet.sheetBg,
+					}}
+					enablePanDownToClose
+					handleComponent={null}
+					onClose={closeFoodOffersTimeSheet}
+				>
+					<FoodOffersNextDayTimeSheet
+						closeSheet={closeFoodOffersTimeSheet}
+						initialValue={foodOffersNextDayThreshold}
+						onSave={value => {
+							dispatch({
+								type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
+								payload: value,
+							});
+							closeFoodOffersTimeSheet();
 						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeCanteenSheet}
-					>
-						<CanteenSelectionSheet closeSheet={closeCanteenSheet} />
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={foodOffersTimeSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeFoodOffersTimeSheet}
-					>
-						<FoodOffersNextDayTimeSheet
-							closeSheet={closeFoodOffersTimeSheet}
-							initialValue={foodOffersNextDayThreshold}
-							onSave={value => {
-								dispatch({
-									type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
-									payload: value,
-								});
-								closeFoodOffersTimeSheet();
-							}}
-						/>
-					</BaseBottomSheet>
-				</>
+					/>
+				</BaseBottomSheet>
 			)}
 		</SafeAreaView>
 	);
