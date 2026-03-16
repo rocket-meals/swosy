@@ -185,6 +185,8 @@ const settingReducer = (state = initialState, actions: any) => {
                         return {
                                 ...state,
                                 offlineMode: actions.payload,
+                        };
+                }
                 case SET_MAP_TILE_VARIANT_KEY: {
                         return {
                                 ...state,
