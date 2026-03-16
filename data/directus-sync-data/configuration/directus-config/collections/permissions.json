@@ -2637,13 +2637,24 @@
     "permissions": {
       "_and": [
         {
-          "folder": {
-            "parent": {
-              "name": {
-                "_eq": "Public Images"
+          "_or": [
+            {
+              "folder": {
+                "name": {
+                  "_eq": "Public Images"
+                }
+              }
+            },
+            {
+              "folder": {
+                "parent": {
+                  "name": {
+                    "_eq": "Public Images"
+                  }
+                }
               }
             }
-          }
+          ]
         }
       ]
     },
