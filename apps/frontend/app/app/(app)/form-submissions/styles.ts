@@ -100,6 +100,11 @@ export default StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
 	},
+	cachedRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
 	groupHeader: {
 		width: '100%',
 		borderRadius: 10,

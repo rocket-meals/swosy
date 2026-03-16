@@ -55,4 +55,9 @@ export default StyleSheet.create({
 		fontSize: 14,
 		fontFamily: 'Poppins_400Regular',
 	},
+	folderHint: {
+		fontSize: 11,
+		opacity: 0.5,
+		marginTop: 4,
+	},
 });
