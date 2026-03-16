@@ -4,9 +4,7 @@ import { Text, View } from 'react-native';
 import { parse, format } from 'date-fns';
 
 import SettingsListEditable from '@/components/SettingsListEditable';
-import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
-import { useModal } from '@/components/GlobalModal/useModal';
-import { useTheme } from '@/hooks/useTheme';
+import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 import styles from './styles';
 import { SettingsListDateProps } from './types';
 
@@ -25,8 +23,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 	suffix,
 	...settingsListProps
 }) => {
-	const { theme } = useTheme();
-	const { show, close } = useModal();
+	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
 	const isEditable = editable && !isDisabled;
 
 	const openCalendar = () => {
@@ -41,24 +38,19 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 			}
 		}
 
-		show(
-			<CalendarSheet
-				selectedDateProp={selectedDate || undefined}
-				onSelect={(dateString: string) => {
-					try {
-						const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
-						const formatted = format(parsed, 'dd.MM.yyyy');
-						onChange(id, formatted, custom_type);
-						onError(id, '');
-					} catch (e) {
-						// ignore
-					}
-					close();
-				}}
-				closeSheet={() => close()}
-			/>
-		, { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
-		);
+		openDatePickerModal({
+			selectedDateProp: selectedDate || undefined,
+			onSelect: (dateString: string) => {
+				try {
+					const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
+					const formatted = format(parsed, 'dd.MM.yyyy');
+					onChange(id, formatted, custom_type);
+					onError(id, '');
+				} catch (e) {
+					// ignore
+				}
+			},
+		});
 	};
 
 	const decoratedValue = value ? `${prefix ?? ''}${value}${suffix ?? ''}` : '';
