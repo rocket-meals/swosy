@@ -9,7 +9,7 @@ import { getNewsTranslationByLanguageCode } from '@/helper/resourceHelper';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
@@ -118,7 +118,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 						alignItems: screenWidth > 768 ? 'flex-start' : 'center',
 					}}
 				>
-					<Tooltip
+					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
 							<TouchableOpacity
@@ -140,7 +140,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 								{translate(TranslationKeys.read_more)}
 							</TooltipText>
 						</TooltipContent>
-					</Tooltip>
+					</CustomTooltip>
 				</View>
 			</View>
 		</View>

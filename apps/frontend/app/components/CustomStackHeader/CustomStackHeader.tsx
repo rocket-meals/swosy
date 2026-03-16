@@ -8,7 +8,7 @@ import { CustomStackHeaderProps } from './types';
 import { usePathname, useRouter } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
 import { excerpt } from '@/constants/HelperFunctions';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
@@ -83,7 +83,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 		>
                         <View style={styles.row}>
                                 <View style={styles.col1}>
-					<Tooltip
+					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
 							<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
@@ -96,7 +96,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 								{`${translate(TranslationKeys.navigate_back)}`}
 							</TooltipText>
 						</TooltipContent>
-					</Tooltip>
+					</CustomTooltip>
 
 					<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(label, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
                                 </View>

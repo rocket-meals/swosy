@@ -13,7 +13,6 @@ import {
 	UPDATE_PROFILE,
 } from '@/redux/Types/types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
-import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -30,6 +29,8 @@ import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
+import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useMyScrollviewModalBusinessHours from '@/hooks/useMyScrollviewModalBusinessHours';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import { useSheetHandling, useNotifications } from './hooks';
@@ -37,7 +38,6 @@ import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 export const SHEET_COMPONENTS = {
-	canteen: CanteenSelectionSheet,
 	hours: HourSheet,
 	calendar: CalendarSheet,
 	aiGeneratedInfo: AIGeneratedHintSheet,
@@ -72,10 +72,25 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		bottomSheetRef,
 		selectedSheet,
 		sheetProps,
-		openSheet,
+		openSheet: openSheetBase,
 		closeSheet,
 		isActive
 	} = useSheetHandling(openFoodofferSortingModal);
+
+	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
+
+	const openSheet = useCallback((sheet: string, props = {}) => {
+		if (sheet === 'canteen') {
+			openChangeMyCanteenSelectionModal();
+			return;
+		}
+		if (sheet === 'hours') {
+			openBusinessHoursModal();
+			return;
+		}
+		openSheetBase(sheet, props);
+	}, [openSheetBase, openChangeMyCanteenSelectionModal, openBusinessHoursModal]);
 
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 
@@ -83,16 +98,17 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		openActiveModal();
 	}, [activePopupEvent, openActiveModal]);
 
-	const setDefaultPriceGroupForAnonymousUser = useCallback(() => {
+	const setDefaultPriceGroupForAnonymousUser = () => {
+		if (profile?.price_group) return;
 		dispatch({
 			type: UPDATE_PROFILE,
 			payload: { ...profile, price_group: 'student' },
 		});
-	}, [dispatch, profile]);
+	};
 
 	useEffect(() => {
-		if (user && !user.id) setDefaultPriceGroupForAnonymousUser();
-	}, [user, setDefaultPriceGroupForAnonymousUser]);
+		if (!user?.id) setDefaultPriceGroupForAnonymousUser();
+	}, [user]);
 
 	const getBusinessHours = useCallback(async () => {
 		if (businessHours && businessHours.length > 0) return;

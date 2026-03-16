@@ -42,8 +42,7 @@ export const MarkingContent: React.FC = () => {
 						color: theme.sheet.text,
 					}}
 				>
-					{getTextFromTranslation(markingDetails?.translations, language)}
-					{` (${markingDetails?.external_identifier})`}
+					{getTextFromTranslation(markingDetails?.translations, language) || markingDetails?.external_identifier || ''}
 				</Text>
 			</View>
 			<View style={{ ...styles.menuContainer, width: isWeb ? '90%' : '100%' }}>

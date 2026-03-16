@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
@@ -52,7 +52,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 						},
 					]}
 				>
-					<Tooltip
+					<CustomTooltip
 						placement="top"
 						trigger={(triggerProps) => (
 							<IconButton
@@ -69,14 +69,14 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 								{`${translate(TranslationKeys.open_drawer)}`}
 							</TooltipText>
 						</TooltipContent>
-					</Tooltip>
+					</CustomTooltip>
 
 					<Text style={[styles.heading, { color: theme.header.text }]}>
 						{translate(TranslationKeys.housing)}
 					</Text>
 				</View>
 				<View style={[styles.col2, { gap: isWeb ? 30 : 15 }]}>
-					<Tooltip
+					<CustomTooltip
 						placement="top"
 						trigger={(triggerProps) => (
 							<IconButton
@@ -93,7 +93,7 @@ const HousingHeader: React.FC<HousingHeaderProps> = ({
 								{`${translate(TranslationKeys.sort)}: ${translate(TranslationKeys.apartments)}`}
 							</TooltipText>
 						</TooltipContent>
-					</Tooltip>
+					</CustomTooltip>
 				</View>
 			</View>
 		</View>

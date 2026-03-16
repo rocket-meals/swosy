@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { DatabaseTypes } from 'repo-depkit-common';
 
 import IconButton from '@/components/UI/IconButton';
@@ -34,7 +34,7 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 		icon: React.ReactNode,
 		translationKey: string
 	) => (
-		<Tooltip
+		<CustomTooltip
 			key={key}
 			placement="top"
 			trigger={(triggerProps) => (
@@ -55,7 +55,7 @@ const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
 					{translate(translationKey)}
 				</TooltipText>
 			</TooltipContent>
-		</Tooltip>
+		</CustomTooltip>
 	);
 
 	return (

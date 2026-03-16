@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Dimensions, KeyboardTypeOptions, PixelRatio, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
-import FeedbackItem from '../../../components/FeedbackSupport/FeedbackSupport';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -10,7 +9,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import * as DeviceInfo from 'expo-device';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
-import { FontAwesome5, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -21,6 +20,8 @@ import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { excerpt } from '@/constants/HelperFunctions';
+import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
 const FeedbackScreen = () => {
 	useSetPageTitle(TranslationKeys.feedback_and_support);
@@ -318,16 +319,29 @@ const FeedbackScreen = () => {
 						{feedbackData
 							.filter(item => item.key === 'positive')
 							.map(item => (
-								<FeedbackItem
+								<SettingsList
 									key={item.key}
-									icon={item.icon}
-									title={item.title}
-									extraIcons={item.extraIcons}
-									theme={theme}
-									windowWidth={windowWidth}
-									value={inputValues[item.key] || ''}
-									inputValues={inputValues}
-									setInputValues={setInputValues}
+									iconBgColor={primaryColor}
+									leftIcon={<MaterialCommunityIcons name="thumb-up-outline" size={24} color={theme.screen.icon} />}
+									label={translate(item.title as any)}
+									rightElement={
+										<SettingsListLikeDislike
+											like={inputValues.positive}
+											onPressLike={() =>
+												setInputValues((prev: any) => ({
+													...prev,
+													positive: prev.positive === true ? null : true,
+												}))
+											}
+											onPressDislike={() =>
+												setInputValues((prev: any) => ({
+													...prev,
+													positive: prev.positive === false ? null : false,
+												}))
+											}
+										/>
+									}
+									groupPosition="single"
 								/>
 							))}
 						{!profile?.id && (
@@ -466,6 +480,9 @@ const FeedbackScreen = () => {
 								</View>
 							</View>
 						)}
+						<SettingsGroupTitle fontSize={14}>
+							{translate(TranslationKeys.optional_device_data_description)}
+						</SettingsGroupTitle>
 						{deviceSettingsItems.map((item, index) => (
 							<SettingsList
 								key={item.key}

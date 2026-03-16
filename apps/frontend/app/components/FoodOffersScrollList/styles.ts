@@ -35,7 +35,13 @@ export default StyleSheet.create({
 	},
 	feebackContainer: {
 		width: '100%',
-		marginTop: 6,
+		marginTop: 20,
+	},
+	feedbackLabelsTitle: {
+		fontSize: 24,
+		fontFamily: 'Poppins_700Bold',
+		paddingHorizontal: 10,
+		marginBottom: 6,
 	},
 	elementContainer: {
 		width: '100%',

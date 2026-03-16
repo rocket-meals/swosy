@@ -12,7 +12,6 @@ export default StyleSheet.create({
         forecastContainer: {
                 width: '100%',
                 minHeight: 400,
-                gap: 8,
         },
         loadingContainer: {
                 width: '100%',

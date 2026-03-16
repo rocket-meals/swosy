@@ -12,10 +12,14 @@ import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
+import { useFocusEffect } from 'expo-router';
 
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useAppSelector } from '@/redux/hooks';
+import { useDispatch } from 'react-redux';
+import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
+import { SET_CANTEEN_FEEDBACK_LABELS } from '@/redux/Types/types';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
@@ -40,14 +44,16 @@ interface DayItem {
 
 const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
+const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const dispatch = useDispatch();
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
 	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
-	const { profile } = useAppSelector((state) => state.authReducer);
+	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { appElements } = useAppSelector((state) => state.appElements);
 	
 	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
@@ -64,6 +70,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
+
+	useEffect(() => {
+		const fetchLabels = async () => {
+			try {
+				const labels = (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as DatabaseTypes.CanteensFeedbacksLabels[];
+				dispatch({ type: SET_CANTEEN_FEEDBACK_LABELS, payload: labels });
+			} catch (e) {
+				console.error('Error fetching canteen feedback labels', e);
+			}
+		};
+		fetchLabels();
+	}, [dispatch]);
 
 	const cacheKey = useMemo(
 		() => `${canteenId}_${format(new Date(startDate), 'yyyy-MM-dd')}`,
@@ -254,12 +272,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	useEffect(() => {
 		setDays(prev => {
 			const updated = prev.map(d => ({ ...d, offers: sortOffers(d.offers) }));
-			if (updated.length > 0) {
+			// Only update the cache if data has already been loaded for the current cacheKey.
+			// This prevents the sort effect from writing the previous canteen's data into the
+			// new canteen's cache key when the canteen changes (which would corrupt the cache
+			// before the fetch for the new canteen completes).
+			if (updated.length > 0 && daysCache[cacheKey] !== undefined) {
 				updateCache(updated);
 			}
 			return updated;
 		});
-	}, [sortOffers, updateCache]);
+	}, [sortOffers, updateCache, cacheKey]);
 
 	const loadDay = useCallback(
 		async (date: string) => {
@@ -312,9 +334,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		[init, openDirectusImageEditModal]
 	);
 
-	useEffect(() => {
-		init();
-	}, [init]);
+	// Re-run init whenever this screen gains focus (e.g. navigating back from wiki).
+	// This ensures that the correct canteen's data is always displayed after navigation.
+	useFocusEffect(
+		useCallback(() => {
+			init();
+		}, [init])
+	);
 
 	useEffect(() => {
 		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
@@ -345,7 +371,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	};
 
 	const renderDay = ({ item }: { item: DayData }) => {
-		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
+		const feedbacks = canteenFeedbackLabels?.map((label, idx) => {
+			const total = canteenFeedbackLabels.length;
+			const groupPosition = total === 1 ? 'single' : idx === 0 ? 'top' : idx === total - 1 ? 'bottom' : 'middle';
+			return <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} groupPosition={groupPosition} isAccountRequired={!user?.id} />;
+		});
 		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
@@ -390,7 +420,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 										canteen={selectedCanteen as DatabaseTypes.Canteens}
 										handleMenuSheet={openSheet}
 										handleImageSheet={openManagementSheet}
-										handleEatingHabitsSheet={openSheet}
 										cardWidth={cardWidth}
 									/>
 								</View>
@@ -429,7 +458,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
 					</View>
 				)}
-				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
+				{feedbacks && feedbacks.length > 0 && (
+					<View style={styles.feebackContainer}>
+						<Text style={[styles.feedbackLabelsTitle, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.feedback_labels)}
+						</Text>
+						{feedbacks}
+					</View>
+				)}
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>

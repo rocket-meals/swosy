@@ -1419,6 +1419,16 @@
         "tr": "Apple Haritalar'da aç",
         "zh": "在 Apple 地图中打开"
     },
+    "open_in_google_or_apple_maps": {
+        "de": "Öffnen in Google/Apple Maps",
+        "en": "Open in Google/Apple Maps",
+        "ar": "فتح في خرائط Google/Apple",
+        "es": "Abrir en Google/Apple Maps",
+        "fr": "Ouvrir dans Google/Apple Maps",
+        "ru": "Открыть в Google/Apple Maps",
+        "tr": "Google/Apple Haritalar'da aç",
+        "zh": "在 Google/Apple 地图中打开"
+    },
     "copy_coordinates": {
         "de": "Koordinaten kopieren",
         "en": "Copy coordinates",
@@ -3042,6 +3052,16 @@
         "ru": "Векторная карта OSM",
         "tr": "OSM Vektör Haritası",
         "zh": "OSM 矢量地图"
+    },
+    "loading_vector_map": {
+        "de": "Vektorkarte wird geladen…",
+        "en": "Loading vector map…",
+        "ar": "جار تحميل الخريطة المتجهة…",
+        "es": "Cargando mapa vectorial…",
+        "fr": "Chargement de la carte vectorielle…",
+        "ru": "Загрузка векторной карты…",
+        "tr": "Vektör haritası yükleniyor…",
+        "zh": "正在加载矢量地图…"
     },
     "leaflet_test": {
         "de": "Leaflet Test",

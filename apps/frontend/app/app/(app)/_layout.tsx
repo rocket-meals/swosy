@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import CustomDrawerContent from '@/components/Drawer/CustomDrawerContent';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,7 +9,7 @@ import { Redirect, useGlobalSearchParams } from 'expo-router';
 import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {AppScreens, DatabaseTypes, filterPopupEvents, sortBySortField, sortMarkingsByGroup} from 'repo-depkit-common';
-import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_NEWS, SET_COLLECTIBLE_EVENTS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
+import { SET_APP_ELEMENTS, SET_APP_SETTINGS, SET_BUILDINGS, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CAMPUSES, SET_CAMPUSES_DICT, SET_CANTEENS, SET_CHATS, SET_CHAT_READ_STATUS, SET_COLLECTION_DATES_LAST_UPDATED, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_CATEGORIES, SET_FOOD_COLLECTION, SET_FOOD_OFFERS_CATEGORIES, SET_FOODOFFERS_INFO_ITEMS, SET_NEWS, SET_COLLECTIBLE_EVENTS, SET_ORGANISATIONS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_POPUP_EVENTS, SET_POPUP_EVENTS_HASH, SET_SELECTED_CANTEEN, SET_SELECTED_DATE, SET_WIKIS, UPDATE_FOOD_FEEDBACK_LABELS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS, UPDATE_OWN_FOOD_FEEDBACK, UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES, UPDATE_PRIVACY_POLICY_DATE, UPDATE_PROFILE } from '@/redux/Types/types';
 import { FoodFeedbackLabelHelper } from '@/redux/actions/FoodFeedbacksLabel/FoodFeedbacksLabel';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { FoodFeedbackLabelEntryHelper } from '@/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries';
@@ -44,6 +44,8 @@ import { shouldFetch } from '@/helper/shouldFetch';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
 import { format } from 'date-fns';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
+import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/Buildings/Buildings';
+import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations';
 // TODO: replace HashHelper with expo-crypto once packages can be installed
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
@@ -55,28 +57,31 @@ export default function Layout() {
 	const { deviceMock } = useGlobalSearchParams();
 	const kioskMode = useKioskMode();
 	const dispatch = useDispatch();
-	const wikisHelper = new WikisHelper();
-	const markingHelper = new MarkingHelper();
-	const profileHelper = new ProfileHelper();
-	const popupEventsHelper = new PopupEventsHelper();
-	const appSettingsHelper = new AppSettingsHelper();
-	const appElementsHelper = new AppElementsHelper();
-	const foodFeedbackHelper = new FoodFeedbackHelper();
-	const businessHoursHelper = new BusinessHoursHelper();
-	const markingGroupsHelper = new MarkingGroupsHelper();
-	const foodAttributesHelper = new FoodAttributesHelper();
-	const foodCategoriesHelper = new FoodCategoriesHelper();
-	const foodfeedbackLabelHelper = new FoodFeedbackLabelHelper();
-        const foodAttributeGroupHelper = new FoodAttributeGroupHelper();
-        const businessHoursGroupsHelper = new BusinessHoursGroupsHelper();
-        const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
-        const foodOffersInfoItemsHelper = new FoodOffersInfoItemsHelper();
-        const newsHelper = new NewsHelper();
-        const collectibleEventsHelper = new CollectibleEventsHelper();
-        const chatsHelper = new ChatsHelper();
-        const collectionLastUpdateHelper = new CollectionLastUpdateHelper();
-        const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
-	const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
+	const wikisHelper = useMemo(() => new WikisHelper(), []);
+	const markingHelper = useMemo(() => new MarkingHelper(), []);
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
+	const popupEventsHelper = useMemo(() => new PopupEventsHelper(), []);
+	const appSettingsHelper = useMemo(() => new AppSettingsHelper(), []);
+	const appElementsHelper = useMemo(() => new AppElementsHelper(), []);
+	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
+	const businessHoursHelper = useMemo(() => new BusinessHoursHelper(), []);
+	const markingGroupsHelper = useMemo(() => new MarkingGroupsHelper(), []);
+	const foodAttributesHelper = useMemo(() => new FoodAttributesHelper(), []);
+	const foodCategoriesHelper = useMemo(() => new FoodCategoriesHelper(), []);
+	const foodfeedbackLabelHelper = useMemo(() => new FoodFeedbackLabelHelper(), []);
+	const foodAttributeGroupHelper = useMemo(() => new FoodAttributeGroupHelper(), []);
+	const businessHoursGroupsHelper = useMemo(() => new BusinessHoursGroupsHelper(), []);
+	const foodOffersCategoriesHelper = useMemo(() => new FoodOffersCategoriesHelper(), []);
+	const foodOffersInfoItemsHelper = useMemo(() => new FoodOffersInfoItemsHelper(), []);
+	const newsHelper = useMemo(() => new NewsHelper(), []);
+	const collectibleEventsHelper = useMemo(() => new CollectibleEventsHelper(), []);
+	const chatsHelper = useMemo(() => new ChatsHelper(), []);
+	const collectionLastUpdateHelper = useMemo(() => new CollectionLastUpdateHelper(), []);
+	const foodFeedbackLabelEntryHelper = useMemo(() => new FoodFeedbackLabelEntryHelper(), []);
+	const canteenFeedbackLabelEntryHelper = useMemo(() => new CanteenFeedbackLabelEntryHelper(), []);
+	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
+	const buildingsOrganizationsHelper = useMemo(() => new BuildingsOrganizationsHelper(), []);
+	const organizationsHelper = useMemo(() => new OrganizationsHelper(), []);
 	const { popupEvents } = useAppSelector((state) => state.food);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
@@ -239,6 +244,7 @@ export default function Layout() {
 			const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);
 
 			dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
+			dispatch({ type: UPDATE_MARKING_GROUPS, payload: markingGroupResult });
 		} catch (error) {
 			console.error('Error fetching markings:', error);
 		}
@@ -432,6 +438,45 @@ export default function Layout() {
 		}
 	};
 
+	const getBuildings = async () => {
+		try {
+			const result = (await buildingsHelper.fetchBuildings({})) as DatabaseTypes.Buildings[];
+			if (result) {
+				dispatch({ type: SET_BUILDINGS, payload: result });
+				const dict = result.reduce<Record<string, DatabaseTypes.Buildings>>((acc, b) => {
+					if (b.id) acc[String(b.id)] = b;
+					return acc;
+				}, {});
+				dispatch({ type: SET_CAMPUSES, payload: result });
+				dispatch({ type: SET_CAMPUSES_DICT, payload: dict });
+			}
+		} catch (error) {
+			console.error('Error fetching buildings:', error);
+		}
+	};
+
+	const getBuildingsOrganizations = async () => {
+		try {
+			const result = (await buildingsOrganizationsHelper.fetchBuildingsOrganizations({})) as DatabaseTypes.BuildingsOrganizations[];
+			if (result) {
+				dispatch({ type: SET_BUILDINGS_ORGANIZATIONS, payload: result });
+			}
+		} catch (error) {
+			console.error('Error fetching buildings organizations:', error);
+		}
+	};
+
+	const getOrganizations = async () => {
+		try {
+			const result = (await organizationsHelper.fetchOrganizations({})) as DatabaseTypes.Organizations[];
+			if (result) {
+				dispatch({ type: SET_ORGANISATIONS, payload: result });
+			}
+		} catch (error) {
+			console.error('Error fetching organizations:', error);
+		}
+	};
+
 	const fetchConfig: { key: string | string[]; action: () => Promise<void> }[] = [
 		{ key: CollectionKeys.APP_ELEMENTS, action: getAllAppElements },
 		// refresh markings when any of the related tables change
@@ -472,6 +517,12 @@ export default function Layout() {
 			action: getAllFoodAttributesGroups,
 		},
 		{ key: CollectionKeys.FOODS_ATTRIBUTES, action: getAllFoodAttributes },
+		{
+			key: [CollectionKeys.BUILDINGS, CollectionKeys.BUILDINGS_TRANSLATIONS],
+			action: getBuildings,
+		},
+		{ key: CollectionKeys.BUILDINGS_ORGANIZATIONS, action: getBuildingsOrganizations },
+		{ key: CollectionKeys.ORGANIZATIONS, action: getOrganizations },
 	];
 
 	const getAllCollectionDatesLastUpdate = async () => {
@@ -516,6 +567,19 @@ export default function Layout() {
 		getAllCollectionDatesLastUpdate();
 	}, [user]);
 
+	const drawerScreenOptions = useMemo(
+		() => ({
+			headerStyle: { backgroundColor: theme.header.background },
+			headerTintColor: theme.header.text,
+			drawerType: 'front' as const,
+			drawerPosition: (() => {
+				const position = drawerPosition === 'system' ? 'left' : drawerPosition;
+				return position === 'left' || position === 'right' ? position : 'left';
+			})() as 'left' | 'right',
+		}),
+		[theme.header.background, theme.header.text, drawerPosition]
+	);
+
 	if (!loggedIn && !kioskMode) {
 		return <Redirect href="/(auth)/login" />;
 	}
@@ -524,17 +588,9 @@ export default function Layout() {
 		<>
 			{deviceMock && deviceMock === 'iphone' && isWeb && <DeviceMock />}
 			<Drawer
-				screenOptions={{
-					headerStyle: { backgroundColor: theme.header.background },
-					headerTintColor: theme.header.text,
-					drawerType: 'front',
-					drawerPosition: (() => {
-						const position = drawerPosition === 'system' ? 'left' : drawerPosition;
-						return position === 'left' || position === 'right' ? position : 'left';
-					})(),
-				}}
+				screenOptions={drawerScreenOptions}
 				detachInactiveScreens={true}
-				drawerContent={props => <CustomDrawerContent {...props} />}
+				drawerContent={CustomDrawerContent}
 				backBehavior="history"
 			>
 				<Drawer.Screen
@@ -621,10 +677,10 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
-					name="leaflet-map/index"
+					name="map/index"
 					options={{
-						header: () => <CustomStackHeader label={translate(TranslationKeys.leaflet_map)} key={'LeafletMap'} />,
-						title: translate(TranslationKeys.leaflet_map),
+						headerShown: false,
+						title: translate(TranslationKeys.map),
 					}}
 				/>
 				<Drawer.Screen

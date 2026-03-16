@@ -58,6 +58,8 @@ export const CollectionKeys = {
 	COLLECTIBLE_EVENTS: 'collectible_events',
 	MAILS_FILES: 'mails_files',
 	BUILDINGS: 'buildings',
+	BUILDINGS_ORGANIZATIONS: 'buildings_organizations',
+	ORGANIZATIONS: 'organizations',
 	BUILDINGS_BUSINESSHOURS: 'buildings_businesshours',
 	CANTEENS_FOODSERVICE_HOURS: 'canteens_foodservice_hours',
 	FOODS_ATTRIBUTES_GROUPS: 'foods_attributes_groups',

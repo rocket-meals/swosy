@@ -30,6 +30,8 @@ export type CanteenWithImage = DatabaseTypes.Canteens & {
 export type CanteensState = {
 	canteens: CanteenWithImage[];
 	buildings: DatabaseTypes.Buildings[];
+	buildingsOrganizations: DatabaseTypes.BuildingsOrganizations[];
+	organisations: DatabaseTypes.Organizations[];
 	selectedCanteen: CanteenWithImage | null;
 	selectedCanteenFoodOffers: DatabaseTypes.Foodoffers[];
 	canteenFoodOffers: DatabaseTypes.Foodoffers[];
@@ -62,6 +64,11 @@ export type SettingsState = {
         simulateExpoUpdateAvailable: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
+        mapTileVariantKey: string;
+        mapUseFlyAnimation: boolean;
+        mapVirtualZoom: number | null;
+        mapOrganisationFilter: Record<string, boolean>;
+        mapClusterPixelRadius: number;
 }
 
 export type FoodState = {
@@ -69,6 +76,7 @@ export type FoodState = {
 	ownFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[];
 	ownfoodFeedbackLabelEntries: DatabaseTypes.FoodsFeedbacksLabelsEntries[];
 	markings: DatabaseTypes.Markings[];
+	markingGroups: DatabaseTypes.MarkingsGroups[];
 	selectedFoodMarkings: DatabaseTypes.FoodoffersMarkings[];
 	foodCategories: DatabaseTypes.FoodsCategories[];
 	foodOfferCategories: DatabaseTypes.FoodoffersCategories[];

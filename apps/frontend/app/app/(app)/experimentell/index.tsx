@@ -38,20 +38,6 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/expo-update-test'),
 		},
 		{
-			key: 'leaflet-map',
-			label: translate(TranslationKeys.leaflet_map),
-			leftIcon: <MaterialCommunityIcons name="map" size={24} color={theme.screen.icon} />,
-			onPress: () =>
-				router.push({
-					pathname: '/leaflet-map',
-					params: {
-						lat: String(buildingPosition?.lat ?? '52.275'),
-						lng: String(buildingPosition?.lng ?? '7.4584'),
-						zoom: '16',
-					},
-				}),
-		},
-		{
 			key: 'vertical-image-scroll',
 			label: translate(TranslationKeys.vertical_image_scroll),
 			leftIcon: <MaterialCommunityIcons name="image-multiple" size={24} color={theme.screen.icon} />,
@@ -135,6 +121,18 @@ const Index = () => {
 			label: translate(TranslationKeys.food_wishlist),
 			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/food-wishlist'),
+		},
+		{
+			key: 'account-required-example',
+			label: translate(TranslationKeys.account_required_example),
+			leftIcon: <MaterialCommunityIcons name="account-lock" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/account-required-example'),
+		},
+		{
+			key: 'eating-habits-performance',
+			label: translate(TranslationKeys.eating_habits_performance),
+			leftIcon: <MaterialCommunityIcons name="speedometer" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance'),
 		},
 	];
 

@@ -1,10 +1,56 @@
-import React, { forwardRef, useCallback, useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import BottomSheet, { BottomSheetBackdrop, type BottomSheetBackdropProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { forwardRef, useCallback, useMemo, useState } from 'react';
+import { Pressable, StyleSheet as RNStyleSheet, TouchableOpacity, View } from 'react-native';
+import Animated, { Extrapolation, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
+import BottomSheet, { type BottomSheetBackdropProps, type BottomSheetProps } from '@gorhom/bottom-sheet';
 import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import styles from './styles';
+
+// Custom backdrop that calls onClose directly (like the close button) without
+// triggering the sheet's own close animation. This prevents the sheet from
+// physically collapsing and re-expanding when the backdrop is pressed while a
+// nested modal is visible, which could otherwise close all stacked modals.
+interface CustomBackdropProps extends BottomSheetBackdropProps {
+        onPress?: () => void;
+}
+
+const CustomBackdrop: React.FC<CustomBackdropProps> = ({ animatedIndex, style, onPress }) => {
+	const containerAnimatedStyle = useAnimatedStyle(() => ({
+		opacity: interpolate(animatedIndex.value, [-1, 0], [0, 1], Extrapolation.CLAMP),
+	}));
+
+	// On web, CSS elements with opacity:0 still intercept pointer events (unlike native).
+	// On native (e.g. Android), an always-mounted Pressable with opacity:0 also blocks all
+	// touch events behind the sheet. Track whether the backdrop is meaningfully visible and
+	// only mount the Pressable then, so an invisible backdrop never blocks interactions.
+	const [isPressableActive, setIsPressableActive] = useState(() => animatedIndex.value > -0.5);
+	useAnimatedReaction(
+		() => animatedIndex.value > -0.5,
+		(isActive, prev) => {
+			if (isActive !== prev) {
+				runOnJS(setIsPressableActive)(isActive);
+			}
+		},
+	);
+
+	return (
+		<Animated.View
+			style={[style, containerAnimatedStyle, backdropStyles.container]}
+			pointerEvents="box-none"
+		>
+			{isPressableActive && (
+				<Pressable style={RNStyleSheet.absoluteFillObject} onPress={onPress} />
+			)}
+		</Animated.View>
+	);
+};
+
+const backdropStyles = RNStyleSheet.create({
+        container: {
+                backgroundColor: 'rgba(0,0,0,0.5)',
+        },
+});
 
 export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
         onClose?: () => void;
@@ -12,7 +58,7 @@ export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropCo
 }
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(({ onClose, children, backgroundStyle, onChange, headerBackgroundColor, ...props }, ref) => {
-        const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} onPress={onClose} />, [onClose]);
+        const renderBackdrop = useCallback((backdropProps: BottomSheetBackdropProps) => <CustomBackdrop {...backdropProps} onPress={onClose} />, [onClose]);
         const { theme } = useTheme();
         useAppSelector((state) => state.settings); // ensure theme subscription
         const snapPoints = useMemo(() => ['80%'], []);

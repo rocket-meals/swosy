@@ -12,6 +12,7 @@ import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBo
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import SettingsListCoordinate from '@/components/SettingsListCoordinate/SettingsListCoordinate';
+import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
 import styles from './styles';
 
 const SettingsListComponents = () => {
@@ -23,6 +24,7 @@ const SettingsListComponents = () => {
 	const [inputValue, setInputValue] = useState('Beispieltext');
 	const [nickname, setNickname] = useState('Tester');
 	const [boolValue, setBoolValue] = useState(true);
+	const [likeValue, setLikeValue] = useState<boolean | null>(null);
 
 	return (
 		<ScrollView
@@ -35,7 +37,16 @@ const SettingsListComponents = () => {
 			<View style={styles.content}>
 				<Text style={{ ...styles.heading, color: theme.screen.text }}>SettingsList Komponenten</Text>
 
-				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList</Text>
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList (isAccountRequired)</Text>
+			<SettingsList
+				iconBgColor={primaryColor}
+				title="Account-Funktion"
+				value="Login erforderlich"
+				isAccountRequired
+				groupPosition="single"
+			/>
+
+			<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsList</Text>
 				<SettingsList
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="format-list-text" size={24} color={theme.screen.icon} />}
@@ -106,6 +117,23 @@ const SettingsListComponents = () => {
 				<SettingsListCoordinate
 					iconBgColor={primaryColor}
 					location={{ latitude: 51.4556, longitude: 7.0116 }}
+					groupPosition="single"
+				/>
+
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListLikeDislike</Text>
+				<SettingsList
+					iconBgColor={primaryColor}
+					leftIcon={<MaterialCommunityIcons name="thumb-up-outline" size={24} color={theme.screen.icon} />}
+					title="Like / Dislike Demo"
+					rightElement={
+						<SettingsListLikeDislike
+							like={likeValue}
+							onPressLike={() => setLikeValue(current => (current === true ? null : true))}
+							onPressDislike={() => setLikeValue(current => (current === false ? null : false))}
+							likeTooltipText="Das gefällt mir"
+							dislikeTooltipText="Das gefällt mir nicht"
+						/>
+					}
 					groupPosition="single"
 				/>
 			</View>

@@ -7,7 +7,7 @@ import { CourseTimetableProps, EventTypes } from './types';
 import { Feather, FontAwesome5, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { daysData } from '@/constants/SettingData';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -252,7 +252,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 											const horizontalPosition = (eventIndex % overlapCount) * eventWidth; // Position side by side
 
 											return (
-												<Tooltip
+												<CustomTooltip
 													key={event.id}
 													placement="top"
 													trigger={triggerProps => (
@@ -278,7 +278,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({ events, openSheet, se
 															{`${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`}
 														</TooltipText>
 													</TooltipContent>
-												</Tooltip>
+												</CustomTooltip>
 											);
 										})}
 							</View>

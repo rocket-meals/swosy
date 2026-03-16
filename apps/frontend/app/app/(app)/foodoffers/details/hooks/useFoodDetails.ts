@@ -12,7 +12,7 @@ interface UseFoodDetailsProps {
 }
 
 export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) => {
-    const { language: languageCode, translate } = useLanguage();
+    const { language: languageCode, translate, translateDynamic } = useLanguage();
     const toast = useToast();
     const [foodDetails, setFoodDetails] = useState<any>(null);
     const [foodAttributes, setFoodAttributes] = useState<any>([]);
@@ -37,7 +37,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
                     setFoodDetails({
                         ...food,
                         foodoffer_category,
-                        name: translation ? translation.name : null,
+                        name: translation ? translateDynamic(translation.name) : null,
                     });
                     if (attribute_values) {
                         setFoodAttributes(attribute_values);
@@ -50,9 +50,10 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
                     const translation = food?.translations?.find(
                         (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
                     );
+                    const rawName = translation?.name ?? food?.name ?? null;
                     setFoodDetails({
                         ...food,
-                        name: translation ? translation.name : food?.name ?? null,
+                        name: rawName ? translateDynamic(rawName) : null,
                     });
 
                     const attributes = food?.attribute_values || food?.foods_attributes_values;
@@ -67,7 +68,7 @@ export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) 
         } finally {
             setLoading(false);
         }
-    }, [offerId, initialFoodId, languageCode, toast, translate]);
+    }, [offerId, initialFoodId, languageCode, translateDynamic, toast, translate]);
 
     useEffect(() => {
         runAfterInteractions(() => {

@@ -9,12 +9,12 @@ import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 const EatingHabitsSheet: React.FC<EatingHabitsSheetProps> = ({ closeSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { selectedFoodMarkings } = useAppSelector(state => state.food);
+	const markings = useAppSelector(state => state.food.markings);
 	return (
 		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
 			<View
@@ -36,9 +36,9 @@ const EatingHabitsSheet: React.FC<EatingHabitsSheetProps> = ({ closeSheet }) => 
 				</Text>
 			</View>
 			<View style={styles.eatingHabitsList}>
-				{selectedFoodMarkings?.map((marking: any, index: number) => (
-					<View key={index}>
-						<MarkingLabels key={marking?.id + index} markingId={marking.markings_id} />
+				{markings?.map((marking: DatabaseTypes.Markings) => (
+					<View key={marking.id}>
+						<MarkingLabels markingId={marking.id} />
 						<View style={styles.divider} />
 					</View>
 				))}

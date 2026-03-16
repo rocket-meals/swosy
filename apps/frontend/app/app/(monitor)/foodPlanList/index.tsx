@@ -9,9 +9,7 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { AntDesign, Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import ManagementCanteensSheet from '@/components/ManagementCanteensSheet/ManagementCanteensSheet';
 import { SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_PLAN } from '@/redux/Types/types';
-import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
 import { isWeb } from '@/constants/Constants';
 import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
@@ -21,6 +19,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { useAppSelector } from '@/redux/hooks';
+import { useMyScrollviewModalSelectFoodPlanCanteen } from '@/hooks/useMyScrollviewModalSelectFoodPlanCanteen';
 
 type FoodAttribute = {
 	id: string;
@@ -42,11 +41,10 @@ const Index = () => {
 	const { foodPlan } = useAppSelector((state) => state.management);
 	const [isActive, setIsActive] = useState(false);
 	const [value, setValue] = useState('');
-	const [selectedCanteenOption, setSelectedCanteenOption] = useState('');
-	const canteenSheetRef = useRef<BottomSheet>(null);
 	const intervalSheetRef = useRef<BottomSheet>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
+	const { openSelectFoodPlanCanteenModal } = useMyScrollviewModalSelectFoodPlanCanteen();
 
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	const [selectedInterval, setSelectedInterval] = useState({
@@ -108,13 +106,8 @@ const Index = () => {
 		setFoodAttributes((prev: any) => prev.map((attr: any) => (attr.id === id ? { ...attr, selected: !attr.selected } : attr)));
 	};
 
-	const openCanteenSheet = (option: string) => {
-		setSelectedCanteenOption(option);
-		canteenSheetRef?.current?.expand();
-	};
-
-	const closeCanteenSheet = () => {
-		canteenSheetRef?.current?.close();
+	const openCanteenModal = (option: 'canteen' | 'additional') => {
+		openSelectFoodPlanCanteenModal(option);
 	};
 
 	const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
@@ -154,21 +147,6 @@ const Index = () => {
 		};
 	}, []);
 
-	const handleSelectCanteen = (canteen: CanteenProps) => {
-		if (selectedCanteenOption === 'canteen') {
-			dispatch({
-				type: SET_FOOD_PLAN,
-				payload: { selectedCanteen: canteen },
-			});
-		} else {
-			dispatch({
-				type: SET_FOOD_PLAN,
-				payload: { additionalSelectedCanteen: canteen },
-			});
-		}
-		closeCanteenSheet();
-	};
-
 	return (
 		<>
 			<ScrollView
@@ -187,7 +165,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={() => openCanteenSheet('canteen')}
+					onPress={() => openCanteenModal('canteen')}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
@@ -205,7 +183,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={() => openCanteenSheet('optional')}
+					onPress={() => openCanteenModal('optional')}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
@@ -343,21 +321,6 @@ const Index = () => {
 				</TouchableOpacity>
 			</ScrollView>
 
-			{isActive && (
-				<BaseBottomSheet
-					ref={canteenSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={closeCanteenSheet}
-				>
-					<ManagementCanteensSheet closeSheet={closeCanteenSheet} handleSelectCanteen={handleSelectCanteen} />
-				</BaseBottomSheet>
-			)}
 			{isActive && (
 				<BaseBottomSheet
 					ref={intervalSheetRef}

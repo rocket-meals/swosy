@@ -13,7 +13,7 @@ import styles from './styles';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import MarkingIcon from '../MarkingIcon';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
@@ -173,7 +173,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 		<View style={styles.row}>
 			<View style={styles.col}>
 				{handleMenuSheet ? (
-					<Tooltip
+					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
 							<Pressable {...triggerProps} onPress={() => openMarkingLabel(marking)} onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)}>
@@ -186,11 +186,11 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 								{`${markingText}`}
 							</TooltipText>
 						</TooltipContent>
-					</Tooltip>
+					</CustomTooltip>
 				) : (
 					<MarkingIcon marking={marking} size={size} />
 				)}
-				<Tooltip
+				<CustomTooltip
 					placement="top"
 					isOpen={showTooltip}
 					trigger={triggerProps => (
@@ -219,12 +219,12 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 							{`${translate(TranslationKeys.markings)}: ${markingText}`}
 						</TooltipText>
 					</TooltipContent>
-				</Tooltip>
+				</CustomTooltip>
 			</View>
 			{/* REACTION SIDE */}
 
 			<View style={styles.col2}>
-				<Tooltip
+				<CustomTooltip
 					placement="top"
 					trigger={triggerProps => (
 						<Pressable onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} style={styles.likeButton} {...triggerProps} onPress={() => handleUpdateMarking(true)}>
@@ -237,8 +237,8 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 							{`${translate(TranslationKeys.i_like_that)}: ${translate(ownMarking?.like ? TranslationKeys.active : TranslationKeys.inactive)}: ${translate(TranslationKeys.markings)}: ${markingText}`}
 						</TooltipText>
 					</TooltipContent>
-				</Tooltip>
-				<Tooltip
+				</CustomTooltip>
+				<CustomTooltip
 					placement="top"
 					trigger={triggerProps => (
 						<Pressable onHoverIn={() => setShowTooltip(true)} onHoverOut={() => setShowTooltip(false)} {...triggerProps} style={styles.dislikeButton} {...triggerProps} onPress={() => handleUpdateMarking(false)}>
@@ -251,7 +251,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 							{`${translate(TranslationKeys.i_dislike_that)}: ${translate(ownMarking?.like === false ? TranslationKeys.active : TranslationKeys.inactive)}: ${translate(TranslationKeys.markings)}: ${markingText}`}
 						</TooltipText>
 					</TooltipContent>
-				</Tooltip>
+				</CustomTooltip>
 			</View>
 			<PermissionModal isVisible={warning} setIsVisible={setWarning} />
 		</View>

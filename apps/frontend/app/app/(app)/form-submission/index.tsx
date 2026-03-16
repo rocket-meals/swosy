@@ -1022,7 +1022,7 @@ const Index = () => {
 										</View>
 									);
 								})}
-							<DebugView title="Form Data" isVisible>
+							<DebugView title="Form Data">
 								<Text style={{ ...styles.body, color: theme.screen.text }}>{JSON.stringify(formData, null, 2)}</Text>
 							</DebugView>
 						</View>

@@ -7,12 +7,13 @@ export interface FoodItemProps {
 	// handleNavigation: (id: string, foodId: string) => void;
 	handleMenuSheet: (sheet: keyof typeof SHEET_COMPONENTS) => void;
 	handleImageSheet: (item: DatabaseTypes.Foods) => void;
-	handleEatingHabitsSheet: (sheet: keyof typeof SHEET_COMPONENTS) => void;
 	// setItemMarkings: React.Dispatch<React.SetStateAction<DatabaseTypes.FoodoffersMarkings[]>>;
 	cardWidth?: number;
 	previousFeedback?: any;
 	// Optimization props
 	language?: string;
+	pirateLanguage?: boolean;
+	funLanguageMode?: string | null;
 	serverInfo?: any;
 	appSettings?: any;
 	primaryColor?: string;

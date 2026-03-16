@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome6, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { useNavigation, useRouter } from 'expo-router';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useTheme } from '@/hooks/useTheme';
@@ -65,7 +65,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
         >
             <View style={rowStyle}>
                 <View style={col1Style}>
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton {...triggerProps} onPress={() => drawerNavigation.toggleDrawer()} style={iconPaddingStyle}>
@@ -89,7 +89,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {`${translate(TranslationKeys.open_drawer)}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
 
                     <TouchableOpacity
                         onPress={() => openSheet('canteen')}
@@ -103,7 +103,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                 </View>
 
                 <View style={[styles.col2, col2GapStyle, drawerPosition === 'right' && styles.rowReverse]}>
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton {...triggerProps} onPress={() => openSheet('sort')} style={iconPaddingStyle}>
@@ -116,9 +116,9 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {`${translate(TranslationKeys.sort)}: ${translate(TranslationKeys.foods)}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
 
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton {...triggerProps} onPress={() => router.navigate('/price-group')} style={iconPaddingStyle}>
@@ -131,9 +131,9 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.price_group)} ${translate(getPriceGroup(profile?.price_group || ''))}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
 
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton {...triggerProps} onPress={() => router.navigate('/eating-habits')} style={iconPaddingStyle}>
@@ -146,9 +146,9 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {` ${translate(TranslationKeys.eating_habits)}: ${translate(TranslationKeys.edit)}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
 
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton {...triggerProps} onPress={() => openSheet('canteen')} style={iconPaddingStyle}>
@@ -161,13 +161,13 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {` ${translate(TranslationKeys.canteen)}: ${translate(TranslationKeys.select)}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
                 </View>
             </View>
 
             <View style={styles.row}>
                 <View style={[styles.col2, col2GapStyle2]}>
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton
@@ -184,12 +184,12 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {` ${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.date)}: ${selectedDate}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
                 </View>
 
                 <View style={[styles.col2, styles.colGapMedium]}>
                     {appSettings?.utilization_display_enabled && (
-                        <Tooltip
+                        <CustomTooltip
                             placement="top"
                             trigger={triggerProps => (
                                 <IconButton
@@ -206,10 +206,10 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                     {` ${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`}
                                 </TooltipText>
                             </TooltipContent>
-                        </Tooltip>
+                        </CustomTooltip>
                     )}
 
-                    <Tooltip
+                    <CustomTooltip
                         placement="top"
                         trigger={triggerProps => (
                             <IconButton {...triggerProps} onPress={() => openSheet('hours')} style={arrowPaddingStyle}>
@@ -222,7 +222,7 @@ const FoodOffersHeader: React.FC<FoodOffersHeaderProps> = ({
                                 {` ${translate(TranslationKeys.businesshours)}`}
                             </TooltipText>
                         </TooltipContent>
-                    </Tooltip>
+                    </CustomTooltip>
                 </View>
             </View>
         </View>
