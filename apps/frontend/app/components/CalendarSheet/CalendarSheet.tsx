@@ -17,7 +17,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { format, isValid, parse } from 'date-fns';
 
-const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, selectedDateProp, updateGlobal }) => {
+export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, selectedDateProp, updateGlobal }) => {
     const { theme } = useTheme();
     const { translate } = useLanguage();
     const dispatch = useDispatch();
@@ -104,10 +104,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
     LocaleConfig.defaultLocale = 'custom';
 
     return (
-        <MyScrollViewModal
-            title={`${translate(TranslationKeys.select)} : ${translate(TranslationKeys.date)}`}
-            closeSheet={closeSheet}
-        >
+        <>
             <View style={styles.manualInputWrapper}>
                 <TextInput
                     style={[
@@ -148,16 +145,12 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                     current={currentMonth.toISOString().split('T')[0]}
                     onDayPress={(day: any) => {
                         if (onSelect) {
-                            console.log('[CalendarSheet] onDayPress -> using onSelect callback', day.dateString);
                             onSelect(day.dateString);
                         } else if (updateGlobal) {
-                            console.log('[CalendarSheet] onDayPress -> updating global selectedDate', day.dateString);
                             dispatch({
                                 type: SET_SELECTED_DATE,
                                 payload: day.dateString,
                             });
-                        } else {
-                            console.log('[CalendarSheet] onDayPress -> neither onSelect nor updateGlobal provided, doing nothing for', day.dateString);
                         }
                         closeSheet();
                     }}
@@ -205,6 +198,18 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, onSelect, sel
                 />
                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_select_date} />
             </View>
+        </>
+    );
+};
+
+const CalendarSheet: React.FC<CalendarSheetProps> = (props) => {
+    const { translate } = useLanguage();
+    return (
+        <MyScrollViewModal
+            title={`${translate(TranslationKeys.select)} : ${translate(TranslationKeys.date)}`}
+            closeSheet={props.closeSheet}
+        >
+            <CalendarSheetContent {...props} />
         </MyScrollViewModal>
     );
 };

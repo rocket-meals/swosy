@@ -3,10 +3,9 @@ import React, { useRef, useState, useEffect } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
-import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
-import { useModal } from '@/components/GlobalModal/useModal';
 import { MaterialIcons } from '@expo/vector-icons';
 import { parse, format } from 'date-fns';
+import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 
 const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
@@ -16,7 +15,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 	const isFifthDotManual = useRef(false);
 	const isLastColonManual = useRef(false);
 
-	const { show, close } = useModal();
+	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
 	const [localValue, setLocalValue] = useState<string>(value || '');
 
 	useEffect(() => {
@@ -98,30 +97,25 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 			}
 		}
 
-		show(
-			<CalendarSheet
-				selectedDateProp={sel || undefined}
-				onSelect={(dateString: string) => {
-					try {
-						const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
-						const formattedDate = format(parsed, 'dd.MM.yyyy');
-						// Preserve existing time (HH:MM) from localValue or value, fallback to '00:00'
-						const timeMatchLocal = (localValue || '').match(/(\d{2}:\d{2})$/);
-						const timeMatchValue = (value || '').match(/(\d{2}:\d{2})$/);
-						const timePart = timeMatchLocal?.[1] || timeMatchValue?.[1] || '00:00';
-						const formatted = `${formattedDate} ${timePart}`;
-						setLocalValue(formatted);
-						onChange(id, formatted, custom_type);
-						onError(id, '');
-					} catch (e) {
-						// ignore
-					}
-					close();
-				}}
-				closeSheet={() => close()}
-			/>
-		, { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
-		);
+		openDatePickerModal({
+			selectedDateProp: sel || undefined,
+			onSelect: (dateString: string) => {
+				try {
+					const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
+					const formattedDate = format(parsed, 'dd.MM.yyyy');
+					// Preserve existing time (HH:MM) from localValue or value, fallback to '00:00'
+					const timeMatchLocal = (localValue || '').match(/(\d{2}:\d{2})$/);
+					const timeMatchValue = (value || '').match(/(\d{2}:\d{2})$/);
+					const timePart = timeMatchLocal?.[1] || timeMatchValue?.[1] || '00:00';
+					const formatted = `${formattedDate} ${timePart}`;
+					setLocalValue(formatted);
+					onChange(id, formatted, custom_type);
+					onError(id, '');
+				} catch (e) {
+					// ignore
+				}
+			},
+		});
 	};
 
 	return (
@@ -203,7 +197,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 		setLocalValue(value || '');
 	}, [value]);
 
-	const { show, close } = useModal();
+	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
 
 	const openCalendar = () => {
 		if (isDisabled) return;
@@ -218,25 +212,20 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 			}
 		}
 
-		show(
-			<CalendarSheet
-				selectedDateProp={sel || undefined}
-				onSelect={(dateString: string) => {
-					try {
-						const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
-						const formatted = format(parsed, 'dd.MM.yyyy');
-						setLocalValue(formatted);
-						onChange(id, formatted, custom_type);
-						onError(id, '');
-					} catch (e) {
-						// ignore
-					}
-					close();
-				}}
-				closeSheet={() => close()}
-			/>
-		, { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
-		);
+		openDatePickerModal({
+			selectedDateProp: sel || undefined,
+			onSelect: (dateString: string) => {
+				try {
+					const parsed = parse(dateString, 'yyyy-MM-dd', new Date());
+					const formatted = format(parsed, 'dd.MM.yyyy');
+					setLocalValue(formatted);
+					onChange(id, formatted, custom_type);
+					onError(id, '');
+				} catch (e) {
+					// ignore
+				}
+			},
+		});
 	};
 
 	// New: allow text editing while keeping the calendar button to the right
