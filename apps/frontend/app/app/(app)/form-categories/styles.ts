@@ -29,5 +29,10 @@ export default StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
 	},
+	rowEnd: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
 	dummy: {},
 });

@@ -100,9 +100,29 @@ export type FoodAttributesState = {
 	foodAttributesDict: Record<string, DatabaseTypes.FoodsAttributes>;
 }
 
+export type FormQueueEntry = {
+	id: string;
+	form_submission_id: string;
+	form_id: string;
+	alias: string;
+	targetState: string;
+	formData: Record<string, { value: any; error: string; custom_type?: string }>;
+	timestamp: string;
+};
+
+export type CachedFormEntry = {
+	form: DatabaseTypes.Forms | null;
+	submissions: DatabaseTypes.FormSubmissions[];
+	answers: Record<string, DatabaseTypes.FormAnswers[]>;
+};
+
 export type FormState = {
 	filterBy: string;
 	formSubmission: DatabaseTypes.FormSubmissions;
+	formQueue: FormQueueEntry[];
+	cachedFormData: Record<string, CachedFormEntry>;
+	cachedFormCategories: DatabaseTypes.FormCategories[];
+	cachedForms: Record<string, DatabaseTypes.Forms[]>;
 }
 
 export type CampusState = {

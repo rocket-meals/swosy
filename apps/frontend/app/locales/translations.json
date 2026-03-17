@@ -5422,5 +5422,175 @@
         "ru": "Варианты Карты",
         "tr": "Harita Varyantları",
         "zh": "地图变体"
+    },
+    "form_cache_download": {
+        "de": "Entwürfe herunterladen",
+        "en": "Download drafts",
+        "ar": "تنزيل المسودات",
+        "es": "Descargar borradores",
+        "fr": "Télécharger les brouillons",
+        "ru": "Скачать черновики",
+        "tr": "Taslakları indir",
+        "zh": "下载草稿"
+    },
+    "form_cache_downloaded": {
+        "de": "Heruntergeladen",
+        "en": "Downloaded",
+        "ar": "تم التنزيل",
+        "es": "Descargado",
+        "fr": "Téléchargé",
+        "ru": "Загружено",
+        "tr": "İndirildi",
+        "zh": "已下载"
+    },
+    "form_cache_downloading": {
+        "de": "Wird heruntergeladen…",
+        "en": "Downloading…",
+        "ar": "جارٍ التنزيل…",
+        "es": "Descargando…",
+        "fr": "Téléchargement…",
+        "ru": "Загрузка…",
+        "tr": "İndiriliyor…",
+        "zh": "下载中…"
+    },
+    "form_queue": {
+        "de": "Warteschlange",
+        "en": "Queue",
+        "ar": "قائمة الانتظار",
+        "es": "Cola",
+        "fr": "File d'attente",
+        "ru": "Очередь",
+        "tr": "Kuyruk",
+        "zh": "队列"
+    },
+    "form_queue_add": {
+        "de": "Zur Warteschlange hinzufügen",
+        "en": "Add to Queue",
+        "ar": "إضافة إلى قائمة الانتظار",
+        "es": "Añadir a la cola",
+        "fr": "Ajouter à la file d'attente",
+        "ru": "Добавить в очередь",
+        "tr": "Kuyruğa ekle",
+        "zh": "添加到队列"
+    },
+    "form_queue_added": {
+        "de": "Formular wurde zur Warteschlange hinzugefügt",
+        "en": "Form added to queue",
+        "ar": "تمت إضافة النموذج إلى قائمة الانتظار",
+        "es": "Formulario añadido a la cola",
+        "fr": "Formulaire ajouté à la file d'attente",
+        "ru": "Форма добавлена в очередь",
+        "tr": "Form kuyruğa eklendi",
+        "zh": "表单已添加到队列"
+    },
+    "form_queue_empty": {
+        "de": "Keine ausstehenden Formulare in der Warteschlange",
+        "en": "No pending forms in the queue",
+        "ar": "لا توجد نماذج معلقة في قائمة الانتظار",
+        "es": "No hay formularios pendientes en la cola",
+        "fr": "Aucun formulaire en attente dans la file",
+        "ru": "Нет ожидающих форм в очереди",
+        "tr": "Kuyrukta bekleyen form yok",
+        "zh": "队列中没有待处理的表单"
+    },
+    "form_queue_sync": {
+        "de": "Synchronisieren",
+        "en": "Sync",
+        "ar": "مزامنة",
+        "es": "Sincronizar",
+        "fr": "Synchroniser",
+        "ru": "Синхронизировать",
+        "tr": "Senkronize et",
+        "zh": "同步"
+    },
+    "form_queue_sync_all": {
+        "de": "Alle synchronisieren",
+        "en": "Sync All",
+        "ar": "مزامنة الكل",
+        "es": "Sincronizar todo",
+        "fr": "Tout synchroniser",
+        "ru": "Синхронизировать все",
+        "tr": "Hepsini senkronize et",
+        "zh": "全部同步"
+    },
+    "form_queue_sync_failed": {
+        "de": "Synchronisierung fehlgeschlagen. Formular bleibt in der Warteschlange.",
+        "en": "Sync failed. Form remains in queue.",
+        "ar": "فشلت المزامنة. النموذج يبقى في قائمة الانتظار.",
+        "es": "Sincronización fallida. El formulario permanece en la cola.",
+        "fr": "Synchronisation échouée. Le formulaire reste dans la file.",
+        "ru": "Синхронизация не удалась. Форма остаётся в очереди.",
+        "tr": "Senkronizasyon başarısız. Form kuyrukta kalıyor.",
+        "zh": "同步失败。表单仍在队列中。"
+    },
+    "form_queue_synced": {
+        "de": "Formular erfolgreich synchronisiert",
+        "en": "Form synced successfully",
+        "ar": "تمت مزامنة النموذج بنجاح",
+        "es": "Formulario sincronizado exitosamente",
+        "fr": "Formulaire synchronisé avec succès",
+        "ru": "Форма успешно синхронизирована",
+        "tr": "Form başarıyla senkronize edildi",
+        "zh": "表单已成功同步"
+    },
+    "form_offline_cached": {
+        "de": "Offline (zwischengespeichert)",
+        "en": "Offline (cached)",
+        "ar": "غير متصل (مخزن مؤقتاً)",
+        "es": "Sin conexión (en caché)",
+        "fr": "Hors ligne (en cache)",
+        "ru": "Офлайн (кэшировано)",
+        "tr": "Çevrimdışı (önbellekte)",
+        "zh": "离线（已缓存）"
+    },
+    "form_offline_mode": {
+        "de": "Offline-Modus",
+        "en": "Offline mode",
+        "ar": "وضع عدم الاتصال",
+        "es": "Modo sin conexión",
+        "fr": "Mode hors ligne",
+        "ru": "Офлайн-режим",
+        "tr": "Çevrimdışı modu",
+        "zh": "离线模式"
+    },
+    "form_download_all": {
+        "de": "Alles herunterladen",
+        "en": "Download all",
+        "ar": "تنزيل الكل",
+        "es": "Descargar todo",
+        "fr": "Tout télécharger",
+        "ru": "Скачать всё",
+        "tr": "Hepsini indir",
+        "zh": "下载全部"
+    },
+    "form_submission_not_found": {
+        "de": "Einreichung nicht gefunden. Bitte Seite neu laden.",
+        "en": "Submission not found. Please reload the page.",
+        "ar": "لم يتم العثور على الإرسال. يرجى إعادة تحميل الصفحة.",
+        "es": "Envío no encontrado. Por favor, recarga la página.",
+        "fr": "Soumission introuvable. Veuillez recharger la page.",
+        "ru": "Заявка не найдена. Пожалуйста, перезагрузите страницу.",
+        "tr": "Gönderim bulunamadı. Lütfen sayfayı yenileyin.",
+        "zh": "未找到提交。请重新加载页面。"
+    },
+    "form_submission_not_found_offline": {
+        "de": "Einreichung nicht im Offline-Cache gefunden.",
+        "en": "Submission not found in offline cache.",
+        "ar": "لم يتم العثور على الإرسال في التخزين المؤقت للوضع غير المتصل.",
+        "es": "Envío no encontrado en la caché sin conexión.",
+        "fr": "Soumission introuvable dans le cache hors ligne.",
+        "ru": "Заявка не найдена в офлайн-кэше.",
+        "tr": "Gönderim çevrimdışı önbellekte bulunamadı.",
+        "zh": "在离线缓存中未找到提交。"
+    },
+    "upload_folder_id": {
+        "de": "Ordner-ID",
+        "en": "Folder ID",
+        "ar": "معرّف المجلد",
+        "es": "ID de carpeta",
+        "fr": "ID du dossier",
+        "ru": "ID папки",
+        "tr": "Klasör kimliği",
+        "zh": "文件夹 ID"
     }
 }

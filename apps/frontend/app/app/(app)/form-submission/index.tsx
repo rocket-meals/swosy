@@ -35,8 +35,9 @@ import CollectionSelection from '@/components/CollectionSelection/CollectionSele
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { filterOptions } from './constants';
 import EditFormSubmissionSheet from '@/components/EditFormSubmissionSheet/EditFormSubmissionSheet';
-import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
-import { excerpt, getFileFromDirectus, getFormValueImageUrl, uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
+import { SET_FORM_SUBMISSION, ADD_FORM_QUEUE_ENTRY, REMOVE_FORM_QUEUE_ENTRY } from '@/redux/Types/types';
+import { deleteDirectusFile, excerpt, getFileFromDirectus, getFormValueImageUrl, uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
+import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/SubmissionWarningSheet';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { Buffer } from 'buffer';
@@ -119,7 +120,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
-	const { form_submission_id } = useLocalSearchParams();
+	const { form_submission_id, queue_entry_id } = useLocalSearchParams();
 	const formAnswersHelper = new FormAnswersHelper();
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 	const editSheetRef = useRef<BottomSheet>(null);
@@ -132,15 +133,17 @@ const Index = () => {
 	const [collectionData, setCollectionData] = useState<any>([]);
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
-	const { formSubmission } = useAppSelector((state) => state.form);
+	const { formSubmission, formQueue, cachedFormData } = useAppSelector((state) => state.form);
 	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { language, drawerPosition, primaryColor } = useAppSelector((state) => state.settings);
+	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+	const [imageFolderIdState, setImageFolderIdState] = useState<string | null>(null);
+	const [filesFolderIdState, setFilesFolderIdState] = useState<string | null>(null);
 
 	// Set Page Title
 	useSetPageTitle(formSubmission?.alias || TranslationKeys.form_submission);
@@ -241,7 +244,24 @@ const Index = () => {
 	};
 
 	const checkValidity = async () => {
-		const result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
+		let result: DatabaseTypes.FormSubmissions | null = null;
+
+		if (offlineMode) {
+			// In offline mode, use cache only
+			result = Object.values(cachedFormData || {})
+				.flatMap(entry => entry.submissions || [])
+				.find(s => String(s.id) === String(form_submission_id)) || null;
+		} else {
+			// In online mode, always fetch fresh from API; fall back to cache on network error
+			try {
+				result = (await formsSubmissionsHelper.fetchFormubmissionById(String(form_submission_id))) as DatabaseTypes.FormSubmissions;
+			} catch {
+				result = Object.values(cachedFormData || {})
+					.flatMap(entry => entry.submissions || [])
+					.find(s => String(s.id) === String(form_submission_id)) || null;
+			}
+		}
+
 		if (result) {
 			dispatch({ type: SET_FORM_SUBMISSION, payload: result });
 			if (result?.user_locked_by && result?.user_locked_by !== user?.id) {
@@ -250,14 +270,22 @@ const Index = () => {
 				} else {
 					openWarningSheet();
 				}
-			} else {
-				const update = (await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), {
-					user_locked_by: String(user?.id),
-					date_started: new Date().toISOString(),
-				})) as DatabaseTypes.FormSubmissions;
+			} else if (!offlineMode) {
+				try {
+					await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), {
+						user_locked_by: String(user?.id),
+						date_started: new Date().toISOString(),
+					});
+				} catch {
+					// update fails silently on network error
+				}
 			}
 		} else {
-			toast('Please reload the page', 'error');
+			if (offlineMode) {
+				toast(translate(TranslationKeys.form_submission_not_found_offline), 'error');
+			} else {
+				toast(translate(TranslationKeys.form_submission_not_found), 'error');
+			}
 		}
 		return result;
 	};
@@ -281,9 +309,25 @@ const Index = () => {
 			setSelectedState(getNextState(formSubmissionPayload?.state));
 		}
 
-		const result = (await formAnswersHelper.fetchFormAnswers({
-			filter: { form_submission: { _eq: form_submission_id } },
-		})) as DatabaseTypes.FormAnswers[];
+		// In offline mode use cache; in online mode always fetch fresh from API
+		let result: DatabaseTypes.FormAnswers[] | null = null;
+
+		if (offlineMode) {
+			result = Object.values(cachedFormData || {})
+				.map(entry => (entry.answers || {})[String(form_submission_id)])
+				.find(answers => answers && answers.length > 0) || null;
+		} else {
+			try {
+				result = (await formAnswersHelper.fetchFormAnswers({
+					filter: { form_submission: { _eq: form_submission_id } },
+				})) as DatabaseTypes.FormAnswers[];
+			} catch {
+				// Fall back to cache on network error
+				result = Object.values(cachedFormData || {})
+					.map(entry => (entry.answers || {})[String(form_submission_id)])
+					.find(answers => answers && answers.length > 0) || null;
+			}
+		}
 
 		if (result) {
 			const sortedResult = result.sort((a, b) => {
@@ -341,8 +385,18 @@ const Index = () => {
 			});
 
 			setFormData(initialFormData);
-			setLoading(false);
+
+			// If opened from queue, override with queued formData
+			if (queue_entry_id) {
+				const queueEntry = (formQueue || []).find((entry: any) => entry.id === queue_entry_id);
+				if (queueEntry) {
+					setFormData({ ...initialFormData, ...queueEntry.formData });
+					setSelectedState(queueEntry.targetState);
+				}
+			}
 		}
+
+		setLoading(false);
 	};
 
 	const fetchCollection = async (collection: string) => {
@@ -492,7 +546,7 @@ const Index = () => {
 		[formData]
 	);
 
-	const getDirectusUploadId = async (value: any) => {
+	const getDirectusUploadId = async (value: any, folderId?: string | null) => {
 		const response = await fetch(value.image);
 		const arrayBuffer = await response.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
@@ -504,16 +558,53 @@ const Index = () => {
 		};
 		let fileId;
 		if (isWeb) {
-			fileId = await uploadToDirectus(fileData);
+			fileId = await uploadToDirectus(fileData, folderId);
 		} else {
-			fileId = await uploadToDirectusFromMobile(fileData);
+			fileId = await uploadToDirectusFromMobile(fileData, folderId);
 		}
 		return fileId;
+	};
+
+	const handleAddToQueue = () => {
+		const rawFormId = (formSubmission as any)?.form;
+		const form_id = rawFormId ? (typeof rawFormId === 'object' ? String(rawFormId?.id || '') : String(rawFormId)) : '';
+		const alias = String(formSubmission?.alias || form_submission_id || '');
+		const entryId = queue_entry_id ? String(queue_entry_id) : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+		const entry = {
+			id: entryId,
+			form_submission_id: String(form_submission_id),
+			form_id,
+			alias,
+			targetState: selectedState,
+			formData,
+			timestamp: new Date().toISOString(),
+		};
+		dispatch({ type: ADD_FORM_QUEUE_ENTRY, payload: entry });
+		toast(translate(TranslationKeys.form_queue_added), 'success');
+		setFormData({});
+		if (router.canGoBack()) {
+			router.back();
+		} else {
+			router.navigate('/form-categories');
+		}
 	};
 
 	const handleFormSubmission = async () => {
 		setSubmissionLoading(true);
 		let hasError = false;
+
+		// Use folder IDs already fetched at component mount; re-fetch if either is still null
+		let imageFolderId: string | null = imageFolderIdState;
+		let filesFolderId: string | null = filesFolderIdState;
+		if (imageFolderId === null || filesFolderId === null) {
+			try {
+				const formAnswerFields: any = await fetchSpecificField('form_answers');
+				imageFolderId = imageFolderId ?? formAnswerFields?.value_image?.meta?.options?.folder ?? null;
+				filesFolderId = filesFolderId ?? formAnswerFields?.value_files?.meta?.options?.folder ?? null;
+			} catch {
+				// silently ignore, upload without folder
+			}
+		}
 
 		const filteredFormAnswers = formAnswers.filter(answer => formData.hasOwnProperty(String(answer?.id)));
 
@@ -540,7 +631,7 @@ const Index = () => {
 					formateDate = formatDateForSubmission(fieldType, value);
 				}
 
-				let updatedValueFields = {};
+				let updatedValueFields: Record<string, any> = {};
 				if (custom_type === 'value_string') {
 					updatedValueFields = { value_string: value };
 				} else if (custom_type === 'value_number') {
@@ -557,18 +648,66 @@ const Index = () => {
 					updatedValueFields = { value_date: formateDate };
 				} else if (custom_type === 'value_image') {
 					if (value?.name) {
-						const directusFileId = await getDirectusUploadId(value);
+						// New file: for signature fields delete the old Directus file first (online mode only)
+						if (custom_id === 'signature' && !offlineMode) {
+							const originalFileId = (answer as any)?.value_image;
+							if (originalFileId) {
+								try {
+									await deleteDirectusFile(String(originalFileId));
+								} catch (e) {
+									console.warn('Could not delete old signature file:', e);
+								}
+							}
+						}
+						const directusFileId = await getDirectusUploadId(value, imageFolderId);
 						updatedValueFields = { value_image: directusFileId };
+					} else if (value === null || value === undefined) {
+						// Image/signature cleared — explicitly set to null
+						if (custom_id === 'signature' && !offlineMode) {
+							const originalFileId = (answer as any)?.value_image;
+							if (originalFileId) {
+								try {
+									await deleteDirectusFile(String(originalFileId));
+								} catch (e) {
+									console.warn('Could not delete old signature file:', e);
+								}
+							}
+						}
+						updatedValueFields = { value_image: null };
 					}
-				} else if (custom_type === 'value_files' && Array.isArray(value)) {
-					const uploadedFileIds = await Promise.all(value.filter((file: any) => !file?.edit).map(async (file: any) => await getDirectusUploadId(file)));
-					updatedValueFields = {
-						value_files: {
-							create: uploadedFileIds.filter(Boolean).map(fileId => ({
-								directus_files_id: fileId,
-							})),
-						},
-					};
+					// else: existing URL unchanged — no update needed
+				} else if (custom_type === 'value_files') {
+					if (Array.isArray(value) && value.length > 0) {
+						const newFiles = value.filter((file: any) => !file?.edit);
+						const existingFileIds = value.filter((file: any) => file?.edit).map((file: any) => file.directus_files_id).filter(Boolean);
+
+						// Detect deleted relations by comparing current files with original answer files
+						const originalValueFiles: any[] = (answer as any).value_files || [];
+						const deletedRelationIds = originalValueFiles
+							.filter((orig: any) => orig?.directus_files_id && !existingFileIds.includes(orig.directus_files_id))
+							.map((orig: any) => orig.id)
+							.filter(Boolean);
+
+						if (newFiles.length > 0 || deletedRelationIds.length > 0) {
+							const uploadedFileIds = newFiles.length > 0
+								? await Promise.all(newFiles.map(async (file: any) => await getDirectusUploadId(file, filesFolderId)))
+								: [];
+
+							const valueFilesUpdate: Record<string, any> = {};
+							const validUploadIds = uploadedFileIds.filter(Boolean);
+							if (validUploadIds.length > 0) {
+								valueFilesUpdate.create = validUploadIds.map(fileId => ({ directus_files_id: fileId }));
+							}
+							if (deletedRelationIds.length > 0) {
+								valueFilesUpdate.delete = deletedRelationIds;
+							}
+							updatedValueFields = { value_files: valueFilesUpdate };
+						}
+						// else: only unchanged existing files, no action needed
+					} else {
+						// All files cleared — explicitly set to empty
+						updatedValueFields = { value_files: [] };
+					}
 				}
 				return {
 					id: fieldId,
@@ -584,10 +723,21 @@ const Index = () => {
 		}
 
 		if (finalAnswers.length > 0) {
+			// In offline mode, immediately add to queue without attempting upload
+			if (offlineMode) {
+				setSubmissionLoading(false);
+				handleAddToQueue();
+				return;
+			}
 			try {
 				await Promise.all(finalAnswers.map((answer: any) => formAnswersHelper.updateFormAnswers(answer.id, answer)));
 
 				await formsSubmissionsHelper.updateFormSubmissionById(String(form_submission_id), { state: selectedState });
+
+				// If submitted from queue, remove the queue entry
+				if (queue_entry_id) {
+					dispatch({ type: REMOVE_FORM_QUEUE_ENTRY, payload: String(queue_entry_id) });
+				}
 
 				setSubmissionLoading(false);
 				setFormData({});
@@ -600,9 +750,8 @@ const Index = () => {
 				console.error('Error updating form answers:', error);
 				const errorMessage = error instanceof Error ? error.message : String(error);
 				toast(errorMessage || 'An error occurred while updating form answers', 'error');
-			} finally {
 				setSubmissionLoading(false);
-				setFormData({});
+				handleAddToQueue();
 			}
 		} else {
 			setSubmissionLoading(false);
@@ -654,6 +803,20 @@ const Index = () => {
 		return () => subscription?.remove();
 	}, []);
 
+	// Fetch folder IDs once at mount so they can be shown as hints and used during upload
+	useEffect(() => {
+		const fetchFolderIds = async () => {
+			try {
+				const formAnswerFields: any = await fetchSpecificField('form_answers');
+				setImageFolderIdState(formAnswerFields?.value_image?.meta?.options?.folder ?? null);
+				setFilesFolderIdState(formAnswerFields?.value_files?.meta?.options?.folder ?? null);
+			} catch {
+				// silently ignore
+			}
+		};
+		fetchFolderIds();
+	}, []);
+
 	return (
 		<View
 			style={{
@@ -692,7 +855,13 @@ const Index = () => {
 							},
 						]}
 					>
-						<TouchableOpacity onPress={() => router.back()} style={{ padding: 10 }}>
+						<TouchableOpacity onPress={() => {
+							if (router.canGoBack()) {
+								router.back();
+							} else {
+								router.navigate('/form-categories');
+							}
+						}} style={{ padding: 10 }}>
 							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
 						</TouchableOpacity>
 						<Text style={{ ...styles.heading, color: theme.header.text }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>
@@ -846,9 +1015,9 @@ const Index = () => {
                                                                                                                 onlyTwo
                                                                                                         />
                                                                                                 )}
-											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
-											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} />}
-											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} />}
+											{custom_id === 'files' && showInForm && <FileUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} offlineMode={offlineMode} folderHint={filesFolderIdState} />}
+											{custom_id === 'image' && showInForm && <ImageUpload id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} offlineMode={offlineMode} folderHint={imageFolderIdState} />}
+											{custom_id === 'signature' && showInForm && <SignatureInterface id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} scrollViewRef={scrollViewRef} folderHint={imageFolderIdState} />}
 											{custom_type === 'value_custom' && showInForm && <CollectionSelection id={fieldId} value={formData[fieldId]?.value} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} loading={loadingCollection} data={collectionData} custom_type={custom_type} />}
 										</View>
 									);
