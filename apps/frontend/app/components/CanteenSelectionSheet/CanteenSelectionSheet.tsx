@@ -6,7 +6,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { CanteenSelectionSheetProps } from './types';
 import { isWeb } from '@/constants/Constants';
-import { SET_BUILDINGS, SET_CANTEENS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
+import { SET_BUILDINGS_DICT, SET_CANTEENS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
@@ -45,7 +45,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({ closeShee
 				return acc;
 			}, {});
 
-			dispatch({ type: SET_BUILDINGS, payload: buildings });
+			dispatch({ type: SET_BUILDINGS_DICT, payload: buildingsDict });
 
 			const canteensData = (await canteenHelper.fetchCanteens({})) as DatabaseTypes.Canteens[];
 

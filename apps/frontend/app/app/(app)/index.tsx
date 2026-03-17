@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
 import { BuildingsHelper, BuildingsOrganizationsHelper } from '@/redux/actions/Buildings/Buildings';
 import { OrganizationsHelper } from '@/redux/actions/Organizations/Organizations';
-import { SET_BUILDINGS, SET_BUILDINGS_ORGANIZATIONS, SET_CANTEENS, SET_ORGANISATIONS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
+import { SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_CANTEENS, SET_ORGANISATIONS, SET_SELECTED_CANTEEN } from '@/redux/Types/types';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { AppScreens, DatabaseTypes } from 'repo-depkit-common';
@@ -56,7 +56,7 @@ const Home = () => {
 				return acc;
 			}, {});
 
-			dispatch({ type: SET_BUILDINGS, payload: buildings });
+			dispatch({ type: SET_BUILDINGS_DICT, payload: buildingsDict });
 
 			const buildingsOrganizationsData = (await buildingsOrganizationsHelper.fetchBuildingsOrganizations({})) as DatabaseTypes.BuildingsOrganizations[];
 			dispatch({ type: SET_BUILDINGS_ORGANIZATIONS, payload: buildingsOrganizationsData || [] });

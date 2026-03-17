@@ -646,7 +646,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const { theme } = useTheme();
 	const myMapRef = useRef<MyMapHandle>(null);
 
-	const { buildings, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
+	const { buildingsDict, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
+	const buildings = useMemo(() => Object.values(buildingsDict ?? {}), [buildingsDict]);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedStyleKey = useAppSelector((state) => (state.settings as any).osmVectorMapStyleKey ?? 'liberty');
@@ -811,14 +812,14 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	const centerPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
-			const building = buildings.find((b: DatabaseTypes.Buildings) => b.id === selectedCanteen.building);
+			const building = buildingsDict[String(selectedCanteen.building)];
 			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 			if (coords && coords.length === 2) {
 				return { lat: Number(coords[1]), lng: Number(coords[0]) };
 			}
 		}
 		return POSITION_BUNDESTAG;
-	}, [selectedCanteen, buildings]);
+	}, [selectedCanteen, buildingsDict]);
 
 	// Keep centerPositionRef up to date for use in game mode and other ref-based access
 	useEffect(() => {
@@ -878,7 +879,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	);
 
 	const buildingMarkers = useMemo((): MapMarker[] => {
-		return (buildings as DatabaseTypes.Buildings[])
+		return buildings
 			.filter((building) => {
 				const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 				if (!coords || coords.length !== 2) return false;
@@ -952,9 +953,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const searchResults = useMemo((): DatabaseTypes.Buildings[] => {
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return [];
-		return (buildings as DatabaseTypes.Buildings[])
-			.filter((b) => (b.alias ?? '').toLowerCase().includes(q))
-			.slice(0, MAX_SEARCH_RESULTS);
+		return buildings.filter((b) => (b.alias ?? '').toLowerCase().includes(q)).slice(0, MAX_SEARCH_RESULTS);
 	}, [buildings, searchQuery]);
 
 	const handleSearchResultSelect = useCallback((building: DatabaseTypes.Buildings) => {
@@ -1198,7 +1197,7 @@ const OsmVectorMapScreen: React.FC = () => {
 			}
 
 			const buildingId = id.startsWith('building-') ? id.slice('building-'.length) : null;
-			const building = buildingId ? (buildings as DatabaseTypes.Buildings[]).find((b) => b.id === buildingId) : null;
+			const building = buildingId ? buildingsDict[String(buildingId)] : null;
 			const title = building?.alias ?? id;
 			const coords = (building?.coordinates as BuildingCoordinates)?.coordinates;
 			const lat = coords ? Number(coords[1]).toFixed(5) : null;
@@ -1215,7 +1214,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				openBuildingDetailsModal(buildingId);
 			}
 		},
-		[buildings, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
+		[buildingsDict, clusteredBuildingMarkers, openBuildingDetailsModal, addLog],
 	);
 
 	const handleMessage = useCallback(

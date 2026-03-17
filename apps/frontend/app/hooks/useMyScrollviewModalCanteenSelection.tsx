@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
-import { SET_BUILDINGS, SET_CANTEENS } from '@/redux/Types/types';
+import { SET_BUILDINGS_DICT, SET_CANTEENS } from '@/redux/Types/types';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -35,7 +35,7 @@ const CanteenSelectionContent: React.FC<CanteenSelectionContentProps> = ({ onSel
 					return acc;
 				}, {});
 
-				dispatch({ type: SET_BUILDINGS, payload: buildings });
+				dispatch({ type: SET_BUILDINGS_DICT, payload: buildingsDict });
 
 				const canteensData = (await canteenHelper.fetchCanteens({})) as DatabaseTypes.Canteens[];
 

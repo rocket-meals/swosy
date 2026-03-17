@@ -12,7 +12,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { DatabaseTypes } from 'repo-depkit-common';
-import { SET_BUILDINGS, SET_CANTEENS } from '@/redux/Types/types';
+import { SET_BUILDINGS_DICT, SET_CANTEENS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -38,7 +38,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({ close
 				return acc;
 			}, {});
 
-			dispatch({ type: SET_BUILDINGS, payload: buildings });
+			dispatch({ type: SET_BUILDINGS_DICT, payload: buildingsDict });
 
 			const canteensData = (await canteenHelper.fetchCanteens({})) as DatabaseTypes.Canteens[];
 
