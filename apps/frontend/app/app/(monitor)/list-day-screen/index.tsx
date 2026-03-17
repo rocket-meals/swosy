@@ -65,7 +65,7 @@ const Index = () => {
 	const [footerHeight, setFooterHeight] = useState(0);
 	const [isConnected, setIsConnected] = useState<boolean | null>(true);
 	const [foodAttributesColumn, setFoodAttributesColumn] = useState<any>([]);
-	const [foodAttributes, setFoodAttributes] = useState<any>(null);
+	
 	const [foodAttributesDataFull, setFoodAttributesDataFull] = useState<any>(null);
 	const [optionalFoodAttributes, setOptionalFoodAttributes] = useState<any>(null);
 
@@ -331,17 +331,7 @@ const Index = () => {
 		}
 	};
 
-	useFocusEffect(
-		useCallback(() => {
-			if (foods) {
-				const filteredAttributes = filterFoodAttributes(foods);
-				setFoodAttributes(filteredAttributes);
-			}
-			return () => {
-				// setFoodAttributes(null);
-			};
-		}, [foods, foodAttributesDataFull])
-	);
+	
 
 	useFocusEffect(
 		useCallback(() => {
@@ -701,9 +691,9 @@ const Index = () => {
 															return <MarkingIcon key={idx} marking={marking} size={24} color={m.color} compact />;
 														})}
 												</View>
-												{foodAttributes[item?.id] &&
-													foodAttributes[item?.id]?.map((attr: any) => {
-														const attributeColumnWidth = (Number(columnPercentages.attributes) / foodAttributes[item?.id].length).toFixed(2);
+												{filterFoodAttributes(foods)[item?.id] &&
+													filterFoodAttributes(foods)[item?.id]?.map((attr: any) => {
+														const attributeColumnWidth = (Number(columnPercentages.attributes) / filterFoodAttributes(foods)[item?.id].length).toFixed(2);
 														if (!attr?.value) {
 															return (
 																<Text

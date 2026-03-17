@@ -88,7 +88,6 @@ type ExtendedPopUpEvents = {
 
 export type FoodAttributesState = {
 	foodAttributeGroups: DatabaseTypes.FoodsAttributesGroups[];
-	foodAttributes: DatabaseTypes.FoodsAttributes[];
 	foodAttributesDict: Record<string, DatabaseTypes.FoodsAttributes>;
 }
 
