@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
@@ -34,7 +34,7 @@ const TabController = ({
     ], [activeTab, foodsAreaColor, theme.screen.iconBg]);
 
     const renderTab = (tabName: string, iconName: any, labelKey: string) => (
-        <Tooltip
+        <CustomTooltip
             placement="top"
             trigger={(triggerProps) => (
                 <IconButton
@@ -62,7 +62,7 @@ const TabController = ({
                     {translate(labelKey)}
                 </TooltipText>
             </TooltipContent>
-        </Tooltip>
+        </CustomTooltip>
     );
 
     return (

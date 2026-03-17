@@ -13,7 +13,6 @@ import {
 	UPDATE_PROFILE,
 } from '@/redux/Types/types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
-import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -22,7 +21,6 @@ import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours
 import { TranslationKeys } from '@/locales/keys';
 
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
@@ -31,6 +29,9 @@ import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import FoodOffersScrollList from '@/components/FoodOffersScrollList';
 import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
+import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useMyScrollviewModalBusinessHours from '@/hooks/useMyScrollviewModalBusinessHours';
+import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 
 import FoodOffersHeader from './components/FoodOffersHeader';
 import { useSheetHandling, useNotifications } from './hooks';
@@ -38,7 +39,6 @@ import useFoodOffersDefaultDate from '@/hooks/useFoodOffersDefaultDate';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 export const SHEET_COMPONENTS = {
-	canteen: CanteenSelectionSheet,
 	hours: HourSheet,
 	calendar: CalendarSheet,
 	aiGeneratedInfo: AIGeneratedHintSheet,
@@ -73,10 +73,30 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		bottomSheetRef,
 		selectedSheet,
 		sheetProps,
-		openSheet,
+		openSheet: openSheetBase,
 		closeSheet,
 		isActive
 	} = useSheetHandling(openFoodofferSortingModal);
+
+	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+	const { openBusinessHoursModal } = useMyScrollviewModalBusinessHours();
+	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
+
+	const openSheet = useCallback((sheet: string, props = {}) => {
+		if (sheet === 'canteen') {
+			openChangeMyCanteenSelectionModal();
+			return;
+		}
+		if (sheet === 'hours') {
+			openBusinessHoursModal();
+			return;
+		}
+		if (sheet === 'calendar') {
+			openDatePickerModal({ updateGlobal: true });
+			return;
+		}
+		openSheetBase(sheet, props);
+	}, [openSheetBase, openChangeMyCanteenSelectionModal, openBusinessHoursModal, openDatePickerModal]);
 
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
 
@@ -84,16 +104,17 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		openActiveModal();
 	}, [activePopupEvent, openActiveModal]);
 
-	const setDefaultPriceGroupForAnonymousUser = useCallback(() => {
+	const setDefaultPriceGroupForAnonymousUser = () => {
+		if (profile?.price_group) return;
 		dispatch({
 			type: UPDATE_PROFILE,
 			payload: { ...profile, price_group: 'student' },
 		});
-	}, [dispatch, profile]);
+	};
 
 	useEffect(() => {
-		if (user && !user.id) setDefaultPriceGroupForAnonymousUser();
-	}, [user, setDefaultPriceGroupForAnonymousUser]);
+		if (!user?.id) setDefaultPriceGroupForAnonymousUser();
+	}, [user]);
 
 	const getBusinessHours = useCallback(async () => {
 		if (businessHours && businessHours.length > 0) return;
@@ -110,7 +131,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 		getBusinessHours();
 	}, [getBusinessHours]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'menu' && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
+	const SheetComponent = selectedSheet && selectedSheet !== 'sort' ? SHEET_COMPONENTS[selectedSheet as keyof typeof SHEET_COMPONENTS] : null;
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
@@ -134,10 +155,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 			</View>
 
 			{isActive &&
-				!kioskMode &&
-				(selectedSheet === 'menu' ? (
-					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
-				) : (
+				!kioskMode && (
 					<BaseBottomSheet
 						key={selectedSheet || 'sheet'}
 						ref={bottomSheetRef}
@@ -160,7 +178,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							)
 						)}
 					</BaseBottomSheet>
-				))}
+				)}
 		</SafeAreaView>
 	);
 };

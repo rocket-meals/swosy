@@ -8,7 +8,7 @@ import { DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { useDispatch } from 'react-redux';
-import { SET_APP_SETTINGS, UPDATE_MARKINGS } from '@/redux/Types/types';
+import { SET_APP_SETTINGS, UPDATE_MARKING_GROUPS, UPDATE_MARKINGS } from '@/redux/Types/types';
 import { ActivityIndicator, View } from 'react-native';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
 import { useAppSelector } from '@/redux/hooks';
@@ -32,6 +32,7 @@ export default function MonitorLayout() {
 		const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);
 
 		dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
+		dispatch({ type: UPDATE_MARKING_GROUPS, payload: markingGroupResult });
 	};
 
 	const getAppSettings = async () => {

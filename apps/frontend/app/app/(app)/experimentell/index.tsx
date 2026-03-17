@@ -38,20 +38,6 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/expo-update-test'),
 		},
 		{
-			key: 'leaflet-map',
-			label: translate(TranslationKeys.leaflet_map),
-			leftIcon: <MaterialCommunityIcons name="map" size={24} color={theme.screen.icon} />,
-			onPress: () =>
-				router.push({
-					pathname: '/leaflet-map',
-					params: {
-						lat: String(buildingPosition?.lat ?? '52.275'),
-						lng: String(buildingPosition?.lng ?? '7.4584'),
-						zoom: '16',
-					},
-				}),
-		},
-		{
 			key: 'vertical-image-scroll',
 			label: translate(TranslationKeys.vertical_image_scroll),
 			leftIcon: <MaterialCommunityIcons name="image-multiple" size={24} color={theme.screen.icon} />,
@@ -106,6 +92,13 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/react-native-qrcode-svg'),
 		},
 		{
+			key: 'markdown-test',
+			label: translate(TranslationKeys.markdown_test),
+			leftIcon: <MaterialCommunityIcons name="language-markdown-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/markdown-test'),
+		},
+
+		{
 			key: 'settings-list-components',
 			label: 'SettingsList Komponenten',
 			leftIcon: <MaterialCommunityIcons name="format-list-bulleted" size={24} color={theme.screen.icon} />,
@@ -122,6 +115,24 @@ const Index = () => {
 			label: translate(TranslationKeys.game_ideas),
 			leftIcon: <MaterialCommunityIcons name="gamepad-variant" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/game-ideas'),
+		},
+		{
+			key: 'food-wishlist',
+			label: translate(TranslationKeys.food_wishlist),
+			leftIcon: <MaterialCommunityIcons name="heart" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/food-wishlist'),
+		},
+		{
+			key: 'account-required-example',
+			label: translate(TranslationKeys.account_required_example),
+			leftIcon: <MaterialCommunityIcons name="account-lock" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/account-required-example'),
+		},
+		{
+			key: 'eating-habits-performance',
+			label: translate(TranslationKeys.eating_habits_performance),
+			leftIcon: <MaterialCommunityIcons name="speedometer" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/eating-habits-performance'),
 		},
 	];
 
@@ -144,17 +155,7 @@ const Index = () => {
 					const totalItems = listItems.length;
 					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
 
-					return (
-						<SettingsList
-							key={item.key}
-							iconBgColor={primaryColor}
-							leftIcon={item.leftIcon}
-							label={item.label}
-							rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
-							handleFunction={item.onPress}
-							groupPosition={groupPosition}
-						/>
-					);
+					return <SettingsList key={item.key} iconBgColor={primaryColor} leftIcon={item.leftIcon} label={item.label} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} handleFunction={item.onPress} groupPosition={groupPosition} />;
 				})}
 			</View>
 		</ScrollView>

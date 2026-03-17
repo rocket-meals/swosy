@@ -42,7 +42,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
   const { user, profile } = useAppSelector(state => state.authReducer);
   const { primaryColor } = useAppSelector(state => state.settings);
   const { collectibleEvents } = useAppSelector(state => state.collectibleEvents ?? {});
-  const { canteens, buildings, selectedCanteenFoodOffers, canteenFoodOffers, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useAppSelector(state => state.canteenReducer);
+  const { canteens, buildings, buildingsOrganizations, organisations, selectedCanteenFoodOffers, canteenFoodOffers, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useAppSelector(state => state.canteenReducer);
   
   const { foodFeedbackLabels, ownFoodFeedbacks, ownfoodFeedbackLabelEntries, markings, selectedFoodMarkings, foodCategories, foodOfferCategories, markingDetails } = useAppSelector(state => state.food);
 
@@ -70,6 +70,8 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 	const dataDevice = [
 		{ label: 'canteens', value: canteens },
 		{ label: 'buildings', value: buildings },
+		{ label: 'buildingsOrganizations', value: buildingsOrganizations },
+		{ label: 'organisations', value: organisations },
 		{ label: 'Selected Canteen FoodOffers', value: selectedCanteenFoodOffers },
 		{ label: 'Canteen FoodOffers', value: canteenFoodOffers },
 		{ label: 'Business Hours', value: businessHours },

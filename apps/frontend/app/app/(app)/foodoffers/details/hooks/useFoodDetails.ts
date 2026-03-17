@@ -9,28 +9,13 @@ import { TranslationKeys } from '@/locales/keys';
 interface UseFoodDetailsProps {
     offerId?: string | string[];
     initialFoodId?: string | string[];
-    initialFoodOffer?: any;
 }
 
-export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: UseFoodDetailsProps) => {
-    const { language: languageCode, translate } = useLanguage();
+export const useFoodDetails = ({ offerId, initialFoodId }: UseFoodDetailsProps) => {
+    const { language: languageCode, translate, translateDynamic } = useLanguage();
     const toast = useToast();
-    const [foodDetails, setFoodDetails] = useState<any>(() => {
-        if (initialFoodOffer?.food) {
-            return {
-                ...initialFoodOffer.food,
-                foodoffer_category: initialFoodOffer.foodoffer_category,
-                name: initialFoodOffer.food.name
-            };
-        }
-        return null;
-    });
-    const [foodAttributes, setFoodAttributes] = useState<any>(() => {
-        if (initialFoodOffer?.attribute_values || initialFoodOffer?.foods_attributes_values) {
-            return initialFoodOffer.attribute_values || initialFoodOffer.foods_attributes_values || [];
-        }
-        return [];
-    });
+    const [foodDetails, setFoodDetails] = useState<any>(null);
+    const [foodAttributes, setFoodAttributes] = useState<any>([]);
     const [loading, setLoading] = useState(false);
 
     const getFoodDetails = useCallback(async () => {
@@ -52,7 +37,7 @@ export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: Use
                     setFoodDetails({
                         ...food,
                         foodoffer_category,
-                        name: translation ? translation.name : null,
+                        name: translation ? translateDynamic(translation.name) : null,
                     });
                     if (attribute_values) {
                         setFoodAttributes(attribute_values);
@@ -65,9 +50,10 @@ export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: Use
                     const translation = food?.translations?.find(
                         (val: DatabaseTypes.FoodsTranslations) => String(val?.languages_code)?.split('-')[0] === languageCode
                     );
+                    const rawName = translation?.name ?? food?.name ?? null;
                     setFoodDetails({
                         ...food,
-                        name: translation ? translation.name : food?.name ?? null,
+                        name: rawName ? translateDynamic(rawName) : null,
                     });
 
                     const attributes = food?.attribute_values || food?.foods_attributes_values;
@@ -82,18 +68,13 @@ export const useFoodDetails = ({ offerId, initialFoodId, initialFoodOffer }: Use
         } finally {
             setLoading(false);
         }
-    }, [offerId, initialFoodId, languageCode, toast, translate]);
-
-    const hasInitialFood = !!initialFoodOffer?.food;
-    const hasInitialAttributes = !!(initialFoodOffer?.attribute_values || initialFoodOffer?.foods_attributes_values);
-    const shouldSkipInitialFetch = hasInitialFood && hasInitialAttributes;
+    }, [offerId, initialFoodId, languageCode, translateDynamic, toast, translate]);
 
     useEffect(() => {
-        if (shouldSkipInitialFetch) return;
         runAfterInteractions(() => {
             getFoodDetails();
         });
-    }, [getFoodDetails, shouldSkipInitialFetch]);
+    }, [getFoodDetails]);
 
     return { foodDetails, foodAttributes, loading };
 };

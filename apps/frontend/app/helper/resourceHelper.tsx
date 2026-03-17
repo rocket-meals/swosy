@@ -121,6 +121,7 @@ const extractFoodDetails = (food: DatabaseTypes.Foods) => {
 	};
 };
 
+
 const DEFAULT_LANGUAGE_CODE_GERMAN = 'de';
 const FALLBACK_LANGUAGE_CODE_ENGLISH = 'en';
 const MISSING_TRANSLATION = 'Missing translation';
@@ -259,4 +260,12 @@ export const getAppElementTranslation = (translations: DatabaseTypes.AppElements
 	}
 };
 
-export { getIconComponent, getTextFromTranslation, extractFoodDetails, getDescriptionFromTranslation, getFoodCategoryName, getFoodOfferCategoryName };
+export { getIconComponent, getTextFromTranslation, getDescriptionFromTranslation, getFoodCategoryName, getFoodOfferCategoryName };
+
+
+
+
+
+
+
+

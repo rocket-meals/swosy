@@ -18,51 +18,60 @@ export interface MarkingBottomSheetProps {
         onClose: () => void;
 }
 
+export const MarkingContent: React.FC = () => {
+	const { theme } = useTheme();
+	const { markingDetails } = useAppSelector((state: RootState) => state.food);
+	const { language } = useAppSelector((state: RootState) => state.settings);
+	const description = getDescriptionFromTranslation(markingDetails?.translations, language);
+
+	return (
+		<>
+			<View
+				style={{
+					...styles.sheetHeader,
+					paddingRight: isWeb ? 10 : 0,
+					paddingTop: isWeb ? 10 : 0,
+				}}
+			>
+				<View />
+				<Text
+					style={{
+						...styles.sheetHeading,
+						maxWidth: '70%',
+						textAlign: 'center',
+						color: theme.sheet.text,
+					}}
+				>
+					{getTextFromTranslation(markingDetails?.translations, language) || markingDetails?.external_identifier || ''}
+				</Text>
+			</View>
+			<View style={{ ...styles.menuContainer, width: isWeb ? '90%' : '100%' }}>
+				<View style={styles.imageContainer}>
+					<Image
+						source={{
+							uri: markingDetails?.image_remote_url || getImageUrl(String(markingDetails?.image)) || undefined,
+						}}
+						style={{
+							...styles.image,
+							backgroundColor: markingDetails?.background_color ? markingDetails?.background_color : 'transparent',
+							borderRadius: markingDetails?.background_color ? 8 : markingDetails?.hide_border ? 5 : 0,
+						}}
+					/>
+				</View>
+				<MyMarkdown content={description} />
+				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings_details} />
+			</View>
+		</>
+	);
+};
+
 const MarkingBottomSheet = forwardRef<BottomSheet, MarkingBottomSheetProps>(({ onClose }, ref) => {
 	const { theme } = useTheme();
-	const { markingDetails } = useAppSelector((state) => state.food);
-	const { language } = useAppSelector((state) => state.settings);
-	const description = getDescriptionFromTranslation(markingDetails?.translations, language);
 
         return (
                 <BaseBottomSheet ref={ref} index={-1} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} enablePanDownToClose handleComponent={null} onClose={onClose}>
                         <BottomSheetScrollView style={styles.sheetView} contentContainerStyle={styles.contentContainer}>
-                                <View
-                                        style={{
-                                                ...styles.sheetHeader,
-                                                paddingRight: isWeb ? 10 : 0,
-                                                paddingTop: isWeb ? 10 : 0,
-                                        }}
-                                >
-                                        <View />
-                                        <Text
-                                                style={{
-                                                        ...styles.sheetHeading,
-                                                        maxWidth: '70%',
-                                                        textAlign: 'center',
-                                                        color: theme.sheet.text,
-                                                }}
-                                        >
-                                                {getTextFromTranslation(markingDetails?.translations, language)}
-                                                {` (${markingDetails?.external_identifier})`}
-                                        </Text>
-                                </View>
-                                <View style={{ ...styles.menuContainer, width: isWeb ? '90%' : '100%' }}>
-                                        <View style={styles.imageContainer}>
-                                                <Image
-                                                        source={{
-                                                                uri: markingDetails?.image_remote_url || getImageUrl(String(markingDetails?.image)) || undefined,
-                                                        }}
-                                                        style={{
-                                                                ...styles.image,
-                                                                backgroundColor: markingDetails?.background_color ? markingDetails?.background_color : 'transparent',
-                                                                borderRadius: markingDetails?.background_color ? 8 : markingDetails?.hide_border ? 5 : 0,
-                                                        }}
-                                                />
-                                        </View>
-                                        <MyMarkdown content={description} />
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings_details} />
-                                </View>
+                                <MarkingContent />
                         </BottomSheetScrollView>
                 </BaseBottomSheet>
         );

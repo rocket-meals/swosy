@@ -1,18 +1,22 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
-import { useAppSelector } from '@/redux/hooks';
+import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import FoodLabelingInfo from '../FoodLabelingInfo';
 import DebugView from '@/components/DebugView';
-import MarkingLabels from '../MarkingLabels/MarkingLabels';
+import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
+import SettingsList from '@/components/SettingsList';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { CollectibleAt, DatabaseTypes, sortMarkingsByGroup } from 'repo-depkit-common';
+import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
+import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { shallowEqual } from 'react-redux';
+import { fetchFoodofferComponentsById } from '@/redux/actions/FoodOffers/FoodOffers';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
+import { getTextFromTranslation } from '@/helper/resourceHelper';
 
 interface LabelsProps {
 	foodDetails: any;
@@ -22,12 +26,20 @@ interface LabelsProps {
 	color: string;
 }
 
-const Labels: React.FC<LabelsProps> = ({ foodOfferDetails, offerId, handleMenuSheet, color }) => {
+const selectMarkings = (state: RootState) => state.food.markings;
+const selectMarkingGroups = (state: RootState) => state.food.markingGroups;
+
+export const selectFoodOffer = (offerId?: string) =>
+	createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
+		offerId ? getFoodOffer(foodOffers, offerId) : undefined
+	);
+
+const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
-	const { primaryColor, appSettings } = useAppSelector((state) => state.settings, shallowEqual);
+	const { translate, language } = useLanguage();
+	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const { isDevMode } = useAppSelector(state => state.authReducer);
 
 	let food_responsible_organization_name = appSettings?.food_responsible_organization_name || 'Verantwortliche Organisation';
 	let food_responsible_organization_link = appSettings?.food_responsible_organization_link || 'https://www.studentenwerk-osnabrueck.de/';
@@ -35,33 +47,33 @@ const Labels: React.FC<LabelsProps> = ({ foodOfferDetails, offerId, handleMenuSh
 		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
 	};
 
-	const markings = useAppSelector((state) => state.food.markings, shallowEqual);
-	const selectedCanteenFoodOffers = useAppSelector((state) => state.canteenReducer.selectedCanteenFoodOffers, shallowEqual);
-
-	const foodOffer = useMemo(
-		() => (offerId ? getFoodOffer(selectedCanteenFoodOffers, offerId) : undefined),
-		[offerId, selectedCanteenFoodOffers]
+	const markings = useSelector(selectMarkings);
+	const markingGroups = useSelector(selectMarkingGroups);
+	const foodOfferSelector = useMemo(
+		() => (offerId ? selectFoodOffer(offerId) : () => undefined),
+		[offerId]
 	);
+	const foodOffer = useSelector(foodOfferSelector as (state: RootState) => DatabaseTypes.Foodoffers | undefined);
 
-	// State for marking groups
-	const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
+	// State for foodoffer components
+	const [foodofferComponents, setFoodofferComponents] = useState<any[]>([]);
 
-	// Fetch marking groups
+	// Fetch foodoffer components when offerId is available
 	useEffect(() => {
-		const fetchMarkingGroups = async () => {
+		if (!offerId) return;
+		const fetchComponents = async () => {
 			try {
-				const markingGroupsHelper = new MarkingGroupsHelper();
-				const result = (await markingGroupsHelper.fetchMarkingGroups({})) as DatabaseTypes.MarkingsGroups[];
-				if (result) {
-					setMarkingGroups(result);
+				const result = await fetchFoodofferComponentsById(offerId);
+				const components = result?.data?.foodoffer_components;
+				if (components) {
+					setFoodofferComponents(components);
 				}
 			} catch (error) {
-				console.error('Error fetching marking groups:', error);
+				console.error('Error fetching foodoffer components:', error);
 			}
 		};
-
-		fetchMarkingGroups();
-	}, []);
+		fetchComponents();
+	}, [offerId]);
 
 	const mappedFoodOfferMarkings = useMemo(() => {
 		const offerMarkings = foodOfferDetails?.markings ?? foodOffer?.markings;
@@ -76,15 +88,55 @@ const Labels: React.FC<LabelsProps> = ({ foodOfferDetails, offerId, handleMenuSh
 		return sortMarkingsByGroup(mappedFoodOfferMarkings, markingGroups);
 	}, [mappedFoodOfferMarkings, markingGroups]);
 
+	const globalMarkingIds = useMemo(() => {
+		const allComponentMarkingIds = new Set<string>(
+			foodofferComponents.flatMap((component: any) =>
+				(component?.component_foodoffers_id?.markings ?? []).map((m: any) => m?.markings_id)
+			)
+		);
+		const foodOfferMarkingIds: string[] = (foodOfferDetails?.markings ?? foodOffer?.markings ?? [])
+			.map((m: DatabaseTypes.FoodoffersMarkings) => m?.markings_id as string)
+			.filter(Boolean);
+		return foodOfferMarkingIds.filter(id => !allComponentMarkingIds.has(id));
+	}, [foodofferComponents, foodOfferDetails, foodOffer]);
+
 	return (
 		<View style={styles.container}>
-			<Text style={[styles.heading, { color: theme.screen.text }]}>{translate(TranslationKeys.markings)}</Text>
+			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
-			{foodMarkings?.map((marking: DatabaseTypes.Markings) => (
-				<MarkingLabels key={marking.id} markingId={marking.id} handleMenuSheet={handleMenuSheet} />
-			))}
+			<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
 
-			<DebugView title="Foodoffer Markings Data" isVisible={isDevMode}>
+			<DebugView title="Foodoffer Components">
+			{foodofferComponents.map((component: any) => {
+				const componentFoodoffer = component?.component_foodoffers_id;
+				if (!componentFoodoffer) return null;
+				const componentName =
+					getTextFromTranslation(componentFoodoffer?.translations, language) ||
+					componentFoodoffer?.alias ||
+					`Component #${componentFoodoffer?.id}`;
+				const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
+					(m: any) => m?.markings_id
+				);
+				return (
+					<View key={componentFoodoffer?.id}>
+						<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
+						{componentMarkingIds.length === 0 ? (
+							<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
+						) : (
+							<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
+						)}
+					</View>
+				);
+			})}
+			{globalMarkingIds.length > 0 && (
+				<View>
+					<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
+					<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
+				</View>
+			)}
+		</DebugView>
+
+			<DebugView title="Foodoffer Markings Data">
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
 					{JSON.stringify(
 						{
@@ -98,7 +150,7 @@ const Labels: React.FC<LabelsProps> = ({ foodOfferDetails, offerId, handleMenuSh
 				</Text>
 			</DebugView>
 
-			<DebugView title="Foodoffer Markings Count" isVisible={isDevMode}>
+			<DebugView title="Foodoffer Markings Count">
 				<Text style={{ ...styles.body, color: theme.screen.text }}>{foodOfferDetails?.markings?.length ?? foodOffer?.markings?.length ?? 0}</Text>
 			</DebugView>
 
@@ -107,10 +159,4 @@ const Labels: React.FC<LabelsProps> = ({ foodOfferDetails, offerId, handleMenuSh
 	);
 };
 
-export default memo(Labels, (prevProps, nextProps) => {
-	return (
-		prevProps.offerId === nextProps.offerId &&
-		prevProps.color === nextProps.color &&
-		prevProps.foodDetails?.id === nextProps.foodDetails?.id
-	);
-});
+export default Labels;

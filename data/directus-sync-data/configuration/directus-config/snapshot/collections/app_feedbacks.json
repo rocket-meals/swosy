@@ -9,14 +9,14 @@
     "collection": "app_feedbacks",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "folder_communication",
     "hidden": false,
-    "icon": null,
+    "icon": "preview",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 18,
+    "sort": 5,
     "sort_field": "sort",
     "translations": [
       {

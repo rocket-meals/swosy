@@ -25,26 +25,29 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
         disabled = false,
         valueActive = 'Aktiv',
         valueInactive = 'Inaktiv',
+        isAccountRequired,
         ...props
 }) => {
         const { theme } = useTheme();
         const { primaryColor } = useAppSelector(state => state.settings);
+        const isDisabled = disabled || !!isAccountRequired;
 
         return (
                 <SettingsList
                         {...props}
+                        isAccountRequired={isAccountRequired}
                         value={isEnabled ? valueActive : valueInactive}
                         rightElement={
                                 <Switch
                                         value={isEnabled}
-                                        onValueChange={onToggle}
+                                        onValueChange={isDisabled ? undefined : onToggle}
                                         trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
                                         thumbColor={theme.screen.icon}
                                         ios_backgroundColor={theme.screen.iconBg}
-                                        disabled={disabled}
+                                        disabled={isDisabled}
                                 />
                         }
-                        handleFunction={disabled ? undefined : onToggle}
+                        handleFunction={isDisabled ? undefined : onToggle}
                 />
         );
 };

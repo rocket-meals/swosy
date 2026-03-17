@@ -33,6 +33,7 @@ export const performLogout = async (
 		dispatch({ type: CLEAR_APARTMENTS });
 		dispatch({ type: UPDATE_MARKINGS, payload: [] });
 		dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: [] });
+		dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
 		dispatch({ type: SET_MARKING_DETAILS, payload: {} });
 		dispatch({ type: CLEAR_FOODS });
                 dispatch({ type: CLEAR_MANAGEMENT });

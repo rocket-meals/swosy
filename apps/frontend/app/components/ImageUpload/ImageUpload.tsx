@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import styles from './styles';
@@ -12,12 +12,40 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { deleteDirectusFile } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string }) => {
+const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type, offlineMode, folderHint }: { id: string; value: any; onChange: (id: string, value: any, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; offlineMode?: boolean; folderHint?: string | null }) => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const formAnswersHelper = new FormAnswersHelper();
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const [authToken, setAuthToken] = useState<string | null | undefined>(undefined);
+
+	useEffect(() => {
+		let cancelled = false;
+		ServerAPI.getClient()
+			.getToken()
+			.then(token => { if (!cancelled) setAuthToken(token); })
+			.catch(() => { if (!cancelled) setAuthToken(null); });
+		return () => { cancelled = true; };
+	}, []);
+
+	const getImageSource = (val: any) => {
+		if (!val) return undefined;
+		const uri = val?.image ? val.image : val;
+		if (typeof uri !== 'string') return undefined;
+		const isNonRemoteUri = uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('ph://') || uri.startsWith('blob:') || uri.startsWith('data:');
+		if (authToken && !isNonRemoteUri) {
+			if (isWeb) {
+				// On web, <img> tags cannot send custom headers in cross-origin requests,
+				// so we include the token as a query parameter. This is the standard Directus approach.
+				const separator = uri.includes('?') ? '&' : '?';
+				return { uri: `${uri}${separator}access_token=${encodeURIComponent(authToken)}` };
+			}
+			return { uri, headers: { Authorization: `Bearer ${authToken}` } };
+		}
+		return { uri };
+	};
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
 	const pickImage = async (fromCamera: boolean) => {
@@ -72,6 +100,11 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 	const deleteImage = async () => {
 		try {
 			if (!value?.name) {
+				// In offline mode, skip API calls — just clear the local value
+				if (offlineMode) {
+					onChange(id, null, custom_type);
+					return;
+				}
 				const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
 					fields: ['id', 'value_image'],
 				})) as DatabaseTypes.FormAnswers;
@@ -123,7 +156,7 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 					</TouchableOpacity>
 				)}
 			</View>
-			{value && (
+			{value && authToken !== undefined && (
 				<View
 					style={{
 						...styles.fileContainer,
@@ -138,8 +171,13 @@ const ImageUpload = ({ id, value, onChange, error, isDisabled, custom_type }: { 
 					>
 						<Ionicons name="close" size={18} color={'red'} />
 					</TouchableOpacity>
-					<Image source={{ uri: value?.image ? value?.image : value }} style={styles.filePreview} />
+					<Image key={authToken || 'no-auth'} source={getImageSource(value)} style={styles.filePreview} />
 				</View>
+			)}
+		{folderHint != null && (
+				<Text style={{ ...styles.folderHint, color: theme.screen.text }}>
+					{`${translate(TranslationKeys.upload_folder_id)}: ${folderHint}`}
+				</Text>
 			)}
 		</View>
 	);

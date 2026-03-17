@@ -1,13 +1,14 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { getImageUrl, numToOneDecimal } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
 import MyImage from '@/components/MyImage';
+import SettingsList from '@/components/SettingsList';
 
 interface FoodHeaderProps {
     foodDetails: any;
@@ -20,6 +21,8 @@ interface FoodHeaderProps {
     theme: any;
     translate: (key: string) => string;
     defaultImage?: string | null;
+    isAccountRequired?: boolean;
+    containerWidth?: string | number;
 }
 
 const FoodHeader = ({
@@ -33,6 +36,8 @@ const FoodHeader = ({
     theme,
     translate,
     defaultImage,
+    isAccountRequired,
+    containerWidth,
 }: FoodHeaderProps) => {
     const isLargeScreen = screenWidth > 1000;
     const isMediumScreen = screenWidth > 800;
@@ -47,7 +52,7 @@ const FoodHeader = ({
             {Array.from({ length: 5 }).map((_, index) => (
                 <React.Fragment key={index}>
                     {isWeb ? (
-                        <Tooltip
+                        <CustomTooltip
                             placement="top"
                             trigger={(triggerProps) => (
                                 <IconButton {...triggerProps} onPress={() => rateFood(index + 1)} style={styles.paddingSmall}>
@@ -64,7 +69,7 @@ const FoodHeader = ({
                                     {`${translate(TranslationKeys.set_rating_to)} ${index + 1}`}
                                 </TooltipText>
                             </TooltipContent>
-                        </Tooltip>
+                        </CustomTooltip>
                     ) : (
                         <TouchableOpacity onPress={() => rateFood(index + 1)}>
                             <MaterialIcons
@@ -123,7 +128,7 @@ const FoodHeader = ({
                                 <View
                                     style={[
                                         styles.ratingView,
-                                        { borderColor: theme.screen.text }
+                                        { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
                                     ]}
                                 >
                                     <AntDesign name="star" size={22} color={foodsAreaColor} />
@@ -141,17 +146,16 @@ const FoodHeader = ({
                                 </View>
                             )}
                         </View>
-                        <View
-                            style={[
-                                styles.ratingContainer,
-                                { backgroundColor: theme.screen.iconBg },
-                                isLargeScreen ? null : styles.marginTopMedium
-                            ]}
-                        >
-                            <Text style={[styles.rateUs, { color: theme.screen.text }]}>
-                                {translate(TranslationKeys.RATE_FOOD)}
-                            </Text>
-                            {renderRatingStars()}
+                        <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth } : null]}>
+                            <SettingsList
+                                leftIcon={<MaterialIcons name="star" size={22} />}
+                                iconBgColor={foodsAreaColor}
+                                title={translate(TranslationKeys.RATE_FOOD)}
+                                rightElement={renderRatingStars()}
+                                showSeparator={false}
+                                groupPosition="single"
+                                isAccountRequired={isAccountRequired}
+                            />
                         </View>
                     </View>
                 </View>
@@ -197,7 +201,7 @@ const FoodHeader = ({
                             <View
                                 style={[
                                     styles.mobileRatingView,
-                                    { borderColor: theme.screen.text }
+                                    { borderColor: theme.screen.text, backgroundColor: theme.screen.iconBg }
                                 ]}
                             >
                                 <AntDesign name="star" size={18} color={foodsAreaColor} />
@@ -226,21 +230,17 @@ const FoodHeader = ({
             >
                 {foodDetails?.name}
             </Text>
-            <View
-                style={[
-                    styles.mobileRatingContainer,
-                    { backgroundColor: theme.screen.iconBg }
-                ]}
-            >
-                <Text
-                    style={[
-                        styles.mobileRateUs,
-                        { color: theme.screen.text }
-                    ]}
-                >
-                    {translate(TranslationKeys.RATE_FOOD)}
-                </Text>
-                {renderRatingStars()}
+            <View style={styles.marginTopMedium}>
+                {/* groupPosition="top" so the rating item visually groups with the notification item below (no gap, "bottom" position on mobile) */}
+                <SettingsList
+                    leftIcon={<MaterialIcons name="star" size={22} />}
+                    iconBgColor={foodsAreaColor}
+                    title={translate(TranslationKeys.RATE_FOOD)}
+                    rightElement={renderRatingStars()}
+                    showSeparator={false}
+                    groupPosition="top"
+                    isAccountRequired={isAccountRequired}
+                />
             </View>
         </View>
     );
@@ -253,6 +253,7 @@ export default memo(FoodHeader, (prevProps, nextProps) => {
         prevProps.previousFeedback === nextProps.previousFeedback &&
         prevProps.foodsAreaColor === nextProps.foodsAreaColor &&
         prevProps.theme === nextProps.theme &&
-        prevProps.defaultImage === nextProps.defaultImage
+        prevProps.defaultImage === nextProps.defaultImage &&
+        prevProps.isAccountRequired === nextProps.isAccountRequired
     );
 });

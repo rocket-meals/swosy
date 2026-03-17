@@ -17,13 +17,12 @@ import { Entypo, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons }
 import { RootDrawerParamList } from './types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import * as Notifications from 'expo-notifications';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
@@ -44,9 +43,10 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import IconButton from '@/components/UI/IconButton';
+import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 
 export const SHEET_COMPONENTS = {
-	canteen: CanteenSelectionSheet,
 	hours: HourSheet,
 	calendar: CalendarSheet,
 	aiGeneratedInfo: AIGeneratedHintSheet,
@@ -82,6 +82,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openUtilizationModal } = useUtilizationModal();
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
+	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
 	const smartReadableDate = useSmartReadableDateMethod();
 
 	// Set Page Title
@@ -145,16 +147,26 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	);
 
 	const openSheet = useCallback(
-		(sheet: 'menu' | 'sort' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+		(sheet: 'menu' | 'sort' | 'canteen' | 'calendar' | keyof typeof SHEET_COMPONENTS, props = {}) => {
 			if (sheet === 'sort') {
 				openFoodofferSortingModal();
 				return;
 			}
 
-                        setSelectedSheet(sheet);
-                        setSheetProps(props);
+			if (sheet === 'canteen') {
+				openChangeMyCanteenSelectionModal();
+				return;
+			}
+
+			if (sheet === 'calendar') {
+				openDatePickerModal({ updateGlobal: true });
+				return;
+			}
+
+			setSelectedSheet(sheet as Exclude<typeof sheet, 'sort' | 'canteen' | 'calendar'>);
+			setSheetProps(props);
 		},
-		[openFoodofferSortingModal]
+		[openFoodofferSortingModal, openChangeMyCanteenSelectionModal, openDatePickerModal]
 	);
 
 
@@ -373,7 +385,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								]}
 							>
 								{/* Menu */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -392,7 +404,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{`${translate(TranslationKeys.open_drawer)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Canteen Heading */}
 								<TouchableOpacity onPress={() => openSheet('canteen')} activeOpacity={0.7}>
@@ -407,7 +419,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								}}
 							>
 								{/* Sorting */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -426,10 +438,10 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{`${translate(TranslationKeys.sort)}: ${translate(TranslationKeys.foods)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Price Group */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -450,11 +462,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.price_group)} ${translate(getPriceGroup(profile?.price_group))}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Eating Habits */}
 
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -475,10 +487,10 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.eating_habits)}: ${translate(TranslationKeys.edit)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								{/* Change Canteen */}
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -497,7 +509,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.canteen)}: ${translate(TranslationKeys.select)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 							</View>
 						</View>
 						<View style={styles.row}>
@@ -508,7 +520,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									gap: isWeb ? (screenWidth < 500 ? 15 : 10) : 10,
 								}}
 							>
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -527,8 +539,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.previous)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
-								<Tooltip
+								</CustomTooltip>
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -547,8 +559,8 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.date)}: ${selectedDate}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
-								<Tooltip
+								</CustomTooltip>
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -567,14 +579,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.day)}: ${translate(TranslationKeys.proceed)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 
 								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}
 								{appSettings?.utilization_display_enabled && (
-									<Tooltip
+									<CustomTooltip
 										placement="top"
 										trigger={triggerProps => (
 											<IconButton
@@ -593,11 +605,11 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 												{` ${translate(TranslationKeys.forecast)}: ${translate(TranslationKeys.utilization)}`}
 											</TooltipText>
 										</TooltipContent>
-									</Tooltip>
+									</CustomTooltip>
 								)}
 								{/* Opening Hours */}
 
-								<Tooltip
+								<CustomTooltip
 									placement="top"
 									trigger={triggerProps => (
 										<IconButton
@@ -616,7 +628,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 											{` ${translate(TranslationKeys.businesshours)}`}
 										</TooltipText>
 									</TooltipContent>
-								</Tooltip>
+								</CustomTooltip>
 							</View>
 						</View>
 					</View>

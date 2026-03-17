@@ -1,20 +1,26 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SettingsListProps } from './types';
 import { borderRadiusContainer, horizontalScreenPadding } from '@/constants/Constants';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import { accountRequiredStyles } from '@/helper/accountRequiredStyles';
 
 const padding = 0; // px used for additional padding and border radius
 const basePaddingVertical = 10;
 
-const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
+const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false, italic = false, isAccountRequired = false }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+        const { openAccountRequiredModal } = useAccountRequiredModal();
 
-        const pressHandler = onPress || handleFunction;
+        const pressHandler = isAccountRequired
+                ? openAccountRequiredModal
+                : (onPress || handleFunction);
         const Container: any = pressHandler ? TouchableOpacity : View;
         const iconBg = iconBackgroundColor || iconBgColor || primaryColor;
         const iconColor = myContrastColor(iconBg, theme, selectedTheme === 'dark');
@@ -36,56 +42,89 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
                 iconWrapperStyles.push(styles.transparentIconWrapper);
         }
 
+	let wrapperBorderRadius: ViewStyle = {};
+
 	if (groupPosition === 'top') {
 		containerStyles.push({
 			borderTopLeftRadius: borderRadiusContainer,
 			borderTopRightRadius: borderRadiusContainer,
 			paddingTop: basePaddingVertical + padding,
 		});
+		wrapperBorderRadius = { borderTopLeftRadius: borderRadiusContainer, borderTopRightRadius: borderRadiusContainer };
 	} else if (groupPosition === 'bottom') {
 		containerStyles.push({
 			borderBottomLeftRadius: borderRadiusContainer,
 			borderBottomRightRadius: borderRadiusContainer,
 			paddingBottom: basePaddingVertical + padding,
 		});
+		wrapperBorderRadius = { borderBottomLeftRadius: borderRadiusContainer, borderBottomRightRadius: borderRadiusContainer };
 	} else if (groupPosition === 'single') {
 		containerStyles.push({
 			borderRadius: borderRadiusContainer,
 			paddingTop: basePaddingVertical + padding,
 			paddingBottom: basePaddingVertical + padding,
 		});
+		wrapperBorderRadius = { borderRadius: borderRadiusContainer };
+	}
+
+	const inner = (
+		<Container onPress={pressHandler} style={containerStyles}>
+			{showIconWrapper ? (
+				leftIconComponent ? (
+					leftIconComponent
+				) : (
+					<View style={iconWrapperStyles}>{renderedLeftIcon}</View>
+				)
+			) : hasIcon ? (
+				leftIconComponent ? leftIconComponent : renderedLeftIcon
+			) : null}
+			{shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
+			<View style={styles.textWrapper}>
+				<View style={styles.titleContainer}>
+					<Text style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={0}>
+						{title || label}
+					</Text>
+				</View>
+				{value ? (
+					<View style={styles.valueContainer}>
+						<Text style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
+							{value}
+						</Text>
+					</View>
+				) : null}
+			</View>
+			{rightElement || rightIcon ? <View style={styles.rightWrapper}>{rightElement || rightIcon}</View> : null}
+		</Container>
+	);
+
+	const separator = showSeparator ? <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: noIconIndent ? 0 : 54 }]} /> : null;
+
+	const accountRequiredBorderStyle: ViewStyle =
+		groupPosition === 'middle' || groupPosition === 'bottom'
+			? { borderLeftWidth: 2, borderRightWidth: 2, borderBottomWidth: 2 }
+			: { borderWidth: 2 };
+
+	if (isAccountRequired) {
+		return (
+			<>
+				<View style={[accountRequiredStyles.wrapper, wrapperBorderRadius, accountRequiredBorderStyle, { borderColor: primaryColor }]}>
+					{inner}
+					<View
+						pointerEvents="none"
+						style={[StyleSheet.absoluteFill, accountRequiredStyles.dimOverlay, wrapperBorderRadius]}
+					>
+						<MaterialCommunityIcons name="lock" size={28} color="#fff" />
+					</View>
+				</View>
+				{separator}
+			</>
+		);
 	}
 
         return (
                 <>
-                        <Container onPress={pressHandler} style={containerStyles}>
-                                {showIconWrapper ? (
-                                        leftIconComponent ? (
-                                                leftIconComponent
-                                        ) : (
-                                                <View style={iconWrapperStyles}>{renderedLeftIcon}</View>
-                                        )
-                                ) : hasIcon ? (
-                                        leftIconComponent ? leftIconComponent : renderedLeftIcon
-                                ) : null}
-                                {shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
-                                <View style={styles.textWrapper}>
-                                        <View style={styles.titleContainer}>
-                                                <Text style={[styles.title, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
-                                                        {title || label}
-                                                </Text>
-					</View>
-					{value ? (
-						<View style={styles.valueContainer}>
-							<Text style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
-								{value}
-							</Text>
-						</View>
-					) : null}
-                                </View>
-                                {rightElement || rightIcon ? <View style={styles.rightWrapper}>{rightElement || rightIcon}</View> : null}
-                        </Container>
-                        {showSeparator && <View style={[styles.separator, { backgroundColor: theme.screen.background, marginLeft: noIconIndent ? 0 : 54 }]} />}
+			{inner}
+			{separator}
                 </>
         );
 };

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Text, View } from 'react-native';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { ActivityIndicator, Text, View } from 'react-native';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
+import MyScrollViewModal from '@/components/MyScrollViewModal';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -36,7 +35,7 @@ const getSortedBusinessHoursGroups = (groups: { id: string; sort?: number | null
 	});
 };
 
-const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
+export const HoursSheetContent: React.FC = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	type GroupedHours = {
@@ -55,7 +54,6 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 	const { language, firstDayOfTheWeek } = useAppSelector((state) => state.settings);
 	const { businessHoursGroups } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
-	const ScreenWidth = Dimensions.get('window').width;
 	const buildingsHelper = new BuildingsHelper();
 	const businessHoursHelper = new BusinessHoursHelper();
 
@@ -411,26 +409,8 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
                 });
         };
 
-        return (
-                <BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: 'transparent' }} contentContainerStyle={styles.contentContainer}>
-			<View
-				style={{
-					...styles.sheetHeader,
-					paddingRight: isWeb ? 10 : 0,
-					paddingTop: isWeb ? 10 : 0,
-				}}
-			>
-				<View />
-				<Text
-					style={{
-						...styles.sheetHeading,
-						fontSize: isWeb ? (ScreenWidth <= 500 ? 16 : 24) : 24,
-						color: theme.sheet.text,
-					}}
-				>
-					{translate(TranslationKeys.businesshours)}
-				</Text>
-			</View>
+	return (
+		<>
 			{loading ? (
 				<View
 					style={{
@@ -460,12 +440,12 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 								.filter(group => hours[group.id])
 								.map(group => {
 									const { name, entries } = hours[group.id];
-                                                                        return (
-                                                                                <View key={group.id} style={{ marginBottom: 20 }}>
-                                                                                        <SettingsGroupTitle>{name}</SettingsGroupTitle>
-                                                                                        {renderHours(group.id, entries)}
-                                                                                </View>
-                                                                        );
+									return (
+										<View key={group.id} style={{ marginBottom: 20 }}>
+											<SettingsGroupTitle>{name}</SettingsGroupTitle>
+											{renderHours(group.id, entries)}
+										</View>
+									);
 								})}
 						</View>
 					) : (
@@ -482,7 +462,16 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 					)}
 				</View>
 			)}
-		</BottomSheetScrollView>
+		</>
+	);
+};
+
+const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
+	const { translate } = useLanguage();
+	return (
+		<MyScrollViewModal title={translate(TranslationKeys.businesshours)} closeSheet={closeSheet}>
+			<HoursSheetContent />
+		</MyScrollViewModal>
 	);
 };
 

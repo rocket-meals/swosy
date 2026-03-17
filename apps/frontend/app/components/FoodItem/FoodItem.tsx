@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import MyImage from '@/components/MyImage';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
@@ -8,13 +8,14 @@ import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/
 import { FoodItemProps } from './types';
 import { excerpt, getImageUrl, getpreviousFeedback, showFormatedPrice, showPrice } from '@/constants/HelperFunctions';
 import { getDescriptionFromTranslation, getTextFromTranslation } from '@/helper/resourceHelper';
+import { applyFunModeTransformation, applyPirateTransformation } from '@/hooks/useLanguage';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/types';
+import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { router } from 'expo-router';
 import { createSelector } from 'reselect';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import translations from '@/locales/translations.json';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
@@ -24,9 +25,14 @@ import CardWithText from '../CardWithText/CardWithText';
 import { useFoodCardBase } from '@/hooks/useFoodCard';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
+import { accountRequiredStyles } from '@/helper/accountRequiredStyles';
+import useFoodOfferDetailsModal from '@/hooks/useFoodOfferDetailsModal';
+import { MarkingContent } from '../MarkingBottomSheet';
+import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
+import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -37,13 +43,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
   ({ 
     item, 
     canteen, 
-    handleMenuSheet, 
     handleImageSheet, 
-    handleEatingHabitsSheet, 
     cardWidth, 
     previousFeedback,
     // Opt props
     language,
+    pirateLanguage,
+    funLanguageMode,
     serverInfo,
     appSettings,
     primaryColor,
@@ -88,11 +94,12 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     // NOTE: If language prop is undefined, translations will fail. But FoodItemConnected passes it.
     
     const { show: showScrollViewModal } = useMyScrollViewModal();
+    const { openFoodOfferDetailsModal } = useFoodOfferDetailsModal();
 
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods & { show_description_icon_on_card?: boolean | null };
 
-    const { openRatingPermissionModal } = useRatingPermissionModal();
+    const { openAccountRequiredModal } = useAccountRequiredModal();
 
     const foods_area_color = appSettings?.foods_area_color || primaryColor;
     const contrastColor = useMyContrastColor(foods_area_color, theme, (theme as any)?.mode === 'dark');
@@ -177,39 +184,28 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       [toast]
     );
 
-    const handleNavigation = useCallback((id: string, foodId: string) => {
-      let initialDataStr = '';
-      try {
-        const minimalInitialData = {
-          food: item.food,
-          foodoffer_category: (item as any).foodoffer_category,
-          attribute_values: (item as any).attribute_values,
-          foods_attributes_values: (item as any).foods_attributes_values,
-        };
-        initialDataStr = JSON.stringify(minimalInitialData);
-      } catch (e) {
-        console.warn('Failed to stringify item for navigation', e);
-      }
-
-      router.push({
-        pathname: '/(app)/foodoffers/details',
-        params: {
-          id,
-          foodId,
-          initialData: initialDataStr,
-        },
-      });
-    }, [item]);
-
     const handleOpenSheet = useCallback(() => {
-      dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
-      handleEatingHabitsSheet('eatingHabits');
-    }, [dispatch, dislikedMarkings, handleEatingHabitsSheet]);
+      showScrollViewModal({
+        children: (
+          <View>
+            <Text style={[styles.markingHintText, { color: theme.screen.text }]}>
+              {translate(TranslationKeys.food_offer_contains_disliked_markings)}
+            </Text>
+            <Labels
+              foodDetails={foodItem}
+              offerId={item?.id}
+              foodOfferDetails={item}
+              color={foods_area_color}
+            />
+          </View>
+        ),
+      });
+    }, [showScrollViewModal, foodItem, item, foods_area_color, translate, theme.screen.text]);
 
     const updateRating = useCallback(
       async (rating: number | null) => {
         if (!user?.id) {
-          openRatingPermissionModal();
+          openAccountRequiredModal();
           return;
         }
 
@@ -231,49 +227,54 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
           // Revert on error
           setCurrentRating(oldRating);
           if ((err as any).status === 403) {
-            openRatingPermissionModal();
+            openAccountRequiredModal();
           } else {
             console.error('Failed to update rating:', err);
             toast('Could not update rating', 'error');
           }
         }
       },
-      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openRatingPermissionModal, currentRating]
+      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openAccountRequiredModal, currentRating]
     );
 
     const openMarkingLabel = useCallback(
       (marking: DatabaseTypes.Markings) => {
         dispatch({ type: SET_MARKING_DETAILS, payload: marking });
-        handleMenuSheet('menu' as any);
+        showScrollViewModal({
+          children: <MarkingContent />,
+          disableHorizontalPadding: true,
+        });
       },
-      [dispatch, handleMenuSheet]
+      [dispatch, showScrollViewModal]
     );
 
     const handlePriceChange = useCallback(() => router.navigate('/price-group'), []);
 
     const foodDescription = useMemo(
-      () => getDescriptionFromTranslation(foodItem?.translations, language || 'de'),
-      [foodItem?.translations, language]
+      () => {
+        const desc = getDescriptionFromTranslation(foodItem?.translations, language || 'de');
+        if (!desc) return desc;
+        let result = desc;
+        if (pirateLanguage) result = applyPirateTransformation(result);
+        if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
+        return result;
+      },
+      [foodItem?.translations, language, pirateLanguage, funLanguageMode]
     );
 
-    const handleDescriptionModal = useCallback(() => {
-      if (!foodDescription) return;
-      showScrollViewModal(
-        {
-          title: translate(TranslationKeys.description),
-          children: <MyMarkdown content={foodDescription} textColor={theme.screen.text} />,
-        },
-        {}
-      );
-    }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
-
     const foodName = useMemo(
-      () =>
-        excerpt(
+      () => {
+        const name = excerpt(
           getTextFromTranslation(foodItem?.translations, language || 'de'),
           screenWidth > 1000 ? 120 : screenWidth > 700 ? 80 : screenWidth > 460 ? 60 : 40
-        ),
-      [foodItem?.translations, language, screenWidth]
+        );
+        if (!name) return name;
+        let result = name;
+        if (pirateLanguage) result = applyPirateTransformation(result);
+        if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
+        return result;
+      },
+      [foodItem?.translations, language, pirateLanguage, funLanguageMode, screenWidth]
     );
 
     const priceLabel = useMemo(() => showFormatedPrice(showPrice(item, profile)), [item, profile]);
@@ -282,9 +283,25 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       return foodItem?.image_remote_url || getImageUrl(foodItem?.image as string) || defaultImage;
     }, [foodItem?.image_remote_url, foodItem?.image, defaultImage]);
 
+    const handleDescriptionModal = useCallback(() => {
+      if (!foodDescription) return;
+      showScrollViewModal(
+        {
+          title: translate(TranslationKeys.description),
+          children: (
+            <View style={{ gap: 20 }}>
+              <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
+              <RateAppSettingsItem />
+            </View>
+          ),
+        },
+        {}
+      );
+    }, [foodDescription, showScrollViewModal, translate, theme.screen.text]);
+
     return (
       <>
-        <Tooltip
+        <CustomTooltip
           placement="top"
           trigger={triggerProps => (
             <CardWithText
@@ -292,7 +309,7 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
               onPress={() =>
                 item.redirect_url
                   ? openInBrowser(item.redirect_url)
-                  : handleNavigation(item?.id, foodItem?.id || '')
+                  : openFoodOfferDetailsModal(item?.id, foodItem?.id || '')
               }
               imageSource={{
                 uri: imageUri as string,
@@ -324,7 +341,13 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                   )}
 
                   <View style={styles.overlayActionsContainer}>
-                    <TouchableOpacity style={styles.favContainer}>
+                    <TouchableOpacity
+                      style={[
+                        styles.favContainer,
+                        !user?.id && accountRequiredStyles.wrapper,
+                        !user?.id && { borderWidth: 2, borderColor: foods_area_color },
+                      ]}
+                    >
                       {RatingHelper.isMaxRating(currentRating) ? (
                         <TouchableOpacity onPress={() => updateRating(null)}>
                           <AntDesign name="star" size={20} color={foods_area_color} />
@@ -333,6 +356,12 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         <TouchableOpacity onPress={() => updateRating(RatingHelper.MAX_RATING)}>
                           <MaterialIcons name="star" size={20} color="white" />
                         </TouchableOpacity>
+                      )}
+                      {!user?.id && (
+                        <View
+                          pointerEvents="none"
+                          style={[StyleSheet.absoluteFill, accountRequiredStyles.dimOverlay, { borderRadius: 50 }]}
+                        />
                       )}
                     </TouchableOpacity>
 
@@ -411,10 +440,17 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
         >
           <TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
             <TooltipText fontSize="$sm" color={theme.tooltip.text}>
-              {getTextFromTranslation(foodItem?.translations, language || 'de')}
+              {(() => {
+                const tooltipText = getTextFromTranslation(foodItem?.translations, language || 'de');
+                if (!tooltipText) return tooltipText;
+                let result = tooltipText;
+                if (pirateLanguage) result = applyPirateTransformation(result);
+                if (funLanguageMode) result = applyFunModeTransformation(result, funLanguageMode);
+                return result;
+              })()}
             </TooltipText>
           </TooltipContent>
-        </Tooltip>
+        </CustomTooltip>
       </>
     );
   },
@@ -424,6 +460,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
     prev.canteen === next.canteen &&
     prev.cardWidth === next.cardWidth &&
     prev.language === next.language &&
+    prev.pirateLanguage === next.pirateLanguage &&
+    prev.funLanguageMode === next.funLanguageMode &&
     prev.serverInfo === next.serverInfo &&
     prev.appSettings === next.appSettings &&
     prev.primaryColor === next.primaryColor &&
@@ -440,6 +478,8 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const { item } = props;
     // Use props if available, otherwise fallback to selectors (for backward compatibility if used elsewhere)
     const language = props.language ?? useAppSelector((state) => state.settings.language);
+    const pirateLanguage = props.pirateLanguage ?? useAppSelector((state) => state.settings.pirateLanguage);
+    const funLanguageMode = props.funLanguageMode ?? useAppSelector((state) => state.settings.funLanguageMode);
     const serverInfo = props.serverInfo ?? useAppSelector((state) => state.settings.serverInfo);
     const appSettings = props.appSettings ?? useAppSelector((state) => state.settings.appSettings);
     const primaryColor = props.primaryColor ?? useAppSelector((state) => state.settings.primaryColor);
@@ -481,6 +521,8 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
             {...props}
             previousFeedback={previousFeedback}
             language={language}
+            pirateLanguage={pirateLanguage}
+            funLanguageMode={funLanguageMode}
             serverInfo={serverInfo}
             appSettings={appSettings}
             primaryColor={primaryColor}

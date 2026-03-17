@@ -1,0 +1,29 @@
+{
+  "collection": "organizations",
+  "field": "child_organizations",
+  "type": "alias",
+  "meta": {
+    "collection": "organizations",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "child_organizations",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "enableLink": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 16,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

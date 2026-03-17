@@ -9,16 +9,21 @@
     "collection": "buildings_attributes",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "buildings",
     "hidden": false,
-    "icon": null,
+    "icon": "tune",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 3,
+    "sort": 4,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Gebäude Attribute"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

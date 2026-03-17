@@ -1,35 +1,33 @@
 {
-  "collection": "collectible_event_participants",
-  "field": "data",
-  "type": "json",
+  "collection": "foods_translations",
+  "field": "description",
+  "type": "text",
   "meta": {
-    "collection": "collectible_event_participants",
+    "collection": "foods_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "data",
+    "field": "description",
     "group": null,
     "hidden": false,
-    "interface": "input-code",
+    "interface": "input-rich-text-md",
     "note": null,
     "options": {
-      "lineWrapping": true
+      "folder": "7ca24fe5-f805-432a-a52e-623682eef9dc"
     },
     "readonly": false,
     "required": false,
-    "sort": 13,
-    "special": [
-      "cast-json"
-    ],
+    "sort": 5,
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "data",
-    "table": "collectible_event_participants",
-    "data_type": "json",
+    "name": "description",
+    "table": "foods_translations",
+    "data_type": "text",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

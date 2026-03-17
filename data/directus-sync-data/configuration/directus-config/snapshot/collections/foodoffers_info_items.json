@@ -9,16 +9,21 @@
     "collection": "foodoffers_info_items",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "folder_food",
     "hidden": false,
-    "icon": null,
+    "icon": "info",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 28,
+    "sort": 2,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speise Angebot Info Elemente"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

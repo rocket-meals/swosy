@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
@@ -33,7 +33,7 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({
                     gap: 10,
                 }}
             >
-                <Tooltip
+                <CustomTooltip
                     placement="top"
                     trigger={triggerProps => (
                         <IconButton
@@ -50,7 +50,7 @@ const DetailsHeader: React.FC<DetailsHeaderProps> = ({
                             {`${translate(TranslationKeys.open_navitation_to_location)}`}
                         </TooltipText>
                     </TooltipContent>
-                </Tooltip>
+                </CustomTooltip>
             </View>
         </>
     );

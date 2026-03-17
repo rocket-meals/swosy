@@ -36,7 +36,7 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 				/>
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_theme} />
-			<DebugView title="Theme" isVisible>
+			<DebugView title="Theme">
 				<View style={styles.debugContainer}>
 					<Text style={[styles.debugLabel, { color: theme.screen.text }]}>
 						theme.screen.background: {theme.screen.background}

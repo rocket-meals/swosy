@@ -14,6 +14,7 @@ export class FormHelperCommon {
     STRING_ADDRESS: "value_string-address",
     STRING_EMAIL: "value_string-email",
     STRING_BANK_ACCOUNT: "value_string-bank_account_number",
+    STRING_BIC: "value_string-bic",
     BOOLEAN_CHECKBOX: "value_boolean-checkbox",
     FILES_FILES: "value_files-files",
     FILES_IMAGE: "value_image-image",

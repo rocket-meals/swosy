@@ -11,14 +11,19 @@
     "display_template": null,
     "group": "workflows",
     "hidden": false,
-    "icon": null,
+    "icon": "play_circle",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
     "sort": 2,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Workflow Ausführungen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

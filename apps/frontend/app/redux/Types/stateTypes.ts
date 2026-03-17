@@ -30,6 +30,8 @@ export type CanteenWithImage = DatabaseTypes.Canteens & {
 export type CanteensState = {
 	canteens: CanteenWithImage[];
 	buildings: DatabaseTypes.Buildings[];
+	buildingsOrganizations: DatabaseTypes.BuildingsOrganizations[];
+	organisations: DatabaseTypes.Organizations[];
 	selectedCanteen: CanteenWithImage | null;
 	selectedCanteenFoodOffers: DatabaseTypes.Foodoffers[];
 	canteenFoodOffers: DatabaseTypes.Foodoffers[];
@@ -62,6 +64,11 @@ export type SettingsState = {
         simulateExpoUpdateAvailable: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
+        mapTileVariantKey: string;
+        mapUseFlyAnimation: boolean;
+        mapVirtualZoom: number | null;
+        mapOrganisationFilter: Record<string, boolean>;
+        mapClusterPixelRadius: number;
 }
 
 export type FoodState = {
@@ -69,6 +76,7 @@ export type FoodState = {
 	ownFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[];
 	ownfoodFeedbackLabelEntries: DatabaseTypes.FoodsFeedbacksLabelsEntries[];
 	markings: DatabaseTypes.Markings[];
+	markingGroups: DatabaseTypes.MarkingsGroups[];
 	selectedFoodMarkings: DatabaseTypes.FoodoffersMarkings[];
 	foodCategories: DatabaseTypes.FoodsCategories[];
 	foodOfferCategories: DatabaseTypes.FoodoffersCategories[];
@@ -91,9 +99,29 @@ export type FoodAttributesState = {
 	foodAttributesDict: Record<string, DatabaseTypes.FoodsAttributes>;
 }
 
+export type FormQueueEntry = {
+	id: string;
+	form_submission_id: string;
+	form_id: string;
+	alias: string;
+	targetState: string;
+	formData: Record<string, { value: any; error: string; custom_type?: string }>;
+	timestamp: string;
+};
+
+export type CachedFormEntry = {
+	form: DatabaseTypes.Forms | null;
+	submissions: DatabaseTypes.FormSubmissions[];
+	answers: Record<string, DatabaseTypes.FormAnswers[]>;
+};
+
 export type FormState = {
 	filterBy: string;
 	formSubmission: DatabaseTypes.FormSubmissions;
+	formQueue: FormQueueEntry[];
+	cachedFormData: Record<string, CachedFormEntry>;
+	cachedFormCategories: DatabaseTypes.FormCategories[];
+	cachedForms: Record<string, DatabaseTypes.Forms[]>;
 }
 
 export type CampusState = {

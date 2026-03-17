@@ -2,7 +2,7 @@ import { ReactNode, useCallback } from 'react';
 import { useModalContext } from './ModalProvider';
 
 export const useModal = () => {
-        const { open, close, debug } = useModalContext();
+        const { open, close, openAndDiscardOthers, closeAll, debug } = useModalContext();
 
         const show = useCallback(
                 (content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
@@ -15,6 +15,17 @@ export const useModal = () => {
                 close();
         }, [close]);
 
-        return { show, close: closeModal, debug };
+        const showAndDiscardOthers = useCallback(
+                (content: ReactNode, options?: { backgroundStyle?: any; headerBackgroundColor?: string }) => {
+                        openAndDiscardOthers(content, options);
+                },
+                [openAndDiscardOthers]
+        );
+
+        const closeAllModals = useCallback(() => {
+                closeAll();
+        }, [closeAll]);
+
+        return { show, close: closeModal, showAndDiscardOthers, closeAll: closeAllModals, debug };
 };
 

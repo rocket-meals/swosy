@@ -1,8 +1,10 @@
-import { CLEAR_CANTEENS, DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_BUILDINGS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEEN_FEEDBACK_LABELS, SET_CANTEENS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_SELECTED_CANTEEN, SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
+import { CLEAR_CANTEENS, DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_BUILDINGS, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEEN_FEEDBACK_LABELS, SET_CANTEENS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_ORGANISATIONS, SET_SELECTED_CANTEEN, SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
 
 const initialState = {
 	canteens: [],
 	buildings: [],
+	buildingsOrganizations: [],
+	organisations: [],
 	selectedCanteen: null,
 	selectedCanteenFoodOffers: [],
 	canteenFoodOffers: [],
@@ -24,6 +26,18 @@ const canteensReducer = (state = initialState, actions: any) => {
 			return {
 				...state,
 				buildings: actions.payload,
+			};
+		}
+		case SET_BUILDINGS_ORGANIZATIONS: {
+			return {
+				...state,
+				buildingsOrganizations: actions.payload,
+			};
+		}
+		case SET_ORGANISATIONS: {
+			return {
+				...state,
+				organisations: actions.payload,
 			};
 		}
 		case SET_SELECTED_CANTEEN: {

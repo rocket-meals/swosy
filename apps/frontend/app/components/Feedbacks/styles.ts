@@ -19,6 +19,7 @@ type FeedbacksStyles = {
     divider: ViewStyle;
     commentDate: TextStyle;
     ratingSummaryContainer: ViewStyle;
+    commentSectionContainer: ViewStyle;
     searchContainerRow: ViewStyle;
     searchContainerColumn: ViewStyle;
     commentButtonBase: ViewStyle;
@@ -132,6 +133,11 @@ export default StyleSheet.create<FeedbacksStyles>({
 	},
 	ratingSummaryContainer: {
 		width: '100%',
+		marginBottom: 20,
+	},
+	commentSectionContainer: {
+		width: '100%',
+		marginTop: 20,
 		marginBottom: 20,
 	},
 	searchContainerRow: {

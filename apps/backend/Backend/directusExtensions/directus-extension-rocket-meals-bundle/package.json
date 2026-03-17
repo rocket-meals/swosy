@@ -90,6 +90,11 @@
       },
       {
         "type": "hook",
+        "name": "files-without-folder-report-schedule",
+        "source": "src/files-without-folder-report-schedule/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "food-feedback-rating-calculate-hook",
         "source": "src/food-feedback-rating-calculate-hook/index.ts"
       },
@@ -107,6 +112,11 @@
         "type": "hook",
         "name": "food-sync-hook",
         "source": "src/food-sync-hook/index.ts"
+      },
+      {
+        "type": "hook",
+        "name": "foodoffers-components-hook",
+        "source": "src/foodoffers-components-hook/index.ts"
       },
       {
         "type": "hook",

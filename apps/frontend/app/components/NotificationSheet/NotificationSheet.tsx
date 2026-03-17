@@ -1,6 +1,5 @@
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { NotificationSheetProps } from './types';
@@ -99,7 +98,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 		return () => subscription?.remove();
 	}, []);
 	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+		<View style={[{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }, styles.contentContainer]}>
 			<View
 				style={{
 					...styles.sheetHeader,
@@ -136,7 +135,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 					<Text style={{ ...styles.buttonLabel, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
 				</TouchableOpacity>
 			</View>
-		</BottomSheetScrollView>
+		</View>
 	);
 };
 

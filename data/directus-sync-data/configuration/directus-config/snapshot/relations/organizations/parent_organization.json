@@ -1,0 +1,25 @@
+{
+  "collection": "organizations",
+  "field": "parent_organization",
+  "related_collection": "organizations",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "organizations",
+    "many_field": "parent_organization",
+    "one_allowed_collections": null,
+    "one_collection": "organizations",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": "child_organizations",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "organizations",
+    "column": "parent_organization",
+    "foreign_key_table": "organizations",
+    "foreign_key_column": "id",
+    "constraint_name": "organizations_parent_organization_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "NO ACTION"
+  }
+}

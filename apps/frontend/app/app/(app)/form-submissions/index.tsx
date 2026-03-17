@@ -2,7 +2,7 @@ import { ActivityIndicator, Dimensions, FlatList, Text, TextInput, TouchableOpac
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { Entypo, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Entypo, FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -18,6 +18,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import FormSubmissionSortSheet from '@/components/FormSubmissionSortSheet/FormSubmissionSortSheet';
 import { FormSubmissionSortOption } from '@/components/FormSubmissionSortSheet/types';
 import { useAppSelector } from '@/redux/hooks';
+import { FormQueueEntry } from '@/redux/Types/stateTypes';
 
 type FormSubmissionListRow =
 	| {
@@ -47,9 +48,17 @@ const Index = () => {
 	const [formSubmissions, setFormSubmissions] = useState<DatabaseTypes.FormSubmissions[]>([]);
     const [selectedOption, setSelectedOption] = useState<string>('draft');
     const [sortOption, setSortOption] = useState<FormSubmissionSortOption>('alphabetical');
-    const { drawerPosition, language } = useAppSelector((state) => state.settings);
+    const { drawerPosition, language, offlineMode } = useAppSelector((state) => state.settings);
     const [currentPath, setCurrentPath] = useState<string[]>([]);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+	const { formQueue, cachedFormData } = useAppSelector((state) => state.form);
+	const [isShowingCachedData, setIsShowingCachedData] = useState(false);
+	const [hasLoadError, setHasLoadError] = useState(false);
+
+	const queueEntries = useMemo(
+		() => (formQueue || []).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
+		[formQueue, form_id]
+	);
 
 	const folderPrefixes = useMemo(() => {
 		const prefixes = new Set<string>();
@@ -235,6 +244,29 @@ const Index = () => {
 	const loadFormSubmissions = async (pageNumber: number, append: boolean = false) => {
 		if (!form_id) return;
 		setLoading(true);
+		setIsShowingCachedData(false);
+		setHasLoadError(false);
+
+		// When offline mode is active, use cache directly without attempting API call
+		if (offlineMode) {
+			const cached = (cachedFormData || {})[String(form_id)]?.submissions || [];
+			const filterState = selectedOption || 'draft';
+			const filterQuery = query ? query.trim().toLowerCase() : '';
+			const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
+				const stateMatch = s.state === filterState;
+				const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
+				return stateMatch && aliasMatch;
+			});
+			const sortedResult = sortFormSubmissions(filtered, sortOption);
+			if (append) {
+				setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
+			} else {
+				setFormSubmissions(sortedResult);
+			}
+			if (cached.length > 0) setIsShowingCachedData(true);
+			setLoading(false);
+			return;
+		}
 
 		try {
 			const result = (await formsSubmissionsHelper.fetchFormSubmissions({
@@ -255,7 +287,27 @@ const Index = () => {
 				}
 			}
 		} catch (error) {
-			console.error('Error fetching form submissions', error);
+			// Network failed – fall back to locally cached submissions for this form
+			const cached = (cachedFormData || {})[String(form_id)]?.submissions || [];
+			if (cached.length > 0) {
+				const filterState = selectedOption || 'draft';
+				const filterQuery = query ? query.trim().toLowerCase() : '';
+				const filtered = cached.filter((s: DatabaseTypes.FormSubmissions) => {
+					const stateMatch = s.state === filterState;
+					const aliasMatch = filterQuery ? (s.alias || '').toLowerCase().includes(filterQuery) : true;
+					return stateMatch && aliasMatch;
+				});
+				const sortedResult = sortFormSubmissions(filtered, sortOption);
+				if (append) {
+					setFormSubmissions(prev => sortFormSubmissions([...(prev || []), ...sortedResult], sortOption));
+				} else {
+					setFormSubmissions(sortedResult);
+				}
+				setIsShowingCachedData(true);
+			} else {
+				console.error('Error fetching form submissions', error);
+				setHasLoadError(true);
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -401,7 +453,7 @@ const Index = () => {
 					>
 						<TouchableOpacity
 							onPress={() => {
-								if (currentPath.length > 0) {
+								if (!hasLoadError && currentPath.length > 0) {
 									setCurrentPath(prev => prev.slice(0, -1));
 								} else {
 									router.navigate('/form-categories');
@@ -420,10 +472,41 @@ const Index = () => {
 						<TouchableOpacity onPress={openFilterSheet} style={{ padding: 10 }}>
 							<FontAwesome name="filter" size={24} color={theme.header.text} />
 						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => router.push('/form-queue')}
+							style={{ padding: 10 }}
+						>
+							<View>
+								<MaterialCommunityIcons
+									name="clock-outline"
+									size={24}
+									color={theme.header.text}
+								/>
+								{queueEntries.length > 0 && (
+									<View
+										style={{
+											position: 'absolute',
+											top: -4,
+											right: -4,
+											backgroundColor: 'red',
+											borderRadius: 8,
+											minWidth: 16,
+											height: 16,
+											justifyContent: 'center',
+											alignItems: 'center',
+											paddingHorizontal: 2,
+										}}
+									>
+										<Text style={{ color: 'white', fontSize: 10, fontFamily: 'Poppins_700Bold' }}>{queueEntries.length}</Text>
+									</View>
+								)}
+							</View>
+						</TouchableOpacity>
 					</View>
 				</View>
 			</View>
 			<View style={styles.contentContainer}>
+			<>
 				<View style={styles.stateContainer}>
 					<Text
 						style={{
@@ -435,6 +518,16 @@ const Index = () => {
 					>
 						{`${translate(TranslationKeys.state)}: ${translate(selectedOption)}`}
 					</Text>
+					{isShowingCachedData && (
+						<View style={styles.cachedRow}>
+							<MaterialCommunityIcons name="cached" size={18} color={theme.screen.icon} />
+						</View>
+					)}
+					{offlineMode && (
+						<View style={styles.cachedRow}>
+							<FontAwesome name="cloud-download" size={18} color="green" />
+						</View>
+					)}
 				</View>
 				<View
 					style={{
@@ -467,36 +560,37 @@ const Index = () => {
 						<Ionicons name="search" color={theme.screen.icon} size={22} />
 					</TouchableOpacity>
 				</View>
+			</>
+		</View>
+		<View
+			style={{
+				flex: 1,
+				width: '100%',
+				marginTop: 10,
+				alignItems: 'center',
+			}}
+		>
+			<View style={{ flex: 1, width: screenWidth > 768 ? '70%' : '90%' }}>
+				{loading ? (
+					<View
+						style={{
+							height: 200,
+							width: '100%',
+							justifyContent: 'center',
+							alignItems: 'center',
+						}}
+					>
+						<ActivityIndicator size={30} color={theme.screen.text} />
+					</View>
+				) : formSubmissions?.length > 0 ? (
+					<FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />
+				) : (
+					<View style={{ padding: 20, alignItems: 'center' }}>
+						<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
+					</View>
+				)}
 			</View>
-			<View
-				style={{
-					flex: 1,
-					width: '100%',
-					marginTop: 10,
-					alignItems: 'center',
-				}}
-			>
-				<View style={{ flex: 1, width: screenWidth > 768 ? '70%' : '90%' }}>
-					{loading ? (
-						<View
-							style={{
-								height: 200,
-								width: '100%',
-								justifyContent: 'center',
-								alignItems: 'center',
-							}}
-						>
-							<ActivityIndicator size={30} color={theme.screen.text} />
-						</View>
-					) : formSubmissions?.length > 0 ? (
-						<FlatList data={listData} keyExtractor={item => item.id} renderItem={renderItem} contentContainerStyle={{ paddingBottom: 10 }} />
-					) : (
-						<View style={{ padding: 20, alignItems: 'center' }}>
-							<Text style={{ color: theme.screen.text, fontSize: 16 }}>{translate(TranslationKeys.no_data_found)}</Text>
-						</View>
-					)}
-				</View>
-			</View>
+		</View>
 			<FilterFormSheet isVisible={isFilterModalVisible} closeSheet={closeFilterSheet} isFormSubmission={true} setSelectedOption={setSelectedOption} selectedOption={selectedOption} options={filterOptions} />
 			{isActive && (
 				<>

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { isWeb } from '@/constants/Constants';
 
 export default StyleSheet.create({
 	editImageButton: {
@@ -114,5 +115,10 @@ export default StyleSheet.create({
         foodNameContainer: {
             minHeight: 52,
             justifyContent: 'center',
+        },
+        markingHintText: {
+            fontSize: isWeb ? 16 : 14,
+            marginBottom: 12,
+            paddingHorizontal: 16,
         },
 });

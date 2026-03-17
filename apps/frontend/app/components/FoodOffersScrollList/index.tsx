@@ -12,10 +12,14 @@ import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import MarkingBottomSheet from '@/components/MarkingBottomSheet';
+import { useFocusEffect } from 'expo-router';
+
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 import { useAppSelector } from '@/redux/hooks';
+import { useDispatch } from 'react-redux';
+import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
+import { SET_CANTEEN_FEEDBACK_LABELS } from '@/redux/Types/types';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
@@ -40,21 +44,23 @@ interface DayItem {
 
 const EMPTY_FEEDBACKS: any[] = [];
 const daysCache: Record<string, DayData[]> = {};
+const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
 
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
+	const dispatch = useDispatch();
 	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
 	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
-	const { profile } = useAppSelector((state) => state.authReducer);
+	const { profile, user } = useAppSelector((state) => state.authReducer);
 	const { appElements } = useAppSelector((state) => state.appElements);
 	
 	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
 	const [days, setDays] = useState<DayData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
-	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
+	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [listWidth, setListWidth] = useState<number | null>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -64,6 +70,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
+
+	useEffect(() => {
+		const fetchLabels = async () => {
+			try {
+				const labels = (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as DatabaseTypes.CanteensFeedbacksLabels[];
+				dispatch({ type: SET_CANTEEN_FEEDBACK_LABELS, payload: labels });
+			} catch (e) {
+				console.error('Error fetching canteen feedback labels', e);
+			}
+		};
+		fetchLabels();
+	}, [dispatch]);
 
 	const cacheKey = useMemo(
 		() => `${canteenId}_${format(new Date(startDate), 'yyyy-MM-dd')}`,
@@ -107,10 +125,36 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		});
 	}, [appElementsMap, appSettings, languageCode]);
 
-	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[]) => {
+	const parseDateOnly = useCallback((date: string) => {
+		const [year, month, day] = date.split('-').map(Number);
+		if (!year || !month || !day) {
+			return new Date(date);
+		}
+		return new Date(year, month - 1, day);
+	}, []);
+
+	const buildDayItems = useCallback((offers: DatabaseTypes.Foodoffers[], date: string) => {
 		const hasOffers = offers.length > 0;
+		const dayOfWeek = parseDateOnly(date).getDay();
+		// Index matches getDay() return values: 0=Sunday, 1=Monday, ..., 6=Saturday
+		const weekdayFields: string[] = [
+			'show_on_sundays',
+			'show_on_mondays',
+			'show_on_tuesdays',
+			'show_on_wednesdays',
+			'show_on_thursdays',
+			'show_on_fridays',
+			'show_on_saturdays',
+		];
 		const infoItemsFiltered = (foodOffersInfoItems || []).filter(info => {
 			if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id) {
+				return false;
+			}
+			// Weekday filter: null/undefined and true are both treated as "show on this day" (default true).
+			// Only an explicit false value excludes the item on this day.
+			const weekdayField = weekdayFields[dayOfWeek];
+			const fieldValue = (info as DatabaseTypes.FoodoffersInfoItems & Record<string, boolean | null | undefined>)[weekdayField];
+			if (fieldValue != null && !fieldValue) {
 				return false;
 			}
 			if (info.show_only_when_no_foodoffers_found) {
@@ -127,7 +171,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		const endItems = endInfos.map(i => ({ foodoffer: null, foodofferInfoItem: i }));
 
 		return [...startItems, ...main, ...endItems] as DayItem[];
-	}, [foodOffersInfoItems, selectedCanteen]);
+	}, [foodOffersInfoItems, selectedCanteen, parseDateOnly]);
 
 	const getInfoItemContent = useCallback(
 		(item: DatabaseTypes.FoodoffersInfoItems) => {
@@ -142,7 +186,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	);
 
 	const openSheet = useCallback(
-			(sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+			(sheet: keyof typeof SHEET_COMPONENTS, props = {}) => {
 				setSelectedSheet(sheet);
 				setSheetProps(props);
 			},
@@ -172,7 +216,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}
 	}, [selectedSheet]);
 
-	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+	const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
 		if (amountColumnsForcard && amountColumnsForcard > 0) {
@@ -228,12 +272,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	useEffect(() => {
 		setDays(prev => {
 			const updated = prev.map(d => ({ ...d, offers: sortOffers(d.offers) }));
-			if (updated.length > 0) {
+			// Only update the cache if data has already been loaded for the current cacheKey.
+			// This prevents the sort effect from writing the previous canteen's data into the
+			// new canteen's cache key when the canteen changes (which would corrupt the cache
+			// before the fetch for the new canteen completes).
+			if (updated.length > 0 && daysCache[cacheKey] !== undefined) {
 				updateCache(updated);
 			}
 			return updated;
 		});
-	}, [sortOffers, updateCache]);
+	}, [sortOffers, updateCache, cacheKey]);
 
 	const loadDay = useCallback(
 		async (date: string) => {
@@ -286,9 +334,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		[init, openDirectusImageEditModal]
 	);
 
-	useEffect(() => {
-		init();
-	}, [init]);
+	// Re-run init whenever this screen gains focus (e.g. navigating back from wiki).
+	// This ensures that the correct canteen's data is always displayed after navigation.
+	useFocusEffect(
+		useCallback(() => {
+			init();
+		}, [init])
+	);
 
 	useEffect(() => {
 		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
@@ -318,17 +370,13 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		setRefreshing(false);
 	};
 
-	const parseDateOnly = useCallback((date: string) => {
-		const [year, month, day] = date.split('-').map(Number);
-		if (!year || !month || !day) {
-			return new Date(date);
-		}
-		return new Date(year, month - 1, day);
-	}, []);
-
 	const renderDay = ({ item }: { item: DayData }) => {
-		const feedbacks = canteenFeedbackLabels?.map((label, idx) => <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} />);
-		const dayItems = buildDayItems(item.offers);
+		const feedbacks = canteenFeedbackLabels?.map((label, idx) => {
+			const total = canteenFeedbackLabels.length;
+			const groupPosition = total === 1 ? 'single' : idx === 0 ? 'top' : idx === total - 1 ? 'bottom' : 'middle';
+			return <CanteenFeedbackLabels key={`fl-${idx}`} label={label} date={item.date} groupPosition={groupPosition} isAccountRequired={!user?.id} />;
+		});
+		const dayItems = buildDayItems(item.offers, item.date);
 		const hasInfoItems = dayItems.some(dayItem => dayItem.foodofferInfoItem);
 
 		return (
@@ -372,7 +420,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 										canteen={selectedCanteen as DatabaseTypes.Canteens}
 										handleMenuSheet={openSheet}
 										handleImageSheet={openManagementSheet}
-										handleEatingHabitsSheet={openSheet}
 										cardWidth={cardWidth}
 									/>
 								</View>
@@ -411,7 +458,14 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						<CustomMarkdown content={afterElement?.content || ''} backgroundColor={foods_area_color} imageWidth={440} imageHeight={293} />
 					</View>
 				)}
-				{feedbacks && feedbacks.length > 0 && <View style={styles.feebackContainer}>{feedbacks}</View>}
+				{feedbacks && feedbacks.length > 0 && (
+					<View style={styles.feebackContainer}>
+						<Text style={[styles.feedbackLabelsTitle, { color: theme.screen.text }]}>
+							{translate(TranslationKeys.feedback_labels)}
+						</Text>
+						{feedbacks}
+					</View>
+				)}
 				<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers} />
 				<View style={[styles.dayDivider, { backgroundColor: contrastColor }]} />
 			</View>
@@ -439,14 +493,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				style={{ flex: 1 }}
 				contentContainerStyle={{ backgroundColor: theme.screen.background }}
 			/>
-			{selectedSheet &&
-				(selectedSheet === 'menu' ? (
-					<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
-				) : (
-					<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
-						{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
-					</BaseBottomSheet>
-				))}
+			{selectedSheet && (
+				<BaseBottomSheet key={selectedSheet} ref={bottomSheetRef} backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }} handleComponent={null} onClose={closeSheet}>
+					{SheetComponent && <SheetComponent closeSheet={closeSheet} {...sheetProps} />}
+				</BaseBottomSheet>
+			)}
 		</>
 	);
 };

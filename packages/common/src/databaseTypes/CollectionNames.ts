@@ -38,6 +38,7 @@ export enum CollectionNames {
   MARKINGS = 'markings',
   MARKINGS_EXCLUSIONS = 'markings_exclusions',
   FOODOFFER_MARKINGS = 'foodoffers_markings',
+  FOODOFFER_COMPONENTS = 'foodoffers_components',
   FOODS_FEEDBACK_LABELS = 'foods_feedbacks_labels',
   APARTMENTS = 'apartments',
   WASHINGMACHINES = 'washingmachines',

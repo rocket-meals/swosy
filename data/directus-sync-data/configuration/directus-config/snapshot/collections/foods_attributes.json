@@ -9,14 +9,14 @@
     "collection": "foods_attributes",
     "color": null,
     "display_template": null,
-    "group": null,
+    "group": "foods",
     "hidden": false,
-    "icon": null,
+    "icon": "tune",
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 9,
+    "sort": 1,
     "sort_field": "sort",
     "translations": [
       {

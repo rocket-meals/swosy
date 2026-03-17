@@ -3,6 +3,8 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { useTheme } from '@/hooks/useTheme';
+import useDebugMode from '@/hooks/useDebugMode';
+import { useAppSelector } from '@/redux/hooks';
 import styles from './styles';
 
 export type DebugLog = string | { message: string; timestamp?: string | Date };
@@ -22,6 +24,7 @@ interface DebugViewProps {
         logs?: DebugLog[];
         actions?: DebugAction[];
         isVisible?: boolean;
+        showInDevMode?: boolean;
         children?: ReactNode;
 }
 
@@ -29,10 +32,13 @@ const DebugView: React.FC<DebugViewProps> = ({
         title = 'Debug',
         logs = [],
         actions = [],
-        isVisible = true,
+        isVisible = false,
+        showInDevMode = false,
         children,
 }) => {
         const { theme } = useTheme();
+        const debugMode = useDebugMode();
+        const isDevMode = useAppSelector((state) => state.authReducer.isDevMode);
 
         const formattedLogs = useMemo(() => {
                 return logs
@@ -50,7 +56,8 @@ const DebugView: React.FC<DebugViewProps> = ({
                         .filter(Boolean);
         }, [logs]);
 
-        if (!isVisible) return null;
+        const shouldRender = isVisible || debugMode || (showInDevMode && isDevMode);
+        if (!shouldRender) return null;
 
         return (
                 <View

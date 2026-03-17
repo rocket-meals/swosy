@@ -1,20 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import styles from './styles';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import ManagementCanteensSheet from '@/components/ManagementCanteensSheet/ManagementCanteensSheet';
 import { SET_WEEK_PLAN } from '@/redux/Types/types';
-import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { Switch } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useAppSelector } from '@/redux/hooks';
+import { useMyScrollviewModalSelectWeekPlanCanteen } from '@/hooks/useMyScrollviewModalSelectWeekPlanCanteen';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_week);
@@ -23,18 +20,9 @@ const Index = () => {
 	const dispatch = useDispatch();
 	const { primaryColor: projectColor, appSettings } = useAppSelector((state) => state.settings);
 	const { weekPlan } = useAppSelector((state) => state.management);
-	const [isActive, setIsActive] = useState(false);
-	const canteenSheetRef = useRef<BottomSheet>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
-
-	const openCanteenSheet = () => {
-		canteenSheetRef?.current?.expand();
-	};
-
-	const closeCanteenSheet = () => {
-		canteenSheetRef?.current?.close();
-	};
+	const { openSelectWeekPlanCanteenModal } = useMyScrollviewModalSelectWeekPlanCanteen();
 
 	const toggleMenuSwitch = () => {
 		dispatch({
@@ -42,15 +30,6 @@ const Index = () => {
 			payload: { isAllergene: !weekPlan?.isAllergene },
 		});
 	};
-
-	useFocusEffect(
-		useCallback(() => {
-			setIsActive(true);
-			return () => {
-				setIsActive(false);
-			};
-		}, [])
-	);
 
 	useEffect(() => {
 		const onChange = ({ window }: { window: any }) => {
@@ -62,14 +41,6 @@ const Index = () => {
 			subscription.remove();
 		};
 	}, []);
-
-	const handleSelectCanteen = (canteen: CanteenProps) => {
-		dispatch({
-			type: SET_WEEK_PLAN,
-			payload: { selectedCanteen: canteen },
-		});
-		closeCanteenSheet();
-	};
 
 	return (
 		<>
@@ -89,7 +60,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={openCanteenSheet}
+					onPress={openSelectWeekPlanCanteenModal}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
@@ -144,21 +115,6 @@ const Index = () => {
 					</View>
 				</TouchableOpacity>
 			</ScrollView>
-			{isActive && (
-				<BaseBottomSheet
-					ref={canteenSheetRef}
-					index={-1}
-					backgroundStyle={{
-						...styles.sheetBackground,
-						backgroundColor: theme.sheet.sheetBg,
-					}}
-					enablePanDownToClose
-					handleComponent={null}
-					onClose={closeCanteenSheet}
-				>
-					<ManagementCanteensSheet closeSheet={closeCanteenSheet} handleSelectCanteen={handleSelectCanteen} />
-				</BaseBottomSheet>
-			)}
 		</>
 	);
 };

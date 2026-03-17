@@ -2,7 +2,7 @@ import React, { memo, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Dimensions, Platform, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import FeedbackLabel from '../FeedbackLabel';
 import { isWeb } from '@/constants/Constants';
 import { useDispatch, shallowEqual } from 'react-redux';
@@ -15,10 +15,11 @@ import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
+import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import { RootState } from '@/redux/reducer';
-import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 const loadingState = {
 	submitLoading: false,
@@ -42,7 +43,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
 	const [comment, setComment] = useState('');
-	const { openRatingPermissionModal } = useRatingPermissionModal();
+	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 
 	// Optimized Selectors
@@ -66,7 +67,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const submitCommentFeedback = async (string: string | null) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 
@@ -106,7 +107,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const handleTextChange = (text: string) => {
 		if (!user?.id) {
-			openRatingPermissionModal();
+			openAccountRequiredModal();
 			return;
 		}
 
@@ -194,34 +195,30 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 			>
 				{translate(TranslationKeys.feedback_labels)}
 			</Text>
-			{labels.map((label: any) => (
-				<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} />
-			))}
+			{labels.map((label: any, index: number) => {
+				const total = labels.length;
+				const groupPosition = total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+				return (
+					<FeedbackLabel key={label.id} label={label.translations} icon={label.icon ? label.icon : undefined} imageUrl={label.image ? label.image : undefined} labelEntries={labelEntries} foodId={foodDetails?.id} offerId={offerId} groupPosition={groupPosition} isAccountRequired={!user?.id} />
+				);
+			})}
 			{commentType !== 'disabled' && commentType !== 'read' && (
-				<View
-					style={[
-						styles.searchContainer,
-						resp ? styles.searchContainerRow : styles.searchContainerColumn,
-						{ backgroundColor: theme.screen.iconBg }
-					]}
-				>
-					<TextInput style={[styles.input, resp ? styles.inputWide : styles.inputFull, Platform.OS === 'web' && styles.inputWeb]} cursorColor={theme.modal.text} placeholderTextColor={theme.modal.placeholder} onChangeText={handleTextChange} value={comment} placeholder={translate(TranslationKeys.your_comment)} editable={commentType === 'disabled' || commentType === 'read' ? false : true} />
-					<TouchableOpacity
-						style={[
-							styles.commentButton,
-							styles.commentButtonBase,
-							{
-								width: resp ? 220 : '90%',
-								backgroundColor: foods_area_color,
-							}
-						]}
-						onPress={() => {
-							submitCommentFeedback(comment);
-						}}
-						disabled={previousFeedback?.comment === comment}
-					>
-						{loading.submitLoading ? <ActivityIndicator color={theme.background} size={22} /> : <Text style={[styles.commentLabel, { color: contrastColor }]}>{translate(TranslationKeys.save_comment)}</Text>}
-					</TouchableOpacity>
+				<View style={styles.commentSectionContainer}>
+					<SettingsListTextInput
+						label={translate(TranslationKeys.your_comment)}
+						value={comment || translate(TranslationKeys.write_a_comment)}
+						initialValue={comment || ''}
+						placeholder={translate(TranslationKeys.your_comment)}
+						onSave={submitCommentFeedback}
+						leftIcon={<MaterialCommunityIcons name="chat-outline" size={20} />}
+						iconBgColor={foods_area_color}
+						multiline={true}
+						numberOfLines={3}
+						groupPosition="single"
+						saveLabel={translate(TranslationKeys.save_comment)}
+						checkTextInput={(value) => ({ isValid: value.length <= 120, value })}
+						isAccountRequired={!user?.id}
+					/>
 				</View>
 			)}
 			{commentType !== 'disabled' && (

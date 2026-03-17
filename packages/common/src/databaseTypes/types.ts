@@ -196,6 +196,13 @@ export type Buildings = {
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  map_marker_cluster_exclude?: boolean | null;
+  map_marker_color?: string | null;
+  map_marker_is_visible?: boolean | null;
+  map_marker_label?: string | null;
+  map_marker_label_color?: string | null;
+  map_marker_style?: string | null;
+  organizations: any[] | BuildingsOrganizations[];
   sort?: number | null;
   status?: string | null;
   translations: any[] | BuildingsTranslations[];
@@ -218,6 +225,12 @@ export type BuildingsBusinesshours = {
   buildings_id?: string | Buildings | null;
   businesshours_id?: string | Businesshours | null;
   id: number;
+};
+
+export type BuildingsOrganizations = {
+  buildings_id?: string | Buildings | null;
+  id: number;
+  organizations_id?: string | Organizations | null;
 };
 
 export type BuildingsTranslations = {
@@ -470,13 +483,12 @@ export type ChatsParticipants = {
 
 export type CollectibleEventParticipants = {
   collectible_event?: string | CollectibleEvents | null;
-  data?: unknown | null;
   date_created?: string | null;
   date_updated?: string | null;
   email?: string | null;
   id: string;
   phone_number?: string | null;
-  points?: number | null;
+  points?: string | null;
   profile?: string | Profiles | null;
   sort?: number | null;
   status: string;
@@ -524,7 +536,6 @@ export type CollectibleEvents = {
   date_updated?: string | null;
   id: string;
   monitor_background_image?: string | DirectusFiles | null;
-  monitor_background_image_remote_url?: string | null;
   monitor_display_number_of_collected_items?: boolean | null;
   monitor_display_number_of_participants?: boolean | null;
   monitor_settings: string;
@@ -1072,6 +1083,7 @@ export type FoodoffersComponents = {
 };
 
 export type FoodoffersInfoItems = {
+  alias?: string | null;
   canteen?: string | Canteens | null;
   date_created?: string | null;
   date_updated?: string | null;
@@ -1081,6 +1093,13 @@ export type FoodoffersInfoItems = {
   link?: string | null;
   name?: string | AppElements | null;
   placement?: string | null;
+  show_on_fridays?: boolean | null;
+  show_on_mondays?: boolean | null;
+  show_on_saturdays?: boolean | null;
+  show_on_sundays?: boolean | null;
+  show_on_thursdays?: boolean | null;
+  show_on_tuesdays?: boolean | null;
+  show_on_wednesdays?: boolean | null;
   show_only_when_no_foodoffers_found?: boolean | null;
   sort?: number | null;
   status: string;
@@ -1115,6 +1134,7 @@ export type Foods = {
   rating_average_legacy?: number | null;
   rating_legacy_settings: string;
   rating_settings: string;
+  show_description_icon_on_card?: boolean | null;
   sort?: number | null;
   status?: string | null;
   translations: any[] | FoodsTranslations[];
@@ -1297,6 +1317,7 @@ export type FoodsMarkings = {
 
 export type FoodsTranslations = {
   be_source_for_translations?: boolean | null;
+  description?: string | null;
   foods_id?: string | Foods | null;
   id: number;
   languages_code?: string | Languages | null;
@@ -1608,6 +1629,25 @@ export type NewsTranslations = {
   translation_settings: string;
 };
 
+export type Organizations = {
+  alias?: string | null;
+  buildings: any[] | BuildingsOrganizations[];
+  child_organizations: any[] | Organizations[];
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  image_remote_url?: string | null;
+  map_marker_color?: string | null;
+  map_marker_label_color?: string | null;
+  map_marker_style?: string | null;
+  parent_organization?: string | Organizations | null;
+  sort?: number | null;
+  status: string;
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type PopupEvents = {
   alias?: string | null;
   canteens: any[] | PopupEventsCanteens[];
@@ -1883,6 +1923,7 @@ export type CustomDirectusTypes = {
   buildings: Buildings[];
   buildings_attributes: BuildingsAttributes[];
   buildings_businesshours: BuildingsBusinesshours[];
+  buildings_organizations: BuildingsOrganizations[];
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
   businesshours_groups: BusinesshoursGroups[];
@@ -1977,6 +2018,7 @@ export type CustomDirectusTypes = {
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];
+  organizations: Organizations[];
   popup_events: PopupEvents[];
   popup_events_canteens: PopupEventsCanteens[];
   popup_events_translations: PopupEventsTranslations[];
