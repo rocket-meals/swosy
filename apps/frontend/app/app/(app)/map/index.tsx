@@ -7,7 +7,7 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -197,6 +197,7 @@ type OsmSettingsContentProps = {
 	onCarModeChange: (value: boolean) => void;
 	onToggleFullscreen: () => void;
 	onShowControlsHint: () => void;
+	onRevokeConsent: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -222,6 +223,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	onCarModeChange,
 	onToggleFullscreen,
 	onShowControlsHint,
+	onRevokeConsent,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
@@ -314,6 +316,15 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				onPress={onShowControlsHint}
 				groupPosition="bottom"
 				showSeparator={false}
+			/>
+			<SettingsGroupTitle>Datenschutz</SettingsGroupTitle>
+			<SettingsList
+				title="OpenStreetMap-Zustimmung widerrufen"
+				value="Karte wird danach nicht mehr geladen"
+				leftIcon={<MaterialCommunityIcons name="map-marker-off-outline" size={20} color={theme.screen.icon} />}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={onRevokeConsent}
+				groupPosition="single"
 			/>
 			<SettingsGroupTitle>Spaß Einstellungen</SettingsGroupTitle>
 			<SettingsList
@@ -470,6 +481,33 @@ const OsmControlsHintContent: React.FC<OsmControlsHintContentProps> = ({ onDontS
 		</View>
 	);
 };
+
+type OsmConsentContentProps = {
+	onConsent: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+const OsmConsentContent: React.FC<OsmConsentContentProps> = ({ onConsent, theme }) => (
+	<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
+		<MaterialCommunityIcons name="map-marker-radius" size={56} color={theme.screen.icon} style={{ marginBottom: 16 }} />
+		<Text style={{ color: theme.screen.text, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 }}>
+			Kartenanzeige mit OpenStreetMap
+		</Text>
+		<Text style={{ color: theme.screen.text, fontSize: 14, textAlign: 'center', marginBottom: 8, lineHeight: 20 }}>
+			Diese Karte lädt Kartendaten von <Text style={{ fontWeight: 'bold' }}>OpenStreetMap</Text> (openstreetmap.org) und <Text style={{ fontWeight: 'bold' }}>OpenFreeMap</Text> (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.
+		</Text>
+		<Text style={{ color: theme.screen.text + 'aa', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
+			Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.
+		</Text>
+		<SettingsList
+			title="Kartendaten laden (Zustimmen)"
+			leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
+			rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+			onPress={onConsent}
+			groupPosition="single"
+		/>
+	</View>
+);
 
 type OsmFilterContentProps = {
 	organisations: DatabaseTypes.Organizations[];
@@ -660,6 +698,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const intelligentMovement = useAppSelector((state) => (state.settings as any).osmVectorMapIntelligentMovement ?? false);
 	const peopleCount = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleCount ?? 80);
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
+	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -1318,6 +1357,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		[dispatch],
 	);
 
+	const setConsentDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -1344,11 +1390,15 @@ const OsmVectorMapScreen: React.FC = () => {
 					onCarModeChange={setCarModeDispatch}
 					onToggleFullscreen={handleToggleFullscreen}
 					onShowControlsHint={openControlsHintModal}
+					onRevokeConsent={() => {
+						setConsentDispatch(false);
+						close();
+					}}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, carMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, setCarModeDispatch, handleToggleFullscreen, openControlsHintModal]);
+	}, [show, close, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, carMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, setCarModeDispatch, setConsentDispatch, handleToggleFullscreen, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
@@ -1405,15 +1455,27 @@ const OsmVectorMapScreen: React.FC = () => {
 			)}
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<MyMap
-						ref={myMapRef}
-						initialCenter={centerPosition}
-						initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
-						loadingText={translate(TranslationKeys.loading_vector_map)}
-						onMessage={handleMessage}
-					/>
+					{osmConsent ? (
+						<MyMap
+							ref={myMapRef}
+							initialCenter={centerPosition}
+							initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
+							loadingText={translate(TranslationKeys.loading_vector_map)}
+							onMessage={handleMessage}
+						/>
+					) : (
+						<ScrollView
+							contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+							style={{ flex: 1, backgroundColor: theme.screen.background }}
+						>
+							<OsmConsentContent
+								onConsent={() => setConsentDispatch(true)}
+								theme={theme}
+							/>
+						</ScrollView>
+					)}
 
-					{!isFullscreen && (gameMode ? (
+					{osmConsent && !isFullscreen && (gameMode ? (
 						<>
 							{/* Vehicle overlay – airplane centered on screen */}
 							<View style={styles.vehicleOverlay} pointerEvents="none">
