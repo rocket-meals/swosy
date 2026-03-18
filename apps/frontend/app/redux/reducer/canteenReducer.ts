@@ -1,8 +1,8 @@
-import { CLEAR_CANTEENS, DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_BUILDINGS, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEEN_FEEDBACK_LABELS, SET_CANTEENS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_ORGANISATIONS, SET_SELECTED_CANTEEN, SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
+import { CLEAR_CANTEENS, DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_BUILDINGS, SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEEN_FEEDBACK_LABELS, SET_CANTEENS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_ORGANISATIONS, SET_SELECTED_CANTEEN, SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
 
 const initialState = {
 	canteens: [],
-	buildings: [],
+	buildingsDict: {},
 	buildingsOrganizations: [],
 	organisations: [],
 	selectedCanteen: null,
@@ -23,9 +23,24 @@ const canteensReducer = (state = initialState, actions: any) => {
 			};
 		}
 		case SET_BUILDINGS: {
+			const payload = actions.payload;
+			const buildingsDict = Array.isArray(payload)
+				? payload.reduce((acc: Record<string, any>, building: any) => {
+						if (building?.id) {
+							acc[String(building.id)] = building;
+						}
+						return acc;
+				  }, {})
+				: (payload ?? {});
 			return {
 				...state,
-				buildings: actions.payload,
+				buildingsDict,
+			};
+		}
+		case SET_BUILDINGS_DICT: {
+			return {
+				...state,
+				buildingsDict: actions.payload ?? {},
 			};
 		}
 		case SET_BUILDINGS_ORGANIZATIONS: {

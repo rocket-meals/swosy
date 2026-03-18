@@ -32,6 +32,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     filesUnreferencedDiskSpace: 0,
     filesDeletedAmount: 0,
     filesDeletedDiskSpace: 0,
+    filesDeletedErrorAmount: 0,
   };
 
   constructor() {
@@ -247,9 +248,14 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             let fileAge = Date.now() - new Date(fileCreatedAt).getTime();
             if (fileAge >= this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]) {
               await context.logger.appendLog('Deleting file: ' + fileId);
-              await filesHelper.deleteOne(fileId);
-              this.statistics.filesDeletedAmount++;
-              this.statistics.filesDeletedDiskSpace += fileSizeAsNumber;
+              try {
+                await filesHelper.deleteOne(fileId);
+                this.statistics.filesDeletedAmount++;
+                this.statistics.filesDeletedDiskSpace += fileSizeAsNumber;
+              } catch (deleteError) {
+                this.statistics.filesDeletedErrorAmount++;
+                await context.logger.appendLog(`Error deleting file: ${fileId} - ${deleteError instanceof Error ? deleteError.message : String(deleteError)}`);
+              }
             }
           }
         }
@@ -264,6 +270,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
       await context.logger.appendLog(`- Files unreferenced disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesUnreferencedDiskSpace)}`);
       await context.logger.appendLog(`- Files deleted: ${this.statistics.filesDeletedAmount}`);
       await context.logger.appendLog(`- Files deleted disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesDeletedDiskSpace)}`);
+      await context.logger.appendLog(`- Files deleted errors: ${this.statistics.filesDeletedErrorAmount}`);
       await context.logger.appendLog(`- Finished file cleanup job.`);
 
       return context.logger.getFinalLogWithStateAndParams({

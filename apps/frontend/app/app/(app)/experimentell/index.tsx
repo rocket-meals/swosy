@@ -15,20 +15,20 @@ const Index = () => {
 	useSetPageTitle(TranslationKeys.experimentell);
 	const { translate } = useLanguage();
     const { theme } = useTheme();
-    const { buildings } = useAppSelector((state) => state.canteenReducer);
+    const { buildingsDict } = useAppSelector((state) => state.canteenReducer);
     const { primaryColor } = useAppSelector((state) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
 
 	const buildingPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
-			const building = buildings.find(b => b.id === selectedCanteen.building);
+			const building = buildingsDict[String(selectedCanteen.building)];
 			const coords = (building as any)?.coordinates?.coordinates;
 			if (coords && coords.length === 2) {
 				return { lat: Number(coords[1]), lng: Number(coords[0]) };
 			}
 		}
 		return null;
-	}, [selectedCanteen, buildings]);
+	}, [selectedCanteen, buildingsDict]);
 
 	const listItems = [
 		{

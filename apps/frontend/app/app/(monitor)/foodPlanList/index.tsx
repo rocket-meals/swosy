@@ -9,7 +9,7 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { AntDesign, Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_PLAN } from '@/redux/Types/types';
+import { SET_FOOD_ATTRIBUTES_DICT, SET_FOOD_PLAN } from '@/redux/Types/types';
 import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
 import { isWeb } from '@/constants/Constants';
 import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
@@ -35,7 +35,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const foodAttributesHelper = new FoodAttributesHelper();
-	const { foodAttributes: initialFoodAttributes } = useAppSelector((state) => state.foodAttributes);
+	const { foodAttributesDict: initialFoodAttributes } = useAppSelector((state) => state.foodAttributes);
 	const [foodAttributes, setFoodAttributes] = useState<FoodAttribute[]>();
 	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { foodPlan } = useAppSelector((state) => state.management);
@@ -65,7 +65,7 @@ const Index = () => {
 					},
 					{} as Record<string, DatabaseTypes.FoodsAttributes>
 				);
-				dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
+				console.log('✅ foodAttributes as Dictionary (O(1) Access):', attributesDict);
 				dispatch({ type: SET_FOOD_ATTRIBUTES_DICT, payload: attributesDict });
 			}
 		} catch (error) {
@@ -74,9 +74,9 @@ const Index = () => {
 	};
 
 	useEffect(() => {
-		if (initialFoodAttributes.length > 0) {
+		if (Object.keys(initialFoodAttributes).length > 0) {
 			setFoodAttributes(
-				initialFoodAttributes.map((attr: any, index: number) => {
+				Object.values(initialFoodAttributes).map((attr: any, index: number) => {
 					const title = attr?.translations ? getFoodAttributesTranslation(attr?.translations, language) : '';
 					return {
 						id: attr?.id,

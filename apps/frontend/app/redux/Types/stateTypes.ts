@@ -29,7 +29,7 @@ export type CanteenWithImage = DatabaseTypes.Canteens & {
 
 export type CanteensState = {
 	canteens: CanteenWithImage[];
-	buildings: DatabaseTypes.Buildings[];
+	buildingsDict: Record<string, DatabaseTypes.Buildings>;
 	buildingsOrganizations: DatabaseTypes.BuildingsOrganizations[];
 	organisations: DatabaseTypes.Organizations[];
 	selectedCanteen: CanteenWithImage | null;
@@ -96,7 +96,6 @@ type ExtendedPopUpEvents = {
 
 export type FoodAttributesState = {
 	foodAttributeGroups: DatabaseTypes.FoodsAttributesGroups[];
-	foodAttributes: DatabaseTypes.FoodsAttributes[];
 	foodAttributesDict: Record<string, DatabaseTypes.FoodsAttributes>;
 }
 
