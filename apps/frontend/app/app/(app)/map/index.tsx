@@ -677,9 +677,9 @@ function createBuildingMarkerSvg(
 			line2 = label.slice(mid);
 		}
 		if (line1 !== null && line2 !== null) {
-			textEl = `<text text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
-				`<tspan x="${cx}" dy="${cy - 6}">${line1}</tspan>` +
-				`<tspan x="${cx}" dy="13">${line2}</tspan>` +
+			textEl = `<text x="${cx}" text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
+				`<tspan x="${cx}" text-anchor="middle" dy="${cy - 6}">${line1}</tspan>` +
+				`<tspan x="${cx}" text-anchor="middle" dy="13">${line2}</tspan>` +
 				`</text>`;
 		} else {
 			textEl = `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`;
