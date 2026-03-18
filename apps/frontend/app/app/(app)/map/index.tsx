@@ -664,13 +664,22 @@ function createBuildingMarkerSvg(
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	let textEl = '';
 	if (label) {
-		if (label.length >= 4) {
+		const spaceIdx = label.indexOf(' ');
+		const splitAtSpace = spaceIdx > 0 && spaceIdx < label.length - 1;
+		let line1: string | null = null;
+		let line2: string | null = null;
+		if (splitAtSpace) {
+			line1 = label.slice(0, spaceIdx);
+			line2 = label.slice(spaceIdx + 1);
+		} else if (label.length >= 4) {
 			const mid = Math.ceil(label.length / 2);
-			const line1 = label.slice(0, mid);
-			const line2 = label.slice(mid);
-			textEl = `<text text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
-				`<tspan x="${cx}" dy="${cy - 6}">${line1}</tspan>` +
-				`<tspan x="${cx}" dy="13">${line2}</tspan>` +
+			line1 = label.slice(0, mid);
+			line2 = label.slice(mid);
+		}
+		if (line1 !== null && line2 !== null) {
+			textEl = `<text x="${cx}" text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
+				`<tspan x="${cx}" text-anchor="middle" dy="${cy - 6}">${line1}</tspan>` +
+				`<tspan x="${cx}" text-anchor="middle" dy="13">${line2}</tspan>` +
 				`</text>`;
 		} else {
 			textEl = `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`;

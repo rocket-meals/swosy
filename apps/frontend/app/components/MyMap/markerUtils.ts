@@ -9,7 +9,7 @@ export const getDefaultIconAnchor = (width: number, height: number): PointTuple 
  * Derives a short label from a building alias when no explicit marker_label or external_identifier is set.
  * Rules (in priority order):
  *  1. If alias is ≤ 4 chars → use as-is
- *  2. If alias contains a number → use that number
+ *  2. If alias contains a number (optionally followed by letters, e.g. "5A") → use that number+letter combo
  *  3. If alias has multiple words → use initials of each word
  *  4. If alias is a single word → use first 4 chars
  *  5. Fallback → "?"
@@ -19,7 +19,7 @@ export function getMarkerLabelFromBuildingAlias(alias?: string | null): string {
 	const trimmed = alias.trim();
 	if (!trimmed) return '?';
 	if (trimmed.length <= 4) return trimmed;
-	const numberMatch = trimmed.match(/\d+/);
+	const numberMatch = trimmed.match(/\d+[A-Za-z]*/);
 	if (numberMatch) return numberMatch[0];
 	const words = trimmed.split(/\s+/).filter((w) => w.length > 0);
 	if (words.length > 1) return words.map((w) => w[0].toUpperCase()).join('');
