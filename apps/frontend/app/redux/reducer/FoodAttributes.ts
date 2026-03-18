@@ -1,8 +1,7 @@
-import { CLEAR_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTES_DICT } from '@/redux/Types/types';
+import { CLEAR_FOOD_ATTRIBUTES, SET_FOOD_ATTRIBUTE_GROUPS, SET_FOOD_ATTRIBUTES_DICT } from '@/redux/Types/types';
 
 const initialState = {
 	foodAttributeGroups: [],
-	foodAttributes: [],
 	foodAttributesDict: {},
 };
 
@@ -14,12 +13,7 @@ const foodAttributesReducer = (state = initialState, actions: any) => {
 				foodAttributeGroups: actions.payload,
 			};
 		}
-		case SET_FOOD_ATTRIBUTES: {
-			return {
-				...state,
-				foodAttributes: actions.payload,
-			};
-		}
+
 		case SET_FOOD_ATTRIBUTES_DICT: {
 			return {
 				...state,
