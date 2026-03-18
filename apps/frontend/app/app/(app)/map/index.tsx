@@ -655,7 +655,7 @@ function createBuildingMarkerSvg(
 	const cy = size / 2;
 	const r = cx - 2;
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
-	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
+	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || getContrastColor(fillColor);
 	let rawLabel: string | null = markerLabel || externalIdentifier || null;
 	if (!rawLabel && alias) {
 		rawLabel = getMarkerLabelFromBuildingAlias(alias);
