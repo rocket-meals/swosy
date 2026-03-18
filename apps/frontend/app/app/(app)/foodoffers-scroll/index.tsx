@@ -44,6 +44,7 @@ import useUtilizationModal from '@/hooks/useUtilizationModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import IconButton from '@/components/UI/IconButton';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
+import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -82,6 +83,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { openActiveModal, activePopupEvent } = usePopupEventModal();
 	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 	const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
+	const { openDatePickerModal } = useMyScrollviewModalDatePicker();
 	const smartReadableDate = useSmartReadableDateMethod();
 
 	// Set Page Title
@@ -145,7 +147,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	);
 
 	const openSheet = useCallback(
-		(sheet: 'menu' | 'sort' | 'canteen' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+		(sheet: 'menu' | 'sort' | 'canteen' | 'calendar' | keyof typeof SHEET_COMPONENTS, props = {}) => {
 			if (sheet === 'sort') {
 				openFoodofferSortingModal();
 				return;
@@ -156,10 +158,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 				return;
 			}
 
-                        setSelectedSheet(sheet as Exclude<typeof sheet, 'sort' | 'canteen'>);
-                        setSheetProps(props);
+			if (sheet === 'calendar') {
+				openDatePickerModal({ updateGlobal: true });
+				return;
+			}
+
+			setSelectedSheet(sheet as Exclude<typeof sheet, 'sort' | 'canteen' | 'calendar'>);
+			setSheetProps(props);
 		},
-		[openFoodofferSortingModal, openChangeMyCanteenSelectionModal]
+		[openFoodofferSortingModal, openChangeMyCanteenSelectionModal, openDatePickerModal]
 	);
 
 
