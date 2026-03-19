@@ -29,6 +29,7 @@ export interface ServerInfo {
 
 export type AuthProvider = {
 	name: string;
+	label?: string | null;
 	icon?: string | null;
 };
 
@@ -128,7 +129,7 @@ export class ServerAPI {
 
 		const client = this.getPublicClient();
 		const providers = await client.request(readProviders());
-		return providers.map(({ name, icon }) => ({ name, icon }));
+		return providers.map(({ name, label, icon }) => ({ name, label, icon }));
 	}
 
 	static getDemoAuthProviders(): AuthProvider[] {
@@ -192,5 +193,13 @@ export class ServerAPI {
 	static async deleteMe() {
 		const me = await this.getMe();
 		return this.getClient().request(deleteUser(me.id));
+	}
+
+	static async logout() {
+		try {
+			await this.getClient().logout();
+		} catch (err) {
+			console.error('Backend logout failed (local logout will proceed):', err);
+		}
 	}
 }

@@ -162,6 +162,18 @@ services:
       AUTH_GOOGLE_LABEL: "Google"
       AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION: "true"
 
+      AUTH_DFN_DRIVER: "openid"
+      AUTH_DFN_REDIRECT_ALLOW_LIST: "${AUTH_REDIRECT_ALLOW_LIST}"
+      AUTH_DFN_MODE: "session"
+      AUTH_DFN_CLIENT_ID: "${AUTH_DFN_CLIENT_ID}"
+      AUTH_DFN_CLIENT_SECRET: "${AUTH_DFN_CLIENT_SECRET}"
+      AUTH_DFN_ISSUER_URL: "https://oidc-proxy.aai.dfn.de/.well-known/openid-configuration" # https://oidc-proxy.aai.dfn.de/.well-known/openid-confi>
+      AUTH_DFN_IDENTIFIER_KEY: "sub"
+      AUTH_DFN_DEFAULT_ROLE_ID: "${DEFAULT_ROLE_ID}"
+      AUTH_DFN_ICON: "school"
+      AUTH_DFN_LABEL: "Uni/Hochschule"
+      AUTH_DFN_ALLOW_PUBLIC_REGISTRATION: "true"
+
   # The Directus database - postgres with data volume
   # https://docs.directus.io/self-hosted/docker-guide.html#example-docker-compose
   rocket-meals-database:

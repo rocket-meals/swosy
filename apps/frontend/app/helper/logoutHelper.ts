@@ -21,12 +21,14 @@ import {
 } from '@/redux/Types/types';
 import { persistor } from '@/redux/store';
 import { clearChatReadStatus } from '@/helper/chatReadStatus';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 export const performLogout = async (
 	dispatch: Dispatch,
 	router: any
 ) => {
 	try {
+		await ServerAPI.logout();
 		dispatch({ type: ON_LOGOUT });
 		dispatch({ type: CLEAR_CANTEENS });
 		dispatch({ type: CLEAR_CAMPUSES });
