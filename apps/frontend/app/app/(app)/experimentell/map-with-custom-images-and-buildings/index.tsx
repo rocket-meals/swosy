@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MyMap from '@/components/MyMap';
 import { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -87,6 +87,15 @@ const BUILDINGS_3D = [
     },
 ];
 
+type LayerGroup = 'poi' | 'parking' | 'transit' | 'roadLabels';
+
+const LAYER_TOGGLE_BUTTONS: { group: LayerGroup; label: string; emoji: string }[] = [
+    { group: 'poi',        label: 'Shops/POI',   emoji: '🏪' },
+    { group: 'parking',    label: 'Parking',     emoji: '🅿️' },
+    { group: 'transit',    label: 'Bus/Transit', emoji: '🚌' },
+    { group: 'roadLabels', label: 'Road names',  emoji: '🛣️' },
+];
+
 type Props = {
     onExperimentalClickOnBuildings?: (properties: object) => void;
 };
@@ -101,6 +110,14 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
     const [modelScale, setModelScale] = useState(GLB_MODEL_SCALE);
     const onBuildingClickRef = useRef(onExperimentalClickOnBuildings);
     onBuildingClickRef.current = onExperimentalClickOnBuildings;
+
+    const [selectedBuilding, setSelectedBuilding] = useState<object | null>(null);
+    const [layerVisibility, setLayerVisibility] = useState<Record<LayerGroup, boolean>>({
+        poi: true,
+        parking: true,
+        transit: true,
+        roadLabels: true,
+    });
 
     const sendGlbIfReady = useCallback(() => {
         if (mapReadyRef.current && glbUrlRef.current) {
@@ -161,11 +178,14 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                 maxPitch: MAX_PITCH,
                 imageOverlays: IMAGE_OVERLAYS,
                 buildings3d: BUILDINGS_3D,
-                enableBuildingClick: !!onBuildingClickRef.current,
+                enableBuildingClick: true,
             });
             sendGlbIfReady();
         } else if (msg.tag === 'BuildingClicked' && msg.properties) {
+            setSelectedBuilding(msg.properties);
             onBuildingClickRef.current?.(msg.properties);
+        } else if (msg.tag === 'MapTapped') {
+            setSelectedBuilding(null);
         }
     }, [sendGlbIfReady]);
 
@@ -179,6 +199,14 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
         }
     }, []);
 
+    const handleLayerToggle = useCallback((group: LayerGroup) => {
+        setLayerVisibility(prev => {
+            const newVisible = !prev[group];
+            mapRef.current?.sendToMap({ setLayerGroupVisibility: { group, visible: newVisible } });
+            return { ...prev, [group]: newVisible };
+        });
+    }, []);
+
     return (
         <View style={styles.container}>
             <MyMap
@@ -188,6 +216,45 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                 loadingText="Loading map…"
                 onMessage={handleMessage}
             />
+
+            {/* Layer toggle buttons */}
+            <View style={styles.layerToggles}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.layerTogglesContent}>
+                    {LAYER_TOGGLE_BUTTONS.map(({ group, label, emoji }) => {
+                        const active = layerVisibility[group];
+                        return (
+                            <Pressable
+                                key={group}
+                                style={[styles.layerToggleButton, !active && styles.layerToggleButtonOff]}
+                                onPress={() => handleLayerToggle(group)}
+                            >
+                                <Text style={styles.layerToggleEmoji}>{emoji}</Text>
+                                <Text style={[styles.layerToggleLabel, !active && styles.layerToggleLabelOff]}>{label}</Text>
+                            </Pressable>
+                        );
+                    })}
+                </ScrollView>
+            </View>
+
+            {/* Selected building info */}
+            {selectedBuilding != null && (
+                <View style={styles.buildingInfo}>
+                    <Text style={styles.buildingInfoTitle}>Building</Text>
+                    <ScrollView style={styles.buildingInfoScroll}>
+                        {Object.entries(selectedBuilding).map(([k, v]) => (
+                            <Text key={k} style={styles.buildingInfoRow}>
+                                <Text style={styles.buildingInfoKey}>{k}: </Text>
+                                {String(v)}
+                            </Text>
+                        ))}
+                    </ScrollView>
+                    <Pressable style={styles.buildingInfoClose} onPress={() => setSelectedBuilding(null)}>
+                        <Text style={styles.buildingInfoCloseText}>✕</Text>
+                    </Pressable>
+                </View>
+            )}
+
+            {/* Scale controls */}
             <View style={styles.scaleControls}>
                 <Pressable style={styles.scaleButton} onPress={() => handleScaleChange(SCALE_STEP)}>
                     <Text style={styles.scaleButtonText}>＋</Text>
@@ -205,6 +272,91 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    // Layer toggle bar
+    layerToggles: {
+        position: 'absolute',
+        top: 12,
+        left: 0,
+        right: 0,
+    },
+    layerTogglesContent: {
+        paddingHorizontal: 12,
+        gap: 8,
+    },
+    layerToggleButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        backgroundColor: 'rgba(255,255,255,0.92)',
+        borderRadius: 20,
+        paddingHorizontal: 12,
+        paddingVertical: 7,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.18,
+        shadowRadius: 3,
+        elevation: 4,
+    },
+    layerToggleButtonOff: {
+        backgroundColor: 'rgba(180,180,180,0.75)',
+    },
+    layerToggleEmoji: {
+        fontSize: 15,
+    },
+    layerToggleLabel: {
+        fontSize: 12,
+        color: '#222',
+        fontWeight: '600',
+    },
+    layerToggleLabelOff: {
+        color: '#666',
+        fontWeight: '400',
+    },
+    // Building info panel
+    buildingInfo: {
+        position: 'absolute',
+        bottom: 120,
+        left: 16,
+        right: 72,
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        borderRadius: 12,
+        padding: 12,
+        maxHeight: 180,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.22,
+        shadowRadius: 6,
+        elevation: 6,
+    },
+    buildingInfoTitle: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#333',
+        marginBottom: 4,
+    },
+    buildingInfoScroll: {
+        maxHeight: 110,
+    },
+    buildingInfoRow: {
+        fontSize: 11,
+        color: '#555',
+        lineHeight: 18,
+    },
+    buildingInfoKey: {
+        fontWeight: '600',
+        color: '#222',
+    },
+    buildingInfoClose: {
+        position: 'absolute',
+        top: 8,
+        right: 10,
+        padding: 4,
+    },
+    buildingInfoCloseText: {
+        fontSize: 14,
+        color: '#888',
+    },
+    // Scale controls
     scaleControls: {
         position: 'absolute',
         bottom: 32,
@@ -244,3 +396,4 @@ const styles = StyleSheet.create({
 });
 
 export default MapWithCustomImagesAndBuildings;
+
