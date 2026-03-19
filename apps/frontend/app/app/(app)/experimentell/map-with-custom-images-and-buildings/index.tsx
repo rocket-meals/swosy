@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import MyMap from '@/components/MyMap';
 import { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -13,10 +13,15 @@ const DEMO_PITCH = 55;
 const MIN_PITCH = 10;
 const MAX_PITCH = 85;
 
-// Airplane model placed slightly north-east of the demo center, 50 m above ground
-const GLB_MODEL_POSITION = { lng: DEMO_CENTER.lng + 0.001, lat: DEMO_CENTER.lat + 0.001, altitude: 50 };
+// Airplane model placed slightly north-east of the demo center, 100 m above ground
+// (raised from 50 m to stay clearly above custom buildings which are up to 50 m tall)
+const GLB_MODEL_POSITION = { lng: DEMO_CENTER.lng + 0.001, lat: DEMO_CENTER.lat + 0.001, altitude: 100 };
 // Scale in meters – the model will appear ~30 m in size
 const GLB_MODEL_SCALE = 30;
+
+const SCALE_STEP = 10;
+const SCALE_MIN = 5;
+const SCALE_MAX = 300;
 
 /**
  * Image overlay: 200 m × 200 m rectangle centered on demo location.
@@ -82,12 +87,20 @@ const BUILDINGS_3D = [
     },
 ];
 
-const MapWithCustomImagesAndBuildings = () => {
+type Props = {
+    onExperimentalClickOnBuildings?: (properties: object) => void;
+};
+
+const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Props) => {
     useSetPageTitle('Map – Custom Images & Buildings');
 
     const mapRef = useRef<MyMapHandle>(null);
     const mapReadyRef = useRef(false);
     const glbUrlRef = useRef<string | null>(null);
+    const modelScaleRef = useRef(GLB_MODEL_SCALE);
+    const [modelScale, setModelScale] = useState(GLB_MODEL_SCALE);
+    const onBuildingClickRef = useRef(onExperimentalClickOnBuildings);
+    onBuildingClickRef.current = onExperimentalClickOnBuildings;
 
     const sendGlbIfReady = useCallback(() => {
         if (mapReadyRef.current && glbUrlRef.current) {
@@ -96,7 +109,7 @@ const MapWithCustomImagesAndBuildings = () => {
                     id: 'airplane',
                     url: glbUrlRef.current,
                     position: GLB_MODEL_POSITION,
-                    scale: GLB_MODEL_SCALE,
+                    scale: modelScaleRef.current,
                     rotateX: Math.PI / 2,
                     rotateY: 0,
                     rotateZ: 0,
@@ -136,7 +149,7 @@ const MapWithCustomImagesAndBuildings = () => {
     }, [sendGlbIfReady]);
 
     const handleMessage = useCallback((data: object) => {
-        const msg = data as { tag?: string };
+        const msg = data as { tag?: string; properties?: object };
         if (msg.tag === 'MapComponentMounted') {
             mapReadyRef.current = true;
             mapRef.current?.sendToMap({
@@ -148,10 +161,23 @@ const MapWithCustomImagesAndBuildings = () => {
                 maxPitch: MAX_PITCH,
                 imageOverlays: IMAGE_OVERLAYS,
                 buildings3d: BUILDINGS_3D,
+                enableBuildingClick: !!onBuildingClickRef.current,
             });
             sendGlbIfReady();
+        } else if (msg.tag === 'BuildingClicked' && msg.properties) {
+            onBuildingClickRef.current?.(msg.properties);
         }
     }, [sendGlbIfReady]);
+
+    const handleScaleChange = useCallback((delta: number) => {
+        const newScale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, modelScaleRef.current + delta));
+        if (newScale === modelScaleRef.current) return;
+        modelScaleRef.current = newScale;
+        setModelScale(newScale);
+        if (mapReadyRef.current) {
+            mapRef.current?.sendToMap({ updateGlbModelScale: { id: 'airplane', scale: newScale } });
+        }
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -162,6 +188,15 @@ const MapWithCustomImagesAndBuildings = () => {
                 loadingText="Loading map…"
                 onMessage={handleMessage}
             />
+            <View style={styles.scaleControls}>
+                <Pressable style={styles.scaleButton} onPress={() => handleScaleChange(SCALE_STEP)}>
+                    <Text style={styles.scaleButtonText}>＋</Text>
+                </Pressable>
+                <Text style={styles.scaleLabel}>{modelScale} m</Text>
+                <Pressable style={styles.scaleButton} onPress={() => handleScaleChange(-SCALE_STEP)}>
+                    <Text style={styles.scaleButtonText}>－</Text>
+                </Pressable>
+            </View>
         </View>
     );
 };
@@ -169,6 +204,42 @@ const MapWithCustomImagesAndBuildings = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    scaleControls: {
+        position: 'absolute',
+        bottom: 32,
+        right: 16,
+        alignItems: 'center',
+        gap: 6,
+    },
+    scaleButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(255,255,255,0.92)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
+    },
+    scaleButtonText: {
+        fontSize: 22,
+        lineHeight: 26,
+        color: '#333',
+        fontWeight: '600',
+    },
+    scaleLabel: {
+        fontSize: 12,
+        color: '#fff',
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+        overflow: 'hidden',
+        textAlign: 'center',
     },
 });
 
