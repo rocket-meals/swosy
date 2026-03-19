@@ -1,13 +1,22 @@
-import React, { useCallback, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import MyMap from '@/components/MyMap';
 import { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // Demo center: FAU Erlangen campus area
 const DEMO_CENTER = { lat: 49.5977, lng: 11.0036 };
 const DEMO_ZOOM = 17;
 const DEMO_PITCH = 55;
+const MIN_PITCH = 10;
+const MAX_PITCH = 85;
+
+// Airplane model placed slightly north-east of the demo center, 50 m above ground
+const GLB_MODEL_POSITION = { lng: DEMO_CENTER.lng + 0.001, lat: DEMO_CENTER.lat + 0.001, altitude: 50 };
+// Scale in meters – the model will appear ~30 m in size
+const GLB_MODEL_SCALE = 30;
 
 /**
  * Image overlay: 200 m × 200 m rectangle centered on demo location.
@@ -77,20 +86,72 @@ const MapWithCustomImagesAndBuildings = () => {
     useSetPageTitle('Map – Custom Images & Buildings');
 
     const mapRef = useRef<MyMapHandle>(null);
+    const mapReadyRef = useRef(false);
+    const glbUrlRef = useRef<string | null>(null);
+
+    const sendGlbIfReady = useCallback(() => {
+        if (mapReadyRef.current && glbUrlRef.current) {
+            mapRef.current?.sendToMap({
+                glbModels: [{
+                    id: 'airplane',
+                    url: glbUrlRef.current,
+                    position: GLB_MODEL_POSITION,
+                    scale: GLB_MODEL_SCALE,
+                    rotateX: Math.PI / 2,
+                    rotateY: 0,
+                    rotateZ: 0,
+                }],
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+        const loadGlb = async () => {
+            try {
+                const asset = Asset.fromModule(require('@/assets/3dmodels/airplane.glb'));
+                await asset.downloadAsync();
+                let url: string;
+                if (Platform.OS === 'web') {
+                    url = asset.uri;
+                } else {
+                    if (!asset.localUri) throw new Error('Asset localUri is undefined after downloadAsync');
+                    const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+                        encoding: FileSystem.EncodingType.Base64,
+                    });
+                    url = `data:model/gltf-binary;base64,${base64}`;
+                }
+                if (isMounted) {
+                    glbUrlRef.current = url;
+                    sendGlbIfReady();
+                }
+            } catch (e) {
+                console.warn('Failed to load airplane.glb. Ensure the asset exists at @/assets/3dmodels/airplane.glb:', e);
+            }
+        };
+        loadGlb();
+        return () => {
+            isMounted = false;
+        };
+    }, [sendGlbIfReady]);
 
     const handleMessage = useCallback((data: object) => {
         const msg = data as { tag?: string };
         if (msg.tag === 'MapComponentMounted') {
+            mapReadyRef.current = true;
             mapRef.current?.sendToMap({
                 mapCenterPosition: DEMO_CENTER,
                 zoom: DEMO_ZOOM,
                 pitch: DEMO_PITCH,
                 animate: false,
+                minPitch: MIN_PITCH,
+                maxPitch: MAX_PITCH,
                 imageOverlays: IMAGE_OVERLAYS,
                 buildings3d: BUILDINGS_3D,
             });
+            sendGlbIfReady();
         }
-    }, []);
+    }, [sendGlbIfReady]);
 
     return (
         <View style={styles.container}>
