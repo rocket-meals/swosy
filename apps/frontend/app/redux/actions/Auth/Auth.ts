@@ -29,6 +29,7 @@ export interface ServerInfo {
 
 export type AuthProvider = {
 	name: string;
+	label?: string | null;
 	icon?: string | null;
 };
 
@@ -128,7 +129,7 @@ export class ServerAPI {
 
 		const client = this.getPublicClient();
 		const providers = await client.request(readProviders());
-		return providers.map(({ name, icon }) => ({ name, icon }));
+		return providers.map(({ name, label, icon }) => ({ name, label, icon }));
 	}
 
 	static getDemoAuthProviders(): AuthProvider[] {

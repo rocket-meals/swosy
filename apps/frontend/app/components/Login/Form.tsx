@@ -120,7 +120,7 @@ const LoginForm: React.FC<FormProps> = ({ openSheet, onSuccess, openAttentionShe
 								<View style={{ ...styles.leftIcon, backgroundColor: primaryColor }}>
 									<MaterialCommunityIcons name={provider?.icon} size={22} color={contrastColor} />
 								</View>
-								<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{`${translate(TranslationKeys.sign_in_with)}: ${provider?.name?.charAt(0)?.toUpperCase() + provider?.name?.slice(1)?.toLowerCase()}`}</Text>
+								<Text style={{ ...styles.buttonLabel, color: theme.login.text }}>{`${translate(TranslationKeys.sign_in_with)}: ${provider?.label || provider?.name?.charAt(0)?.toUpperCase() + provider?.name?.slice(1)?.toLowerCase()}`}</Text>
 								<View style={{ width: 58 }} />
 							</TouchableOpacity>
 						))}
