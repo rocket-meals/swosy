@@ -193,4 +193,12 @@ export class ServerAPI {
 		const me = await this.getMe();
 		return this.getClient().request(deleteUser(me.id));
 	}
+
+	static async logout() {
+		try {
+			await this.getClient().logout();
+		} catch (err) {
+			console.error('Backend logout failed (local logout will proceed):', err);
+		}
+	}
 }
