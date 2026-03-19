@@ -40,10 +40,11 @@ export const handleNativeLogin = async (loginUrl: string, redirectUrl: string, c
 		const { browserPackage } = await getAndroidPreferredBrowserPackageOption();
 		result = await WebBrowser.openAuthSessionAsync(loginUrl, redirectUrl, {
 			browserPackage,
+			preferEphemeralSession: true,
 		});
 	} else {
 		result = await WebBrowser.openAuthSessionAsync(loginUrl, redirectUrl, {
-			preferEphemeralSession: false,
+			preferEphemeralSession: true,
 		});
 	}
 
