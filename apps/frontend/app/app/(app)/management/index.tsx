@@ -150,6 +150,19 @@ const Index = () => {
                                                 groupPosition="single"
                                         />
                                 </View>
+
+                                <SettingsGroupTitle>{translate(TranslationKeys.public_links)}</SettingsGroupTitle>
+                                <View style={styles.groupContainer}>
+                                        <SettingsList
+                                                leftIcon={<MaterialCommunityIcons name="comment-edit" size={24} />}
+                                                label={translate(TranslationKeys.rueckmeldung_geben)}
+                                                rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                onPress={() => {
+                                                        router.navigate('/rueckmeldung');
+                                                }}
+                                                groupPosition="single"
+                                        />
+                                </View>
                         </View>
                 </ScrollView>
         );

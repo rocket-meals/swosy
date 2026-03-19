@@ -758,6 +758,14 @@ export default function Layout() {
 				/>
 
 				<Drawer.Screen
+					name="rueckmeldung/index"
+					options={{
+						title: translate(TranslationKeys.rueckmeldung_geben),
+						header: () => <CustomStackHeader label={translate(TranslationKeys.rueckmeldung_geben)} key={'rueckmeldung_geben'} />,
+					}}
+				/>
+
+				<Drawer.Screen
 					name="support-ticket"
 					options={{
 						title: 'Support Ticket',
