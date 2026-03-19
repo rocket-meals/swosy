@@ -6,11 +6,9 @@ const preferInkognitoMode = true;
 
 export const handleWebLogin = async (loginUrl: string, redirectUrl: string, codeVerifier: string, getToken: (codeVerifier: string, code: string) => void) => {
 	const WEB_CHECK_INTERVAL = 25;
-	const windowFeatures = preferInkognitoMode
-		? 'width=500,height=600,noopener,noreferrer'
-		: 'width=500,height=600';
 
 	return new Promise<void>(resolve => {
+		const windowFeatures = 'width=500,height=600';
 		const authWindow = window.open(loginUrl, '_blank', windowFeatures);
 		const authCheckInterval = setInterval(() => {
 			if (authWindow) {
