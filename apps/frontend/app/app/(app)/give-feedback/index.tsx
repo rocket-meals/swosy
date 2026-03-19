@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -9,9 +9,32 @@ import SettingsList from '@/components/SettingsList';
 import { MaterialIcons, Octicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
-import styles from './styles';
 
-const Rueckmeldung = () => {
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	content: {
+		width: '100%',
+		height: '100%',
+		padding: 20,
+	},
+	heading: {
+		fontSize: 24,
+		fontFamily: 'Poppins_700Bold',
+		marginVertical: 10,
+	},
+	description: {
+		fontSize: 16,
+		fontFamily: 'Poppins_400Regular',
+		marginBottom: 10,
+	},
+	groupContainer: {
+		marginBottom: 20,
+	},
+});
+
+const GiveFeedback = () => {
 	useSetPageTitle(TranslationKeys.rueckmeldung_geben);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
@@ -20,10 +43,7 @@ const Rueckmeldung = () => {
 	return (
 		<ScrollView
 			style={{ ...styles.container, backgroundColor: theme.screen.background }}
-			contentContainerStyle={{
-				...styles.contentContainer,
-				backgroundColor: theme.screen.background,
-			}}
+			contentContainerStyle={{ backgroundColor: theme.screen.background }}
 		>
 			<View style={styles.content}>
 				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.rueckmeldung_geben)}</Text>
@@ -49,4 +69,4 @@ const Rueckmeldung = () => {
 	);
 };
 
-export default Rueckmeldung;
+export default GiveFeedback;

@@ -158,7 +158,7 @@ const Index = () => {
                                                 label={translate(TranslationKeys.rueckmeldung_geben)}
                                                 rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
                                                 onPress={() => {
-                                                        router.navigate('/rueckmeldung');
+                                                        router.navigate('/give-feedback');
                                                 }}
                                                 groupPosition="single"
                                         />

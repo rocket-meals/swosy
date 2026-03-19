@@ -758,7 +758,7 @@ export default function Layout() {
 				/>
 
 				<Drawer.Screen
-					name="rueckmeldung/index"
+					name="give-feedback/index"
 					options={{
 						title: translate(TranslationKeys.rueckmeldung_geben),
 						header: () => <CustomStackHeader label={translate(TranslationKeys.rueckmeldung_geben)} key={'rueckmeldung_geben'} />,
