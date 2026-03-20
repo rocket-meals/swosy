@@ -4,6 +4,27 @@ export type PoiSubtype = {
     label: string;
 };
 
+// All icon keys from ICON_EMOJI_MAP that belong to the "barriers" group.
+// When the barriers layer-group toggle is turned off, all of these are removed
+// from the MapLibre image registry so the emoji markers disappear.
+export const BARRIER_ICON_KEYS: string[] = [
+    'gate',
+    'bollard',
+    'cycle_barrier',
+    'lift_gate',
+    'sally_port',
+    'swing_gate',
+    'jersey_barrier',
+    'debris',
+    'kissing_gate',
+    'turnstile',
+    'full-height_turnstile',
+    'stile',
+    'cattle_grid',
+    'height_restrictor',
+    'log',
+];
+
 export const POI_SUBTYPES: PoiSubtype[] = [
     { key: 'recycling', emoji: '♻️', label: 'Recycling' },
     { key: 'waste_basket', emoji: '🗑️', label: 'Mülleimer' },

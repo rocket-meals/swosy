@@ -69,7 +69,7 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
             />
             <SettingsListBoolean
                 title="Barrieren & Sperren"
-                leftIcon={<EmojiIcon emoji="⛔" />}
+                leftIcon={<EmojiIcon emoji="🚧" />}
                 isEnabled={showSettings.barriers ?? true}
                 onToggle={() => toggle('barriers')}
                 groupPosition="middle"

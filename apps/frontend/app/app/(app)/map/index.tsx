@@ -12,7 +12,7 @@ import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGen
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
-import { POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
+import { BARRIER_ICON_KEYS, POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
@@ -1237,16 +1237,22 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [showSettings]);
 
-	// Send POI icon overrides when POI sub-settings or the main POI toggle changes
+	// Send POI icon overrides when POI sub-settings, the main POI toggle, or the barriers toggle changes
 	useEffect(() => {
 		if (!mapMountedRef.current) return;
 		const poiEnabled = showSettings.poi ?? true;
+		const barriersEnabled = showSettings.barriers ?? true;
 		const overrides: Record<string, string | null> = {};
 		if (poiEnabled) {
 			POI_SUBTYPES.forEach(({ key }) => {
 				if (!(poiSubSettings[key] ?? true)) {
 					overrides[key] = null;
 				}
+			});
+		}
+		if (!barriersEnabled) {
+			BARRIER_ICON_KEYS.forEach((key) => {
+				overrides[key] = null;
 			});
 		}
 		sendToMapRef.current({ poiIconOverrides: overrides });
@@ -1331,14 +1337,20 @@ const OsmVectorMapScreen: React.FC = () => {
 						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
 					}
 				});
-				// Send initial POI icon overrides for disabled sub-types
+				// Send initial POI icon overrides for disabled sub-types and barrier group
 				const poiEnabled = showSettingsRef.current.poi ?? true;
+				const barriersEnabled = showSettingsRef.current.barriers ?? true;
 				const initialPoiOverrides: Record<string, string | null> = {};
 				if (poiEnabled) {
 					POI_SUBTYPES.forEach(({ key }) => {
 						if (!(poiSubSettingsRef.current[key] ?? true)) {
 							initialPoiOverrides[key] = null;
 						}
+					});
+				}
+				if (!barriersEnabled) {
+					BARRIER_ICON_KEYS.forEach((key) => {
+						initialPoiOverrides[key] = null;
 					});
 				}
 				sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
