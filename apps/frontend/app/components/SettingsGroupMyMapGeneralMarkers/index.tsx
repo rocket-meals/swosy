@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import { SET_OSM_VECTOR_MAP_SHOW_SETTINGS } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_POI_SUB_SETTINGS, SET_OSM_VECTOR_MAP_SHOW_SETTINGS } from '@/redux/Types/types';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
+import { POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
 
 const DEFAULT_SHOW_SETTINGS = { poi: true, transit: true, roadNames: true, leisure: true, barriers: true, parking: true };
 
@@ -17,9 +18,17 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
     const showSettings = useAppSelector(
         (state) => ((state.settings as any).osmVectorMapShowSettings ?? DEFAULT_SHOW_SETTINGS) as Record<string, boolean>,
     );
+    const poiSubSettings = useAppSelector(
+        (state) => ((state.settings as any).osmVectorMapPoiSubSettings ?? {}) as Record<string, boolean>,
+    );
+
+    const poiEnabled = showSettings.poi ?? true;
 
     const toggle = (key: string) =>
         dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_SETTINGS, payload: { [key]: !(showSettings[key] ?? true) } });
+
+    const togglePoiSub = (key: string) =>
+        dispatch({ type: SET_OSM_VECTOR_MAP_POI_SUB_SETTINGS, payload: { [key]: !(poiSubSettings[key] ?? true) } });
 
     return (
         <>
@@ -27,10 +36,23 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
             <SettingsListBoolean
                 title="Shops/POI"
                 leftIcon={<EmojiIcon emoji="🏪" />}
-                isEnabled={showSettings.poi ?? true}
+                isEnabled={poiEnabled}
                 onToggle={() => toggle('poi')}
                 groupPosition="top"
             />
+            <View style={!poiEnabled ? styles.subItemsDisabled : undefined}>
+                {POI_SUBTYPES.map((subtype) => (
+                    <SettingsListBoolean
+                        key={subtype.key}
+                        title={subtype.label}
+                        leftIcon={<EmojiIcon emoji={subtype.emoji} />}
+                        isEnabled={poiSubSettings[subtype.key] ?? true}
+                        onToggle={() => togglePoiSub(subtype.key)}
+                        disabled={!poiEnabled}
+                        groupPosition="middle"
+                    />
+                ))}
+            </View>
             <SettingsListBoolean
                 title="Bus/Transit"
                 leftIcon={<EmojiIcon emoji="🚌" />}
@@ -75,5 +97,8 @@ export default SettingsGroupMyMapGeneralMarkers;
 const styles = StyleSheet.create({
     emojiIcon: {
         fontSize: 20,
+    },
+    subItemsDisabled: {
+        opacity: 0.4,
     },
 });

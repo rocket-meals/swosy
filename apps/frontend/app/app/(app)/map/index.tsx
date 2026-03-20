@@ -12,6 +12,7 @@ import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGen
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
+import { POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
@@ -714,6 +715,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const showSettings = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: true, parking: true }) as Record<string, boolean>,
 	);
+	const poiSubSettings = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapPoiSubSettings ?? {}) as Record<string, boolean>,
+	);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -786,6 +790,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	carModeRef.current = carMode;
 	const showSettingsRef = useRef(showSettings);
 	showSettingsRef.current = showSettings;
+	const poiSubSettingsRef = useRef(poiSubSettings);
+	poiSubSettingsRef.current = poiSubSettings;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1231,6 +1237,21 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [showSettings]);
 
+	// Send POI icon overrides when POI sub-settings or the main POI toggle changes
+	useEffect(() => {
+		if (!mapMountedRef.current) return;
+		const poiEnabled = showSettings.poi ?? true;
+		const overrides: Record<string, string | null> = {};
+		if (poiEnabled) {
+			POI_SUBTYPES.forEach(({ key }) => {
+				if (!(poiSubSettings[key] ?? true)) {
+					overrides[key] = null;
+				}
+			});
+		}
+		sendToMapRef.current({ poiIconOverrides: overrides });
+	}, [showSettings, poiSubSettings]);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1310,6 +1331,17 @@ const OsmVectorMapScreen: React.FC = () => {
 						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
 					}
 				});
+				// Send initial POI icon overrides for disabled sub-types
+				const poiEnabled = showSettingsRef.current.poi ?? true;
+				const initialPoiOverrides: Record<string, string | null> = {};
+				if (poiEnabled) {
+					POI_SUBTYPES.forEach(({ key }) => {
+						if (!(poiSubSettingsRef.current[key] ?? true)) {
+							initialPoiOverrides[key] = null;
+						}
+					});
+				}
+				sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
 				addLog('MapComponentMounted');
 				return;
 			}
