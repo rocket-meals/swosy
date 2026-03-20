@@ -714,6 +714,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const showPOI = useAppSelector((state) => (state.settings as any).osmVectorMapShowPOI ?? true);
 	const showTransit = useAppSelector((state) => (state.settings as any).osmVectorMapShowTransit ?? true);
 	const showRoadNames = useAppSelector((state) => (state.settings as any).osmVectorMapShowRoadNames ?? true);
+	const showLeisure = useAppSelector((state) => (state.settings as any).osmVectorMapShowLeisure ?? true);
+	const showBarriers = useAppSelector((state) => (state.settings as any).osmVectorMapShowBarriers ?? true);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -790,6 +792,10 @@ const OsmVectorMapScreen: React.FC = () => {
 	showTransitRef.current = showTransit;
 	const showRoadNamesRef = useRef(showRoadNames);
 	showRoadNamesRef.current = showRoadNames;
+	const showLeisureRef = useRef(showLeisure);
+	showLeisureRef.current = showLeisure;
+	const showBarriersRef = useRef(showBarriers);
+	showBarriersRef.current = showBarriers;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1245,6 +1251,18 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 	}, [showRoadNames]);
 
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group: 'leisure', visible: showLeisure } });
+		}
+	}, [showLeisure]);
+
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group: 'barriers', visible: showBarriers } });
+		}
+	}, [showBarriers]);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1326,6 +1344,12 @@ const OsmVectorMapScreen: React.FC = () => {
 				}
 				if (!showRoadNamesRef.current) {
 					sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: false } });
+				}
+				if (!showLeisureRef.current) {
+					sendToMapRef.current({ setLayerGroupVisibility: { group: 'leisure', visible: false } });
+				}
+				if (!showBarriersRef.current) {
+					sendToMapRef.current({ setLayerGroupVisibility: { group: 'barriers', visible: false } });
 				}
 				addLog('MapComponentMounted');
 				return;

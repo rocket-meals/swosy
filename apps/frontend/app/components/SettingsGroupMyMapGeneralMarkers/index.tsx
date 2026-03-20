@@ -6,6 +6,8 @@ import {
     SET_OSM_VECTOR_MAP_SHOW_POI,
     SET_OSM_VECTOR_MAP_SHOW_TRANSIT,
     SET_OSM_VECTOR_MAP_SHOW_ROAD_NAMES,
+    SET_OSM_VECTOR_MAP_SHOW_LEISURE,
+    SET_OSM_VECTOR_MAP_SHOW_BARRIERS,
 } from '@/redux/Types/types';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
@@ -17,6 +19,8 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
     const showPOI = useAppSelector((state) => (state.settings as any).osmVectorMapShowPOI ?? true);
     const showTransit = useAppSelector((state) => (state.settings as any).osmVectorMapShowTransit ?? true);
     const showRoadNames = useAppSelector((state) => (state.settings as any).osmVectorMapShowRoadNames ?? true);
+    const showLeisure = useAppSelector((state) => (state.settings as any).osmVectorMapShowLeisure ?? true);
+    const showBarriers = useAppSelector((state) => (state.settings as any).osmVectorMapShowBarriers ?? true);
 
     return (
         <>
@@ -33,6 +37,20 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
                 leftIcon={<MaterialCommunityIcons name="bus" size={20} color={theme.screen.icon} />}
                 isEnabled={showTransit}
                 onToggle={() => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_TRANSIT, payload: !showTransit })}
+                groupPosition="middle"
+            />
+            <SettingsListBoolean
+                title="Sport & Freizeit"
+                leftIcon={<MaterialCommunityIcons name="swim" size={20} color={theme.screen.icon} />}
+                isEnabled={showLeisure}
+                onToggle={() => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_LEISURE, payload: !showLeisure })}
+                groupPosition="middle"
+            />
+            <SettingsListBoolean
+                title="Barrieren & Sperren"
+                leftIcon={<MaterialCommunityIcons name="boom-gate" size={20} color={theme.screen.icon} />}
+                isEnabled={showBarriers}
+                onToggle={() => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_BARRIERS, payload: !showBarriers })}
                 groupPosition="middle"
             />
             <SettingsListBoolean
