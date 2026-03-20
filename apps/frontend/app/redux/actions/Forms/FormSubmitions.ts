@@ -26,8 +26,8 @@ export class FormsSubmissionsHelper extends CollectionHelper<DatabaseTypes.FormS
 		}
 
 		const defaultQuery = {
-			// Get all fields and include translations.
-			fields: ['*, translations.*'],
+			// Only fetch the fields needed for the list view; full data is loaded on demand.
+			fields: ['id', 'alias'],
 			// Sort by date_updated (or custom sort if provided).
 			sort: sort || ['date_updated'],
 			// Apply the filters built above.
