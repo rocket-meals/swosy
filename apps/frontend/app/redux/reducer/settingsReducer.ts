@@ -49,6 +49,7 @@ const initialState = {
             roadNames: true,
             leisure: true,
             barriers: true,
+            parking: true,
         } as Record<string, boolean>,
         mapClusterPixelRadius: 60,
         pirateLanguage: false,
