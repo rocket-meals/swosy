@@ -12,7 +12,8 @@ import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGen
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
-import { BARRIER_ICON_KEYS, POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
+import { BARRIER_ICON_KEYS, PARKING_ICON_KEYS, POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
+import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
@@ -713,7 +714,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
 	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
 	const showSettings = useAppSelector(
-		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: true, parking: true }) as Record<string, boolean>,
+		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: false, parking: true }) as Record<string, boolean>,
 	);
 	const poiSubSettings = useAppSelector(
 		(state) => ((state.settings as any).osmVectorMapPoiSubSettings ?? {}) as Record<string, boolean>,
@@ -1237,11 +1238,12 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, [showSettings]);
 
-	// Send POI icon overrides when POI sub-settings, the main POI toggle, or the barriers toggle changes
+	// Send POI icon overrides when POI sub-settings, the main POI toggle, barriers toggle, or parking toggle changes
 	useEffect(() => {
 		if (!mapMountedRef.current) return;
 		const poiEnabled = showSettings.poi ?? true;
-		const barriersEnabled = showSettings.barriers ?? true;
+		const barriersEnabled = showSettings.barriers ?? false;
+		const parkingEnabled = showSettings.parking ?? true;
 		const overrides: Record<string, string | null> = {};
 		if (poiEnabled) {
 			POI_SUBTYPES.forEach(({ key }) => {
@@ -1252,6 +1254,11 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 		if (!barriersEnabled) {
 			BARRIER_ICON_KEYS.forEach((key) => {
+				overrides[key] = null;
+			});
+		}
+		if (!parkingEnabled) {
+			PARKING_ICON_KEYS.forEach((key) => {
 				overrides[key] = null;
 			});
 		}
@@ -1331,15 +1338,18 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (carModeRef.current) {
 					sendToMapRef.current({ carMode: true });
 				}
+				// Send the emoji map so the HTML has no hardcoded emoji data
+				sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
 				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
 				Object.entries(GROUP_MAP).forEach(([key, group]) => {
-					if (!(showSettingsRef.current[key] ?? true)) {
+					if (!(showSettingsRef.current[key] ?? (key === 'barriers' ? false : true))) {
 						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
 					}
 				});
-				// Send initial POI icon overrides for disabled sub-types and barrier group
+				// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
 				const poiEnabled = showSettingsRef.current.poi ?? true;
-				const barriersEnabled = showSettingsRef.current.barriers ?? true;
+				const barriersEnabled = showSettingsRef.current.barriers ?? false;
+				const parkingEnabled = showSettingsRef.current.parking ?? true;
 				const initialPoiOverrides: Record<string, string | null> = {};
 				if (poiEnabled) {
 					POI_SUBTYPES.forEach(({ key }) => {
@@ -1350,6 +1360,11 @@ const OsmVectorMapScreen: React.FC = () => {
 				}
 				if (!barriersEnabled) {
 					BARRIER_ICON_KEYS.forEach((key) => {
+						initialPoiOverrides[key] = null;
+					});
+				}
+				if (!parkingEnabled) {
+					PARKING_ICON_KEYS.forEach((key) => {
 						initialPoiOverrides[key] = null;
 					});
 				}

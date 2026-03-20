@@ -25,6 +25,18 @@ export const BARRIER_ICON_KEYS: string[] = [
     'log',
 ];
 
+// All icon keys from ICON_EMOJI_MAP that belong to the "parking" group.
+// Parking emoji markers are rendered via ICON_EMOJI_MAP just like POI markers,
+// so visibility must be controlled through poiIconOverrides (not setLayerGroupVisibility).
+export const PARKING_ICON_KEYS: string[] = [
+    'bicycle_parking',
+    'motorcycle_parking',
+    'parking',
+    'parking_entrance',
+    'parking_space',
+    'bicycle_rental',
+];
+
 export const POI_SUBTYPES: PoiSubtype[] = [
     { key: 'recycling', emoji: '♻️', label: 'Recycling' },
     { key: 'waste_basket', emoji: '🗑️', label: 'Mülleimer' },
