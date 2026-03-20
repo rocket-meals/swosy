@@ -712,7 +712,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
 	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
 	const showSettings = useAppSelector(
-		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: true }) as Record<string, boolean>,
+		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: true, parking: true }) as Record<string, boolean>,
 	);
 	const showBuildingMarkers = true;
 	const showClusters = true;
@@ -1225,7 +1225,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	// Send layer visibility to the map when settings change and the map is ready
 	useEffect(() => {
 		if (!mapMountedRef.current) return;
-		const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers' };
+		const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
 		Object.entries(GROUP_MAP).forEach(([key, group]) => {
 			sendToMapRef.current({ setLayerGroupVisibility: { group, visible: showSettings[key] ?? true } });
 		});
@@ -1304,7 +1304,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (carModeRef.current) {
 					sendToMapRef.current({ carMode: true });
 				}
-				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers' };
+				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
 				Object.entries(GROUP_MAP).forEach(([key, group]) => {
 					if (!(showSettingsRef.current[key] ?? true)) {
 						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
