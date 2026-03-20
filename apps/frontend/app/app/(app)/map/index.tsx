@@ -711,11 +711,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const peopleCount = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleCount ?? 80);
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
 	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
-	const showPOI = useAppSelector((state) => (state.settings as any).osmVectorMapShowPOI ?? true);
-	const showTransit = useAppSelector((state) => (state.settings as any).osmVectorMapShowTransit ?? true);
-	const showRoadNames = useAppSelector((state) => (state.settings as any).osmVectorMapShowRoadNames ?? true);
-	const showLeisure = useAppSelector((state) => (state.settings as any).osmVectorMapShowLeisure ?? true);
-	const showBarriers = useAppSelector((state) => (state.settings as any).osmVectorMapShowBarriers ?? true);
+	const showSettings = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: true }) as Record<string, boolean>,
+	);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -786,16 +784,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	peopleCountRef.current = peopleCount;
 	const carModeRef = useRef(carMode);
 	carModeRef.current = carMode;
-	const showPOIRef = useRef(showPOI);
-	showPOIRef.current = showPOI;
-	const showTransitRef = useRef(showTransit);
-	showTransitRef.current = showTransit;
-	const showRoadNamesRef = useRef(showRoadNames);
-	showRoadNamesRef.current = showRoadNames;
-	const showLeisureRef = useRef(showLeisure);
-	showLeisureRef.current = showLeisure;
-	const showBarriersRef = useRef(showBarriers);
-	showBarriersRef.current = showBarriers;
+	const showSettingsRef = useRef(showSettings);
+	showSettingsRef.current = showSettings;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1234,34 +1224,12 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// Send layer visibility to the map when settings change and the map is ready
 	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'poi', visible: showPOI } });
-		}
-	}, [showPOI]);
-
-	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'transit', visible: showTransit } });
-		}
-	}, [showTransit]);
-
-	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: showRoadNames } });
-		}
-	}, [showRoadNames]);
-
-	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'leisure', visible: showLeisure } });
-		}
-	}, [showLeisure]);
-
-	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'barriers', visible: showBarriers } });
-		}
-	}, [showBarriers]);
+		if (!mapMountedRef.current) return;
+		const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers' };
+		Object.entries(GROUP_MAP).forEach(([key, group]) => {
+			sendToMapRef.current({ setLayerGroupVisibility: { group, visible: showSettings[key] ?? true } });
+		});
+	}, [showSettings]);
 
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
@@ -1336,21 +1304,12 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (carModeRef.current) {
 					sendToMapRef.current({ carMode: true });
 				}
-				if (!showPOIRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'poi', visible: false } });
-				}
-				if (!showTransitRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'transit', visible: false } });
-				}
-				if (!showRoadNamesRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: false } });
-				}
-				if (!showLeisureRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'leisure', visible: false } });
-				}
-				if (!showBarriersRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'barriers', visible: false } });
-				}
+				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers' };
+				Object.entries(GROUP_MAP).forEach(([key, group]) => {
+					if (!(showSettingsRef.current[key] ?? true)) {
+						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
+					}
+				});
 				addLog('MapComponentMounted');
 				return;
 			}
