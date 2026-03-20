@@ -154,6 +154,20 @@ jobs:
           source-language-type: typescript
           generate-issue: 'true'
           detector-options-paths-ignored-in-detection-comparison: '**/databaseTypes/types.ts'
+      - name: "💾 Commit reports"
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull --rebase --autostash origin "$GITHUB_REF_NAME"
+          git add -f reports/data-clumps-doctor
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update data-clumps reports [skip ci]"
+            git push
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   backend-directus:
     name: "🔨 Directus Backend Build"
