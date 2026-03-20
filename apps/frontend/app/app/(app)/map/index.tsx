@@ -8,6 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
 import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGeneralMarkers';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
@@ -317,6 +318,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				groupPosition="bottom"
 				showSeparator={false}
 			/>
+			<SettingsGroupMyMapGeneralMarkers />
 			<SettingsGroupTitle>Datenschutz</SettingsGroupTitle>
 			<SettingsList
 				title="OpenStreetMap-Zustimmung widerrufen"
@@ -600,6 +602,7 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 					/>
 				);
 			})}
+			<SettingsGroupMyMapGeneralMarkers />
 		</>
 	);
 };
@@ -708,6 +711,9 @@ const OsmVectorMapScreen: React.FC = () => {
 	const peopleCount = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleCount ?? 80);
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
 	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
+	const showPOI = useAppSelector((state) => (state.settings as any).osmVectorMapShowPOI ?? true);
+	const showTransit = useAppSelector((state) => (state.settings as any).osmVectorMapShowTransit ?? true);
+	const showRoadNames = useAppSelector((state) => (state.settings as any).osmVectorMapShowRoadNames ?? true);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -778,6 +784,12 @@ const OsmVectorMapScreen: React.FC = () => {
 	peopleCountRef.current = peopleCount;
 	const carModeRef = useRef(carMode);
 	carModeRef.current = carMode;
+	const showPOIRef = useRef(showPOI);
+	showPOIRef.current = showPOI;
+	const showTransitRef = useRef(showTransit);
+	showTransitRef.current = showTransit;
+	const showRoadNamesRef = useRef(showRoadNames);
+	showRoadNamesRef.current = showRoadNames;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1214,6 +1226,25 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 	}, [carMode]);
 
+	// Send layer visibility to the map when settings change and the map is ready
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group: 'poi', visible: showPOI } });
+		}
+	}, [showPOI]);
+
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group: 'transit', visible: showTransit } });
+		}
+	}, [showTransit]);
+
+	useEffect(() => {
+		if (mapMountedRef.current) {
+			sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: showRoadNames } });
+		}
+	}, [showRoadNames]);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1286,6 +1317,15 @@ const OsmVectorMapScreen: React.FC = () => {
 				}
 				if (carModeRef.current) {
 					sendToMapRef.current({ carMode: true });
+				}
+				if (!showPOIRef.current) {
+					sendToMapRef.current({ setLayerGroupVisibility: { group: 'poi', visible: false } });
+				}
+				if (!showTransitRef.current) {
+					sendToMapRef.current({ setLayerGroupVisibility: { group: 'transit', visible: false } });
+				}
+				if (!showRoadNamesRef.current) {
+					sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: false } });
 				}
 				addLog('MapComponentMounted');
 				return;

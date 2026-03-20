@@ -32,6 +32,12 @@ const Index = () => {
 
 	const listItems = [
 		{
+			key: 'map-with-custom-images-and-buildings',
+			label: 'Map – Custom Images & Buildings',
+			leftIcon: <MaterialCommunityIcons name="layers" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/map-with-custom-images-and-buildings'),
+		},
+		{
 			key: 'expo-update-test',
 			label: translate(TranslationKeys.EXPO_UPDATE_TEST),
 			leftIcon: <MaterialCommunityIcons name="cloud-sync-outline" size={24} color={theme.screen.icon} />,

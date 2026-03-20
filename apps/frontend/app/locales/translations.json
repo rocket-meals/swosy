@@ -5592,5 +5592,45 @@
         "ru": "ID папки",
         "tr": "Klasör kimliği",
         "zh": "文件夹 ID"
+    },
+    "rueckmeldung_geben": {
+        "de": "Rückmeldung geben",
+        "en": "Give Feedback",
+        "ar": "تقديم ملاحظات",
+        "es": "Dar comentarios",
+        "fr": "Donner un retour",
+        "ru": "Оставить отзыв",
+        "tr": "Geri bildirim ver",
+        "zh": "提供反馈"
+    },
+    "rueckmeldung_rate_app_description": {
+        "de": "Wir würden uns über eine App Bewertung im Store freuen.",
+        "en": "We would appreciate an app rating in the store.",
+        "ar": "سنكون سعداء بتقييم التطبيق في المتجر.",
+        "es": "Agradeceríamos una calificación de la app en la tienda.",
+        "fr": "Nous apprécierions une évaluation de l'app dans le store.",
+        "ru": "Мы были бы рады оценке приложения в магазине.",
+        "tr": "Mağazada bir uygulama değerlendirmesi yapmaktan memnuniyet duyarız.",
+        "zh": "我们希望您能在应用商店为我们的应用评分。"
+    },
+    "rueckmeldung_feedback_description": {
+        "de": "Sollten dir noch weitere Verbesserungen oder Wünsche aufgefallen sein, teile uns dies gern mit.",
+        "en": "If you have noticed any further improvements or wishes, please feel free to share them with us.",
+        "ar": "إذا لاحظت أي تحسينات أو رغبات إضافية، فلا تتردد في مشاركتنا بها.",
+        "es": "Si has notado mejoras o deseos adicionales, no dudes en compartirlos con nosotros.",
+        "fr": "Si vous avez remarqué d'autres améliorations ou souhaits, n'hésitez pas à nous les partager.",
+        "ru": "Если вы заметили дополнительные улучшения или пожелания, пожалуйста, поделитесь ими с нами.",
+        "tr": "Daha fazla iyileştirme veya istek fark ettiyseniz, lütfen bunları bizimle paylaşın.",
+        "zh": "如果您发现了其他改进或愿望，请随时与我们分享。"
+    },
+    "public_links": {
+        "de": "Öffentliche Links",
+        "en": "Public Links",
+        "ar": "روابط عامة",
+        "es": "Enlaces públicos",
+        "fr": "Liens publics",
+        "ru": "Публичные ссылки",
+        "tr": "Genel bağlantılar",
+        "zh": "公共链接"
     }
 }
