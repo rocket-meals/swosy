@@ -2,21 +2,22 @@ import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import {
-    SET_OSM_VECTOR_MAP_SHOW_POI,
-    SET_OSM_VECTOR_MAP_SHOW_TRANSIT,
-    SET_OSM_VECTOR_MAP_SHOW_ROAD_NAMES,
-} from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_SHOW_SETTINGS } from '@/redux/Types/types';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { useTheme } from '@/hooks/useTheme';
 
+const DEFAULT_SHOW_SETTINGS = { poi: true, transit: true, roadNames: true, leisure: true, barriers: true };
+
 const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
     const { theme } = useTheme();
     const dispatch = useDispatch();
-    const showPOI = useAppSelector((state) => (state.settings as any).osmVectorMapShowPOI ?? true);
-    const showTransit = useAppSelector((state) => (state.settings as any).osmVectorMapShowTransit ?? true);
-    const showRoadNames = useAppSelector((state) => (state.settings as any).osmVectorMapShowRoadNames ?? true);
+    const showSettings = useAppSelector(
+        (state) => ((state.settings as any).osmVectorMapShowSettings ?? DEFAULT_SHOW_SETTINGS) as Record<string, boolean>,
+    );
+
+    const toggle = (key: string) =>
+        dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_SETTINGS, payload: { [key]: !(showSettings[key] ?? true) } });
 
     return (
         <>
@@ -24,22 +25,36 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
             <SettingsListBoolean
                 title="Shops/POI"
                 leftIcon={<MaterialCommunityIcons name="store" size={20} color={theme.screen.icon} />}
-                isEnabled={showPOI}
-                onToggle={() => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_POI, payload: !showPOI })}
+                isEnabled={showSettings.poi ?? true}
+                onToggle={() => toggle('poi')}
                 groupPosition="top"
             />
             <SettingsListBoolean
                 title="Bus/Transit"
                 leftIcon={<MaterialCommunityIcons name="bus" size={20} color={theme.screen.icon} />}
-                isEnabled={showTransit}
-                onToggle={() => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_TRANSIT, payload: !showTransit })}
+                isEnabled={showSettings.transit ?? true}
+                onToggle={() => toggle('transit')}
+                groupPosition="middle"
+            />
+            <SettingsListBoolean
+                title="Sport & Freizeit"
+                leftIcon={<MaterialCommunityIcons name="swim" size={20} color={theme.screen.icon} />}
+                isEnabled={showSettings.leisure ?? true}
+                onToggle={() => toggle('leisure')}
+                groupPosition="middle"
+            />
+            <SettingsListBoolean
+                title="Barrieren & Sperren"
+                leftIcon={<MaterialCommunityIcons name="boom-gate" size={20} color={theme.screen.icon} />}
+                isEnabled={showSettings.barriers ?? true}
+                onToggle={() => toggle('barriers')}
                 groupPosition="middle"
             />
             <SettingsListBoolean
                 title="Straßennamen"
                 leftIcon={<MaterialCommunityIcons name="road" size={20} color={theme.screen.icon} />}
-                isEnabled={showRoadNames}
-                onToggle={() => dispatch({ type: SET_OSM_VECTOR_MAP_SHOW_ROAD_NAMES, payload: !showRoadNames })}
+                isEnabled={showSettings.roadNames ?? true}
+                onToggle={() => toggle('roadNames')}
                 groupPosition="bottom"
             />
         </>
