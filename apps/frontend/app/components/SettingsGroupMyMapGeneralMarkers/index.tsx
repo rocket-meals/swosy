@@ -7,7 +7,7 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
 
-const DEFAULT_SHOW_SETTINGS = { poi: true, transit: true, roadNames: true, leisure: true, barriers: true, parking: true };
+const DEFAULT_SHOW_SETTINGS = { poi: true, transit: true, roadNames: true, leisure: true, barriers: false, parking: true };
 
 const EmojiIcon: React.FC<{ emoji: string }> = ({ emoji }) => (
     <Text style={styles.emojiIcon}>{emoji}</Text>
@@ -69,8 +69,8 @@ const SettingsGroupMyMapGeneralMarkers: React.FC = () => {
             />
             <SettingsListBoolean
                 title="Barrieren & Sperren"
-                leftIcon={<EmojiIcon emoji="⛔" />}
-                isEnabled={showSettings.barriers ?? true}
+                leftIcon={<EmojiIcon emoji="🚧" />}
+                isEnabled={showSettings.barriers ?? false}
                 onToggle={() => toggle('barriers')}
                 groupPosition="middle"
             />
