@@ -6,11 +6,10 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import type { CheckTextInput } from '@/components/SettingsListTextInput';
 import { borderRadiusContainer } from '@/constants/Constants';
 
-type ModalTextInputSheetProps = {
+type TextInputSharedProps = {
 	initialValue?: string;
 	placeholder: string;
 	saveLabel: string;
-	onSave: (value: string) => void;
 	multiline?: boolean;
 	keyboardType?: KeyboardTypeOptions;
 	numberOfLines?: number;
@@ -19,6 +18,10 @@ type ModalTextInputSheetProps = {
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
+};
+
+type ModalTextInputSheetProps = TextInputSharedProps & {
+	onSave: (value: string) => void;
 };
 
 const defaultCheckTextInput: CheckTextInput = value => ({
@@ -83,20 +86,9 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	);
 };
 
-type OpenTextInputOptions = {
+type OpenTextInputOptions = TextInputSharedProps & {
 	title: string;
-	initialValue?: string;
-	placeholder: string;
-	saveLabel: string;
 	onSave: (value: string) => void | Promise<void>;
-	multiline?: boolean;
-	keyboardType?: KeyboardTypeOptions;
-	numberOfLines?: number;
-	textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
-	inputStyle?: object;
-	autoFocus?: boolean;
-	checkTextInput?: CheckTextInput;
-	allowSubmitWhenDisabled?: boolean;
 };
 
 const useMyScrollviewTextInputModal = () => {
