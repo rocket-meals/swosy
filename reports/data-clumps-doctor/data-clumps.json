@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-21T16:07:15.632Z",
+  "report_timestamp": "2026-03-21T16:17:33.008Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 17,
-          "average": 1.3200992555831266,
-          "amountSavedValuesForKeys": 1064,
+          "average": 1.315527950310559,
+          "amountSavedValuesForKeys": 1059,
           "amountKeys": 13
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 11
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 17,
-          "average": 1.3233830845771144,
-          "amountSavedValuesForKeys": 1064,
+          "average": 1.3188044831880448,
+          "amountSavedValuesForKeys": 1059,
           "amountKeys": 13
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 1943,
-        "detection_time_ms": 28,
+        "ast_generation_time_ms": 2204,
+        "detection_time_ms": 30,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 234.64,
-          "os_memory_free": 14945001472,
-          "os_memory_total": 16766193664,
+          "os_uptime": 119.94,
+          "os_memory_free": 15057940480,
+          "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3472
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 2,
-    "amount_files_with_data_clumps": 2,
+    "amount_classes_or_interfaces_with_data_clumps": 0,
+    "amount_files_with_data_clumps": 0,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 2,
+    "fields_to_fields_data_clump": 0,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 2
+    "amount_data_clumps": 0
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "11213b7109645ac15be37286f03d40c02c71197d",
-    "project_commit_hash": "11213b7109645ac15be37286f03d40c02c71197d",
+    "project_version": "5f5f57b14cbcc3428aea679d6f8b24f4805acda2",
+    "project_commit_hash": "5f5f57b14cbcc3428aea679d6f8b24f4805acda2",
     "project_tag": null,
-    "project_commit_date": "1774109139",
+    "project_commit_date": "1774109750",
     "additional": {
       "relative_path_to_source_folder_in_project": "apps/frontend"
     },
     "number_of_files": 244,
-    "number_of_classes_or_interfaces": 375,
+    "number_of_classes_or_interfaces": 376,
     "number_of_methods": 376,
-    "number_of_data_fields": 1064,
+    "number_of_data_fields": 1059,
     "number_of_method_parameters": 402
   },
   "detector": {
@@ -90,200 +90,5 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-themecontainerWidthfoodsAreaColor": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-themecontainerWidthfoodsAreaColor",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
-      "from_class_or_interface_name": "TabControllerProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/types.ts",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps",
-      "to_class_or_interface_name": "FoodDetailsSectionBaseProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 2,
-              "startColumn": 5,
-              "endLine": 2,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 5,
-            "endLine": 13,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 5,
-              "endLine": 7,
-              "endColumn": 38
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 5,
-            "endLine": 16,
-            "endColumn": 37
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor",
-          "name": "foodsAreaColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/foodsAreaColor",
-            "name": "foodsAreaColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 5,
-              "startColumn": 5,
-              "endLine": 5,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 5,
-            "endLine": 17,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/types.ts-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-themefoodsAreaColorcontainerWidth": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/types.ts-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-themefoodsAreaColorcontainerWidth",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/types.ts",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps",
-      "from_class_or_interface_name": "FoodDetailsSectionBaseProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
-      "to_class_or_interface_name": "TabControllerProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 5,
-              "endLine": 13,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 2,
-            "startColumn": 5,
-            "endLine": 2,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/foodsAreaColor",
-          "name": "foodsAreaColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor",
-            "name": "foodsAreaColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 5,
-              "endLine": 17,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 5,
-            "startColumn": 5,
-            "endLine": 5,
-            "endColumn": 28
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 5,
-            "endLine": 7,
-            "endColumn": 38
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 2
-      }
-    }
-  }
+  "data_clumps": {}
 }
