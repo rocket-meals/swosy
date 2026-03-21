@@ -20,7 +20,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation, getDescriptionFromTranslation } from '@/helper/resourceHelper';
 import DebugView from '@/components/DebugView';
-import { PlainMarkingBaseProps } from '../types';
+import { PlainMarkingBaseProps } from '..';
 
 // ---------------------------------------------------------------------------
 // Minimal plain component – receives resolved strings, no hooks/Redux inside

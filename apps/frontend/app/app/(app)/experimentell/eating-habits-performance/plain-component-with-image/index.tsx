@@ -19,7 +19,7 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation, getDescriptionFromTranslation } from '@/helper/resourceHelper';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import DebugView from '@/components/DebugView';
-import { PlainMarkingBaseProps } from '../types';
+import { PlainMarkingBaseProps } from '..';
 
 // ---------------------------------------------------------------------------
 // Plain component with image – receives resolved strings + image URI as props
