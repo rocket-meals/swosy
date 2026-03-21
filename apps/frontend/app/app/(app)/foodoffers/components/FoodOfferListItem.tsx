@@ -4,28 +4,16 @@ import { FoodItemBase } from '@/components/FoodItem/FoodItem';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from '../styles';
+import { FoodItemSharedRenderProps } from '@/components/FoodItem/types';
 
 interface DayItem {
     foodoffer: DatabaseTypes.Foodoffers | null;
     foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
 
-export interface FoodOfferItemRenderProps {
+export interface FoodOfferItemRenderProps extends FoodItemSharedRenderProps {
     cardWidth: number;
     selectedCanteen: DatabaseTypes.Canteens | null;
-    language?: string;
-    pirateLanguage?: boolean;
-    funLanguageMode?: string | null;
-    serverInfo?: any;
-    appSettings?: any;
-    primaryColor?: string;
-    user?: any;
-    isManagement?: boolean;
-    profile?: any;
-    markings?: any[];
-    screenWidth?: number;
-    theme?: any;
-    amountColumnsForcard?: number;
 }
 
 interface FoodOfferListItemProps extends FoodOfferItemRenderProps {
