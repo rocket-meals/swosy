@@ -9,20 +9,15 @@ import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
 import MyImage from '@/components/MyImage';
 import SettingsList from '@/components/SettingsList';
+import type { FoodDetailsSectionBaseProps } from './types';
 
-interface FoodHeaderProps {
+interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     foodDetails: any;
     screenWidth: number;
     openFullScreenImage: () => void;
     rateFood: (rating: number) => void;
-    previousFeedback: any;
     appSettings: any;
-    foodsAreaColor: string;
-    theme: any;
-    translate: (key: string) => string;
     defaultImage?: string | null;
-    isAccountRequired?: boolean;
-    containerWidth?: string | number;
 }
 
 const FoodHeader = ({

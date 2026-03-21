@@ -27,21 +27,20 @@ export interface CourseBottomSheetState {
 	inputValue: string;
 }
 
-export type BaseCourseTimetableEvent = {
+export type CourseTimetableEventBase = {
 	id?: string;
 	title?: string;
 	location?: string;
 	color?: string;
+};
+
+export type BaseCourseTimetableEvent = CourseTimetableEventBase & {
 	start: string;
 	end: string;
 	weekday: string;
 };
 
-export type EventTypes = {
-	id?: string;
-	title?: string;
-	location?: string;
-	color?: string;
+export type EventTypes = CourseTimetableEventBase & {
 	startTime: string;
 	endTime: string;
 	day: string;

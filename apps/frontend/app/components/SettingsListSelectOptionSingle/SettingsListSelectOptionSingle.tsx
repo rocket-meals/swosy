@@ -5,18 +5,14 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 
-import { SettingsListProps } from '@/components/SettingsList/types';
+import { SettingsListItemBaseProps, SettingsListProps } from '@/components/SettingsList/types';
 
-type SettingsListSelectOptionSingleProps = {
+type SettingsListSelectOptionSingleProps = Pick<SettingsListItemBaseProps, 'leftIcon' | 'iconBgColor' | 'showSeparator' | 'noIconIndent'> & {
 	label: string;
-	leftIcon?: React.ReactNode;
-	iconBgColor?: string;
+	onPress: () => void;
 	selectionColor?: string;
 	isSelected: boolean;
-	onPress: () => void;
 	groupPosition?: SettingsListProps['groupPosition'];
-	showSeparator?: boolean;
-	noIconIndent?: boolean;
 };
 
 const SettingsListSelectOptionSingle: React.FC<SettingsListSelectOptionSingleProps> = ({
