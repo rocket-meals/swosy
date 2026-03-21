@@ -17,10 +17,7 @@ export type FoodofferDateType = {
   day: number;
 };
 
-export type MySimpleDate = {
-  year: number;
-  month: number;
-  day: number;
+export type MySimpleDate = FoodofferDateType & {
   hours: number;
   minutes: number;
   seconds: number;
