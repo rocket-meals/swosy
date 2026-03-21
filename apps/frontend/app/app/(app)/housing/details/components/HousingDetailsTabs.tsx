@@ -7,16 +7,13 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
+import { TabsStyleProps } from '@/components/shared/tabsStyleProps';
 
-interface HousingDetailsTabsProps {
+interface HousingDetailsTabsProps extends TabsStyleProps {
 	activeTab: string;
 	setActiveTab: (tab: string) => void;
-	theme: any;
-	themeStyles: any;
-	contrastColor: string;
 	translate: (key: string) => string;
 	apartmentDetails: DatabaseTypes.Apartments | null;
-	screenWidth: number;
 }
 
 const HousingDetailsTabs: React.FC<HousingDetailsTabsProps> = ({
