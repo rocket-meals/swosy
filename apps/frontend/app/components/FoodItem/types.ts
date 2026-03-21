@@ -1,21 +1,18 @@
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 import { DatabaseTypes } from 'repo-depkit-common';
+import { CardLayoutProps } from '@/components/shared/cardLayoutProps';
 
-export interface FoodItemSharedRenderProps {
+export interface FoodItemSharedRenderProps extends CardLayoutProps {
 	cardWidth?: number;
 	language?: string;
 	pirateLanguage?: boolean;
 	funLanguageMode?: string | null;
 	serverInfo?: any;
 	appSettings?: any;
-	primaryColor?: string;
 	user?: any;
-	isManagement?: boolean;
 	profile?: any;
 	markings?: any[];
-	screenWidth?: number;
 	theme?: any;
-	amountColumnsForcard?: number;
 }
 
 export interface FoodItemProps extends FoodItemSharedRenderProps {

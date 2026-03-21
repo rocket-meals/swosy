@@ -15,20 +15,20 @@ import useBuildingDetailsModal from '@/hooks/useBuildingDetailsModal';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import IconButton from '../UI/IconButton';
+import { CardLayoutProps } from '@/components/shared/cardLayoutProps';
 
 
-export interface BuildingItemPropsOptimized {
+export interface BuildingItemPropsOptimized extends CardLayoutProps {
 	campus: any;
 	onEditImage?: (campus: any) => void;
 	openDistanceSheet: () => void;
 	// Flattened settings to improve memoization stability
+	// amountColumnsForcard and screenWidth are required here (narrowed from optional in CardLayoutProps)
 	amountColumnsForcard: number;
-	primaryColor?: string;
 	projectLogo?: string; // Replaces serverInfo
 	campusAreaColor?: string; // Replaces appSettings logic
 	selectedTheme?: string;
 	screenWidth: number;
-	isManagement?: boolean;
 }
 
 const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ 

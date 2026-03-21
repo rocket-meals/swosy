@@ -7,6 +7,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { uploadFiles } from '@directus/sdk';
 
 import SettingsList from '@/components/SettingsList';
+import { SettingsListItemBaseProps } from '@/components/SettingsList/types';
 import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -35,16 +36,14 @@ type DirectusImageEditModalContentProps = DirectusImageEditModalBase & {
 	onClose: () => void;
 };
 
-type ActionItem = {
+type ActionItem = Pick<SettingsListItemBaseProps, 'onPress' | 'showSeparator'> & {
 	key: string;
 	label: string;
 	icon?: any;
 	rightElement?: any;
 	rightIcon?: any;
-	onPress?: () => void;
 	isCancel?: boolean;
 	groupPosition?: 'bottom' | 'top' | 'middle' | 'single';
-	showSeparator?: boolean;
 };
 
 const MAX_IMAGE_DIMENSION = 6000;
