@@ -19,6 +19,12 @@ type ImageFieldContext = {
   myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
 };
 
+type FileValueContext = {
+  fieldName: string;
+  value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined;
+  myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
+};
+
 type FormFieldExampleData = {
   value_string?: string | null;
   value_number?: number | null;
@@ -503,10 +509,9 @@ export class FormHelper {
   }
 
   private static generateHtmlForFileValue(
-    fieldName: string,
-    value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined,
-    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+    context: FileValueContext,
   ): string {
+    const { fieldName, value_file, myDatabaseHelperInterface } = context;
     let assetUrl: string | undefined;
     if (value_file) {
       if (typeof value_file === 'string' && value_file.startsWith('http')) {
@@ -621,7 +626,8 @@ export class FormHelper {
     return this.generateMarkdownForTypeImageUrl(fieldName, assetUrl);
   }
 
-  private static generateMarkdownForTypeFilesValue(fieldName: string, value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+  private static generateMarkdownForTypeFilesValue(context: FileValueContext): string {
+    const { fieldName, value_file, myDatabaseHelperInterface } = context;
     let assetUrl: undefined | string = undefined;
     //console.log("generateMarkdownForTypeFilesValue");
     //console.log(JSON.stringify(value_file, null, 2));
@@ -666,7 +672,7 @@ export class FormHelper {
       markdownContent += this.generateMarkdownForTypeImageValue({ fieldName, value_image: formExtractRelevantInformationSingle.form_answer.value_image, myDatabaseHelperInterface });
       if(formExtractRelevantInformationSingle.form_answer.value_files.length > 0){
         for (let formAnswerValueFile of formExtractRelevantInformationSingle.form_answer.value_files || []) {
-          markdownContent += this.generateMarkdownForTypeFilesValue(fieldName, formAnswerValueFile, myDatabaseHelperInterface);
+          markdownContent += this.generateMarkdownForTypeFilesValue({ fieldName, value_file: formAnswerValueFile, myDatabaseHelperInterface });
         }
       }
     }
@@ -712,7 +718,7 @@ export class FormHelper {
       html += this.generateHtmlForImageValue({ fieldName, value_image: formExtract.form_answer.value_image, myDatabaseHelperInterface }, isSignature);
       if (formExtract.form_answer.value_files && formExtract.form_answer.value_files.length > 0) {
         for (const file of formExtract.form_answer.value_files) {
-          html += this.generateHtmlForFileValue(fieldName, file, myDatabaseHelperInterface);
+          html += this.generateHtmlForFileValue({ fieldName, value_file: file, myDatabaseHelperInterface });
         }
       }
     }

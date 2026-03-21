@@ -1,5 +1,5 @@
 import { DeepLTranslator } from './DeepLTranslator';
-import { MyTranslatorInterface } from './MyTranslatorInterface';
+import { MyTranslatorInterface, TranslationRequest } from './MyTranslatorInterface';
 import { TranslatorSettings } from './TranslatorSettings';
 import { EnvVariableHelper } from '../helpers/EnvVariableHelper';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
@@ -34,9 +34,9 @@ export class Translator {
     }
   }
 
-  async translate(text: string, source_language: string, destination_language: string) {
+  async translate(request: TranslationRequest) {
     if (!this.translatorImplementation) return null;
-    const translation = await this.translatorImplementation.translate(text, source_language, destination_language);
+    const translation = await this.translatorImplementation.translate(request);
     await this.reloadUsage(); //update usage stats
     return translation;
   }

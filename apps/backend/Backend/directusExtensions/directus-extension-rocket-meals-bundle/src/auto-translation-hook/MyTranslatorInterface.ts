@@ -1,7 +1,13 @@
+export type TranslationRequest = {
+  text: string;
+  source_language: string;
+  destination_language: string;
+};
+
 export interface MyTranslatorInterface {
   init(): Promise<void>;
 
-  translate(text: string, source_language: string, destination_language: string): Promise<any>;
+  translate(request: TranslationRequest): Promise<any>;
 
   getUsage(): Promise<any>;
 
