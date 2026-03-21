@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-21T14:41:48.671Z",
+  "report_timestamp": "2026-03-21T15:40:44.249Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
-          "maximum": 19,
-          "average": 1.372121212121212,
-          "amountSavedValuesForKeys": 1132,
-          "amountKeys": 15
+          "median": 1.5,
+          "maximum": 17,
+          "average": 1.3320987654320988,
+          "amountSavedValuesForKeys": 1079,
+          "amountKeys": 11
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 67,
-          "average": 2.6933333333333334,
-          "amountSavedValuesForKeys": 404,
+          "average": 2.68,
+          "amountSavedValuesForKeys": 402,
           "amountKeys": 11
         },
         "invertedParameterToClasses": {
-          "median": 1,
-          "maximum": 19,
-          "average": 1.3754556500607533,
-          "amountSavedValuesForKeys": 1132,
-          "amountKeys": 15
+          "median": 1.5,
+          "maximum": 17,
+          "average": 1.3353960396039604,
+          "amountSavedValuesForKeys": 1079,
+          "amountKeys": 11
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 2151,
-        "detection_time_ms": 35,
+        "ast_generation_time_ms": 2126,
+        "detection_time_ms": 30,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 113.91,
-          "os_memory_free": 15059472384,
+          "os_uptime": 113.68,
+          "os_memory_free": 15040032768,
           "os_memory_total": 16767234048,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,29 +44,29 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 23,
-    "amount_files_with_data_clumps": 21,
+    "amount_classes_or_interfaces_with_data_clumps": 11,
+    "amount_files_with_data_clumps": 11,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 44,
+    "fields_to_fields_data_clump": 18,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 44
+    "amount_data_clumps": 18
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "5400b9c357f2121b17ef74ccdc4cbf024ed2f21c",
-    "project_commit_hash": "5400b9c357f2121b17ef74ccdc4cbf024ed2f21c",
+    "project_version": "9c85d3f373a36618689f6a099451b7cad37a322a",
+    "project_commit_hash": "9c85d3f373a36618689f6a099451b7cad37a322a",
     "project_tag": null,
-    "project_commit_date": "1774104013",
+    "project_commit_date": "1774107550",
     "additional": {
       "relative_path_to_source_folder_in_project": "apps/frontend"
     },
-    "number_of_files": 240,
-    "number_of_classes_or_interfaces": 368,
-    "number_of_methods": 378,
-    "number_of_data_fields": 1132,
-    "number_of_method_parameters": 404
+    "number_of_files": 242,
+    "number_of_classes_or_interfaces": 373,
+    "number_of_methods": 376,
+    "number_of_data_fields": 1079,
+    "number_of_method_parameters": 402
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -213,591 +213,6 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-screenWidthappSettingstheme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-screenWidthappSettingstheme",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "from_class_or_interface_name": "FoodHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/FoodItem/types.ts",
-      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
-      "to_class_or_interface_name": "FoodItemSharedRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 5,
-            "endLine": 15,
-            "endColumn": 25
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 2,
-              "endLine": 10,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 5,
-            "endLine": 19,
-            "endColumn": 22
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 2,
-              "endLine": 17,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 16
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-previousFeedbackfoodsAreaColorthemeisAccountRequiredcontainerWidth": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-previousFeedbackfoodsAreaColorthemeisAccountRequiredcontainerWidth",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "from_class_or_interface_name": "FoodHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps",
-      "to_class_or_interface_name": "NotificationSectionProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/previousFeedback": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/previousFeedback",
-          "name": "previousFeedback",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/previousFeedback",
-            "name": "previousFeedback",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 5,
-              "endLine": 13,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 5,
-            "endLine": 18,
-            "endColumn": 27
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/foodsAreaColor",
-          "name": "foodsAreaColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/foodsAreaColor",
-            "name": "foodsAreaColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 5,
-              "endLine": 15,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 5,
-            "endLine": 20,
-            "endColumn": 28
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 5,
-              "endLine": 10,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/isAccountRequired": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/isAccountRequired",
-          "name": "isAccountRequired",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/isAccountRequired",
-            "name": "isAccountRequired",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 33
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 5,
-            "endLine": 24,
-            "endColumn": 33
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 5,
-              "endLine": 11,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 5,
-            "endLine": 25,
-            "endColumn": 38
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-foodsAreaColorthemecontainerWidth": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-foodsAreaColorthemecontainerWidth",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "from_class_or_interface_name": "FoodHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
-      "to_class_or_interface_name": "TabControllerProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/foodsAreaColor",
-          "name": "foodsAreaColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor",
-            "name": "foodsAreaColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 5,
-              "endLine": 17,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 5,
-            "endLine": 20,
-            "endColumn": 28
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 5,
-              "endLine": 13,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 5,
-            "endLine": 25,
-            "endColumn": 38
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/NotificationSection.tsx-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-themecontainerWidthpreviousFeedbackfoodsAreaColorisAccountRequired": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/NotificationSection.tsx-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-themecontainerWidthpreviousFeedbackfoodsAreaColorisAccountRequired",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps",
-      "from_class_or_interface_name": "NotificationSectionProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "to_class_or_interface_name": "FoodHeaderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 5,
-            "endLine": 10,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 5,
-              "endLine": 25,
-              "endColumn": 38
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 5,
-            "endLine": 11,
-            "endColumn": 37
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/previousFeedback": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/previousFeedback",
-          "name": "previousFeedback",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/previousFeedback",
-            "name": "previousFeedback",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 5,
-              "endLine": 18,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 5,
-            "endLine": 13,
-            "endColumn": 27
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/foodsAreaColor",
-          "name": "foodsAreaColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/foodsAreaColor",
-            "name": "foodsAreaColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 5,
-              "endLine": 20,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 5,
-            "endLine": 15,
-            "endColumn": 28
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/isAccountRequired": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/isAccountRequired",
-          "name": "isAccountRequired",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/isAccountRequired",
-            "name": "isAccountRequired",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 5,
-              "endLine": 24,
-              "endColumn": 33
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 5,
-            "endLine": 16,
-            "endColumn": 33
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/NotificationSection.tsx-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-themecontainerWidthfoodsAreaColor": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/NotificationSection.tsx-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-themecontainerWidthfoodsAreaColor",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps",
-      "from_class_or_interface_name": "NotificationSectionProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
-      "to_class_or_interface_name": "TabControllerProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 5,
-              "endLine": 13,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 5,
-            "endLine": 10,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 5,
-            "endLine": 11,
-            "endColumn": 37
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/foodsAreaColor",
-          "name": "foodsAreaColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor",
-            "name": "foodsAreaColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 5,
-              "endLine": 17,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 5,
-            "endLine": 15,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
     "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/housing/details/components/HousingDetailsTabs.tsx/interface/HousingDetailsTabsProps-activeTabthemecontrastColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/housing/details/components/HousingDetailsTabs.tsx/interface/HousingDetailsTabsProps-activeTabthemecontrastColor",
@@ -895,18 +310,18 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-themecontainerWidthfoodsAreaColor": {
+    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-themecontainerWidthfoodsAreaColor": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-themecontainerWidthfoodsAreaColor",
+      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-themecontainerWidthfoodsAreaColor",
       "probability": 1,
       "from_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
       "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
       "from_class_or_interface_name": "TabControllerProps",
       "from_method_name": null,
       "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "to_class_or_interface_name": "FoodHeaderProps",
+      "to_file_path": "app/app/(app)/foodoffers/details/components/types.ts",
+      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps",
+      "to_class_or_interface_name": "FoodDetailsSectionBaseProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
@@ -918,14 +333,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
+            "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/theme",
             "name": "theme",
             "type": "any",
             "modifiers": [],
             "position": {
-              "startLine": 21,
+              "startLine": 2,
               "startColumn": 5,
-              "endLine": 21,
+              "endLine": 2,
               "endColumn": 16
             }
           },
@@ -943,14 +358,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/containerWidth",
+            "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/containerWidth",
             "name": "containerWidth",
             "type": "string | number",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 7,
               "startColumn": 5,
-              "endLine": 25,
+              "endLine": 7,
               "endColumn": 38
             }
           },
@@ -968,14 +383,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/foodsAreaColor",
+            "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/foodsAreaColor",
             "name": "foodsAreaColor",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 20,
+              "startLine": 5,
               "startColumn": 5,
-              "endLine": 20,
+              "endLine": 5,
               "endColumn": 28
             }
           },
@@ -992,95 +407,95 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-themecontainerWidthfoodsAreaColor": {
+    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/types.ts-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-themefoodsAreaColorcontainerWidth": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/TabController.tsx-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps-themecontainerWidthfoodsAreaColor",
+      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/types.ts-app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps-app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps-themefoodsAreaColorcontainerWidth",
       "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
-      "from_class_or_interface_name": "TabControllerProps",
+      "from_file_path": "app/app/(app)/foodoffers/details/components/types.ts",
+      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps",
+      "from_class_or_interface_name": "FoodDetailsSectionBaseProps",
       "from_method_name": null,
       "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps",
-      "to_class_or_interface_name": "NotificationSectionProps",
+      "to_file_path": "app/app/(app)/foodoffers/details/components/TabController.tsx",
+      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps",
+      "to_class_or_interface_name": "TabControllerProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme",
+        "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/theme": {
+          "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/theme",
           "name": "theme",
           "type": "any",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/theme",
+            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/theme",
             "name": "theme",
             "type": "any",
             "modifiers": [],
             "position": {
-              "startLine": 10,
+              "startLine": 13,
               "startColumn": 5,
-              "endLine": 10,
+              "endLine": 13,
               "endColumn": 16
             }
           },
           "position": {
-            "startLine": 13,
+            "startLine": 2,
             "startColumn": 5,
-            "endLine": 13,
+            "endLine": 2,
             "endColumn": 16
           }
         },
-        "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth",
-          "name": "containerWidth",
-          "type": "string | number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/containerWidth",
-            "name": "containerWidth",
-            "type": "string | number",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 5,
-              "endLine": 11,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 5,
-            "endLine": 16,
-            "endColumn": 37
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor": {
-          "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor",
+        "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/foodsAreaColor": {
+          "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/foodsAreaColor",
           "name": "foodsAreaColor",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/NotificationSection.tsx/interface/NotificationSectionProps/memberField/foodsAreaColor",
+            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/foodsAreaColor",
             "name": "foodsAreaColor",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 15,
+              "startLine": 17,
               "startColumn": 5,
-              "endLine": 15,
+              "endLine": 17,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 17,
+            "startLine": 5,
             "startColumn": 5,
-            "endLine": 17,
+            "endLine": 5,
             "endColumn": 28
+          }
+        },
+        "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/containerWidth": {
+          "key": "app/app/(app)/foodoffers/details/components/types.ts/interface/FoodDetailsSectionBaseProps/memberField/containerWidth",
+          "name": "containerWidth",
+          "type": "string | number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "app/app/(app)/foodoffers/details/components/TabController.tsx/interface/TabControllerProps/memberField/containerWidth",
+            "name": "containerWidth",
+            "type": "string | number",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 5,
+              "endLine": 16,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 5,
+            "endLine": 7,
+            "endColumn": 38
           }
         }
       },
@@ -1182,7 +597,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -1717,7 +1132,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -1814,886 +1229,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolor": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolor",
-      "probability": 1,
-      "from_file_path": "app/components/CourseTimeTable/types.ts",
-      "from_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
-      "from_class_or_interface_name": "BaseCourseTimetableEvent",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/CourseTimeTable/types.ts",
-      "to_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/EventTypes",
-      "to_class_or_interface_name": "EventTypes",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 41,
-              "startColumn": 2,
-              "endLine": 41,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 31,
-            "startColumn": 2,
-            "endLine": 31,
-            "endColumn": 14
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 42,
-              "startColumn": 2,
-              "endLine": 42,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 32,
-            "startColumn": 2,
-            "endLine": 32,
-            "endColumn": 17
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
-          "name": "location",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
-            "name": "location",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 43,
-              "startColumn": 2,
-              "endLine": 43,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 33,
-            "startColumn": 2,
-            "endLine": 33,
-            "endColumn": 20
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
-          "name": "color",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
-            "name": "color",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 44,
-              "startColumn": 2,
-              "endLine": 44,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 34,
-            "startColumn": 2,
-            "endLine": 34,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
         "cluster_id": 2,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor",
-      "probability": 1,
-      "from_file_path": "app/components/CourseTimeTable/types.ts",
-      "from_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/EventTypes",
-      "from_class_or_interface_name": "EventTypes",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/CourseTimeTable/types.ts",
-      "to_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
-      "to_class_or_interface_name": "BaseCourseTimetableEvent",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 31,
-              "startColumn": 2,
-              "endLine": 31,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 41,
-            "startColumn": 2,
-            "endLine": 41,
-            "endColumn": 14
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 32,
-              "startColumn": 2,
-              "endLine": 32,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 42,
-            "startColumn": 2,
-            "endLine": 42,
-            "endColumn": 17
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
-          "name": "location",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
-            "name": "location",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 33,
-              "startColumn": 2,
-              "endLine": 33,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 43,
-            "startColumn": 2,
-            "endLine": 43,
-            "endColumn": 20
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
-          "name": "color",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
-            "name": "color",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 34,
-              "startColumn": 2,
-              "endLine": 34,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 44,
-            "startColumn": 2,
-            "endLine": 44,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-app/components/DropdownInput/DropdownInput.tsx-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-idonChangeerrorisDisabledcustom_typeprefixsuffix": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/DropdownInput/DropdownInput.tsx-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-idonChangeerrorisDisabledcustom_typeprefixsuffix",
-      "probability": 1,
-      "from_file_path": "app/components/DropdownInput/DropdownInput.tsx",
-      "from_class_or_interface_key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps",
-      "from_class_or_interface_name": "DropdownInputProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListDate/types.ts",
-      "to_class_or_interface_key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn",
-      "to_class_or_interface_name": "SettingsListDatePropsOwn",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/id": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 5,
-              "startColumn": 2,
-              "endLine": 5,
-              "endColumn": 13
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 9,
-            "endLine": 24,
-            "endColumn": 20
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/onChange": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/onChange",
-          "name": "onChange",
-          "type": "(id: string, value: string, custom_type: string) => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/onChange",
-            "name": "onChange",
-            "type": "(id: string, value: string, custom_type: string) => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 2,
-              "endLine": 7,
-              "endColumn": 69
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 9,
-            "endLine": 26,
-            "endColumn": 76
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error",
-          "name": "error",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/error",
-            "name": "error",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 9,
-              "startColumn": 2,
-              "endLine": 9,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 9,
-            "endLine": 27,
-            "endColumn": 24
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled",
-          "name": "isDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/isDisabled",
-            "name": "isDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 2,
-              "endLine": 10,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 9,
-            "endLine": 28,
-            "endColumn": 29
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/custom_type": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/custom_type",
-          "name": "custom_type",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/custom_type",
-            "name": "custom_type",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 2,
-              "endLine": 11,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 29,
-            "startColumn": 9,
-            "endLine": 29,
-            "endColumn": 29
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/prefix": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/prefix",
-          "name": "prefix",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/prefix",
-            "name": "prefix",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 2,
-              "endLine": 15,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 31,
-            "startColumn": 9,
-            "endLine": 31,
-            "endColumn": 32
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/suffix": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/suffix",
-          "name": "suffix",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/suffix",
-            "name": "suffix",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 32,
-            "startColumn": 9,
-            "endLine": 32,
-            "endColumn": 32
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/DropdownInput/DropdownInput.tsx-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-errorisDisabledoptionsallowCustomValues": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/DropdownInput/DropdownInput.tsx-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-errorisDisabledoptionsallowCustomValues",
-      "probability": 1,
-      "from_file_path": "app/components/DropdownInput/DropdownInput.tsx",
-      "from_class_or_interface_key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps",
-      "from_class_or_interface_name": "DropdownInputProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/DropdownInput/DropdownSheet.tsx",
-      "to_class_or_interface_key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
-      "to_class_or_interface_name": "DropdownSheetProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error",
-          "name": "error",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
-            "name": "error",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 3,
-              "endLine": 23,
-              "endColumn": 18
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 9,
-            "endLine": 27,
-            "endColumn": 24
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled",
-          "name": "isDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
-            "name": "isDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 3,
-              "endLine": 20,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 9,
-            "endLine": 28,
-            "endColumn": 29
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/options": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/options",
-          "name": "options",
-          "type": "string[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/options",
-            "name": "options",
-            "type": "string[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 3,
-              "endLine": 14,
-              "endColumn": 21
-            }
-          },
-          "position": {
-            "startLine": 30,
-            "startColumn": 9,
-            "endLine": 30,
-            "endColumn": 28
-          }
-        },
-        "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/allowCustomValues": {
-          "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/allowCustomValues",
-          "name": "allowCustomValues",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/allowCustomValues",
-            "name": "allowCustomValues",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 3,
-              "endLine": 15,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 33,
-            "startColumn": 9,
-            "endLine": 33,
-            "endColumn": 37
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/DropdownInput/DropdownSheet.tsx-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-optionsallowCustomValuesisDisablederror": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/DropdownInput/DropdownSheet.tsx-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-optionsallowCustomValuesisDisablederror",
-      "probability": 1,
-      "from_file_path": "app/components/DropdownInput/DropdownSheet.tsx",
-      "from_class_or_interface_key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
-      "from_class_or_interface_name": "DropdownSheetProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/DropdownInput/DropdownInput.tsx",
-      "to_class_or_interface_key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps",
-      "to_class_or_interface_name": "DropdownInputProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/options": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/options",
-          "name": "options",
-          "type": "string[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/options",
-            "name": "options",
-            "type": "string[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 30,
-              "startColumn": 9,
-              "endLine": 30,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 3,
-            "endLine": 14,
-            "endColumn": 21
-          }
-        },
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/allowCustomValues": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/allowCustomValues",
-          "name": "allowCustomValues",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/allowCustomValues",
-            "name": "allowCustomValues",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 33,
-              "startColumn": 9,
-              "endLine": 33,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 3,
-            "endLine": 15,
-            "endColumn": 30
-          }
-        },
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
-          "name": "isDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled",
-            "name": "isDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 9,
-              "endLine": 28,
-              "endColumn": 29
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 3,
-            "endLine": 20,
-            "endColumn": 24
-          }
-        },
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
-          "name": "error",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error",
-            "name": "error",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 9,
-              "endLine": 27,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 3,
-            "endLine": 23,
-            "endColumn": 18
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/DropdownInput/DropdownSheet.tsx-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-valueisDisablederror": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/DropdownInput/DropdownSheet.tsx-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-valueisDisablederror",
-      "probability": 1,
-      "from_file_path": "app/components/DropdownInput/DropdownSheet.tsx",
-      "from_class_or_interface_key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
-      "from_class_or_interface_name": "DropdownSheetProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListDate/types.ts",
-      "to_class_or_interface_key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn",
-      "to_class_or_interface_name": "SettingsListDatePropsOwn",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/value": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 6,
-              "startColumn": 2,
-              "endLine": 6,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 3,
-            "endLine": 16,
-            "endColumn": 17
-          }
-        },
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
-          "name": "isDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/isDisabled",
-            "name": "isDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 2,
-              "endLine": 10,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 3,
-            "endLine": 20,
-            "endColumn": 24
-          }
-        },
-        "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error": {
-          "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
-          "name": "error",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/error",
-            "name": "error",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 9,
-              "startColumn": 2,
-              "endLine": 9,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 3,
-            "endLine": 23,
-            "endColumn": 18
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/FeedbackSupport/FeedbackSupport.tsx-app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-titlevalueonPress": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FeedbackSupport/FeedbackSupport.tsx-app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-titlevalueonPress",
-      "probability": 1,
-      "from_file_path": "app/components/FeedbackSupport/FeedbackSupport.tsx",
-      "from_class_or_interface_key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps",
-      "from_class_or_interface_name": "FeedbackItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsList/types.ts",
-      "to_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "to_class_or_interface_name": "SettingsListPropsOwn",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/title": {
-          "key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 9,
-              "endLine": 13,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 12,
-            "startColumn": 2,
-            "endLine": 12,
-            "endColumn": 16
-          }
-        },
-        "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/value": {
-          "key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 2,
-              "endLine": 15,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 2,
-            "endLine": 13,
-            "endColumn": 17
-          }
-        },
-        "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/onPress": {
-          "key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 2,
-              "endLine": 26,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 2,
-            "endLine": 17,
-            "endColumn": 23
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
         "cluster_type": 3
       }
     },
@@ -2790,7 +1326,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -2887,104 +1423,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-appSettingsscreenWidththeme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-appSettingsscreenWidththeme",
-      "probability": 1,
-      "from_file_path": "app/components/FoodItem/types.ts",
-      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
-      "from_class_or_interface_name": "FoodItemSharedRenderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "to_class_or_interface_name": "FoodHeaderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/appSettings": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 5,
-              "endLine": 19,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 2,
-            "endLine": 10,
-            "endColumn": 20
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 5,
-              "endLine": 15,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 23
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 2,
-            "endLine": 17,
-            "endColumn": 14
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -3106,483 +1545,17 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/components/SettingsListDate/types.ts-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-idonChangeerrorisDisabledcustom_typeprefixsuffix": {
+    "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-labelonPressshowSeparator": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListDate/types.ts-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-idonChangeerrorisDisabledcustom_typeprefixsuffix",
+      "key": "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-labelonPressshowSeparator",
       "probability": 1,
-      "from_file_path": "app/components/SettingsListDate/types.ts",
-      "from_class_or_interface_key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn",
-      "from_class_or_interface_name": "SettingsListDatePropsOwn",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/DropdownInput/DropdownInput.tsx",
-      "to_class_or_interface_key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps",
-      "to_class_or_interface_name": "DropdownInputProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/id": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 9,
-              "endLine": 24,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 5,
-            "startColumn": 2,
-            "endLine": 5,
-            "endColumn": 13
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/onChange": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/onChange",
-          "name": "onChange",
-          "type": "(id: string, value: string, custom_type: string) => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/onChange",
-            "name": "onChange",
-            "type": "(id: string, value: string, custom_type: string) => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 9,
-              "endLine": 26,
-              "endColumn": 76
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 2,
-            "endLine": 7,
-            "endColumn": 69
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/error": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/error",
-          "name": "error",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/error",
-            "name": "error",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 9,
-              "endLine": 27,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 9,
-            "startColumn": 2,
-            "endLine": 9,
-            "endColumn": 16
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/isDisabled": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/isDisabled",
-          "name": "isDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/isDisabled",
-            "name": "isDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 9,
-              "endLine": 28,
-              "endColumn": 29
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 2,
-            "endLine": 10,
-            "endColumn": 23
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/custom_type": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/custom_type",
-          "name": "custom_type",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/custom_type",
-            "name": "custom_type",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 29,
-              "startColumn": 9,
-              "endLine": 29,
-              "endColumn": 29
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 2,
-            "endLine": 11,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/prefix": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/prefix",
-          "name": "prefix",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/prefix",
-            "name": "prefix",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 31,
-              "startColumn": 9,
-              "endLine": 31,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 2,
-            "endLine": 15,
-            "endColumn": 25
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/suffix": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/suffix",
-          "name": "suffix",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps/memberField/suffix",
-            "name": "suffix",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 32,
-              "startColumn": 9,
-              "endLine": 32,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 25
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListDate/types.ts-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-valueerrorisDisabled": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListDate/types.ts-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-valueerrorisDisabled",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListDate/types.ts",
-      "from_class_or_interface_key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn",
-      "from_class_or_interface_name": "SettingsListDatePropsOwn",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/DropdownInput/DropdownSheet.tsx",
-      "to_class_or_interface_key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
-      "to_class_or_interface_name": "DropdownSheetProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/value": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 3,
-              "endLine": 16,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 6,
-            "startColumn": 2,
-            "endLine": 6,
-            "endColumn": 16
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/error": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/error",
-          "name": "error",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
-            "name": "error",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 3,
-              "endLine": 23,
-              "endColumn": 18
-            }
-          },
-          "position": {
-            "startLine": 9,
-            "startColumn": 2,
-            "endLine": 9,
-            "endColumn": 16
-          }
-        },
-        "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/isDisabled": {
-          "key": "app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn/memberField/isDisabled",
-          "name": "isDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
-            "name": "isDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 3,
-              "endLine": 20,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 2,
-            "endLine": 10,
-            "endColumn": 23
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 3,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-labelleftIconiconBgColoronPressshowSeparatornoIconIndent": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-labelleftIconiconBgColoronPressshowSeparatornoIconIndent",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps",
-      "from_class_or_interface_name": "SettingsListSelectOptionSingleProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsList/types.ts",
-      "to_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "to_class_or_interface_name": "SettingsListPropsOwn",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/label": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 2,
-            "endLine": 11,
-            "endColumn": 16
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/leftIcon": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/leftIcon",
-          "name": "leftIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon",
-            "name": "leftIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 4,
-              "startColumn": 9,
-              "endLine": 4,
-              "endColumn": 36
-            }
-          },
-          "position": {
-            "startLine": 12,
-            "startColumn": 2,
-            "endLine": 12,
-            "endColumn": 29
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/iconBgColor": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/iconBgColor",
-          "name": "iconBgColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/iconBgColor",
-            "name": "iconBgColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 34,
-              "startColumn": 9,
-              "endLine": 34,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 2,
-            "endLine": 13,
-            "endColumn": 23
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/onPress": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 2,
-              "endLine": 26,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/showSeparator": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/showSeparator",
-          "name": "showSeparator",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/showSeparator",
-            "name": "showSeparator",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 43,
-              "startColumn": 2,
-              "endLine": 43,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 26
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/noIconIndent": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/noIconIndent",
-          "name": "noIconIndent",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/noIconIndent",
-            "name": "noIconIndent",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 39,
-              "startColumn": 9,
-              "endLine": 39,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 2,
-            "endLine": 19,
-            "endColumn": 25
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-labelonPressshowSeparator": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-labelonPressshowSeparator",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps",
-      "from_class_or_interface_name": "SettingsListSelectOptionSingleProps",
+      "from_file_path": "app/components/SettingsList/types.ts",
+      "from_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps",
+      "from_class_or_interface_name": "SettingsListItemBaseProps",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx",
@@ -3592,8 +1565,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/label": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/label",
+        "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/label": {
+          "key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/label",
           "name": "label",
           "type": "string",
           "probability": 1,
@@ -3611,940 +1584,14 @@
             }
           },
           "position": {
-            "startLine": 11,
-            "startColumn": 2,
-            "endLine": 11,
-            "endColumn": 16
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/onPress": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 44,
-              "startColumn": 2,
-              "endLine": 44,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/showSeparator": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/showSeparator",
-          "name": "showSeparator",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/showSeparator",
-            "name": "showSeparator",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 47,
-              "startColumn": 2,
-              "endLine": 47,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 26
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps-iconBgColorselectionColornoIconIndent": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps-iconBgColorselectionColornoIconIndent",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps",
-      "from_class_or_interface_name": "SettingsListSelectOptionSingleProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps",
-      "to_class_or_interface_name": "SettingsListSelectOptionProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/iconBgColor": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/iconBgColor",
-          "name": "iconBgColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/iconBgColor",
-            "name": "iconBgColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 2,
-            "endLine": 13,
-            "endColumn": 23
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/selectionColor": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/selectionColor",
-          "name": "selectionColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/selectionColor",
-            "name": "selectionColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 2,
-              "endLine": 17,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 26
-          }
-        },
-        "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/noIconIndent": {
-          "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/noIconIndent",
-          "name": "noIconIndent",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/noIconIndent",
-            "name": "noIconIndent",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 2,
-            "endLine": 19,
-            "endColumn": 25
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListSelectOption/SettingsListSelectOption.tsx-app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-iconBgColorselectionColornoIconIndent": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListSelectOption/SettingsListSelectOption.tsx-app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-iconBgColorselectionColornoIconIndent",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps",
-      "from_class_or_interface_name": "SettingsListSelectOptionProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps",
-      "to_class_or_interface_name": "SettingsListSelectOptionSingleProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/iconBgColor": {
-          "key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/iconBgColor",
-          "name": "iconBgColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/iconBgColor",
-            "name": "iconBgColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 2,
-              "endLine": 13,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 23
-          }
-        },
-        "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/selectionColor": {
-          "key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/selectionColor",
-          "name": "selectionColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/selectionColor",
-            "name": "selectionColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 2,
-            "endLine": 17,
-            "endColumn": 26
-          }
-        },
-        "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/noIconIndent": {
-          "key": "app/components/SettingsListSelectOption/SettingsListSelectOption.tsx/interface/SettingsListSelectOptionProps/memberField/noIconIndent",
-          "name": "noIconIndent",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/noIconIndent",
-            "name": "noIconIndent",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 2,
-              "endLine": 19,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 25
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-placeholderkeyboardTypeinputStyleautoFocus": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-placeholderkeyboardTypeinputStyleautoFocus",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListTextInput.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps",
-      "from_class_or_interface_name": "SettingsListTextInputFieldProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListTextInput.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps",
-      "to_class_or_interface_name": "TextInputSharedProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/placeholder": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/placeholder",
-          "name": "placeholder",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/placeholder",
-            "name": "placeholder",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 2,
-              "endLine": 25,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 44,
-            "startColumn": 2,
-            "endLine": 44,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType",
-          "name": "keyboardType",
-          "type": "KeyboardTypeOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/keyboardType",
-            "name": "keyboardType",
-            "type": "KeyboardTypeOptions",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 2,
-              "endLine": 28,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 47,
-            "startColumn": 2,
-            "endLine": 47,
-            "endColumn": 37
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 32,
-              "startColumn": 2,
-              "endLine": 32,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 52,
-            "startColumn": 2,
-            "endLine": 52,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/autoFocus": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/autoFocus",
-          "name": "autoFocus",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/autoFocus",
-            "name": "autoFocus",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 2,
-              "endLine": 27,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 53,
-            "startColumn": 2,
-            "endLine": 53,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 5,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholderautoFocuskeyboardTypeinputStyle": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholderautoFocuskeyboardTypeinputStyle",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListTextInput.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps",
-      "from_class_or_interface_name": "TextInputSharedProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListTextInput.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps",
-      "to_class_or_interface_name": "SettingsListTextInputFieldProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/placeholder": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/placeholder",
-          "name": "placeholder",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/placeholder",
-            "name": "placeholder",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 44,
-              "startColumn": 2,
-              "endLine": 44,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 2,
-            "endLine": 25,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/autoFocus": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/autoFocus",
-          "name": "autoFocus",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/autoFocus",
-            "name": "autoFocus",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 53,
-              "startColumn": 2,
-              "endLine": 53,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 2,
-            "endLine": 27,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/keyboardType": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/keyboardType",
-          "name": "keyboardType",
-          "type": "KeyboardTypeOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType",
-            "name": "keyboardType",
-            "type": "KeyboardTypeOptions",
-            "modifiers": [],
-            "position": {
-              "startLine": 47,
-              "startColumn": 2,
-              "endLine": 47,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 2,
-            "endLine": 28,
-            "endColumn": 37
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/inputStyle": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 52,
-              "startColumn": 2,
-              "endLine": 52,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 32,
-            "startColumn": 2,
-            "endLine": 32,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 5,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-leftIconlabelonPressiconBgColornoIconIndentshowSeparator": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-leftIconlabelonPressiconBgColornoIconIndentshowSeparator",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsList/types.ts",
-      "from_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "from_class_or_interface_name": "SettingsListPropsOwn",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps",
-      "to_class_or_interface_name": "SettingsListSelectOptionSingleProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon",
-          "name": "leftIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/leftIcon",
-            "name": "leftIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 12,
-              "startColumn": 2,
-              "endLine": 12,
-              "endColumn": 29
-            }
-          },
-          "position": {
-            "startLine": 4,
+            "startLine": 6,
             "startColumn": 9,
-            "endLine": 4,
-            "endColumn": 36
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 2,
-              "endLine": 11,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 17
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 2,
-            "endLine": 26,
-            "endColumn": 23
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/iconBgColor": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/iconBgColor",
-          "name": "iconBgColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/iconBgColor",
-            "name": "iconBgColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 2,
-              "endLine": 13,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 34,
-            "startColumn": 9,
-            "endLine": 34,
-            "endColumn": 30
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/noIconIndent": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/noIconIndent",
-          "name": "noIconIndent",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/noIconIndent",
-            "name": "noIconIndent",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 2,
-              "endLine": 19,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 39,
-            "startColumn": 9,
-            "endLine": 39,
-            "endColumn": 32
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/showSeparator": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/showSeparator",
-          "name": "showSeparator",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/showSeparator",
-            "name": "showSeparator",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 43,
-            "startColumn": 2,
-            "endLine": 43,
-            "endColumn": 26
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/TimeTable/types.ts/interface/TimeTableListProps-leftIconlabelvaluerightIcon": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/TimeTable/types.ts/interface/TimeTableListProps-leftIconlabelvaluerightIcon",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsList/types.ts",
-      "from_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "from_class_or_interface_name": "SettingsListPropsOwn",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/TimeTable/types.ts",
-      "to_class_or_interface_key": "app/components/TimeTable/types.ts/interface/TimeTableListProps",
-      "to_class_or_interface_name": "TimeTableListProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon",
-          "name": "leftIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon",
-            "name": "leftIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 4,
-              "startColumn": 2,
-              "endLine": 4,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 4,
-            "startColumn": 9,
-            "endLine": 4,
-            "endColumn": 36
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 5,
-              "startColumn": 2,
-              "endLine": 5,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 17
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 2,
-              "endLine": 7,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 2,
-            "endLine": 15,
-            "endColumn": 17
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/rightIcon": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/rightIcon",
-          "name": "rightIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
-            "name": "rightIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 6,
-              "startColumn": 2,
-              "endLine": 6,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 2,
-            "endLine": 21,
-            "endColumn": 30
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-titlevalueonPress": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps-titlevalueonPress",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsList/types.ts",
-      "from_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "from_class_or_interface_name": "SettingsListPropsOwn",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/FeedbackSupport/FeedbackSupport.tsx",
-      "to_class_or_interface_key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps",
-      "to_class_or_interface_name": "FeedbackItemProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/title": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 12,
-              "startColumn": 2,
-              "endLine": 12,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 9,
-            "endLine": 13,
+            "endLine": 6,
             "endColumn": 24
           }
         },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 2,
-              "endLine": 13,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 2,
-            "endLine": 15,
-            "endColumn": 17
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FeedbackSupport/FeedbackSupport.tsx/interface/FeedbackItemProps/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 2,
-              "endLine": 17,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 2,
-            "endLine": 26,
-            "endColumn": 23
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-labelonPressshowSeparator": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-labelonPressshowSeparator",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsList/types.ts",
-      "from_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "from_class_or_interface_name": "SettingsListPropsOwn",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx",
-      "to_class_or_interface_key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem",
-      "to_class_or_interface_name": "ActionItem",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 40,
-              "startColumn": 2,
-              "endLine": 40,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 17
-          }
-        },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
+        "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/onPress": {
+          "key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/onPress",
           "name": "onPress",
           "type": "() => void",
           "probability": 1,
@@ -4562,14 +1609,14 @@
             }
           },
           "position": {
-            "startLine": 26,
-            "startColumn": 2,
-            "endLine": 26,
-            "endColumn": 23
+            "startLine": 7,
+            "startColumn": 9,
+            "endLine": 7,
+            "endColumn": 30
           }
         },
-        "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/showSeparator": {
-          "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/showSeparator",
+        "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/showSeparator": {
+          "key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/showSeparator",
           "name": "showSeparator",
           "type": "boolean",
           "probability": 1,
@@ -4587,200 +1634,78 @@
             }
           },
           "position": {
-            "startLine": 43,
-            "startColumn": 2,
-            "endLine": 43,
-            "endColumn": 26
+            "startLine": 8,
+            "startColumn": 9,
+            "endLine": 8,
+            "endColumn": 33
           }
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
+        "cluster_id": 3,
+        "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-app/components/TimeTable/types.ts-app/components/TimeTable/types.ts/interface/TimeTableListProps-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-leftIconlabelrightIconvalue": {
+    "fields_to_fields_data_clump-app/hooks/useMyScrollviewDirectusImageEditModal.tsx-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-labelonPressshowSeparator": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/TimeTable/types.ts-app/components/TimeTable/types.ts/interface/TimeTableListProps-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-leftIconlabelrightIconvalue",
+      "key": "fields_to_fields_data_clump-app/hooks/useMyScrollviewDirectusImageEditModal.tsx-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-labelonPressshowSeparator",
       "probability": 1,
-      "from_file_path": "app/components/TimeTable/types.ts",
-      "from_class_or_interface_key": "app/components/TimeTable/types.ts/interface/TimeTableListProps",
-      "from_class_or_interface_name": "TimeTableListProps",
+      "from_file_path": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx",
+      "from_class_or_interface_key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem",
+      "from_class_or_interface_name": "ActionItem",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/SettingsList/types.ts",
-      "to_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "to_class_or_interface_name": "SettingsListPropsOwn",
+      "to_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps",
+      "to_class_or_interface_name": "SettingsListItemBaseProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon": {
-          "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/leftIcon",
-          "name": "leftIcon",
-          "type": "React.ReactNode",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/leftIcon",
-            "name": "leftIcon",
-            "type": "React.ReactNode",
-            "modifiers": [],
-            "position": {
-              "startLine": 4,
-              "startColumn": 9,
-              "endLine": 4,
-              "endColumn": 36
-            }
-          },
-          "position": {
-            "startLine": 4,
-            "startColumn": 2,
-            "endLine": 4,
-            "endColumn": 28
-          }
-        },
-        "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label": {
-          "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/label",
+        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label": {
+          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label",
           "name": "label",
           "type": "string",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
+            "key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/label",
             "name": "label",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 17
+              "startLine": 6,
+              "startColumn": 9,
+              "endLine": 6,
+              "endColumn": 24
             }
           },
           "position": {
-            "startLine": 5,
+            "startLine": 40,
             "startColumn": 2,
-            "endLine": 5,
+            "endLine": 40,
             "endColumn": 16
           }
         },
-        "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon": {
-          "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/rightIcon",
-          "name": "rightIcon",
-          "type": "React.ReactNode",
+        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress": {
+          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/rightIcon",
-            "name": "rightIcon",
-            "type": "React.ReactNode",
+            "key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
             "modifiers": [],
             "position": {
-              "startLine": 21,
-              "startColumn": 2,
-              "endLine": 21,
+              "startLine": 7,
+              "startColumn": 9,
+              "endLine": 7,
               "endColumn": 30
             }
           },
           "position": {
-            "startLine": 6,
-            "startColumn": 2,
-            "endLine": 6,
-            "endColumn": 30
-          }
-        },
-        "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value": {
-          "key": "app/components/TimeTable/types.ts/interface/TimeTableListProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 2,
-              "endLine": 15,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 2,
-            "endLine": 7,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/hooks/useMyScrollviewDirectusImageEditModal.tsx-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-labelonPressshowSeparator": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/hooks/useMyScrollviewDirectusImageEditModal.tsx-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-labelonPressshowSeparator",
-      "probability": 1,
-      "from_file_path": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx",
-      "from_class_or_interface_key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem",
-      "from_class_or_interface_name": "ActionItem",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps",
-      "to_class_or_interface_name": "SettingsListSelectOptionSingleProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label": {
-          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 2,
-              "endLine": 11,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 40,
-            "startColumn": 2,
-            "endLine": 40,
-            "endColumn": 16
-          }
-        },
-        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress": {
-          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 22
-            }
-          },
-          "position": {
             "startLine": 44,
             "startColumn": 2,
             "endLine": 44,
@@ -4794,15 +1719,15 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps/memberField/showSeparator",
+            "key": "app/components/SettingsList/types.ts/interface/SettingsListItemBaseProps/memberField/showSeparator",
             "name": "showSeparator",
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 26
+              "startLine": 8,
+              "startColumn": 9,
+              "endLine": 8,
+              "endColumn": 33
             }
           },
           "position": {
@@ -4814,105 +1739,8 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/hooks/useMyScrollviewDirectusImageEditModal.tsx-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-labelonPressshowSeparator": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/hooks/useMyScrollviewDirectusImageEditModal.tsx-app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-labelonPressshowSeparator",
-      "probability": 1,
-      "from_file_path": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx",
-      "from_class_or_interface_key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem",
-      "from_class_or_interface_name": "ActionItem",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsList/types.ts",
-      "to_class_or_interface_key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn",
-      "to_class_or_interface_name": "SettingsListPropsOwn",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label": {
-          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/label",
-          "name": "label",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/label",
-            "name": "label",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 40,
-            "startColumn": 2,
-            "endLine": 40,
-            "endColumn": 16
-          }
-        },
-        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress": {
-          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/onPress",
-          "name": "onPress",
-          "type": "() => void",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/onPress",
-            "name": "onPress",
-            "type": "() => void",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 2,
-              "endLine": 26,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 44,
-            "startColumn": 2,
-            "endLine": 44,
-            "endColumn": 23
-          }
-        },
-        "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/showSeparator": {
-          "key": "app/hooks/useMyScrollviewDirectusImageEditModal.tsx/interface/ActionItem/memberField/showSeparator",
-          "name": "showSeparator",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsList/types.ts/interface/SettingsListPropsOwn/memberField/showSeparator",
-            "name": "showSeparator",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 43,
-              "startColumn": 2,
-              "endLine": 43,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 47,
-            "startColumn": 2,
-            "endLine": 47,
-            "endColumn": 26
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 4,
-        "cluster_type": 3
+        "cluster_id": 3,
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-selectedThemeprimaryColoramountColumnsForcard": {
@@ -5008,7 +1836,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -5105,7 +1933,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 1,
+        "cluster_id": 2,
         "cluster_type": 3
       }
     }
