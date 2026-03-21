@@ -12,6 +12,8 @@ import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGen
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
+import { BARRIER_ICON_KEYS, PARKING_ICON_KEYS, POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
+import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
@@ -711,9 +713,12 @@ const OsmVectorMapScreen: React.FC = () => {
 	const peopleCount = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleCount ?? 80);
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
 	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
-	const showPOI = useAppSelector((state) => (state.settings as any).osmVectorMapShowPOI ?? true);
-	const showTransit = useAppSelector((state) => (state.settings as any).osmVectorMapShowTransit ?? true);
-	const showRoadNames = useAppSelector((state) => (state.settings as any).osmVectorMapShowRoadNames ?? true);
+	const showSettings = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: false, parking: true }) as Record<string, boolean>,
+	);
+	const poiSubSettings = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapPoiSubSettings ?? {}) as Record<string, boolean>,
+	);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -784,12 +789,10 @@ const OsmVectorMapScreen: React.FC = () => {
 	peopleCountRef.current = peopleCount;
 	const carModeRef = useRef(carMode);
 	carModeRef.current = carMode;
-	const showPOIRef = useRef(showPOI);
-	showPOIRef.current = showPOI;
-	const showTransitRef = useRef(showTransit);
-	showTransitRef.current = showTransit;
-	const showRoadNamesRef = useRef(showRoadNames);
-	showRoadNamesRef.current = showRoadNames;
+	const showSettingsRef = useRef(showSettings);
+	showSettingsRef.current = showSettings;
+	const poiSubSettingsRef = useRef(poiSubSettings);
+	poiSubSettingsRef.current = poiSubSettings;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1228,22 +1231,39 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// Send layer visibility to the map when settings change and the map is ready
 	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'poi', visible: showPOI } });
-		}
-	}, [showPOI]);
+		if (!mapMountedRef.current) return;
+		const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
+		Object.entries(GROUP_MAP).forEach(([key, group]) => {
+			sendToMapRef.current({ setLayerGroupVisibility: { group, visible: showSettings[key] ?? true } });
+		});
+	}, [showSettings]);
 
+	// Send POI icon overrides when POI sub-settings, the main POI toggle, barriers toggle, or parking toggle changes
 	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'transit', visible: showTransit } });
+		if (!mapMountedRef.current) return;
+		const poiEnabled = showSettings.poi ?? true;
+		const barriersEnabled = showSettings.barriers ?? false;
+		const parkingEnabled = showSettings.parking ?? true;
+		const overrides: Record<string, string | null> = {};
+		if (poiEnabled) {
+			POI_SUBTYPES.forEach(({ key }) => {
+				if (!(poiSubSettings[key] ?? true)) {
+					overrides[key] = null;
+				}
+			});
 		}
-	}, [showTransit]);
-
-	useEffect(() => {
-		if (mapMountedRef.current) {
-			sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: showRoadNames } });
+		if (!barriersEnabled) {
+			BARRIER_ICON_KEYS.forEach((key) => {
+				overrides[key] = null;
+			});
 		}
-	}, [showRoadNames]);
+		if (!parkingEnabled) {
+			PARKING_ICON_KEYS.forEach((key) => {
+				overrides[key] = null;
+			});
+		}
+		sendToMapRef.current({ poiIconOverrides: overrides });
+	}, [showSettings, poiSubSettings]);
 
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
@@ -1318,15 +1338,37 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (carModeRef.current) {
 					sendToMapRef.current({ carMode: true });
 				}
-				if (!showPOIRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'poi', visible: false } });
+				// Send the emoji map so the HTML has no hardcoded emoji data
+				sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
+				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
+				Object.entries(GROUP_MAP).forEach(([key, group]) => {
+					if (!(showSettingsRef.current[key] ?? (key === 'barriers' ? false : true))) {
+						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
+					}
+				});
+				// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
+				const poiEnabled = showSettingsRef.current.poi ?? true;
+				const barriersEnabled = showSettingsRef.current.barriers ?? false;
+				const parkingEnabled = showSettingsRef.current.parking ?? true;
+				const initialPoiOverrides: Record<string, string | null> = {};
+				if (poiEnabled) {
+					POI_SUBTYPES.forEach(({ key }) => {
+						if (!(poiSubSettingsRef.current[key] ?? true)) {
+							initialPoiOverrides[key] = null;
+						}
+					});
 				}
-				if (!showTransitRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'transit', visible: false } });
+				if (!barriersEnabled) {
+					BARRIER_ICON_KEYS.forEach((key) => {
+						initialPoiOverrides[key] = null;
+					});
 				}
-				if (!showRoadNamesRef.current) {
-					sendToMapRef.current({ setLayerGroupVisibility: { group: 'roadLabels', visible: false } });
+				if (!parkingEnabled) {
+					PARKING_ICON_KEYS.forEach((key) => {
+						initialPoiOverrides[key] = null;
+					});
 				}
+				sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
 				addLog('MapComponentMounted');
 				return;
 			}

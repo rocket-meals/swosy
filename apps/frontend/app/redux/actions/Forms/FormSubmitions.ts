@@ -9,7 +9,7 @@ export class FormsSubmissionsHelper extends CollectionHelper<DatabaseTypes.FormS
 
 	async fetchFormSubmissions(queryOverride: any = {}) {
 		// Destructure parameters from queryOverride and provide defaults.
-		const { alias, state, page = 1, offset = 0, limit = 100, sort, form, ...restQuery } = queryOverride;
+		const { alias, state, page = 1, offset = 0, limit = -1, sort, form, ...restQuery } = queryOverride;
 
 		// Build filters object based on alias and state if provided.
 		const filters: any = {};
@@ -26,8 +26,8 @@ export class FormsSubmissionsHelper extends CollectionHelper<DatabaseTypes.FormS
 		}
 
 		const defaultQuery = {
-			// Get all fields and include translations.
-			fields: ['*, translations.*'],
+			// Only fetch the fields needed for the list view; full data is loaded on demand.
+			fields: ['id', 'alias'],
 			// Sort by date_updated (or custom sort if provided).
 			sort: sort || ['date_updated'],
 			// Apply the filters built above.

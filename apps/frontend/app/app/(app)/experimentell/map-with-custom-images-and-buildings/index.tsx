@@ -5,6 +5,7 @@ import { MyMapHandle } from '@/components/MyMap/MyMapHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
+import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
 
 // Demo center: FAU Erlangen campus area
 const DEMO_CENTER = { lat: 49.5977, lng: 11.0036 };
@@ -112,6 +113,7 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
     onBuildingClickRef.current = onExperimentalClickOnBuildings;
 
     const [selectedBuilding, setSelectedBuilding] = useState<object | null>(null);
+    const [selectedPoi, setSelectedPoi] = useState<{ iconId: string; emoji: string; properties: object } | null>(null);
     const [layerVisibility, setLayerVisibility] = useState<Record<LayerGroup, boolean>>({
         poi: true,
         parking: true,
@@ -166,10 +168,11 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
     }, [sendGlbIfReady]);
 
     const handleMessage = useCallback((data: object) => {
-        const msg = data as { tag?: string; properties?: object };
+        const msg = data as { tag?: string; properties?: object; iconId?: string; emoji?: string };
         if (msg.tag === 'MapComponentMounted') {
             mapReadyRef.current = true;
             mapRef.current?.sendToMap({
+                iconEmojiMap: ICON_EMOJI_MAP,
                 mapCenterPosition: DEMO_CENTER,
                 zoom: DEMO_ZOOM,
                 pitch: DEMO_PITCH,
@@ -179,13 +182,19 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                 imageOverlays: IMAGE_OVERLAYS,
                 buildings3d: BUILDINGS_3D,
                 enableBuildingClick: true,
+                poiClickEnabled: true,
             });
             sendGlbIfReady();
         } else if (msg.tag === 'BuildingClicked' && msg.properties) {
             setSelectedBuilding(msg.properties);
+            setSelectedPoi(null);
             onBuildingClickRef.current?.(msg.properties);
+        } else if (msg.tag === 'PoiClicked') {
+            setSelectedPoi({ iconId: msg.iconId ?? '', emoji: msg.emoji ?? '', properties: msg.properties ?? {} });
+            setSelectedBuilding(null);
         } else if (msg.tag === 'MapTapped') {
             setSelectedBuilding(null);
+            setSelectedPoi(null);
         }
     }, [sendGlbIfReady]);
 
@@ -249,6 +258,26 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                         ))}
                     </ScrollView>
                     <Pressable style={styles.buildingInfoClose} onPress={() => setSelectedBuilding(null)}>
+                        <Text style={styles.buildingInfoCloseText}>✕</Text>
+                    </Pressable>
+                </View>
+            )}
+
+            {/* Selected POI info */}
+            {selectedPoi !== null && (
+                <View style={styles.buildingInfo}>
+                    <Text style={styles.buildingInfoTitle}>
+                        {selectedPoi.emoji ? `${selectedPoi.emoji} ` : ''}{selectedPoi.iconId || 'POI'}
+                    </Text>
+                    <ScrollView style={styles.buildingInfoScroll}>
+                        {Object.entries(selectedPoi.properties).map(([k, v]) => (
+                            <Text key={k} style={styles.buildingInfoRow}>
+                                <Text style={styles.buildingInfoKey}>{k}: </Text>
+                                {String(v)}
+                            </Text>
+                        ))}
+                    </ScrollView>
+                    <Pressable style={styles.buildingInfoClose} onPress={() => setSelectedPoi(null)}>
                         <Text style={styles.buildingInfoCloseText}>✕</Text>
                     </Pressable>
                 </View>
