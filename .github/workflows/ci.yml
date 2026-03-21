@@ -148,7 +148,7 @@ jobs:
         id: data-clumps
         uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master
         with:
-          path-to-source: ./apps/frontend
+          path-to-source: .
           output-path: reports/data-clumps-doctor/data-clumps.json
           badge-output-path: reports/data-clumps-doctor/badges/data-clumps.svg
           source-language-type: typescript
