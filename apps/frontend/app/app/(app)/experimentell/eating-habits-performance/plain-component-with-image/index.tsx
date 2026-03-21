@@ -19,19 +19,15 @@ import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation, getDescriptionFromTranslation } from '@/helper/resourceHelper';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import DebugView from '@/components/DebugView';
+import { PlainMarkingBaseProps } from '../types';
 
 // ---------------------------------------------------------------------------
 // Plain component with image – receives resolved strings + image URI as props
 // ---------------------------------------------------------------------------
-interface PlainMarkingImageRowProps {
-	id: string;
-	name: string;
-	description: string;
+interface PlainMarkingImageRowProps extends PlainMarkingBaseProps {
 	imageUri: string | null;
 	shortCode: string | null;
 	bgColor: string | null;
-	borderColor: string;
-	textColor: string;
 }
 
 const PlainMarkingImageRow: React.FC<PlainMarkingImageRowProps> = ({
