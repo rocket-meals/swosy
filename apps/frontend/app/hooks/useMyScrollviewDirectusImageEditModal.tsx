@@ -19,19 +19,19 @@ import { RootState } from '@/redux/reducer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { CollectionNames } from 'repo-depkit-common';
 
-type DirectusImageEditModalOptions = {
-	itemId: string | number;
+type DirectusImageEditModalBase = {
 	field: string;
 	collection: CollectionNames;
 	onUpdated?: () => void;
+};
+
+type DirectusImageEditModalOptions = DirectusImageEditModalBase & {
+	itemId: string | number;
 	title?: string;
 };
 
-type DirectusImageEditModalContentProps = {
+type DirectusImageEditModalContentProps = DirectusImageEditModalBase & {
 	itemId: string;
-	field: string;
-	collection: CollectionNames;
-	onUpdated?: () => void;
 	onClose: () => void;
 };
 

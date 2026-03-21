@@ -144,23 +144,26 @@ export type LastUpdatedState = {
 	lastUpdatedMap: Record<string, string>;
 }
 
-export type DayPlan = {
+/**
+ * Shared fields between DayPlan and FoodPlan for the monitor screen configuration.
+ */
+export type CanteenIntervalPlanBase = {
 	selectedCanteen: DatabaseTypes.Canteens;
-	mealOfferCategory: { id: string; alias: string };
-	isMenuCategory: boolean;
 	nextFoodInterval: number;
 	refreshInterval: number;
+};
+
+export type DayPlan = CanteenIntervalPlanBase & {
+	mealOfferCategory: { id: string; alias: string };
+	isMenuCategory: boolean;
 	isFullScreen: boolean;
 	showMarkingsOnCard: boolean;
 	foodCategory: { id: string; alias: string };
 	isMenuCategoryName: boolean;
 }
 
-export type FoodPlan = {
-	selectedCanteen: DatabaseTypes.Canteens;
+export type FoodPlan = CanteenIntervalPlanBase & {
 	additionalSelectedCanteen: DatabaseTypes.Canteens;
-	nextFoodInterval: number;
-	refreshInterval: number;
 }
 
 export type WeekPlan = {
