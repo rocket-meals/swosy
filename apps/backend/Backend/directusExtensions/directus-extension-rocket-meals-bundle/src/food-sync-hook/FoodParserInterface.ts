@@ -1,7 +1,9 @@
 import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
-import {DatabaseTypes, DateHelper, LanguageCodes} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, FoodofferDateType, LanguageCodes} from 'repo-depkit-common';
 import {MarkingsTypeForParser} from './MarkingParserInterface';
 import {HashHelper} from '../helpers/HashHelper';
+
+export type { FoodofferDateType };
 
 export type FoodParseFoodAttributeValueType = {
   external_identifier: string;
@@ -13,11 +15,14 @@ export type FoodParseFoodAttributesType = FoodParseFoodAttributeValueType[];
 export type FoodWithBasicData = Omit<DatabaseTypes.Foods, 'user_created' | 'user_updated' | 'markings' | 'image' | 'feedbacks' | 'translations' | 'environmental_impact' | 'nutrition' | 'rating_legacy_settings' | 'rating_settings' | 'food_category' | 'category' | 'attribute_values'>;
 export type FoodWithBasicDataWithoutIdType = Omit<FoodWithBasicData, 'id'>;
 
-export type FoodsInformationTypeForParser = {
-  basicFoodData: FoodWithBasicData;
+export type FoodClassificationData = {
   attribute_values: FoodParseFoodAttributesType;
-  category_external_identifier: string | null;
   marking_external_identifiers: string[];
+  category_external_identifier: string | null;
+};
+
+export type FoodsInformationTypeForParser = FoodClassificationData & {
+  basicFoodData: FoodWithBasicData;
   translations: TranslationsFromParsingType;
 };
 
@@ -27,11 +32,6 @@ export type CanteensTypeForParser = CanteenTypeOmitedFields & {
   external_identifier: string;
 }; // make external_identifier required
 
-export type FoodofferDateType = {
-  year: number; // e.g. 2021
-  month: number; // 01-12
-  day: number; // 01-31
-};
 export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values'>;
 
 export type FoodComponentForParser = {
@@ -41,11 +41,8 @@ export type FoodComponentForParser = {
   food_id: string;
 };
 
-export type FoodoffersTypeForParser = {
+export type FoodoffersTypeForParser = FoodClassificationData & {
   basicFoodofferData: FoodofferTypeWithBasicData;
-  attribute_values: FoodParseFoodAttributesType;
-  marking_external_identifiers: string[];
-  category_external_identifier: string | null;
   date: FoodofferDateType;
   canteen_external_identifier: string;
   food_id: string;
