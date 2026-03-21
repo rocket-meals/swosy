@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-21T14:06:35.472Z",
+  "report_timestamp": "2026-03-21T14:41:48.671Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 20,
-          "average": 1.4055690072639224,
-          "amountSavedValuesForKeys": 1161,
+          "median": 1,
+          "maximum": 19,
+          "average": 1.372121212121212,
+          "amountSavedValuesForKeys": 1132,
           "amountKeys": 15
         },
         "invertedParameterToMethods": {
@@ -20,23 +20,23 @@
           "amountKeys": 11
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
-          "maximum": 20,
-          "average": 1.4089805825242718,
-          "amountSavedValuesForKeys": 1161,
+          "median": 1,
+          "maximum": 19,
+          "average": 1.3754556500607533,
+          "amountSavedValuesForKeys": 1132,
           "amountKeys": 15
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 2122,
-        "detection_time_ms": 36,
+        "ast_generation_time_ms": 2151,
+        "detection_time_ms": 35,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 232.52,
-          "os_memory_free": 15026171904,
+          "os_uptime": 113.91,
+          "os_memory_free": 15059472384,
           "os_memory_total": 16767234048,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,28 +44,28 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 27,
-    "amount_files_with_data_clumps": 25,
+    "amount_classes_or_interfaces_with_data_clumps": 23,
+    "amount_files_with_data_clumps": 21,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 64,
+    "fields_to_fields_data_clump": 44,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 64
+    "amount_data_clumps": 44
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c52417c545384069f75e14800e8fecf3cc561805",
-    "project_commit_hash": "c52417c545384069f75e14800e8fecf3cc561805",
+    "project_version": "5400b9c357f2121b17ef74ccdc4cbf024ed2f21c",
+    "project_commit_hash": "5400b9c357f2121b17ef74ccdc4cbf024ed2f21c",
     "project_tag": null,
-    "project_commit_date": "1774101904",
+    "project_commit_date": "1774104013",
     "additional": {
       "relative_path_to_source_folder_in_project": "apps/frontend"
     },
-    "number_of_files": 241,
-    "number_of_classes_or_interfaces": 367,
+    "number_of_files": 240,
+    "number_of_classes_or_interfaces": 368,
     "number_of_methods": 378,
-    "number_of_data_fields": 1161,
+    "number_of_data_fields": 1132,
     "number_of_method_parameters": 404
   },
   "detector": {
@@ -213,1508 +213,88 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/app/(app)/course-timetable/types.ts-app/app/(app)/course-timetable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor": {
+    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-screenWidthappSettingstheme": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/course-timetable/types.ts-app/app/(app)/course-timetable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor",
+      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-screenWidthappSettingstheme",
       "probability": 1,
-      "from_file_path": "app/app/(app)/course-timetable/types.ts",
-      "from_class_or_interface_key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes",
-      "from_class_or_interface_name": "EventTypes",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/CourseTimeTable/types.ts",
-      "to_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
-      "to_class_or_interface_name": "BaseCourseTimetableEvent",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 31,
-              "startColumn": 2,
-              "endLine": 31,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 2,
-            "startColumn": 2,
-            "endLine": 2,
-            "endColumn": 14
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 32,
-              "startColumn": 2,
-              "endLine": 32,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 3,
-            "startColumn": 2,
-            "endLine": 3,
-            "endColumn": 17
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
-          "name": "location",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
-            "name": "location",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 33,
-              "startColumn": 2,
-              "endLine": 33,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 4,
-            "startColumn": 2,
-            "endLine": 4,
-            "endColumn": 20
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
-          "name": "color",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
-            "name": "color",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 34,
-              "startColumn": 2,
-              "endLine": 34,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 5,
-            "startColumn": 2,
-            "endLine": 5,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/course-timetable/types.ts-app/app/(app)/course-timetable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/course-timetable/types.ts-app/app/(app)/course-timetable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/course-timetable/types.ts",
-      "from_class_or_interface_key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes",
-      "from_class_or_interface_name": "EventTypes",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/CourseTimeTable/types.ts",
-      "to_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/EventTypes",
-      "to_class_or_interface_name": "EventTypes",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 41,
-              "startColumn": 2,
-              "endLine": 41,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 2,
-            "startColumn": 2,
-            "endLine": 2,
-            "endColumn": 14
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 42,
-              "startColumn": 2,
-              "endLine": 42,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 3,
-            "startColumn": 2,
-            "endLine": 3,
-            "endColumn": 17
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
-          "name": "location",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
-            "name": "location",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 43,
-              "startColumn": 2,
-              "endLine": 43,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 4,
-            "startColumn": 2,
-            "endLine": 4,
-            "endColumn": 20
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
-          "name": "color",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
-            "name": "color",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 44,
-              "startColumn": 2,
-              "endLine": 44,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 5,
-            "startColumn": 2,
-            "endLine": 5,
-            "endColumn": 17
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/startTime": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/startTime",
-          "name": "startTime",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/startTime",
-            "name": "startTime",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 45,
-              "startColumn": 2,
-              "endLine": 45,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 6,
-            "startColumn": 2,
-            "endLine": 6,
-            "endColumn": 20
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/endTime": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/endTime",
-          "name": "endTime",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/endTime",
-            "name": "endTime",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 46,
-              "startColumn": 2,
-              "endLine": 46,
-              "endColumn": 18
-            }
-          },
-          "position": {
-            "startLine": 7,
-            "startColumn": 2,
-            "endLine": 7,
-            "endColumn": 18
-          }
-        },
-        "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/day": {
-          "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/day",
-          "name": "day",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/day",
-            "name": "day",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 47,
-              "startColumn": 2,
-              "endLine": 47,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 8,
-            "startColumn": 2,
-            "endLine": 8,
-            "endColumn": 14
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/components/FoodItem/types.ts/interface/FoodItemProps-cardWidthlanguagepirateLanguagefunLanguageModeserverInfoappSettingsprimaryColoruserisManagementprofilemarkingsscreenWidththemeamountColumnsForcard": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/components/FoodItem/types.ts/interface/FoodItemProps-cardWidthlanguagepirateLanguagefunLanguageModeserverInfoappSettingsprimaryColoruserisManagementprofilemarkingsscreenWidththemeamountColumnsForcard",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "from_class_or_interface_name": "FoodOfferItemRenderProps",
+      "from_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
+      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
+      "from_class_or_interface_name": "FoodHeaderProps",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/FoodItem/types.ts",
-      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "to_class_or_interface_name": "FoodItemProps",
+      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "to_class_or_interface_name": "FoodItemSharedRenderProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/cardWidth": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/cardWidth",
-          "name": "cardWidth",
+        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth": {
+          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
+          "name": "screenWidth",
           "type": "number",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/cardWidth",
-            "name": "cardWidth",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
+            "name": "screenWidth",
             "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 2,
-              "endLine": 11,
-              "endColumn": 21
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 5,
-            "endLine": 14,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language",
-          "name": "language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language",
-            "name": "language",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 5,
-            "endLine": 16,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/pirateLanguage": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/pirateLanguage",
-          "name": "pirateLanguage",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/pirateLanguage",
-            "name": "pirateLanguage",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 2,
-              "endLine": 15,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 5,
-            "endLine": 17,
-            "endColumn": 30
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/funLanguageMode": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/funLanguageMode",
-          "name": "funLanguageMode",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/funLanguageMode",
-            "name": "funLanguageMode",
-            "type": "string",
             "modifiers": [],
             "position": {
               "startLine": 16,
               "startColumn": 2,
               "endLine": 16,
-              "endColumn": 34
+              "endColumn": 23
             }
           },
           "position": {
-            "startLine": 18,
+            "startLine": 15,
             "startColumn": 5,
-            "endLine": 18,
-            "endColumn": 37
+            "endLine": 15,
+            "endColumn": 25
           }
         },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/serverInfo": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/serverInfo",
-          "name": "serverInfo",
+        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings": {
+          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
+          "name": "appSettings",
           "type": "any",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/serverInfo",
-            "name": "serverInfo",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/appSettings",
+            "name": "appSettings",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 5,
+            "endLine": 19,
+            "endColumn": 22
+          }
+        },
+        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme": {
+          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
+          "name": "theme",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme",
+            "name": "theme",
             "type": "any",
             "modifiers": [],
             "position": {
               "startLine": 17,
               "startColumn": 2,
               "endLine": 17,
-              "endColumn": 19
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 5,
-            "endLine": 19,
-            "endColumn": 22
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 5,
-            "endLine": 20,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor",
-          "name": "primaryColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor",
-            "name": "primaryColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 2,
-              "endLine": 19,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 27
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/user": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/user",
-          "name": "user",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/user",
-            "name": "user",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 2,
-              "endLine": 20,
-              "endColumn": 13
-            }
-          },
-          "position": {
-            "startLine": 22,
-            "startColumn": 5,
-            "endLine": 22,
-            "endColumn": 16
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/isManagement": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/isManagement",
-          "name": "isManagement",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/isManagement",
-            "name": "isManagement",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 2,
-              "endLine": 21,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 5,
-            "endLine": 23,
-            "endColumn": 28
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/profile": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/profile",
-          "name": "profile",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/profile",
-            "name": "profile",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 22,
-              "startColumn": 2,
-              "endLine": 22,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 5,
-            "endLine": 24,
-            "endColumn": 19
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/markings": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/markings",
-          "name": "markings",
-          "type": "any[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/markings",
-            "name": "markings",
-            "type": "any[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 3,
-              "endLine": 23,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 5,
-            "endLine": 25,
-            "endColumn": 22
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 3,
-              "endLine": 24,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 5,
-            "endLine": 26,
-            "endColumn": 26
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 3,
-              "endLine": 25,
-              "endColumn": 15
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 5,
-            "endLine": 27,
-            "endColumn": 17
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard",
-          "name": "amountColumnsForcard",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard",
-            "name": "amountColumnsForcard",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 3,
-              "endLine": 26,
-              "endColumn": 33
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 5,
-            "endLine": 28,
-            "endColumn": 35
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps-selectedCanteenappSettingsprofile": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps-selectedCanteenappSettingsprofile",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "from_class_or_interface_name": "FoodOfferItemRenderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps",
-      "to_class_or_interface_name": "FoodOffersHeaderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/selectedCanteen": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/selectedCanteen",
-          "name": "selectedCanteen",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/selectedCanteen",
-            "name": "selectedCanteen",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 5,
-              "endLine": 20,
-              "endColumn": 52
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 5,
-            "endLine": 15,
-            "endColumn": 52
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 5,
-              "endLine": 23,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 5,
-            "endLine": 20,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/profile": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/profile",
-          "name": "profile",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/profile",
-            "name": "profile",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 22,
-              "startColumn": 5,
-              "endLine": 22,
-              "endColumn": 18
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 5,
-            "endLine": 24,
-            "endColumn": 19
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-languagescreenWidththeme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-languagescreenWidththeme",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "from_class_or_interface_name": "FoodOfferItemRenderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/housing/components/HousingListHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps",
-      "to_class_or_interface_name": "HousingListHeaderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language",
-          "name": "language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/language",
-            "name": "language",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 19
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 5,
-            "endLine": 16,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 12,
-              "startColumn": 2,
-              "endLine": 12,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 5,
-            "endLine": 26,
-            "endColumn": 26
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 2,
-              "endLine": 16,
-              "endColumn": 13
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 5,
-            "endLine": 27,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/redux/Types/stateTypes.ts/interface/SettingsState-languageprimaryColoramountColumnsForcard": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/redux/Types/stateTypes.ts/interface/SettingsState-languageprimaryColoramountColumnsForcard",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "from_class_or_interface_name": "FoodOfferItemRenderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/redux/Types/stateTypes.ts",
-      "to_class_or_interface_key": "app/redux/Types/stateTypes.ts/interface/SettingsState",
-      "to_class_or_interface_name": "SettingsState",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language",
-          "name": "language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/language",
-            "name": "language",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 53,
-              "startColumn": 9,
-              "endLine": 53,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 5,
-            "endLine": 16,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor",
-          "name": "primaryColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/primaryColor",
-            "name": "primaryColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 51,
-              "startColumn": 9,
-              "endLine": 51,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 27
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard",
-          "name": "amountColumnsForcard",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/amountColumnsForcard",
-            "name": "amountColumnsForcard",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 60,
-              "startColumn": 9,
-              "endLine": 60,
-              "endColumn": 38
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 5,
-            "endLine": 28,
-            "endColumn": 35
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-appSettingsscreenWidththeme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-appSettingsscreenWidththeme",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "from_class_or_interface_name": "FoodOfferItemRenderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "to_class_or_interface_name": "FoodHeaderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 5,
-              "endLine": 19,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 5,
-            "endLine": 20,
-            "endColumn": 23
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 5,
-              "endLine": 15,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 5,
-            "endLine": 26,
-            "endColumn": 26
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 5,
-            "endLine": 27,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-primaryColorisManagementscreenWidthamountColumnsForcard": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-primaryColorisManagementscreenWidthamountColumnsForcard",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "from_class_or_interface_name": "FoodOfferItemRenderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/BuildingItem/BuildingItem.tsx",
-      "to_class_or_interface_key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
-      "to_class_or_interface_name": "BuildingItemPropsOptimized",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor",
-          "name": "primaryColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/primaryColor",
-            "name": "primaryColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 2,
-              "endLine": 26,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 27
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/isManagement": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/isManagement",
-          "name": "isManagement",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/isManagement",
-            "name": "isManagement",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 31,
-              "startColumn": 2,
-              "endLine": 31,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 5,
-            "endLine": 23,
-            "endColumn": 28
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 30,
-              "startColumn": 2,
-              "endLine": 30,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 5,
-            "endLine": 26,
-            "endColumn": 26
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard": {
-          "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard",
-          "name": "amountColumnsForcard",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/amountColumnsForcard",
-            "name": "amountColumnsForcard",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 2,
-              "endLine": 25,
-              "endColumn": 31
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 5,
-            "endLine": 28,
-            "endColumn": 35
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOffersHeader.tsx-app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-selectedCanteenprofileappSettings": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/components/FoodOffersHeader.tsx-app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-selectedCanteenprofileappSettings",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps",
-      "from_class_or_interface_name": "FoodOffersHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "to_class_or_interface_name": "FoodOfferItemRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/selectedCanteen": {
-          "key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/selectedCanteen",
-          "name": "selectedCanteen",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/selectedCanteen",
-            "name": "selectedCanteen",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 5,
-              "endLine": 15,
-              "endColumn": 52
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 5,
-            "endLine": 20,
-            "endColumn": 52
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/profile": {
-          "key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/profile",
-          "name": "profile",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/profile",
-            "name": "profile",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 5,
-              "endLine": 24,
-              "endColumn": 19
-            }
-          },
-          "position": {
-            "startLine": 22,
-            "startColumn": 5,
-            "endLine": 22,
-            "endColumn": 18
-          }
-        },
-        "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/components/FoodOffersHeader.tsx/interface/FoodOffersHeaderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 5,
-              "endLine": 20,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 5,
-            "endLine": 23,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-screenWidthappSettingstheme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-screenWidthappSettingstheme",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "from_class_or_interface_name": "FoodHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "to_class_or_interface_name": "FoodOfferItemRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 5,
-              "endLine": 26,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 5,
-            "endLine": 15,
-            "endColumn": 25
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 5,
-              "endLine": 20,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 5,
-            "endLine": 19,
-            "endColumn": 22
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 5,
-              "endLine": 27,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 5,
-            "endLine": 21,
-            "endColumn": 16
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemProps-screenWidthpreviousFeedbackappSettingstheme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/foodoffers/details/components/FoodHeader.tsx-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemProps-screenWidthpreviousFeedbackappSettingstheme",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "from_class_or_interface_name": "FoodHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/FoodItem/types.ts",
-      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "to_class_or_interface_name": "FoodItemProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 3,
-              "endLine": 24,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 5,
-            "endLine": 15,
-            "endColumn": 25
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/previousFeedback": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/previousFeedback",
-          "name": "previousFeedback",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/previousFeedback",
-            "name": "previousFeedback",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 12,
-              "startColumn": 2,
-              "endLine": 12,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 5,
-            "endLine": 18,
-            "endColumn": 27
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 5,
-            "endLine": 19,
-            "endColumn": 22
-          }
-        },
-        "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme": {
-          "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 3,
-              "endLine": 25,
-              "endColumn": 15
+              "endColumn": 14
             }
           },
           "position": {
@@ -2509,106 +1089,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/app/(app)/housing/components/HousingListHeader.tsx-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-screenWidthlanguagetheme": {
+    "fields_to_fields_data_clump-app/app/(app)/housing/components/HousingListHeader.tsx-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-screenWidthlanguagetheme": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/housing/components/HousingListHeader.tsx-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-screenWidthlanguagetheme",
-      "probability": 1,
-      "from_file_path": "app/app/(app)/housing/components/HousingListHeader.tsx",
-      "from_class_or_interface_key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps",
-      "from_class_or_interface_name": "HousingListHeaderProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "to_class_or_interface_name": "FoodOfferItemRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/screenWidth": {
-          "key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 5,
-              "endLine": 26,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 12,
-            "startColumn": 2,
-            "endLine": 12,
-            "endColumn": 22
-          }
-        },
-        "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/language": {
-          "key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/language",
-          "name": "language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language",
-            "name": "language",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 19
-          }
-        },
-        "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/theme": {
-          "key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 5,
-              "endLine": 27,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 13
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/app/(app)/housing/components/HousingListHeader.tsx-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemProps-screenWidthlanguagetheme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/app/(app)/housing/components/HousingListHeader.tsx-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemProps-screenWidthlanguagetheme",
+      "key": "fields_to_fields_data_clump-app/app/(app)/housing/components/HousingListHeader.tsx-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-screenWidthlanguagetheme",
       "probability": 1,
       "from_file_path": "app/app/(app)/housing/components/HousingListHeader.tsx",
       "from_class_or_interface_key": "app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps",
@@ -2616,8 +1099,8 @@
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/FoodItem/types.ts",
-      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "to_class_or_interface_name": "FoodItemProps",
+      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "to_class_or_interface_name": "FoodItemSharedRenderProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
@@ -2629,15 +1112,15 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
             "name": "screenWidth",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 24,
-              "startColumn": 3,
-              "endLine": 24,
-              "endColumn": 24
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 23
             }
           },
           "position": {
@@ -2654,14 +1137,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/language",
             "name": "language",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 14,
+              "startLine": 6,
               "startColumn": 2,
-              "endLine": 14,
+              "endLine": 6,
               "endColumn": 20
             }
           },
@@ -2679,15 +1162,15 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme",
             "name": "theme",
             "type": "any",
             "modifiers": [],
             "position": {
-              "startLine": 25,
-              "startColumn": 3,
-              "endLine": 25,
-              "endColumn": 15
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 14
             }
           },
           "position": {
@@ -3116,131 +1599,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/components/BuildingItem/BuildingItem.tsx-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-amountColumnsForcardprimaryColorscreenWidthisManagement": {
+    "fields_to_fields_data_clump-app/components/BuildingItem/BuildingItem.tsx-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-amountColumnsForcardprimaryColorscreenWidthisManagement": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/BuildingItem/BuildingItem.tsx-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-amountColumnsForcardprimaryColorscreenWidthisManagement",
-      "probability": 1,
-      "from_file_path": "app/components/BuildingItem/BuildingItem.tsx",
-      "from_class_or_interface_key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
-      "from_class_or_interface_name": "BuildingItemPropsOptimized",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "to_class_or_interface_name": "FoodOfferItemRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/amountColumnsForcard": {
-          "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/amountColumnsForcard",
-          "name": "amountColumnsForcard",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard",
-            "name": "amountColumnsForcard",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 5,
-              "endLine": 28,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 2,
-            "endLine": 25,
-            "endColumn": 31
-          }
-        },
-        "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/primaryColor": {
-          "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/primaryColor",
-          "name": "primaryColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor",
-            "name": "primaryColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 2,
-            "endLine": 26,
-            "endColumn": 24
-          }
-        },
-        "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/screenWidth": {
-          "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 5,
-              "endLine": 26,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 30,
-            "startColumn": 2,
-            "endLine": 30,
-            "endColumn": 22
-          }
-        },
-        "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/isManagement": {
-          "key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized/memberField/isManagement",
-          "name": "isManagement",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/isManagement",
-            "name": "isManagement",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 5,
-              "endLine": 23,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 31,
-            "startColumn": 2,
-            "endLine": 31,
-            "endColumn": 25
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/BuildingItem/BuildingItem.tsx-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-app/components/FoodItem/types.ts/interface/FoodItemProps-amountColumnsForcardprimaryColorscreenWidthisManagement": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/BuildingItem/BuildingItem.tsx-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-app/components/FoodItem/types.ts/interface/FoodItemProps-amountColumnsForcardprimaryColorscreenWidthisManagement",
+      "key": "fields_to_fields_data_clump-app/components/BuildingItem/BuildingItem.tsx-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-amountColumnsForcardprimaryColorscreenWidthisManagement",
       "probability": 1,
       "from_file_path": "app/components/BuildingItem/BuildingItem.tsx",
       "from_class_or_interface_key": "app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized",
@@ -3248,8 +1609,8 @@
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/FoodItem/types.ts",
-      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "to_class_or_interface_name": "FoodItemProps",
+      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "to_class_or_interface_name": "FoodItemSharedRenderProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
@@ -3261,15 +1622,15 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/amountColumnsForcard",
             "name": "amountColumnsForcard",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 26,
-              "startColumn": 3,
-              "endLine": 26,
-              "endColumn": 33
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 32
             }
           },
           "position": {
@@ -3286,14 +1647,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/primaryColor",
             "name": "primaryColor",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 11,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 11,
               "endColumn": 24
             }
           },
@@ -3311,15 +1672,15 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
             "name": "screenWidth",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 24,
-              "startColumn": 3,
-              "endLine": 24,
-              "endColumn": 24
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 23
             }
           },
           "position": {
@@ -3336,14 +1697,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/isManagement",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/isManagement",
             "name": "isManagement",
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 21,
+              "startLine": 13,
               "startColumn": 2,
-              "endLine": 21,
+              "endLine": 13,
               "endColumn": 25
             }
           },
@@ -3454,128 +1815,6 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolor": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolor",
-      "probability": 1,
-      "from_file_path": "app/components/CourseTimeTable/types.ts",
-      "from_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent",
-      "from_class_or_interface_name": "BaseCourseTimetableEvent",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/course-timetable/types.ts",
-      "to_class_or_interface_key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes",
-      "to_class_or_interface_name": "EventTypes",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 2,
-              "startColumn": 2,
-              "endLine": 2,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 31,
-            "startColumn": 2,
-            "endLine": 31,
-            "endColumn": 14
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 3,
-              "startColumn": 2,
-              "endLine": 3,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 32,
-            "startColumn": 2,
-            "endLine": 32,
-            "endColumn": 17
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/location",
-          "name": "location",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
-            "name": "location",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 4,
-              "startColumn": 2,
-              "endLine": 4,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 33,
-            "startColumn": 2,
-            "endLine": 33,
-            "endColumn": 20
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent/memberField/color",
-          "name": "color",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
-            "name": "color",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 5,
-              "startColumn": 2,
-              "endLine": 5,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 34,
-            "startColumn": 2,
-            "endLine": 34,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
         "cluster_type": 3
       }
     },
@@ -3698,204 +1937,7 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 2,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/EventTypes-app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/EventTypes-app/app/(app)/course-timetable/types.ts/interface/EventTypes-idtitlelocationcolorstartTimeendTimeday",
-      "probability": 1,
-      "from_file_path": "app/components/CourseTimeTable/types.ts",
-      "from_class_or_interface_key": "app/components/CourseTimeTable/types.ts/interface/EventTypes",
-      "from_class_or_interface_name": "EventTypes",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/course-timetable/types.ts",
-      "to_class_or_interface_key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes",
-      "to_class_or_interface_name": "EventTypes",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/id",
-          "name": "id",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/id",
-            "name": "id",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 2,
-              "startColumn": 2,
-              "endLine": 2,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 41,
-            "startColumn": 2,
-            "endLine": 41,
-            "endColumn": 14
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 3,
-              "startColumn": 2,
-              "endLine": 3,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 42,
-            "startColumn": 2,
-            "endLine": 42,
-            "endColumn": 17
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/location",
-          "name": "location",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/location",
-            "name": "location",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 4,
-              "startColumn": 2,
-              "endLine": 4,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 43,
-            "startColumn": 2,
-            "endLine": 43,
-            "endColumn": 20
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/color",
-          "name": "color",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/color",
-            "name": "color",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 5,
-              "startColumn": 2,
-              "endLine": 5,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 44,
-            "startColumn": 2,
-            "endLine": 44,
-            "endColumn": 17
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/startTime": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/startTime",
-          "name": "startTime",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/startTime",
-            "name": "startTime",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 6,
-              "startColumn": 2,
-              "endLine": 6,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 45,
-            "startColumn": 2,
-            "endLine": 45,
-            "endColumn": 20
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/endTime": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/endTime",
-          "name": "endTime",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/endTime",
-            "name": "endTime",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 7,
-              "startColumn": 2,
-              "endLine": 7,
-              "endColumn": 18
-            }
-          },
-          "position": {
-            "startLine": 46,
-            "startColumn": 2,
-            "endLine": 46,
-            "endColumn": 18
-          }
-        },
-        "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/day": {
-          "key": "app/components/CourseTimeTable/types.ts/interface/EventTypes/memberField/day",
-          "name": "day",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/course-timetable/types.ts/interface/EventTypes/memberField/day",
-            "name": "day",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 8,
-              "startColumn": 2,
-              "endLine": 8,
-              "endColumn": 14
-            }
-          },
-          "position": {
-            "startLine": 47,
-            "startColumn": 2,
-            "endLine": 47,
-            "endColumn": 14
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 3
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-app/components/CourseTimeTable/types.ts-app/components/CourseTimeTable/types.ts/interface/EventTypes-app/components/CourseTimeTable/types.ts/interface/BaseCourseTimetableEvent-idtitlelocationcolor": {
@@ -4017,7 +2059,7 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 2,
-        "cluster_type": 3
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-app/components/DropdownInput/DropdownInput.tsx-app/components/DropdownInput/DropdownInput.tsx/interface/DropdownInputProps-app/components/SettingsListDate/types.ts/interface/SettingsListDatePropsOwn-idonChangeerrorisDisabledcustom_typeprefixsuffix": {
@@ -4655,507 +2697,13 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-cardWidthlanguagepirateLanguagefunLanguageModeserverInfoappSettingsprimaryColoruserisManagementprofilemarkingsscreenWidththemeamountColumnsForcard": {
+    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-languagescreenWidththeme": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-cardWidthlanguagepirateLanguagefunLanguageModeserverInfoappSettingsprimaryColoruserisManagementprofilemarkingsscreenWidththemeamountColumnsForcard",
+      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-languagescreenWidththeme",
       "probability": 1,
       "from_file_path": "app/components/FoodItem/types.ts",
-      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "from_class_or_interface_name": "FoodItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "to_class_or_interface_name": "FoodOfferItemRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/cardWidth": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/cardWidth",
-          "name": "cardWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/cardWidth",
-            "name": "cardWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 5,
-              "endLine": 14,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 2,
-            "endLine": 11,
-            "endColumn": 21
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language",
-          "name": "language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language",
-            "name": "language",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 20
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/pirateLanguage": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/pirateLanguage",
-          "name": "pirateLanguage",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/pirateLanguage",
-            "name": "pirateLanguage",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 5,
-              "endLine": 17,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 2,
-            "endLine": 15,
-            "endColumn": 27
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/funLanguageMode": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/funLanguageMode",
-          "name": "funLanguageMode",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/funLanguageMode",
-            "name": "funLanguageMode",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 5,
-              "endLine": 18,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 2,
-            "endLine": 16,
-            "endColumn": 34
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/serverInfo": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/serverInfo",
-          "name": "serverInfo",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/serverInfo",
-            "name": "serverInfo",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 5,
-              "endLine": 19,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 2,
-            "endLine": 17,
-            "endColumn": 19
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/appSettings": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 5,
-              "endLine": 20,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 20
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor",
-          "name": "primaryColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor",
-            "name": "primaryColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 19,
-            "startColumn": 2,
-            "endLine": 19,
-            "endColumn": 24
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/user": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/user",
-          "name": "user",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/user",
-            "name": "user",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 22,
-              "startColumn": 5,
-              "endLine": 22,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 2,
-            "endLine": 20,
-            "endColumn": 13
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/isManagement": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/isManagement",
-          "name": "isManagement",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/isManagement",
-            "name": "isManagement",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 5,
-              "endLine": 23,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 2,
-            "endLine": 21,
-            "endColumn": 25
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/profile": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/profile",
-          "name": "profile",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/profile",
-            "name": "profile",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 24,
-              "startColumn": 5,
-              "endLine": 24,
-              "endColumn": 19
-            }
-          },
-          "position": {
-            "startLine": 22,
-            "startColumn": 2,
-            "endLine": 22,
-            "endColumn": 16
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/markings": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/markings",
-          "name": "markings",
-          "type": "any[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/markings",
-            "name": "markings",
-            "type": "any[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 5,
-              "endLine": 25,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 3,
-            "endLine": 23,
-            "endColumn": 20
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 5,
-              "endLine": 26,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 3,
-            "endLine": 24,
-            "endColumn": 24
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 5,
-              "endLine": 27,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 3,
-            "endLine": 25,
-            "endColumn": 15
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard",
-          "name": "amountColumnsForcard",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard",
-            "name": "amountColumnsForcard",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 5,
-              "endLine": 28,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 3,
-            "endLine": 26,
-            "endColumn": 33
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-previousFeedbackappSettingsscreenWidththeme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-previousFeedbackappSettingsscreenWidththeme",
-      "probability": 1,
-      "from_file_path": "app/components/FoodItem/types.ts",
-      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "from_class_or_interface_name": "FoodItemProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
-      "to_class_or_interface_name": "FoodHeaderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/previousFeedback": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/previousFeedback",
-          "name": "previousFeedback",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/previousFeedback",
-            "name": "previousFeedback",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 5,
-              "endLine": 18,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 12,
-            "startColumn": 2,
-            "endLine": 12,
-            "endColumn": 25
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/appSettings": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/appSettings",
-          "name": "appSettings",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
-            "name": "appSettings",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 19,
-              "startColumn": 5,
-              "endLine": 19,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 20
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
-          "name": "screenWidth",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
-            "name": "screenWidth",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 5,
-              "endLine": 15,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 24,
-            "startColumn": 3,
-            "endLine": 24,
-            "endColumn": 24
-          }
-        },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme",
-          "name": "theme",
-          "type": "any",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
-            "name": "theme",
-            "type": "any",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 3,
-            "endLine": 25,
-            "endColumn": 15
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-languagescreenWidththeme": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/app/(app)/housing/components/HousingListHeader.tsx/interface/HousingListHeaderProps-languagescreenWidththeme",
-      "probability": 1,
-      "from_file_path": "app/components/FoodItem/types.ts",
-      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "from_class_or_interface_name": "FoodItemProps",
+      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "from_class_or_interface_name": "FoodItemSharedRenderProps",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/app/(app)/housing/components/HousingListHeader.tsx",
@@ -5165,8 +2713,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/language": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/language",
           "name": "language",
           "type": "string",
           "probability": 1,
@@ -5184,14 +2732,14 @@
             }
           },
           "position": {
-            "startLine": 14,
+            "startLine": 6,
             "startColumn": 2,
-            "endLine": 14,
+            "endLine": 6,
             "endColumn": 20
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
           "name": "screenWidth",
           "type": "number",
           "probability": 1,
@@ -5209,14 +2757,14 @@
             }
           },
           "position": {
-            "startLine": 24,
-            "startColumn": 3,
-            "endLine": 24,
-            "endColumn": 24
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 23
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/theme",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme",
           "name": "theme",
           "type": "any",
           "probability": 1,
@@ -5234,10 +2782,10 @@
             }
           },
           "position": {
-            "startLine": 25,
-            "startColumn": 3,
-            "endLine": 25,
-            "endColumn": 15
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 14
           }
         }
       },
@@ -5246,13 +2794,13 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/redux/Types/stateTypes.ts/interface/SettingsState-languageprimaryColoramountColumnsForcard": {
+    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/redux/Types/stateTypes.ts/interface/SettingsState-languageprimaryColoramountColumnsForcard": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/redux/Types/stateTypes.ts/interface/SettingsState-languageprimaryColoramountColumnsForcard",
+      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/redux/Types/stateTypes.ts/interface/SettingsState-languageprimaryColoramountColumnsForcard",
       "probability": 1,
       "from_file_path": "app/components/FoodItem/types.ts",
-      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "from_class_or_interface_name": "FoodItemProps",
+      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "from_class_or_interface_name": "FoodItemSharedRenderProps",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/redux/Types/stateTypes.ts",
@@ -5262,8 +2810,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/language": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/language",
           "name": "language",
           "type": "string",
           "probability": 1,
@@ -5281,14 +2829,14 @@
             }
           },
           "position": {
-            "startLine": 14,
+            "startLine": 6,
             "startColumn": 2,
-            "endLine": 14,
+            "endLine": 6,
             "endColumn": 20
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/primaryColor": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/primaryColor",
           "name": "primaryColor",
           "type": "string",
           "probability": 1,
@@ -5306,14 +2854,14 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 11,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 11,
             "endColumn": 24
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/amountColumnsForcard": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/amountColumnsForcard",
           "name": "amountColumnsForcard",
           "type": "number",
           "probability": 1,
@@ -5331,10 +2879,10 @@
             }
           },
           "position": {
-            "startLine": 26,
-            "startColumn": 3,
-            "endLine": 26,
-            "endColumn": 33
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 32
           }
         }
       },
@@ -5343,13 +2891,110 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-primaryColorisManagementscreenWidthamountColumnsForcard": {
+    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-appSettingsscreenWidththeme": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemProps-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-primaryColorisManagementscreenWidthamountColumnsForcard",
+      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps-appSettingsscreenWidththeme",
       "probability": 1,
       "from_file_path": "app/components/FoodItem/types.ts",
-      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "from_class_or_interface_name": "FoodItemProps",
+      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "from_class_or_interface_name": "FoodItemSharedRenderProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx",
+      "to_class_or_interface_key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps",
+      "to_class_or_interface_name": "FoodHeaderProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/appSettings": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/appSettings",
+          "name": "appSettings",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/appSettings",
+            "name": "appSettings",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 5,
+              "endLine": 19,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 20
+          }
+        },
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
+          "name": "screenWidth",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/screenWidth",
+            "name": "screenWidth",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 5,
+              "endLine": 15,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 23
+          }
+        },
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/theme",
+          "name": "theme",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "app/app/(app)/foodoffers/details/components/FoodHeader.tsx/interface/FoodHeaderProps/memberField/theme",
+            "name": "theme",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 5,
+              "endLine": 21,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 14
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 1,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-primaryColorisManagementscreenWidthamountColumnsForcard": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-app/components/FoodItem/types.ts-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-primaryColorisManagementscreenWidthamountColumnsForcard",
+      "probability": 1,
+      "from_file_path": "app/components/FoodItem/types.ts",
+      "from_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "from_class_or_interface_name": "FoodItemSharedRenderProps",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/BuildingItem/BuildingItem.tsx",
@@ -5359,8 +3004,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/primaryColor": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/primaryColor",
           "name": "primaryColor",
           "type": "string",
           "probability": 1,
@@ -5378,14 +3023,14 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 11,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 11,
             "endColumn": 24
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/isManagement": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/isManagement",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/isManagement": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/isManagement",
           "name": "isManagement",
           "type": "boolean",
           "probability": 1,
@@ -5403,14 +3048,14 @@
             }
           },
           "position": {
-            "startLine": 21,
+            "startLine": 13,
             "startColumn": 2,
-            "endLine": 21,
+            "endLine": 13,
             "endColumn": 25
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/screenWidth",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/screenWidth",
           "name": "screenWidth",
           "type": "number",
           "probability": 1,
@@ -5428,14 +3073,14 @@
             }
           },
           "position": {
-            "startLine": 24,
-            "startColumn": 3,
-            "endLine": 24,
-            "endColumn": 24
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 23
           }
         },
-        "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard": {
-          "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard",
+        "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/amountColumnsForcard": {
+          "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/amountColumnsForcard",
           "name": "amountColumnsForcard",
           "type": "number",
           "probability": 1,
@@ -5453,10 +3098,10 @@
             }
           },
           "position": {
-            "startLine": 26,
-            "startColumn": 3,
-            "endLine": 26,
-            "endColumn": 33
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 32
           }
         }
       },
@@ -6222,9 +3867,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-placeholdervaluekeyboardTypeinputStyleautoFocus": {
+    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-placeholderkeyboardTypeinputStyleautoFocus": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-placeholdervaluekeyboardTypeinputStyleautoFocus",
+      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-placeholderkeyboardTypeinputStyleautoFocus",
       "probability": 1,
       "from_file_path": "app/components/SettingsListTextInput.tsx",
       "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps",
@@ -6232,8 +3877,8 @@
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/SettingsListTextInput.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps",
-      "to_class_or_interface_name": "SettingsListTextInputSheetProps",
+      "to_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps",
+      "to_class_or_interface_name": "TextInputSharedProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
@@ -6245,7 +3890,7 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/placeholder",
+            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/placeholder",
             "name": "placeholder",
             "type": "string",
             "modifiers": [],
@@ -6257,35 +3902,10 @@
             }
           },
           "position": {
-            "startLine": 41,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 41,
+            "endLine": 44,
             "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/value": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 26,
-              "startColumn": 2,
-              "endLine": 26,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 42,
-            "startColumn": 2,
-            "endLine": 42,
-            "endColumn": 16
           }
         },
         "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType": {
@@ -6295,46 +3915,46 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/keyboardType",
+            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/keyboardType",
             "name": "keyboardType",
             "type": "KeyboardTypeOptions",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 2,
+            "endLine": 47,
+            "endColumn": 37
+          }
+        },
+        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle": {
+          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle",
+          "name": "inputStyle",
+          "type": "object",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/inputStyle",
+            "name": "inputStyle",
+            "type": "object",
             "modifiers": [],
             "position": {
               "startLine": 32,
               "startColumn": 2,
               "endLine": 32,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 44,
-            "startColumn": 2,
-            "endLine": 44,
-            "endColumn": 37
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 36,
-              "startColumn": 2,
-              "endLine": 36,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 49,
+            "startLine": 52,
             "startColumn": 2,
-            "endLine": 49,
+            "endLine": 52,
             "endColumn": 22
           }
         },
@@ -6345,159 +3965,37 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/autoFocus",
+            "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/autoFocus",
             "name": "autoFocus",
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 31,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 31,
+              "endLine": 27,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 50,
+            "startLine": 53,
             "startColumn": 2,
-            "endLine": 50,
+            "endLine": 53,
             "endColumn": 22
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 5,
-        "cluster_type": 3
+        "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-placeholderkeyboardTypeinputStyleautoFocus": {
+    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholderautoFocuskeyboardTypeinputStyle": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-placeholderkeyboardTypeinputStyleautoFocus",
+      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholderautoFocuskeyboardTypeinputStyle",
       "probability": 1,
       "from_file_path": "app/components/SettingsListTextInput.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps",
-      "from_class_or_interface_name": "SettingsListTextInputFieldProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/hooks/useMyScrollviewTextInputModal.tsx",
-      "to_class_or_interface_key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps",
-      "to_class_or_interface_name": "TextInputSharedProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/placeholder": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/placeholder",
-          "name": "placeholder",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/placeholder",
-            "name": "placeholder",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 2,
-              "endLine": 11,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 41,
-            "startColumn": 2,
-            "endLine": 41,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType",
-          "name": "keyboardType",
-          "type": "KeyboardTypeOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/keyboardType",
-            "name": "keyboardType",
-            "type": "KeyboardTypeOptions",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 44,
-            "startColumn": 2,
-            "endLine": 44,
-            "endColumn": 37
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 2,
-              "endLine": 17,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 49,
-            "startColumn": 2,
-            "endLine": 49,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/autoFocus": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/autoFocus",
-          "name": "autoFocus",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/autoFocus",
-            "name": "autoFocus",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 50,
-            "startColumn": 2,
-            "endLine": 50,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 5,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholdervalueautoFocuskeyboardTypeinputStyle": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholdervalueautoFocuskeyboardTypeinputStyle",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListTextInput.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps",
-      "from_class_or_interface_name": "SettingsListTextInputSheetProps",
+      "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps",
+      "from_class_or_interface_name": "TextInputSharedProps",
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/SettingsListTextInput.tsx",
@@ -6507,8 +4005,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/placeholder": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/placeholder",
+        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/placeholder": {
+          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/placeholder",
           "name": "placeholder",
           "type": "string",
           "probability": 1,
@@ -6519,9 +4017,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 41,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 41,
+              "endLine": 44,
               "endColumn": 22
             }
           },
@@ -6532,33 +4030,8 @@
             "endColumn": 22
           }
         },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/value": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/value",
-          "name": "value",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/value",
-            "name": "value",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 42,
-              "startColumn": 2,
-              "endLine": 42,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 26,
-            "startColumn": 2,
-            "endLine": 26,
-            "endColumn": 16
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/autoFocus": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/autoFocus",
+        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/autoFocus": {
+          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/autoFocus",
           "name": "autoFocus",
           "type": "boolean",
           "probability": 1,
@@ -6569,21 +4042,21 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 50,
+              "startLine": 53,
               "startColumn": 2,
-              "endLine": 50,
+              "endLine": 53,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 31,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 31,
+            "endLine": 27,
             "endColumn": 22
           }
         },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/keyboardType": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/keyboardType",
+        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/keyboardType": {
+          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/keyboardType",
           "name": "keyboardType",
           "type": "KeyboardTypeOptions",
           "probability": 1,
@@ -6594,21 +4067,21 @@
             "type": "KeyboardTypeOptions",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 44,
+              "endLine": 47,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 32,
+            "startLine": 28,
             "startColumn": 2,
-            "endLine": 32,
+            "endLine": 28,
             "endColumn": 37
           }
         },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/inputStyle": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/inputStyle",
+        "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/inputStyle": {
+          "key": "app/components/SettingsListTextInput.tsx/interface/TextInputSharedProps/memberField/inputStyle",
           "name": "inputStyle",
           "type": "object",
           "probability": 1,
@@ -6619,245 +4092,23 @@
             "type": "object",
             "modifiers": [],
             "position": {
-              "startLine": 49,
+              "startLine": 52,
               "startColumn": 2,
-              "endLine": 49,
+              "endLine": 52,
               "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 36,
-            "startColumn": 2,
-            "endLine": 36,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 5,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-placeholdersaveLabelautoFocuskeyboardTypemultilinenumberOfLinesinputStyleallowSubmitWhenDisabled": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/components/SettingsListTextInput.tsx-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-placeholdersaveLabelautoFocuskeyboardTypemultilinenumberOfLinesinputStyleallowSubmitWhenDisabled",
-      "probability": 1,
-      "from_file_path": "app/components/SettingsListTextInput.tsx",
-      "from_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps",
-      "from_class_or_interface_name": "SettingsListTextInputSheetProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/hooks/useMyScrollviewTextInputModal.tsx",
-      "to_class_or_interface_key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps",
-      "to_class_or_interface_name": "TextInputSharedProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/placeholder": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/placeholder",
-          "name": "placeholder",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/placeholder",
-            "name": "placeholder",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 2,
-              "endLine": 11,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 25,
-            "startColumn": 2,
-            "endLine": 25,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/saveLabel": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/saveLabel",
-          "name": "saveLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/saveLabel",
-            "name": "saveLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 12,
-              "startColumn": 2,
-              "endLine": 12,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 29,
-            "startColumn": 2,
-            "endLine": 29,
-            "endColumn": 20
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/autoFocus": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/autoFocus",
-          "name": "autoFocus",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/autoFocus",
-            "name": "autoFocus",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 18,
-              "startColumn": 2,
-              "endLine": 18,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 31,
-            "startColumn": 2,
-            "endLine": 31,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/keyboardType": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/keyboardType",
-          "name": "keyboardType",
-          "type": "KeyboardTypeOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/keyboardType",
-            "name": "keyboardType",
-            "type": "KeyboardTypeOptions",
-            "modifiers": [],
-            "position": {
-              "startLine": 14,
-              "startColumn": 2,
-              "endLine": 14,
-              "endColumn": 37
             }
           },
           "position": {
             "startLine": 32,
             "startColumn": 2,
             "endLine": 32,
-            "endColumn": 37
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/multiline": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/multiline",
-          "name": "multiline",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/multiline",
-            "name": "multiline",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 13,
-              "startColumn": 2,
-              "endLine": 13,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 33,
-            "startColumn": 2,
-            "endLine": 33,
             "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/numberOfLines": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/numberOfLines",
-          "name": "numberOfLines",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/numberOfLines",
-            "name": "numberOfLines",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 2,
-              "endLine": 15,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 34,
-            "startColumn": 2,
-            "endLine": 34,
-            "endColumn": 25
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/inputStyle": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 2,
-              "endLine": 17,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 36,
-            "startColumn": 2,
-            "endLine": 36,
-            "endColumn": 22
-          }
-        },
-        "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/allowSubmitWhenDisabled": {
-          "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/allowSubmitWhenDisabled",
-          "name": "allowSubmitWhenDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/allowSubmitWhenDisabled",
-            "name": "allowSubmitWhenDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 20,
-              "startColumn": 2,
-              "endLine": 20,
-              "endColumn": 36
-            }
-          },
-          "position": {
-            "startLine": 37,
-            "startColumn": 2,
-            "endLine": 37,
-            "endColumn": 36
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 5,
-        "cluster_type": 3
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-app/components/SettingsList/types.ts-app/components/SettingsList/types.ts/interface/SettingsListPropsOwn-app/components/SettingsListSelectOptionSingle/SettingsListSelectOptionSingle.tsx/interface/SettingsListSelectOptionSingleProps-leftIconlabelonPressiconBgColornoIconIndentshowSeparator": {
@@ -7664,350 +4915,6 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/hooks/useMyScrollviewTextInputModal.tsx-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholderkeyboardTypeinputStyleautoFocus": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/hooks/useMyScrollviewTextInputModal.tsx-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps-placeholderkeyboardTypeinputStyleautoFocus",
-      "probability": 1,
-      "from_file_path": "app/hooks/useMyScrollviewTextInputModal.tsx",
-      "from_class_or_interface_key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps",
-      "from_class_or_interface_name": "TextInputSharedProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListTextInput.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps",
-      "to_class_or_interface_name": "SettingsListTextInputFieldProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/placeholder": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/placeholder",
-          "name": "placeholder",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/placeholder",
-            "name": "placeholder",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 41,
-              "startColumn": 2,
-              "endLine": 41,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 2,
-            "endLine": 11,
-            "endColumn": 22
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/keyboardType": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/keyboardType",
-          "name": "keyboardType",
-          "type": "KeyboardTypeOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/keyboardType",
-            "name": "keyboardType",
-            "type": "KeyboardTypeOptions",
-            "modifiers": [],
-            "position": {
-              "startLine": 44,
-              "startColumn": 2,
-              "endLine": 44,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 37
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/inputStyle": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 49,
-              "startColumn": 2,
-              "endLine": 49,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 2,
-            "endLine": 17,
-            "endColumn": 22
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/autoFocus": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/autoFocus",
-          "name": "autoFocus",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputFieldProps/memberField/autoFocus",
-            "name": "autoFocus",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 50,
-              "startColumn": 2,
-              "endLine": 50,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 5,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/hooks/useMyScrollviewTextInputModal.tsx-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-placeholdersaveLabelmultilinekeyboardTypenumberOfLinesinputStyleautoFocusallowSubmitWhenDisabled": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/hooks/useMyScrollviewTextInputModal.tsx-app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps-app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps-placeholdersaveLabelmultilinekeyboardTypenumberOfLinesinputStyleautoFocusallowSubmitWhenDisabled",
-      "probability": 1,
-      "from_file_path": "app/hooks/useMyScrollviewTextInputModal.tsx",
-      "from_class_or_interface_key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps",
-      "from_class_or_interface_name": "TextInputSharedProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/components/SettingsListTextInput.tsx",
-      "to_class_or_interface_key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps",
-      "to_class_or_interface_name": "SettingsListTextInputSheetProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/placeholder": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/placeholder",
-          "name": "placeholder",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/placeholder",
-            "name": "placeholder",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 25,
-              "startColumn": 2,
-              "endLine": 25,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 2,
-            "endLine": 11,
-            "endColumn": 22
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/saveLabel": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/saveLabel",
-          "name": "saveLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/saveLabel",
-            "name": "saveLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 29,
-              "startColumn": 2,
-              "endLine": 29,
-              "endColumn": 20
-            }
-          },
-          "position": {
-            "startLine": 12,
-            "startColumn": 2,
-            "endLine": 12,
-            "endColumn": 20
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/multiline": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/multiline",
-          "name": "multiline",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/multiline",
-            "name": "multiline",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 33,
-              "startColumn": 2,
-              "endLine": 33,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 13,
-            "startColumn": 2,
-            "endLine": 13,
-            "endColumn": 22
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/keyboardType": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/keyboardType",
-          "name": "keyboardType",
-          "type": "KeyboardTypeOptions",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/keyboardType",
-            "name": "keyboardType",
-            "type": "KeyboardTypeOptions",
-            "modifiers": [],
-            "position": {
-              "startLine": 32,
-              "startColumn": 2,
-              "endLine": 32,
-              "endColumn": 37
-            }
-          },
-          "position": {
-            "startLine": 14,
-            "startColumn": 2,
-            "endLine": 14,
-            "endColumn": 37
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/numberOfLines": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/numberOfLines",
-          "name": "numberOfLines",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/numberOfLines",
-            "name": "numberOfLines",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 34,
-              "startColumn": 2,
-              "endLine": 34,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 2,
-            "endLine": 15,
-            "endColumn": 25
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/inputStyle": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/inputStyle",
-          "name": "inputStyle",
-          "type": "object",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/inputStyle",
-            "name": "inputStyle",
-            "type": "object",
-            "modifiers": [],
-            "position": {
-              "startLine": 36,
-              "startColumn": 2,
-              "endLine": 36,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 2,
-            "endLine": 17,
-            "endColumn": 22
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/autoFocus": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/autoFocus",
-          "name": "autoFocus",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/autoFocus",
-            "name": "autoFocus",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 31,
-              "startColumn": 2,
-              "endLine": 31,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 18,
-            "startColumn": 2,
-            "endLine": 18,
-            "endColumn": 22
-          }
-        },
-        "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/allowSubmitWhenDisabled": {
-          "key": "app/hooks/useMyScrollviewTextInputModal.tsx/interface/TextInputSharedProps/memberField/allowSubmitWhenDisabled",
-          "name": "allowSubmitWhenDisabled",
-          "type": "boolean",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/components/SettingsListTextInput.tsx/interface/SettingsListTextInputSheetProps/memberField/allowSubmitWhenDisabled",
-            "name": "allowSubmitWhenDisabled",
-            "type": "boolean",
-            "modifiers": [],
-            "position": {
-              "startLine": 37,
-              "startColumn": 2,
-              "endLine": 37,
-              "endColumn": 36
-            }
-          },
-          "position": {
-            "startLine": 20,
-            "startColumn": 2,
-            "endLine": 20,
-            "endColumn": 36
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 5,
-        "cluster_type": 3
-      }
-    },
     "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-selectedThemeprimaryColoramountColumnsForcard": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/BuildingItem/BuildingItem.tsx/interface/BuildingItemPropsOptimized-selectedThemeprimaryColoramountColumnsForcard",
@@ -8105,106 +5012,9 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-primaryColorlanguageamountColumnsForcard": {
+    "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-primaryColorlanguageamountColumnsForcard": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps-primaryColorlanguageamountColumnsForcard",
-      "probability": 1,
-      "from_file_path": "app/redux/Types/stateTypes.ts",
-      "from_class_or_interface_key": "app/redux/Types/stateTypes.ts/interface/SettingsState",
-      "from_class_or_interface_name": "SettingsState",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",
-      "to_class_or_interface_key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps",
-      "to_class_or_interface_name": "FoodOfferItemRenderProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/primaryColor": {
-          "key": "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/primaryColor",
-          "name": "primaryColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/primaryColor",
-            "name": "primaryColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 5,
-              "endLine": 21,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 51,
-            "startColumn": 9,
-            "endLine": 51,
-            "endColumn": 30
-          }
-        },
-        "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/language": {
-          "key": "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/language",
-          "name": "language",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/language",
-            "name": "language",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 5,
-              "endLine": 16,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 53,
-            "startColumn": 9,
-            "endLine": 53,
-            "endColumn": 26
-          }
-        },
-        "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/amountColumnsForcard": {
-          "key": "app/redux/Types/stateTypes.ts/interface/SettingsState/memberField/amountColumnsForcard",
-          "name": "amountColumnsForcard",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "app/app/(app)/foodoffers/components/FoodOfferListItem.tsx/interface/FoodOfferItemRenderProps/memberField/amountColumnsForcard",
-            "name": "amountColumnsForcard",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 5,
-              "endLine": 28,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 60,
-            "startColumn": 9,
-            "endLine": 60,
-            "endColumn": 38
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 3
-      }
-    },
-    "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/FoodItem/types.ts/interface/FoodItemProps-primaryColorlanguageamountColumnsForcard": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/FoodItem/types.ts/interface/FoodItemProps-primaryColorlanguageamountColumnsForcard",
+      "key": "fields_to_fields_data_clump-app/redux/Types/stateTypes.ts-app/redux/Types/stateTypes.ts/interface/SettingsState-app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps-primaryColorlanguageamountColumnsForcard",
       "probability": 1,
       "from_file_path": "app/redux/Types/stateTypes.ts",
       "from_class_or_interface_key": "app/redux/Types/stateTypes.ts/interface/SettingsState",
@@ -8212,8 +5022,8 @@
       "from_method_name": null,
       "from_method_key": null,
       "to_file_path": "app/components/FoodItem/types.ts",
-      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemProps",
-      "to_class_or_interface_name": "FoodItemProps",
+      "to_class_or_interface_key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps",
+      "to_class_or_interface_name": "FoodItemSharedRenderProps",
       "to_method_key": null,
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
@@ -8225,14 +5035,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/primaryColor",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/primaryColor",
             "name": "primaryColor",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 11,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 11,
               "endColumn": 24
             }
           },
@@ -8250,14 +5060,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/language",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/language",
             "name": "language",
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 14,
+              "startLine": 6,
               "startColumn": 2,
-              "endLine": 14,
+              "endLine": 6,
               "endColumn": 20
             }
           },
@@ -8275,15 +5085,15 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "app/components/FoodItem/types.ts/interface/FoodItemProps/memberField/amountColumnsForcard",
+            "key": "app/components/FoodItem/types.ts/interface/FoodItemSharedRenderProps/memberField/amountColumnsForcard",
             "name": "amountColumnsForcard",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 26,
-              "startColumn": 3,
-              "endLine": 26,
-              "endColumn": 33
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 32
             }
           },
           "position": {
