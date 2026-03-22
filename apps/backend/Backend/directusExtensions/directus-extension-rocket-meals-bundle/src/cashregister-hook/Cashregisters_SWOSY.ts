@@ -158,12 +158,12 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
       return null;
     }
 
-    const [day, month, year] = date.split('.').map(num => Number.parseInt(num));
+    const [day, month, year] = date.split('.').map(num => Number.parseInt(num, 10));
     if (day === undefined || month === undefined || year === undefined) {
       return null;
     }
 
-    const [hour, minute, seconds] = time.split(':').map(num => Number.parseInt(num));
+    const [hour, minute, seconds] = time.split(':').map(num => Number.parseInt(num, 10));
     if (hour === undefined || minute === undefined || seconds === undefined) {
       return null;
     }

@@ -327,9 +327,9 @@ export class ReportSchedule {
   public static splitSendReportAtHhMm(recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>) {
     let send_report_at_hh_mm = recipientEntry.send_report_at_hh_mm;
     let send_report_at_hh_mm_splits = send_report_at_hh_mm?.split(':');
-    let send_report_at_hh = Number.parseInt(send_report_at_hh_mm_splits?.[0] || '06');
-    let send_report_at_mm = Number.parseInt(send_report_at_hh_mm_splits?.[1] || '00');
-    let send_report_at_ss = Number.parseInt(send_report_at_hh_mm_splits?.[2] || '00');
+    let send_report_at_hh = Number.parseInt(send_report_at_hh_mm_splits?.[0] || '06', 10);
+    let send_report_at_mm = Number.parseInt(send_report_at_hh_mm_splits?.[1] || '00', 10);
+    let send_report_at_ss = Number.parseInt(send_report_at_hh_mm_splits?.[2] || '00', 10);
     return {
       send_report_at_hh,
       send_report_at_mm,

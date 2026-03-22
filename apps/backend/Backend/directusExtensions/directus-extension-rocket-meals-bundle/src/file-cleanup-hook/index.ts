@@ -221,7 +221,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
         const fileSizeAsString = file.filesize;
         let fileSizeAsNumber = 0;
         if (!!fileSizeAsString && !Number.isNaN(Number(fileSizeAsString))) {
-          fileSizeAsNumber = Number.parseInt(fileSizeAsString + '');
+          fileSizeAsNumber = Number.parseInt(fileSizeAsString, 10);
         }
         this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
         dictFileIdsDiskSpace[fileId] = fileSizeAsNumber;
