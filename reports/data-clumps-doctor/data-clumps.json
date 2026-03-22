@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-22T09:50:23.732Z",
+  "report_timestamp": "2026-03-22T10:02:27.390Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 89,
-          "average": 1.5643564356435644,
-          "amountSavedValuesForKeys": 3318,
+          "average": 1.5624705327675625,
+          "amountSavedValuesForKeys": 3314,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -22,50 +22,50 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 89,
-          "average": 1.5792479771537362,
-          "amountSavedValuesForKeys": 3318,
+          "average": 1.5773441218467397,
+          "amountSavedValuesForKeys": 3314,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3461,
-        "detection_time_ms": 63,
+        "ast_generation_time_ms": 3626,
+        "detection_time_ms": 59,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 128.46,
-          "os_memory_free": 14975365120,
-          "os_memory_total": 16766197760,
+          "os_uptime": 110.9,
+          "os_memory_free": 14949793792,
+          "os_memory_total": 16767234048,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3440
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 2,
-    "amount_files_with_data_clumps": 2,
+    "amount_classes_or_interfaces_with_data_clumps": 0,
+    "amount_files_with_data_clumps": 0,
     "amount_methods_with_data_clumps": 0,
-    "fields_to_fields_data_clump": 2,
+    "fields_to_fields_data_clump": 0,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 0,
-    "amount_data_clumps": 2
+    "amount_data_clumps": 0
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "99d1c032ea39a35eea5014b213b599522da87615",
-    "project_commit_hash": "99d1c032ea39a35eea5014b213b599522da87615",
+    "project_version": "e84b36ff79a2e7b10d3876e6f927eb5c113b9eec",
+    "project_commit_hash": "e84b36ff79a2e7b10d3876e6f927eb5c113b9eec",
     "project_tag": null,
-    "project_commit_date": "1774172928",
+    "project_commit_date": "1774173652",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 418,
-    "number_of_classes_or_interfaces": 846,
+    "number_of_files": 419,
+    "number_of_classes_or_interfaces": 847,
     "number_of_methods": 1258,
-    "number_of_data_fields": 3318,
+    "number_of_data_fields": 3314,
     "number_of_method_parameters": 1359
   },
   "detector": {
@@ -90,250 +90,5 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {
-    "fields_to_fields_data_clump-apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts-apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue-apps/sonarCloudReportDownloader/src/index.ts/interface/Issue-keymessagecomponentline": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts-apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue-apps/sonarCloudReportDownloader/src/index.ts/interface/Issue-keymessagecomponentline",
-      "probability": 1,
-      "from_file_path": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",
-      "from_class_or_interface_key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue",
-      "from_class_or_interface_name": "CsvIssue",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/sonarCloudReportDownloader/src/index.ts",
-      "to_class_or_interface_key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue",
-      "to_class_or_interface_name": "Issue",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/key": {
-          "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/key",
-          "name": "key",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/key",
-            "name": "key",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 9,
-              "startColumn": 3,
-              "endLine": 9,
-              "endColumn": 15
-            }
-          },
-          "position": {
-            "startLine": 8,
-            "startColumn": 3,
-            "endLine": 8,
-            "endColumn": 15
-          }
-        },
-        "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/message": {
-          "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/message",
-          "name": "message",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/message",
-            "name": "message",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 3,
-              "endLine": 10,
-              "endColumn": 19
-            }
-          },
-          "position": {
-            "startLine": 9,
-            "startColumn": 3,
-            "endLine": 9,
-            "endColumn": 19
-          }
-        },
-        "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/component": {
-          "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/component",
-          "name": "component",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/component",
-            "name": "component",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 3,
-              "endLine": 11,
-              "endColumn": 21
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 3,
-            "endLine": 10,
-            "endColumn": 21
-          }
-        },
-        "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/line": {
-          "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/line",
-          "name": "line",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/line",
-            "name": "line",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 12,
-              "startColumn": 3,
-              "endLine": 12,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 3,
-            "endLine": 11,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-apps/sonarCloudReportDownloader/src/index.ts-apps/sonarCloudReportDownloader/src/index.ts/interface/Issue-apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue-keymessagecomponentline": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/sonarCloudReportDownloader/src/index.ts-apps/sonarCloudReportDownloader/src/index.ts/interface/Issue-apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue-keymessagecomponentline",
-      "probability": 1,
-      "from_file_path": "apps/sonarCloudReportDownloader/src/index.ts",
-      "from_class_or_interface_key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue",
-      "from_class_or_interface_name": "Issue",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",
-      "to_class_or_interface_key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue",
-      "to_class_or_interface_name": "CsvIssue",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/key": {
-          "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/key",
-          "name": "key",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/key",
-            "name": "key",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 8,
-              "startColumn": 3,
-              "endLine": 8,
-              "endColumn": 15
-            }
-          },
-          "position": {
-            "startLine": 9,
-            "startColumn": 3,
-            "endLine": 9,
-            "endColumn": 15
-          }
-        },
-        "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/message": {
-          "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/message",
-          "name": "message",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/message",
-            "name": "message",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 9,
-              "startColumn": 3,
-              "endLine": 9,
-              "endColumn": 19
-            }
-          },
-          "position": {
-            "startLine": 10,
-            "startColumn": 3,
-            "endLine": 10,
-            "endColumn": 19
-          }
-        },
-        "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/component": {
-          "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/component",
-          "name": "component",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/component",
-            "name": "component",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 10,
-              "startColumn": 3,
-              "endLine": 10,
-              "endColumn": 21
-            }
-          },
-          "position": {
-            "startLine": 11,
-            "startColumn": 3,
-            "endLine": 11,
-            "endColumn": 21
-          }
-        },
-        "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/line": {
-          "key": "apps/sonarCloudReportDownloader/src/index.ts/interface/Issue/memberField/line",
-          "name": "line",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts/interface/CsvIssue/memberField/line",
-            "name": "line",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 11,
-              "startColumn": 3,
-              "endLine": 11,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 12,
-            "startColumn": 3,
-            "endLine": 12,
-            "endColumn": 17
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 2
-      }
-    }
-  }
+  "data_clumps": {}
 }
