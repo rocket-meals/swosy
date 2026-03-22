@@ -5,6 +5,12 @@ export type ReplaceOptions = {
   flags?: string;
 }
 
+export type ReplaceCallbackOptions = {
+  str: string;
+  find: RegExp;
+  replace: (match: string, ...args: any[]) => string;
+}
+
 export class StringHelper {
   static EMPTY_SPACE = '\u200b';
   static NONBREAKING_SPACE = '\u00a0';
@@ -20,6 +26,13 @@ export class StringHelper {
   static replaceAllLiteralWithOptions(options: Omit<ReplaceOptions, 'flags'>) {
     const { str, find, replace } = options;
     return str.split(find).join(replace);
+  }
+
+  // Regex-based replacement with a callback function for dynamic replacements
+  static replaceAllWithCallback(options: ReplaceCallbackOptions): string {
+    const { str, find, replace } = options;
+    const globalRegex = find.flags.includes('g') ? find : new RegExp(find.source, find.flags + 'g');
+    return str.replace(globalRegex, replace);
   }
 
   static capitalizeFirstLetter(string: string) {
