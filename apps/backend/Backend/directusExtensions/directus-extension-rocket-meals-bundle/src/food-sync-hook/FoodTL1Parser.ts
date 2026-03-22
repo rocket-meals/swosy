@@ -118,9 +118,9 @@ export class FoodTL1Parser implements FoodParserInterface {
     let foodsJSONList: FoodsInformationTypeForParser[] = [];
     for (let foodId of foodIds) {
       let rawFoodoffer = foodIdToRawFoodofferDict[foodId];
-      if (!!rawFoodoffer) {
+      if (rawFoodoffer) {
         let foodInformationForParser = this.getFoodInformationFromRawFoodoffer(rawFoodoffer);
-        if (!!foodInformationForParser) {
+        if (foodInformationForParser) {
           foodsJSONList.push(foodInformationForParser);
         }
       }
@@ -175,7 +175,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     for (let rawFoodoffer of rawFoodoffers) {
       let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
       let canteenLabel = FoodTL1Parser.getCanteenLabelFunction(parsedReportItem);
-      if (!!canteenLabel) {
+      if (canteenLabel) {
         canteenLabelsDict[canteenLabel] = {
           external_identifier: canteenLabel,
           alias: canteenLabel,
@@ -280,7 +280,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     } = {};
     for (let item of parsedReportAsJsonList) {
       let identifier: string | null = FoodTL1Parser.getFoodofferIdentifier(item);
-      if (!!identifier) {
+      if (identifier) {
         let listOfParsedItemsForSameFoodoffer = dictOfFoodIngredientsForFoodoffer[identifier] || [];
         listOfParsedItemsForSameFoodoffer.push(item);
         dictOfFoodIngredientsForFoodoffer[identifier] = listOfParsedItemsForSameFoodoffer;
@@ -295,7 +295,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     for (let key of keys) {
       let listOfItemsForSameFoodoffer = groupedReportItems[key];
       let foodOfferJSON = this.getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer);
-      if (!!foodOfferJSON) {
+      if (foodOfferJSON) {
         foodOfferJSONList.push(foodOfferJSON);
       }
     }
@@ -310,7 +310,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     let recipe_ids: string[] = [];
     for (let item of listOfItemsForSameFoodoffer) {
       let item_id = FoodTL1Parser.getRecipeIdFunction(item);
-      if (!!item_id) {
+      if (item_id) {
         recipe_ids.push(item_id);
       }
     }
@@ -393,10 +393,10 @@ export class FoodTL1Parser implements FoodParserInterface {
     let foodIdsDictTorawFoodoffers: {
       [x: string]: RawFoodofferInformationType;
     } = {};
-    if (!!rawFoodofferJSONList) {
+    if (rawFoodofferJSONList) {
       for (let rawFoodoffer of rawFoodofferJSONList) {
         let foodId = FoodTL1Parser.getFoodIdFromRawFoodoffer(rawFoodoffer);
-        if (!!foodId) {
+        if (foodId) {
           foodIdsDictTorawFoodoffers[foodId] = rawFoodoffer;
         }
       }
@@ -428,7 +428,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       foodofferIdentifier += FoodTL1Parser._getCanteenName(parsedReportItem);
       foodofferIdentifier += FoodTL1Parser._getRawDatum(parsedReportItem);
       foodofferIdentifier += FoodTL1Parser._getFoodIdentifierByName(parsedReportItem);
-      return foodofferIdentifier as string;
+      return foodofferIdentifier;
     } else {
       return null;
     }
@@ -475,9 +475,6 @@ export class FoodTL1Parser implements FoodParserInterface {
       month: month,
       year: year,
     };
-
-    //let isoDate = moment(rawDate, "DD-MM-YYYY");
-    //return isoDate.toISOString();
   }
 
   static getCanteenLabelFunction(parsedReportItem: RawTL1FoodofferType) {
@@ -487,7 +484,7 @@ export class FoodTL1Parser implements FoodParserInterface {
   static findFirstPriceValueForFields(parsedReportItem: RawTL1FoodofferType, fields: string[]) {
     for (let field of fields) {
       let value = parsedReportItem[field];
-      if (!!value) {
+      if (value) {
         return value;
       }
     }
@@ -509,7 +506,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       default:
         return null;
     }
-    if (!!foundPrice) {
+    if (foundPrice) {
       /**
        *    "STD_PREIS": "0,50",
        */
@@ -575,11 +572,11 @@ export class FoodTL1Parser implements FoodParserInterface {
      * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
      */
     let nutritionValuesString = parsedReportItem[FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD];
-    if (!!nutritionValuesString) {
+    if (nutritionValuesString) {
       let kcalEndString = ' kcal)';
       let match = nutritionValuesString.match(/\(.* kcal/gm);
       // e. G. (XXXXXXX kcal)
-      if (!!match) {
+      if (match) {
         let kcal = match[0].slice(1, kcalEndString.length); //remove starting bracket "(" and kcal)
         attributeValues.push({
           external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER,
@@ -587,48 +584,50 @@ export class FoodTL1Parser implements FoodParserInterface {
         });
       }
 
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FAT_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Fett'),
+      attributeValues.push(
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FAT_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Fett'),
+          },
         },
-      });
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SATURATED_FAT_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Fettsäuren'),
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SATURATED_FAT_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Fettsäuren'),
+          },
         },
-      });
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_CARBOHYDRATE_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Kohlenhydrate'),
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_CARBOHYDRATE_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Kohlenhydrate'),
+          },
         },
-      });
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SUGAR_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Zucker'),
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SUGAR_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Zucker'),
+          },
         },
-      });
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FIBER_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Ballaststoffe'),
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FIBER_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Ballaststoffe'),
+          },
         },
-      });
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_PROTEIN_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Eiweiß'),
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_PROTEIN_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Eiweiß'),
+          },
         },
-      });
-      attributeValues.push({
-        external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SALT_EXTERNAL_IDENTIFIER,
-        attribute_value: {
-          number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Salz'),
+        {
+          external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SALT_EXTERNAL_IDENTIFIER,
+          attribute_value: {
+            number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, 'Salz'),
+          },
         },
-      });
+      );
     }
     return attributeValues;
   }
@@ -644,9 +643,9 @@ export class FoodTL1Parser implements FoodParserInterface {
   static parseNutritionValue(nutritionValuesString: string, searchValue: string) {
     try {
       let searchText = searchValue + '=';
-      let regex = new RegExp(searchText + '\\d*,\\d*', 'gm');
+      let regex = new RegExp(String.raw`${searchText}\d*,\d*`, 'gm');
       let match = nutritionValuesString.match(regex);
-      if (!!match && match.length === 1) {
+      if (match && match.length === 1) {
         let matchString = match[0];
         let valueString = matchString.slice(searchText.length);
         valueString = StringHelper.replaceAllLiteralWithOptions({ str: valueString, find: ',', replace: '.' });
@@ -654,6 +653,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return valueNumer;
       }
     } catch (err) {
+      console.error('parseNutritionValue failed:', err);
       return null;
     }
     return null;
@@ -671,11 +671,11 @@ export class FoodTL1Parser implements FoodParserInterface {
 
   static getMarkingExternalIdentifierForMenuLineText(menu_line_text: string | undefined): string[] {
     let menu_lines_with_prefix = [];
-    if (!!menu_line_text && menu_line_text.length > 0) {
+    if (menu_line_text && menu_line_text.length > 0) {
       const menu_lines = menu_line_text.split(','); // "a,b,c" --> ["a", "b", "c"]
       for (let menu_line of menu_lines) {
         let menu_line_trimmed = menu_line.trim();
-        if (!!menu_line_trimmed && menu_line_trimmed.length > 0) {
+        if (menu_line_trimmed && menu_line_trimmed.length > 0) {
           menu_lines_with_prefix.push(FoodTL1Parser.MARKING_EXTERNAL_IDENTIFIER_PREFIX_FOR_MENU_LINE + menu_line_trimmed);
         }
       }
@@ -686,9 +686,9 @@ export class FoodTL1Parser implements FoodParserInterface {
   static getMarkingLabelsDictFromFoodName(name: string) {
     let markingsDict: { [x: string]: string } = {};
     //e. G. "Strawberries (g, b) with Cream (2)"
-    let rawMarkingsInName = name.match(/\([^\)]+\)/gm); //http://regex.inginf.units.it/
+    let rawMarkingsInName = name.match(/\([^)]+\)/gm); //http://regex.inginf.units.it/
     //e. G. ["(g, b)", "(2)"]
-    if (!!rawMarkingsInName) {
+    if (rawMarkingsInName) {
       for (let rawMarkingsPart of rawMarkingsInName) {
         //e. G. "(g, b)"
         let listOfPartMarkings = FoodTL1Parser.removeValuesAndWhitespacesAndSeperators(rawMarkingsPart, ['(', ')'], ',');
