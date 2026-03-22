@@ -172,7 +172,7 @@ export class FoodParserHelper {
   }
 
   static getFoodofferIdFromFoodofferInformationForParser(foodofferInformationForParser: FoodoffersTypeForParser): string {
-    const normalizedMarkings = [...foodofferInformationForParser.marking_external_identifiers].sort();
+    const normalizedMarkings = [...foodofferInformationForParser.marking_external_identifiers].sort((a, b) => a.localeCompare(b));
     const normalizedDate = DateHelper.foodofferDateTypeToString(foodofferInformationForParser.date);
 
     const normalizedFoodofferInformationForParser = {

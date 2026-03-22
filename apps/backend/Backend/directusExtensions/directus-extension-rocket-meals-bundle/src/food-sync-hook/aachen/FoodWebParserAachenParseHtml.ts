@@ -164,7 +164,6 @@ export class FoodWebParserAachenParseHtml {
     if (priceText) {
       // price may contain euro symbol and comma as decimal separator
       const normalized = priceText
-        .replace(/\u0000/g, '')
         .replace('€', '')
         .replace(/[^0-9,\.]/g, '')
         .trim();
@@ -248,7 +247,7 @@ export class FoodWebParserAachenParseHtml {
   private static generateRecipeId(basicFoodofferData: FoodofferTypeWithBasicData, markingExternalIdentifiers: Set<string>): string {
     // hash alias + sorted markings
     const aliasPart = basicFoodofferData.alias ? basicFoodofferData.alias.toLowerCase().replace(/\s+/g, '_') : 'no_alias';
-    const markingsPart = Array.from(markingExternalIdentifiers).sort().join('_');
+    const markingsPart = Array.from(markingExternalIdentifiers).sort((a, b) => a.localeCompare(b)).join('_');
     let id = `recipe_`;
     id += `${aliasPart}`;
     let involveMarkings = false;
