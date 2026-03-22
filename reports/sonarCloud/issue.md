@@ -5,14 +5,14 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 22 | 22 |
-| 🔧 Maintainability | 2225 | 28 |
+| 🐛 Reliability | 24 | 24 |
+| 🔧 Maintainability | 2234 | 26 |
 
-**Total issues:** 2247 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2258 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (22/22)
+## 🐛 Reliability (24/24)
 
 - **React Hook "useMyContrastColor" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
   apps/frontend/app/components/Details/AttributeItem.tsx:46
@@ -78,6 +78,14 @@
   apps/frontend/app/helper/hashHelper.ts:56
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L56
 
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/frontend/app/hooks/useLanguage.ts:68
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useLanguage.ts#L68
+
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/frontend/app/hooks/useLanguage.ts:77
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useLanguage.ts#L77
+
 - **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
   apps/frontend/generateIcons.sh:132
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/generateIcons.sh#L132
@@ -102,7 +110,7 @@
   scripts/weekly-update.sh:15
   https://github.com/rocket-meals/rocket-meals/blob/master/scripts/weekly-update.sh#L15
 
-## 🔧 Maintainability (28/2225)
+## 🔧 Maintainability (26/2234)
 
 - **Remove cache after installing packages or store it in a cache mount.**
   apps/backend-sync/Dockerfile:11
@@ -121,24 +129,24 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L8
 
 - **Move function 'base64UrlDecodeToString' to the outer scope.**
-  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:34
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L34
+  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:35
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L35
 
 - **Handle this exception or don't catch it at all.**
-  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:48
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L48
+  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:50
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L50
 
 - **Prefer `node:child_process` over `child_process`.**
   apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts:2
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts#L2
 
 - **`String.raw` should be used to avoid escaping `\`.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:34
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L34
+  apps/backend-sync/src/apple-secret-rotator/index.ts:35
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L35
 
 - **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:92
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L92
+  apps/backend-sync/src/apple-secret-rotator/index.ts:93
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L93
 
 - **Prefer `node:fs` over `fs`.**
   apps/backend-sync/src/apple-secret-rotator/index.ts:1
@@ -207,12 +215,4 @@
 - **Remove this commented out code.**
   apps/backend-sync/src/DockerDirectusHelper.ts:7
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusHelper.ts#L7
-
-- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
-  apps/backend-sync/src/DockerDirectusPingHelper.ts:6
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusPingHelper.ts#L6
-
-- **Remove this commented out code.**
-  apps/backend-sync/src/DockerDirectusPingHelper.ts:7
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusPingHelper.ts#L7
 

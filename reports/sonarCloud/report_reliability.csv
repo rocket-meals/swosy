@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ0VmBm9mRbbgKiJd_tj","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",68
+"AZ0VmBm9mRbbgKiJd_tk","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",77
 "AZ0TplGSufp2jxPAhS0o","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",482
 "AZ0TplGSufp2jxPAhS0n","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",481
 "AZ0TplJGufp2jxPAhS1Z","React Hook ""useCallback"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",95
