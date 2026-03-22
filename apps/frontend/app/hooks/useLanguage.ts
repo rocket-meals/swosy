@@ -65,22 +65,30 @@ export const applyAlternatingCaseTransformation = (text: string): string => {
 };
 
 export const applyTypoglycemiaTransformation = (text: string): string => {
-	return text.replace(/\b[a-zA-ZÄäÖöÜüß]{4,}\b/g, (word) => {
-		const first = word[0];
-		const last = word[word.length - 1];
-		const inner = word.slice(1, -1).split('').reverse().join('');
-		return first + inner + last;
+	return StringHelper.replaceAllWithCallback({
+		str: text,
+		find: /\b[a-zA-ZÄäÖöÜüß]{4,}\b/g,
+		replace: (word) => {
+			const first = word[0];
+			const last = word[word.length - 1];
+			const inner = word.slice(1, -1).split('').reverse().join('');
+			return first + inner + last;
+		},
 	});
 };
 
 export const applyGlitchTransformation = (text: string): string => {
-	return text.replace(/\b[a-zA-ZÄäÖöÜüß]+\b/g, (word) => {
-		const chars = word.split('');
-		for (let i = chars.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[chars[i], chars[j]] = [chars[j], chars[i]];
-		}
-		return chars.join('');
+	return StringHelper.replaceAllWithCallback({
+		str: text,
+		find: /\b[a-zA-ZÄäÖöÜüß]+\b/g,
+		replace: (word) => {
+			const chars = word.split('');
+			for (let i = chars.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[chars[i], chars[j]] = [chars[j], chars[i]];
+			}
+			return chars.join('');
+		},
 	});
 };
 
