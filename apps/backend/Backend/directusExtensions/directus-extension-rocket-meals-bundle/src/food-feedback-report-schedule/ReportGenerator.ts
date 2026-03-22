@@ -22,8 +22,6 @@ type Interval = {
 // NA = Not Available
 const VALUE_NOT_AVAILABLE = 'N/A';
 
-export type ReportStatusTrafficLightType = string;
-
 export type ReportEntryAmountStatsType = {
   amount_positive_new: number;
   amount_negative_new: number;
@@ -31,8 +29,8 @@ export type ReportEntryAmountStatsType = {
   amount_positive: number;
   amount_negative: number;
   amount_total: number;
-  status_total: ReportStatusTrafficLightType;
-  status_new: ReportStatusTrafficLightType;
+  status_total: string;
+  status_new: string;
 };
 
 export type ReportFoodEntryLabelType = ReportEntryAmountStatsType & {
@@ -49,7 +47,7 @@ export type ReportFoodEntryType = {
   comments: string[];
   comments_new: string[];
   labels: ReportFoodEntryLabelType[];
-  status_rating: ReportStatusTrafficLightType;
+  status_rating: string;
 };
 
 export type ReportCanteenEntryLabelsType = ReportEntryAmountStatsType & {
@@ -159,7 +157,6 @@ export class ReportGenerator {
     let dateStartHumanReadable = DateHelper.getHumanReadableDate(startDate, true);
     let dateEndHumanReadable = DateHelper.getHumanReadableDate(endDate, true);
     const dateHumanReadable = '[' + dateStartHumanReadable + ' - ' + dateEndHumanReadable + ']';
-    //console.log("Generate report for date: "+dateHumanReadable);
 
     let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
     const canteen_alias = canteen_alias_list.join(', ');
@@ -232,7 +229,7 @@ export class ReportGenerator {
 
   static readonly THRESHOLD_PERCENTAGE = 0.1;
 
-  calculateTrafficLightStatus(amount_positive: number, amount_negative: number): ReportStatusTrafficLightType {
+  calculateTrafficLightStatus(amount_positive: number, amount_negative: number): string {
     // if there are no feedbacks, the status is orange
     let threshold_percentage = ReportGenerator.THRESHOLD_PERCENTAGE;
     // if the amount of positive is more than 10% of the amount of negative feedbacks, the status is green
@@ -463,7 +460,7 @@ export class ReportGenerator {
     return image_url;
   }
 
-  private calculateFoodStatusRating(food: DatabaseTypes.Foods, foodAverageRating: number | undefined): ReportStatusTrafficLightType {
+  private calculateFoodStatusRating(food: DatabaseTypes.Foods, foodAverageRating: number | undefined): string {
     if (food.rating_average == null || foodAverageRating == null) {
       return ReportStatusTrafficLightValues.YELLOW;
     }
@@ -550,8 +547,6 @@ export class ReportGenerator {
   }
 
   getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: DatabaseTypes.FoodsFeedbacksLabels | DatabaseTypes.CanteensFeedbacksLabels): string {
-    // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
-    // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
     return feedbackLabelWithTranslation?.alias || feedbackLabelWithTranslation.id;
   }
 
@@ -584,7 +579,7 @@ export class ReportGenerator {
     let feedbackLabelKeys = Object.keys(dictFeedbackLabelsWithTranslation);
     for (let feedbackLabelKey of feedbackLabelKeys) {
       let feedbackLabelWithTranslation = dictFeedbackLabelsWithTranslation[feedbackLabelKey];
-      if (!!feedbackLabelWithTranslation) {
+      if (feedbackLabelWithTranslation) {
         let feedbackLabelId = feedbackLabelWithTranslation?.id;
 
         let filterFeedbackLabelEntriesFeedbackLabelEquals: Filter = {
@@ -696,14 +691,14 @@ export class ReportGenerator {
       let comment = feedback?.comment;
       const canteen = feedback.canteen;
       let canteenAlias: string | null | undefined;
-      if (!!canteen && typeof canteen !== 'string') {
+      if (canteen && typeof canteen !== 'string') {
         canteenAlias = canteen.alias;
       }
 
       if (comment) {
         // we should sanitize the comment here just to be sure that we don't have any html tags in the comment
         let sanitized_comment = StringHelper.replaceAllWithOptions({ str: comment, find: '<[^>]*>?', replace: '', flags: 'gm' });
-        if (!!canteenAlias) {
+        if (canteenAlias) {
           sanitized_comment += ' [' + canteenAlias + ']';
         }
         comments.push(sanitized_comment);

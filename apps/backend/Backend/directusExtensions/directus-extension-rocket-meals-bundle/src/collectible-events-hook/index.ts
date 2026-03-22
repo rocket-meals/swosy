@@ -44,11 +44,10 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
   filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.update', async (payload, meta) => {
     const isArrayPayload = Array.isArray(payload);
     const payloadArray = normalizePayload(payload);
+    const metaKeysSingle = meta.keys ? [meta.keys as string | number] : [];
     const keysArray = Array.isArray(meta.keys)
       ? (meta.keys as (string | number | undefined)[])
-      : meta.keys
-        ? [meta.keys as string | number]
-        : [];
+      : metaKeysSingle;
     const itemIds = keysArray.filter((id): id is string | number => id !== undefined && id !== null);
 
     const existingItems = itemIds.length > 0 ? await collectibleEventsHelper.readMany(itemIds) : [];
