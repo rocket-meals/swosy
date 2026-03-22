@@ -2,10 +2,26 @@ import { DockerDirectusHelper } from './DockerDirectusHelper';
 import { FetchIgnoreSelfSignedCertHelper } from './FetchIgnoreSelfSignedCertHelper';
 
 export class DockerDirectusPingHelper {
+  private static handlePingError(error: any): void {
+    if (error.name === 'FetchError') {
+      if (error.type === 'system' && error.code === 'ECONNREFUSED') {
+        console.log(`🔌 Verbindungsfehler - Directus ist noch nicht erreichbar (${error.code})`);
+      } else {
+        console.log(`❌ Fetch-Fehler beim Ping-Check:`, error.message);
+      }
+    } else if (error.name === 'TimeoutError') {
+      console.log(`⏱️ Ping-Check Timeout - Directus antwortet nicht schnell genug`);
+    } else if (error.name === 'TypeError' && error.message.includes('fetch failed')) {
+      console.log(`🔌 Verbindungsfehler - Directus ist noch nicht erreichbar`);
+    } else {
+      console.log(`❌ Unerwarteter Fehler beim Ping-Check:`, error.message);
+      console.log(error);
+    }
+  }
+
   // Ping-Check-Funktion für Directus
   public static async waitForDirectusHealthy(directusUrl = DockerDirectusHelper.getDirectusServerUrl(), maxRetries: number = -1, retryIntervalSeconds: number = 5): Promise<boolean> {
-    //const healthCheckUrl = `${directusUrl}/server/health`; // Health prüft auch email connection, welche wenn nicht konfiguriert fehlschlägt
-    const pingCheckUrl = `${directusUrl}/server/ping`; // daher als fallback
+    const pingCheckUrl = `${directusUrl}/server/ping`; // health check also checks email connection; ping is used as fallback
 
     console.log(`🔍 Warte auf Directus Ping-Check auf: ${pingCheckUrl}`);
 
@@ -15,13 +31,11 @@ export class DockerDirectusPingHelper {
       try {
         console.log(`⏳ Prüfe Directus Ping Status...`);
 
-        // Versuche zuerst den standard Ping endpoint
-        let response = await FetchIgnoreSelfSignedCertHelper.fetch(pingCheckUrl, {
+        const response = await FetchIgnoreSelfSignedCertHelper.fetch(pingCheckUrl, {
           method: 'GET',
           headers: {
             Accept: 'application/json',
           },
-          // Timeout nach 5 Sekunden
           signal: AbortSignal.timeout(retryIntervalSeconds * 1000),
         });
 
@@ -33,21 +47,7 @@ export class DockerDirectusPingHelper {
           console.log(`❌ Directus Ping-Check fehlgeschlagen - Status: ${response.status}`);
         }
       } catch (error: any) {
-        // Behandlung spezifischer Fehlertypen
-        if (error.name === 'FetchError') {
-          if (error.type === 'system' && error.code === 'ECONNREFUSED') {
-            console.log(`🔌 Verbindungsfehler - Directus ist noch nicht erreichbar (${error.code})`);
-          } else {
-            console.log(`❌ Fetch-Fehler beim Ping-Check:`, error.message);
-          }
-        } else if (error.name === 'TimeoutError') {
-          console.log(`⏱️ Ping-Check Timeout - Directus antwortet nicht schnell genug`);
-        } else if (error.name === 'TypeError' && error.message.includes('fetch failed')) {
-          console.log(`🔌 Verbindungsfehler - Directus ist noch nicht erreichbar`);
-        } else {
-          console.log(`❌ Unerwarteter Fehler beim Ping-Check:`, error.message);
-          console.log(error);
-        }
+        DockerDirectusPingHelper.handlePingError(error);
       }
 
       console.log(`⏸️  Warte ${retryIntervalSeconds} Sekunden vor dem nächsten Ping-Check...`);
