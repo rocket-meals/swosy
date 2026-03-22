@@ -375,7 +375,7 @@ const Index = () => {
 								}}
 								value={value}
 								onChangeText={text => {
-									const numericValue = text.replace(/[^0-9]/g, '');
+									const numericValue = text.replaceAll(/[^0-9]/g, '');
 									setValue(numericValue);
 								}}
 								keyboardType="number-pad"

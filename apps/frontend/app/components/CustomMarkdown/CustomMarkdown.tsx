@@ -47,7 +47,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 				for (let i = 0; i < lines.length; i += 1) {
 					const line = lines[i];
-					const normalizedLine = line.replace(/\t/g, '    ');
+					const normalizedLine = line.replaceAll('\t', '    ');
 					const indentLength = normalizedLine.match(/^\s*/)?.[0].length ?? 0;
 					const trimmedLine = line.trim();
 
@@ -81,7 +81,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 							if (lookLine.trim() === '') {
 								continue;
 							}
-							const lookNormalized = lookLine.replace(/\t/g, '    ');
+							const lookNormalized = lookLine.replaceAll('\t', '    ');
 							const lookIndent = lookNormalized.match(/^\s*/)?.[0].length ?? 0;
 							startCollapsed = lookIndent > 0;
 							break;

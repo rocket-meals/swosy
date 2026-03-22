@@ -230,7 +230,7 @@ const Index = () => {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const now = new Date();
-			const formattedTime = `${now.toLocaleDateString('en-GB').replace(/\//g, '.')} - ${now.toLocaleTimeString('en-US', {
+			const formattedTime = `${now.toLocaleDateString('en-GB').replaceAll('/', '.')} - ${now.toLocaleTimeString('en-US', {
 				hour12: false,
 			})}`;
 			setCurrentTime(formattedTime);

@@ -9,11 +9,11 @@ import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
 function escapeHtml(text: string): string {
 	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;');
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;')
+		.replaceAll("'", '&#39;');
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch, loadingText, onMessage }, ref) => {

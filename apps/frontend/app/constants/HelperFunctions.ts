@@ -23,7 +23,7 @@ export const generateCodeVerifier = async () => {
 export const generateCodeChallenge = async (codeVerifier: string) => {
 	const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, codeVerifier, { encoding: Crypto.CryptoEncoding.BASE64 });
 	// Adjust the base64url encoding
-	return digest.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+	return digest.replaceAll('=', '').replaceAll('+', '-').replaceAll('/', '_');
 };
 
 // Update the login status

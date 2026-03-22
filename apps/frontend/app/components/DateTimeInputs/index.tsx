@@ -23,7 +23,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 	}, [value]);
 
 	const formatDateTimeInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, '');
+		let cleanedText = text.replaceAll(/[^0-9]/g, '');
 
 		if (cleanedText.length > 2) {
 			cleanedText = cleanedText.slice(0, 2) + '.' + cleanedText.slice(2);
@@ -319,7 +319,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	const isThirdColonManual = useRef(false);
 
 	const formatTimeInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, '');
+		let cleanedText = text.replaceAll(/[^0-9]/g, '');
 
 		if (cleanedText.length > 2) {
 			cleanedText = cleanedText.slice(0, 2) + ':' + cleanedText.slice(2);
@@ -419,7 +419,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 	const isLastColonManual = useRef(false);
 
 	const formatTimestampInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+		let cleanedText = text.replaceAll(/[^0-9]/g, ''); // Remove non-numeric characters
 
 		// Format date (DD.MM.YYYY)
 		if (cleanedText.length > 2) {
