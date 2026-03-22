@@ -30,6 +30,12 @@ type CollectionProcessingParams = {
   dict: FileReferenceDict;
 };
 
+type SchemaRelationScanParams = {
+  context: WorkflowRunContext;
+  schema: SchemaOverview;
+  dict: FileReferenceDict;
+};
+
 export class FileCleanupWorkflow extends SingleWorkflowRun {
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_DONT_DELETE = -1;
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_30_DAYS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -119,12 +125,11 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async processCollectionRelation(
-    context: WorkflowRunContext,
-    schema: SchemaOverview,
+    scanParams: SchemaRelationScanParams,
     collectionName: string,
-    fieldForDirectusFileId: string,
-    dict: FileReferenceDict
+    fieldForDirectusFileId: string
   ): Promise<void> {
+    const { context, schema, dict } = scanParams;
     const collectionObj = schema.collections[collectionName];
     if (!collectionObj) {
       return;
@@ -141,10 +146,9 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async scanSchemaRelations(
-    context: WorkflowRunContext,
-    schema: SchemaOverview,
-    dict: FileReferenceDict
+    scanParams: SchemaRelationScanParams
   ): Promise<void> {
+    const { context, schema } = scanParams;
     await context.logger.appendLog('Searching for items that are using files and marking them as used.');
     const schemaRelations = schema.relations;
     const amountRelations = Object.keys(schemaRelations).length;
@@ -156,7 +160,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
       const { collection: collectionName, field: fieldForDirectusFileId } = relationObj;
       await context.logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName} - field ${fieldForDirectusFileId}`);
       if (relationObj.related_collection === 'directus_files') {
-        await this.processCollectionRelation(context, schema, collectionName, fieldForDirectusFileId, dict);
+        await this.processCollectionRelation(scanParams, collectionName, fieldForDirectusFileId);
       }
     }
   }
@@ -287,7 +291,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
       dictFileIdsUsedInDatabase[file.id] = false;
     }
 
-    await this.scanSchemaRelations(context, schema, dictFileIdsUsedInDatabase);
+    await this.scanSchemaRelations({ context, schema, dict: dictFileIdsUsedInDatabase });
 
     const hasDirectusFilesFieldIsUnreferenced = this.checkHasUnreferencedField(schema, directusFiles_fieldname_is_unreferenced);
     if (hasDirectusFilesFieldIsUnreferenced) {
