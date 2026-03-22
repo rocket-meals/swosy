@@ -1,30 +1,6 @@
 Key,Message,Component,Line
-"AZ0U1T6zmRbbgKiJY8A-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",120
-"AZ0U1T6zmRbbgKiJY8BA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
-"AZ0U1T6zmRbbgKiJY8BB","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",163
-"AZ0U1T6zmRbbgKiJY8BC","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",274
-"AZ0Tpk9zufp2jxPAhSzF","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",12
-"AZ0Tpk9zufp2jxPAhSzG","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",13
-"AZ0Tpk9zufp2jxPAhSzH","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",14
-"AZ0Tpk9zufp2jxPAhSzI","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",15
-"AZ0Tpk9zufp2jxPAhSzJ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",16
 "AZ0TplGSufp2jxPAhS0o","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",482
-"AZ0TpleXufp2jxPAhS5b","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",61
-"AZ0TpleXufp2jxPAhS5d","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",70
 "AZ0TplGSufp2jxPAhS0n","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",481
-"AZ0TpleXufp2jxPAhS5P","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",24
-"AZ0TpleXufp2jxPAhS5Q","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",24
-"AZ0TpleXufp2jxPAhS5R","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",26
-"AZ0TpleXufp2jxPAhS5S","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",26
-"AZ0TpleXufp2jxPAhS5T","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",27
-"AZ0TpleXufp2jxPAhS5U","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",27
-"AZ0TpleXufp2jxPAhS5V","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",29
-"AZ0TpleXufp2jxPAhS5W","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",29
-"AZ0TpleXufp2jxPAhS5X","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",30
-"AZ0TpleXufp2jxPAhS5Y","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",30
-"AZ0TpleXufp2jxPAhS5Z","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",31
-"AZ0TpleXufp2jxPAhS5a","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",31
-"AZ0Tpk9kufp2jxPAhSzB","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/clusterUtils.ts",70
 "AZ0TplJGufp2jxPAhS1Z","React Hook ""useCallback"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",95
 "AZ0TpmPJufp2jxPAhTMx","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:scripts/setup-weekly-update-cron.sh",22
 "AZ0TpmPPufp2jxPAhTM0","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:scripts/weekly-update.sh",15
@@ -37,58 +13,10 @@ Key,Message,Component,Line
 "AZ0TplGSufp2jxPAhS0u","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",491
 "AZ0TplGSufp2jxPAhS0x","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",517
 "AZ0TplaHufp2jxPAhS41","React Hook ""CommonDateHelper.useSmartReadableDate"" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function.","rocket-meals_rocket-meals:apps/frontend/app/helper/DateHelper.ts",20
-"AZ0Tpk6Iufp2jxPAhSyc","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",74
 "AZ0Tpk-Qufp2jxPAhSzQ","React Hook ""useMyContrastColor"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/Details/AttributeItem.tsx",46
-"AZ0TplGqufp2jxPAhS05","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",142
-"AZ0TplBrufp2jxPAhSzv","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx",50
-"AZmmpWFoTT1E7gtUoReT","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",95
-"AZmmpWFoTT1E7gtUoReU","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",96
-"AZmlpMbtdw_hdAYcor6g","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",30
-"AZmlpMbtdw_hdAYcor6h","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",31
-"AZmlpMbtdw_hdAYcor6i","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",73
-"AZmhgvb7SH5T9lrKgP3j","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",50
-"AZmhgvb7SH5T9lrKgP3n","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",84
 "AZlyj_Mg0YdgFOBafBLM","React Hook ""useCallback"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",102
-"AZlykAAE0YdgFOBafBOz","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",37
-"AZlyj_ek0YdgFOBafBL4","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",233
-"AZlyj_Fi0YdgFOBafBKu","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",159
-"AZlyj_Fi0YdgFOBafBKv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",159
-"AZlyj_Fi0YdgFOBafBKw","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",160
-"AZlyj_Fi0YdgFOBafBKx","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",160
-"AZlyj_QA0YdgFOBafBLZ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/LabelHeader/LabelHeader.tsx",34
-"AZlyj_pn0YdgFOBafBMW","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",19
 "AZlyj_m20YdgFOBafBMP","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",49
 "AZlyj_m20YdgFOBafBMQ","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",56
-"AZlyj_Rn0YdgFOBafBLc","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/NumberInput/NumberInput.tsx",19
-"AZlykADB0YdgFOBafBPI","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",50
-"AZlykADB0YdgFOBafBPJ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",51
-"AZlykADB0YdgFOBafBPK","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",52
-"AZlyj_f60YdgFOBafBL-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",96
-"AZlykADB0YdgFOBafBPM","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",654
-"AZlykADB0YdgFOBafBPN","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",655
-"AZlykADB0YdgFOBafBPO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",656
-"AZlykADB0YdgFOBafBPH","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",44
-"AZlyj_f60YdgFOBafBMA","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",378
-"AZlyj_O60YdgFOBafBLP","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",26
-"AZlyj_O60YdgFOBafBLT","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",322
-"AZlyj_O70YdgFOBafBLV","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",422
-"AZlyj_Fi0YdgFOBafBK6","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",315
-"AZlyj_Fi0YdgFOBafBK7","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",316
-"AZlyj_Lo0YdgFOBafBLJ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/IBANInput/IBANInput.tsx",15
-"AZlyj_Lo0YdgFOBafBLK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/IBANInput/IBANInput.tsx",16
-"AZlyj_Rn0YdgFOBafBLb","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/NumberInput/NumberInput.tsx",15
-"AZlyj_pn0YdgFOBafBMX","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",26
-"AZlyj_pn0YdgFOBafBMY","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",26
-"AZlyj_pn0YdgFOBafBMZ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",26
-"AZlyj_mS0YdgFOBafBMD","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",12
-"AZlyj_mS0YdgFOBafBME","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",13
-"AZlyj_mS0YdgFOBafBMF","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",14
-"AZlyj_mS0YdgFOBafBMH","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",129
-"AZlyj_mS0YdgFOBafBMI","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",130
-"AZlyj_mS0YdgFOBafBMJ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",131
-"AZlyj_mS0YdgFOBafBMK","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
-"AZlyj_mS0YdgFOBafBML","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
-"AZlyj_mS0YdgFOBafBMM","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
 "AZnlPdtFjqHa6CjL-2W3","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",132
 "AZnlPdtFjqHa6CjL-2W4","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",141
 "AZnlPeBljqHa6CjL-2XY","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",16

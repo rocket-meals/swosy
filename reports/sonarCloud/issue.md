@@ -5,62 +5,18 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 94 | 50 |
-| 🔧 Maintainability | 2297 | 0 |
+| 🐛 Reliability | 22 | 22 |
+| 🔧 Maintainability | 2225 | 28 |
 
-**Total issues:** 2391 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2247 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (50/94)
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(monitor)/bigScreen/index.tsx:233
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/bigScreen/index.tsx#L233
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx:74
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx#L74
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/app/(monitor)/foodPlanList/index.tsx:96
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/foodPlanList/index.tsx#L96
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/app/(monitor)/foodPlanList/index.tsx:378
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(monitor)/foodPlanList/index.tsx#L378
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx#L50
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L50
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx:84
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx#L84
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/DateTimeInputs/index.tsx:26
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/DateTimeInputs/index.tsx#L26
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/DateTimeInputs/index.tsx:322
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/DateTimeInputs/index.tsx#L322
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/DateTimeInputs/index.tsx:422
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/DateTimeInputs/index.tsx#L422
+## 🐛 Reliability (22/22)
 
 - **React Hook "useMyContrastColor" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
   apps/frontend/app/components/Details/AttributeItem.tsx:46
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/Details/AttributeItem.tsx#L46
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/frontend/app/components/Feedbacks/index.tsx:142
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/Feedbacks/index.tsx#L142
 
 - **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
   apps/frontend/app/components/FoodItem/FoodItem.tsx:482
@@ -102,115 +58,161 @@
   apps/frontend/app/components/FoodItem/FoodItem.tsx:517
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L517
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/components/HoursSheet/HoursSheet.tsx:159
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/HoursSheet/HoursSheet.tsx#L159
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/components/HoursSheet/HoursSheet.tsx:159
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/HoursSheet/HoursSheet.tsx#L159
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/components/HoursSheet/HoursSheet.tsx:160
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/HoursSheet/HoursSheet.tsx#L160
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/components/HoursSheet/HoursSheet.tsx:160
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/HoursSheet/HoursSheet.tsx#L160
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/components/HoursSheet/HoursSheet.tsx:315
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/HoursSheet/HoursSheet.tsx#L315
-
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/components/HoursSheet/HoursSheet.tsx:316
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/HoursSheet/HoursSheet.tsx#L316
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/IBANInput/IBANInput.tsx:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/IBANInput/IBANInput.tsx#L15
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/IBANInput/IBANInput.tsx:16
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/IBANInput/IBANInput.tsx#L16
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/LabelHeader/LabelHeader.tsx:34
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/LabelHeader/LabelHeader.tsx#L34
-
 - **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
   apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx:102
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx#L102
-
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/frontend/app/components/MyMap/clusterUtils.ts:70
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMap/clusterUtils.ts#L70
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/MyMap/index.tsx:12
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMap/index.tsx#L12
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/MyMap/index.tsx:13
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMap/index.tsx#L13
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/MyMap/index.tsx:14
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMap/index.tsx#L14
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/MyMap/index.tsx:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMap/index.tsx#L15
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/MyMap/index.tsx:16
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMap/index.tsx#L16
-
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx:95
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx#L95
-
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx:96
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx#L96
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/NumberInput/NumberInput.tsx:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NumberInput/NumberInput.tsx#L19
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/components/NumberInput/NumberInput.tsx:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/NumberInput/NumberInput.tsx#L15
 
 - **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
   apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx:95
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx#L95
 
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/frontend/app/constants/HelperFunctions.ts:19
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/HelperFunctions.ts#L19
+- **React Hook "CommonDateHelper.useSmartReadableDate" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function.**
+  apps/frontend/app/helper/DateHelper.ts:20
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DateHelper.ts#L20
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/constants/HelperFunctions.ts:26
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/HelperFunctions.ts#L26
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/frontend/app/helper/hashHelper.ts:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L49
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/constants/HelperFunctions.ts:26
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/HelperFunctions.ts#L26
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/frontend/app/helper/hashHelper.ts:56
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L56
 
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/constants/HelperFunctions.ts:26
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/constants/HelperFunctions.ts#L26
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/generateIcons.sh:132
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/generateIcons.sh#L132
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/helper/animationHelper.ts:12
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/animationHelper.ts#L12
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  apps/frontend/generateIcons.sh:141
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/generateIcons.sh#L141
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/helper/animationHelper.ts:13
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/animationHelper.ts#L13
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  generate_basic_auth_traefik.sh:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/generate_basic_auth_traefik.sh#L16
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/frontend/app/helper/animationHelper.ts:14
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/animationHelper.ts#L14
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  generate_basic_auth_traefik.sh:46
+  https://github.com/rocket-meals/rocket-meals/blob/master/generate_basic_auth_traefik.sh#L46
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  scripts/setup-weekly-update-cron.sh:22
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/setup-weekly-update-cron.sh#L22
+
+- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
+  scripts/weekly-update.sh:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/weekly-update.sh#L15
+
+## 🔧 Maintainability (28/2225)
+
+- **Remove cache after installing packages or store it in a cache mount.**
+  apps/backend-sync/Dockerfile:11
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L11
+
+- **Merge this RUN instruction with the consecutive ones.**
+  apps/backend-sync/Dockerfile:4
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L4
+
+- **Remove cache after installing packages or store it in a cache mount.**
+  apps/backend-sync/Dockerfile:4
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L4
+
+- **Remove cache after installing packages or store it in a cache mount.**
+  apps/backend-sync/Dockerfile:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L8
+
+- **Move function 'base64UrlDecodeToString' to the outer scope.**
+  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:34
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L34
+
+- **Handle this exception or don't catch it at all.**
+  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:48
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L48
+
+- **Prefer `node:child_process` over `child_process`.**
+  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts#L2
+
+- **`String.raw` should be used to avoid escaping `\`.**
+  apps/backend-sync/src/apple-secret-rotator/index.ts:34
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L34
+
+- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
+  apps/backend-sync/src/apple-secret-rotator/index.ts:92
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L92
+
+- **Prefer `node:fs` over `fs`.**
+  apps/backend-sync/src/apple-secret-rotator/index.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L1
+
+- **Prefer `node:path` over `path`.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L2
+
+- **Prefer `node:fs` over `fs`.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:3
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L3
+
+- **Prefer `node:module` over `module`.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L8
+
+- **`requiredModules` should be a `Set`, and use `requiredModules.has()` to check existence or non-existence.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:27
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L27
+
+- **`collectionsToSkip` should be a `Set`, and use `collectionsToSkip.has()` to check existence or non-existence.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:28
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L28
+
+- **Remove this commented out code.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:55
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L55
+
+- **Remove this commented out code.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:64
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L64
+
+- **Remove this commented out code.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:129
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L129
+
+- **Unexpected negated condition.**
+  apps/backend-sync/src/DirectusDatabaseSync.ts:216
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L216
+
+- **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
+  apps/backend-sync/src/DockerContainerManager.ts:14
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L14
+
+- **Handle this exception or don't catch it at all.**
+  apps/backend-sync/src/DockerContainerManager.ts:129
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L129
+
+- **Prefer `node:child_process` over `child_process`.**
+  apps/backend-sync/src/DockerContainerManager.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L1
+
+- **Prefer `node:util` over `util`.**
+  apps/backend-sync/src/DockerContainerManager.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L2
+
+- **Make this public static property readonly.**
+  apps/backend-sync/src/DockerContainerManager.ts:8
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L8
+
+- **Make this public static property readonly.**
+  apps/backend-sync/src/DockerDirectusHelper.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusHelper.ts#L2
+
+- **Remove this commented out code.**
+  apps/backend-sync/src/DockerDirectusHelper.ts:7
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusHelper.ts#L7
+
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/backend-sync/src/DockerDirectusPingHelper.ts:6
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusPingHelper.ts#L6
+
+- **Remove this commented out code.**
+  apps/backend-sync/src/DockerDirectusPingHelper.ts:7
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusPingHelper.ts#L7
 

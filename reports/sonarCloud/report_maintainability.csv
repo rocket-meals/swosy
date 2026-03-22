@@ -1,15 +1,12 @@
 Key,Message,Component,Line
+"AZ0VRY-O3JYEkI94__uX","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend-sync/src/apple-secret-rotator/index.ts",34
 "AZ0U9d0d4T-oZG71XAr4","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.web.tsx",28
-"AZ0U1T6zmRbbgKiJY8A-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",120
 "AZ0U1T6zmRbbgKiJY8A_","Unexpected negated condition.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
-"AZ0U1T6zmRbbgKiJY8BA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
 "AZ0U1T6zmRbbgKiJY8A4","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",1
 "AZ0U1T6zmRbbgKiJY8A5","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",2
 "AZ0U1T6zmRbbgKiJY8A6","Prefer `node:child_process` over `child_process`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",5
 "AZ0U1T6zmRbbgKiJY8A8","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",82
 "AZ0U1T6zmRbbgKiJY8A9","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",101
-"AZ0U1T6zmRbbgKiJY8BB","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",163
-"AZ0U1T6zmRbbgKiJY8BC","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",274
 "AZ0Tplqeufp2jxPAhTKP","Use `export…from` to re-export `FoodofferDateType`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",6
 "AZ0Tplt9ufp2jxPAhTKs","Remove this useless assignment to variable ""schema"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",43
 "AZ0Tplt9ufp2jxPAhTKt","Remove this useless assignment to variable ""collectionName"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",43
@@ -38,11 +35,6 @@ Key,Message,Component,Line
 "AZ0Tpk7Fufp2jxPAhSys","A fragment with only one child is redundant.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanWeek/index.tsx",46
 "AZ0Tpldvufp2jxPAhS5L","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useMyScrollviewModalCanteenSelection.tsx",30
 "AZ0Tpldvufp2jxPAhS5M","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/hooks/useMyScrollviewModalCanteenSelection.tsx",48
-"AZ0Tpk9zufp2jxPAhSzF","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",12
-"AZ0Tpk9zufp2jxPAhSzG","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",13
-"AZ0Tpk9zufp2jxPAhSzH","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",14
-"AZ0Tpk9zufp2jxPAhSzI","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",15
-"AZ0Tpk9zufp2jxPAhSzJ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",16
 "AZ0Tpk_Bufp2jxPAhSzX","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/MyImage/index.tsx",54
 "AZ0Tpk2Eufp2jxPAhSwz","Refactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",592
 "AZ0Tpk2Eufp2jxPAhSw3","`existingFileIds` should be a `Set`, and use `existingFileIds.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",682
@@ -90,23 +82,9 @@ Key,Message,Component,Line
 "AZ0Tpk31ufp2jxPAhSxf","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",109
 "AZ0Tpk31ufp2jxPAhSxv","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",709
 "AZ0TplGSufp2jxPAhS0l","A fragment with only one child is redundant.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",303
-"AZ0TpleXufp2jxPAhS5b","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",61
 "AZ0TpleXufp2jxPAhS5c","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",63
-"AZ0TpleXufp2jxPAhS5d","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",70
 "AZ0TpleXufp2jxPAhS5g","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",107
 "AZ0Tpkvcufp2jxPAhSvM","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",21
-"AZ0TpleXufp2jxPAhS5P","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",24
-"AZ0TpleXufp2jxPAhS5Q","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",24
-"AZ0TpleXufp2jxPAhS5R","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",26
-"AZ0TpleXufp2jxPAhS5S","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",26
-"AZ0TpleXufp2jxPAhS5T","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",27
-"AZ0TpleXufp2jxPAhS5U","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",27
-"AZ0TpleXufp2jxPAhS5V","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",29
-"AZ0TpleXufp2jxPAhS5W","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",29
-"AZ0TpleXufp2jxPAhS5X","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",30
-"AZ0TpleXufp2jxPAhS5Y","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",30
-"AZ0TpleXufp2jxPAhS5Z","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",31
-"AZ0TpleXufp2jxPAhS5a","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",31
 "AZ0TpleXufp2jxPAhS5f","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",106
 "AZ0Tpk31ufp2jxPAhSxr","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",705
 "AZ0Tpk31ufp2jxPAhSxs","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",706
@@ -138,7 +116,6 @@ Key,Message,Component,Line
 "AZ0TplOlufp2jxPAhS2E","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentDetailsContent/ApartmentDetailsContent.tsx",48
 "AZ0TplOlufp2jxPAhS2F","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentDetailsContent/ApartmentDetailsContent.tsx",70
 "AZ0TplLWufp2jxPAhS1u","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingDetailsContent/BuildingDetailsContent.tsx",91
-"AZ0Tpk9kufp2jxPAhSzB","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/clusterUtils.ts",70
 "AZ0Tpkypufp2jxPAhSwS","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/news/index.tsx",69
 "AZ0Tpk2yufp2jxPAhSxL","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",460
 "AZ0Tpk2yufp2jxPAhSxM","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",478
@@ -385,7 +362,6 @@ Key,Message,Component,Line
 "AZ0TploZufp2jxPAhS9E","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",96
 "AZ0TploZufp2jxPAhS9F","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",96
 "AZ0Tpk6Iufp2jxPAhSyb","Remove this unused import of 'Text'.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",2
-"AZ0Tpk6Iufp2jxPAhSyc","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",74
 "AZ0Tpk6Iufp2jxPAhSyd","Use concise character class syntax '\D' instead of '[^0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",74
 "AZ0Tpk6Iufp2jxPAhSyf","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",132
 "AZ0Tpk6Iufp2jxPAhSyg","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",149
@@ -405,7 +381,6 @@ Key,Message,Component,Line
 "AZ0Tpk-Qufp2jxPAhSzP","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/Details/AttributeItem.tsx",18
 "AZ0Tpk-dufp2jxPAhSzS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Details/index.tsx",60
 "AZ0Tpk-dufp2jxPAhSzT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Details/index.tsx",62
-"AZ0TplGqufp2jxPAhS05","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",142
 "AZ0TplGqufp2jxPAhS06","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",174
 "AZ0TplGqufp2jxPAhS07","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",174
 "AZ0TplHwufp2jxPAhS1R","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/LocationInformation/LocationInformation.tsx",63
@@ -420,7 +395,6 @@ Key,Message,Component,Line
 "AZ0TplFTufp2jxPAhS0c","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListTextInput.tsx",160
 "AZ0TplAHufp2jxPAhSzg","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListDate/SettingsListDate.tsx",36
 "AZ0TplAHufp2jxPAhSzh","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListDate/SettingsListDate.tsx",49
-"AZ0TplBrufp2jxPAhSzv","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx",50
 "AZ0Tpk2yufp2jxPAhSxK","Remove this useless assignment to variable ""closeScrollViewModal"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/settings/index.tsx",69
 "AZ0TplL0ufp2jxPAhS1y","Remove this useless assignment to variable ""disableSave"".","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListNickname/SettingsListNickname.tsx",20
 "AZ0Tpk2Vufp2jxPAhSxA","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",490
@@ -600,7 +574,6 @@ Key,Message,Component,Line
 "AZ0Tplz5ufp2jxPAhTLe","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/backend-sync/src/SyncDatabaseSchema.ts",4
 "AZ0Tplz5ufp2jxPAhTLg","This always evaluates to truthy. Consider refactoring this code.","rocket-meals_rocket-meals:apps/backend-sync/src/SyncDatabaseSchema.ts",71
 "AZ0Tplzaufp2jxPAhTLX","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/backend-sync/src/apple-secret-rotator/index.ts",1
-"AZ0Tplzaufp2jxPAhTLY","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/backend-sync/src/apple-secret-rotator/index.ts",40
 "AZ0TpliQufp2jxPAhS6G","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ActionInitFilterEventHelper.ts",4
 "AZ0TpliQufp2jxPAhS6H","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ActionInitFilterEventHelper.ts",5
 "AZ0TpmNIufp2jxPAhTMg","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/CronHelper.ts",78
@@ -679,21 +652,14 @@ Key,Message,Component,Line
 "AZoA9Ktmb6ci_Qvhj9oL","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",61
 "AZ0TplKaufp2jxPAhS1p","Remove this unused import of 'SingleLineInput'.","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownInput.tsx",7
 "AZ0TpleKufp2jxPAhS5O","Remove this unused import of 'useRef'.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useFoodOffersDefaultDate.ts",1
-"AZmmpWFoTT1E7gtUoReT","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",95
-"AZmmpWFoTT1E7gtUoReU","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",96
 "AZ0TplbOufp2jxPAhS44","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/constants/MarkdownPatterns.ts",10
 "AZ0TplbOufp2jxPAhS46","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/constants/MarkdownPatterns.ts",14
-"AZmlpMbtdw_hdAYcor6g","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",30
-"AZmlpMbtdw_hdAYcor6h","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",31
-"AZmlpMbtdw_hdAYcor6i","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",73
 "AZ0TplbOufp2jxPAhS45","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/constants/MarkdownPatterns.ts",13
 "AZmhgvb7SH5T9lrKgP3g","Refactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",30
 "AZmhgvb7SH5T9lrKgP3h","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",37
 "AZmhgvb7SH5T9lrKgP3i","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",38
-"AZmhgvb7SH5T9lrKgP3j","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",50
 "AZmhgvb7SH5T9lrKgP3k","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",51
 "AZmhgvb7SH5T9lrKgP3l","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",54
-"AZmhgvb7SH5T9lrKgP3n","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",84
 "AZmhgvb7SH5T9lrKgP3o","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",85
 "AZmhgvb7SH5T9lrKgP3q","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",113
 "AZmhgvb7SH5T9lrKgP3r","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",125
@@ -737,7 +703,6 @@ Key,Message,Component,Line
 "AZkfCEQNZWk3l8lfAOUE","Unnecessary escape character: \"".","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",32
 "AZkfCEQNZWk3l8lfAOUF","Unnecessary escape character: \"".","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",32
 "AZkfCEQNZWk3l8lfAOUG","Unnecessary escape character: \"".","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",32
-"AZlykAAE0YdgFOBafBOz","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",37
 "AZkU8RfCaFO0qV2RlEyv","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers-scroll/index.tsx",390
 "AZkU8RfCaFO0qV2RlEym","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers-scroll/index.tsx",424
 "AZkU8RfCaFO0qV2RlEyn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers-scroll/index.tsx",446
@@ -920,7 +885,6 @@ Key,Message,Component,Line
 "AZkUSvSGS4VhJojFFAfA","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",28
 "AZ0Tpk6Xufp2jxPAhSyi","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",89
 "AZ0Tpk6Xufp2jxPAhSyj","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",100
-"AZlyj_ek0YdgFOBafBL4","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",233
 "AZkUSvSGS4VhJojFFAfE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",337
 "AZkUSvSGS4VhJojFFAfF","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",510
 "AZ0Tpk7Wufp2jxPAhSyt","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",57
@@ -985,16 +949,11 @@ Key,Message,Component,Line
 "AZkUSu6wS4VhJojFFAOX","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",59
 "AZ0TplDiufp2jxPAhS0C","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",74
 "AZkUSvBTS4VhJojFFAQj","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",141
-"AZlyj_Fi0YdgFOBafBKu","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",159
-"AZlyj_Fi0YdgFOBafBKv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",159
-"AZlyj_Fi0YdgFOBafBKw","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",160
-"AZlyj_Fi0YdgFOBafBKx","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",160
 "AZkUSvBTS4VhJojFFAQo","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",200
 "AZkUSvGJS4VhJojFFAS0","Remove this useless assignment to variable ""selectedImage"".","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",32
 "AZkUSvGJS4VhJojFFAS1","Remove this useless assignment to variable ""setSelectedImage"".","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",32
 "AZkUSvGJS4VhJojFFAS2","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",51
 "AZkUSvHoS4VhJojFFATk","Replace this ""Boolean"" wrapper object with primitive type ""boolean"".","rocket-meals_rocket-meals:apps/frontend/app/components/LabelHeader/LabelHeader.tsx",8
-"AZlyj_QA0YdgFOBafBLZ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/LabelHeader/LabelHeader.tsx",34
 "AZkUSvCqS4VhJojFFARY","Remove this useless assignment to variable ""food_responsible_organization_name"".","rocket-meals_rocket-meals:apps/frontend/app/components/Labels/index.tsx",44
 "AZkUSu_PS4VhJojFFAPw","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/Login/Footer.tsx",15
 "AZkUSu-IS4VhJojFFAPs","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/Login/Form.tsx",109
@@ -1021,7 +980,6 @@ Key,Message,Component,Line
 "AZkUSvBIS4VhJojFFAQh","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/VerticalScrollTopFood/index.tsx",38
 "AZ0TplH7ufp2jxPAhS1U","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/WashingMachines/index.tsx",59
 "AZkUSvEFS4VhJojFFASI","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/WashingMachines/index.tsx",160
-"AZlyj_pn0YdgFOBafBMW","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",19
 "AZkUSveRS4VhJojFFCTz","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",20
 "AZkUSveRS4VhJojFFCT5","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",26
 "AZkUSveRS4VhJojFFCUV","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",56
@@ -1220,7 +1178,6 @@ Key,Message,Component,Line
 "AZkUSvCWS4VhJojFFARO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",62
 "AZkUSvCWS4VhJojFFARP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",75
 "AZkUSvCWS4VhJojFFARQ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/NewsItem/NewsItem.tsx",123
-"AZlyj_Rn0YdgFOBafBLc","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/NumberInput/NumberInput.tsx",19
 "AZkUSu8XS4VhJojFFAO8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SignatureInterface/SignatureInterface.tsx",135
 "AZkUSveRS4VhJojFFCTj","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",4
 "AZkUSveRS4VhJojFFCTk","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",5
@@ -1365,11 +1322,7 @@ Key,Message,Component,Line
 "AZlyj_rt0YdgFOBafBMi","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/reset-project.js",9
 "AZlyj_rt0YdgFOBafBMj","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/frontend/app/scripts/reset-project.js",10
 "AZlykAD-0YdgFOBafBPw","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:packages/common-backend/src/CollectionHelper.ts",2
-"AZlykADB0YdgFOBafBPI","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",50
-"AZlykADB0YdgFOBafBPJ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",51
-"AZlykADB0YdgFOBafBPK","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",52
 "AZkUSvK8S4VhJojFFAWX","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/game-ideas/index.tsx",152
-"AZlyj_f60YdgFOBafBL-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",96
 "AZ0Tpk4aufp2jxPAhSyQ","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",17
 "AZkUSvQUS4VhJojFFAdO","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",150
 "AZlyj_cc0YdgFOBafBLv","Prefer `childNode.remove()` over `parentNode.removeChild(childNode)`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/image-full-screen/index.tsx",157
@@ -1443,11 +1396,7 @@ Key,Message,Component,Line
 "AZ0TplVJufp2jxPAhS4Z","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/FoodFeedbacks/FoodFeedbacks.ts",96
 "AZkUSvanS4VhJojFFCS6","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/User/User.ts",66
 "AZkUSvanS4VhJojFFCS9","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/User/User.ts",82
-"AZlykADB0YdgFOBafBPM","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",654
-"AZlykADB0YdgFOBafBPN","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",655
-"AZlykADB0YdgFOBafBPO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",656
 "AZkUSv3FS4VhJojFFCsQ","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",32
-"AZlykADB0YdgFOBafBPH","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",44
 "AZlykADB0YdgFOBafBPL","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",53
 "AZkUSv3FS4VhJojFFCsR","Redundant double negation.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",72
 "AZkUSv3FS4VhJojFFCsS","Expected a `for-of` loop instead of a `for` loop with this simple iteration.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",91
@@ -1609,7 +1558,6 @@ Key,Message,Component,Line
 "AZkUSvS3S4VhJojFFAgf","Unnecessary use of boolean literals in conditional expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",86
 "AZkUSvS3S4VhJojFFAgh","Unnecessary use of boolean literals in conditional expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",284
 "AZkUSvS3S4VhJojFFAgi","Use concise character class syntax '\D' instead of '[^0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",378
-"AZlyj_f60YdgFOBafBMA","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",378
 "AZkUSvSqS4VhJojFFAgc","Unnecessary use of boolean literals in conditional expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanWeek/index.tsx",103
 "AZkUSvRDS4VhJojFFAdv","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/labels/index.tsx",88
 "AZkUSvSVS4VhJojFFAf6","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/list-day-screen/index.tsx",343
@@ -1644,14 +1592,11 @@ Key,Message,Component,Line
 "AZkUSvC0S4VhJojFFARf","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseTimetable.tsx",237
 "AZkUSvHUS4VhJojFFATW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DataAcces/DataAccess.tsx",19
 "AZkUSvG7S4VhJojFFATK","Use concise character class syntax '\D' instead of '[^0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",26
-"AZlyj_O60YdgFOBafBLP","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",26
 "AZkUSvG7S4VhJojFFATL","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",51
 "AZlyj_O60YdgFOBafBLQ","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",80
 "AZkUSvG7S4VhJojFFATP","Use concise character class syntax '\D' instead of '[^0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",322
-"AZlyj_O60YdgFOBafBLT","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",322
 "AZlyj_O60YdgFOBafBLU","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",352
 "AZkUSvG7S4VhJojFFATR","Use concise character class syntax '\D' instead of '[^0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",422
-"AZlyj_O70YdgFOBafBLV","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",422
 "AZkUSvG7S4VhJojFFATS","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",454
 "AZlyj_O70YdgFOBafBLW","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",490
 "AZkUSvIiS4VhJojFFAT0","Rename interface ""sheetProps"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/components/EditFormSubmissionSheet/types.ts",1
@@ -1672,11 +1617,7 @@ Key,Message,Component,Line
 "AZkUSvBTS4VhJojFFAQq","Remove this useless assignment to variable ""isBetween"".","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",213
 "AZkUSvBTS4VhJojFFAQr","Remove this useless assignment to variable ""isExtending"".","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",216
 "AZkUSvBTS4VhJojFFAQs","Remove this useless assignment to variable ""isOutside"".","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",219
-"AZlyj_Fi0YdgFOBafBK6","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",315
-"AZlyj_Fi0YdgFOBafBK7","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",316
 "AZ0TplDiufp2jxPAhS0D","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",377
-"AZlyj_Lo0YdgFOBafBLJ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/IBANInput/IBANInput.tsx",15
-"AZlyj_Lo0YdgFOBafBLK","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/IBANInput/IBANInput.tsx",16
 "AZkUSvGJS4VhJojFFAS3","Remove this useless assignment to variable ""fileSizes"".","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",131
 "AZkUSvGJS4VhJojFFAS4","Remove this useless assignment to variable ""fileSizes"".","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",153
 "AZkUSvGJS4VhJojFFAS6","Remove this useless assignment to variable ""result"".","rocket-meals_rocket-meals:apps/frontend/app/components/ImageManagementSheet/ImageManagementSheet.tsx",181
@@ -1700,7 +1641,6 @@ Key,Message,Component,Line
 "AZkUSvAzS4VhJojFFAQZ","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/components/NotificationSheet/NotificationSheet.tsx",31
 "AZkUSvAzS4VhJojFFAQa","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/NotificationSheet/NotificationSheet.tsx",113
 "AZkUSvAzS4VhJojFFAQb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/NotificationSheet/NotificationSheet.tsx",126
-"AZlyj_Rn0YdgFOBafBLb","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/NumberInput/NumberInput.tsx",15
 "AZlyj_Pf0YdgFOBafBLY","Move async function 'loadServerInfo' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/components/ServerStatusLoader/ServerStatusLoader.tsx",16
 "AZkUSvF2S4VhJojFFASy","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SubmissionWarningModal/SubmissionWarningModal.tsx",65
 "AZkUSvF_S4VhJojFFASz","Replace this ""String"" wrapper object with primitive type ""string"".","rocket-meals_rocket-meals:apps/frontend/app/components/SubmissionWarningModal/types.ts",4
@@ -1714,9 +1654,6 @@ Key,Message,Component,Line
 "AZkUSvdzS4VhJojFFCTZ","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/constants/DataItem.ts",1
 "AZkUSvdzS4VhJojFFCTa","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/constants/DataItem.ts",3
 "AZkUSveIS4VhJojFFCTg","Remove this useless assignment to variable ""bytesMaxAmount"".","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",12
-"AZlyj_pn0YdgFOBafBMX","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",26
-"AZlyj_pn0YdgFOBafBMY","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",26
-"AZlyj_pn0YdgFOBafBMZ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",26
 "AZlyj_pn0YdgFOBafBMa","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",37
 "AZkUSveIS4VhJojFFCTh","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",44
 "AZlyj_pn0YdgFOBafBMb","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",46
@@ -1747,17 +1684,8 @@ Key,Message,Component,Line
 "AZkUSvUHS4VhJojFFAhh","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",105
 "AZkUSvUHS4VhJojFFAhi","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",106
 "AZkUSvUHS4VhJojFFAhj","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",107
-"AZlyj_mS0YdgFOBafBMD","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",12
-"AZlyj_mS0YdgFOBafBME","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",13
-"AZlyj_mS0YdgFOBafBMF","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",14
 "AZlyj_mS0YdgFOBafBMG","Move function 'hexToLottieColor' to the outer scope.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",123
 "AZotV6J9yrDQpCspziJ3","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",124
-"AZlyj_mS0YdgFOBafBMH","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",129
-"AZlyj_mS0YdgFOBafBMI","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",130
-"AZlyj_mS0YdgFOBafBMJ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",131
-"AZlyj_mS0YdgFOBafBMK","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
-"AZlyj_mS0YdgFOBafBML","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
-"AZlyj_mS0YdgFOBafBMM","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
 "AZlyj_mS0YdgFOBafBMN","Prefer `structuredClone(…)` over `JSON.parse(JSON.stringify(…))` to create a deep clone.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",175
 "AZkUSvUQS4VhJojFFAhl","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",11
 "AZkUSvUQS4VhJojFFAhm","Member 'collection' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",30
