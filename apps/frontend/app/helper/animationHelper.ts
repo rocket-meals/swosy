@@ -9,9 +9,9 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
 		? {
-				r: parseInt(result[1], 16),
-				g: parseInt(result[2], 16),
-				b: parseInt(result[3], 16),
+				r: Number.parseInt(result[1], 16),
+				g: Number.parseInt(result[2], 16),
+				b: Number.parseInt(result[3], 16),
 			}
 		: null;
 }
@@ -126,10 +126,10 @@ export function replaceLottieColors(lottieJSON: any, primaryColor: string): any 
 			return [0, 0, 0];
 		}
 		try {
-			const r = (parseInt(hex.slice(1, 3), 16) / 255).toFixed(4);
-			const g = (parseInt(hex.slice(3, 5), 16) / 255).toFixed(4);
-			const b = (parseInt(hex.slice(5, 7), 16) / 255).toFixed(4);
-			return [parseFloat(r), parseFloat(g), parseFloat(b)];
+			const r = (Number.parseInt(hex.slice(1, 3), 16) / 255).toFixed(4);
+			const g = (Number.parseInt(hex.slice(3, 5), 16) / 255).toFixed(4);
+			const b = (Number.parseInt(hex.slice(5, 7), 16) / 255).toFixed(4);
+			return [Number.parseFloat(r), Number.parseFloat(g), Number.parseFloat(b)];
 		} catch (error) {
 			console.error(`Error converting hex to Lottie color: ${hex}`, error);
 			return [0, 0, 0];

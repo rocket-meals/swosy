@@ -117,8 +117,8 @@ function parseCsvLine(line: string): string[] {
  */
 function parseLineNumber(value: string | undefined): number | undefined {
   if (!value) return undefined;
-  const parsed = parseInt(value, 10);
-  return !isNaN(parsed) ? parsed : undefined;
+  const parsed = Number.parseInt(value, 10);
+  return !Number.isNaN(parsed) ? parsed : undefined;
 }
 
 /**
@@ -160,7 +160,7 @@ function componentToFileUrl(component: string, line: number | undefined, repoUrl
   const filePath = colonIndex >= 0 ? component.substring(colonIndex + 1) : component;
 
   let url = `${repoUrl}/blob/${branch}/${filePath}`;
-  if (line !== undefined && !isNaN(line)) {
+  if (line !== undefined && !Number.isNaN(line)) {
     url += `#L${line}`;
   }
   return url;
@@ -271,7 +271,7 @@ function generateMarkdown(allIssues: PrioritizedIssue[], maxIssues: number): str
     const shortPath = getShortPath(issue.component);
     md += `- **${issue.message}**\n`;
     md += `  ${shortPath}`;
-    if (issue.line !== undefined && !isNaN(issue.line)) {
+    if (issue.line !== undefined && !Number.isNaN(issue.line)) {
       md += `:${issue.line}`;
     }
     md += `\n`;

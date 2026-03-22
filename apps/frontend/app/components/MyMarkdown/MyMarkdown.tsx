@@ -92,8 +92,8 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 				const coordinateString = href.slice('latlon:'.length);
 				const [latitudeRaw, longitudeRaw] = coordinateString.split(',');
 
-				const latitude = parseFloat(latitudeRaw?.trim() ?? '');
-				const longitude = parseFloat(longitudeRaw?.trim() ?? '');
+				const latitude = Number.parseFloat(latitudeRaw?.trim() ?? '');
+				const longitude = Number.parseFloat(longitudeRaw?.trim() ?? '');
 
 				if (!Number.isNaN(latitude) && !Number.isNaN(longitude)) {
 					finalHref = CommonSystemActionHelper.getGoogleMapsUrl(latitude, longitude);

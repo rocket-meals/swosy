@@ -16,7 +16,7 @@ export const generateCodeVerifier = async () => {
 	const printableAsciiRange = printableAsciiEnd - printableAsciiStart + 1; // Calculate the range
 
 	const array = await Crypto.getRandomBytesAsync(bytesAmount); // Generates 32 random bytes
-	return Array.from(array, byte => String.fromCharCode(printableAsciiStart + (byte % printableAsciiRange))).join('');
+	return Array.from(array, byte => String.fromCodePoint(printableAsciiStart + (byte % printableAsciiRange))).join('');
 };
 
 // Generate a code challenge using the S256 method

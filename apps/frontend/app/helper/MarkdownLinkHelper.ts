@@ -27,8 +27,8 @@ export const parseCoordinatesFromUri = (uri: string, scheme: UriScheme) => {
 	}
 
 	const [latitudeRaw, longitudeRaw] = matches;
-	const latitude = parseFloat(latitudeRaw);
-	const longitude = parseFloat(longitudeRaw);
+	const latitude = Number.parseFloat(latitudeRaw);
+	const longitude = Number.parseFloat(longitudeRaw);
 
 	if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
 		return null;

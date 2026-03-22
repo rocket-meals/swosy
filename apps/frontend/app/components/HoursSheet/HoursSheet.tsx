@@ -156,8 +156,8 @@ export const HoursSheetContent: React.FC = () => {
 									time_end: null,
 								});
 							} else {
-								let time_start_as_seconds = parseInt(time_start_as_string.split(':')[0]) * 3600 + parseInt(time_start_as_string.split(':')[1]) * 60;
-								let time_end_as_seconds = parseInt(time_end_as_string.split(':')[0]) * 3600 + parseInt(time_end_as_string.split(':')[1]) * 60;
+								let time_start_as_seconds = Number.parseInt(time_start_as_string.split(':')[0]) * 3600 + Number.parseInt(time_start_as_string.split(':')[1]) * 60;
+								let time_end_as_seconds = Number.parseInt(time_end_as_string.split(':')[0]) * 3600 + Number.parseInt(time_end_as_string.split(':')[1]) * 60;
 
 								timesForDay.push({
 									day,
@@ -312,8 +312,8 @@ export const HoursSheetContent: React.FC = () => {
 						return;
 					}
 
-					let time_start_in_seconds = parseInt(timeRange.time_start);
-					let time_end_in_seconds = parseInt(timeRange.time_end);
+					let time_start_in_seconds = Number.parseInt(timeRange.time_start);
+					let time_end_in_seconds = Number.parseInt(timeRange.time_end);
 					let time_start_hours = Math.floor(time_start_in_seconds / 3600);
 					let time_start_minutes = Math.floor((time_start_in_seconds % 3600) / 60);
 					let time_start_seconds = time_start_in_seconds % 60;
