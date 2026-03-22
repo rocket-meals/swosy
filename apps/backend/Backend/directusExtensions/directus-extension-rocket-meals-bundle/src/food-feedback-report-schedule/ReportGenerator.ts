@@ -102,6 +102,13 @@ export type ReportContext = {
   canteenEntries: Record<string, DatabaseTypes.Canteens>;
 } & CommonReportContext;
 
+type CanteenFeedbackFilterParams = {
+  filterLabel: FieldFilter;
+  filterLikes: FieldFilter;
+  filterDislikes: FieldFilter;
+  filterDateUpdatedFeedbackLabelEntries: Filter[];
+};
+
 export class ReportGenerator {
   private readonly myDatabaseHelper: MyDatabaseHelper;
 
@@ -267,16 +274,13 @@ export class ReportGenerator {
     canteenEntries: ReportContext['canteenEntries'],
     canteenKeys: string[],
     canteen_feedback_dict: { [key: string]: ReportCanteenEntryType },
-    filterLabel: FieldFilter,
-    filterLikes: FieldFilter,
-    filterDislikes: FieldFilter,
-    filterDateUpdatedFeedbackLabelEntries: Filter[],
+    feedbackFilterParams: CanteenFeedbackFilterParams,
     alias: string
   ) {
     for (const canteenKey of canteenKeys) {
       const canteen = canteenEntries[canteenKey];
       if (canteen) {
-        const countsForCanteen = await this.getCanteenFeedbackCounts(filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries, canteen);
+        const countsForCanteen = await this.getCanteenFeedbackCounts(feedbackFilterParams, canteen);
         canteen_feedback_dict[canteen.id]?.labels.push({
           label_alias: alias,
           amount_positive_new: countsForCanteen.amount_positive_new,
@@ -341,14 +345,19 @@ export class ReportGenerator {
     for (let canteenFeedbackLabelsWithTranslation of canteenFeedbackLabelsWithTranslations) {
       let alias = this.getTranslationOfFeedbackLabel(canteenFeedbackLabelsWithTranslation);
 
-      const filterLabel = {
-        label: {
-          _eq: canteenFeedbackLabelsWithTranslation.id,
+      const feedbackFilterParams: CanteenFeedbackFilterParams = {
+        filterLabel: {
+          label: {
+            _eq: canteenFeedbackLabelsWithTranslation.id,
+          },
         },
+        filterLikes,
+        filterDislikes,
+        filterDateUpdatedFeedbackLabelEntries,
       };
 
       // Get the counts for all canteens
-      const countsAllCanteens = await this.getCanteenFeedbackCounts(filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries, null);
+      const countsAllCanteens = await this.getCanteenFeedbackCounts(feedbackFilterParams, null);
 
       canteen_feedback_all.labels.push({
         label_alias: alias,
@@ -364,7 +373,7 @@ export class ReportGenerator {
 
       // If per-canteen feedbacks are to be shown
       if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
-        await this.addPerCanteenLabelCounts(canteenEntries, canteenKeys, canteen_feedback_dict, filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries, alias);
+        await this.addPerCanteenLabelCounts(canteenEntries, canteenKeys, canteen_feedback_dict, feedbackFilterParams, alias);
       }
     }
 
@@ -380,7 +389,8 @@ export class ReportGenerator {
     return canteens_feedbacks;
   }
 
-  async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: DatabaseTypes.Canteens | null = null) {
+  async getCanteenFeedbackCounts(feedbackFilterParams: CanteenFeedbackFilterParams, canteen: DatabaseTypes.Canteens | null = null) {
+    const { filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries } = feedbackFilterParams;
     const canteenFilter: FieldFilter = canteen ? { canteen: { _eq: canteen.id } } : {};
 
     const amount_positive_new = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({

@@ -23,6 +23,13 @@ type FileReferenceDict = { [key: string]: boolean };
 type FileDiskSpaceDict = { [key: string]: number };
 type SpecificCollection = { [key: string]: string | DatabaseTypes.DirectusFiles };
 
+type CollectionProcessingParams = {
+  context: WorkflowRunContext;
+  collectionHelper: ItemsServiceHelper<SpecificCollection>;
+  fieldForDirectusFileId: string;
+  dict: FileReferenceDict;
+};
+
 export class FileCleanupWorkflow extends SingleWorkflowRun {
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_DONT_DELETE = -1;
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_30_DAYS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -71,11 +78,9 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async processSingletonCollection(
-    context: WorkflowRunContext,
-    collectionHelper: ItemsServiceHelper<SpecificCollection>,
-    fieldForDirectusFileId: string,
-    dict: FileReferenceDict
+    params: CollectionProcessingParams
   ): Promise<void> {
+    const { context, collectionHelper, fieldForDirectusFileId, dict } = params;
     this.statistics.itemsCheckedAmount++;
     await context.logger.appendLog('- Reading singleton item.');
     const item = await collectionHelper.readSingleton();
@@ -86,12 +91,10 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
   }
 
   private async processNonSingletonCollection(
-    context: WorkflowRunContext,
-    collectionHelper: ItemsServiceHelper<SpecificCollection>,
-    collectionName: string,
-    fieldForDirectusFileId: string,
-    dict: FileReferenceDict
+    params: CollectionProcessingParams,
+    collectionName: string
   ): Promise<void> {
+    const { context, collectionHelper, fieldForDirectusFileId, dict } = params;
     const query: Query = {
       filter: { _and: [{ [fieldForDirectusFileId]: { _nnull: true } }] },
     };
@@ -129,10 +132,11 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     const isSingleton = collectionObj.singleton;
     await context.logger.appendLog('- Found relation to directus_files in collection: ' + collectionName + ' (singleton: ' + isSingleton + ', field: ' + fieldForDirectusFileId + ')');
     const collectionHelper = context.myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);
+    const params: CollectionProcessingParams = { context, collectionHelper, fieldForDirectusFileId, dict };
     if (isSingleton) {
-      await this.processSingletonCollection(context, collectionHelper, fieldForDirectusFileId, dict);
+      await this.processSingletonCollection(params);
     } else {
-      await this.processNonSingletonCollection(context, collectionHelper, collectionName, fieldForDirectusFileId, dict);
+      await this.processNonSingletonCollection(params, collectionName);
     }
   }
 
