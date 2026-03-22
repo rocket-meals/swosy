@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { styles } from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
@@ -8,7 +8,8 @@ import { getTitleFromTranslation } from '@/helper/resourceHelper';
 
 const Footer = () => {
 	const { theme } = useTheme();
-	const { wikis, language } = useAppSelector(state => state.settings);
+	const { wikisDict, language } = useAppSelector(state => state.settings);
+	const wikis = useMemo(() => Object.values(wikisDict || {}), [wikisDict]);
 
 	return (
 		<View style={styles.footer}>

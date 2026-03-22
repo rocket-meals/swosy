@@ -50,13 +50,20 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { canteenFeedbackLabels, canteens } = useAppSelector((state) => state.canteenReducer);
+	const { canteenFeedbackLabelsDict, canteensDict } = useAppSelector((state) => state.canteenReducer);
+	const canteens = useMemo(() => Object.values(canteensDict || {}), [canteensDict]);
+	const canteenFeedbackLabels = useMemo(() => Object.values(canteenFeedbackLabelsDict || {}), [canteenFeedbackLabelsDict]);
 	const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useAppSelector((state) => state.food);
+	const { ownFoodFeedbacksDict, foodCategoriesDict, foodOfferCategoriesDict, foodOffersInfoItemsDict } = useAppSelector((state) => state.food);
+	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
+	const foodCategories = useMemo(() => Object.values(foodCategoriesDict || {}), [foodCategoriesDict]);
+	const foodOfferCategories = useMemo(() => Object.values(foodOfferCategoriesDict || {}), [foodOfferCategoriesDict]);
+	const foodOffersInfoItems = useMemo(() => Object.values(foodOffersInfoItemsDict || {}), [foodOffersInfoItemsDict]);
 	const { profile, user } = useAppSelector((state) => state.authReducer);
-	const { appElements } = useAppSelector((state) => state.appElements);
+	const { appElementsDict } = useAppSelector((state) => state.appElements);
+	const appElements = useMemo(() => Object.values(appElementsDict || {}), [appElementsDict]);
 	
-	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
+	const selectedCanteen = (canteensDict?.[String(canteenId)] ?? canteens?.find(c => String(c.id) === String(canteenId))) as DatabaseTypes.Canteens | undefined;
 	const [days, setDays] = useState<DayData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);

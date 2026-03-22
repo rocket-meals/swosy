@@ -51,13 +51,13 @@ const Index = () => {
     const { drawerPosition, language, offlineMode } = useAppSelector((state) => state.settings);
     const [currentPath, setCurrentPath] = useState<string[]>([]);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-	const { formQueue, cachedFormData } = useAppSelector((state) => state.form);
+	const { formQueueDict, cachedFormData } = useAppSelector((state) => state.form);
 	const [isShowingCachedData, setIsShowingCachedData] = useState(false);
 	const [hasLoadError, setHasLoadError] = useState(false);
 
 	const queueEntries = useMemo(
-		() => (formQueue || []).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
-		[formQueue, form_id]
+		() => Object.values(formQueueDict || {}).filter((entry: FormQueueEntry) => entry.form_id === String(form_id)),
+		[formQueueDict, form_id]
 	);
 
 	const folderPrefixes = useMemo(() => {

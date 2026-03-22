@@ -29,7 +29,7 @@ const [isShowingCachedData, setIsShowingCachedData] = useState(false);
     const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);
 const formsHelper = new FormsHelper();
 const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-const { cachedFormData, cachedForms } = useAppSelector((state) => state.form);
+const { cachedFormData, cachedFormsDict } = useAppSelector((state) => state.form);
 
 const getAllForms = async () => {
 setLoading(true);
@@ -43,7 +43,7 @@ setForms(result);
 dispatch({ type: SET_CACHED_FORMS, payload: { category_id: String(category_id), forms: result } });
 }
 } catch {
-const cached = (cachedForms || {})[String(category_id)] || [];
+const cached = Object.values((cachedFormsDict || {})[String(category_id)] || {}) as DatabaseTypes.Forms[];
 if (cached.length > 0) {
 setForms(cached);
 setIsShowingCachedData(true);

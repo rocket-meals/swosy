@@ -133,7 +133,7 @@ const Index = () => {
 	const [collectionData, setCollectionData] = useState<any>([]);
 	const [selectedState, setSelectedState] = useState('submitted');
 	const [currentState, setCurrentState] = useState<string | null>(null);
-	const { formSubmission, formQueue, cachedFormData } = useAppSelector((state) => state.form);
+	const { formSubmission, formQueueDict, cachedFormData } = useAppSelector((state) => state.form);
 	const { user } = useAppSelector((state) => state.authReducer);
 	const [submissionLoading, setSubmissionLoading] = useState(false);
 	const [formData, setFormData] = useState<{
@@ -388,7 +388,7 @@ const Index = () => {
 
 			// If opened from queue, override with queued formData
 			if (queue_entry_id) {
-				const queueEntry = (formQueue || []).find((entry: any) => entry.id === queue_entry_id);
+				const queueEntry = Object.values(formQueueDict || {}).find((entry: any) => String(entry?.id) === String(queue_entry_id));
 				if (queueEntry) {
 					setFormData({ ...initialFormData, ...queueEntry.formData });
 					setSelectedState(queueEntry.targetState);

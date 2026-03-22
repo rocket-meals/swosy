@@ -1,5 +1,5 @@
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -31,7 +31,8 @@ const Home = () => {
 	const { serverInfo } = useAppSelector(state => state.settings);
 	const { isManagement } = useAppSelector(state => state.authReducer);
 	const [loading, setLoading] = useState(false);
-	const { canteens } = useAppSelector(state => state.canteenReducer);
+	const { canteensDict } = useAppSelector(state => state.canteenReducer);
+	const canteens = useMemo(() => Object.values(canteensDict || {}), [canteensDict]);
 	const selectedCanteen = useSelectedCanteen();
 
 	const checkCanteenSelection = () => {

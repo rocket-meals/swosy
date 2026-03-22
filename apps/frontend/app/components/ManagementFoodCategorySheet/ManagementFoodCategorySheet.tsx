@@ -1,5 +1,5 @@
 import { Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ManagementFoodCategorySheetProps } from './types';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -22,7 +22,9 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 	const [value, setValue] = useState('');
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const { primaryColor, language } = useAppSelector(state => state.settings);
-	const { foodCategories, foodOfferCategories } = useAppSelector(state => state.food);
+	const { foodCategoriesDict, foodOfferCategoriesDict } = useAppSelector(state => state.food);
+	const foodCategories = useMemo(() => Object.values(foodCategoriesDict || {}), [foodCategoriesDict]);
+	const foodOfferCategories = useMemo(() => Object.values(foodOfferCategoriesDict || {}), [foodOfferCategoriesDict]);
 
 	const currentSelectedId = selectedFoodCategory.key === 'Speiseangebot' ? dayPlan?.mealOfferCategory?.id : dayPlan?.foodCategory?.id;
 
@@ -32,7 +34,7 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 		} else {
 			setList(foodCategories);
 		}
-	}, [selectedFoodCategory]);
+	}, [selectedFoodCategory, foodCategories, foodOfferCategories]);
 
 	const handleSelect = (item: any) => {
 		const alias = item?.translations?.length > 0 ? getTextFromTranslation(item?.translations, language) : item?.alias || '';

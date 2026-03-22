@@ -1,5 +1,5 @@
 import { Image, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { AntDesign, Entypo, EvilIcons, Feather, FontAwesome, FontAwesome5, FontAwesome6, Foundation, Ionicons, MaterialCommunityIcons, Octicons, SimpleLineIcons, Zocial } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useTheme } from '@/hooks/useTheme';
@@ -63,8 +63,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
         const wikisHelper = new WikisHelper();
         const activeIndex = state.index;
         const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
-        const { chats } = useAppSelector((state) => state.chats);
-        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis, selectedTheme: mode } = useAppSelector((state) => state.settings);
+        const { chatsDict } = useAppSelector((state) => state.chats);
+        const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
+        const { serverInfo, primaryColor: projectColor, language, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
+        const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import { useDispatch } from 'react-redux';
@@ -66,7 +66,8 @@ const Index = () => {
 		menuSheetRef.current?.close();
 	};
 
-	const { markings } = useAppSelector((state) => state.food);
+	const { markingsDict } = useAppSelector((state) => state.food);
+	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
 
 	const chunkedMarkings = [];
 	for (let i = 0; i < markings?.length; i += 7) {

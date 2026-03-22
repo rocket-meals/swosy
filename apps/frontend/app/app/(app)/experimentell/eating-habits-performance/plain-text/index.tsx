@@ -22,10 +22,11 @@ const EatingHabitsPlainText = () => {
 	useSetPageTitle(TranslationKeys.eating_habits_performance_plain_text);
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
-	const { markings } = useAppSelector((state) => state.food);
+	const { markingsDict } = useAppSelector((state) => state.food);
+	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
 
 	const mountTimeRef = useRef<number>(performance.now());
-	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markings]);
+	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);
 
 	const totalMarkingsCount = useMemo(() => markings?.length ?? 0, [markings]);
 

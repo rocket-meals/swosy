@@ -1,5 +1,5 @@
 import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -36,9 +36,10 @@ const Index = () => {
 	const formsHelper = new FormsHelper();
 	const formsSubmissionsHelper = new FormsSubmissionsHelper();
 	const formAnswersHelper = new FormAnswersHelper();
-	const { cachedFormCategories, cachedForms, formQueue } = useAppSelector((state) => state.form);
+	const { cachedFormCategoriesDict, cachedFormsDict, formQueueDict } = useAppSelector((state) => state.form);
+	const cachedFormCategories = useMemo(() => Object.values(cachedFormCategoriesDict || {}), [cachedFormCategoriesDict]);
 
-	const queueCount = (formQueue || []).length;
+	const queueCount = useMemo(() => Object.keys(formQueueDict || {}).length, [formQueueDict]);
 
 	const getAllCategories = async () => {
 		setLoading(true);
@@ -46,7 +47,7 @@ const Index = () => {
 
 		if (offlineMode) {
 			// In offline mode, use cache only
-			const cached = cachedFormCategories || [];
+			const cached = cachedFormCategories;
 			setFormCategories(cached);
 			if (cached.length > 0) setIsShowingCachedData(true);
 			setLoading(false);
@@ -64,7 +65,7 @@ const Index = () => {
 			}
 		} catch {
 			// Network failed – fall back to locally cached data
-			const cached = cachedFormCategories || [];
+			const cached = cachedFormCategories;
 			if (cached.length > 0) {
 				setFormCategories(cached);
 				setIsShowingCachedData(true);
@@ -186,7 +187,7 @@ const Index = () => {
 
 	const isCategoryCached = (categoryId: string | number) => {
 		const key = String(categoryId);
-		return !!(cachedForms && cachedForms[key] && cachedForms[key].length > 0);
+		return !!Object.keys((cachedFormsDict || {})[key] || {}).length;
 	};
 
 	return (

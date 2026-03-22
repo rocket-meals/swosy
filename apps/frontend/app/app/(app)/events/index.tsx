@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { SafeAreaView, ScrollView } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
@@ -22,7 +22,8 @@ const EventsScreen = () => {
 	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
     const kioskMode = useKioskMode();
-    const { popupEvents } = useAppSelector((state) => state.food);
+    const { popupEventsDict } = useAppSelector((state) => state.food);
+    const popupEvents = useMemo(() => Object.values(popupEventsDict || {}), [popupEventsDict]);
     const { primaryColor } = useAppSelector((state) => state.settings);
 	const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();

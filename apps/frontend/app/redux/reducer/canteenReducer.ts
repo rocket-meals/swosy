@@ -1,17 +1,34 @@
 import { CLEAR_CANTEENS, DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_BUILDINGS, SET_BUILDINGS_DICT, SET_BUILDINGS_ORGANIZATIONS, SET_BUSINESS_HOURS, SET_BUSINESS_HOURS_GROUPS, SET_CANTEEN_FEEDBACK_LABELS, SET_CANTEENS, SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES, SET_ORGANISATIONS, SET_SELECTED_CANTEEN, SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES } from '@/redux/Types/types';
 
+const arrayToDictById = <T extends { id?: any }>(payload: unknown): Record<string, T> => {
+	if (!payload) return {};
+	if (!Array.isArray(payload)) return payload as Record<string, T>;
+	return payload.reduce((acc: Record<string, T>, item: any) => {
+		if (item?.id) {
+			acc[String(item.id)] = item;
+		}
+		return acc;
+	}, {});
+};
+
+const getCanteenFeedbackLabelEntryKey = (entry: any): string | null => {
+	if (entry?.id) return String(entry.id);
+	if (entry?.label && entry?.canteen && entry?.date) return `${String(entry.label)}|${String(entry.canteen)}|${String(entry.date)}`;
+	return null;
+};
+
 const initialState = {
-	canteens: [],
+	canteensDict: {},
 	buildingsDict: {},
-	buildingsOrganizations: [],
-	organisations: [],
+	buildingsOrganizationsDict: {},
+	organisationsDict: {},
 	selectedCanteen: null,
-	selectedCanteenFoodOffers: [],
-	canteenFoodOffers: [],
-	businessHours: [],
-	businessHoursGroups: [],
-	canteenFeedbackLabels: [],
-	ownCanteenFeedBackLabelEntries: [],
+	selectedCanteenFoodOffersDict: {},
+	canteenFoodOffersDict: {},
+	businessHoursDict: {},
+	businessHoursGroupsDict: {},
+	canteenFeedbackLabelsDict: {},
+	ownCanteenFeedBackLabelEntriesDict: {},
 };
 
 const canteensReducer = (state = initialState, actions: any) => {
@@ -19,7 +36,7 @@ const canteensReducer = (state = initialState, actions: any) => {
 		case SET_CANTEENS: {
 			return {
 				...state,
-				canteens: actions.payload,
+				canteensDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_BUILDINGS: {
@@ -46,13 +63,13 @@ const canteensReducer = (state = initialState, actions: any) => {
 		case SET_BUILDINGS_ORGANIZATIONS: {
 			return {
 				...state,
-				buildingsOrganizations: actions.payload,
+				buildingsOrganizationsDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_ORGANISATIONS: {
 			return {
 				...state,
-				organisations: actions.payload,
+				organisationsDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_SELECTED_CANTEEN: {
@@ -64,61 +81,58 @@ const canteensReducer = (state = initialState, actions: any) => {
 		case SET_SELECTED_CANTEEN_FOOD_OFFERS: {
 			return {
 				...state,
-				selectedCanteenFoodOffers: actions.payload,
+				selectedCanteenFoodOffersDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL: {
 			return {
 				...state,
-				canteenFoodOffers: actions.payload,
+				canteenFoodOffersDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_BUSINESS_HOURS: {
 			return {
 				...state,
-				businessHours: actions.payload,
+				businessHoursDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_BUSINESS_HOURS_GROUPS: {
 			return {
 				...state,
-				businessHoursGroups: actions.payload,
+				businessHoursGroupsDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_CANTEEN_FEEDBACK_LABELS: {
 			return {
 				...state,
-				canteenFeedbackLabels: actions.payload,
+				canteenFeedbackLabelsDict: arrayToDictById(actions.payload),
 			};
 		}
 		case SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES: {
 			return {
 				...state,
-				ownCanteenFeedBackLabelEntries: actions.payload,
+				ownCanteenFeedBackLabelEntriesDict: arrayToDictById(actions.payload),
 			};
 		}
 		case UPDATE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES: {
-			let match = false;
-			const entries = state.ownCanteenFeedBackLabelEntries.map((entry: any) => {
-				if (entry.label === actions.payload.label) {
-					match = true;
-					return actions.payload;
-				}
-				return entry;
-			});
-			if (!match) {
-				entries.push(actions.payload);
-			}
+			const key = getCanteenFeedbackLabelEntryKey(actions.payload);
+			if (!key) return state;
 			return {
 				...state,
-				ownCanteenFeedBackLabelEntries: entries,
+				ownCanteenFeedBackLabelEntriesDict: {
+					...(state.ownCanteenFeedBackLabelEntriesDict || {}),
+					[key]: actions.payload,
+				},
 			};
 		}
 		case DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES: {
-			const entries = state.ownCanteenFeedBackLabelEntries.filter((feedback: any) => feedback.id !== actions.payload);
+			const nextDict = { ...(state.ownCanteenFeedBackLabelEntriesDict || {}) } as Record<string, any>;
+			if (actions.payload && String(actions.payload) in nextDict) {
+				delete nextDict[String(actions.payload)];
+			}
 			return {
 				...state,
-				ownCanteenFeedBackLabelEntries: entries,
+				ownCanteenFeedBackLabelEntriesDict: nextDict,
 			};
 		}
 		case CLEAR_CANTEENS: {

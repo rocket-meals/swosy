@@ -646,8 +646,10 @@ const OsmVectorMapScreen: React.FC = () => {
 	const { theme } = useTheme();
 	const myMapRef = useRef<MyMapHandle>(null);
 
-	const { buildingsDict, buildingsOrganizations, organisations } = useAppSelector((state) => state.canteenReducer);
+	const { buildingsDict, buildingsOrganizationsDict, organisationsDict } = useAppSelector((state) => state.canteenReducer);
 	const buildings = useMemo(() => Object.values(buildingsDict ?? {}), [buildingsDict]);
+	const buildingsOrganizations = useMemo(() => Object.values(buildingsOrganizationsDict ?? {}), [buildingsOrganizationsDict]);
+	const organisations = useMemo(() => Object.values(organisationsDict ?? {}), [organisationsDict]);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const selectedStyleKey = useAppSelector((state) => (state.settings as any).osmVectorMapStyleKey ?? 'liberty');

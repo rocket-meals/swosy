@@ -48,9 +48,12 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	// Optimized Selectors
 	const foodId = foodDetails?.id;
-	const labels = useAppSelector((state) => state.food.foodFeedbackLabels, shallowEqual);
-	const labelEntries = useAppSelector((state) => state.food.ownfoodFeedbackLabelEntries, shallowEqual);
-	const ownFoodFeedbacks = useAppSelector((state) => state.food.ownFoodFeedbacks, shallowEqual);
+	const labelsDict = useAppSelector((state) => state.food.foodFeedbackLabelsDict, shallowEqual);
+	const labelEntriesDict = useAppSelector((state) => state.food.ownfoodFeedbackLabelEntriesDict, shallowEqual);
+	const ownFoodFeedbacksDict = useAppSelector((state) => state.food.ownFoodFeedbacksDict, shallowEqual);
+	const labels = useMemo(() => Object.values(labelsDict || {}), [labelsDict]);
+	const labelEntries = useMemo(() => Object.values(labelEntriesDict || {}), [labelEntriesDict]);
+	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	
 	const previousFeedback = useMemo(() => {
 		return getpreviousFeedback(ownFoodFeedbacks, foodId);

@@ -2,6 +2,20 @@ import { CHANGE_LANGUAGE, CHANGE_THEME, CLEAR_SETTINGS, SET_AMOUNT_COLUMNS_FOR_C
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 import { ConfigCustomerEnum } from '@/config';
 
+const arrayToDict = <T>(payload: unknown, getKey: (item: any, index: number) => string | null): Record<string, T> => {
+	if (!payload) return {};
+	if (!Array.isArray(payload)) return payload as Record<string, T>;
+	return payload.reduce((acc: Record<string, T>, item: any, index: number) => {
+		const key = getKey(item, index);
+		if (key) {
+			acc[key] = item;
+		}
+		return acc;
+	}, {});
+};
+
+const idKey = (item: any) => (item?.id ? String(item.id) : null);
+
 const initialState = {
 	selectedTheme: 'systematic',
 	isWarning: false,
@@ -15,8 +29,8 @@ const initialState = {
         language: 'de',
 	firstDayOfTheWeek: { id: 'monday', name: 'Mon' },
 	drawerPosition: 'left',
-	wikisPages: [],
-	wikis: [],
+	wikisPagesDict: {},
+	wikisDict: {},
         nickNameLocal: '',
         amountColumnsForcard: 0,
         useWebpForAssets: true,
@@ -112,13 +126,13 @@ const settingReducer = (state = initialState, actions: any) => {
 		case SET_WIKIS_PAGES: {
 			return {
 				...state,
-				wikisPages: actions.payload,
+				wikisPagesDict: arrayToDict(actions.payload, (item, index) => idKey(item) ?? `idx:${index}`),
 			};
 		}
 		case SET_WIKIS: {
 			return {
 				...state,
-				wikis: actions.payload,
+				wikisDict: arrayToDict(actions.payload, (item, index) => idKey(item) ?? `idx:${index}`),
 			};
 		}
 		case SET_NICKNAME_LOCAL: {

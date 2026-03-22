@@ -55,7 +55,9 @@ const EatingHabitsPerformanceNoDefer = () => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { translate, language } = useLanguage();
-	const { markings, markingGroups } = useAppSelector((state) => state.food);
+	const { markingsDict, markingGroupsDict } = useAppSelector((state) => state.food);
+	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+	const markingGroups = useMemo(() => Object.values(markingGroupsDict || {}), [markingGroupsDict]);
 	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');

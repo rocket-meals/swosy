@@ -33,9 +33,7 @@ interface PlainFullMarkingRowProps {
 const PlainFullMarkingRow: React.FC<PlainFullMarkingRowProps> = ({ markingId }) => {
 	const { theme } = useTheme();
 	const language = useAppSelector((state) => state.settings.language);
-	const marking = useAppSelector((state) =>
-		state.food.markings?.find((m: DatabaseTypes.Markings) => m.id === markingId)
-	);
+	const marking = useAppSelector((state) => (state.food.markingsDict as any)?.[String(markingId)]);
 	const ownMarking = useAppSelector((state) =>
 		state.authReducer.profile?.markings?.find((m: any) => m.markings_id === markingId)
 	);
@@ -123,10 +121,11 @@ const EatingHabitsPlainComponentFull = () => {
 	useSetPageTitle(TranslationKeys.eating_habits_performance_plain_component_full);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { markings } = useAppSelector((state) => state.food);
+	const { markingsDict } = useAppSelector((state) => state.food);
+	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
 
 	const mountTimeRef = useRef<number>(performance.now());
-	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markings]);
+	const renderMs = useMemo(() => Math.round(performance.now() - mountTimeRef.current), [markingsDict]);
 
 	const totalMarkingsCount = useMemo(() => markings?.length ?? 0, [markings]);
 

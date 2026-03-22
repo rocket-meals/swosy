@@ -82,12 +82,10 @@ export default function Layout() {
 	const buildingsHelper = useMemo(() => new BuildingsHelper(), []);
 	const buildingsOrganizationsHelper = useMemo(() => new BuildingsOrganizationsHelper(), []);
 	const organizationsHelper = useMemo(() => new OrganizationsHelper(), []);
-	const { popupEvents } = useAppSelector((state) => state.food);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
 	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
-	const { canteens } = useAppSelector((state) => state.canteenReducer);
 	const selectedCanteen = useSelectedCanteen();
 
 	useEffect(() => {

@@ -30,10 +30,10 @@ const Index = () => {
     const [isSyncingAll, setIsSyncingAll] = useState(false);
     const formsSubmissionsHelper = new FormsSubmissionsHelper();
     const formAnswersHelper = new FormAnswersHelper();
-    const { formQueue } = useAppSelector((state) => state.form);
+    const { formQueueDict } = useAppSelector((state) => state.form);
     const { primaryColor } = useAppSelector((state) => state.settings);
 
-    const queueEntries: FormQueueEntry[] = formQueue || [];
+    const queueEntries: FormQueueEntry[] = Object.values(formQueueDict || {});
 
     const syncQueueEntry = async (entry: FormQueueEntry) => {
         setSyncingId(entry.id);

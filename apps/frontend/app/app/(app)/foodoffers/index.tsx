@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { SafeAreaView, View } from 'react-native';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
@@ -57,7 +57,8 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 
 	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
 	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
-	const businessHours = useAppSelector((state) => state.canteenReducer.businessHours, shallowEqual);
+	const businessHoursDict = useAppSelector((state) => state.canteenReducer.businessHoursDict, shallowEqual);
+	const businessHours = useMemo(() => Object.values(businessHoursDict || {}), [businessHoursDict]);
 
 	const selectedCanteen = useSelectedCanteen();
 	useFoodOffersDefaultDate();

@@ -60,13 +60,13 @@ const CollectibleEventsScreen = () => {
         const { theme } = useTheme();
         const { translate, language } = useLanguage();
         const { primaryColor } = useAppSelector((state) => state.settings);
-        const { collectibleEvents, collectibleEventsDict = {} } = useAppSelector(
+        const { collectibleEventsItemsDict, collectibleEventsDict = {} } = useAppSelector(
                 (state) => state.collectibleEvents
         );
 
         const events = useMemo<DatabaseTypes.CollectibleEvents[]>(
-                () => collectibleEvents || [],
-                [collectibleEvents]
+                () => Object.values(collectibleEventsItemsDict || {}) as DatabaseTypes.CollectibleEvents[],
+                [collectibleEventsItemsDict]
         );
         const eventsWithProgress = useMemo(
                 () =>

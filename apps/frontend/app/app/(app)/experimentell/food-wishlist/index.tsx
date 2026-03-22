@@ -21,7 +21,8 @@ const FoodWishlist = () => {
 	const { translate } = useLanguage();
 	const { theme } = useTheme();
 	const { language, primaryColor } = useAppSelector((state) => state.settings);
-	const { ownFoodFeedbacks } = useAppSelector((state) => state.food);
+	const { ownFoodFeedbacksDict } = useAppSelector((state) => state.food);
+	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	const selectedCanteen = useSelectedCanteen();
 
 	const [foods, setFoods] = useState<DatabaseTypes.Foods[]>([]);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Dimensions, Image, ScrollView, Text, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -41,10 +41,12 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 	const { translate } = useLanguage();
   const { user, profile } = useAppSelector(state => state.authReducer);
   const { primaryColor } = useAppSelector(state => state.settings);
-  const { collectibleEvents } = useAppSelector(state => state.collectibleEvents ?? {});
-  const { canteens, buildingsDict, buildingsOrganizations, organisations, selectedCanteenFoodOffers, canteenFoodOffers, businessHours, canteenFeedbackLabels, ownCanteenFeedBackLabelEntries } = useAppSelector(state => state.canteenReducer);
+  const { collectibleEventsItemsDict } = useAppSelector(state => state.collectibleEvents ?? {});
+  const collectibleEvents = useMemo(() => Object.values(collectibleEventsItemsDict || {}), [collectibleEventsItemsDict]);
+  const { canteensDict, buildingsDict, buildingsOrganizationsDict, organisationsDict, selectedCanteenFoodOffersDict, canteenFoodOffersDict, businessHoursDict, businessHoursGroupsDict, canteenFeedbackLabelsDict, ownCanteenFeedBackLabelEntriesDict } = useAppSelector(state => state.canteenReducer);
   
-  const { foodFeedbackLabels, ownFoodFeedbacks, ownfoodFeedbackLabelEntries, markings, selectedFoodMarkings, foodCategories, foodOfferCategories, markingDetails } = useAppSelector(state => state.food);
+  const { foodFeedbackLabelsDict, ownFoodFeedbacksDict, ownfoodFeedbackLabelEntriesDict, markingsDict, markingGroupsDict, selectedFoodMarkingsDict, foodCategoriesDict, foodOfferCategoriesDict, foodOffersInfoItemsDict, mostLikedFoodsDict, mostDislikedFoodsDict, popupEventsDict, markingDetails } = useAppSelector(state => state.food);
+  const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 
@@ -68,30 +70,33 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 	];
 
 	const dataDevice = [
-		{ label: 'canteens', value: canteens },
+		{ label: 'canteensDict', value: canteensDict },
 		{ label: 'buildingsDict', value: buildingsDict },
-		{ label: 'buildingsOrganizations', value: buildingsOrganizations },
-		{ label: 'organisations', value: organisations },
-		{ label: 'Selected Canteen FoodOffers', value: selectedCanteenFoodOffers },
-		{ label: 'Canteen FoodOffers', value: canteenFoodOffers },
-		{ label: 'Business Hours', value: businessHours },
-		{ label: 'Canteen FeedbackLabels', value: canteenFeedbackLabels },
+		{ label: 'buildingsOrganizationsDict', value: buildingsOrganizationsDict },
+		{ label: 'organisationsDict', value: organisationsDict },
+		{ label: 'selectedCanteenFoodOffersDict', value: selectedCanteenFoodOffersDict },
+		{ label: 'canteenFoodOffersDict', value: canteenFoodOffersDict },
+		{ label: 'businessHoursDict', value: businessHoursDict },
+		{ label: 'businessHoursGroupsDict', value: businessHoursGroupsDict },
+		{ label: 'canteenFeedbackLabelsDict', value: canteenFeedbackLabelsDict },
 		{
 			label: 'Own Canteen FeedBack Label Entries',
-			value: ownCanteenFeedBackLabelEntries,
+			value: ownCanteenFeedBackLabelEntriesDict,
 		},
-		{ label: 'Food FeedbackLabels', value: foodFeedbackLabels },
-		{ label: 'Own FoodFeedbacks', value: ownFoodFeedbacks },
-		{
-			label: 'Own Food Feedback Label Entries',
-			value: ownfoodFeedbackLabelEntries,
-		},
-		{ label: 'Markings', value: markings },
-		{ label: 'Selected Food Markings', value: selectedFoodMarkings },
-                { label: 'Food Categories', value: foodCategories },
-                { label: 'FoodOffer Categories', value: foodOfferCategories },
-                { label: 'MarkingDetails', value: markingDetails },
-                { label: 'Collectible Events', value: collectibleEvents },
+		{ label: 'foodFeedbackLabelsDict', value: foodFeedbackLabelsDict },
+		{ label: 'ownFoodFeedbacksDict', value: ownFoodFeedbacksDict },
+		{ label: 'ownfoodFeedbackLabelEntriesDict', value: ownfoodFeedbackLabelEntriesDict },
+		{ label: 'markingsDict', value: markingsDict },
+		{ label: 'markingGroupsDict', value: markingGroupsDict },
+		{ label: 'selectedFoodMarkingsDict', value: selectedFoodMarkingsDict },
+		{ label: 'foodCategoriesDict', value: foodCategoriesDict },
+		{ label: 'foodOfferCategoriesDict', value: foodOfferCategoriesDict },
+		{ label: 'foodOffersInfoItemsDict', value: foodOffersInfoItemsDict },
+		{ label: 'mostLikedFoodsDict', value: mostLikedFoodsDict },
+		{ label: 'mostDislikedFoodsDict', value: mostDislikedFoodsDict },
+		{ label: 'popupEventsDict', value: popupEventsDict },
+		{ label: 'markingDetails', value: markingDetails },
+		{ label: 'collectibleEvents', value: collectibleEvents },
         ];
 
 	return (

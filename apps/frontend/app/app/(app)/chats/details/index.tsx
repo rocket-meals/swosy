@@ -36,7 +36,7 @@ const ChatDetailsScreen = () => {
         const { primaryColor: projectColor, selectedTheme: mode, appSettings, serverInfo } = useAppSelector((state) => state.settings);
 
         const dispatch = useDispatch();
-        const { chats, readStatus } = useAppSelector((state) => state.chats);
+        const { chatsDict, readStatus } = useAppSelector((state) => state.chats);
         const { profile } = useAppSelector((state) => state.authReducer);
 	const [messages, setMessages] = useState<DatabaseTypes.ChatMessages[]>([]);
         const [newMessage, setNewMessage] = useState('');
@@ -86,7 +86,7 @@ const ChatDetailsScreen = () => {
                 }
         }, [fetchMessages, refreshKey]);
 
-        const chat = chats.find(c => c.id === chat_id);
+        const chat = chat_id ? (chatsDict?.[String(chat_id)] as DatabaseTypes.Chats | undefined) : undefined;
         const chatInitialMessage = (chat as { initial_message?: string } | undefined)?.initial_message;
         const initialMessage = typeof chatInitialMessage === 'string' ? chatInitialMessage.trim() : undefined;
 

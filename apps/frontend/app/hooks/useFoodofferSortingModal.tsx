@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AntDesign, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -41,9 +41,13 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         const { translate } = useLanguage();
 
         const dispatch = useDispatch();
-        const { canteenFoodOffers } = useAppSelector((state) => state.canteenReducer);
+        const { canteenFoodOffersDict } = useAppSelector((state) => state.canteenReducer);
+        const canteenFoodOffers = useMemo(() => Object.values(canteenFoodOffersDict || {}), [canteenFoodOffersDict]);
         const { primaryColor, language: languageCode, sortBy, appSettings } = useAppSelector((state) => state.settings);
-        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useAppSelector((state) => state.food);
+        const { ownFoodFeedbacksDict, foodCategoriesDict, foodOfferCategoriesDict } = useAppSelector((state) => state.food);
+        const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
+        const foodCategories = useMemo(() => Object.values(foodCategoriesDict || {}), [foodCategoriesDict]);
+        const foodOfferCategories = useMemo(() => Object.values(foodOfferCategoriesDict || {}), [foodOfferCategoriesDict]);
         const { profile } = useAppSelector((state) => state.authReducer);
         const [selectedOption, setSelectedOption] = useState<FoodSortOption | null>(null);
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;

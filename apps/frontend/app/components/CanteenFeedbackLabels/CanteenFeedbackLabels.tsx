@@ -28,7 +28,8 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	const { language } = useAppSelector((state) => state.settings);
 	const [count, setCount] = useState({ likes: 0, dislikes: 0 });
 	const { user, profile } = useAppSelector((state) => state.authReducer);
-	const { ownCanteenFeedBackLabelEntries } = useAppSelector((state) => state.canteenReducer);
+	const { ownCanteenFeedBackLabelEntriesDict } = useAppSelector((state) => state.canteenReducer);
+	const ownCanteenFeedBackLabelEntries = useMemo(() => Object.values(ownCanteenFeedBackLabelEntriesDict || {}), [ownCanteenFeedBackLabelEntriesDict]);
 	const selectedCanteen = useSelectedCanteen();
 
 	// Use useMemo to optimize the filtering processs

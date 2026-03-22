@@ -26,13 +26,14 @@ interface LabelsProps {
 	color: string;
 }
 
-const selectMarkings = (state: RootState) => state.food.markings;
-const selectMarkingGroups = (state: RootState) => state.food.markingGroups;
+const selectMarkingsDict = (state: RootState) => state.food.markingsDict;
+const selectMarkingGroupsDict = (state: RootState) => state.food.markingGroupsDict;
 
 export const selectFoodOffer = (offerId?: string) =>
-	createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers], foodOffers =>
-		offerId ? getFoodOffer(foodOffers, offerId) : undefined
-	);
+	createSelector([(state: RootState) => state.canteenReducer.selectedCanteenFoodOffersDict], foodOffersDict => {
+	const foodOffers = Object.values(foodOffersDict || {});
+	return offerId ? getFoodOffer(foodOffers, offerId) : undefined;
+});
 
 const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails, handleMenuSheet, color }) => {
 	const { theme } = useTheme();
@@ -47,8 +48,10 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 		Linking.openURL(food_responsible_organization_link).catch(err => console.error('Failed to open URL:', err));
 	};
 
-	const markings = useSelector(selectMarkings);
-	const markingGroups = useSelector(selectMarkingGroups);
+	const markingsDict = useSelector(selectMarkingsDict);
+	const markingGroupsDict = useSelector(selectMarkingGroupsDict);
+	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
+	const markingGroups = useMemo(() => Object.values(markingGroupsDict || {}), [markingGroupsDict]);
 	const foodOfferSelector = useMemo(
 		() => (offerId ? selectFoodOffer(offerId) : () => undefined),
 		[offerId]

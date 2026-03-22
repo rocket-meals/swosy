@@ -1,5 +1,5 @@
 import { Dimensions, ScrollView, Text, View } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import StatisticsCard from '@/components/StatisticsCard/StatisticsCard';
@@ -23,7 +23,9 @@ const Index = () => {
 	const [selectedFoodId, setSelectedFoodId] = useState('');
 	const imageManagementSheetRef = useRef<BottomSheet>(null);
 
-	const { mostLikedFoods, mostDislikedFoods } = useAppSelector((state) => state.food);
+	const { mostLikedFoodsDict, mostDislikedFoodsDict } = useAppSelector((state) => state.food);
+	const mostLikedFoods = useMemo(() => Object.values(mostLikedFoodsDict || {}) as DatabaseTypes.Foods[], [mostLikedFoodsDict]);
+	const mostDislikedFoods = useMemo(() => Object.values(mostDislikedFoodsDict || {}) as DatabaseTypes.Foods[], [mostDislikedFoodsDict]);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
 	const openImageManagementSheet = () => {

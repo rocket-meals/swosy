@@ -93,8 +93,6 @@ export const useFoodOffersData = (
         languageCode
     });
 
-    const currentFoodOffers = useAppSelector((state: RootState) => state.canteenReducer.canteenFoodOffers, shallowEqual);
-
     useEffect(() => {
         stateRef.current = {
             profile,
@@ -136,10 +134,7 @@ export const useFoodOffersData = (
         if (foodOffers && !forceFetch) {
             // Always resort with current sortBy to reflect UI changes
             updateSort(sortBy as FoodSortOption, foodOffers);
-            // Dispatch local raw offers only if reference changed
-            if (foodOffers !== currentFoodOffers) {
-                dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
-            }
+            dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
         } else {
             try {
                 setLoading(true);

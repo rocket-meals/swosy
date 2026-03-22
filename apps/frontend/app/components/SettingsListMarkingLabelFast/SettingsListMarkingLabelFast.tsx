@@ -26,8 +26,8 @@ export interface SettingsListMarkingLabelFastProps {
 
 const makeSelectMarking = (markingId: string) =>
 	createSelector(
-		[(state: RootState) => state.food.markings],
-		markings => markings?.find((m: any) => m.id === markingId)
+		[(state: RootState) => state.food.markingsDict],
+		(markingsDict) => (markingsDict ? (markingsDict as any)[String(markingId)] : null)
 	);
 
 const makeSelectOwnMarking = (markingId: string) =>
