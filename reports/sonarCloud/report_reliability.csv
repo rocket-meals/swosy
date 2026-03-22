@@ -8,8 +8,6 @@ Key,Message,Component,Line
 "AZ0Tpk9zufp2jxPAhSzH","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",14
 "AZ0Tpk9zufp2jxPAhSzI","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",15
 "AZ0Tpk9zufp2jxPAhSzJ","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",16
-"AZ0Tpk31ufp2jxPAhSxi","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",405
-"AZ0Tpk31ufp2jxPAhSxj","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",406
 "AZ0TplGSufp2jxPAhS0o","React Hook ""useAppSelector"" is called conditionally. React Hooks must be called in the exact same order in every component render.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",482
 "AZ0TpleXufp2jxPAhS5b","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",61
 "AZ0TpleXufp2jxPAhS5d","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",70
@@ -26,11 +24,6 @@ Key,Message,Component,Line
 "AZ0TpleXufp2jxPAhS5Y","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",30
 "AZ0TpleXufp2jxPAhS5Z","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",31
 "AZ0TpleXufp2jxPAhS5a","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",31
-"AZ0Tpk31ufp2jxPAhSxg","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",277
-"AZ0Tpk31ufp2jxPAhSxh","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",278
-"AZ0Tpk31ufp2jxPAhSxm","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",630
-"AZ0Tpk31ufp2jxPAhSxn","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",631
-"AZ0Tpk31ufp2jxPAhSxo","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",632
 "AZ0Tpk9kufp2jxPAhSzB","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/clusterUtils.ts",70
 "AZ0TplJGufp2jxPAhS1Z","React Hook ""useCallback"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx",95
 "AZ0TpmPJufp2jxPAhTMx","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:scripts/setup-weekly-update-cron.sh",22
@@ -48,13 +41,6 @@ Key,Message,Component,Line
 "AZ0Tpk-Qufp2jxPAhSzQ","React Hook ""useMyContrastColor"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/Details/AttributeItem.tsx",46
 "AZ0TplGqufp2jxPAhS05","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",142
 "AZ0TplBrufp2jxPAhSzv","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx",50
-"AZ0Tpk2Vufp2jxPAhSw9","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",190
-"AZ0Tplmlufp2jxPAhS6n","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts",65
-"AZ0Tplqeufp2jxPAhTKR","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",66
-"AZ0TplqTufp2jxPAhTKL","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",457
-"AZ0TplqTufp2jxPAhTKM","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",463
-"AZ0Tpk0wufp2jxPAhSwj","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",118
-"AZ0Tpk0wufp2jxPAhSwl","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",119
 "AZmmpWFoTT1E7gtUoReT","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",95
 "AZmmpWFoTT1E7gtUoReU","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",96
 "AZmlpMbtdw_hdAYcor6g","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",30
@@ -64,8 +50,6 @@ Key,Message,Component,Line
 "AZmhgvb7SH5T9lrKgP3n","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomMarkdown/CustomMarkdown.tsx",84
 "AZlyj_Mg0YdgFOBafBLM","React Hook ""useCallback"" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?","rocket-meals_rocket-meals:apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx",102
 "AZlykAAE0YdgFOBafBOz","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/fixStaticReadonly.ts",37
-"AZlyj_5w0YdgFOBafBOG","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",107
-"AZlyj_6C0YdgFOBafBOK","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",268
 "AZlyj_ek0YdgFOBafBL4","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",233
 "AZlyj_Fi0YdgFOBafBKu","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",159
 "AZlyj_Fi0YdgFOBafBKv","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",159
@@ -75,11 +59,6 @@ Key,Message,Component,Line
 "AZlyj_pn0YdgFOBafBMW","Prefer `String.fromCodePoint()` over `String.fromCharCode()`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",19
 "AZlyj_m20YdgFOBafBMP","Use `Math.trunc` instead of `| 0`.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",49
 "AZlyj_m20YdgFOBafBMQ","Prefer `String#codePointAt()` over `String#charCodeAt()`.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",56
-"AZlyj_3m0YdgFOBafBNp","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",588
-"AZlyj_5w0YdgFOBafBOD","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",101
-"AZlyj_5w0YdgFOBafBOE","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",102
-"AZlyj_5w0YdgFOBafBOF","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",103
-"AZlyj_5w0YdgFOBafBOH","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",108
 "AZlyj_Rn0YdgFOBafBLc","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/NumberInput/NumberInput.tsx",19
 "AZlykADB0YdgFOBafBPI","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",50
 "AZlykADB0YdgFOBafBPJ","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",51
@@ -89,10 +68,6 @@ Key,Message,Component,Line
 "AZlykADB0YdgFOBafBPN","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",655
 "AZlykADB0YdgFOBafBPO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",656
 "AZlykADB0YdgFOBafBPH","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",44
-"AZnlPd34jqHa6CjL-2XB","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/exampleData/convertToCharsetOfServer.sh",7
-"AZnlPd34jqHa6CjL-2XC","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/exampleData/convertToCharsetOfServer.sh",18
-"AZlyj_WG0YdgFOBafBLh","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",26
-"AZlyj_Yk0YdgFOBafBLn","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",166
 "AZlyj_f60YdgFOBafBMA","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",378
 "AZlyj_O60YdgFOBafBLP","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",26
 "AZlyj_O60YdgFOBafBLT","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",322
@@ -114,32 +89,7 @@ Key,Message,Component,Line
 "AZlyj_mS0YdgFOBafBMK","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
 "AZlyj_mS0YdgFOBafBML","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
 "AZlyj_mS0YdgFOBafBMM","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/frontend/app/helper/animationHelper.ts",132
-"AZlyj_uI0YdgFOBafBMy","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ByteSizeHelper.ts",11
-"AZlyj_3m0YdgFOBafBNo","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",536
-"AZlyj_wH0YdgFOBafBM2","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",121
-"AZlyj_wH0YdgFOBafBM3","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",140
-"AZlyj_1c0YdgFOBafBNR","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/osnabrueck/StudentenwerkOsnabrueckWashingmachineParser.ts",146
-"AZlyj_1c0YdgFOBafBNS","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/osnabrueck/StudentenwerkOsnabrueckWashingmachineParser.ts",147
-"AZlyj_1c0YdgFOBafBNT","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/osnabrueck/StudentenwerkOsnabrueckWashingmachineParser.ts",149
-"AZnlPd9GjqHa6CjL-2XO","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",51
-"AZnlPd9GjqHa6CjL-2XP","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",57
-"AZnlPd9GjqHa6CjL-2XQ","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",69
-"AZnlPd9GjqHa6CjL-2XR","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",70
-"AZnlPd8SjqHa6CjL-2XF","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackup/dump.sh",15
-"AZnlPd79jqHa6CjL-2XD","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackup/start.sh",22
-"AZnlPd79jqHa6CjL-2XE","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackup/start.sh",25
-"AZlyj_3m0YdgFOBafBNh","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",471
-"AZlyj_3m0YdgFOBafBNi","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",472
-"AZlyj_3m0YdgFOBafBNj","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",473
-"AZlyj_3m0YdgFOBafBNk","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",474
-"AZlyj_3m0YdgFOBafBNl","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",474
-"AZlyj_3m0YdgFOBafBNm","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",474
-"AZlyj_3m0YdgFOBafBNn","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",521
 "AZnlPdtFjqHa6CjL-2W3","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",132
 "AZnlPdtFjqHa6CjL-2W4","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",141
 "AZnlPeBljqHa6CjL-2XY","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",16
 "AZnlPeBljqHa6CjL-2XZ","Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.","rocket-meals_rocket-meals:generate_basic_auth_traefik.sh",46
-"AZlyj_3m0YdgFOBafBNy","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",639
-"AZlyj_3m0YdgFOBafBNz","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",640
-"AZlyj_3m0YdgFOBafBN0","Prefer `Number.NaN` over `NaN`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",641
-"AZlyj_3m0YdgFOBafBN2","Use `String()` instead of `new String()`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",710
