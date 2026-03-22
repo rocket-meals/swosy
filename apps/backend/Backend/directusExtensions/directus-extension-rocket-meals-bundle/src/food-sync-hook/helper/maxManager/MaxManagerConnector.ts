@@ -73,7 +73,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
         let initialHtml: string | null = null;
         if(this.config.fileContentReader){
             const fileContentReader = this.config.fileContentReader;
-            initialHtml = await fileContentReader.getContent();
+            initialHtml = fileContentReader.getContent();
         }
         if(this.config.url){
             const url = this.config.url + MaxManagerConnector.PAGE_INDEX;
@@ -87,10 +87,8 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
         }
 
         let canteenMap = this.getCanteenMap(initialHtml);
-        //console.log("Selected canteen id from file: " + selectedCanteenId);
         this.canteenIdToNameMap = canteenMap;
 
-        //console.log("Fetching foodoffers for " + amountDays + " days for all canteens...");
         for(let dayOffset = 0; dayOffset < amountDays; dayOffset++) {
             let fetchDate = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
 
@@ -327,49 +325,14 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
         let allMarkings = await this.getMarkingsJSONList();
 
         for(const canteenId in this.canteenIdToDataMap){
-            //console.log("------");
-            //console.log("Canteen ID: " + canteenId);
-            let canteenName = this.canteenIdToNameMap[canteenId];
-            //console.log("Canteen Name: " + canteenName);
             const canteenDataList = this.canteenIdToDataMap[canteenId];
             if(canteenDataList){
                 for(const canteenData of canteenDataList){
                     const date = canteenData.date;
-                    //console.log(" Parsing foodoffers for canteen id: " + canteenId + " for date: " + date.toDateString());
                     const html = canteenData.html;
                     const $ = load(html);
 
                     // Parse foods from HTML
-
-                    // search for class "row splMeal" with spaces
-                    // <div class="row splMeal" data-kennz="9,G,J,Rin" tabindex="0" role="button" aria-label="Gericht: Rindergeschnetzeltes nach Stroganoff Art - vom westfälischen Weiderind Hof Keil&nbsp;9,G,Jmit Süßungsmittel, enthält Milch, enthält Senf, Preis:  €&nbsp;4,70&nbsp;/&nbsp;7,05" aria-describedby="meal-icons-1">
-                    //
-                    //                 <div class="col-12 d-block d-md-none">
-                    //                     <span style="font-size:15px">Rindergeschnetzeltes nach Stroganoff Art - vom westfälischen Weiderind Hof Keil<sup class="tooltip-trigger ptr" data-tooltip="mit Süßungsmittel, enthält Milch, enthält Senf" aria-describedby="allergen-c872bc6e741402a03d6558605fe6dd72" role="button" tabindex="0" style="font-size:[26]px">&nbsp;9,G,J</sup><span id="allergen-c872bc6e741402a03d6558605fe6dd72" class="sr-only">mit Süßungsmittel, enthält Milch, enthält Senf</span></span>
-                    //                 </div>
-                    //
-                    //                 <div class="col-md-6 d-none d-md-block">
-                    //                     <span style="font-size: 15px">Rindergeschnetzeltes nach Stroganoff Art - vom westfälischen Weiderind Hof Keil<sup class="tooltip-trigger ptr" data-tooltip="mit Süßungsmittel, enthält Milch, enthält Senf" aria-describedby="allergen-c872bc6e741402a03d6558605fe6dd72" role="button" tabindex="0" style="font-size:[26]px">&nbsp;9,G,J</sup><span id="allergen-c872bc6e741402a03d6558605fe6dd72" class="sr-only">mit Süßungsmittel, enthält Milch, enthält Senf</span></span>
-                    //                 </div>
-                    //
-                    //                 <div class="col-md-3 d-none d-md-block" style="text-align:right">
-                    //                     <div class="tooltip-container"><img src="https://sw-muenster-spl24.maxmanager.xyz/assets/icons/H2O_bewertung_B.png?v=1" class="iconNormal" alt="26,64 l Wasserverbrauch / Portion | Der Wasserverbrauch ist doppelt so hoch wie der Durchschnitt."><span class="tooltip">26,64 l Wasserverbrauch / Portion | Der Wasserverbrauch ist doppelt so hoch wie der Durchschnitt.</span></div><div class="tooltip-container"><img src="https://sw-muenster-spl24.maxmanager.xyz/assets/icons/CO2_bewertung_C.png?v=1" class="iconNormal" alt="3176 g CO2 / Portion | Der CO&lt;sub&gt;2&lt;/sub&gt;-Verbrauch ist schlechter als der Durchschnitt."><span class="tooltip">3176 g CO2 / Portion | Der CO<sub>2</sub>-Verbrauch ist schlechter als der Durchschnitt.</span></div><div class="tooltip-container"><img src="https://sw-muenster-spl24.maxmanager.xyz/assets/icons/R.png?v=1" class="iconNormal" alt="Rind"><span class="tooltip">Rind</span></div>
-                    //                 </div>
-                    //                 <div class="col-md-3 d-none d-md-block" style="text-align:right">
-                    //                     €&nbsp;4,70&nbsp;/&nbsp;7,05<br>
-                    //                 </div>
-                    //
-                    //                 <div class="col-6 d-block d-md-none" style="height:30px;padding:0 0 10px 0">
-                    //                     <div style="padding:0 0 20px 10px"><div class="tooltip-container"><img src="https://sw-muenster-spl24.maxmanager.xyz/assets/icons/H2O_bewertung_B.png?v=1" class="iconLarge" alt="26,64 l Wasserverbrauch / Portion | Der Wasserverbrauch ist doppelt so hoch wie der Durchschnitt."><span class="tooltip">26,64 l Wasserverbrauch / Portion | Der Wasserverbrauch ist doppelt so hoch wie der Durchschnitt.</span></div><div class="tooltip-container"><img src="https://sw-muenster-spl24.maxmanager.xyz/assets/icons/CO2_bewertung_C.png?v=1" class="iconLarge" alt="3176 g CO2 / Portion | Der CO&lt;sub&gt;2&lt;/sub&gt;-Verbrauch ist schlechter als der Durchschnitt."><span class="tooltip">3176 g CO2 / Portion | Der CO<sub>2</sub>-Verbrauch ist schlechter als der Durchschnitt.</span></div><div class="tooltip-container"><img src="https://sw-muenster-spl24.maxmanager.xyz/assets/icons/R.png?v=1" class="iconLarge" alt="Rind"><span class="tooltip">Rind</span></div></div>
-                    //                 </div>
-                    //                 <div class="col-6 d-block d-md-none" style="height:30px;text-align: right">
-                    //                     <div style="font-size:15px;padding:20px 0"> €&nbsp;4,70&nbsp;/&nbsp;7,05 </div>
-                    //                 </div>
-                    //
-                    //                 <div class="col-12 d-block d-md-none">
-                    //                     <div style="height:16px">&nbsp;</div>
-                    //                 </div>
-                    //             </div>
                     $('div.row.splMeal').each((index, element) => {
                         let foodofferDate: FoodofferDateType = {
                             day: date.getDate(),
@@ -441,13 +404,8 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                         let priceStudent: number | null = null;
                         let priceGuest: number | null = null;
 
-                        let log = mealName === "Schokoladenpudding" ? true : false;
-
                         if(priceElement){
                             let priceText = priceElement.text().trim();
-                            if(log){
-                                //console.log("Price text for "+mealName+": '"+priceText+"'");
-                            }
                             // split by "/"
                             let priceParts = priceText.split("/");
                             let priceStudentString = priceParts?.[0]

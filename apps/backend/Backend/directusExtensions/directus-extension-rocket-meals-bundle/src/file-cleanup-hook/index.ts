@@ -8,6 +8,7 @@ import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEn
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { Query, SchemaOverview } from '@directus/types';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
+import { ByteSizeHelper } from '../helpers/ByteSizeHelper';
 
 enum FileCleanupWorkflowConfigEnum {
   delete_unreferenced_files_when_older_than_ms = 'delete_unreferenced_files_when_older_than_ms',

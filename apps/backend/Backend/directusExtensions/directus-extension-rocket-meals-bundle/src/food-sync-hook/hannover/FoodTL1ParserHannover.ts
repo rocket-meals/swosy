@@ -9,10 +9,10 @@ import {FoodTL1ParserGetRawReportInterface} from '../FoodTL1Parser_GetRawReportI
 import {FoodoffersTypeForParser, FoodParseFoodAttributesType} from '../FoodParserInterface';
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
-  static MENUEKENNZEICHEN_FIELD = 'MENUEKENNZEICHEN';
-  static EXTINFO_CO2_BEWERTUNG = 'EXTINFO_CO2_BEWERTUNG';
+  static readonly MENUEKENNZEICHEN_FIELD = 'MENUEKENNZEICHEN';
+  static readonly EXTINFO_CO2_BEWERTUNG = 'EXTINFO_CO2_BEWERTUNG';
 
-  static CO2_BEWERTUNG_PREFIX_IDENTIFIER = 'CO2_RATING_';
+  static readonly CO2_BEWERTUNG_PREFIX_IDENTIFIER = 'CO2_RATING_';
 
   constructor(rawFoodofferReader: FoodTL1ParserGetRawReportInterface) {
     super(rawFoodofferReader);
@@ -26,17 +26,13 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
    */
   _filterZsNummernOnlyForPassedExternalMarkingIdentifiersFromMarkingParser(markings: string[]) {
     let markingForParserFromMarkingParser = this.markingsJSONListFromMarkingParger;
-    if (!!markingForParserFromMarkingParser) {
-      let markingExternalIdentifiersFromMarkingParser = markingForParserFromMarkingParser.map(marking => {
-        return marking.external_identifier;
-      });
-      let filteredMarkings = markings.filter(marking => {
-        return markingExternalIdentifiersFromMarkingParser.includes(marking);
-      });
-      return filteredMarkings;
-    } else {
+    if (!markingForParserFromMarkingParser) {
       return markings; // if no marking parser is set, return all markings as they are
     }
+    const markingExternalIdentifiersFromMarkingParser = new Set(
+      markingForParserFromMarkingParser.map(marking => marking.external_identifier)
+    );
+    return markings.filter(marking => markingExternalIdentifiersFromMarkingParser.has(marking));
   }
 
   _getMarkingsExternalIdentifiersFromRawFoodoffer(raw_tl1_foodoffer_json: RawTL1FoodofferType): string[] {
@@ -46,20 +42,20 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     let tl1_co2_bewertung_string = raw_tl1_foodoffer_json[FoodTL1ParserHannover.EXTINFO_CO2_BEWERTUNG];
 
     let combinedMarkings: string[] = [];
-    if (!!tl1_zusatz_nummern_string) {
+    if (tl1_zusatz_nummern_string) {
       let markings = tl1_zusatz_nummern_string.split(',').map(nummernString => {
         return nummernString.trim();
       });
       markings = this._filterZsNummernOnlyForPassedExternalMarkingIdentifiersFromMarkingParser(markings);
       combinedMarkings = combinedMarkings.concat(markings);
     }
-    if (!!tl1_menuekennzeichen_string) {
+    if (tl1_menuekennzeichen_string) {
       let markings = tl1_menuekennzeichen_string.split(',').map(nummernString => {
         return nummernString.trim();
       });
       combinedMarkings = combinedMarkings.concat(markings);
     }
-    if (!!tl1_co2_bewertung_string) {
+    if (tl1_co2_bewertung_string) {
       combinedMarkings.push(FoodTL1ParserHannover.getCO2RatingMarkingExternalIdentifier(tl1_co2_bewertung_string));
 
       // 19.03.2025 um 12:32 schrieb Steinhauer, Katharina
@@ -77,7 +73,6 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
    * Hannover Mail: 17.10.2024
    */
   override getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType) {
-    //return super.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer);
     return this._getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer.raw_tl1_foodoffer_json);
   }
 
@@ -91,16 +86,16 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     return parsedReportItem?.['SPEISE'] || null; // ATTENTION: Hannover has no specific field for foodoffer category
   }
 
-  static KLIMA_TELLER_EXTERNAL_IDENTIFIER = 'kt';
-  static NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER = 'q';
-  static NIEDERSACHSEN_MENUE_PRICE = 2.50;
-  static FOOD_ID_EXCLUDED_MARKINGS = [FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER];
+  static readonly KLIMA_TELLER_EXTERNAL_IDENTIFIER = 'kt';
+  static readonly NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER = 'q';
+  static readonly NIEDERSACHSEN_MENUE_PRICE = 2.5;
+  static readonly FOOD_ID_EXCLUDED_MARKINGS = [FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER];
 
   /**
    * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E
    * @param co2_bewertung_string
    */
-  static CO2RATING_A_VALUE = 'A';
+  static readonly CO2RATING_A_VALUE = 'A';
 
   /**
    * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E
@@ -111,7 +106,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
   }
 
   static getCombinedSortedMarkingsExternalIdentifiersAsString(total_marking_external_identifier_list: string[]) {
-    let sorted_marking_external_identifiers = total_marking_external_identifier_list.sort((a, b) => a.localeCompare(b));
+    const sorted_marking_external_identifiers = [...total_marking_external_identifier_list].sort((a, b) => a.localeCompare(b));
     let combined_marking_ids_as_string = sorted_marking_external_identifiers.join('-');
     return combined_marking_ids_as_string;
   }
@@ -163,7 +158,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     return food_id;
   }
 
-  static FOOD_ATTRIBUTE_FIELDS: Tl1AttributeType[] = [
+  static readonly FOOD_ATTRIBUTE_FIELDS: Tl1AttributeType[] = [
     {
       field_name: 'NW_KCAL',
       external_identifier: 'calories_kcal',
