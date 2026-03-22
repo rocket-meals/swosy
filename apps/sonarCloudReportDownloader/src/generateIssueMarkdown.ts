@@ -36,8 +36,8 @@ const DEFAULT_MAX_ISSUES = 50;
 function getRepoRoot(): string {
   try {
     return execSync('git rev-parse --show-toplevel', { encoding: 'utf-8' }).trim();
-  } catch {
-    console.warn('Could not determine git repository root. Using current directory.');
+  } catch (error) {
+    console.warn('Could not determine git repository root. Using current directory.', error);
     return process.cwd();
   }
 }
@@ -117,6 +117,15 @@ function parseCsvLine(line: string): string[] {
 }
 
 /**
+ * Safely parse a line number string, returning undefined for invalid values.
+ */
+function parseLineNumber(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const parsed = parseInt(value, 10);
+  return !isNaN(parsed) ? parsed : undefined;
+}
+
+/**
  * Read and parse a SonarCloud CSV report file.
  */
 function readCsvReport(filePath: string): CsvIssue[] {
@@ -139,7 +148,7 @@ function readCsvReport(filePath: string): CsvIssue[] {
       key: fields[0] || '',
       message: fields[1] || '',
       component: fields[2] || '',
-      line: fields[3] ? parseInt(fields[3], 10) : undefined,
+      line: parseLineNumber(fields[3]),
     };
   }).filter(issue => issue.key.length > 0);
 }
@@ -284,7 +293,7 @@ function truncateMarkdown(md: string, charLimit: number): string {
     return md;
   }
 
-  const truncationNote = `\n\n---\n\n> ⚠️ **Note:** This report was truncated to fit within the ${charLimit.toLocaleString()} character limit. Run the report locally with a lower \`--max-issues\` value or review the full CSV reports in \`reports/sonarCloud/\`.\n`;
+  const truncationNote = `\n\n---\n\n> ⚠️ **Note:** This report was truncated to fit within the ${charLimit.toLocaleString()} character limit. Review the full CSV reports in \`reports/sonarCloud/\` for all issues or reduce \`--max-issues\` to shorten the report.\n`;
 
   const availableLength = charLimit - truncationNote.length;
   // Cut at the last complete issue entry (look for the last double newline)
