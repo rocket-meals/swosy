@@ -24,6 +24,7 @@ const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition }) =>
 	const status = attr?.food_attribute?.status;
 	const backgroundColor = attr?.food_attribute?.background_color || 'transparent';
 	const label = attr?.food_attribute?.translations ? getFoodAttributesTranslation(attr?.food_attribute?.translations, language) : '';
+	const iconColor = useMyContrastColor(backgroundColor, theme, mode === 'dark');
 
 	let value: string | undefined;
 	if (attr?.number_value !== null && attr?.number_value !== undefined) {
@@ -43,7 +44,6 @@ const AttributeItem: React.FC<AttributeItemProps> = ({ attr, groupPosition }) =>
 	const iconParts = attr?.food_attribute?.icon_expo?.split(':') || [];
 	const [library, name] = iconParts;
 	const Icon = library && iconLibraries[library];
-	const iconColor = useMyContrastColor(backgroundColor, theme, mode === 'dark');
 
 	const imageUri = attr?.food_attribute?.image_remote_url || getImageUrl(attr?.food_attribute?.image);
 	const imageSource = imageUri ? { uri: imageUri } : null;

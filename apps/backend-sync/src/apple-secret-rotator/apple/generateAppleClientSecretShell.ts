@@ -1,5 +1,5 @@
 // import child_process for execSync
-import {execSync} from 'child_process';
+import {execSync} from 'node:child_process';
 import {AppleClientSecretCredentials} from './types';
 
 /**

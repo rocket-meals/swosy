@@ -22,6 +22,19 @@ export type AppleJwtPayload = {
   [k: string]: any;
 };
 
+// Decode a base64url-encoded string to a UTF-8 string
+function base64UrlDecodeToString(input: string): string {
+  // Replace url-safe characters
+  let str = StringHelper.replaceAllLiteralWithOptions({ str: input, find: '-', replace: '+' });
+  str = StringHelper.replaceAllLiteralWithOptions({ str, find: '_', replace: '/' });
+  // Pad with '=' to make length a multiple of 4
+  const pad = str.length % 4;
+  if (pad === 2) str += '==';
+  else if (pad === 3) str += '=';
+  else if (pad === 1) str += '==='; // unlikely
+  return Buffer.from(str, 'base64').toString('utf8');
+}
+
 // Decode the payload part of a JWT without verifying signature
 export function decodeAppleClientSecret(token: string): AppleJwtPayload | null {
   if (!token) return null;
@@ -32,22 +45,11 @@ export function decodeAppleClientSecret(token: string): AppleJwtPayload | null {
   const payloadPart = parts[1];
   if (!payloadPart) return null;
 
-  function base64UrlDecodeToString(input: string): string {
-    // Replace url-safe characters
-    let str = StringHelper.replaceAllLiteralWithOptions({ str: input, find: '-', replace: '+' });
-    str = StringHelper.replaceAllLiteralWithOptions({ str, find: '_', replace: '/' });
-    // Pad with '=' to make length a multiple of 4
-    const pad = str.length % 4;
-    if (pad === 2) str += '==';
-    else if (pad === 3) str += '=';
-    else if (pad === 1) str += '==='; // unlikely
-    return Buffer.from(str, 'base64').toString('utf8');
-  }
-
   try {
     const json = base64UrlDecodeToString(payloadPart);
     return JSON.parse(json) as AppleJwtPayload;
   } catch (e) {
+    console.error('Failed to decode Apple JWT payload:', e);
     return null;
   }
 }

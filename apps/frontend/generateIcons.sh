@@ -129,7 +129,7 @@ generate_images() {
 }
 
 # Main script execution
-if [ $# -lt 2 ]; then
+if [[ $# -lt 2 ]]; then
     echo "Error: Missing required arguments."
     print_usage
     exit 1
@@ -138,7 +138,7 @@ fi
 ICON_PATH=$1
 LOGO_PATH=$2
 
-if [ $# -eq 3 ]; then
+if [[ $# -eq 3 ]]; then
     OUTPUT_FOLDER=$3
 fi
 
