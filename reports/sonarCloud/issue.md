@@ -5,78 +5,14 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 24 | 24 |
-| 🔧 Maintainability | 2234 | 26 |
+| 🐛 Reliability | 2 | 2 |
+| 🔧 Maintainability | 2208 | 48 |
 
-**Total issues:** 2258 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2210 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (24/24)
-
-- **React Hook "useMyContrastColor" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/Details/AttributeItem.tsx:46
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/Details/AttributeItem.tsx#L46
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:482
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L482
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:481
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L481
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:480
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L480
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:483
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L483
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:484
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L484
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:485
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L485
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:488
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L488
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:490
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L490
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:491
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L491
-
-- **React Hook "useAppSelector" is called conditionally. React Hooks must be called in the exact same order in every component render.**
-  apps/frontend/app/components/FoodItem/FoodItem.tsx:517
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/FoodItem/FoodItem.tsx#L517
-
-- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx:102
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/MarkingLabels/MarkingLabels.tsx#L102
-
-- **React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?**
-  apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx:95
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/components/SettingsListMarkingLabel/SettingsListMarkingLabel.tsx#L95
-
-- **React Hook "CommonDateHelper.useSmartReadableDate" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function.**
-  apps/frontend/app/helper/DateHelper.ts:20
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/DateHelper.ts#L20
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/frontend/app/helper/hashHelper.ts:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L49
-
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/frontend/app/helper/hashHelper.ts:56
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/hashHelper.ts#L56
+## 🐛 Reliability (2/2)
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/frontend/app/hooks/useLanguage.ts:68
@@ -86,133 +22,197 @@
   apps/frontend/app/hooks/useLanguage.ts:77
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useLanguage.ts#L77
 
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/generateIcons.sh:132
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/generateIcons.sh#L132
+## 🔧 Maintainability (48/2208)
 
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  apps/frontend/generateIcons.sh:141
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/generateIcons.sh#L141
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  generate_basic_auth_traefik.sh:16
-  https://github.com/rocket-meals/rocket-meals/blob/master/generate_basic_auth_traefik.sh#L16
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  generate_basic_auth_traefik.sh:46
-  https://github.com/rocket-meals/rocket-meals/blob/master/generate_basic_auth_traefik.sh#L46
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  scripts/setup-weekly-update-cron.sh:22
-  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/setup-weekly-update-cron.sh#L22
-
-- **Use '[[' instead of '[' for conditional tests. The '[[' construct is safer and more feature-rich.**
-  scripts/weekly-update.sh:15
-  https://github.com/rocket-meals/rocket-meals/blob/master/scripts/weekly-update.sh#L15
-
-## 🔧 Maintainability (26/2234)
-
-- **Remove cache after installing packages or store it in a cache mount.**
-  apps/backend-sync/Dockerfile:11
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L11
+- **Sort these package names alphanumerically.**
+  apps/backend-sync/Dockerfile:5
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L5
 
 - **Merge this RUN instruction with the consecutive ones.**
   apps/backend-sync/Dockerfile:4
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L4
 
-- **Remove cache after installing packages or store it in a cache mount.**
-  apps/backend-sync/Dockerfile:4
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L4
+- **Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.**
+  apps/backend-sync/src/DockerDirectusPingHelper.ts:6
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusPingHelper.ts#L6
 
-- **Remove cache after installing packages or store it in a cache mount.**
-  apps/backend-sync/Dockerfile:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/Dockerfile#L8
-
-- **Move function 'base64UrlDecodeToString' to the outer scope.**
-  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:35
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L35
-
-- **Handle this exception or don't catch it at all.**
-  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts:50
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecret.ts#L50
-
-- **Prefer `node:child_process` over `child_process`.**
-  apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/apple/generateAppleClientSecretShell.ts#L2
-
-- **`String.raw` should be used to avoid escaping `\`.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:35
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L35
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:93
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L93
-
-- **Prefer `node:fs` over `fs`.**
-  apps/backend-sync/src/apple-secret-rotator/index.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/apple-secret-rotator/index.ts#L1
+- **Remove this commented out code.**
+  apps/backend-sync/src/DockerDirectusPingHelper.ts:7
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusPingHelper.ts#L7
 
 - **Prefer `node:path` over `path`.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L2
+  apps/backend-sync/src/EnvFileFinder.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/EnvFileFinder.ts#L1
 
 - **Prefer `node:fs` over `fs`.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L3
+  apps/backend-sync/src/EnvFileFinder.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/EnvFileFinder.ts#L2
 
-- **Prefer `node:module` over `module`.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L8
+- **Prefer `node:https` over `https`.**
+  apps/backend-sync/src/FetchIgnoreSelfSignedCertHelper.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/FetchIgnoreSelfSignedCertHelper.ts#L1
 
-- **`requiredModules` should be a `Set`, and use `requiredModules.has()` to check existence or non-existence.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:27
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L27
+- **Remove this useless assignment to variable "result".**
+  apps/backend-sync/src/index.ts:14
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/index.ts#L14
 
-- **`collectionsToSkip` should be a `Set`, and use `collectionsToSkip.has()` to check existence or non-existence.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:28
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L28
+- **Remove this useless assignment to variable "result".**
+  apps/backend-sync/src/index.ts:27
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/index.ts#L27
+
+- **Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.**
+  apps/backend-sync/src/SyncDatabaseSchema.ts:32
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L32
+
+- **Prefer `node:path` over `path`.**
+  apps/backend-sync/src/SyncDatabaseSchema.ts:4
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L4
+
+- **This always evaluates to truthy. Consider refactoring this code.**
+  apps/backend-sync/src/SyncDatabaseSchema.ts:71
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/SyncDatabaseSchema.ts#L71
+
+- **Remove this unused import of 'DatabaseInitializedCheck'.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts#L2
+
+- **Remove this unused import of 'defineHook'.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts#L1
 
 - **Remove this commented out code.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:55
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L55
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts:21
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/activity-auto-cleanup-schedule/index.ts#L21
+
+- **Remove this unused import of 'DatabaseInitializedCheck'.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:2
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L2
+
+- **Remove this unused import of 'defineHook'.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:1
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L1
+
+- **Complete the task associated to this "TODO" comment.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts:40
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/app-feedbacks-hook/index.ts#L40
+
+- **`String.raw` should be used to avoid escaping `\`.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:62
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L62
+
+- **`String.raw` should be used to avoid escaping `\`.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:62
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L62
 
 - **Remove this commented out code.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:64
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L64
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L43
 
 - **Remove this commented out code.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:129
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L129
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:80
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L80
 
-- **Unexpected negated condition.**
-  apps/backend-sync/src/DirectusDatabaseSync.ts:216
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DirectusDatabaseSync.ts#L216
+- **Remove this commented out code.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:114
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L114
+
+- **Remove this commented out code.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:117
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L117
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts:204
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DeepLTranslator.ts#L204
+
+- **Remove this useless assignment to variable "schema".**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L43
+
+- **Remove this useless assignment to variable "collectionName".**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L43
+
+- **Remove this useless assignment to variable "translation_field".**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:43
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L43
+
+- **Expected a `for-of` loop instead of a `for` loop with this simple iteration.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:56
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L56
+
+- **Refactor this function to reduce its Cognitive Complexity from 71 to the 15 allowed.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:97
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L97
 
 - **Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.**
-  apps/backend-sync/src/DockerContainerManager.ts:14
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L14
-
-- **Handle this exception or don't catch it at all.**
-  apps/backend-sync/src/DockerContainerManager.ts:129
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L129
-
-- **Prefer `node:child_process` over `child_process`.**
-  apps/backend-sync/src/DockerContainerManager.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L1
-
-- **Prefer `node:util` over `util`.**
-  apps/backend-sync/src/DockerContainerManager.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L2
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:392
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L392
 
 - **Make this public static property readonly.**
-  apps/backend-sync/src/DockerContainerManager.ts:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerContainerManager.ts#L8
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:15
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L15
 
 - **Make this public static property readonly.**
-  apps/backend-sync/src/DockerDirectusHelper.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusHelper.ts#L2
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:16
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L16
+
+- **Make this public static property readonly.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:18
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L18
+
+- **Make this public static property readonly.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:19
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L19
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:256
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L256
+
+- **Unexpected negated condition.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:256
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L256
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:298
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L298
+
+- **Unexpected negated condition.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:298
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L298
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:348
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L348
+
+- **Unexpected negated condition.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:348
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L348
+
+- **Make this public static property readonly.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:20
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L20
+
+- **Make this public static property readonly.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:22
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L22
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:90
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L90
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:186
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L186
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:233
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L233
 
 - **Remove this commented out code.**
-  apps/backend-sync/src/DockerDirectusHelper.ts:7
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend-sync/src/DockerDirectusHelper.ts#L7
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:30
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L30
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:47
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L47
 
