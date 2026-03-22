@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-21T17:51:47.424Z",
+  "report_timestamp": "2026-03-22T00:08:27.818Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,65 +8,65 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 89,
-          "average": 1.5636192271442035,
-          "amountSavedValuesForKeys": 3318,
+          "average": 1.5632672332389046,
+          "amountSavedValuesForKeys": 3311,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 70,
-          "average": 2.3419243986254297,
-          "amountSavedValuesForKeys": 1363,
+          "average": 2.343103448275862,
+          "amountSavedValuesForKeys": 1359,
           "amountKeys": 22
         },
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 89,
-          "average": 1.5784966698382492,
-          "amountSavedValuesForKeys": 3318,
+          "average": 1.5781696854146807,
+          "amountSavedValuesForKeys": 3311,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3740,
-        "detection_time_ms": 64,
+        "ast_generation_time_ms": 3842,
+        "detection_time_ms": 68,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 713.94,
-          "os_memory_free": 14958198784,
-          "os_memory_total": 16767234048,
+          "os_uptime": 118.2,
+          "os_memory_free": 14997049344,
+          "os_memory_total": 16771612672,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 3,
-    "amount_files_with_data_clumps": 2,
-    "amount_methods_with_data_clumps": 2,
-    "fields_to_fields_data_clump": 2,
+    "amount_classes_or_interfaces_with_data_clumps": 0,
+    "amount_files_with_data_clumps": 0,
+    "amount_methods_with_data_clumps": 0,
+    "fields_to_fields_data_clump": 0,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 2,
-    "amount_data_clumps": 4
+    "parameters_to_parameters_data_clump": 0,
+    "amount_data_clumps": 0
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "65164f5618871cab5e0a636d5deabe4b0138c220",
-    "project_commit_hash": "65164f5618871cab5e0a636d5deabe4b0138c220",
+    "project_version": "3bbac3fc875918c4a34f94a0eed3e4c27631d14d",
+    "project_commit_hash": "3bbac3fc875918c4a34f94a0eed3e4c27631d14d",
     "project_tag": null,
-    "project_commit_date": "1774115412",
+    "project_commit_date": "1774138012",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 417,
     "number_of_classes_or_interfaces": 844,
     "number_of_methods": 1258,
-    "number_of_data_fields": 3318,
-    "number_of_method_parameters": 1363
+    "number_of_data_fields": 3311,
+    "number_of_method_parameters": 1359
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -90,394 +90,5 @@
       "ignoredVariableNames": []
     }
   },
-  "data_clumps": {
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm-formformExtractRelevantInformationmyDatabaseHelperInterface": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm-formformExtractRelevantInformationmyDatabaseHelperInterface",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",
-      "from_class_or_interface_name": "FormHelper",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper",
-      "from_method_name": "generateMarkdownContentFromForm",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",
-      "to_class_or_interface_name": "FormHelper",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper",
-      "to_method_name": "generateHtmlContentFromForm",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/form": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/form",
-          "name": "form",
-          "type": "DatabaseTypes.Forms",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/form",
-            "name": "form",
-            "type": "DatabaseTypes.Forms",
-            "modifiers": [],
-            "position": {
-              "startLine": 701,
-              "startColumn": 5,
-              "endLine": 701,
-              "endColumn": 30
-            }
-          },
-          "position": {
-            "startLine": 651,
-            "startColumn": 55,
-            "endLine": 651,
-            "endColumn": 80
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/formExtractRelevantInformation": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/formExtractRelevantInformation",
-          "name": "formExtractRelevantInformation",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index\").FormExtractRelevantInformationSingle[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/formExtractRelevantInformation",
-            "name": "formExtractRelevantInformation",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index\").FormExtractRelevantInformationSingle[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 702,
-              "startColumn": 5,
-              "endLine": 702,
-              "endColumn": 75
-            }
-          },
-          "position": {
-            "startLine": 651,
-            "startColumn": 82,
-            "endLine": 651,
-            "endColumn": 152
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/myDatabaseHelperInterface": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/myDatabaseHelperInterface",
-          "name": "myDatabaseHelperInterface",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface\").MyDatabaseTestableHelperInterface",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/myDatabaseHelperInterface",
-            "name": "myDatabaseHelperInterface",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface\").MyDatabaseTestableHelperInterface",
-            "modifiers": [],
-            "position": {
-              "startLine": 703,
-              "startColumn": 5,
-              "endLine": 703,
-              "endColumn": 65
-            }
-          },
-          "position": {
-            "startLine": 651,
-            "startColumn": 154,
-            "endLine": 651,
-            "endColumn": 214
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm-formformExtractRelevantInformationmyDatabaseHelperInterface": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm-formformExtractRelevantInformationmyDatabaseHelperInterface",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",
-      "from_class_or_interface_name": "FormHelper",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper",
-      "from_method_name": "generateHtmlContentFromForm",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",
-      "to_class_or_interface_name": "FormHelper",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper",
-      "to_method_name": "generateMarkdownContentFromForm",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/form": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/form",
-          "name": "form",
-          "type": "DatabaseTypes.Forms",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/form",
-            "name": "form",
-            "type": "DatabaseTypes.Forms",
-            "modifiers": [],
-            "position": {
-              "startLine": 651,
-              "startColumn": 55,
-              "endLine": 651,
-              "endColumn": 80
-            }
-          },
-          "position": {
-            "startLine": 701,
-            "startColumn": 5,
-            "endLine": 701,
-            "endColumn": 30
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/formExtractRelevantInformation": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/formExtractRelevantInformation",
-          "name": "formExtractRelevantInformation",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index\").FormExtractRelevantInformationSingle[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/formExtractRelevantInformation",
-            "name": "formExtractRelevantInformation",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index\").FormExtractRelevantInformationSingle[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 651,
-              "startColumn": 82,
-              "endLine": 651,
-              "endColumn": 152
-            }
-          },
-          "position": {
-            "startLine": 702,
-            "startColumn": 5,
-            "endLine": 702,
-            "endColumn": 75
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/myDatabaseHelperInterface": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateHtmlContentFromForm/parameter/myDatabaseHelperInterface",
-          "name": "myDatabaseHelperInterface",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface\").MyDatabaseTestableHelperInterface",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts/class/FormHelper/method/generateMarkdownContentFromForm/parameter/myDatabaseHelperInterface",
-            "name": "myDatabaseHelperInterface",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/MyDatabaseHelperInterface\").MyDatabaseTestableHelperInterface",
-            "modifiers": [],
-            "position": {
-              "startLine": 651,
-              "startColumn": 154,
-              "endLine": 651,
-              "endColumn": 214
-            }
-          },
-          "position": {
-            "startLine": 703,
-            "startColumn": 5,
-            "endLine": 703,
-            "endColumn": 65
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/MySimpleDate-yearmonthday": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/FoodofferDateType-packages/common/src/DateHelper.ts/interface/MySimpleDate-yearmonthday",
-      "probability": 1,
-      "from_file_path": "packages/common/src/DateHelper.ts",
-      "from_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType",
-      "from_class_or_interface_name": "FoodofferDateType",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common/src/DateHelper.ts",
-      "to_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/MySimpleDate",
-      "to_class_or_interface_name": "MySimpleDate",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year": {
-          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year",
-          "name": "year",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year",
-            "name": "year",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 21,
-              "startColumn": 3,
-              "endLine": 21,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 15,
-            "startColumn": 3,
-            "endLine": 15,
-            "endColumn": 16
-          }
-        },
-        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month": {
-          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month",
-          "name": "month",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month",
-            "name": "month",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 22,
-              "startColumn": 3,
-              "endLine": 22,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 16,
-            "startColumn": 3,
-            "endLine": 16,
-            "endColumn": 17
-          }
-        },
-        "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day": {
-          "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day",
-          "name": "day",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day",
-            "name": "day",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 23,
-              "startColumn": 3,
-              "endLine": 23,
-              "endColumn": 15
-            }
-          },
-          "position": {
-            "startLine": 17,
-            "startColumn": 3,
-            "endLine": 17,
-            "endColumn": 15
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/MySimpleDate-packages/common/src/DateHelper.ts/interface/FoodofferDateType-yearmonthday": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common/src/DateHelper.ts-packages/common/src/DateHelper.ts/interface/MySimpleDate-packages/common/src/DateHelper.ts/interface/FoodofferDateType-yearmonthday",
-      "probability": 1,
-      "from_file_path": "packages/common/src/DateHelper.ts",
-      "from_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/MySimpleDate",
-      "from_class_or_interface_name": "MySimpleDate",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common/src/DateHelper.ts",
-      "to_class_or_interface_key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType",
-      "to_class_or_interface_name": "FoodofferDateType",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year": {
-          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/year",
-          "name": "year",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/year",
-            "name": "year",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 15,
-              "startColumn": 3,
-              "endLine": 15,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 21,
-            "startColumn": 3,
-            "endLine": 21,
-            "endColumn": 16
-          }
-        },
-        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month": {
-          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/month",
-          "name": "month",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/month",
-            "name": "month",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 16,
-              "startColumn": 3,
-              "endLine": 16,
-              "endColumn": 17
-            }
-          },
-          "position": {
-            "startLine": 22,
-            "startColumn": 3,
-            "endLine": 22,
-            "endColumn": 17
-          }
-        },
-        "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day": {
-          "key": "packages/common/src/DateHelper.ts/interface/MySimpleDate/memberField/day",
-          "name": "day",
-          "type": "number",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common/src/DateHelper.ts/interface/FoodofferDateType/memberField/day",
-            "name": "day",
-            "type": "number",
-            "modifiers": [],
-            "position": {
-              "startLine": 17,
-              "startColumn": 3,
-              "endLine": 17,
-              "endColumn": 15
-            }
-          },
-          "position": {
-            "startLine": 23,
-            "startColumn": 3,
-            "endLine": 23,
-            "endColumn": 15
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 2
-      }
-    }
-  }
+  "data_clumps": {}
 }
