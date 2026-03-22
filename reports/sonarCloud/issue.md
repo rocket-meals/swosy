@@ -4,15 +4,25 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 0 | 0 |
+| 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 1860 | 50 |
+| 🔧 Maintainability | 1861 | 48 |
 
-**Total issues:** 1860 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1863 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔧 Maintainability (50/1860)
+## 🔒 Security (2/2)
+
+- **Change this action to not use user-controlled data directly in a run block.**
+  .github/actions/geonexia-expo-update/action.yml:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L49
+
+- **Change this action to not use user-controlled data directly in a run block.**
+  .github/actions/geonexia-expo-update/action.yml:49
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L49
+
+## 🔧 Maintainability (48/1861)
 
 - **This assertion is unnecessary since it does not change the type of the expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:62
@@ -205,12 +215,4 @@
 - **Unexpected `await` of a non-Promise (non-"Thenable") value.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:394
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L394
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:881
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L881
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:907
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L907
 
