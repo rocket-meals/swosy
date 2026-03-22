@@ -1,5 +1,3 @@
-import { defineHook } from '@directus/extensions-sdk';
-import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { CollectionNames, DateHelper, MailAdresses } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { HtmlTemplatesEnum } from '../helpers/html/HtmlGenerator';
@@ -36,9 +34,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
   const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
   const publicUrl = myDatabaseHelper.getServerUrl();
-
-  // TODO: Create a table for app-feedbacks-settings
-  // There we can store to which emails we should send the feedbacks and at which time or on a daily basis
 
   const toMail = MailAdresses.SupportMail;
 

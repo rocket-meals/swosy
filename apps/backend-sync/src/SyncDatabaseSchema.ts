@@ -1,7 +1,7 @@
 import {DirectusDatabaseSync} from './DirectusDatabaseSync';
 import {DockerDirectusHelper} from './DockerDirectusHelper';
 import {ServerHelper} from 'repo-depkit-common';
-import * as path from 'path';
+import * as path from 'node:path';
 import * as dotenv from 'dotenv';
 import {DockerContainerManager} from './DockerContainerManager';
 import {findEnvFile} from "./EnvFileFinder";
@@ -29,11 +29,16 @@ export const SyncDataBaseOptionDockerPush: SyncDatabaseOptions = {
   dockerPush: true,
 }
 
-export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolean> {
-  console.log("Starting Backend Sync Service...");
-  console.log("Options:");
-  console.log(JSON.stringify(options, null, 2));
+type ResolvedSyncConfig = {
+  adminEmail: string | undefined;
+  adminPassword: string | undefined;
+  directusInstanceUrl: string | undefined;
+  pathToDataDirectusSync: string | undefined;
+  dockerDirectusRestart: boolean;
+  syncOperation: SyncOperation;
+};
 
+async function resolveSyncConfig(options: SyncDatabaseOptions): Promise<ResolvedSyncConfig> {
   let adminEmail = options.adminEmail || process.env.ADMIN_EMAIL;
   let adminPassword = options.adminPassword || process.env.ADMIN_PASSWORD;
   let directusInstanceUrl = options.directusUrl;
@@ -44,23 +49,19 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
   if (options.push || options.dockerPush || options.pushToTestSystem) {
     syncOperation = SyncOperation.PUSH;
   }
-
-  if (options.dockerPush) {
-    dockerDirectusRestart = true;
-  }
-
   if (options.pull || options.pullFromTestSystem) {
     syncOperation = SyncOperation.PULL;
   }
 
   if (options.dockerPush) {
+    dockerDirectusRestart = true;
     directusInstanceUrl = DockerDirectusHelper.getDirectusServerUrl();
     pathToDataDirectusSync = DockerDirectusHelper.getDataPathToDirectusSyncData();
   }
 
   if (options.pullFromTestSystem || options.pushToTestSystem) {
     directusInstanceUrl = ServerHelper.TEST_SERVER_CONFIG.server_url;
-    let envFilePath = await findEnvFile();
+    const envFilePath = await findEnvFile();
     if (envFilePath) {
       console.log(`🔍 Gefundene .env Datei für Pull vom Testsystem: ${envFilePath}`);
       dotenv.config({ path: envFilePath });
@@ -68,37 +69,51 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
       adminPassword = process.env.ADMIN_PASSWORD;
 
       if (!pathToDataDirectusSync) {
-        let folderOfEnvFile = path.dirname(envFilePath || '');
+        const folderOfEnvFile = path.dirname(envFilePath);
         pathToDataDirectusSync = path.join(folderOfEnvFile, DockerDirectusHelper.getRelativePathToDirectusSyncFromProjectRoot());
       }
     }
   }
 
+  return { adminEmail, adminPassword, directusInstanceUrl, pathToDataDirectusSync, dockerDirectusRestart, syncOperation };
+}
+
+function validateSyncConfig(config: ResolvedSyncConfig): boolean {
   let errors = false;
-  if (!directusInstanceUrl) {
+  if (!config.directusInstanceUrl) {
     console.error('❌ Fehler: Directus URL muss angegeben werden (--directus-url) oder Docker Push muss aktiviert sein (--docker-push)');
     errors = true;
   }
-  if (!pathToDataDirectusSync) {
+  if (!config.pathToDataDirectusSync) {
     console.error('❌ Fehler: Pfad zu den Sync-Daten muss angegeben werden (--path-to-data-directus-sync)');
     errors = true;
   }
-  if (!adminEmail) {
+  if (!config.adminEmail) {
     console.error('❌ Fehler: Admin Email muss angegeben werden (--admin-email) oder über Umgebungsvariablen ADMIN_EMAIL gesetzt sein');
     errors = true;
   }
-  if (!adminPassword) {
+  if (!config.adminPassword) {
     console.error('❌ Fehler: Admin Password muss angegeben werden (--admin-password) oder über Umgebungsvariablen ADMIN_PASSWORD gesetzt sein');
     errors = true;
   }
-  if (syncOperation === SyncOperation.NONE) {
+  if (config.syncOperation === SyncOperation.NONE) {
     console.error('❌ Fehler: Ungültige Operation. Wählen Sie entweder --push, --pull oder --docker-push');
     errors = true;
   }
+  return !errors;
+}
 
-  if (errors) {
+export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolean> {
+  console.log("Starting Backend Sync Service...");
+  console.log("Options:");
+  console.log(JSON.stringify(options, null, 2));
+
+  const config = await resolveSyncConfig(options);
+  if (!validateSyncConfig(config)) {
     return false;
   }
+
+  const { adminEmail, adminPassword, directusInstanceUrl, pathToDataDirectusSync, dockerDirectusRestart, syncOperation } = config;
 
   try {
     console.log('🚀 Starte Backend Sync Service...');
@@ -123,7 +138,6 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
         console.log('✅ Initiale Pull-Operation erfolgreich abgeschlossen!');
         break;
       case SyncOperation.NONE:
-        // Sollte nie erreicht werden, da oben validiert
         break;
     }
 
@@ -142,5 +156,5 @@ export async function syncDatabase(options: SyncDatabaseOptions): Promise<boolea
     console.error('💥 Fehler im Backend Sync Service:', error);
     return false;
   }
-    return true;
+  return true;
 }

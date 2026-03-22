@@ -1,16 +1,15 @@
 FROM node:22-bookworm
 
-# Install basic tools, Docker CLI, openssl and xxd for Apple Token generation
+# Install basic tools, Docker CLI, openssl and xxd for Apple Token generation, then set up yarn
 RUN apt-get update \
-    && apt-get install -y git curl openssl xxd \
+    && apt-get install -y curl git openssl xxd \
     && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bookworm stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
     && apt-get update \
     && apt-get install -y docker-ce-cli \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install yarn
-RUN corepack enable && corepack prepare yarn@stable --activate
+    && rm -rf /var/lib/apt/lists/* \
+    && corepack enable \
+    && corepack prepare yarn@stable --activate
 
 # Set working directory
 WORKDIR /rocket-meals

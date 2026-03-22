@@ -1,5 +1,3 @@
-import { defineHook } from '@directus/extensions-sdk';
-import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { ActivityServiceCreator } from '../helpers/ItemsServiceCreator';
 import {MyDefineHook} from "../helpers/MyDefineHook";
 
@@ -18,7 +16,6 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
    */
 
   const MODE_DELETE_OLD_LOGS: string = 'delete_old_logs';
-  //const MODE_DELETE_PERSONAL_DATA: string = "delete_personal_data";
   const MODE_SELECTED: string = MODE_DELETE_OLD_LOGS;
 
   // https://www.datenschutz-notizen.de/ip-adressen-und-datenschutz-teil-iii-speicherfristen-0634313/
@@ -60,10 +57,5 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
 
       await activityService.deleteByQuery(query);
     }
-    //else if (MODE_SELECTED===MODE_DELETE_PERSONAL_DATA){
-    //    logger.info(SCHEDULE_NAME+ ": Deleting personal data");
-    //    const FIELD_IP = "ip";
-    //    const FIELD_USER_AGNET = "user_agent";
-    //}
   });
 });
