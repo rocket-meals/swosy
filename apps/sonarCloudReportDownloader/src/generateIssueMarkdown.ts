@@ -74,7 +74,7 @@ const argv = yargs(hideBin(process.argv))
   .option('branch', {
     alias: 'b',
     type: 'string',
-    default: 'main',
+    default: 'master',
     describe: 'Branch name for file links',
   })
   .help()

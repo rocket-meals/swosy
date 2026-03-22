@@ -168,8 +168,8 @@ export class FoodWebParserAachenParseHtml {
         .replace(/[^0-9,\.]/g, '')
         .trim();
       const withDot = normalized.replace(',', '.');
-      const parsed = parseFloat(withDot);
-      if (!isNaN(parsed)) {
+      const parsed = Number.parseFloat(withDot);
+      if (!Number.isNaN(parsed)) {
         priceStudent = parsed;
       }
     }
@@ -238,9 +238,9 @@ export class FoodWebParserAachenParseHtml {
     if (!match) {
       return null;
     }
-    const day = parseInt(match[1]!, 10);
-    const month = parseInt(match[2]!, 10);
-    const year = parseInt(match[3]!, 10);
+    const day = Number.parseInt(match[1]!, 10);
+    const month = Number.parseInt(match[2]!, 10);
+    const year = Number.parseInt(match[3]!, 10);
     return new Date(year, month - 1, day);
   }
 

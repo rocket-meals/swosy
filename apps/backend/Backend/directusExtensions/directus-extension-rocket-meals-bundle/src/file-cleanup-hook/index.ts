@@ -220,8 +220,8 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
         let file = await filesHelper.readOne(fileId);
         const fileSizeAsString = file.filesize;
         let fileSizeAsNumber = 0;
-        if (!!fileSizeAsString && !isNaN(fileSizeAsString)) {
-          fileSizeAsNumber = parseInt(fileSizeAsString + '');
+        if (!!fileSizeAsString && !Number.isNaN(Number(fileSizeAsString))) {
+          fileSizeAsNumber = Number.parseInt(fileSizeAsString, 10);
         }
         this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
         dictFileIdsDiskSpace[fileId] = fileSizeAsNumber;
