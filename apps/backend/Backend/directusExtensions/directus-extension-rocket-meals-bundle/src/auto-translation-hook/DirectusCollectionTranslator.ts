@@ -277,7 +277,7 @@ export class DirectusCollectionTranslator {
   }
 
   static async translateTranslationItem(options: TranslationEntryOptions) {
-    const { sourceTranslation, language_code, translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
+    const { sourceTranslation, language_code, translator, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
     let translatedItem: any = {};
     if (fieldsToTranslate && fieldsToTranslate.length > 0) {
       for (const field of fieldsToTranslate) {

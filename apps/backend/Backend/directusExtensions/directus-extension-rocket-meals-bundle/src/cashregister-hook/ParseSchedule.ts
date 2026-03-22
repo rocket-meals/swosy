@@ -48,7 +48,7 @@ export class ParseSchedule {
         let cashregister_id = undefined;
         if (cached_cashregister_id === undefined) {
           let cashRegister = await this.context.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
-          if (!!cashRegister) {
+          if (cashRegister) {
             cached_cashregister_id = cashRegister?.id;
             external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_cashregister_id;
             cashregister_id = cached_cashregister_id;
@@ -57,10 +57,10 @@ export class ParseSchedule {
           cashregister_id = cached_cashregister_id;
         }
 
-        if (cashregister_id !== undefined) {
-          await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
-        } else {
+        if (cashregister_id === undefined) {
           console.log('Houston we got a problem? Seems like somebody deleted a cashregister mid transaction');
+        } else {
+          await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
         }
 
         myTimer.setCurrentCount(i);

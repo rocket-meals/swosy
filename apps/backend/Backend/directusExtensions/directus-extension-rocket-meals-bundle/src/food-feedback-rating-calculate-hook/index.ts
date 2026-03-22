@@ -1,6 +1,4 @@
-import { defineHook } from '@directus/extensions-sdk';
 import { CollectionNames } from 'repo-depkit-common';
-import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { FoodRatingCalculator } from './FoodRatingCalculator';
 import {MyDefineHook} from "../helpers/MyDefineHook";
 

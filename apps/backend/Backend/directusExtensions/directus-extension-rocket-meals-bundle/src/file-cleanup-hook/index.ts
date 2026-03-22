@@ -3,12 +3,13 @@ import { RegisterFunctions } from '@directus/extensions';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { WorkflowScheduleHelper } from '../workflows-runs-hook';
 import { SingleWorkflowRun, WorkflowEnum } from '../workflows-runs-hook/WorkflowRunJobInterface';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
 import { Query } from '@directus/types';
 import { ByteSizeHelper } from '../helpers/ByteSizeHelper';
-import {CronHelper, CronObject} from "repo-depkit-common";
+import { SchemaOverview } from '@directus/types';
+import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 
 enum FileCleanupWorkflowConfigEnum {
   delete_unreferenced_files_when_older_than_ms = 'delete_unreferenced_files_when_older_than_ms',
@@ -17,6 +18,10 @@ enum FileCleanupWorkflowConfigEnum {
 type FileCleanupWorkflowConfig = {
   [FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]: number;
 };
+
+type FileReferenceDict = { [key: string]: boolean };
+type FileDiskSpaceDict = { [key: string]: number };
+type SpecificCollection = { [key: string]: string | DatabaseTypes.DirectusFiles };
 
 export class FileCleanupWorkflow extends SingleWorkflowRun {
   private static readonly PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_DONT_DELETE = -1;
@@ -46,243 +51,279 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
     return WorkflowEnum.fileCleanup;
   }
 
+  private applyInputConfig(input: string | null | undefined): void {
+    if (!input) {
+      return;
+    }
+    const parsed = JSON.parse(input) as FileCleanupWorkflowConfig;
+    const value = parsed[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms];
+    if (value) {
+      this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms] = value;
+    }
+  }
+
+  private markFileAsUsed(dict: FileReferenceDict, fieldRaw: string | DatabaseTypes.DirectusFiles): void {
+    if (typeof fieldRaw === 'string') {
+      dict[fieldRaw] = true;
+    } else {
+      dict[fieldRaw.id] = true;
+    }
+  }
+
+  private async processSingletonCollection(
+    context: WorkflowRunContext,
+    collectionHelper: ItemsServiceHelper<SpecificCollection>,
+    fieldForDirectusFileId: string,
+    dict: FileReferenceDict
+  ): Promise<void> {
+    this.statistics.itemsCheckedAmount++;
+    await context.logger.appendLog('- Reading singleton item.');
+    const item = await collectionHelper.readSingleton();
+    const fieldRaw = item[fieldForDirectusFileId];
+    if (fieldRaw) {
+      this.markFileAsUsed(dict, fieldRaw);
+    }
+  }
+
+  private async processNonSingletonCollection(
+    context: WorkflowRunContext,
+    collectionHelper: ItemsServiceHelper<SpecificCollection>,
+    collectionName: string,
+    fieldForDirectusFileId: string,
+    dict: FileReferenceDict
+  ): Promise<void> {
+    const query: Query = {
+      filter: { _and: [{ [fieldForDirectusFileId]: { _nnull: true } }] },
+    };
+    const amountItems = await collectionHelper.countItems(query);
+    this.statistics.itemsCheckedAmount += amountItems;
+    await context.logger.appendLog(`- Found ${amountItems} items in collection ${collectionName}.`);
+
+    const limit = 1000;
+    let offset = 0;
+    while (offset < amountItems) {
+      await context.logger.appendLog(`- Reading items progress: ${offset}/${amountItems}`);
+      const items = await collectionHelper.readByQuery({ ...query, limit, fields: [fieldForDirectusFileId], offset });
+      for (const item of items) {
+        const fieldRaw = item[fieldForDirectusFileId];
+        if (fieldRaw) {
+          this.markFileAsUsed(dict, fieldRaw);
+        }
+      }
+      offset += limit;
+    }
+    await context.logger.appendLog('- Finished reading items');
+  }
+
+  private async processCollectionRelation(
+    context: WorkflowRunContext,
+    schema: SchemaOverview,
+    collectionName: string,
+    fieldForDirectusFileId: string,
+    dict: FileReferenceDict
+  ): Promise<void> {
+    const collectionObj = schema.collections[collectionName];
+    if (!collectionObj) {
+      return;
+    }
+    const isSingleton = collectionObj.singleton;
+    await context.logger.appendLog('- Found relation to directus_files in collection: ' + collectionName + ' (singleton: ' + isSingleton + ', field: ' + fieldForDirectusFileId + ')');
+    const collectionHelper = context.myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);
+    if (isSingleton) {
+      await this.processSingletonCollection(context, collectionHelper, fieldForDirectusFileId, dict);
+    } else {
+      await this.processNonSingletonCollection(context, collectionHelper, collectionName, fieldForDirectusFileId, dict);
+    }
+  }
+
+  private async scanSchemaRelations(
+    context: WorkflowRunContext,
+    schema: SchemaOverview,
+    dict: FileReferenceDict
+  ): Promise<void> {
+    await context.logger.appendLog('Searching for items that are using files and marking them as used.');
+    const schemaRelations = schema.relations;
+    const amountRelations = Object.keys(schemaRelations).length;
+    for (const relation in schemaRelations) {
+      const relationObj = schemaRelations[relation];
+      if (!relationObj) {
+        continue;
+      }
+      const { collection: collectionName, field: fieldForDirectusFileId } = relationObj;
+      await context.logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName} - field ${fieldForDirectusFileId}`);
+      if (relationObj.related_collection === 'directus_files') {
+        await this.processCollectionRelation(context, schema, collectionName, fieldForDirectusFileId, dict);
+      }
+    }
+  }
+
+  private checkHasUnreferencedField(schema: SchemaOverview, fieldName: string): boolean {
+    const directusFilesCollection = schema.collections?.['directus_files'];
+    if (!directusFilesCollection?.fields) {
+      return false;
+    }
+    return Boolean(directusFilesCollection.fields[fieldName]);
+  }
+
+  private async syncNoLongerUnreferencedFiles(
+    context: WorkflowRunContext,
+    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
+    dict: FileReferenceDict,
+    fieldName: string
+  ): Promise<void> {
+    const filesPreviouslyUnreferenced = await filesHelper.readByQuery({
+      filter: { _and: [{ [fieldName]: { _eq: true } }] },
+      limit: -1,
+      fields: ['id'],
+    });
+    const fileIdsNoLongerUnreferenced: string[] = [];
+    for (const file of filesPreviouslyUnreferenced) {
+      if (dict[file.id]) {
+        fileIdsNoLongerUnreferenced.push(file.id);
+        await filesHelper.updateOne(file.id, { [fieldName]: false });
+      }
+    }
+    if (fileIdsNoLongerUnreferenced.length > 0) {
+      await context.logger.appendLog(`Found ${fileIdsNoLongerUnreferenced.length} files that are no longer unereferenced.`);
+    }
+  }
+
+  private async collectFileSizeStats(
+    context: WorkflowRunContext,
+    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
+    dict: FileReferenceDict,
+    diskSpaceDict: FileDiskSpaceDict
+  ): Promise<string[]> {
+    const unreferencedFiles: string[] = [];
+    for (const fileId in dict) {
+      const file = await filesHelper.readOne(fileId);
+      const fileSize = file.filesize;
+      const fileSizeAsNumber = typeof fileSize === 'number' && !Number.isNaN(fileSize) ? fileSize : 0;
+      this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
+      diskSpaceDict[fileId] = fileSizeAsNumber;
+      if (!dict[fileId]) {
+        unreferencedFiles.push(fileId);
+      }
+    }
+    return unreferencedFiles;
+  }
+
+  private async tryDeleteOldUnreferencedFile(
+    context: WorkflowRunContext,
+    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
+    fileId: string,
+    fileSizeAsNumber: number
+  ): Promise<void> {
+    const file = await filesHelper.readOne(fileId);
+    if (!file) {
+      return;
+    }
+    const fileAge = Date.now() - new Date(file.created_on).getTime();
+    if (fileAge < this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]) {
+      return;
+    }
+    await context.logger.appendLog('Deleting file: ' + fileId);
+    try {
+      await filesHelper.deleteOne(fileId);
+      this.statistics.filesDeletedAmount++;
+      this.statistics.filesDeletedDiskSpace += fileSizeAsNumber;
+    } catch (deleteError) {
+      this.statistics.filesDeletedErrorAmount++;
+      await context.logger.appendLog(`Error deleting file: ${fileId} - ${deleteError instanceof Error ? deleteError.message : String(deleteError)}`);
+    }
+  }
+
+  private async processUnreferencedFiles(
+    context: WorkflowRunContext,
+    filesHelper: ReturnType<MyDatabaseHelper['getFilesHelper']>,
+    unreferencedFiles: string[],
+    diskSpaceDict: FileDiskSpaceDict,
+    fieldName: string
+  ): Promise<void> {
+    for (const fileId of unreferencedFiles) {
+      const fileSizeAsNumber = diskSpaceDict[fileId] || 0;
+      this.statistics.filesUnreferencedDiskSpace += fileSizeAsNumber;
+      await filesHelper.updateOne(fileId, { [fieldName]: true });
+      if (this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms] >= 0) {
+        await this.tryDeleteOldUnreferencedFile(context, filesHelper, fileId, fileSizeAsNumber);
+      }
+    }
+  }
+
+  private async logSummary(context: WorkflowRunContext): Promise<void> {
+    await context.logger.appendLog(JSON.stringify(this.statistics, null, 2));
+    await context.logger.appendLog('Summary:');
+    await context.logger.appendLog(`- Items checked: ${this.statistics.itemsCheckedAmount}`);
+    await context.logger.appendLog(`- Files total: ${this.statistics.filesTotalAmount}`);
+    await context.logger.appendLog(`- Files total disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesTotalDiskSpace)}`);
+    await context.logger.appendLog(`- Files unreferenced: ${this.statistics.filesUnreferencedAmount}`);
+    await context.logger.appendLog(`- Files unreferenced disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesUnreferencedDiskSpace)}`);
+    await context.logger.appendLog(`- Files deleted: ${this.statistics.filesDeletedAmount}`);
+    await context.logger.appendLog(`- Files deleted disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesDeletedDiskSpace)}`);
+    await context.logger.appendLog(`- Files deleted errors: ${this.statistics.filesDeletedErrorAmount}`);
+    await context.logger.appendLog('- Finished file cleanup job.');
+  }
+
+  private async runCleanupWithSchema(
+    context: WorkflowRunContext,
+    schema: SchemaOverview,
+    directusFiles_fieldname_is_unreferenced: string
+  ): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
+    await context.logger.appendLog('Schema is defined.');
+    await context.logger.appendLog('Searching for files that are used in the database.');
+
+    const dictFileIdsUsedInDatabase: FileReferenceDict = {};
+    const dictFileIdsDiskSpace: FileDiskSpaceDict = {};
+
+    const filesHelper = context.myDatabaseHelper.getFilesHelper();
+    const allFiles = await filesHelper.readByQuery({ limit: -1, fields: ['id'] });
+    this.statistics.filesTotalAmount = allFiles.length;
+    await context.logger.appendLog(`Found ${allFiles.length} files in the database.`);
+    for (const file of allFiles) {
+      dictFileIdsUsedInDatabase[file.id] = false;
+    }
+
+    await this.scanSchemaRelations(context, schema, dictFileIdsUsedInDatabase);
+
+    const hasDirectusFilesFieldIsUnreferenced = this.checkHasUnreferencedField(schema, directusFiles_fieldname_is_unreferenced);
+    if (hasDirectusFilesFieldIsUnreferenced) {
+      await this.syncNoLongerUnreferencedFiles(context, filesHelper, dictFileIdsUsedInDatabase, directusFiles_fieldname_is_unreferenced);
+    } else {
+      await context.logger.appendLog(`The directus_files collection does not have the field "${directusFiles_fieldname_is_unreferenced}". Otherwise, we would have updated the field, to mark the files that are no longer orphaned.`);
+    }
+
+    const unreferencedFiles = await this.collectFileSizeStats(context, filesHelper, dictFileIdsUsedInDatabase, dictFileIdsDiskSpace);
+    this.statistics.filesUnreferencedAmount = unreferencedFiles.length;
+
+    await this.processUnreferencedFiles(context, filesHelper, unreferencedFiles, dictFileIdsDiskSpace, directusFiles_fieldname_is_unreferenced);
+    await this.logSummary(context);
+
+    return context.logger.getFinalLogWithStateAndParams({
+      state: WORKFLOW_RUN_STATE.SUCCESS,
+      log: context.logger.getCurrentLog(),
+    });
+  }
+
   async runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
     await context.logger.appendLog('Starting file cleanup job.');
 
-    if (!!context.workflowRun.input) {
-      let input = JSON.parse(context.workflowRun.input || '{}') as FileCleanupWorkflowConfig;
-      if (!!input[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]) {
-        this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms] = input[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms];
-      }
-    }
+    this.applyInputConfig(context.workflowRun.input);
 
     await context.logger.appendLog('Current configuration:');
     await context.logger.appendLog(JSON.stringify(this.config, null, 2));
     await context.logger.appendLog('- ' + FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms + ': time in ms to delete unreferenced files. -1 to disable.');
 
     const directusFiles_fieldname_is_unreferenced = 'is_unreferenced';
+    const schema = await context.myDatabaseHelper.getSchema();
 
-    let schema = await context.myDatabaseHelper.getSchema();
-
-    // since we want to clean up unused files, we need to find them first
-
-    if (!!schema) {
-      await context.logger.appendLog('Schema is defined.');
-      await context.logger.appendLog('Searching for files that are used in the database.');
-      let dictFileIdsUsedInDatabase: { [key: string]: boolean } = {};
-      let dictFileIdsDiskSpace: { [key: string]: number } = {};
-
-      let filesHelper = context.myDatabaseHelper.getFilesHelper();
-      let allFiles = await filesHelper.readByQuery({
-        limit: -1,
-        fields: ['id'], // only interested in the id
-      });
-      this.statistics.filesTotalAmount = allFiles.length;
-
-      await context.logger.appendLog(`Found ${allFiles.length} files in the database.`);
-      // set all files to false
-      for (let file of allFiles) {
-        dictFileIdsUsedInDatabase[file.id] = false;
-      }
-
-      await context.logger.appendLog('Searching for items that are using files and marking them as used.');
-      let schemaRelations = schema.relations;
-      let amountRelations = Object.keys(schemaRelations).length;
-      for (let relation in schemaRelations) {
-        let relationObj = schemaRelations[relation];
-        if (!!relationObj) {
-          let collectionName = relationObj.collection;
-          let fieldForDirectusFileId = relationObj.field;
-          await context.logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName} - field ${fieldForDirectusFileId}`);
-          // search for related_collection is directus_files
-          if (relationObj.related_collection === 'directus_files') {
-            let collectionObj = schema.collections[collectionName];
-            if (!!collectionObj) {
-              let isSingleton = collectionObj.singleton;
-              await context.logger.appendLog('- Found relation to directus_files in collection: ' + collectionName + ' (singleton: ' + isSingleton + ', field: ' + fieldForDirectusFileId + ')');
-              // define the SpecificCollection type
-              type SpecificCollection = {
-                // the fieldForDirectusFileId is a string
-                [key: string]: string | DatabaseTypes.DirectusFiles;
-              };
-
-              let collectionHelper = context.myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);
-              if (isSingleton) {
-                this.statistics.itemsCheckedAmount++;
-                await context.logger.appendLog('- Reading singleton item.');
-                let item = await collectionHelper.readSingleton();
-                let fieldRaw = item[fieldForDirectusFileId];
-                if (!!fieldRaw) {
-                  if (typeof fieldRaw === 'string') {
-                    // normal case
-                    dictFileIdsUsedInDatabase[fieldRaw] = true; // mark the file as used
-                  } else {
-                    // when the field is an DirectusFiles object
-                    dictFileIdsUsedInDatabase[fieldRaw.id] = true; // mark the file as used
-                  }
-                }
-              } else {
-                let query: Query = {
-                  filter: {
-                    _and: [
-                      {
-                        [fieldForDirectusFileId]: {
-                          _nnull: true,
-                        },
-                      },
-                    ],
-                  },
-                };
-                let amountItems = await collectionHelper.countItems(query);
-                this.statistics.itemsCheckedAmount += amountItems;
-                await context.logger.appendLog(`- Found ${amountItems} items in collection ${collectionName}.`);
-
-                let limit = 1000;
-                let offset = 0;
-                while (offset < amountItems) {
-                  await context.logger.appendLog(`- Reading items progress: ${offset}/${amountItems}`);
-
-                  let items = await collectionHelper.readByQuery({
-                    ...query,
-                    limit: limit,
-                    fields: [fieldForDirectusFileId], // only get the field that we are interested in // reduce the amount of data that we need to read
-                    offset: offset,
-                  });
-                  for (let item of items) {
-                    let fieldRaw = item[fieldForDirectusFileId];
-                    if (!!fieldRaw) {
-                      if (typeof fieldRaw === 'string') {
-                        // normal case
-                        dictFileIdsUsedInDatabase[fieldRaw] = true; // mark the file as used
-                      } else {
-                        // when the field is an DirectusFiles object
-                        dictFileIdsUsedInDatabase[fieldRaw.id] = true; // mark the file as used
-                      }
-                    }
-                  }
-                  offset += limit;
-                }
-                await context.logger.appendLog(`- Finished reading items`);
-              }
-            }
-          }
-        }
-      }
-
-      let hasDirectusFilesFieldIsUnreferenced = false;
-      if (!!schema.collections) {
-        let directusFilesCollection = schema.collections['directus_files'];
-        if (!!directusFilesCollection) {
-          let directusFilesFields = directusFilesCollection.fields;
-          if (!!directusFilesFields) {
-            if (directusFilesFields[directusFiles_fieldname_is_unreferenced]) {
-              hasDirectusFilesFieldIsUnreferenced = true;
-            }
-          }
-        }
-      }
-
-      if (hasDirectusFilesFieldIsUnreferenced) {
-        let filesPreviouslyUnreferenced = await filesHelper.readByQuery({
-          filter: {
-            _and: [
-              {
-                [directusFiles_fieldname_is_unreferenced]: {
-                  _eq: true,
-                },
-              },
-            ],
-          },
-          limit: -1,
-          fields: ['id'], // only interested in the id
-        });
-        // check if the files are still orphaned
-        let fileIdsNoLongerUnreferenced = [];
-        for (let file of filesPreviouslyUnreferenced) {
-          let fileId = file.id;
-          if (dictFileIdsUsedInDatabase[fileId]) {
-            fileIdsNoLongerUnreferenced.push(fileId);
-            await filesHelper.updateOne(fileId, {
-              [directusFiles_fieldname_is_unreferenced]: false,
-            });
-          }
-        }
-        if (fileIdsNoLongerUnreferenced.length > 0) {
-          await context.logger.appendLog(`Found ${fileIdsNoLongerUnreferenced.length} files that are no longer unereferenced.`);
-        }
-      } else {
-        await context.logger.appendLog(`The directus_files collection does not have the field "${directusFiles_fieldname_is_unreferenced}". Otherwise, we would have updated the field, to mark the files that are no longer orphaned.`);
-      }
-
-      // now we need to look for all directusFiles that exist and then compare which are not used
-      let unreferencedFiles: string[] = [];
-      for (let fileId in dictFileIdsUsedInDatabase) {
-        let file = await filesHelper.readOne(fileId);
-        const fileSize = file.filesize;
-        let fileSizeAsNumber = 0;
-        if (typeof fileSize === 'number' && !Number.isNaN(fileSize)) {
-          fileSizeAsNumber = fileSize;
-        }
-        this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
-        dictFileIdsDiskSpace[fileId] = fileSizeAsNumber;
-
-        if (!dictFileIdsUsedInDatabase[fileId]) {
-          // if the file is not used
-          //await logger.appendLog("File is unreferenced: " + fileId);
-          unreferencedFiles.push(fileId);
-        }
-      }
-      this.statistics.filesUnreferencedAmount = unreferencedFiles.length;
-
-      for (let fileId of unreferencedFiles) {
-        let fileSizeAsNumber = dictFileIdsDiskSpace[fileId] || 0;
-        this.statistics.filesUnreferencedDiskSpace += fileSizeAsNumber;
-
-        await filesHelper.updateOne(fileId, {
-          [directusFiles_fieldname_is_unreferenced]: true,
-        });
-        if (this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms] >= 0) {
-          let file = await filesHelper.readOne(fileId);
-          if (!!file) {
-            let fileCreatedAt = file.created_on;
-            let fileAge = Date.now() - new Date(fileCreatedAt).getTime();
-            if (fileAge >= this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]) {
-              await context.logger.appendLog('Deleting file: ' + fileId);
-              try {
-                await filesHelper.deleteOne(fileId);
-                this.statistics.filesDeletedAmount++;
-                this.statistics.filesDeletedDiskSpace += fileSizeAsNumber;
-              } catch (deleteError) {
-                this.statistics.filesDeletedErrorAmount++;
-                await context.logger.appendLog(`Error deleting file: ${fileId} - ${deleteError instanceof Error ? deleteError.message : String(deleteError)}`);
-              }
-            }
-          }
-        }
-      }
-
-      await context.logger.appendLog(JSON.stringify(this.statistics, null, 2));
-      await context.logger.appendLog(`Summary:`);
-      await context.logger.appendLog(`- Items checked: ${this.statistics.itemsCheckedAmount}`);
-      await context.logger.appendLog(`- Files total: ${this.statistics.filesTotalAmount}`);
-      await context.logger.appendLog(`- Files total disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesTotalDiskSpace)}`);
-      await context.logger.appendLog(`- Files unreferenced: ${this.statistics.filesUnreferencedAmount}`);
-      await context.logger.appendLog(`- Files unreferenced disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesUnreferencedDiskSpace)}`);
-      await context.logger.appendLog(`- Files deleted: ${this.statistics.filesDeletedAmount}`);
-      await context.logger.appendLog(`- Files deleted disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesDeletedDiskSpace)}`);
-      await context.logger.appendLog(`- Files deleted errors: ${this.statistics.filesDeletedErrorAmount}`);
-      await context.logger.appendLog(`- Finished file cleanup job.`);
-
-      return context.logger.getFinalLogWithStateAndParams({
-        state: WORKFLOW_RUN_STATE.SUCCESS,
-        log: context.logger.getCurrentLog(),
-      });
-    } else {
+    if (!schema) {
       await context.logger.appendLog('Schema is undefined.');
       return context.logger.getFinalLogWithStateAndParams({
         state: WORKFLOW_RUN_STATE.FAILED,
       });
     }
+
+    return this.runCleanupWithSchema(context, schema, directusFiles_fieldname_is_unreferenced);
   }
 }
 

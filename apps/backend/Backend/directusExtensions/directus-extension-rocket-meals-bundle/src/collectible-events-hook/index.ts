@@ -44,12 +44,12 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
   filter(CollectionNames.COLLECTIBLE_EVENTS + '.items.update', async (payload, meta) => {
     const isArrayPayload = Array.isArray(payload);
     const payloadArray = normalizePayload(payload);
-    const itemIds = (Array.isArray(meta.keys)
+    const keysArray = Array.isArray(meta.keys)
       ? (meta.keys as (string | number | undefined)[])
       : meta.keys
         ? [meta.keys as string | number]
-        : []
-    ).filter((id): id is string | number => id !== undefined && id !== null);
+        : [];
+    const itemIds = keysArray.filter((id): id is string | number => id !== undefined && id !== null);
 
     const existingItems = itemIds.length > 0 ? await collectibleEventsHelper.readMany(itemIds) : [];
     const existingItemsById = existingItems.reduce<Record<string, DatabaseTypes.CollectibleEvents>>((acc, current) => {
@@ -61,7 +61,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(HOOK_NAME, async ({ 
 
     const updatedPayload = payloadArray.map((item, index) => {
       const itemId = itemIds[index];
-      const existingItem = itemId !== undefined ? existingItemsById[String(itemId)] : undefined;
+      const existingItem = itemId === undefined ? undefined : existingItemsById[String(itemId)];
       const mergedItem = {
         ...existingItem,
         ...item,

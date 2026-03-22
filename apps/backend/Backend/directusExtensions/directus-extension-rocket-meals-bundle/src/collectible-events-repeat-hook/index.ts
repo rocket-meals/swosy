@@ -32,12 +32,14 @@ function sanitizeTranslations(
 
   return translations.map(translation => {
     const { id, collectible_events_id, languages_code, ...rest } = translation || {};
-    const normalizedLanguageCode =
-      typeof languages_code === 'string'
-        ? languages_code
-        : typeof languages_code === 'object' && languages_code?.code
-          ? languages_code.code
-          : undefined;
+    let normalizedLanguageCode: string | undefined;
+    if (typeof languages_code === 'string') {
+      normalizedLanguageCode = languages_code;
+    } else if (typeof languages_code === 'object' && languages_code?.code) {
+      normalizedLanguageCode = languages_code.code;
+    } else {
+      normalizedLanguageCode = undefined;
+    }
 
     return {
       ...rest,
@@ -132,7 +134,7 @@ class CollectibleEventsRepeatWorkflow extends SingleWorkflowRun {
         continue;
       }
 
-      const newEvent = cloneCollectibleEvent(event as CollectibleEventWithTranslations, newDateStart, newDateEnd);
+      const newEvent = cloneCollectibleEvent(event, newDateStart, newDateEnd);
       await collectibleEventsHelper.createOne(newEvent);
       createdEvents++;
 
