@@ -33,57 +33,60 @@ export class ReportSchedule {
 
       // 2. check for every recipient if a report is needed to be sent
       for (let reportSchedule of reportSchedules) {
-        //console.log("reportSchedule.id: "+reportSchedule.id)
-        let referenceDateForReport = await this.getReferenceDateOfTheReportOrNull(reportSchedule);
-        //console.log("referenceDateForReport: "+referenceDateForReport)
-        if (referenceDateForReport) {
-          let endDate = new Date(referenceDateForReport);
-          let startDate = ReportSchedule.getStartDateBasedOnReferenceDate(referenceDateForReport, reportSchedule);
-
-          let recipientEmailList = await this.getRecipientEmailList(reportSchedule);
-
-          if (recipientEmailList.length > 0) {
-            let canteenEntries = await this.getCanteenEntries(reportSchedule);
-            if (Object.keys(canteenEntries).length > 0) {
-              try {
-                // 3. send report
-
-                let reportContext: ReportContext = {
-                  reportSchedule: reportSchedule,
-                  startDate: startDate,
-                  endDate: endDate,
-                  canteenEntries: canteenEntries,
-                }
-                let generated_report_data: ReportType = await reportGenerator.generateReportJSON(reportContext);
-                if (!!generated_report_data) {
-                  for (let toMail of recipientEmailList) {
-                    await this.sendReport(generated_report_data, reportSchedule, canteenEntries, toMail);
-                  }
-                  //console.log("Report was sent successfully for the date: setting the next report date")
-                  await this.setNextReportDate(reportSchedule);
-                  await this.updateReportLogSuccess(referenceDateForReport, reportSchedule);
-                } else {
-                  await this.logReportSendError(reportSchedule, 'No report could be generated. Please contact admin and tell him: await reportGenerator.generateReportForMail(referenceDateForReport)');
-                }
-              } catch (err) {
-                // 3.1 if sending the report failed, log the error
-                await this.logReportSendError(reportSchedule, err);
-              }
-            } else {
-              await this.logReportSendError(reportSchedule, 'No canteen set.');
-            }
-          } else {
-            await this.logReportSendError(reportSchedule, 'No emails given.');
-          }
-        } else {
-          await this.setNextReportDate(reportSchedule);
-        }
+        await this.processReportSchedule(reportSchedule, reportGenerator);
       }
-
-      //console.log("Finished " + SCHEDULE_NAME);
     } catch (err) {
       console.log('Error in ' + SCHEDULE_NAME);
       console.log(err);
+    }
+  }
+
+  private async processReportSchedule(
+    reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules,
+    reportGenerator: ReportGenerator
+  ): Promise<void> {
+    let referenceDateForReport = await this.getReferenceDateOfTheReportOrNull(reportSchedule);
+    if (!referenceDateForReport) {
+      await this.setNextReportDate(reportSchedule);
+      return;
+    }
+
+    let endDate = new Date(referenceDateForReport);
+    let startDate = ReportSchedule.getStartDateBasedOnReferenceDate(referenceDateForReport, reportSchedule);
+    let recipientEmailList = await this.getRecipientEmailList(reportSchedule);
+
+    if (recipientEmailList.length === 0) {
+      await this.logReportSendError(reportSchedule, 'No emails given.');
+      return;
+    }
+
+    let canteenEntries = await this.getCanteenEntries(reportSchedule);
+    if (Object.keys(canteenEntries).length === 0) {
+      await this.logReportSendError(reportSchedule, 'No canteen set.');
+      return;
+    }
+
+    try {
+      // 3. send report
+      let reportContext: ReportContext = {
+        reportSchedule: reportSchedule,
+        startDate: startDate,
+        endDate: endDate,
+        canteenEntries: canteenEntries,
+      };
+      let generated_report_data: ReportType = await reportGenerator.generateReportJSON(reportContext);
+      if (generated_report_data) {
+        for (let toMail of recipientEmailList) {
+          await this.sendReport(generated_report_data, reportSchedule, canteenEntries, toMail);
+        }
+        await this.setNextReportDate(reportSchedule);
+        await this.updateReportLogSuccess(referenceDateForReport, reportSchedule);
+      } else {
+        await this.logReportSendError(reportSchedule, 'No report could be generated. Please contact admin and tell him: await reportGenerator.generateReportForMail(referenceDateForReport)');
+      }
+    } catch (err) {
+      // 3.1 if sending the report failed, log the error
+      await this.logReportSendError(reportSchedule, err);
     }
   }
 
@@ -122,7 +125,7 @@ export class ReportSchedule {
     let report_recipients_primary_keys: PrimaryKey[] = [];
     for (let report_schedule_report_recipient of report_schedule_report_recipients) {
       let recipient_id = report_schedule_report_recipient.report_recipients_id;
-      if (!!recipient_id && typeof recipient_id === 'string') {
+      if (recipient_id && typeof recipient_id === 'string') {
         report_recipients_primary_keys.push(recipient_id as PrimaryKey);
       }
     }
@@ -133,7 +136,7 @@ export class ReportSchedule {
     let list: string[] = [];
     for (let report_recipient of report_recipients) {
       let email = report_recipient.mail;
-      if (!!email) {
+      if (email) {
         list.push(email);
       }
     }
@@ -163,7 +166,7 @@ export class ReportSchedule {
     } else {
       for (let scheduleCanteen of scheduleCanteens) {
         let canteen_id = scheduleCanteen.canteens_id;
-        if (!!canteen_id && typeof canteen_id === 'string') {
+        if (canteen_id && typeof canteen_id === 'string') {
           canteen_primary_keys.push(canteen_id as PrimaryKey);
         }
       }
@@ -205,7 +208,6 @@ export class ReportSchedule {
   }
 
   async setNextReportDate(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules) {
-    //console.log(SCHEDULE_NAME + " setNextReportDate")
     const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
     let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
     let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename);
@@ -213,7 +215,12 @@ export class ReportSchedule {
     let now = new Date();
     let new_date_next_report_is_due_iso = ReportSchedule.getNextReportIsDueDateIsoOrNull(reportSchedule, now);
 
-    if (!new_date_next_report_is_due_iso) {
+    if (new_date_next_report_is_due_iso) {
+      await itemService.updateOne(reportSchedule.id, {
+        date_next_report_is_due: new_date_next_report_is_due_iso,
+      });
+      await this.updateReportLog(reportSchedule, 'Next report date was not set. Set next report due date to: ' + new_date_next_report_is_due_iso, true);
+    } else {
       let messageNoSuitableNextReportDateFound = 'No suitable next report date found. Please select at least one weekday.';
       if (!reportSchedule.enabled) {
         messageNoSuitableNextReportDateFound = 'Report is disabled.';
@@ -224,28 +231,14 @@ export class ReportSchedule {
       if (!reportSchedule.report_status_log || reportSchedule.report_status_log !== messageNoSuitableNextReportDateFound) {
         await this.updateReportLog(reportSchedule, messageNoSuitableNextReportDateFound, false);
       }
-    } else {
-      //console.log("Next report due date was calculated: "+new_date_next_report_is_due_iso)
-      //console.log("Update recipientEntry.id: "+recipientEntry.id)
-      await itemService.updateOne(reportSchedule.id, {
-        date_next_report_is_due: new_date_next_report_is_due_iso,
-      });
-      //console.log("Update report_status_log after setting next report date")
-      await this.updateReportLog(reportSchedule, 'Next report date was not set. Set next report due date to: ' + new_date_next_report_is_due_iso, true);
     }
   }
 
   async updateReportLogSuccess(generateReportForDate: Date, recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules) {
-    let logMessage = `
-            Report was sent successfully for the date: ${generateReportForDate}
-            Sent at: ${new Date().toISOString()}
-        `;
     await this.updateReportLog(recipientEntry, 'Report was sent successfully for the date: ' + generateReportForDate, true);
   }
 
   async logReportSendError(recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules, err: any) {
-    //console.log(SCHEDULE_NAME + " logReportSendError:")
-    //console.log(err);
     await this.updateReportLog(recipientEntry, 'Report sending failed: ' + err.toString(), false);
   }
 
@@ -267,11 +260,7 @@ export class ReportSchedule {
   }
 
   async getReferenceDateOfTheReportOrNull(recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules) {
-    //console.log("#############");
-    //console.log(SCHEDULE_NAME + " getDateForWhichTheReportShouldBeSend")
-
     const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-    //console.log("Checking if report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
     let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
     let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename);
 
@@ -288,22 +277,11 @@ export class ReportSchedule {
     }
 
     let current_date_next_report_is_due = recipientEntry.date_next_report_is_due;
-    //console.log("date_for_which_the_report_should_be_generated_moment_date: " + date_for_which_the_report_should_be_generated_moment_date);
 
-    if (!current_date_next_report_is_due) {
-      return null; // we do not want to send a report now
-    } else {
-      // if the date_next_report_is_due is set, we have to check if the report is due
-      if (now_moment_date.isAfter(current_date_next_report_is_due)) {
-        //console.log("Report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
-        //console.log("Report is due: "+date_for_which_the_report_should_be_generated_moment_date.toString());
-        // date_for_which_the_report_should_be_generated_moment_date; to iso string
-
-        return ReportSchedule.getReferenceDate(recipientEntry, now);
-      } else {
-        return null; // we do not want to send a report now
-      }
+    if (current_date_next_report_is_due && now_moment_date.isAfter(current_date_next_report_is_due)) {
+      return ReportSchedule.getReferenceDate(recipientEntry, now);
     }
+    return null; // we do not want to send a report now
   }
 
   public static getReferenceDate(recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, now: Date): Date | null {
@@ -314,7 +292,6 @@ export class ReportSchedule {
     let now_moment_date = moment(now.toISOString());
 
     let foodoffers_days_offset = recipientEntry.period_days_offset || 0; // for example we want to 4 days before the offer date notify the user
-    //console.log("MOMENT 2 - now_moment_date: "+now_moment_date)
     let date_for_which_the_report_should_be_generated = moment(now_moment_date.toISOString()).add(foodoffers_days_offset, 'days').set({
       hour: 12,
       minute: 0,
@@ -337,96 +314,58 @@ export class ReportSchedule {
     };
   }
 
+  private static isWeekdayEnabledInSchedule(weekday: Weekday, reportSchedule: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>): boolean {
+    switch (weekday) {
+      case Weekday.MONDAY: return Boolean(reportSchedule.send_on_mondays);
+      case Weekday.TUESDAY: return Boolean(reportSchedule.send_on_tuesdays);
+      case Weekday.WEDNESDAY: return Boolean(reportSchedule.send_on_wednesdays);
+      case Weekday.THURSDAY: return Boolean(reportSchedule.send_on_thursdays);
+      case Weekday.FRIDAY: return Boolean(reportSchedule.send_on_fridays);
+      case Weekday.SATURDAY: return Boolean(reportSchedule.send_on_saturdays);
+      case Weekday.SUNDAY: return Boolean(reportSchedule.send_on_sundays);
+      default: return false;
+    }
+  }
+
   public static getNextReportIsDueToBeGeneratedDateOrNull(reportSchedule: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, now: Date): Date | null {
     if (!reportSchedule.enabled) {
       return null;
     }
 
-    //console.log("getNextReportIsDueToBeGeneratedDateOrNull")
     let now_copy = new Date(now);
-    //console.log("MOMENT 1 - now_copy: "+now_copy)
     const now_moment_date = moment(now_copy);
     const send_report_at_splits = ReportSchedule.splitSendReportAtHhMm(reportSchedule);
     const send_report_at_hh = send_report_at_splits.send_report_at_hh;
     const send_report_at_mm = send_report_at_splits.send_report_at_mm;
     const send_report_at_ss = send_report_at_splits.send_report_at_ss;
 
-    //console.log("MOMENT 2 - now_copy: "+now_copy)
     let date_when_the_next_report_should_be_generated = moment(now_copy).add(0, 'days').set({
       hour: send_report_at_hh,
       minute: send_report_at_mm,
       second: send_report_at_ss,
     });
     if (now_moment_date.isAfter(date_when_the_next_report_should_be_generated)) {
-      //console.log("now_moment_date.isAfter(date_when_the_next_report_should_be_generated) - we missed the report")
       // since the date_when_the_next_report_should_be_generated is in the past and we "missed" the report, we have to set the next report date to tomorrow
-      //console.log("MOMENT 3 - date_when_the_next_report_should_be_generated: "+date_when_the_next_report_should_be_generated)
       date_when_the_next_report_should_be_generated = moment(date_when_the_next_report_should_be_generated.toISOString()).add(1, 'days');
-    } else {
-      //console.log("now_moment_date.isBefore(date_when_the_next_report_should_be_generated) - we are in time for the report")
     }
 
     // Lets check if for the date the report should be generated, a weekday is set
-    //console.log("date_for_which_the_report_should_be_generated_moment_date: "+date_for_which_the_report_should_be_generated_moment_date)
     const next_weekdayList_for_date_for_which_the_report_should_be_generated = DateHelper.getWeekdayListFromDate(new Date(date_when_the_next_report_should_be_generated.toISOString()));
-    //console.log("next_weekdayList_for_date_for_which_the_report_should_be_generated: ")
-    //console.log(next_weekdayList_for_date_for_which_the_report_should_be_generated)
     let found_suitable_weekday = false;
     let amount_days_to_add = 0;
     for (let weekday of next_weekdayList_for_date_for_which_the_report_should_be_generated) {
-      //console.log("Check if weekday is suitable: "+weekday)
-      switch (weekday) {
-        case Weekday.MONDAY:
-          if (reportSchedule.send_on_mondays) {
-            found_suitable_weekday = true;
-          }
-          break;
-        case Weekday.TUESDAY:
-          if (reportSchedule.send_on_tuesdays) {
-            found_suitable_weekday = true;
-          }
-          break;
-        case Weekday.WEDNESDAY:
-          if (reportSchedule.send_on_wednesdays) {
-            found_suitable_weekday = true;
-          }
-          break;
-        case Weekday.THURSDAY:
-          if (reportSchedule.send_on_thursdays) {
-            found_suitable_weekday = true;
-          }
-          break;
-        case Weekday.FRIDAY:
-          if (reportSchedule.send_on_fridays) {
-            found_suitable_weekday = true;
-          }
-          break;
-        case Weekday.SATURDAY:
-          if (reportSchedule.send_on_saturdays) {
-            found_suitable_weekday = true;
-          }
-          break;
-        case Weekday.SUNDAY:
-          if (reportSchedule.send_on_sundays) {
-            found_suitable_weekday = true;
-          }
-          break;
-      }
-      if (found_suitable_weekday) {
+      if (ReportSchedule.isWeekdayEnabledInSchedule(weekday, reportSchedule)) {
+        found_suitable_weekday = true;
         break;
       }
-      //console.log("weekday is not suitable: "+weekday)
       amount_days_to_add++;
     }
 
     if (!found_suitable_weekday) {
-      //console.log("No suitable weekday found")
       return null;
     }
 
-    //console.log("amount_days_to_add: "+amount_days_to_add)
     // we have to add the amount of days to the date_when_the_next_report_should_be_generated to get the next report date
-    //console.log("MOMENT 4 - date_when_the_next_report_should_be_generated: "+date_when_the_next_report_should_be_generated)
     let suitable_date_when_the_next_report_should_be_generated_moment_date = moment(date_when_the_next_report_should_be_generated.toISOString()).add(amount_days_to_add, 'days');
     suitable_date_when_the_next_report_should_be_generated_moment_date = suitable_date_when_the_next_report_should_be_generated_moment_date.set({
       hour: send_report_at_hh,
@@ -435,9 +374,7 @@ export class ReportSchedule {
     });
 
     let date_next_report_is_due_iso = suitable_date_when_the_next_report_should_be_generated_moment_date.toISOString();
-    let date_next_report_is_due = new Date(date_next_report_is_due_iso);
-    //console.log("date_next_report_is_due: "+date_next_report_is_due)
-    return date_next_report_is_due;
+    return new Date(date_next_report_is_due_iso);
   }
 
   public static getNextReportIsDueDateIsoOrNull(recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, now: Date): string | null {
@@ -468,9 +405,9 @@ export class ReportSchedule {
     // Iterate over the fields and return true if any of the corresponding fields have changed
     return fieldsToCheck.some(field => {
       // Only compare if the newCanteenFoodFeedbackReportSchedules field is defined
-      if (newCanteenFoodFeedbackReportSchedules[field as keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules] !== undefined) {
-        const currentValue = currentCanteenFoodFeedbackReportSchedules[field as keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules];
-        const newValue = newCanteenFoodFeedbackReportSchedules[field as keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules];
+      if (newCanteenFoodFeedbackReportSchedules[field] !== undefined) {
+        const currentValue = currentCanteenFoodFeedbackReportSchedules[field];
+        const newValue = newCanteenFoodFeedbackReportSchedules[field];
 
         // Check if the values are different
         return currentValue !== newValue;

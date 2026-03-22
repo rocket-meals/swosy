@@ -16,13 +16,13 @@ export class FoodAndMarkingWebParserAachen implements FoodParserInterface, Marki
   private readonly htmlFileReader: FoodWebParserAachenReadHtmlFiles;
   private canteensHtmlFilesMap: CanteenNamesToHtmlFileDict = {};
 
-  private filterDuplicatedOffersPerCanteen: boolean = true;
+  private readonly filterDuplicatedOffersPerCanteen: boolean = true;
 
   constructor(htmlFileReader?: FoodWebParserAachenReadHtmlFiles) {
-    if (!htmlFileReader) {
-      this.htmlFileReader = new FoodWebParser_RawReportWebReaderAachen();
-    } else {
+    if (htmlFileReader) {
       this.htmlFileReader = htmlFileReader;
+    } else {
+      this.htmlFileReader = new FoodWebParser_RawReportWebReaderAachen();
     }
     this.resetData();
   }

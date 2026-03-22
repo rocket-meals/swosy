@@ -6,9 +6,7 @@ import { SingleWorkflowRun, WorkflowEnum } from '../workflows-runs-hook/Workflow
 import { CollectionNames, CronHelper, DatabaseTypes } from 'repo-depkit-common';
 import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 import { WorkflowRunContext } from '../helpers/WorkflowRunContext';
-import { Query } from '@directus/types';
-import { ByteSizeHelper } from '../helpers/ByteSizeHelper';
-import { SchemaOverview } from '@directus/types';
+import { Query, SchemaOverview } from '@directus/types';
 import { ItemsServiceHelper } from '../helpers/ItemsServiceHelper';
 
 enum FileCleanupWorkflowConfigEnum {
