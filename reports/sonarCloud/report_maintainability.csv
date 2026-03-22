@@ -1,15 +1,15 @@
 Key,Message,Component,Line
 "AZ0U9d0d4T-oZG71XAr4","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.web.tsx",28
-"AZ0U1T6zmRbbgKiJY8A-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",124
-"AZ0U1T6zmRbbgKiJY8A_","Unexpected negated condition.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",125
-"AZ0U1T6zmRbbgKiJY8BA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",125
+"AZ0U1T6zmRbbgKiJY8A-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",120
+"AZ0U1T6zmRbbgKiJY8A_","Unexpected negated condition.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
+"AZ0U1T6zmRbbgKiJY8BA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
 "AZ0U1T6zmRbbgKiJY8A4","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",1
 "AZ0U1T6zmRbbgKiJY8A5","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",2
 "AZ0U1T6zmRbbgKiJY8A6","Prefer `node:child_process` over `child_process`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",5
-"AZ0U1T6zmRbbgKiJY8A8","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",86
-"AZ0U1T6zmRbbgKiJY8A9","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",105
-"AZ0U1T6zmRbbgKiJY8BB","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",167
-"AZ0U1T6zmRbbgKiJY8BC","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",278
+"AZ0U1T6zmRbbgKiJY8A8","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",82
+"AZ0U1T6zmRbbgKiJY8A9","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",101
+"AZ0U1T6zmRbbgKiJY8BB","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",163
+"AZ0U1T6zmRbbgKiJY8BC","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",274
 "AZ0Tplqeufp2jxPAhTKP","Use `export…from` to re-export `FoodofferDateType`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts",6
 "AZ0Tplt9ufp2jxPAhTKs","Remove this useless assignment to variable ""schema"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",43
 "AZ0Tplt9ufp2jxPAhTKt","Remove this useless assignment to variable ""collectionName"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",43

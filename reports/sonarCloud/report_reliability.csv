@@ -1,8 +1,8 @@
 Key,Message,Component,Line
-"AZ0U1T6zmRbbgKiJY8A-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",124
-"AZ0U1T6zmRbbgKiJY8BA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",125
-"AZ0U1T6zmRbbgKiJY8BB","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",167
-"AZ0U1T6zmRbbgKiJY8BC","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",278
+"AZ0U1T6zmRbbgKiJY8A-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",120
+"AZ0U1T6zmRbbgKiJY8BA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
+"AZ0U1T6zmRbbgKiJY8BB","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",163
+"AZ0U1T6zmRbbgKiJY8BC","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",274
 "AZ0Tpk9zufp2jxPAhSzF","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",12
 "AZ0Tpk9zufp2jxPAhSzG","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",13
 "AZ0Tpk9zufp2jxPAhSzH","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.tsx",14
