@@ -78,6 +78,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
       } catch (e) {
         // Ignore duplicate key errors when creating entries concurrently.
         // This can happen when two operations trigger an update for the same collection simultaneously.
+        console.error('Error while updating the collection \'collections_dates_last_update\' for collection: ' + collection, e);
       }
       await cleanupNonExistingCollectionsAndCreateMissingCollections();
     }
