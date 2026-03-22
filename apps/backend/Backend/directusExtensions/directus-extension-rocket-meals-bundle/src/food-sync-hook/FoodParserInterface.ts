@@ -3,7 +3,7 @@ import {DatabaseTypes, DateHelper, FoodofferDateType, LanguageCodes} from 'repo-
 import {MarkingsTypeForParser} from './MarkingParserInterface';
 import {HashHelper} from '../helpers/HashHelper';
 
-export type { FoodofferDateType };
+export type { FoodofferDateType } from 'repo-depkit-common';
 
 export type FoodParseFoodAttributeValueType = {
   external_identifier: string;
@@ -56,6 +56,35 @@ export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
 };
 
 export class FoodParserHelper {
+  private static extractAttributeValues(foodoffer: DatabaseTypes.Foodoffers): FoodParseFoodAttributesType {
+    const attribute_values: FoodParseFoodAttributesType = [];
+    for (const attributeValue of (foodoffer.attribute_values as DatabaseTypes.FoodsAttributesValues[]) || []) {
+      const foodAttribute = attributeValue.food_attribute as DatabaseTypes.FoodsAttributes | null | undefined;
+      const externalIdentifier =
+        typeof foodAttribute === 'object' && foodAttribute ? foodAttribute.external_identifier || null : null;
+      if (!externalIdentifier) {
+        continue;
+      }
+      const {id, food_attribute, food_id, foodoffer_id, ...attributeValueWithoutRelations} = attributeValue;
+      attribute_values.push({
+        external_identifier: externalIdentifier,
+        attribute_value: attributeValueWithoutRelations,
+      });
+    }
+    return attribute_values;
+  }
+
+  private static extractMarkingExternalIdentifiers(foodoffer: DatabaseTypes.Foodoffers): string[] {
+    const marking_external_identifiers: string[] = [];
+    for (const markingRelation of (foodoffer.markings as DatabaseTypes.FoodoffersMarkings[]) || []) {
+      const marking = markingRelation.markings_id as DatabaseTypes.Markings | null | undefined;
+      if (typeof marking === 'object' && marking?.external_identifier) {
+        marking_external_identifiers.push(marking.external_identifier);
+      }
+    }
+    return marking_external_identifiers;
+  }
+
   static getFoodofferForParserInformation(foodoffer: DatabaseTypes.Foodoffers): FoodoffersTypeForParser | null {
     const dateString = foodoffer.date;
     if (!dateString) {
@@ -90,36 +119,12 @@ export class FoodParserHelper {
       alias:
         foodoffer.alias ?? (typeof foodoffer.food === 'object' && foodoffer.food ? foodoffer.food.alias ?? null : null),
       foodoffer_components: foodoffer.foodoffer_components ?? [],
-    } as FoodofferTypeWithBasicData;
-
-    const attribute_values: FoodParseFoodAttributesType = [];
-    for (const attributeValue of (foodoffer.attribute_values as DatabaseTypes.FoodsAttributesValues[]) || []) {
-      const foodAttribute = attributeValue.food_attribute as DatabaseTypes.FoodsAttributes | null | undefined;
-      const externalIdentifier =
-        typeof foodAttribute === 'object' && foodAttribute ? foodAttribute.external_identifier || null : null;
-      if (!externalIdentifier) {
-        continue;
-      }
-
-      const {id, food_attribute, food_id, foodoffer_id, ...attributeValueWithoutRelations} = attributeValue;
-      attribute_values.push({
-        external_identifier: externalIdentifier,
-        attribute_value: attributeValueWithoutRelations,
-      });
-    }
-
-    const marking_external_identifiers: string[] = [];
-    for (const markingRelation of (foodoffer.markings as DatabaseTypes.FoodoffersMarkings[]) || []) {
-      const marking = markingRelation.markings_id as DatabaseTypes.Markings | null | undefined;
-      if (typeof marking === 'object' && marking?.external_identifier) {
-        marking_external_identifiers.push(marking.external_identifier);
-      }
-    }
+    };
 
     return {
       basicFoodofferData,
-      attribute_values,
-      marking_external_identifiers,
+      attribute_values: FoodParserHelper.extractAttributeValues(foodoffer),
+      marking_external_identifiers: FoodParserHelper.extractMarkingExternalIdentifiers(foodoffer),
       category_external_identifier: categoryExternalIdentifier,
       date: DateHelper.getFoodofferDateTypeFromDate(date),
       canteen_external_identifier: canteenExternalIdentifier,

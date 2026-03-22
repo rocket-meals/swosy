@@ -1,15 +1,15 @@
 import {describe, expect, it} from '@jest/globals';
 import {FoodAndMarkingWebParserAachen} from '../FoodAndMarkingWebParserAachen';
-import {FoodWebParser_RawReportTestReaderAachen} from '../FoodWebParser_RawReportTestReaderAachen';
+import {FoodWebParserRawReportTestReaderAachen} from '../FoodWebParser_RawReportTestReaderAachen';
 import {FoodParserInterface} from '../../FoodParserInterface';
 import {MarkingParserInterface} from '../../MarkingParserInterface';
 
 function getTestParser(): FoodParserInterface {
-  return new FoodAndMarkingWebParserAachen(new FoodWebParser_RawReportTestReaderAachen());
+  return new FoodAndMarkingWebParserAachen(new FoodWebParserRawReportTestReaderAachen());
 }
 
 function getMarkingParser(): MarkingParserInterface {
-  return new FoodAndMarkingWebParserAachen(new FoodWebParser_RawReportTestReaderAachen());
+  return new FoodAndMarkingWebParserAachen(new FoodWebParserRawReportTestReaderAachen());
 }
 
 describe('FoodAndMarkingWebParserAachen Test', () => {

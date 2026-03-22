@@ -1,4 +1,4 @@
-import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
+import { FoodTL1ParserGetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
 import {FoodTL1Parser} from "../FoodTL1Parser";
 
 export type FoodofferComponentForTestReader = {
@@ -8,7 +8,7 @@ export type FoodofferComponentForTestReader = {
     marking_external_identifiers: string;
 }
 
-export class FoodTL1Parser_RawReportTestReaderHannover implements FoodTL1Parser_GetRawReportInterface {
+export class FoodTL1Parser_RawReportTestReaderHannover implements FoodTL1ParserGetRawReportInterface {
     private readonly reportToReturn: string | undefined;
 
     constructor(reportToReturn?: string | undefined) {

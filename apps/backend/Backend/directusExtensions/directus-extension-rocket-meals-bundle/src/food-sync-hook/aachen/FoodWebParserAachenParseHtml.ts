@@ -141,7 +141,7 @@ export class FoodWebParserAachenParseHtml {
     const extractedCodes: string[] = supTexts
       .map(t => StringHelper.replaceAllLiteralWithOptions({ str: t, find: '\u00A0', replace: ' ' }))
       .map(t => t.replace(/^[+]/, ''))
-      .flatMap(t => t.split(/[,|\/]+/))
+      .flatMap(t => t.split(/[,|/]+/))
       .flatMap(t => t.split(/\s+/))
       .map((s: string) => StringHelper.replaceAllWithOptions({ str: s, find: '[^A-Za-z0-9]', replace: '' }).trim())
       .filter((s: string) => s.length > 0);
@@ -164,7 +164,7 @@ export class FoodWebParserAachenParseHtml {
     if (priceText) {
       // price may contain euro symbol and comma as decimal separator
       const normalized = StringHelper.replaceAllLiteralWithOptions({ str: priceText, find: '€', replace: '' });
-      const normalizedFiltered = StringHelper.replaceAllWithOptions({ str: normalized, find: '[^0-9,\\.]', replace: '' }).trim();
+      const normalizedFiltered = StringHelper.replaceAllWithOptions({ str: normalized, find: String.raw`[^0-9,\.]`, replace: '' }).trim();
       const withDot = StringHelper.replaceAllLiteralWithOptions({ str: normalizedFiltered, find: ',', replace: '.' });
       const parsed = Number.parseFloat(withDot);
       if (!Number.isNaN(parsed)) {
@@ -232,7 +232,7 @@ export class FoodWebParserAachenParseHtml {
 
   private static parseDateFromHeader(headerText: string): Date | null {
     // expecting strings like "Montag, 03.11.2025" or "03.11.2025"
-    const match = headerText.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+    const match = /(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(headerText);
     if (!match) {
       return null;
     }
@@ -244,7 +244,7 @@ export class FoodWebParserAachenParseHtml {
 
   private static generateRecipeId(basicFoodofferData: FoodofferTypeWithBasicData, markingExternalIdentifiers: Set<string>): string {
     // hash alias + sorted markings
-    const aliasPart = basicFoodofferData.alias ? StringHelper.replaceAllWithOptions({ str: basicFoodofferData.alias.toLowerCase(), find: '\\s+', replace: '_' }) : 'no_alias';
+    const aliasPart = basicFoodofferData.alias ? StringHelper.replaceAllWithOptions({ str: basicFoodofferData.alias.toLowerCase(), find: String.raw`\s+`, replace: '_' }) : 'no_alias';
     const markingsPart = Array.from(markingExternalIdentifiers).sort((a, b) => a.localeCompare(b)).join('_');
     let id = `recipe_`;
     id += `${aliasPart}`;

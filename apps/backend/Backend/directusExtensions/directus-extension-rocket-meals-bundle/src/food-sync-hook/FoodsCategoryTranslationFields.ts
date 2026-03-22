@@ -1,3 +1,3 @@
 export class FoodsCategoryTranslationFields {
-  static TRANSLATION_FIELD_NAME = 'name';
+  static readonly TRANSLATION_FIELD_NAME = 'name';
 }
