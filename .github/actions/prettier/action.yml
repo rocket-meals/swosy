@@ -9,8 +9,10 @@ runs:
   using: 'composite'
   steps:
     - name: Run Prettier
+      env:
+        PRETTIER_VERSION: ${{ inputs.version }}
       run: |
         echo "Running Prettier on supported files..."
-        yarn dlx prettier@${{ inputs.version}} --write "**/*.{js,jsx,ts,tsx,json,md,yml,yaml}" --ignore-path .prettierignore --cache --cache-location .prettier-cache/ || true
+        yarn dlx prettier@${PRETTIER_VERSION} --write "**/*.{js,jsx,ts,tsx,json,md,yml,yaml}" --ignore-path .prettierignore --cache --cache-location .prettier-cache/ || true
         echo "Prettier formatting completed"
       shell: bash
