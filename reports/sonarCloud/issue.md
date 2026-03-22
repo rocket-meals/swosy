@@ -6,21 +6,17 @@
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 2082 | 50 |
+| 🔧 Maintainability | 2081 | 50 |
 
-**Total issues:** 2082 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2081 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔧 Maintainability (50/2082)
+## 🔧 Maintainability (50/2081)
 
-- **Static async method 'buildUpdateEntry' has too many parameters (10). Maximum allowed is 7.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:179
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L179
-
-- **Static async method 'buildCreateEntry' has too many parameters (9). Maximum allowed is 7.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:216
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L216
+- **Remove this useless assignment to variable "translatorSettings".**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:280
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L280
 
 - **Unexpected negated condition.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/cashregister-hook/ParseSchedule.ts:60
@@ -213,4 +209,8 @@
 - **Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts:403
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts#L403
+
+- **Make this public static property readonly.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts:12
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts#L12
 

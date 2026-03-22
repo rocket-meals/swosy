@@ -1,6 +1,5 @@
 Key,Message,Component,Line
-"AZ0WRaKnEnrKnygj-_cr","Static async method 'buildUpdateEntry' has too many parameters (10). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",179
-"AZ0WRaKnEnrKnygj-_cs","Static async method 'buildCreateEntry' has too many parameters (9). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",216
+"AZ0WUHYPynbVXazX3727","Remove this useless assignment to variable ""translatorSettings"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts",280
 "AZ0VmBy3mRbbgKiJd_tr","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",790
 "AZ0VmBy3mRbbgKiJd_ts","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",793
 "AZ0VmBxmmRbbgKiJd_tp","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/aachen/FoodWebParserAachenParseHtml.ts",167
