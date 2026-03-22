@@ -5,6 +5,9 @@ inputs:
   EXPO_TOKEN:
     required: true
     description: "Expo Access Token for EAS CLI"
+  GITHUB_TOKEN:
+    required: true
+    description: "GitHub Token for committing EAS project config changes"
   ref_name:
     required: true
     description: "Git branch name (determines the update channel: production or preview)"
@@ -42,6 +45,33 @@ runs:
 
     - name: "📦 Install dependencies"
       run: yarn install --immutable
+      shell: bash
+
+    - name: "🔧 Initialize EAS project if not configured"
+      run: |
+        if [ ! -f app.json ] || ! grep -q '"projectId"' app.json 2>/dev/null; then
+          echo "EAS project not yet configured, running eas init..."
+          eas init --non-interactive --force
+        else
+          echo "EAS project already configured"
+        fi
+      working-directory: ./apps/geonexia/frontend
+      shell: bash
+      env:
+        EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
+
+    - name: "💾 Commit EAS project config"
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git remote set-url origin https://git:${{ inputs.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git add apps/geonexia/frontend/app.json 2>/dev/null || true
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "chore: initialize Geonexia EAS project config [skip ci]"
+          git push
+        fi
       shell: bash
 
     - name: "🚀 Publish OTA update"
