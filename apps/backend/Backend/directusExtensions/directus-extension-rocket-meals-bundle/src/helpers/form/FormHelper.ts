@@ -648,7 +648,8 @@ export class FormHelper {
     return `### ${fieldName}` + MarkdownHelper.getMarkdownNewLine();
   }
 
-  public static async generateMarkdownContentFromForm(form: DatabaseTypes.Forms, formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
+  public static async generateMarkdownContentFromForm(params: FormGenerationParams): Promise<string> {
+    const { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
     let markdownNewLine = MarkdownHelper.getMarkdownNewLine();
 
     let markdownContent = '';
@@ -698,10 +699,9 @@ export class FormHelper {
    * checkboxes, bold field names).
    */
   public static async generateHtmlContentFromForm(
-    form: DatabaseTypes.Forms,
-    formExtractRelevantInformation: FormExtractRelevantInformationSingle[],
-    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+    params: FormGenerationParams,
   ): Promise<string> {
+    const { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
     let html = '';
 
     html += `<h1 style="font-size:1.6em; margin-bottom:12px;">${form.alias || form.id}</h1>\n`;
@@ -756,8 +756,8 @@ export class FormHelper {
   }
 
   public static async generateHtmlFromForm(params: FormGenerationParams): Promise<string> {
-    let { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
-    let htmlContent = await this.generateHtmlContentFromForm(form, formExtractRelevantInformation, myDatabaseHelperInterface);
+    const { myDatabaseHelperInterface } = params;
+    const htmlContent = await this.generateHtmlContentFromForm(params);
     let template = DEFAULT_HTML_TEMPLATE;
     // Pass the generated HTML directly into the template field.
     // Note: despite the field name containing "Markdown", the Liquid template simply
