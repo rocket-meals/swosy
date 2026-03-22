@@ -5,6 +5,7 @@ import {
   generateAppleClientSecret,
   MAX_TOKEN_LIFETIME_SECONDS
 } from './apple/generateAppleClientSecret';
+import { StringHelper } from 'repo-depkit-common';
 
 const refreshIfExpiringWithinDays = 7; // Refresh if expiring within 7 days
 const REFRESH_THRESHOLD_SECONDS = 60 * 60 * 24 * refreshIfExpiringWithinDays;
@@ -31,7 +32,7 @@ export function buildConfigFromEnv(hostEnvFilePath: string): AppleClientSecretCr
   }
 
   const privateKeyRaw = privateKeyEscaped || '';
-  const privateKeyPem = privateKeyRaw.replaceAll('\\n', '\n');
+  const privateKeyPem = StringHelper.replaceAllLiteralWithOptions({ str: privateKeyRaw, find: '\\n', replace: '\n' });
 
   return {
     teamId: teamId!,

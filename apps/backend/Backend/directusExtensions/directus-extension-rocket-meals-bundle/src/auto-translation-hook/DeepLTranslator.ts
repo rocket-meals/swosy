@@ -1,6 +1,6 @@
 import deepl, { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node';
 import { MyTranslatorInterface, TranslationRequest } from './MyTranslatorInterface';
-import { ReplaceOptions } from "repo-depkit-common";
+import { ReplaceOptions, StringHelper } from "repo-depkit-common";
 
 export class DeepLTranslator implements MyTranslatorInterface {
   private readonly translator: Translator;
@@ -59,7 +59,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
     // use regex where find is replaced with replace globally and multiple times
     // find could be a special character like * which needs to be escaped
     const { str, find, replace } = replaceOptions;
-    return str.replace(new RegExp(find.replaceAll(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+    return str.replace(new RegExp(StringHelper.replaceAllWithOptions({ str: find, find: '[-\\/\\\\^$*+?.()|[\\]{}]', replace: '\\$&' }), 'g'), replace);
   }
 
   async translateRaw(text: string, source_language_code: SourceLanguageCode, destination_language_code: TargetLanguageCode) {

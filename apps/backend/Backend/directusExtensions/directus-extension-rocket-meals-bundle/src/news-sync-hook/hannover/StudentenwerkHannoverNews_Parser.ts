@@ -4,7 +4,7 @@ import type { Element as CheerioElement } from 'domhandler';
 import { TranslationHelper } from '../../helpers/TranslationHelper';
 import { NewsParserInterface, NewsTypeForParser } from './../NewsParserInterface';
 //import undici, {Agent} from 'undici';
-import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
+import { DatabaseTypes, DateHelper, StringHelper } from 'repo-depkit-common';
 import { WorkflowRunLogger } from '../../workflows-runs-hook/WorkflowRunJobInterface';
 import { FetchHelper } from '../../helpers/FetchHelper';
 
@@ -88,7 +88,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
       data.push({
         basicNews: {
-          external_identifier: 'news_' + header.replaceAll(/\W+/g, '_'),
+          external_identifier: 'news_' + StringHelper.replaceAllWithOptions({ str: header, find: '\\W+', replace: '_' }),
           image_remote_url: imageUrl,
           alias: header,
           date: date,

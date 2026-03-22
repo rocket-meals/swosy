@@ -14,7 +14,7 @@ import CompanyImage from '@/components/CompanyImage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { SET_FOOD_CATEGORIES, SET_FOOD_OFFERS_CATEGORIES } from '@/redux/Types/types';
 import { FoodOffersCategoriesHelper } from '@/redux/actions/FoodOffersCategories/FoodOffersCategories';
 import { PriceGroupKey } from '@/app/(app)/settings/types';
@@ -230,7 +230,7 @@ const Index = () => {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const now = new Date();
-			const formattedTime = `${now.toLocaleDateString('en-GB').replaceAll('/', '.')} - ${now.toLocaleTimeString('en-US', {
+			const formattedTime = `${StringHelper.replaceAllLiteralWithOptions({ str: now.toLocaleDateString('en-GB'), find: '/', replace: '.' })} - ${now.toLocaleTimeString('en-US', {
 				hour12: false,
 			})}`;
 			setCurrentTime(formattedTime);

@@ -19,6 +19,7 @@ import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import type { CheckTextInput } from '@/components/SettingsListTextInput';
 import { useMyScrollviewModalSelectDayPlanCanteen } from '@/hooks/useMyScrollviewModalSelectDayPlanCanteen';
+import { StringHelper } from 'repo-depkit-common';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_day);
@@ -71,7 +72,7 @@ const Index = () => {
 	);
 
 	const numericCheckTextInput = useCallback<CheckTextInput>(value => {
-		const normalizedValue = value.replaceAll(/[^0-9]/g, '');
+		const normalizedValue = StringHelper.replaceAllWithOptions({ str: value, find: '[^0-9]', replace: '' });
 		return {
 			isValid: true,
 			value: normalizedValue,

@@ -1,4 +1,4 @@
-import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
+import { DatabaseTypes, DateHelper, StringHelper } from 'repo-depkit-common';
 import { ApiContext } from '../helpers/ApiContext';
 import { FieldFilter, Filter } from '@directus/types/dist/filter';
 import { AssetHelperDirectusBackend, AssetHelperTransformOptions } from '../helpers/AssetHelperDirectusBackend';
@@ -663,7 +663,7 @@ export class ReportGenerator {
 
       if (comment) {
         // we should sanitize the comment here just to be sure that we don't have any html tags in the comment
-        let sanitized_comment = comment.replaceAll(/<[^>]*>?/gm, '');
+        let sanitized_comment = StringHelper.replaceAllWithOptions({ str: comment, find: '<[^>]*>?', replace: '', flags: 'gm' });
         if (!!canteenAlias) {
           sanitized_comment += ' [' + canteenAlias + ']';
         }

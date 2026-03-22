@@ -2,7 +2,7 @@ import axios from 'axios';
 import { load as cheerioLoad } from 'cheerio';
 import { TranslationHelper } from '../../helpers/TranslationHelper';
 import { NewsParserInterface, NewsTypeForParser } from './../NewsParserInterface';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { WorkflowRunLogger } from '../../workflows-runs-hook/WorkflowRunJobInterface';
 
 type ArticleDetails = {
@@ -49,11 +49,11 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
         content = content.replace(/Weiterlesen$/, '').trim();
         content = content.replace(/\n$/, '').trim();
         content = content.replace(/\t$/, '').trim();
-        content = content.replaceAll('&nbsp;', ' ').trim();
+        content = StringHelper.replaceAllLiteralWithOptions({ str: content, find: '&nbsp;', replace: ' ' }).trim();
 
         news.push({
           basicNews: {
-            external_identifier: 'news_' + header.replaceAll(/\W+/g, '_'),
+            external_identifier: 'news_' + StringHelper.replaceAllWithOptions({ str: header, find: '\\W+', replace: '_' }),
             image_remote_url: imageUrl,
             alias: header,
             date: articleDetails?.date ? articleDetails.date.toISOString() : null,

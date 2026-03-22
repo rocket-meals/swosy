@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
+import { StringHelper } from 'repo-depkit-common';
 
 const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
@@ -12,8 +13,8 @@ const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	const flag = !suffix && !prefix;
 
 	const formatIBAN = (text: string) => {
-		let cleaned = text.replaceAll(/[^A-Za-z0-9]/g, '');
-		let formatted = cleaned.replaceAll(/(.{4})/g, '$1 ').trim();
+		let cleaned = StringHelper.replaceAllWithOptions({ str: text, find: '[^A-Za-z0-9]', replace: '' });
+		let formatted = StringHelper.replaceAllWithOptions({ str: cleaned, find: '(.{4})', replace: '$1 ' }).trim();
 		return formatted;
 	};
 

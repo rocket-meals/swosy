@@ -23,7 +23,9 @@ export const generateCodeVerifier = async () => {
 export const generateCodeChallenge = async (codeVerifier: string) => {
 	const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, codeVerifier, { encoding: Crypto.CryptoEncoding.BASE64 });
 	// Adjust the base64url encoding
-	return digest.replaceAll('=', '').replaceAll('+', '-').replaceAll('/', '_');
+	const withoutEquals = StringHelper.replaceAllLiteralWithOptions({ str: digest, find: '=', replace: '' });
+	const withDashes = StringHelper.replaceAllLiteralWithOptions({ str: withoutEquals, find: '+', replace: '-' });
+	return StringHelper.replaceAllLiteralWithOptions({ str: withDashes, find: '/', replace: '_' });
 };
 
 // Update the login status

@@ -6,7 +6,7 @@ import { TestArtifacts } from '../../../../TestArtifacts';
 import { FormHelper } from '../../../FormHelper';
 import { PdfGeneratorForJest } from '../../../../pdf/PdfGeneratorHelperForJest';
 import { MyDatabaseTestableHelper } from '../../../../MyDatabaseHelperInterface';
-import { DatabaseTypes, FormHelperCommon } from 'repo-depkit-common';
+import { DatabaseTypes, FormHelperCommon, StringHelper } from 'repo-depkit-common';
 import {
   FormExtractFormAnswer,
   FormExtractFormAnswerValueFileSingleOrString,
@@ -171,7 +171,7 @@ describe('Hannover forms_export PDF Generator', () => {
         requestOptions,
       });
       expect(pdfBuffer).toBeTruthy();
-      const safeName = (form.alias ?? form.id ?? 'unknown').replaceAll(/[^a-z0-9_\-]/gi, '_');
+      const safeName = StringHelper.replaceAllWithOptions({ str: (form.alias ?? form.id ?? 'unknown'), find: '[^a-z0-9_\\-]', replace: '_', flags: 'gi' });
       TestArtifacts.saveTestArtifact(pdfBuffer, `form/pdf/hannover/${safeName}.pdf`);
     }
   });

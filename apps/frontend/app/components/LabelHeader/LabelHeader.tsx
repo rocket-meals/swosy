@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
 import CompanyImage from '@/components/CompanyImage';
+import { StringHelper } from 'repo-depkit-common';
 
 
 const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, isConnected = true }) => {
@@ -31,7 +32,7 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({ Label, i
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const now = new Date();
-			const formattedTime = `${now.toLocaleDateString('en-GB').replaceAll('/', '.')} - ${now.toLocaleTimeString('en-US', {
+			const formattedTime = `${StringHelper.replaceAllLiteralWithOptions({ str: now.toLocaleDateString('en-GB'), find: '/', replace: '.' })} - ${now.toLocaleTimeString('en-US', {
 				hour12: false,
 			})}`;
 			setCurrentTime(formattedTime);

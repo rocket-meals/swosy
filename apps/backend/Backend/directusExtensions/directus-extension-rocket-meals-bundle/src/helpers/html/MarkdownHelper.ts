@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it';
+import { StringHelper } from 'repo-depkit-common';
 
 export class MarkdownHelper {
   public static getMarkdownNewLine(): string {
@@ -10,7 +11,7 @@ export class MarkdownHelper {
     let html = md.render(markdownText);
 
     // <img ...> → <img style="max-width:100%;" ...>
-    html = html.replaceAll(/<img(.*?)>/g, '<img$1 style="max-width:100%; height:auto;">');
+    html = StringHelper.replaceAllWithOptions({ str: html, find: '<img(.*?)>', replace: '<img$1 style="max-width:100%; height:auto;">' });
 
     return html;
   }
