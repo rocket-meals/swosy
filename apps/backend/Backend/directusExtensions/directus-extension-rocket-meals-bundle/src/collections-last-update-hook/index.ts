@@ -1,4 +1,3 @@
-import { defineHook } from '@directus/extensions-sdk';
 import { CollectionNames } from 'repo-depkit-common';
 import { DatabaseInitializedCheck } from '../helpers/DatabaseInitializedCheck';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
@@ -9,7 +8,7 @@ const SCHEDULE_NAME = 'collections_dates_last_update';
 export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async ({ action, init }, apiContext) => {
   const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
-  const excludeCollections = [CollectionNames.COLLECTIONS_DATES_LAST_UPDATE];
+  const excludeCollections = new Set([CollectionNames.COLLECTIONS_DATES_LAST_UPDATE]);
   // create a function which will be called after any update, create or delete of a collection, except the collection "collections_dates_last_update"
   // this function will update the collection "collections_dates_last_update" with the current date for the collection which was updated, created or deleted
 
@@ -25,7 +24,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
    */
   async function cleanupNonExistingCollectionsAndCreateMissingCollections() {
     let allTableNamesInDatabase = await DatabaseInitializedCheck.getTableNamesFromApiContext(apiContext);
-    let allTableNamesWithoutExcludeCollections = allTableNamesInDatabase.filter(tableName => !excludeCollections.includes(tableName));
+    let allTableNamesWithoutExcludeCollections = allTableNamesInDatabase.filter(tableName => !excludeCollections.has(tableName));
 
     let allItemsInLastUpdatesTables = await collectionsDatesLastUpdateService.readAllItems();
 
@@ -49,7 +48,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
   async function updateLastUpdateDate(collection: CollectionNames) {
     //console.log("collection-last-update-hook: updateLastUpdateDate")
     // check if the collection is not in the excludeCollections list
-    if (!excludeCollections.includes(collection)) {
+    if (!excludeCollections.has(collection)) {
       // get the current date
       let currentDate = new Date().toISOString();
 
@@ -77,11 +76,9 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME,async 
           });
         }
       } catch (e) {
-        // TODO Check if the error was this
-        //WARN: An error was thrown while executing action "foods_translations.items.create"
-        //WARN: Value for field "id" in collection "collections_dates_last_update" has to be unique.
-        //console.error("Error while updating the collection 'collections_dates_last_update' for the collection: " + collection + " with the current date: " + currentDate);
-        //console.error(e);
+        // Ignore duplicate key errors when creating entries concurrently.
+        // This can happen when two operations trigger an update for the same collection simultaneously.
+        console.error('Error while updating the collection \'collections_dates_last_update\' for collection: ' + collection, e);
       }
       await cleanupNonExistingCollectionsAndCreateMissingCollections();
     }
