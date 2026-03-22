@@ -41,15 +41,15 @@ export class DateHelper {
       return false;
     }
     const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date.getTime());
+    return date instanceof Date && !Number.isNaN(date.getTime());
   }
 
   static parseTime(time: string, date?: Date): Date {
     const parts = time.split(':');
 
-    const hours = parseInt(parts[0] || '0');
-    const minutes = parseInt(parts[1] || '0');
-    const seconds = parseInt(parts[2] || '0');
+    const hours = Number.parseInt(parts[0] || '0');
+    const minutes = Number.parseInt(parts[1] || '0');
+    const seconds = Number.parseInt(parts[2] || '0');
     if (!date) {
       date = new Date(); // create a new date object
     } else {
@@ -651,9 +651,9 @@ export class DateHelper {
     if (parts[0] == undefined || parts[1] == undefined || parts[2] == undefined) {
       throw new Error(`Invalid date string: ${dateString}`);
     }
-    const day = parseInt(parts[0]);
-    const month = parseInt(parts[1]);
-    const year = parseInt(parts[2]);
+    const day = Number.parseInt(parts[0]);
+    const month = Number.parseInt(parts[1]);
+    const year = Number.parseInt(parts[2]);
     return new Date(year, month - 1, day);
   }
 

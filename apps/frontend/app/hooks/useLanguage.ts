@@ -21,14 +21,14 @@ const setFunLanguageModeAction = (mode: string | null) => ({
 export const applyPirateTransformation = (text: string): string => {
 	let result = text;
 	// 1. Roll the R: r → rr, R → RR
-	result = result.replace(/r/g, 'rr').replace(/R/g, 'RR');
+	result = result.replaceAll('r', 'rr').replaceAll('R', 'RR');
 	// 2. Vowel elongation: a → aa, o → oo
-	result = result.replace(/a/g, 'aa').replace(/A/g, 'AA');
-	result = result.replace(/o/g, 'oo').replace(/O/g, 'OO');
+	result = result.replaceAll('a', 'aa').replaceAll('A', 'AA');
+	result = result.replaceAll('o', 'oo').replaceAll('O', 'OO');
 	// 3. Consonant aspiration: b → bh, g → gh, t → th
-	result = result.replace(/b/g, 'bh').replace(/B/g, 'Bh');
-	result = result.replace(/g/g, 'gh').replace(/G/g, 'Gh');
-	result = result.replace(/t/g, 'th').replace(/T/g, 'Th');
+	result = result.replaceAll('b', 'bh').replaceAll('B', 'Bh');
+	result = result.replaceAll('g', 'gh').replaceAll('G', 'Gh');
+	result = result.replaceAll('t', 'th').replaceAll('T', 'Th');
 	// 4. Append "Arr!" for full sentences (ending with sentence-ending punctuation)
 	if (/[.!?]\s*$/.test(text.trim())) {
 		result = result + ' Arr!';
@@ -58,7 +58,7 @@ export const applyAlternatingCaseTransformation = (text: string): string => {
 };
 
 export const applyTypoglycemiaTransformation = (text: string): string => {
-	return text.replace(/\b[a-zA-ZÄäÖöÜüß]{4,}\b/g, (word) => {
+	return text.replaceAll(/\b[a-zA-ZÄäÖöÜüß]{4,}\b/g, (word) => {
 		const first = word[0];
 		const last = word[word.length - 1];
 		const inner = word.slice(1, -1).split('').reverse().join('');
@@ -67,7 +67,7 @@ export const applyTypoglycemiaTransformation = (text: string): string => {
 };
 
 export const applyGlitchTransformation = (text: string): string => {
-	return text.replace(/\b[a-zA-ZÄäÖöÜüß]+\b/g, (word) => {
+	return text.replaceAll(/\b[a-zA-ZÄäÖöÜüß]+\b/g, (word) => {
 		const chars = word.split('');
 		for (let i = chars.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));

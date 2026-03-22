@@ -93,7 +93,7 @@ const Index = () => {
 	}, [initialFoodAttributes]);
 
 	const handleSortChange = (id: string, newValue: string) => {
-		const parsed = parseInt(newValue, 10);
+		const parsed = Number.parseInt(newValue, 10);
 		if (!newValue || parsed === 0) {
 			setFoodAttributes((prev: any) => prev.map((attr: any) => (attr.id === id ? { ...attr, manualSort: undefined } : attr)));
 			return;
@@ -375,7 +375,7 @@ const Index = () => {
 								}}
 								value={value}
 								onChangeText={text => {
-									const numericValue = text.replace(/[^0-9]/g, '');
+									const numericValue = text.replaceAll(/[^0-9]/g, '');
 									setValue(numericValue);
 								}}
 								keyboardType="number-pad"

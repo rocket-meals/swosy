@@ -31,7 +31,7 @@ export function buildConfigFromEnv(hostEnvFilePath: string): AppleClientSecretCr
   }
 
   const privateKeyRaw = privateKeyEscaped || '';
-  const privateKeyPem = privateKeyRaw.replace(/\\n/g, '\n');
+  const privateKeyPem = privateKeyRaw.replaceAll('\\n', '\n');
 
   return {
     teamId: teamId!,

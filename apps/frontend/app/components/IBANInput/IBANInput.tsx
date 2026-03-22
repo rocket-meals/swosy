@@ -12,8 +12,8 @@ const IBANInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	const flag = !suffix && !prefix;
 
 	const formatIBAN = (text: string) => {
-		let cleaned = text.replace(/[^A-Za-z0-9]/g, '');
-		let formatted = cleaned.replace(/(.{4})/g, '$1 ').trim();
+		let cleaned = text.replaceAll(/[^A-Za-z0-9]/g, '');
+		let formatted = cleaned.replaceAll(/(.{4})/g, '$1 ').trim();
 		return formatted;
 	};
 

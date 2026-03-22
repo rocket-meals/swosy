@@ -12,11 +12,11 @@ const NumberInput = ({ id, value, onChange, error, isDisabled, custom_type, pref
 	const flag = !suffix && !prefix;
 
 	const handleTextChange = (text: string) => {
-		let formattedText = text.replace(/[^0-9,]/g, '');
+		let formattedText = text.replaceAll(/[^0-9,]/g, '');
 
 		const parts = formattedText.split(',');
 		if (parts.length > 2) {
-			formattedText = parts[0] + ',' + parts.slice(1).join('').replace(/,/g, '');
+			formattedText = parts[0] + ',' + parts.slice(1).join('').replaceAll(',', '');
 		}
 
 		onChange(id, formattedText, custom_type);

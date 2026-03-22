@@ -517,7 +517,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       /**
        *    "STD_PREIS": "0,50",
        */
-      foundPrice = foundPrice.replace(',', '.');
+      foundPrice = foundPrice.replaceAll(',', '.');
       return Number.parseFloat(foundPrice);
     }
     return null;
@@ -531,7 +531,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         let value_as_number = null;
         if (!!value) {
           if (value.includes(',')) {
-            value = value.replace(',', '.');
+            value = value.replaceAll(',', '.');
           }
           value_as_number = Number.parseFloat(value);
         }
@@ -651,7 +651,7 @@ export class FoodTL1Parser implements FoodParserInterface {
       if (!!match && match.length === 1) {
         let matchString = match[0];
         let valueString = matchString.slice(searchText.length);
-        valueString = valueString.replace(',', '.');
+        valueString = valueString.replaceAll(',', '.');
         let valueNumer = FoodTL1Parser.parseFloatWithOneDecimal(valueString);
         return valueNumer;
       }
@@ -787,10 +787,10 @@ export class FoodTL1Parser implements FoodParserInterface {
     //example: "Strawberries (g, b,)"
     //expected: "Strawberries"
     // Remove all brackets and their content and a possible whitespace before the brackets
-    let sanitizedName = name.replace(/\s?\([^\)]+\)/gm, '');
+    let sanitizedName = name.replaceAll(/\s?\([^\)]+\)/gm, '');
 
     // Remove all commas at the end of the string
-    sanitizedName = sanitizedName.replace(/,\s*$/gm, '');
+    sanitizedName = sanitizedName.replaceAll(/,\s*$/gm, '');
     return sanitizedName;
   }
 

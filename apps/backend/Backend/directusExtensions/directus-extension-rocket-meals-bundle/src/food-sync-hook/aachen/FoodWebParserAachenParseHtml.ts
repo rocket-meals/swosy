@@ -139,11 +139,11 @@ export class FoodWebParserAachenParseHtml {
 
     // Extract individual codes like 'A', 'A1', 'B' from the collected sup texts.
     const extractedCodes: string[] = supTexts
-      .map(t => t.replace(/\u00A0/g, ' '))
+      .map(t => t.replaceAll('\u00A0', ' '))
       .map(t => t.replace(/^[+]/, ''))
       .flatMap(t => t.split(/[,|\/]+/))
       .flatMap(t => t.split(/\s+/))
-      .map((s: string) => s.replace(/[^A-Za-z0-9]/g, '').trim())
+      .map((s: string) => s.replaceAll(/[^A-Za-z0-9]/g, '').trim())
       .filter((s: string) => s.length > 0);
 
     // create readable alias by cloning and removing sup tags
@@ -164,10 +164,10 @@ export class FoodWebParserAachenParseHtml {
     if (priceText) {
       // price may contain euro symbol and comma as decimal separator
       const normalized = priceText
-        .replace('€', '')
-        .replace(/[^0-9,\.]/g, '')
+        .replaceAll('€', '')
+        .replaceAll(/[^0-9,\.]/g, '')
         .trim();
-      const withDot = normalized.replace(',', '.');
+      const withDot = normalized.replaceAll(',', '.');
       const parsed = Number.parseFloat(withDot);
       if (!Number.isNaN(parsed)) {
         priceStudent = parsed;
@@ -246,7 +246,7 @@ export class FoodWebParserAachenParseHtml {
 
   private static generateRecipeId(basicFoodofferData: FoodofferTypeWithBasicData, markingExternalIdentifiers: Set<string>): string {
     // hash alias + sorted markings
-    const aliasPart = basicFoodofferData.alias ? basicFoodofferData.alias.toLowerCase().replace(/\s+/g, '_') : 'no_alias';
+    const aliasPart = basicFoodofferData.alias ? basicFoodofferData.alias.toLowerCase().replaceAll(/\s+/g, '_') : 'no_alias';
     const markingsPart = Array.from(markingExternalIdentifiers).sort((a, b) => a.localeCompare(b)).join('_');
     let id = `recipe_`;
     id += `${aliasPart}`;

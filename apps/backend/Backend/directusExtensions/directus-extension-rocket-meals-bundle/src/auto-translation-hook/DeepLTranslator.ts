@@ -59,7 +59,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
     // use regex where find is replaced with replace globally and multiple times
     // find could be a special character like * which needs to be escaped
     const { str, find, replace } = replaceOptions;
-    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+    return str.replace(new RegExp(find.replaceAll(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
   }
 
   async translateRaw(text: string, source_language_code: SourceLanguageCode, destination_language_code: TargetLanguageCode) {

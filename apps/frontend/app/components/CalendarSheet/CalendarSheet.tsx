@@ -47,7 +47,7 @@ export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet,
     };
 
     const formatManualInput = (value: string) => {
-        const digitsOnly = value.replace(/\D/g, '').slice(0, 8);
+        const digitsOnly = value.replaceAll(/\D/g, '').slice(0, 8);
         const day = digitsOnly.slice(0, 2);
         const month = digitsOnly.slice(2, 4);
         const year = digitsOnly.slice(4, 8);

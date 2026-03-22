@@ -40,8 +40,8 @@ export class FormHelperCommon {
   }
 
   static formatIban(text: string): string {
-      let cleaned = text.replace(/[^A-Za-z0-9]/g, '');
-      let formatted = cleaned.replace(/(.{4})/g, '$1 ').trim();
+      let cleaned = text.replaceAll(/[^A-Za-z0-9]/g, '');
+      let formatted = cleaned.replaceAll(/(.{4})/g, '$1 ').trim();
       return formatted;
   }
 

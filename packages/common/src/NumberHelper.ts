@@ -35,7 +35,7 @@ export class NumberHelper {
       if (!integerPart) {
         formattedValue = `0${fractionsSeparator}${fractionPart || ''}`;
       } else {
-        const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+        const formattedInteger = integerPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
         formattedValue = fractionPart ? `${formattedInteger}${fractionsSeparator}${fractionPart}` : formattedInteger;
       }
     }

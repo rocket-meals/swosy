@@ -363,7 +363,7 @@ export class FormHelper {
    * (collapsed) for a connected look; groups are separated by a small gap.
    */
   private static generateBankAccountBoxesHtml(value: string): string {
-    const cleaned = value.replace(/\s/g, '').toUpperCase();
+    const cleaned = value.replaceAll(/\s/g, '').toUpperCase();
     const total = cleaned.length;
 
     let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:flex-end; gap:0; line-height:0;">';

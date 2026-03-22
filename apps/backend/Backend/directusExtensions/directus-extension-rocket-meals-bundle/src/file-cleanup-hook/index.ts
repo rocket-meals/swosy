@@ -218,10 +218,10 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
       let unreferencedFiles: string[] = [];
       for (let fileId in dictFileIdsUsedInDatabase) {
         let file = await filesHelper.readOne(fileId);
-        const fileSizeAsString = file.filesize;
+        const fileSize = file.filesize;
         let fileSizeAsNumber = 0;
-        if (!!fileSizeAsString && !Number.isNaN(Number(fileSizeAsString))) {
-          fileSizeAsNumber = Number.parseInt(fileSizeAsString, 10);
+        if (typeof fileSize === 'number' && !Number.isNaN(fileSize)) {
+          fileSizeAsNumber = fileSize;
         }
         this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
         dictFileIdsDiskSpace[fileId] = fileSizeAsNumber;

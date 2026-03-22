@@ -71,7 +71,7 @@ const Index = () => {
 	);
 
 	const numericCheckTextInput = useCallback<CheckTextInput>(value => {
-		const normalizedValue = value.replace(/[^0-9]/g, '');
+		const normalizedValue = value.replaceAll(/[^0-9]/g, '');
 		return {
 			isValid: true,
 			value: normalizedValue,

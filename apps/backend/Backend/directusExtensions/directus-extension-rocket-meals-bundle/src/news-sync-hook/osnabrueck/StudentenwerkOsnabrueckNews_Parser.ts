@@ -49,11 +49,11 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
         content = content.replace(/Weiterlesen$/, '').trim();
         content = content.replace(/\n$/, '').trim();
         content = content.replace(/\t$/, '').trim();
-        content = content.replace(/&nbsp;/g, ' ').trim();
+        content = content.replaceAll('&nbsp;', ' ').trim();
 
         news.push({
           basicNews: {
-            external_identifier: 'news_' + header.replace(/\W+/g, '_'),
+            external_identifier: 'news_' + header.replaceAll(/\W+/g, '_'),
             image_remote_url: imageUrl,
             alias: header,
             date: articleDetails?.date ? articleDetails.date.toISOString() : null,
