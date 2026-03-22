@@ -98,14 +98,14 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
       if (!!dateString) {
         let dateParts = dateString.split('.');
         if (dateParts.length === 3) {
-          let day = parseInt(dateParts[0] + '');
-          let month = parseInt(dateParts[1] + '');
-          let yearSingle = parseInt(dateParts[2] + '');
+          let day = Number.parseInt(dateParts[0] + '');
+          let month = Number.parseInt(dateParts[1] + '');
+          let yearSingle = Number.parseInt(dateParts[2] + '');
           let year: number | undefined = undefined;
           if (yearSingle < 100) {
             let currentYearWithCentury = new Date().getFullYear();
-            let currentYear = parseInt(('' + currentYearWithCentury).substring(0, 2));
-            year = parseInt(currentYear + '' + yearSingle);
+            let currentYear = Number.parseInt(('' + currentYearWithCentury).substring(0, 2));
+            year = Number.parseInt(currentYear + '' + yearSingle);
           } else {
             year = yearSingle;
           }

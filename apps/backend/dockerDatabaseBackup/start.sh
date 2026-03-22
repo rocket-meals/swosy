@@ -19,10 +19,10 @@ elif [[ "$COMMAND" == 'dump-cron' ]]; then
         mkfifo "$LOGFIFO"
     fi
     CRON_ENV="PREFIX='$PREFIX'\nPGUSER='$PGUSER'\nPGDB='$PGDB'\nPGHOST='$PGHOST'\nPGPORT='$PGPORT'"
-    if [ -n "$PGPASSWORD" ]; then
+    if [[ -n "$PGPASSWORD" ]]; then
         CRON_ENV="$CRON_ENV\nPGPASSWORD='$PGPASSWORD'"
     fi
-    if [ ! -z "$DELETE_OLDER_THAN" ]; then
+    if [[ ! -z "$DELETE_OLDER_THAN" ]]; then
         CRON_ENV="$CRON_ENV\nDELETE_OLDER_THAN='$DELETE_OLDER_THAN'"
     fi
     echo -e "$CRON_ENV\n$CRON_SCHEDULE /dump.sh > $LOGFIFO 2>&1" | crontab -

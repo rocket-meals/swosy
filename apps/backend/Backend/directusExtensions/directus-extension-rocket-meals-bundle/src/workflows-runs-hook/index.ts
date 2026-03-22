@@ -265,7 +265,7 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Data
 
             result.date_started = date_started; // make sure that date_started is not overwritten
             result.date_finished = new Date().toISOString();
-            result.runtime_in_seconds = parseInt('' + (new Date(result.date_finished).getTime() - new Date(date_started).getTime()) / 1000);
+            result.runtime_in_seconds = Number.parseInt('' + (new Date(result.date_finished).getTime() - new Date(date_started).getTime()) / 1000);
 
             await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger({
               primary_key: workflowRun.id,

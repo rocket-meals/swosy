@@ -118,7 +118,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
 
     // Parse and return the average result
     if (answer && answer[0] && answer[0].avg && answer[0].avg?.[fieldName]) {
-      return parseFloat(answer[0].avg?.[fieldName]); // Parse the average to a float
+      return Number.parseFloat(answer[0].avg?.[fieldName]); // Parse the average to a float
     } else {
       return undefined; // Return 0 if no data is found
     }
@@ -137,7 +137,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     let answer = (await itemsService.readByQuery(totalQuery)) as AggregateAnswer[];
     // data = {"data":[{"count":"1869"}]}
     if (!!answer && !!answer[0]) {
-      return parseInt(answer[0].count);
+      return Number.parseInt(answer[0].count);
     } else {
       return 0;
     }
