@@ -23,7 +23,7 @@ import { CollectibleAt } from 'repo-depkit-common';
 
 const extractTextAndLink = (description: string) => {
 	// Remove unintended spaces between `]` and `(`
-	const cleanedDescription = description.replace(/\]\s+\(/g, '](');
+	const cleanedDescription = description.replaceAll(/\]\s+\(/g, '](');
 
 	const regex = /\[(.*?)\]\((.*?)\)/g;
 	const match = regex.exec(cleanedDescription);

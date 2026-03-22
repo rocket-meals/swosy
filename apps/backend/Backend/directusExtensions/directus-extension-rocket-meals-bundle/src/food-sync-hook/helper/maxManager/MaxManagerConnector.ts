@@ -454,13 +454,13 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                             if(priceStudentString){
                                 priceStudentString = priceStudentString.replace("€", "").trim();
                                 priceStudentString = priceStudentString.replace(",", ".").trim();
-                                priceStudent = parseFloat(priceStudentString);
+                                priceStudent = Number.parseFloat(priceStudentString);
                             }
                             let priceGuestSting = priceParts?.[1];
                             if(priceGuestSting){
                                 priceGuestSting = priceGuestSting.replace("€", "").trim();
                                 priceGuestSting = priceGuestSting.replace(",", ".").trim();
-                                priceGuest = parseFloat(priceGuestSting);
+                                priceGuest = Number.parseFloat(priceGuestSting);
                             }
                         }
 

@@ -63,7 +63,7 @@ export class FoodParserHelper {
     }
 
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return null;
     }
 

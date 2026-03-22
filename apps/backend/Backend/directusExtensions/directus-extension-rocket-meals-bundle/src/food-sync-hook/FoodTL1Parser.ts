@@ -468,10 +468,10 @@ export class FoodTL1Parser implements FoodParserInterface {
     if (!dayPartString || !monthPartString || !yearPartString) {
       return null;
     }
-    const day = parseInt(dayPartString);
-    const month = parseInt(monthPartString);
-    const year = parseInt(yearPartString);
-    if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    const day = Number.parseInt(dayPartString);
+    const month = Number.parseInt(monthPartString);
+    const year = Number.parseInt(yearPartString);
+    if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) {
       return null;
     }
     return {
@@ -518,7 +518,7 @@ export class FoodTL1Parser implements FoodParserInterface {
        *    "STD_PREIS": "0,50",
        */
       foundPrice = foundPrice.replace(',', '.');
-      return parseFloat(foundPrice);
+      return Number.parseFloat(foundPrice);
     }
     return null;
   }
@@ -533,7 +533,7 @@ export class FoodTL1Parser implements FoodParserInterface {
           if (value.includes(',')) {
             value = value.replace(',', '.');
           }
-          value_as_number = parseFloat(value);
+          value_as_number = Number.parseFloat(value);
         }
         attributeValues.push({
           external_identifier: csvAttribute.external_identifier,
@@ -585,7 +585,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         let kcal = match[0].slice(1, kcalEndString.length); //remove starting bracket "(" and kcal)
         attributeValues.push({
           external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER,
-          attribute_value: { number_value: parseInt(kcal) },
+          attribute_value: { number_value: Number.parseInt(kcal) },
         });
       }
 
@@ -636,9 +636,9 @@ export class FoodTL1Parser implements FoodParserInterface {
   }
 
   static parseFloatWithOneDecimal(str: string) {
-    let num = parseFloat(str);
-    if (isNaN(num)) {
-      return NaN; // or some other value to indicate the parse failed
+    let num = Number.parseFloat(str);
+    if (Number.isNaN(num)) {
+      return Number.NaN; // or some other value to indicate the parse failed
     }
     return Math.round(num * 10) / 10;
   }
@@ -707,7 +707,7 @@ export class FoodTL1Parser implements FoodParserInterface {
   static removeValuesAndWhitespacesAndSeperators(string: string, valuesToRemove: string[], seperator: string) {
     //e. G. string is "(g, b)"  valuesToRemove ["(", ")"]   seperator ","
     let output = [];
-    let workingString = new String(string);
+    let workingString = String(string);
     //remove values
     for (let value of valuesToRemove) {
       workingString = workingString.replace(value, '');
