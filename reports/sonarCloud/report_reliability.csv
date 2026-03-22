@@ -1,3 +1,1 @@
 Key,Message,Component,Line
-"AZ0VmBm9mRbbgKiJd_tj","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",68
-"AZ0VmBm9mRbbgKiJd_tk","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",77

@@ -18,8 +18,6 @@ Key,Message,Component,Line
 "AZ0VmBG5mRbbgKiJd_th","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx",51
 "AZ0VmBF9mRbbgKiJd_te","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMarkdown/MyMarkdown.tsx",23
 "AZ0VmBhumRbbgKiJd_ti","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/frontend/app/helper/MarkdownLinkHelper.ts",74
-"AZ0VmBm9mRbbgKiJd_tj","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",68
-"AZ0VmBm9mRbbgKiJd_tk","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",77
 "AZ0VmB8hmRbbgKiJd_tw","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/screenshotGenerator/src/helpers.ts",35
 "AZ0U9d0d4T-oZG71XAr4","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/components/MyMap/index.web.tsx",28
 "AZ0U1T6zmRbbgKiJY8A_","Unexpected negated condition.","rocket-meals_rocket-meals:apps/sonarCloudReportDownloader/src/generateIssueMarkdown.ts",121
@@ -103,10 +101,9 @@ Key,Message,Component,Line
 "AZ0Tpk31ufp2jxPAhSxf","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",109
 "AZ0Tpk31ufp2jxPAhSxv","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",709
 "AZ0TplGSufp2jxPAhS0l","A fragment with only one child is redundant.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",303
-"AZ0TpleXufp2jxPAhS5c","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",70
-"AZ0TpleXufp2jxPAhS5g","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",114
+"AZ0TpleXufp2jxPAhS5g","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",122
 "AZ0Tpkvcufp2jxPAhSvM","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",21
-"AZ0TpleXufp2jxPAhS5f","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",113
+"AZ0TpleXufp2jxPAhS5f","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",121
 "AZ0Tpk31ufp2jxPAhSxr","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",705
 "AZ0Tpk31ufp2jxPAhSxs","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",706
 "AZ0Tpk31ufp2jxPAhSxt","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/index.tsx",707
@@ -1393,9 +1390,9 @@ Key,Message,Component,Line
 "AZkUSv3FS4VhJojFFCsV","Redundant double negation.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",172
 "AZkUSv3FS4VhJojFFCsX","Update this function so that its implementation is not identical to the one on line 362.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",500
 "AZlykACq0YdgFOBafBPF","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common/src/NumberHelper.ts",35
-"AZkUSv3XS4VhJojFFCsa","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/StringHelper.ts",9
-"AZkUSv3XS4VhJojFFCsb","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/StringHelper.ts",10
-"AZkUSv3XS4VhJojFFCsc","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/StringHelper.ts",11
+"AZkUSv3XS4VhJojFFCsa","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/StringHelper.ts",15
+"AZkUSv3XS4VhJojFFCsb","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/StringHelper.ts",16
+"AZkUSv3XS4VhJojFFCsc","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/StringHelper.ts",17
 "AZkUSvtiS4VhJojFFCeM","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",101
 "AZkUSvtiS4VhJojFFCeN","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",117
 "AZlyj_6v0YdgFOBafBOO","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/customers/hannover/HannoverTL1HousingFileReader.ts",122
@@ -1673,7 +1670,7 @@ Key,Message,Component,Line
 "AZkUSvUQS4VhJojFFAhl","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",11
 "AZkUSvUQS4VhJojFFAhm","Member 'collection' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",30
 "AZkUSvVYS4VhJojFFAiO","Redundant double negation.","rocket-meals_rocket-meals:apps/frontend/app/helper/iconHelper.tsx",53
-"AZkUSvfAS4VhJojFFCV4","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",110
+"AZkUSvfAS4VhJojFFCV4","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLanguage.ts",118
 "AZkUSve2S4VhJojFFCV3","Remove this useless assignment to variable ""systemTheme"".","rocket-meals_rocket-meals:apps/frontend/app/hooks/useTheme.ts",32
 "AZ0TplVdufp2jxPAhS4b","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Apartments/Apartments.ts",3
 "AZ0TplWJufp2jxPAhS4i","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/AppElements/AppElements.ts",3

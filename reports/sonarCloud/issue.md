@@ -5,24 +5,14 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 0 | 0 |
-| 🐛 Reliability | 2 | 2 |
-| 🔧 Maintainability | 2208 | 48 |
+| 🐛 Reliability | 0 | 0 |
+| 🔧 Maintainability | 2205 | 50 |
 
-**Total issues:** 2210 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 2205 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🐛 Reliability (2/2)
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/hooks/useLanguage.ts:68
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useLanguage.ts#L68
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/frontend/app/hooks/useLanguage.ts:77
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/hooks/useLanguage.ts#L77
-
-## 🔧 Maintainability (48/2208)
+## 🔧 Maintainability (50/2205)
 
 - **Sort these package names alphanumerically.**
   apps/backend-sync/Dockerfile:5
@@ -215,4 +205,12 @@
 - **Redundant double negation.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:47
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L47
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:59
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L59
+
+- **Redundant double negation.**
+  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts:74
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/auto-translation-hook/DirectusCollectionTranslator.ts#L74
 
