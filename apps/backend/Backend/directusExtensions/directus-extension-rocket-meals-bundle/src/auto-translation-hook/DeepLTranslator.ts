@@ -9,7 +9,8 @@ export class DeepLTranslator implements MyTranslatorInterface {
     this.translator = new deepl.Translator(auth_key);
   }
 
-  async init() {
+  init(): Promise<void> {
+    return Promise.resolve();
   }
 
   async translate(request: TranslationRequest) {
@@ -89,8 +90,6 @@ export class DeepLTranslator implements MyTranslatorInterface {
 
   async getUsage() {
     const usage = await this.translator.getUsage();
-    if (usage.anyLimitReached()) {
-    }
     const characterUsage = usage?.character; // {"character":{"count":0,"limit":500000}}
 
     return {
