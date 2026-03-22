@@ -3,13 +3,9 @@ import path from 'path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { execSync } from 'child_process';
+import { IssueData } from './IssueData';
 
-interface CsvIssue {
-  key: string;
-  message: string;
-  component: string;
-  line: number | undefined;
-}
+type CsvIssue = IssueData;
 
 interface PrioritizedIssue extends CsvIssue {
   category: string;
