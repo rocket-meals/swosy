@@ -54,7 +54,7 @@ export function decodeAppleClientSecretExpiry(token: string): number | null {
     const decoded = decodeAppleClientSecret(token);
     let exp = decoded?.exp;
     if(!exp) return null;
-    return parseInt(exp.toString());
+    return Number.parseInt(exp.toString());
 }
 
 export function generateAppleClientSecret(config: AppleClientSecretCredentials): AppleClientSecretResult {

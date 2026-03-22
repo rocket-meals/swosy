@@ -121,7 +121,7 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
               parsedPart.Name = value;
               break;
             case Menge:
-              parsedPart.Menge = parseFloat(value);
+              parsedPart.Menge = Number.parseFloat(value);
               break;
             case Verbrauchergruppe_ID:
               parsedPart.Verbrauchergruppe_ID = value;
@@ -158,12 +158,12 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
       return null;
     }
 
-    const [day, month, year] = date.split('.').map(num => parseInt(num));
+    const [day, month, year] = date.split('.').map(num => Number.parseInt(num));
     if (day === undefined || month === undefined || year === undefined) {
       return null;
     }
 
-    const [hour, minute, seconds] = time.split(':').map(num => parseInt(num));
+    const [hour, minute, seconds] = time.split(':').map(num => Number.parseInt(num));
     if (hour === undefined || minute === undefined || seconds === undefined) {
       return null;
     }

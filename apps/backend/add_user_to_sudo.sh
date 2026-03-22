@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Check if the script is run as root
-if [ "$(id -u)" -ne 0 ]; then
+if [[ "$(id -u)" -ne 0 ]]; then
     echo "This script must be run as root" 1>&2
     exit 1
 fi
 
 # Check for correct number of arguments
-if [ "$#" -ne 2 ]; then
+if [[ "$#" -ne 2 ]]; then
     echo "Usage: $0 username 'ssh-rsa AAA...'" 1>&2
     exit 1
 fi
