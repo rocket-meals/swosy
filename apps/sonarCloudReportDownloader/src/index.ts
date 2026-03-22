@@ -4,13 +4,9 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import path from 'path';
 import { execSync } from 'child_process';
+import { IssueData } from './IssueData';
 
-interface Issue {
-  key: string;
-  message: string;
-  component: string;
-  line?: number;
-}
+type Issue = IssueData;
 
 // Mapping von Impact Software Qualities zu Report-Namen
 const qualityToReportName: Record<string, string> = {
