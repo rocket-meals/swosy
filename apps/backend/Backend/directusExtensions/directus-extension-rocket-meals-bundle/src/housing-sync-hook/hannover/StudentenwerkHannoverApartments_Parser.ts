@@ -165,14 +165,14 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
 
         data.push({
           basicData: {
-            external_identifier: 'apartment_' + name.replace(/\W+/g, '_'),
+            external_identifier: 'apartment_' + name.replaceAll(/\W+/, '_'),
             available_from: null,
             handicapped_accessible: false,
             family_friendly: false,
             singleflat: false,
           },
           buildingData: {
-            external_identifier: 'building_' + name.replace(/\W+/g, '_'),
+            external_identifier: 'building_' + name.replaceAll(/\W+/, '_'),
             url: apartmentUrl,
             alias: name,
             image_remote_url: imageUrl,

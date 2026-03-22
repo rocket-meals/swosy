@@ -101,7 +101,7 @@ async function generateReport(token: string, project: string, quality: string, o
 
   console.log(`Fetched ${issues.length} ${quality} issues. Writing to ${outputFile}...`);
   const header = 'Key,Message,Component,Line\n';
-  const rows = issues.map(i => `"${i.key}","${i.message.replace(/"/g, '""')}","${i.component}",${i.line ?? ''}`);
+  const rows = issues.map(i => `"${i.key}","${i.message.replaceAll('"', '""')}","${i.component}",${i.line ?? ''}`);
 
   // Stelle sicher, dass das Verzeichnis existiert
   fs.mkdirSync(outputDir, { recursive: true });

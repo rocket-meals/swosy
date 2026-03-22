@@ -31,18 +31,18 @@ export async function createScreenshotUncompressed(url: string, device: Device, 
 
 export function getFileSafeNameFromUrl(url: string, baseUrl: string) {
   const urlWithoutBaseUrl = url.replace(baseUrl, '');
-  return urlWithoutBaseUrl.replace(/https?:\/\/|\/|\?/g, '_');
+  return urlWithoutBaseUrl.replaceAll(/https?:\/\/|\/|\?/, '_');
 }
 
 export function getFileName(url: string, device: Device, screenshotDirWithSlash: string, baseUrl: string) {
   const fileSafeUrl = getFileSafeNameFromUrl(url, baseUrl);
-  const fileSafeDeviceName = device.name.replace('-', '_');
+  const fileSafeDeviceName = device.name.replaceAll('-', '_');
   return `${screenshotDirWithSlash}/${fileSafeDeviceName}/${fileSafeUrl}.png`;
 }
 
 export async function compressScreenshotAndDeleteOld(fileName: string) {
   console.log(`Compressing file: ${fileName}`);
-  const compressedFileName = fileName.replace('.png', '_compressed.png');
+  const compressedFileName = fileName.replaceAll('.png', '_compressed.png');
   try {
     await sharp(fileName).png({ compressionLevel: 9, palette: true, quality: 90 }).toFile(compressedFileName);
     await fs.unlink(fileName);

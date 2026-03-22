@@ -10,7 +10,7 @@ export class MarkdownHelper {
     let html = md.render(markdownText);
 
     // <img ...> → <img style="max-width:100%;" ...>
-    html = html.replace(/<img(.*?)>/g, '<img$1 style="max-width:100%; height:auto;">');
+    html = html.replaceAll(/<img(.*?)>/, '<img$1 style="max-width:100%; height:auto;">');
 
     return html;
   }

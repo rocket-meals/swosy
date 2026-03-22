@@ -33,7 +33,7 @@ export function decodeAppleClientSecret(token: string): AppleJwtPayload | null {
 
   function base64UrlDecodeToString(input: string): string {
     // Replace url-safe characters
-    let str = input.replace(/-/g, '+').replace(/_/g, '/');
+    let str = input.replaceAll('-', '+').replaceAll('_', '/');
     // Pad with '=' to make length a multiple of 4
     const pad = str.length % 4;
     if (pad === 2) str += '==';

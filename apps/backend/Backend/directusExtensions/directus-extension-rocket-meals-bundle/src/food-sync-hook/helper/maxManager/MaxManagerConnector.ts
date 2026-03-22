@@ -384,7 +384,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                         supElements.each((i, supElement) => {
                             // 782dd9ce018e7ad7b12d" role="button" tabindex="0" style="font-size:[26]px">&nbsp;C,G,I,N</sup>
                             // get all text inside sup element, remove &nbsp; and split by ","
-                            let supText = $(supElement).text().replace(/\u00a0/g, '').trim();
+                            let supText = $(supElement).text().replaceAll('\u00a0', '').trim();
                             let supMarkings = supText.split(",");
                             supMarkings.forEach((marking) => {
                                 marking = marking.trim();
@@ -452,14 +452,14 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                             let priceParts = priceText.split("/");
                             let priceStudentString = priceParts?.[0]
                             if(priceStudentString){
-                                priceStudentString = priceStudentString.replace("€", "").trim();
-                                priceStudentString = priceStudentString.replace(",", ".").trim();
+                                priceStudentString = priceStudentString.replaceAll("€", "").trim();
+                                priceStudentString = priceStudentString.replaceAll(",", ".").trim();
                                 priceStudent = Number.parseFloat(priceStudentString);
                             }
                             let priceGuestSting = priceParts?.[1];
                             if(priceGuestSting){
-                                priceGuestSting = priceGuestSting.replace("€", "").trim();
-                                priceGuestSting = priceGuestSting.replace(",", ".").trim();
+                                priceGuestSting = priceGuestSting.replaceAll("€", "").trim();
+                                priceGuestSting = priceGuestSting.replaceAll(",", ".").trim();
                                 priceGuest = Number.parseFloat(priceGuestSting);
                             }
                         }
