@@ -11,6 +11,17 @@ export type TranslationSchemaContext = {
   translation_field: string;
 };
 
+export type TranslationEntryOptions = {
+  isSourceTranslation: boolean;
+  sourceTranslation: any;
+  language_code: string;
+  translator: Translator;
+  translatorSettings: TranslatorSettings;
+  fieldsToTranslate: string[];
+  FIELD_LANGUAGES_ID_OR_CODE: string;
+  context: TranslationSchemaContext;
+};
+
 export class DirectusCollectionTranslator {
   static readonly FIELD_BE_SOURCE_FOR_TRANSLATION = 'be_source_for_translations';
   static readonly FIELD_LET_BE_TRANSLATED = 'let_be_translated';
@@ -136,20 +147,27 @@ export class DirectusCollectionTranslator {
       const existingTranslation = existingTranslations[language_code];
       const isSourceTranslation = language_code === sourceTranslationLanguageCode;
 
+      const entryOptions: TranslationEntryOptions = {
+        isSourceTranslation,
+        sourceTranslation,
+        language_code,
+        translator,
+        translatorSettings,
+        fieldsToTranslate,
+        FIELD_LANGUAGES_ID_OR_CODE,
+        context,
+      };
+
       if (existingTranslation) {
         const updateEntry = await DirectusCollectionTranslator.buildUpdateEntry(
-          isSourceTranslation, sourceTranslation, existingTranslation,
-          newTranslationsUpdateLanguageDict, language_code,
-          translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE, context
+          entryOptions, existingTranslation, newTranslationsUpdateLanguageDict
         );
         if (updateEntry) {
           translationsToUpdate.push(updateEntry);
         }
       } else {
         const createEntry = await DirectusCollectionTranslator.buildCreateEntry(
-          isSourceTranslation, sourceTranslation,
-          newTranslationsCreateLanguageDict, language_code,
-          translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE, context
+          entryOptions, newTranslationsCreateLanguageDict
         );
         if (createEntry) {
           translationsToCreate.push(createEntry);
@@ -177,17 +195,11 @@ export class DirectusCollectionTranslator {
   }
 
   private static async buildUpdateEntry(
-    isSourceTranslation: boolean,
-    sourceTranslation: any,
+    options: TranslationEntryOptions,
     existingTranslation: any,
-    newTranslationsUpdateLanguageDict: Record<string, any>,
-    language_code: string,
-    translator: Translator,
-    translatorSettings: TranslatorSettings,
-    fieldsToTranslate: string[],
-    FIELD_LANGUAGES_ID_OR_CODE: string,
-    context: TranslationSchemaContext
+    newTranslationsUpdateLanguageDict: Record<string, any>
   ): Promise<any> {
+    const { isSourceTranslation, sourceTranslation, language_code, context } = options;
     if (isSourceTranslation) {
       return { ...sourceTranslation };
     }
@@ -201,7 +213,7 @@ export class DirectusCollectionTranslator {
     }
 
     if (createTranslation) {
-      const translatedItem = await DirectusCollectionTranslator.translateTranslationItem(sourceTranslation, language_code, translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE);
+      const translatedItem = await DirectusCollectionTranslator.translateTranslationItem(options);
       return { ...existingTranslation, ...translatedItem };
     } else if (translationInPayload) {
       return {
@@ -214,16 +226,10 @@ export class DirectusCollectionTranslator {
   }
 
   private static async buildCreateEntry(
-    isSourceTranslation: boolean,
-    sourceTranslation: any,
-    newTranslationsCreateLanguageDict: Record<string, any>,
-    language_code: string,
-    translator: Translator,
-    translatorSettings: TranslatorSettings,
-    fieldsToTranslate: string[],
-    FIELD_LANGUAGES_ID_OR_CODE: string,
-    context: TranslationSchemaContext
+    options: TranslationEntryOptions,
+    newTranslationsCreateLanguageDict: Record<string, any>
   ): Promise<any> {
+    const { isSourceTranslation, sourceTranslation, language_code, context } = options;
     if (isSourceTranslation) {
       return {
         ...sourceTranslation,
@@ -240,7 +246,7 @@ export class DirectusCollectionTranslator {
     }
 
     if (letBeTranslated) {
-      const translatedItem = await DirectusCollectionTranslator.translateTranslationItem(sourceTranslation, language_code, translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE);
+      const translatedItem = await DirectusCollectionTranslator.translateTranslationItem(options);
       return { ...translatedItem };
     } else if (translationInPayload) {
       return {
@@ -270,7 +276,8 @@ export class DirectusCollectionTranslator {
     }
   }
 
-  static async translateTranslationItem(sourceTranslation: any, language_code: string, translator: Translator, translatorSettings: TranslatorSettings, fieldsToTranslate: string[], FIELD_LANGUAGES_ID_OR_CODE: string) {
+  static async translateTranslationItem(options: TranslationEntryOptions) {
+    const { sourceTranslation, language_code, translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE } = options;
     let translatedItem: any = {};
     if (fieldsToTranslate && fieldsToTranslate.length > 0) {
       for (const field of fieldsToTranslate) {
