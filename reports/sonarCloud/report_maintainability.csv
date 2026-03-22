@@ -1,5 +1,5 @@
 Key,Message,Component,Line
-"AZ0XXYv7YQaj1trrYK6v","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",431
+"AZ0XgX4uyJsjaJPaBpOF","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",648
 "AZ0VmBt-mRbbgKiJd_tm","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",40
 "AZ0VmBpmmRbbgKiJd_tl","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",366
 "AZ0VmBvvmRbbgKiJd_tn","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/hannover/StudentenwerkHannoverApartments_Parser.ts",169
@@ -366,8 +366,6 @@ Key,Message,Component,Line
 "AZ0TplX4ufp2jxPAhS4u","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/chatsReducer.ts",10
 "AZ0TplYdufp2jxPAhS4y","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/collectibleEventsReducer.ts",17
 "AZ0TpksGufp2jxPAhSu2","Remove this unused import of 'useSelector'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/haptics/index.tsx",4
-"AZ0TploZufp2jxPAhS9E","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",96
-"AZ0TploZufp2jxPAhS9F","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",96
 "AZ0Tpk6Iufp2jxPAhSyb","Remove this unused import of 'Text'.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",2
 "AZ0Tpk6Iufp2jxPAhSyf","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",133
 "AZ0Tpk6Iufp2jxPAhSyg","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanDay/index.tsx",150
@@ -425,8 +423,6 @@ Key,Message,Component,Line
 "AZ0TplDiufp2jxPAhS0E","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",397
 "AZ0TplDiufp2jxPAhS0F","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",397
 "AZ0TplcUufp2jxPAhS47","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/hooks/usePopupEventModal.tsx",16
-"AZ0TploZufp2jxPAhS9D","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",95
-"AZ0TploZufp2jxPAhS9G","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",97
 "AZ0Tpk4yufp2jxPAhSyR","Remove this unused import of 'CollectibleAt'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",3
 "AZ0TplHnufp2jxPAhS1O","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/GlobalModal/ModalProvider.tsx",242
 "AZ0TplHnufp2jxPAhS1P","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/GlobalModal/ModalProvider.tsx",247
@@ -471,9 +467,6 @@ Key,Message,Component,Line
 "AZ0TplECufp2jxPAhS0J","Consider removing 'undefined' type or '?' specifier, one of them is redundant.","rocket-meals_rocket-meals:apps/frontend/app/components/TriStateCheckbox/TriStateCheckbox.tsx",19
 "AZ0TplECufp2jxPAhS0K","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/TriStateCheckbox/TriStateCheckbox.tsx",31
 "AZ0TplECufp2jxPAhS0L","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/TriStateCheckbox/TriStateCheckbox.tsx",31
-"AZ0TplqTufp2jxPAhTKI","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",338
-"AZ0TplqTufp2jxPAhTKJ","Unnecessary use of boolean literals in conditional expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",444
-"AZ0TplqTufp2jxPAhTKK","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",449
 "AZ0TplgKufp2jxPAhS5y","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",84
 "AZ0TplgKufp2jxPAhS5z","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",92
 "AZ0TplgKufp2jxPAhS50","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",100
@@ -485,27 +478,21 @@ Key,Message,Component,Line
 "AZ0TpmNoufp2jxPAhTMj","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/DateHelper.ts",660
 "AZ0TpmNvufp2jxPAhTMk","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/form/FormHelperCommon.ts",3
 "AZ0TpmNvufp2jxPAhTMl","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/form/FormHelperCommon.ts",5
-"AZ0TplqTufp2jxPAhTJ4","Unexpected `await` of a non-Promise (non-""Thenable"") value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",76
-"AZ0TplqTufp2jxPAhTJ5","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",90
-"AZ0TplqTufp2jxPAhTJ6","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",93
-"AZ0TplqTufp2jxPAhTJ7","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",97
-"AZ0TplqTufp2jxPAhTJ-","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",168
+"AZ0TplqTufp2jxPAhTJ7","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",95
+"AZ0TplqTufp2jxPAhTJ-","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",166
 "AZ0TplqTufp2jxPAhTJ0","Member 'config' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",45
 "AZ0TplqTufp2jxPAhTJ1","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",47
 "AZ0TplqTufp2jxPAhTJ2","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",48
 "AZ0TplqTufp2jxPAhTJ3","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",70
-"AZ0TplqTufp2jxPAhTJ8","Unexpected `await` of a non-Promise (non-""Thenable"") value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",133
-"AZ0TplqTufp2jxPAhTJ9","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",145
-"AZ0TplqTufp2jxPAhTJ_","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",169
-"AZ0TplqTufp2jxPAhTKA","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",195
-"AZ0TplqTufp2jxPAhTKB","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",232
-"AZ0TplqTufp2jxPAhTKC","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",248
-"AZ0TplqTufp2jxPAhTKD","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",275
-"AZ0TplqTufp2jxPAhTKE","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",301
-"AZ0TplqTufp2jxPAhTKF","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",330
-"AZ0TplqTufp2jxPAhTKG","Remove this useless assignment to variable ""canteenName"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",332
-"AZ0TplqTufp2jxPAhTKH","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",333
-"AZ0TplqTufp2jxPAhTKN","Prefer `return value` over `return Promise.resolve(value)`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",497
+"AZ0TplqTufp2jxPAhTJ8","Unexpected `await` of a non-Promise (non-""Thenable"") value.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",131
+"AZ0TplqTufp2jxPAhTJ9","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",143
+"AZ0TplqTufp2jxPAhTJ_","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",167
+"AZ0TplqTufp2jxPAhTKA","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",193
+"AZ0TplqTufp2jxPAhTKB","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",230
+"AZ0TplqTufp2jxPAhTKC","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",246
+"AZ0TplqTufp2jxPAhTKD","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",273
+"AZ0TplqTufp2jxPAhTKE","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",299
+"AZ0TplqTufp2jxPAhTKN","Prefer `return value` over `return Promise.resolve(value)`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts",455
 "AZ0Tplpzufp2jxPAhTDf","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerFileContentReader.ts",1
 "AZ0Tplpzufp2jxPAhTDg","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerFileContentReader.ts",2
 "AZ0Tplo-ufp2jxPAhTDa","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/FoodAndMarkingWebParserMuenster.ts",11
@@ -685,8 +672,6 @@ Key,Message,Component,Line
 "AZkUSvreS4VhJojFFCb8","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",574
 "AZkUSvreS4VhJojFFCcD","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",776
 "AZkUSvreS4VhJojFFCcL","Remove this useless assignment to variable ""myTimersEmitEvents"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",884
-"AZlyj_3F0YdgFOBafBNe","`markingExternalIdentifiersFromMarkingParser` should be a `Set`, and use `markingExternalIdentifiersFromMarkingParser.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",30
-"AZkUSvrzS4VhJojFFCcg","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",114
 "AZkUSvsCS4VhJojFFCcj","Unexpected lexical declaration in case block.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts",37
 "AZkUSvsCS4VhJojFFCck","Unexpected lexical declaration in case block.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts",38
 "AZkUSvsCS4VhJojFFCcl","Unexpected lexical declaration in case block.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts",41
@@ -924,15 +909,9 @@ Key,Message,Component,Line
 "AZ0TpmOQufp2jxPAhTMp","The signature '(collection: CollectionNames): any' of 'CollectionHelper.getCollectionPropertyDetails' is deprecated.","rocket-meals_rocket-meals:packages/common-backend/src/CollectionHelper.ts",60
 "AZkUSv3PS4VhJojFFCsY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common/src/SortingHelper.ts",233
 "AZkUSv3PS4VhJojFFCsZ","Refactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.","rocket-meals_rocket-meals:packages/common/src/SortingHelper.ts",245
-"AZlyj_3m0YdgFOBafBN1","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",647
 "AZkUSvs5S4VhJojFFCd9","Remove this useless assignment to variable ""hint"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts",45
 "AZkUSvreS4VhJojFFCb-","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",592
 "AZkUSvreS4VhJojFFCcF","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",812
-"AZkUSvrzS4VhJojFFCcW","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",12
-"AZkUSvrzS4VhJojFFCcX","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",13
-"AZkUSvrzS4VhJojFFCcY","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",15
-"AZkUSvrzS4VhJojFFCce","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",94
-"AZkUSvrzS4VhJojFFCcf","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",103
 "AZkUSvrQS4VhJojFFCbS","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts",6
 "AZkUSvrQS4VhJojFFCbT","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts",9
 "AZkUSvrQS4VhJojFFCbU","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts",61
@@ -1658,9 +1637,6 @@ Key,Message,Component,Line
 "AZlyj_670YdgFOBafBOR","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/FormImportSyncWorkflow.ts",93
 "AZkUSvuBS4VhJojFFCen","Replace this ""switch"" statement by ""if"" statements to increase readability.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/forms-sync-hook/index.ts",454
 "AZkUSviOS4VhJojFFCXj","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/itemServiceHelpers/WorkflowsRunHelper.ts",55
-"AZkUSvrzS4VhJojFFCcZ","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",29
-"AZlyj_3F0YdgFOBafBNd","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",29
-"AZkUSvrzS4VhJojFFCcc","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",62
 "AZkUSvxcS4VhJojFFCiW","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",104
 "AZkUSvhES4VhJojFFCXF","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TimerHelper.ts",82
 "AZkUSvqIS4VhJojFFCbA","Remove this useless assignment to variable ""action"".","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/index.ts",119
@@ -1677,18 +1653,8 @@ Key,Message,Component,Line
 "AZ0TpmNAufp2jxPAhTMO","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",996
 "AZ0TpmNAufp2jxPAhTMQ","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",1340
 "AZ0TpmNAufp2jxPAhTMV","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",1695
-"AZkUSvrzS4VhJojFFCci","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",166
-"AZkUSvrzS4VhJojFFCcd","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",80
 "AZkUSvreS4VhJojFFCb7","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",562
 "AZkUSvgPS4VhJojFFCWw","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",115
-"AZkUSvsQS4VhJojFFCdb","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",578
-"AZkUSvsQS4VhJojFFCdd","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",582
-"AZlyj_3m0YdgFOBafBNs","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",596
-"AZlyj_3m0YdgFOBafBNt","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",602
-"AZlyj_3m0YdgFOBafBNu","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",608
-"AZlyj_3m0YdgFOBafBNv","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",614
-"AZlyj_3m0YdgFOBafBNr","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",620
-"AZlyj_3m0YdgFOBafBNq","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",626
 "AZkUSvreS4VhJojFFCbm","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",177
 "AZkUSvreS4VhJojFFCbn","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",198
 "AZkUSvreS4VhJojFFCb4","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",495
@@ -1696,7 +1662,6 @@ Key,Message,Component,Line
 "AZlyj_210YdgFOBafBNa","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",497
 "AZkUSvreS4VhJojFFCb6","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",509
 "AZkUSvreS4VhJojFFCcB","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",634
-"AZkUSvrzS4VhJojFFCcb","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",56
 "AZkUSvreS4VhJojFFCbo","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",209
 "AZkUSvreS4VhJojFFCbp","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",234
 "AZkUSvreS4VhJojFFCbq","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",245
@@ -1710,7 +1675,6 @@ Key,Message,Component,Line
 "AZkUSvi8S4VhJojFFCX1","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",100
 "AZkUSvi8S4VhJojFFCX3","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",110
 "AZkUSvi8S4VhJojFFCX4","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",117
-"AZkUSvrzS4VhJojFFCca","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/hannover/FoodTL1ParserHannover.ts",49
 "AZkUSvi8S4VhJojFFCXx","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",29
 "AZkUSvi8S4VhJojFFCXy","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper.ts",30
 "AZ0TplvDufp2jxPAhTKx","Remove this unused import of 'defineHook'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/mails-hook/index.ts",1
@@ -1791,17 +1755,9 @@ Key,Message,Component,Line
 "AZkUSvUyS4VhJojFFAiB","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/nfcCardReaderHelper/ErrorMessages.ts",4
 "AZkUSvUyS4VhJojFFAiC","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/nfcCardReaderHelper/ErrorMessages.ts",5
 "AZkUSvUyS4VhJojFFAiD","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/nfcCardReaderHelper/ErrorMessages.ts",6
-"AZkUSvsQS4VhJojFFCdW","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",479
-"AZkUSvsQS4VhJojFFCdL","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",121
-"AZkUSvsQS4VhJojFFCdM","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",123
 "AZkUSvs5S4VhJojFFCd7","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts",32
 "AZkUSvkCS4VhJojFFCYG","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DictHelper.ts",7
 "AZkUSvjGS4VhJojFFCX6","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/SystemFileHelper.ts",12
-"AZkUSvsQS4VhJojFFCdN","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",178
-"AZkUSvsQS4VhJojFFCdS","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",313
-"AZkUSvsQS4VhJojFFCdR","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",298
-"AZkUSvsQS4VhJojFFCdT","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",396
-"AZkUSvsQS4VhJojFFCdU","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",399
 "AZkUSvreS4VhJojFFCb2","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",445
 "AZkUSvreS4VhJojFFCb9","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",575
 "AZkUSvhOS4VhJojFFCXL","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceCreator.ts",106
@@ -1881,7 +1837,6 @@ Key,Message,Component,Line
 "AZkUSvsCS4VhJojFFCcq","Replace this ""switch"" statement by ""if"" statements to increase readability.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts",70
 "AZkUSvgPS4VhJojFFCW0","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",236
 "AZkUSvgPS4VhJojFFCW2","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",246
-"AZkUSvsQS4VhJojFFCdX","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",490
 "AZlyj__P0YdgFOBafBOj","Prefer `node:fs` over `fs`.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",3
 "AZlyj__P0YdgFOBafBOl","Prefer `node:path` over `path`.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",6
 "AZlyj__P0YdgFOBafBOm","Prefer `node:url` over `url`.","rocket-meals_rocket-meals:apps/backend/sync/importSchema.js",7
@@ -1894,11 +1849,6 @@ Key,Message,Component,Line
 "AZkUSvhES4VhJojFFCXE","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TimerHelper.ts",38
 "AZ0Tplwrufp2jxPAhTLD","Remove this unused import of 'defineHook'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/profile-create-hook/index.ts",1
 "AZkUSv0DS4VhJojFFClb","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/profile-create-hook/index.ts",54
-"AZkUSvsQS4VhJojFFCdP","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",283
-"AZkUSvsQS4VhJojFFCdY","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",512
-"AZkUSvsQS4VhJojFFCdh","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",656
-"AZkUSvsQS4VhJojFFCdk","Unnecessary escape character: \).","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",689
-"AZkUSvsQS4VhJojFFCdl","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",691
 "AZlyj_210YdgFOBafBNc","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",928
 "AZkUSvreS4VhJojFFCcN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",943
 "AZkUSvxRS4VhJojFFCiF","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/NewsParseSchedule.ts",10
