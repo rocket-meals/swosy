@@ -787,10 +787,10 @@ export class FoodTL1Parser implements FoodParserInterface {
     //example: "Strawberries (g, b,)"
     //expected: "Strawberries"
     // Remove all brackets and their content and a possible whitespace before the brackets
-    let sanitizedName = name.replace(/\s?\([^\)]+\)/gm, '');
+    let sanitizedName = name.replaceAll(/\s?\([^\)]+\)/gm, '');
 
     // Remove all commas at the end of the string
-    sanitizedName = sanitizedName.replace(/,\s*$/gm, '');
+    sanitizedName = sanitizedName.replaceAll(/,\s*$/gm, '');
     return sanitizedName;
   }
 

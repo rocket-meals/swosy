@@ -663,7 +663,7 @@ export class ReportGenerator {
 
       if (comment) {
         // we should sanitize the comment here just to be sure that we don't have any html tags in the comment
-        let sanitized_comment = comment.replace(/<[^>]*>?/gm, '');
+        let sanitized_comment = comment.replaceAll(/<[^>]*>?/gm, '');
         if (!!canteenAlias) {
           sanitized_comment += ' [' + canteenAlias + ']';
         }

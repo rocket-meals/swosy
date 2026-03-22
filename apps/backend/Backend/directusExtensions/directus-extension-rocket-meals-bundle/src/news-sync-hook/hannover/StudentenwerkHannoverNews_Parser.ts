@@ -88,7 +88,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
       data.push({
         basicNews: {
-          external_identifier: 'news_' + header.replaceAll(/\W+/, '_'),
+          external_identifier: 'news_' + header.replaceAll(/\W+/g, '_'),
           image_remote_url: imageUrl,
           alias: header,
           date: date,

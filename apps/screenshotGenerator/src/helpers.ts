@@ -31,7 +31,7 @@ export async function createScreenshotUncompressed(url: string, device: Device, 
 
 export function getFileSafeNameFromUrl(url: string, baseUrl: string) {
   const urlWithoutBaseUrl = url.replace(baseUrl, '');
-  return urlWithoutBaseUrl.replaceAll(/https?:\/\/|\/|\?/, '_');
+  return urlWithoutBaseUrl.replaceAll(/https?:\/\/|\/|\?/g, '_');
 }
 
 export function getFileName(url: string, device: Device, screenshotDirWithSlash: string, baseUrl: string) {

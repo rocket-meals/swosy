@@ -53,7 +53,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
         news.push({
           basicNews: {
-            external_identifier: 'news_' + header.replaceAll(/\W+/, '_'),
+            external_identifier: 'news_' + header.replaceAll(/\W+/g, '_'),
             image_remote_url: imageUrl,
             alias: header,
             date: articleDetails?.date ? articleDetails.date.toISOString() : null,

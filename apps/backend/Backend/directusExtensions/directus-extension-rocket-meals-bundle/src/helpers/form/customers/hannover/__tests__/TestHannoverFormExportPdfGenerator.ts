@@ -171,7 +171,7 @@ describe('Hannover forms_export PDF Generator', () => {
         requestOptions,
       });
       expect(pdfBuffer).toBeTruthy();
-      const safeName = (form.alias ?? form.id ?? 'unknown').replace(/[^a-z0-9_\-]/gi, '_');
+      const safeName = (form.alias ?? form.id ?? 'unknown').replaceAll(/[^a-z0-9_\-]/gi, '_');
       TestArtifacts.saveTestArtifact(pdfBuffer, `form/pdf/hannover/${safeName}.pdf`);
     }
   });
