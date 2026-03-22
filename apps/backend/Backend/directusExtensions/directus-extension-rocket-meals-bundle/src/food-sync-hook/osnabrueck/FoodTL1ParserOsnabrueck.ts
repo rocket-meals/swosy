@@ -1,5 +1,5 @@
 import { FoodTL1Parser, RawFoodofferInformationType, RawTL1FoodofferType, TL1AttributeValueType } from '../FoodTL1Parser';
-import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
+import { FoodTL1ParserGetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
 import {FoodoffersTypeForParser, FoodParseFoodAttributesType} from '../FoodParserInterface';
 
 export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
@@ -8,7 +8,7 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
   static MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU = "custom_niedersachsen_menu";
   static FOODOFFER_CATEGORY_NIEDERSACHSEN_MENU = "Niedersachsenmenü"
 
-  constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
+  constructor(rawFoodofferReader: FoodTL1ParserGetRawReportInterface) {
     super(rawFoodofferReader);
   }
 

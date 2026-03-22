@@ -1,7 +1,7 @@
 // small jest test
 import { describe, expect, it } from '@jest/globals';
 import { FoodTL1ParserHannover } from '../FoodTL1ParserHannover';
-import { FoodTL1Parser_GetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
+import { FoodTL1ParserGetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
 import {
   FoodofferComponentForTestReader,
   FoodTL1Parser_RawReportTestReaderHannover
@@ -15,21 +15,21 @@ function generateFoodId(foodIds: number[], markingExternalIdentifiers: string[])
 }
 
 async function getFoodoffersJson(reportToReturn?: string | undefined, markingsJSONList?: MarkingsTypeForParser[] | undefined) {
-  let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
   let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
   await foodParser.createNeededData(markingsJSONList);
   return await foodParser.getFoodoffersForParser();
 }
 
 async function getFoodsJson(reportToReturn?: string | undefined) {
-  let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
   let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
   await foodParser.createNeededData();
   return await foodParser.getFoodsListForParser();
 }
 
 describe('FoodTL1ParserHannover Test', () => {
-  let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover();
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover();
   let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
 
   // should find atleast one food

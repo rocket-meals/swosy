@@ -1,9 +1,9 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { FoodWebParserAachenReadHtmlFiles } from './FoodWebParserAachenReadHtmlFiles';
 import { CanteenNamesToHtmlFileDict } from './FoodAndMarkingWebParserAachen';
 
-export class FoodWebParser_RawReportTestReaderAachen implements FoodWebParserAachenReadHtmlFiles {
+export class FoodWebParserRawReportTestReaderAachen implements FoodWebParserAachenReadHtmlFiles {
   private readonly canteensHtmlFilesMap: CanteenNamesToHtmlFileDict | undefined;
 
   constructor(canteensHtmlFilesMap?: CanteenNamesToHtmlFileDict) {
@@ -16,7 +16,7 @@ export class FoodWebParser_RawReportTestReaderAachen implements FoodWebParserAac
     if (this.canteensHtmlFilesMap) {
       return this.canteensHtmlFilesMap;
     }
-    return FoodWebParser_RawReportTestReaderAachen.getSavedWeeklyPlanFromFile();
+    return FoodWebParserRawReportTestReaderAachen.getSavedWeeklyPlanFromFile();
   }
 
   public static getSavedWeeklyPlanFromFile(): CanteenNamesToHtmlFileDict {

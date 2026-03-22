@@ -39,12 +39,15 @@ class FoodImageAiGenerationWorkflow extends SingleWorkflowRun {
     processedCount: number,
     totalFoodsToProcess: number,
     context: WorkflowRunContext,
-    foodsService: ItemsService<DatabaseTypes.Foods>,
-    imageSafeGenerator: ImageSafeGeneratorFood,
-    filesHelper: FilesServiceHelper,
-    foodsHelper: ItemsServiceHelper<DatabaseTypes.Foods>,
-    foodsImageFolderId: string | null | undefined
+    params: {
+      foodsService: ItemsService<DatabaseTypes.Foods>;
+      imageSafeGenerator: ImageSafeGeneratorFood;
+      filesHelper: FilesServiceHelper;
+      foodsHelper: ItemsServiceHelper<DatabaseTypes.Foods>;
+      foodsImageFolderId: string | null | undefined;
+    }
   ): Promise<'generated' | 'skipped' | 'error'> {
+    const { foodsService, imageSafeGenerator, filesHelper, foodsHelper, foodsImageFolderId } = params;
     try {
       const food = await foodsService.readOne(foodId, {
         fields: ['id', 'alias', 'image', 'image_remote_url'],
@@ -71,7 +74,7 @@ class FoodImageAiGenerationWorkflow extends SingleWorkflowRun {
 
       const imageBuffer = await imageSafeGenerator.generateImage(alias);
       const filename = `Foods ${foodId}`;
-      const fileId = await filesHelper.uploadOneFromBuffer(imageBuffer, filename, MyFileTypes.PNG, context.myDatabaseHelper, foodsImageFolderId);
+      const fileId = await filesHelper.uploadOneFromBuffer(imageBuffer, filename, MyFileTypes.PNG, context.myDatabaseHelper, foodsImageFolderId ?? undefined);
       await foodsHelper.updateOne(foodId, { image: String(fileId), image_generated: true });
       await context.logger.appendLog(`Generated image for food ${foodId} (${processedCount}/${totalFoodsToProcess})`);
       return 'generated';
@@ -80,6 +83,51 @@ class FoodImageAiGenerationWorkflow extends SingleWorkflowRun {
       await context.logger.appendLog(`Failed to process food ${foodId}: ${message} (${processedCount}/${totalFoodsToProcess})`);
       return 'error';
     }
+  }
+
+  private async processBatch(
+    context: WorkflowRunContext,
+    params: {
+      foodsService: ItemsService<DatabaseTypes.Foods>;
+      imageSafeGenerator: ImageSafeGeneratorFood;
+      filesHelper: FilesServiceHelper;
+      foodsHelper: ItemsServiceHelper<DatabaseTypes.Foods>;
+      foodsImageFolderId: string | null | undefined;
+      missingImageFilter: any;
+    }
+  ): Promise<{ generatedImages: number; skippedFoods: number; processedCount: number }> {
+    const { foodsService, missingImageFilter } = params;
+    let generatedImages = 0;
+    let skippedFoods = 0;
+    let processedCount = 0;
+    const processedIds = new Set<string>();
+    const batchSize = 100;
+
+    while (true) {
+      const batchFilter: any = { _and: [...missingImageFilter._and] };
+      if (processedIds.size > 0) {
+        batchFilter._and.push({ id: { _nin: Array.from(processedIds) } });
+      }
+
+      const foodsBatch = await foodsService.readByQuery({ filter: batchFilter, fields: ['id'], limit: batchSize });
+      if (!foodsBatch || foodsBatch.length === 0) {
+        break;
+      }
+
+      for (const batchFood of foodsBatch) {
+        const foodId = batchFood.id;
+        processedIds.add(foodId);
+        processedCount += 1;
+        const result = await this.processSingleFood(foodId, processedCount, 0, context, params);
+        if (result === 'generated') {
+          generatedImages += 1;
+        } else {
+          skippedFoods += 1;
+        }
+      }
+    }
+
+    return { generatedImages, skippedFoods, processedCount };
   }
 
   async runJob(context: WorkflowRunContext): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
@@ -124,35 +172,15 @@ class FoodImageAiGenerationWorkflow extends SingleWorkflowRun {
       const imageGenerator = new ImageRawGeneratorChatGpt({ apiKey: openAiToken });
       const imageSafeGenerator = new ImageSafeGeneratorFood({ moderationCheck, imageGenerator });
       const filesHelper = context.myDatabaseHelper.getFilesHelper();
-      let generatedImages = 0;
-      let skippedFoods = 0;
-      let processedCount = 0;
-      const processedIds = new Set<string>();
-      const batchSize = 100;
 
-      while (true) {
-        const batchFilter: any = { _and: [...missingImageFilter._and] };
-        if (processedIds.size > 0) {
-          batchFilter._and.push({ id: { _nin: Array.from(processedIds) } });
-        }
-
-        const foodsBatch = await foodsService.readByQuery({ filter: batchFilter, fields: ['id'], limit: batchSize });
-        if (!foodsBatch || foodsBatch.length === 0) {
-          break;
-        }
-
-        for (const batchFood of foodsBatch) {
-          const foodId = batchFood.id;
-          processedIds.add(foodId);
-          processedCount += 1;
-          const result = await this.processSingleFood(foodId, processedCount, totalFoodsToProcess, context, foodsService, imageSafeGenerator, filesHelper, foodsHelper, foodsImageFolderId);
-          if (result === 'generated') {
-            generatedImages += 1;
-          } else if (result === 'skipped' || result === 'error') {
-            skippedFoods += 1;
-          }
-        }
-      }
+      const { generatedImages, skippedFoods, processedCount } = await this.processBatch(context, {
+        foodsService,
+        imageSafeGenerator,
+        filesHelper,
+        foodsHelper,
+        foodsImageFolderId,
+        missingImageFilter,
+      });
 
       await context.logger.appendLog(`Finished food image generation. Generated images: ${generatedImages}. Skipped foods: ${skippedFoods}. Processed foods: ${processedCount}.`);
       return context.logger.getFinalLogWithStateAndParams({ state: WORKFLOW_RUN_STATE.SUCCESS });

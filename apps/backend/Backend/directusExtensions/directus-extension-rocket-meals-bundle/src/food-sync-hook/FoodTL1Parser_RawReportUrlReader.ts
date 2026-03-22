@@ -1,7 +1,7 @@
-import { FoodTL1Parser_GetRawReportInterface } from './FoodTL1Parser_GetRawReportInterface';
+import { FoodTL1ParserGetRawReportInterface } from './FoodTL1Parser_GetRawReportInterface';
 import axios from 'axios';
 
-export class FoodTL1Parser_RawReportUrlReader implements FoodTL1Parser_GetRawReportInterface {
+export class FoodTL1ParserRawReportUrlReader implements FoodTL1ParserGetRawReportInterface {
   private readonly api_url: string;
 
   constructor(api_url: string) {
@@ -23,7 +23,7 @@ export class FoodTL1Parser_RawReportUrlReader implements FoodTL1Parser_GetRawRep
       console.log('TL1 Report; length= ' + content.length);
       return content;
     } catch (err) {
-      console.log('File not found yet');
+      console.log('File not found yet: ' + String(err));
     }
     return undefined;
   }

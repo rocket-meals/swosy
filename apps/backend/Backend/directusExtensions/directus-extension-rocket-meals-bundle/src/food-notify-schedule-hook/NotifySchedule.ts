@@ -41,7 +41,7 @@ export class NotifySchedule {
         await this.context.logger.appendLog('- Found ' + foodFeedbacks.length + ' food feedbacks for food ' + food_id);
 
         for (let foodFeedback of foodFeedbacks) {
-          await this.processFoodFeedbackForOffer(foodFeedback, foodOffer, foodWithTranslations, food_offer_in_canteen_id, food_id, aboutMealsInDays, date, devicesService);
+          await this.processFoodFeedbackForOffer(foodFeedback, foodOffer, foodWithTranslations, food_offer_in_canteen_id, food_id, { aboutMealsInDays, date, devicesService });
         }
       }
       await this.context.logger.appendLog('Finished');
@@ -62,10 +62,13 @@ export class NotifySchedule {
     foodWithTranslations: DatabaseTypes.Foods,
     food_offer_in_canteen_id: string | DatabaseTypes.Canteens | null | undefined,
     food_id: string,
-    aboutMealsInDays: number,
-    date: Date,
-    devicesService: DevicesServiceHelper
+    params: {
+      aboutMealsInDays: number;
+      date: Date;
+      devicesService: DevicesServiceHelper;
+    }
   ): Promise<void> {
+    const { aboutMealsInDays, date, devicesService } = params;
     let profile_id = foodFeedback.profile as string;
     await this.context.logger.appendLog('-- Notify profile: ' + profile_id + ' about food: ' + food_id);
     // Step 3: Get the profile and all devices of the profile
@@ -87,7 +90,7 @@ export class NotifySchedule {
     for (let expoPushToken of expoPushTokens) {
       let devices = expoPushTokensDict[expoPushToken] as DatabaseTypes.Devices[];
       await this.context.logger.appendLog('--- Notify devices: ' + devices.length + ' about food: ' + food_id);
-      await this.sendNotificationToExpoPushToken(expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date, devices, devicesService);
+      await this.sendNotificationToExpoPushToken(expoPushToken, foodOffer, foodWithTranslations, language, { aboutMealsInDays, date, devices, devicesService });
     }
 
     for (let device of profileDevices) {
@@ -102,16 +105,44 @@ export class NotifySchedule {
     }
   }
 
+  private async deduplicateDevicesWithSameToken(
+    devices: DatabaseTypes.Devices[],
+    devicesService: DevicesServiceHelper
+  ): Promise<void> {
+    await this.context.logger.appendLog('--- Notify multiple devices with the same push token');
+    await this.context.logger.appendLog('--- we will remove the pushTokenObj from all but the last updated device');
+    let recentDateUpdated: Date | null = null;
+    let recentDevice: DatabaseTypes.Devices | null = null;
+    for (let device of devices) {
+      if (device.date_updated) {
+        let device_date_updated = new Date(device.date_updated);
+        if (!recentDateUpdated || device_date_updated > recentDateUpdated) {
+          recentDateUpdated = device_date_updated;
+          recentDevice = device;
+        }
+      }
+    }
+    for (let device of devices) {
+      if (device.id !== recentDevice?.id) {
+        await this.context.logger.appendLog('--- Remove pushTokenObj from device.id: ' + device.id + ' as it is not the recent updated device: ' + device.id);
+        await devicesService.updateOne(device.id, { pushTokenObj: null });
+      }
+    }
+  }
+
   private async sendNotificationToExpoPushToken(
     expoPushToken: string,
     foodOffer: DatabaseTypes.Foodoffers,
     foodWithTranslations: DatabaseTypes.Foods,
     language: string,
-    aboutMealsInDays: number,
-    date: Date,
-    devices: DatabaseTypes.Devices[],
-    devicesService: DevicesServiceHelper
+    params: {
+      aboutMealsInDays: number;
+      date: Date;
+      devices: DatabaseTypes.Devices[];
+      devicesService: DevicesServiceHelper;
+    }
   ): Promise<void> {
+    const { aboutMealsInDays, date, devices, devicesService } = params;
     try {
       await this.notifyExpoPushTokenAboutFoodOffer(expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date);
     } catch (err: any) {
@@ -119,7 +150,6 @@ export class NotifySchedule {
       const message = err?.message;
       if (message.includes('Failed to send notification')) {
         await this.context.logger.appendLog('--- Failed to send notification');
-        // Reset the pushTokenObj to null
         for (let device of devices) {
           await devicesService.updateOne(device.id, { pushTokenObj: null });
         }
@@ -127,27 +157,7 @@ export class NotifySchedule {
     }
 
     if (devices.length > 1) {
-      await this.context.logger.appendLog('--- Notify multiple devices with the same push token');
-      // we will remove the pushTokenObj from all but the last updated device
-      await this.context.logger.appendLog('--- we will remove the pushTokenObj from all but the last updated device');
-      let recentDateUpdated: Date | null = null;
-      let recentDevice: DatabaseTypes.Devices | null = null;
-      for (let device of devices) {
-        if (device.date_updated) {
-          let device_date_updated = new Date(device.date_updated);
-          if (!recentDateUpdated || device_date_updated > recentDateUpdated) {
-            recentDateUpdated = device_date_updated;
-            recentDevice = device;
-          }
-        }
-      }
-      // now we have the most recent device, so we will remove the pushTokenObj from all other devices
-      for (let device of devices) {
-        if (device.id !== recentDevice?.id) {
-          await this.context.logger.appendLog('--- Remove pushTokenObj from device.id: ' + device.id + ' as it is not the recent updated device: ' + device.id);
-          await devicesService.updateOne(device.id, { pushTokenObj: null });
-        }
-      }
+      await this.deduplicateDevicesWithSameToken(devices, devicesService);
     }
   }
 
