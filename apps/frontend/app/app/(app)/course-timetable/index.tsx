@@ -19,11 +19,11 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
-import { CollectibleAt } from 'repo-depkit-common';
+import { CollectibleAt, StringHelper } from 'repo-depkit-common';
 
 const extractTextAndLink = (description: string) => {
 	// Remove unintended spaces between `]` and `(`
-	const cleanedDescription = description.replaceAll(/\]\s+\(/g, '](');
+	const cleanedDescription = StringHelper.replaceAllWithOptions({ str: description, find: ']\\s+\\(', replace: '](' });
 
 	const regex = /\[(.*?)\]\((.*?)\)/g;
 	const match = regex.exec(cleanedDescription);

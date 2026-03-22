@@ -9,6 +9,7 @@ import { RootState } from '@/redux/reducer';
 import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import { StringHelper } from 'repo-depkit-common';
 
 export interface MyMarkdownProps {
 	content: string;
@@ -18,14 +19,14 @@ export interface MyMarkdownProps {
 export const replaceLinebreaks = (sourceContent: string) => {
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
-		sourceContent = sourceContent.replaceAll('\\n', '\n');
-		sourceContent = sourceContent.replaceAll('\\r\\n', '\n');
-		sourceContent = sourceContent.replaceAll('<br/>', '\n');
-		sourceContent = sourceContent.replaceAll('</br>', '\n');
-		sourceContent = sourceContent.replaceAll('<br>', '\n');
-		sourceContent = sourceContent.replaceAll('<p/>', '\n');
-		sourceContent = sourceContent.replaceAll('</p>', '\n');
-		sourceContent = sourceContent.replaceAll('<p>', '\n');
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '\\n', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '\\r\\n', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '<br/>', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '</br>', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '<br>', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '<p/>', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '</p>', replace: '\n' });
+		sourceContent = StringHelper.replaceAllLiteralWithOptions({ str: sourceContent, find: '<p>', replace: '\n' });
 	}
 	return sourceContent;
 };

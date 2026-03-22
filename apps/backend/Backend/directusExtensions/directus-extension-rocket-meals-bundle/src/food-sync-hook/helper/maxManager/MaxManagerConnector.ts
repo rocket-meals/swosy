@@ -384,7 +384,7 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                         supElements.each((i, supElement) => {
                             // 782dd9ce018e7ad7b12d" role="button" tabindex="0" style="font-size:[26]px">&nbsp;C,G,I,N</sup>
                             // get all text inside sup element, remove &nbsp; and split by ","
-                            let supText = $(supElement).text().replaceAll('\u00a0', '').trim();
+                            let supText = StringHelper.replaceAllLiteralWithOptions({ str: $(supElement).text(), find: '\u00a0', replace: '' }).trim();
                             let supMarkings = supText.split(",");
                             supMarkings.forEach((marking) => {
                                 marking = marking.trim();
@@ -452,14 +452,14 @@ export class MaxManagerConnector implements FoodParserInterface, MarkingParserIn
                             let priceParts = priceText.split("/");
                             let priceStudentString = priceParts?.[0]
                             if(priceStudentString){
-                                priceStudentString = priceStudentString.replaceAll("€", "").trim();
-                                priceStudentString = priceStudentString.replaceAll(",", ".").trim();
+                                priceStudentString = StringHelper.replaceAllLiteralWithOptions({ str: priceStudentString, find: '€', replace: '' }).trim();
+                                priceStudentString = StringHelper.replaceAllLiteralWithOptions({ str: priceStudentString, find: ',', replace: '.' }).trim();
                                 priceStudent = Number.parseFloat(priceStudentString);
                             }
                             let priceGuestSting = priceParts?.[1];
                             if(priceGuestSting){
-                                priceGuestSting = priceGuestSting.replaceAll("€", "").trim();
-                                priceGuestSting = priceGuestSting.replaceAll(",", ".").trim();
+                                priceGuestSting = StringHelper.replaceAllLiteralWithOptions({ str: priceGuestSting, find: '€', replace: '' }).trim();
+                                priceGuestSting = StringHelper.replaceAllLiteralWithOptions({ str: priceGuestSting, find: ',', replace: '.' }).trim();
                                 priceGuest = Number.parseFloat(priceGuestSting);
                             }
                         }

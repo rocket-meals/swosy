@@ -2,6 +2,7 @@ export type ReplaceOptions = {
   str: string;
   find: string;
   replace: string;
+  flags?: string;
 }
 
 export class StringHelper {
@@ -11,8 +12,14 @@ export class StringHelper {
 
   // also be able to replace "*" with "WILDCARD_REPLACEMENT"
   static replaceAllWithOptions(options: ReplaceOptions) {
+    const { str, find, replace, flags } = options;
+    return str.replace(new RegExp(find, flags ?? 'g'), replace);
+  }
+
+  // Safe literal string replacement using split/join (no regex interpretation)
+  static replaceAllLiteralWithOptions(options: Omit<ReplaceOptions, 'flags'>) {
     const { str, find, replace } = options;
-    return str.replace(new RegExp(find, 'g'), replace);
+    return str.split(find).join(replace);
   }
 
   static capitalizeFirstLetter(string: string) {

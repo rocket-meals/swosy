@@ -13,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SET_SELECTED_DATE } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+import { StringHelper } from 'repo-depkit-common';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { format, isValid, parse } from 'date-fns';
@@ -47,7 +48,7 @@ export const CalendarSheetContent: React.FC<CalendarSheetProps> = ({ closeSheet,
     };
 
     const formatManualInput = (value: string) => {
-        const digitsOnly = value.replaceAll(/\D/g, '').slice(0, 8);
+        const digitsOnly = StringHelper.replaceAllWithOptions({ str: value, find: '\\D', replace: '' }).slice(0, 8);
         const day = digitsOnly.slice(0, 2);
         const month = digitsOnly.slice(2, 4);
         const year = digitsOnly.slice(4, 8);

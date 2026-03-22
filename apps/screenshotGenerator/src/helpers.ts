@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import sharp from 'sharp';
 import { Browser } from 'puppeteer';
 import { Device } from './devices';
+import { StringHelper } from 'repo-depkit-common';
 
 export async function createDirIfNotExists(dirOrFilePath: string) {
   const dirPath = dirOrFilePath.endsWith('/') ? dirOrFilePath : dirOrFilePath.substring(0, dirOrFilePath.lastIndexOf('/'));
@@ -31,18 +32,18 @@ export async function createScreenshotUncompressed(url: string, device: Device, 
 
 export function getFileSafeNameFromUrl(url: string, baseUrl: string) {
   const urlWithoutBaseUrl = url.replace(baseUrl, '');
-  return urlWithoutBaseUrl.replaceAll(/https?:\/\/|\/|\?/g, '_');
+  return StringHelper.replaceAllWithOptions({ str: urlWithoutBaseUrl, find: 'https?:\\/\\/|\\/|\\?', replace: '_' });
 }
 
 export function getFileName(url: string, device: Device, screenshotDirWithSlash: string, baseUrl: string) {
   const fileSafeUrl = getFileSafeNameFromUrl(url, baseUrl);
-  const fileSafeDeviceName = device.name.replaceAll('-', '_');
+  const fileSafeDeviceName = StringHelper.replaceAllLiteralWithOptions({ str: device.name, find: '-', replace: '_' });
   return `${screenshotDirWithSlash}/${fileSafeDeviceName}/${fileSafeUrl}.png`;
 }
 
 export async function compressScreenshotAndDeleteOld(fileName: string) {
   console.log(`Compressing file: ${fileName}`);
-  const compressedFileName = fileName.replaceAll('.png', '_compressed.png');
+  const compressedFileName = StringHelper.replaceAllLiteralWithOptions({ str: fileName, find: '.png', replace: '_compressed.png' });
   try {
     await sharp(fileName).png({ compressionLevel: 9, palette: true, quality: 90 }).toFile(compressedFileName);
     await fs.unlink(fileName);

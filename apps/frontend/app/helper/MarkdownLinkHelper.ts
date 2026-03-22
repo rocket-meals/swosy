@@ -1,5 +1,6 @@
 import { UriScheme } from '@/constants/UriScheme';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import { StringHelper } from 'repo-depkit-common';
 
 const COORDINATE_PATTERN = /-?\d+(?:\.\d+)?/g;
 
@@ -70,7 +71,7 @@ export const resolveLocationHref = (href: string | null | undefined): ResolvedLo
 	}
 
 	if (coordinatePayload) {
-		const fallbackQuery = coordinatePayload.replaceAll(/^[,\s]+|[,\s]+$/g, '');
+		const fallbackQuery = StringHelper.replaceAllWithOptions({ str: coordinatePayload, find: '^[,\\s]+|[,\\s]+$', replace: '' });
 		if (fallbackQuery) {
 			return {
 				resolvedHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackQuery)}`,

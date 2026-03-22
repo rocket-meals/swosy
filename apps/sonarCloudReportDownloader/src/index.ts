@@ -5,6 +5,7 @@ import { hideBin } from 'yargs/helpers';
 import path from 'path';
 import { execSync } from 'child_process';
 import { IssueData } from './IssueData';
+import { StringHelper } from 'repo-depkit-common';
 
 type Issue = IssueData;
 
@@ -101,7 +102,7 @@ async function generateReport(token: string, project: string, quality: string, o
 
   console.log(`Fetched ${issues.length} ${quality} issues. Writing to ${outputFile}...`);
   const header = 'Key,Message,Component,Line\n';
-  const rows = issues.map(i => `"${i.key}","${i.message.replaceAll('"', '""')}","${i.component}",${i.line ?? ''}`);
+  const rows = issues.map(i => `"${i.key}","${StringHelper.replaceAllLiteralWithOptions({ str: i.message, find: '"', replace: '""' })}","${i.component}",${i.line ?? ''}`);
 
   // Stelle sicher, dass das Verzeichnis existiert
   fs.mkdirSync(outputDir, { recursive: true });

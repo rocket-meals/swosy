@@ -13,7 +13,7 @@ import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes, EmailHelper } from 'repo-depkit-common';
+import { DatabaseTypes, EmailHelper, StringHelper } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
@@ -187,7 +187,7 @@ const FeedbackScreen = () => {
 				inputStyle: multiline ? { height: 150 } : undefined,
 				checkTextInput: isEmailField
 					? value => {
-							const cleanedEmail = value.replaceAll(/\s+/g, '');
+							const cleanedEmail = StringHelper.replaceAllWithOptions({ str: value, find: '\\s+', replace: '' });
 							if (cleanedEmail.trim().length === 0) {
 								return { isValid: true, value: '' };
 							}
