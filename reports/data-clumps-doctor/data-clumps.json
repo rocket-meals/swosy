@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-22T16:46:13.445Z",
+  "report_timestamp": "2026-03-22T17:12:16.527Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,65 +8,65 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 89,
-          "average": 1.5594569288389513,
-          "amountSavedValuesForKeys": 3331,
+          "average": 1.5573694029850746,
+          "amountSavedValuesForKeys": 3339,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 70,
-          "average": 2.382695507487521,
-          "amountSavedValuesForKeys": 1432,
-          "amountKeys": 21
+          "average": 2.3745819397993313,
+          "amountSavedValuesForKeys": 1420,
+          "amountKeys": 20
         },
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 89,
-          "average": 1.5749408983451536,
-          "amountSavedValuesForKeys": 3331,
+          "average": 1.5727743758831843,
+          "amountSavedValuesForKeys": 3339,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3726,
-        "detection_time_ms": 68,
+        "ast_generation_time_ms": 3484,
+        "detection_time_ms": 64,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 182.63,
-          "os_memory_free": 14986539008,
-          "os_memory_total": 16767234048,
+          "os_uptime": 176.19,
+          "os_memory_free": 14970859520,
+          "os_memory_total": 16766193664,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "os_cpu_speed": 3491
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 2,
-    "amount_files_with_data_clumps": 2,
-    "amount_methods_with_data_clumps": 9,
+    "amount_classes_or_interfaces_with_data_clumps": 1,
+    "amount_files_with_data_clumps": 1,
+    "amount_methods_with_data_clumps": 5,
     "fields_to_fields_data_clump": 0,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 16,
-    "amount_data_clumps": 16
+    "parameters_to_parameters_data_clump": 8,
+    "amount_data_clumps": 8
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "cf2cab3fddbfaa62a6329261b5cf0ac843b1d6ea",
-    "project_commit_hash": "cf2cab3fddbfaa62a6329261b5cf0ac843b1d6ea",
+    "project_version": "291cef623e39dc0207518e2035f45b39027330b0",
+    "project_commit_hash": "291cef623e39dc0207518e2035f45b39027330b0",
     "project_tag": null,
-    "project_commit_date": "1774197874",
+    "project_commit_date": "1774199438",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 419,
-    "number_of_classes_or_interfaces": 853,
+    "number_of_classes_or_interfaces": 855,
     "number_of_methods": 1286,
-    "number_of_data_fields": 3331,
-    "number_of_method_parameters": 1432
+    "number_of_data_fields": 3339,
+    "number_of_method_parameters": 1420
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -91,688 +91,6 @@
     }
   },
   "data_clumps": {
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-contextcollectionHelperfieldForDirectusFileIddict": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-contextcollectionHelperfieldForDirectusFileIddict",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "from_class_or_interface_name": "FileCleanupWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "from_method_name": "processSingletonCollection",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "to_class_or_interface_name": "FileCleanupWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "to_method_name": "processNonSingletonCollection",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 89,
-              "startColumn": 5,
-              "endLine": 89,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 74,
-            "startColumn": 5,
-            "endLine": 74,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/collectionHelper": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/collectionHelper",
-          "name": "collectionHelper",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper\").ItemsServiceHelper<SpecificCollection>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/collectionHelper",
-            "name": "collectionHelper",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper\").ItemsServiceHelper<SpecificCollection>",
-            "modifiers": [],
-            "position": {
-              "startLine": 90,
-              "startColumn": 5,
-              "endLine": 90,
-              "endColumn": 61
-            }
-          },
-          "position": {
-            "startLine": 75,
-            "startColumn": 5,
-            "endLine": 75,
-            "endColumn": 61
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/fieldForDirectusFileId": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/fieldForDirectusFileId",
-          "name": "fieldForDirectusFileId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/fieldForDirectusFileId",
-            "name": "fieldForDirectusFileId",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 92,
-              "startColumn": 5,
-              "endLine": 92,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 76,
-            "startColumn": 5,
-            "endLine": 76,
-            "endColumn": 35
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/dict": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/dict",
-          "name": "dict",
-          "type": "FileReferenceDict",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/dict",
-            "name": "dict",
-            "type": "FileReferenceDict",
-            "modifiers": [],
-            "position": {
-              "startLine": 93,
-              "startColumn": 5,
-              "endLine": 93,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 77,
-            "startColumn": 5,
-            "endLine": 77,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-contextfieldForDirectusFileIddict": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-contextfieldForDirectusFileIddict",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "from_class_or_interface_name": "FileCleanupWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "from_method_name": "processSingletonCollection",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "to_class_or_interface_name": "FileCleanupWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "to_method_name": "processCollectionRelation",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 119,
-              "startColumn": 5,
-              "endLine": 119,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 74,
-            "startColumn": 5,
-            "endLine": 74,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/fieldForDirectusFileId": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/fieldForDirectusFileId",
-          "name": "fieldForDirectusFileId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/fieldForDirectusFileId",
-            "name": "fieldForDirectusFileId",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 122,
-              "startColumn": 5,
-              "endLine": 122,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 76,
-            "startColumn": 5,
-            "endLine": 76,
-            "endColumn": 35
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/dict": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/dict",
-          "name": "dict",
-          "type": "FileReferenceDict",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/dict",
-            "name": "dict",
-            "type": "FileReferenceDict",
-            "modifiers": [],
-            "position": {
-              "startLine": 123,
-              "startColumn": 5,
-              "endLine": 123,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 77,
-            "startColumn": 5,
-            "endLine": 77,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-contextcollectionHelperfieldForDirectusFileIddict": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-contextcollectionHelperfieldForDirectusFileIddict",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "from_class_or_interface_name": "FileCleanupWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "from_method_name": "processNonSingletonCollection",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "to_class_or_interface_name": "FileCleanupWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "to_method_name": "processSingletonCollection",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 74,
-              "startColumn": 5,
-              "endLine": 74,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 89,
-            "startColumn": 5,
-            "endLine": 89,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/collectionHelper": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/collectionHelper",
-          "name": "collectionHelper",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper\").ItemsServiceHelper<SpecificCollection>",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/collectionHelper",
-            "name": "collectionHelper",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/ItemsServiceHelper\").ItemsServiceHelper<SpecificCollection>",
-            "modifiers": [],
-            "position": {
-              "startLine": 75,
-              "startColumn": 5,
-              "endLine": 75,
-              "endColumn": 61
-            }
-          },
-          "position": {
-            "startLine": 90,
-            "startColumn": 5,
-            "endLine": 90,
-            "endColumn": 61
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/fieldForDirectusFileId": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/fieldForDirectusFileId",
-          "name": "fieldForDirectusFileId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/fieldForDirectusFileId",
-            "name": "fieldForDirectusFileId",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 76,
-              "startColumn": 5,
-              "endLine": 76,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 92,
-            "startColumn": 5,
-            "endLine": 92,
-            "endColumn": 35
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/dict": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/dict",
-          "name": "dict",
-          "type": "FileReferenceDict",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/dict",
-            "name": "dict",
-            "type": "FileReferenceDict",
-            "modifiers": [],
-            "position": {
-              "startLine": 77,
-              "startColumn": 5,
-              "endLine": 77,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 93,
-            "startColumn": 5,
-            "endLine": 93,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-contextcollectionNamefieldForDirectusFileIddict": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-contextcollectionNamefieldForDirectusFileIddict",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "from_class_or_interface_name": "FileCleanupWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "from_method_name": "processNonSingletonCollection",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "to_class_or_interface_name": "FileCleanupWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "to_method_name": "processCollectionRelation",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 119,
-              "startColumn": 5,
-              "endLine": 119,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 89,
-            "startColumn": 5,
-            "endLine": 89,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/collectionName": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/collectionName",
-          "name": "collectionName",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/collectionName",
-            "name": "collectionName",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 121,
-              "startColumn": 5,
-              "endLine": 121,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 91,
-            "startColumn": 5,
-            "endLine": 91,
-            "endColumn": 27
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/fieldForDirectusFileId": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/fieldForDirectusFileId",
-          "name": "fieldForDirectusFileId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/fieldForDirectusFileId",
-            "name": "fieldForDirectusFileId",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 122,
-              "startColumn": 5,
-              "endLine": 122,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 92,
-            "startColumn": 5,
-            "endLine": 92,
-            "endColumn": 35
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/dict": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/dict",
-          "name": "dict",
-          "type": "FileReferenceDict",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/dict",
-            "name": "dict",
-            "type": "FileReferenceDict",
-            "modifiers": [],
-            "position": {
-              "startLine": 123,
-              "startColumn": 5,
-              "endLine": 123,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 93,
-            "startColumn": 5,
-            "endLine": 93,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-contextfieldForDirectusFileIddict": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection-contextfieldForDirectusFileIddict",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "from_class_or_interface_name": "FileCleanupWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "from_method_name": "processCollectionRelation",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "to_class_or_interface_name": "FileCleanupWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "to_method_name": "processSingletonCollection",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 74,
-              "startColumn": 5,
-              "endLine": 74,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 119,
-            "startColumn": 5,
-            "endLine": 119,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/fieldForDirectusFileId": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/fieldForDirectusFileId",
-          "name": "fieldForDirectusFileId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/fieldForDirectusFileId",
-            "name": "fieldForDirectusFileId",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 76,
-              "startColumn": 5,
-              "endLine": 76,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 122,
-            "startColumn": 5,
-            "endLine": 122,
-            "endColumn": 35
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/dict": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/dict",
-          "name": "dict",
-          "type": "FileReferenceDict",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processSingletonCollection/parameter/dict",
-            "name": "dict",
-            "type": "FileReferenceDict",
-            "modifiers": [],
-            "position": {
-              "startLine": 77,
-              "startColumn": 5,
-              "endLine": 77,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 123,
-            "startColumn": 5,
-            "endLine": 123,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-contextcollectionNamefieldForDirectusFileIddict": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection-contextcollectionNamefieldForDirectusFileIddict",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "from_class_or_interface_name": "FileCleanupWorkflow",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "from_method_name": "processCollectionRelation",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts",
-      "to_class_or_interface_name": "FileCleanupWorkflow",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow",
-      "to_method_name": "processNonSingletonCollection",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/context": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/context",
-          "name": "context",
-          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/context",
-            "name": "context",
-            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
-            "modifiers": [],
-            "position": {
-              "startLine": 89,
-              "startColumn": 5,
-              "endLine": 89,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 119,
-            "startColumn": 5,
-            "endLine": 119,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/collectionName": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/collectionName",
-          "name": "collectionName",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/collectionName",
-            "name": "collectionName",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 91,
-              "startColumn": 5,
-              "endLine": 91,
-              "endColumn": 27
-            }
-          },
-          "position": {
-            "startLine": 121,
-            "startColumn": 5,
-            "endLine": 121,
-            "endColumn": 27
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/fieldForDirectusFileId": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/fieldForDirectusFileId",
-          "name": "fieldForDirectusFileId",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/fieldForDirectusFileId",
-            "name": "fieldForDirectusFileId",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 92,
-              "startColumn": 5,
-              "endLine": 92,
-              "endColumn": 35
-            }
-          },
-          "position": {
-            "startLine": 122,
-            "startColumn": 5,
-            "endLine": 122,
-            "endColumn": 35
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/dict": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation/parameter/dict",
-          "name": "dict",
-          "type": "FileReferenceDict",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processNonSingletonCollection/parameter/dict",
-            "name": "dict",
-            "type": "FileReferenceDict",
-            "modifiers": [],
-            "position": {
-              "startLine": 93,
-              "startColumn": 5,
-              "endLine": 93,
-              "endColumn": 28
-            }
-          },
-          "position": {
-            "startLine": 123,
-            "startColumn": 5,
-            "endLine": 123,
-            "endColumn": 28
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
     "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/scanSchemaRelations-contextschemadict": {
       "type": "data_clump",
       "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/processCollectionRelation-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/file-cleanup-hook/index.ts/class/FileCleanupWorkflow/method/scanSchemaRelations-contextschemadict",
@@ -801,16 +119,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 140,
+              "startLine": 144,
               "startColumn": 5,
-              "endLine": 140,
+              "endLine": 144,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 119,
+            "startLine": 122,
             "startColumn": 5,
-            "endLine": 119,
+            "endLine": 122,
             "endColumn": 32
           }
         },
@@ -826,16 +144,16 @@
             "type": "SchemaOverview",
             "modifiers": [],
             "position": {
-              "startLine": 141,
+              "startLine": 145,
               "startColumn": 5,
-              "endLine": 141,
+              "endLine": 145,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 120,
+            "startLine": 123,
             "startColumn": 5,
-            "endLine": 120,
+            "endLine": 123,
             "endColumn": 27
           }
         },
@@ -851,16 +169,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 142,
+              "startLine": 146,
               "startColumn": 5,
-              "endLine": 142,
+              "endLine": 146,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 123,
+            "startLine": 126,
             "startColumn": 5,
-            "endLine": 123,
+            "endLine": 126,
             "endColumn": 28
           }
         }
@@ -898,16 +216,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 119,
+              "startLine": 122,
               "startColumn": 5,
-              "endLine": 119,
+              "endLine": 122,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 140,
+            "startLine": 144,
             "startColumn": 5,
-            "endLine": 140,
+            "endLine": 144,
             "endColumn": 32
           }
         },
@@ -923,16 +241,16 @@
             "type": "SchemaOverview",
             "modifiers": [],
             "position": {
-              "startLine": 120,
+              "startLine": 123,
               "startColumn": 5,
-              "endLine": 120,
+              "endLine": 123,
               "endColumn": 27
             }
           },
           "position": {
-            "startLine": 141,
+            "startLine": 145,
             "startColumn": 5,
-            "endLine": 141,
+            "endLine": 145,
             "endColumn": 27
           }
         },
@@ -948,16 +266,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 123,
+              "startLine": 126,
               "startColumn": 5,
-              "endLine": 123,
+              "endLine": 126,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 142,
+            "startLine": 146,
             "startColumn": 5,
-            "endLine": 142,
+            "endLine": 146,
             "endColumn": 28
           }
         }
@@ -995,16 +313,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 192,
+              "startLine": 196,
               "startColumn": 5,
-              "endLine": 192,
+              "endLine": 196,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 169,
+            "startLine": 173,
             "startColumn": 5,
-            "endLine": 169,
+            "endLine": 173,
             "endColumn": 32
           }
         },
@@ -1020,16 +338,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 193,
+              "startLine": 197,
               "startColumn": 5,
-              "endLine": 193,
+              "endLine": 197,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 170,
+            "startLine": 174,
             "startColumn": 5,
-            "endLine": 170,
+            "endLine": 174,
             "endColumn": 64
           }
         },
@@ -1045,16 +363,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 194,
+              "startLine": 198,
               "startColumn": 5,
-              "endLine": 194,
+              "endLine": 198,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 171,
+            "startLine": 175,
             "startColumn": 5,
-            "endLine": 171,
+            "endLine": 175,
             "endColumn": 28
           }
         }
@@ -1092,16 +410,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 237,
+              "startLine": 241,
               "startColumn": 5,
-              "endLine": 237,
+              "endLine": 241,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 169,
+            "startLine": 173,
             "startColumn": 5,
-            "endLine": 169,
+            "endLine": 173,
             "endColumn": 32
           }
         },
@@ -1117,16 +435,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 238,
+              "startLine": 242,
               "startColumn": 5,
-              "endLine": 238,
+              "endLine": 242,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 170,
+            "startLine": 174,
             "startColumn": 5,
-            "endLine": 170,
+            "endLine": 174,
             "endColumn": 64
           }
         },
@@ -1142,16 +460,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 241,
+              "startLine": 245,
               "startColumn": 5,
-              "endLine": 241,
+              "endLine": 245,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 172,
+            "startLine": 176,
             "startColumn": 5,
-            "endLine": 172,
+            "endLine": 176,
             "endColumn": 22
           }
         }
@@ -1189,16 +507,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 169,
+              "startLine": 173,
               "startColumn": 5,
-              "endLine": 169,
+              "endLine": 173,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 192,
+            "startLine": 196,
             "startColumn": 5,
-            "endLine": 192,
+            "endLine": 196,
             "endColumn": 32
           }
         },
@@ -1214,16 +532,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 170,
+              "startLine": 174,
               "startColumn": 5,
-              "endLine": 170,
+              "endLine": 174,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 193,
+            "startLine": 197,
             "startColumn": 5,
-            "endLine": 193,
+            "endLine": 197,
             "endColumn": 64
           }
         },
@@ -1239,16 +557,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 171,
+              "startLine": 175,
               "startColumn": 5,
-              "endLine": 171,
+              "endLine": 175,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 194,
+            "startLine": 198,
             "startColumn": 5,
-            "endLine": 194,
+            "endLine": 198,
             "endColumn": 28
           }
         }
@@ -1286,16 +604,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 237,
+              "startLine": 241,
               "startColumn": 5,
-              "endLine": 237,
+              "endLine": 241,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 192,
+            "startLine": 196,
             "startColumn": 5,
-            "endLine": 192,
+            "endLine": 196,
             "endColumn": 32
           }
         },
@@ -1311,16 +629,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 238,
+              "startLine": 242,
               "startColumn": 5,
-              "endLine": 238,
+              "endLine": 242,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 193,
+            "startLine": 197,
             "startColumn": 5,
-            "endLine": 193,
+            "endLine": 197,
             "endColumn": 64
           }
         },
@@ -1336,16 +654,16 @@
             "type": "FileDiskSpaceDict",
             "modifiers": [],
             "position": {
-              "startLine": 240,
+              "startLine": 244,
               "startColumn": 5,
-              "endLine": 240,
+              "endLine": 244,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 195,
+            "startLine": 199,
             "startColumn": 5,
-            "endLine": 195,
+            "endLine": 199,
             "endColumn": 37
           }
         }
@@ -1383,16 +701,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 169,
+              "startLine": 173,
               "startColumn": 5,
-              "endLine": 169,
+              "endLine": 173,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 237,
+            "startLine": 241,
             "startColumn": 5,
-            "endLine": 237,
+            "endLine": 241,
             "endColumn": 32
           }
         },
@@ -1408,16 +726,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 170,
+              "startLine": 174,
               "startColumn": 5,
-              "endLine": 170,
+              "endLine": 174,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 238,
+            "startLine": 242,
             "startColumn": 5,
-            "endLine": 238,
+            "endLine": 242,
             "endColumn": 64
           }
         },
@@ -1433,16 +751,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 172,
+              "startLine": 176,
               "startColumn": 5,
-              "endLine": 172,
+              "endLine": 176,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 241,
+            "startLine": 245,
             "startColumn": 5,
-            "endLine": 241,
+            "endLine": 245,
             "endColumn": 22
           }
         }
@@ -1480,16 +798,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 192,
+              "startLine": 196,
               "startColumn": 5,
-              "endLine": 192,
+              "endLine": 196,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 237,
+            "startLine": 241,
             "startColumn": 5,
-            "endLine": 237,
+            "endLine": 241,
             "endColumn": 32
           }
         },
@@ -1505,16 +823,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 193,
+              "startLine": 197,
               "startColumn": 5,
-              "endLine": 193,
+              "endLine": 197,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 238,
+            "startLine": 242,
             "startColumn": 5,
-            "endLine": 238,
+            "endLine": 242,
             "endColumn": 64
           }
         },
@@ -1530,266 +848,22 @@
             "type": "FileDiskSpaceDict",
             "modifiers": [],
             "position": {
-              "startLine": 195,
+              "startLine": 199,
               "startColumn": 5,
-              "endLine": 195,
+              "endLine": 199,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 240,
+            "startLine": 244,
             "startColumn": 5,
-            "endLine": 240,
+            "endLine": 244,
             "endColumn": 37
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 1,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts-filterLabelfilterLikesfilterDislikesfilterDateUpdatedFeedbackLabelEntries": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts-filterLabelfilterLikesfilterDislikesfilterDateUpdatedFeedbackLabelEntries",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
-      "from_class_or_interface_name": "ReportGenerator",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator",
-      "from_method_name": "addPerCanteenLabelCounts",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
-      "to_class_or_interface_name": "ReportGenerator",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator",
-      "to_method_name": "getCanteenFeedbackCounts",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterLabel": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterLabel",
-          "name": "filterLabel",
-          "type": "FieldFilter",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterLabel",
-            "name": "filterLabel",
-            "type": "FieldFilter",
-            "modifiers": [],
-            "position": {
-              "startLine": 383,
-              "startColumn": 34,
-              "endLine": 383,
-              "endColumn": 58
-            }
-          },
-          "position": {
-            "startLine": 270,
-            "startColumn": 5,
-            "endLine": 270,
-            "endColumn": 29
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterLikes": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterLikes",
-          "name": "filterLikes",
-          "type": "FieldFilter",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterLikes",
-            "name": "filterLikes",
-            "type": "FieldFilter",
-            "modifiers": [],
-            "position": {
-              "startLine": 383,
-              "startColumn": 60,
-              "endLine": 383,
-              "endColumn": 84
-            }
-          },
-          "position": {
-            "startLine": 271,
-            "startColumn": 5,
-            "endLine": 271,
-            "endColumn": 29
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterDislikes": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterDislikes",
-          "name": "filterDislikes",
-          "type": "FieldFilter",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterDislikes",
-            "name": "filterDislikes",
-            "type": "FieldFilter",
-            "modifiers": [],
-            "position": {
-              "startLine": 383,
-              "startColumn": 86,
-              "endLine": 383,
-              "endColumn": 113
-            }
-          },
-          "position": {
-            "startLine": 272,
-            "startColumn": 5,
-            "endLine": 272,
-            "endColumn": 32
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterDateUpdatedFeedbackLabelEntries": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterDateUpdatedFeedbackLabelEntries",
-          "name": "filterDateUpdatedFeedbackLabelEntries",
-          "type": "Filter[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterDateUpdatedFeedbackLabelEntries",
-            "name": "filterDateUpdatedFeedbackLabelEntries",
-            "type": "Filter[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 383,
-              "startColumn": 115,
-              "endLine": 383,
-              "endColumn": 162
-            }
-          },
-          "position": {
-            "startLine": 273,
-            "startColumn": 5,
-            "endLine": 273,
-            "endColumn": 52
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
-        "cluster_type": 1
-      }
-    },
-    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts-filterLabelfilterLikesfilterDislikesfilterDateUpdatedFeedbackLabelEntries": {
-      "type": "data_clump",
-      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts-filterLabelfilterLikesfilterDislikesfilterDateUpdatedFeedbackLabelEntries",
-      "probability": 1,
-      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
-      "from_class_or_interface_name": "ReportGenerator",
-      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator",
-      "from_method_name": "getCanteenFeedbackCounts",
-      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts",
-      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts",
-      "to_class_or_interface_name": "ReportGenerator",
-      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator",
-      "to_method_name": "addPerCanteenLabelCounts",
-      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts",
-      "data_clump_type": "parameters_to_parameters_data_clump",
-      "data_clump_data": {
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterLabel": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterLabel",
-          "name": "filterLabel",
-          "type": "FieldFilter",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterLabel",
-            "name": "filterLabel",
-            "type": "FieldFilter",
-            "modifiers": [],
-            "position": {
-              "startLine": 270,
-              "startColumn": 5,
-              "endLine": 270,
-              "endColumn": 29
-            }
-          },
-          "position": {
-            "startLine": 383,
-            "startColumn": 34,
-            "endLine": 383,
-            "endColumn": 58
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterLikes": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterLikes",
-          "name": "filterLikes",
-          "type": "FieldFilter",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterLikes",
-            "name": "filterLikes",
-            "type": "FieldFilter",
-            "modifiers": [],
-            "position": {
-              "startLine": 271,
-              "startColumn": 5,
-              "endLine": 271,
-              "endColumn": 29
-            }
-          },
-          "position": {
-            "startLine": 383,
-            "startColumn": 60,
-            "endLine": 383,
-            "endColumn": 84
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterDislikes": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterDislikes",
-          "name": "filterDislikes",
-          "type": "FieldFilter",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterDislikes",
-            "name": "filterDislikes",
-            "type": "FieldFilter",
-            "modifiers": [],
-            "position": {
-              "startLine": 272,
-              "startColumn": 5,
-              "endLine": 272,
-              "endColumn": 32
-            }
-          },
-          "position": {
-            "startLine": 383,
-            "startColumn": 86,
-            "endLine": 383,
-            "endColumn": 113
-          }
-        },
-        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterDateUpdatedFeedbackLabelEntries": {
-          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/getCanteenFeedbackCounts/parameter/filterDateUpdatedFeedbackLabelEntries",
-          "name": "filterDateUpdatedFeedbackLabelEntries",
-          "type": "Filter[]",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-feedback-report-schedule/ReportGenerator.ts/class/ReportGenerator/method/addPerCanteenLabelCounts/parameter/filterDateUpdatedFeedbackLabelEntries",
-            "name": "filterDateUpdatedFeedbackLabelEntries",
-            "type": "Filter[]",
-            "modifiers": [],
-            "position": {
-              "startLine": 273,
-              "startColumn": 5,
-              "endLine": 273,
-              "endColumn": 52
-            }
-          },
-          "position": {
-            "startLine": 383,
-            "startColumn": 115,
-            "endLine": 383,
-            "endColumn": 162
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 2,
         "cluster_type": 1
       }
     }
