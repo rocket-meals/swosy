@@ -1,14 +1,14 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-22T21:02:59.528Z",
+  "report_timestamp": "2026-03-22T21:42:18.686Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 89,
-          "average": 1.5575757575757576,
+          "average": 1.5568499534016775,
           "amountSavedValuesForKeys": 3341,
           "amountKeys": 25
         },
@@ -20,24 +20,24 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 89,
-          "average": 1.572975517890772,
+          "average": 1.572235294117647,
           "amountSavedValuesForKeys": 3341,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3828,
-        "detection_time_ms": 66,
+        "ast_generation_time_ms": 3902,
+        "detection_time_ms": 68,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 237.62,
-          "os_memory_free": 14932721664,
-          "os_memory_total": 16767234048,
+          "os_uptime": 652.8,
+          "os_memory_free": 14983315456,
+          "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "827af9a377c60a73f75cff70a13a608fa54006cb",
-    "project_commit_hash": "827af9a377c60a73f75cff70a13a608fa54006cb",
+    "project_version": "1384651e2d72653f35dd677bab282711bff9b57b",
+    "project_commit_hash": "1384651e2d72653f35dd677bab282711bff9b57b",
     "project_tag": null,
-    "project_commit_date": "1774213266",
+    "project_commit_date": "1774215641",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -119,16 +119,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 198,
+              "startLine": 199,
               "startColumn": 5,
-              "endLine": 198,
+              "endLine": 199,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 175,
+            "startLine": 176,
             "startColumn": 5,
-            "endLine": 175,
+            "endLine": 176,
             "endColumn": 32
           }
         },
@@ -144,16 +144,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 199,
+              "startLine": 200,
               "startColumn": 5,
-              "endLine": 199,
+              "endLine": 200,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 176,
+            "startLine": 177,
             "startColumn": 5,
-            "endLine": 176,
+            "endLine": 177,
             "endColumn": 64
           }
         },
@@ -169,16 +169,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 200,
+              "startLine": 201,
               "startColumn": 5,
-              "endLine": 200,
+              "endLine": 201,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 177,
+            "startLine": 178,
             "startColumn": 5,
-            "endLine": 177,
+            "endLine": 178,
             "endColumn": 28
           }
         }
@@ -216,16 +216,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 243,
+              "startLine": 244,
               "startColumn": 5,
-              "endLine": 243,
+              "endLine": 244,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 175,
+            "startLine": 176,
             "startColumn": 5,
-            "endLine": 175,
+            "endLine": 176,
             "endColumn": 32
           }
         },
@@ -241,16 +241,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 244,
+              "startLine": 245,
               "startColumn": 5,
-              "endLine": 244,
+              "endLine": 245,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 176,
+            "startLine": 177,
             "startColumn": 5,
-            "endLine": 176,
+            "endLine": 177,
             "endColumn": 64
           }
         },
@@ -266,16 +266,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 247,
+              "startLine": 248,
               "startColumn": 5,
-              "endLine": 247,
+              "endLine": 248,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 178,
+            "startLine": 179,
             "startColumn": 5,
-            "endLine": 178,
+            "endLine": 179,
             "endColumn": 22
           }
         }
@@ -313,16 +313,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 175,
+              "startLine": 176,
               "startColumn": 5,
-              "endLine": 175,
+              "endLine": 176,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 198,
+            "startLine": 199,
             "startColumn": 5,
-            "endLine": 198,
+            "endLine": 199,
             "endColumn": 32
           }
         },
@@ -338,16 +338,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 176,
+              "startLine": 177,
               "startColumn": 5,
-              "endLine": 176,
+              "endLine": 177,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 199,
+            "startLine": 200,
             "startColumn": 5,
-            "endLine": 199,
+            "endLine": 200,
             "endColumn": 64
           }
         },
@@ -363,16 +363,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 177,
+              "startLine": 178,
               "startColumn": 5,
-              "endLine": 177,
+              "endLine": 178,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 200,
+            "startLine": 201,
             "startColumn": 5,
-            "endLine": 200,
+            "endLine": 201,
             "endColumn": 28
           }
         }
@@ -410,16 +410,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 243,
+              "startLine": 244,
               "startColumn": 5,
-              "endLine": 243,
+              "endLine": 244,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 198,
+            "startLine": 199,
             "startColumn": 5,
-            "endLine": 198,
+            "endLine": 199,
             "endColumn": 32
           }
         },
@@ -435,16 +435,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 244,
+              "startLine": 245,
               "startColumn": 5,
-              "endLine": 244,
+              "endLine": 245,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 199,
+            "startLine": 200,
             "startColumn": 5,
-            "endLine": 199,
+            "endLine": 200,
             "endColumn": 64
           }
         },
@@ -460,16 +460,16 @@
             "type": "FileDiskSpaceDict",
             "modifiers": [],
             "position": {
-              "startLine": 246,
+              "startLine": 247,
               "startColumn": 5,
-              "endLine": 246,
+              "endLine": 247,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 201,
+            "startLine": 202,
             "startColumn": 5,
-            "endLine": 201,
+            "endLine": 202,
             "endColumn": 37
           }
         }
@@ -507,16 +507,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 175,
+              "startLine": 176,
               "startColumn": 5,
-              "endLine": 175,
+              "endLine": 176,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 243,
+            "startLine": 244,
             "startColumn": 5,
-            "endLine": 243,
+            "endLine": 244,
             "endColumn": 32
           }
         },
@@ -532,16 +532,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 176,
+              "startLine": 177,
               "startColumn": 5,
-              "endLine": 176,
+              "endLine": 177,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 244,
+            "startLine": 245,
             "startColumn": 5,
-            "endLine": 244,
+            "endLine": 245,
             "endColumn": 64
           }
         },
@@ -557,16 +557,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 178,
+              "startLine": 179,
               "startColumn": 5,
-              "endLine": 178,
+              "endLine": 179,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 247,
+            "startLine": 248,
             "startColumn": 5,
-            "endLine": 247,
+            "endLine": 248,
             "endColumn": 22
           }
         }
@@ -604,16 +604,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 198,
+              "startLine": 199,
               "startColumn": 5,
-              "endLine": 198,
+              "endLine": 199,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 243,
+            "startLine": 244,
             "startColumn": 5,
-            "endLine": 243,
+            "endLine": 244,
             "endColumn": 32
           }
         },
@@ -629,16 +629,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 199,
+              "startLine": 200,
               "startColumn": 5,
-              "endLine": 199,
+              "endLine": 200,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 244,
+            "startLine": 245,
             "startColumn": 5,
-            "endLine": 244,
+            "endLine": 245,
             "endColumn": 64
           }
         },
@@ -654,16 +654,16 @@
             "type": "FileDiskSpaceDict",
             "modifiers": [],
             "position": {
-              "startLine": 201,
+              "startLine": 202,
               "startColumn": 5,
-              "endLine": 201,
+              "endLine": 202,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 246,
+            "startLine": 247,
             "startColumn": 5,
-            "endLine": 246,
+            "endLine": 247,
             "endColumn": 37
           }
         }
