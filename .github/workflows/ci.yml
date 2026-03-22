@@ -153,6 +153,7 @@ jobs:
           badge-output-path: reports/data-clumps-doctor/badges/data-clumps.svg
           source-language-type: typescript
           generate-issue: 'true'
+          refactor-amount: 15
           detector-options-paths-ignored-in-detection-comparison: '**/databaseTypes/types.ts'
       - name: "💾 Commit reports"
         run: |

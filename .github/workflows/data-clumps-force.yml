@@ -2,6 +2,15 @@ name: "🩺 Data Clumps Force Analysis"
 
 on:
   workflow_dispatch:
+    inputs:
+      start-directory:
+        description: "Start directory for the analysis"
+        required: false
+        default: "."
+      amount:
+        description: "Number of top data clumps to list in the issue body"
+        required: false
+        default: "5"
 
 jobs:
   data-clumps-force:
@@ -23,12 +32,13 @@ jobs:
         id: data-clumps
         uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master
         with:
-          path-to-source: .
+          path-to-source: ${{ github.event.inputs.start-directory || '.' }}
           output-path: reports/data-clumps-doctor/data-clumps.json
           badge-output-path: reports/data-clumps-doctor/badges/data-clumps.svg
           source-language-type: typescript
           generate-issue: 'true'
           only-update-if-changes: 'false'
+          refactor-amount: ${{ github.event.inputs.amount || '5' }}
           detector-options-paths-ignored-in-detection-comparison: '**/databaseTypes/types.ts'
       - name: "💾 Commit reports"
         run: |

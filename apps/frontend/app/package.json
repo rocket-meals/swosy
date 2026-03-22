@@ -145,7 +145,7 @@
     "react-test-renderer": "18.3.1",
     "redux-logger": "3.0.6",
     "ts-node": "^10.9.2",
-    "typescript": "~5.8.3"
+    "typescript": "^5.9.3"
   },
   "private": true
 }

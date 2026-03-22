@@ -19,13 +19,20 @@ export type DebugAction = {
         disabled?: boolean;
 };
 
-interface DebugViewProps {
+/**
+ * Shared base props for overlay/panel components that can display a title,
+ * control their own visibility, and render arbitrary children.
+ */
+export interface OverlayBaseProps {
         title?: string;
+        isVisible?: boolean;
+        children?: ReactNode;
+}
+
+interface DebugViewProps extends OverlayBaseProps {
         logs?: DebugLog[];
         actions?: DebugAction[];
-        isVisible?: boolean;
         showInDevMode?: boolean;
-        children?: ReactNode;
 }
 
 const DebugView: React.FC<DebugViewProps> = ({

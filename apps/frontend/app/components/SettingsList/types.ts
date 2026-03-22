@@ -1,7 +1,15 @@
 import {PropsWithChildren} from "react";
 
-type SettingsListPropsOwn = {
+export type SettingsListItemBaseProps = {
         leftIcon?: React.ReactNode;
+        iconBgColor?: string;
+        label?: string;
+        onPress?: () => void;
+        showSeparator?: boolean;
+        noIconIndent?: boolean;
+};
+
+type SettingsListPropsOwn = SettingsListItemBaseProps & {
         /**
          * Custom component rendered in place of the default left icon wrapper.
          */
@@ -11,7 +19,6 @@ type SettingsListPropsOwn = {
          * compatibility with the old `SettingList` component.
          */
         title?: string;
-	label?: string;
 	value?: string;
 	/**
 	 * Element rendered on the right side. "rightIcon" is kept for
@@ -23,7 +30,6 @@ type SettingsListPropsOwn = {
 	 * Press handler. "handleFunction" is kept for backwards
 	 * compatibility with the old `SettingList` component.
 	 */
-	onPress?: () => void;
 	handleFunction?: () => void;
 	/**
 	 * Background color of the left icon wrapper. "iconBgColor" is
@@ -31,16 +37,6 @@ type SettingsListPropsOwn = {
 	 * component.
 	 */
         iconBackgroundColor?: string;
-        iconBgColor?: string;
-        /**
-         * Disable indentation that is normally reserved for the icon column.
-         * Useful when no icon should be displayed.
-         */
-        noIconIndent?: boolean;
-	/**
-	 * Optional separator below the item.
-	 */
-	showSeparator?: boolean;
 	/**
 	 * Visual grouping support. When set to "top" the item receives a
 	 * rounded top border and extra padding at the top. "bottom" applies

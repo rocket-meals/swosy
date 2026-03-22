@@ -5,15 +5,11 @@ import { TranslationKeys } from '@/locales/keys';
 import SettingsListBoolean from '@/components/SettingsListBoolean';
 import { isWeb } from '@/constants/Constants';
 import styles from '../styles';
+import type { FoodDetailsSectionBaseProps } from './types';
 
-interface NotificationSectionProps {
-    theme: any;
+interface NotificationSectionProps extends FoodDetailsSectionBaseProps {
     containerWidth: string | number;
-    translate: (key: string) => string;
-    previousFeedback: any;
     updateNotification: () => void;
-    foodsAreaColor: string;
-    isAccountRequired?: boolean;
 }
 
 const NotificationSection = ({

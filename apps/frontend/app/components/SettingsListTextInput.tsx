@@ -21,33 +21,35 @@ export type CheckTextInputResult = {
 
 export type CheckTextInput = (value: string) => CheckTextInputResult;
 
-export interface SettingsListTextInputSheetProps {
+export type TextInputBaseProps = {
 	placeholder: string;
-	value: string;
-	onChangeText: (text: string) => void;
-	onSave: () => void;
-	saveLabel: string;
-	disableSave?: boolean;
-	autoFocus?: boolean;
 	keyboardType?: KeyboardTypeOptions;
+	inputStyle?: object;
+	autoFocus?: boolean;
+};
+
+export interface TextInputSharedProps extends TextInputBaseProps {
+	saveLabel: string;
 	multiline?: boolean;
 	numberOfLines?: number;
 	textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
-	inputStyle?: object;
 	allowSubmitWhenDisabled?: boolean;
 }
 
-export interface SettingsListTextInputFieldProps {
-	placeholder: string;
+export interface SettingsListTextInputSheetProps extends TextInputSharedProps {
 	value: string;
 	onChangeText: (text: string) => void;
-	keyboardType?: KeyboardTypeOptions;
+	onSave: () => void;
+	disableSave?: boolean;
+}
+
+export interface SettingsListTextInputFieldProps extends TextInputBaseProps {
+	value: string;
+	onChangeText: (text: string) => void;
 	secureTextEntry?: boolean;
 	autoCapitalize?: TextInputProps['autoCapitalize'];
 	autoCorrect?: boolean;
 	textContentType?: TextInputProps['textContentType'];
-	inputStyle?: object;
-	autoFocus?: boolean;
 	returnKeyType?: TextInputProps['returnKeyType'];
 	onSubmitEditing?: TextInputProps['onSubmitEditing'];
 }

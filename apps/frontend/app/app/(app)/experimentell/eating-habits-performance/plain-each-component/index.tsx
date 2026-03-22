@@ -20,17 +20,12 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { getTextFromTranslation, getDescriptionFromTranslation } from '@/helper/resourceHelper';
 import DebugView from '@/components/DebugView';
+import { PlainMarkingBaseProps } from '..';
 
 // ---------------------------------------------------------------------------
 // Minimal plain component – receives resolved strings, no hooks/Redux inside
 // ---------------------------------------------------------------------------
-interface PlainMarkingRowProps {
-	id: string;
-	name: string;
-	description: string;
-	borderColor: string;
-	textColor: string;
-}
+type PlainMarkingRowProps = PlainMarkingBaseProps;
 
 const PlainMarkingRow: React.FC<PlainMarkingRowProps> = ({ id, name, description, borderColor, textColor }) => (
 	<View

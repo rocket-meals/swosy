@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { styles } from './styles';
@@ -8,13 +8,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { useAppSelector } from '@/redux/hooks';
+import { OverlayBaseProps } from '@/components/DebugView';
 
-interface ModalComponentProps {
+interface ModalComponentProps extends OverlayBaseProps {
+	/** Required for ModalComponent: controls whether the modal is displayed. */
 	isVisible: boolean;
-	title?: string;
 	onClose: () => void;
 	onSave: () => void;
-	children?: ReactNode;
 	showButtons?: boolean;
 	disableSave?: boolean;
 }

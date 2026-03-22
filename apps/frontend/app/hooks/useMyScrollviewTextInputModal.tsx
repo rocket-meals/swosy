@@ -1,24 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, KeyboardTypeOptions } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { SettingsListTextInputSheet } from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import type { CheckTextInput } from '@/components/SettingsListTextInput';
+import type { CheckTextInput, TextInputSharedProps } from '@/components/SettingsListTextInput';
 import { borderRadiusContainer } from '@/constants/Constants';
 
-type ModalTextInputSheetProps = {
+type ModalTextInputExtraProps = {
 	initialValue?: string;
-	placeholder: string;
-	saveLabel: string;
-	onSave: (value: string) => void;
-	multiline?: boolean;
-	keyboardType?: KeyboardTypeOptions;
-	numberOfLines?: number;
-	textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
-	inputStyle?: object;
-	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
-	allowSubmitWhenDisabled?: boolean;
+};
+
+type ModalTextInputSheetProps = TextInputSharedProps & ModalTextInputExtraProps & {
+	onSave: (value: string) => void;
 };
 
 const defaultCheckTextInput: CheckTextInput = value => ({
@@ -83,20 +77,9 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	);
 };
 
-type OpenTextInputOptions = {
+type OpenTextInputOptions = TextInputSharedProps & ModalTextInputExtraProps & {
 	title: string;
-	initialValue?: string;
-	placeholder: string;
-	saveLabel: string;
 	onSave: (value: string) => void | Promise<void>;
-	multiline?: boolean;
-	keyboardType?: KeyboardTypeOptions;
-	numberOfLines?: number;
-	textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
-	inputStyle?: object;
-	autoFocus?: boolean;
-	checkTextInput?: CheckTextInput;
-	allowSubmitWhenDisabled?: boolean;
 };
 
 const useMyScrollviewTextInputModal = () => {

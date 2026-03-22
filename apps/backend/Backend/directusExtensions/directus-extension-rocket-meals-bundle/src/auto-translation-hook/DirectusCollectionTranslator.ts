@@ -5,6 +5,12 @@ import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { SchemaOverview } from '@directus/types';
 import {SchemaHelper} from "../helpers/SchemaHelper";
 
+export type TranslationSchemaContext = {
+  schema: SchemaOverview;
+  collectionName: string;
+  translation_field: string;
+};
+
 export class DirectusCollectionTranslator {
   static FIELD_BE_SOURCE_FOR_TRANSLATION = 'be_source_for_translations';
   static FIELD_LET_BE_TRANSLATED = 'let_be_translated';
@@ -33,10 +39,11 @@ export class DirectusCollectionTranslator {
     return false;
   }
 
-  static getSourceTranslationFromTranslations(translations: any, schema: SchemaOverview, collectionName: string, translation_field: string) {
+  static getSourceTranslationFromTranslations(translations: any, context: TranslationSchemaContext) {
+    const { schema, collectionName, translation_field } = context;
     if (!!translations && translations.length > 0) {
       for (let translation of translations) {
-        let let_be_source_for_translation = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translation, DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION, schema, collectionName, translation_field);
+        let let_be_source_for_translation = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translation, DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION, context);
         if (!!let_be_source_for_translation) {
           return translation;
         }
@@ -44,11 +51,11 @@ export class DirectusCollectionTranslator {
     }
   }
 
-  static getSourceTranslationFromListsOfTranslations(listsOfTranslations: any, schema: SchemaOverview, collectionName: string, translation_field: string) {
+  static getSourceTranslationFromListsOfTranslations(listsOfTranslations: any, context: TranslationSchemaContext) {
     if (!!listsOfTranslations && listsOfTranslations.length > 0) {
       for (let i = 0; i < listsOfTranslations.length; i++) {
         let translations = listsOfTranslations[i];
-        let sourceTranslation = DirectusCollectionTranslator.getSourceTranslationFromTranslations(translations, schema, collectionName, translation_field);
+        let sourceTranslation = DirectusCollectionTranslator.getSourceTranslationFromTranslations(translations, context);
         if (!!sourceTranslation) {
           return sourceTranslation;
         }
@@ -96,6 +103,7 @@ export class DirectusCollectionTranslator {
       let workPayload = JSON.parse(JSON.stringify(payload));
 
       const schema = await myDatabaseHelper.getSchema();
+      const context: TranslationSchemaContext = { schema, collectionName, translation_field };
 
       /**
               workPayload either:
@@ -190,8 +198,8 @@ export class DirectusCollectionTranslator {
       let newTranslationsCreateLanguageDict = DirectusCollectionTranslator.parseTranslationListToLanguagesCodeDict(newTranslationsCreateActions);
       let newTranslationsUpdateLanguageDict = DirectusCollectionTranslator.parseTranslationListToLanguagesCodeDict(newTranslationsUpdateActions);
 
-      let sourceTranslationInExistingItem = DirectusCollectionTranslator.getSourceTranslationFromListsOfTranslations([currentTranslations], schema, collectionName, translation_field);
-      let sourceTranslationInPayload = DirectusCollectionTranslator.getSourceTranslationFromListsOfTranslations([newTranslationsCreateActions, newTranslationsUpdateActions], schema, collectionName, translation_field);
+      let sourceTranslationInExistingItem = DirectusCollectionTranslator.getSourceTranslationFromListsOfTranslations([currentTranslations], { schema, collectionName, translation_field });
+      let sourceTranslationInPayload = DirectusCollectionTranslator.getSourceTranslationFromListsOfTranslations([newTranslationsCreateActions, newTranslationsUpdateActions], { schema, collectionName, translation_field });
 
       let sourceTranslation = sourceTranslationInPayload || sourceTranslationInExistingItem;
       /**
@@ -234,7 +242,7 @@ export class DirectusCollectionTranslator {
           let translationsToUpdate = [];
           let translationsToDelete: any[] = [];
 
-          let fieldsToTranslate = DirectusCollectionTranslator.getFieldsToTranslate(schema, collectionName, translation_field);
+          let fieldsToTranslate = DirectusCollectionTranslator.getFieldsToTranslate(context);
           // fieldsToTranslate:  [ 'content', 'title' ]
 
           for (let language of languages) {
@@ -265,7 +273,7 @@ export class DirectusCollectionTranslator {
                 let letBeTranslatedInExistingTranslation = existingTranslation?.[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED];
                 //console.log("The existing translation has the field let_be_translated: ", letBeTranslatedInExistingTranslation);
                 let createTranslation = letBeTranslatedInExistingTranslation;
-                let letBeTranslatedInPayload = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translationInPayload, DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED, schema, collectionName, translation_field);
+                let letBeTranslatedInPayload = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translationInPayload, DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED, context);
                 //console.log("The translation in the payload has the field let_be_translated: ", letBeTranslatedInPayload);
                 if (DirectusCollectionTranslator.isValueDefined(letBeTranslatedInPayload)) {
                   //if payload has false or true, overwrite existing value
@@ -308,7 +316,7 @@ export class DirectusCollectionTranslator {
                 //console.log("Its the source translation, we just pass it through");
                 translationsToCreate.push({
                   ...sourceTranslation,
-                  [DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED]: DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(sourceTranslation, DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED, schema, collectionName, translation_field),
+                  [DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED]: DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(sourceTranslation, DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED, context),
                   [DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION]: true,
                 });
               } else {
@@ -318,7 +326,7 @@ export class DirectusCollectionTranslator {
 
                 //console.log("translationInPayload: ");
                 //console.log(translationInPayload);
-                let letBeTranslatedInPayload = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translationInPayload, DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED, schema, collectionName, translation_field);
+                let letBeTranslatedInPayload = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translationInPayload, DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED, context);
                 let letBeTranslated = true; //only if the user explicitly set it to false, we dont create the translation, otherwise on undefined we create it
                 //console.log("letBeTranslatedInPayload", letBeTranslatedInPayload);
                 if (DirectusCollectionTranslator.isValueDefined(letBeTranslatedInPayload)) {
@@ -367,8 +375,8 @@ export class DirectusCollectionTranslator {
     return value !== undefined && value !== null;
   }
 
-  static getValueFromPayloadOrDefaultValue(payloadItem: any, fieldName: string, schema: SchemaOverview, collectionName: string, translation_field: string) {
-    let translationCollectionSchema = DirectusCollectionTranslator.getTranslationCollectionSchema(schema, collectionName, translation_field);
+  static getValueFromPayloadOrDefaultValue(payloadItem: any, fieldName: string, context: TranslationSchemaContext) {
+    let translationCollectionSchema = DirectusCollectionTranslator.getTranslationCollectionSchema(context);
 
     let valueInPayload = payloadItem?.[fieldName];
     if (DirectusCollectionTranslator.isValueDefined(valueInPayload)) {
@@ -388,7 +396,7 @@ export class DirectusCollectionTranslator {
         let fieldValue = sourceTranslation[field];
         if (!!fieldValue) {
           try {
-            let translatedValue = await translator.translate(fieldValue, sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code, language_code);
+            let translatedValue = await translator.translate({ text: fieldValue, source_language: sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code, destination_language: language_code });
             if (!!translatedValue) {
               translatedItem[field] = translatedValue;
             } else {
@@ -410,7 +418,8 @@ export class DirectusCollectionTranslator {
     return translatedItem;
   }
 
-  static getTranslationCollectionName(schema: SchemaOverview, collectionName: string, translation_field: string): string | null {
+  static getTranslationCollectionName(context: TranslationSchemaContext): string | null {
+    const { schema, collectionName, translation_field } = context;
     //console.log("Get Translation Collection Name for collection: ", collectionName);
     //console.log("translation_field: ", translation_field);
 
@@ -473,8 +482,9 @@ export class DirectusCollectionTranslator {
     return SchemaHelper.getSchemaForCollection(schema, collectionName);
   }
 
-  static getTranslationCollectionSchema(schema: SchemaOverview, collectionName: string, translation_field: string) {
-    let translationCollectionName = DirectusCollectionTranslator.getTranslationCollectionName(schema, collectionName, translation_field);
+  static getTranslationCollectionSchema(context: TranslationSchemaContext) {
+    const { schema } = context;
+    let translationCollectionName = DirectusCollectionTranslator.getTranslationCollectionName(context);
     if (!translationCollectionName) {
       return null;
     }
@@ -488,7 +498,8 @@ export class DirectusCollectionTranslator {
    * Ignores the primary key field
    * Ignores fields that are relations
    */
-  static getFieldsToTranslate(schema: SchemaOverview, collectionName: string, translation_field: string) {
+  static getFieldsToTranslate(context: TranslationSchemaContext) {
+    const { schema } = context;
     /**
      * Get Fields to Translate for collection:  news
      * translationCollectionName:  news_translations
@@ -502,7 +513,7 @@ export class DirectusCollectionTranslator {
      *   'title'
      * ]
      */
-    let translationCollectionInformations = DirectusCollectionTranslator.getTranslationCollectionSchema(schema, collectionName, translation_field);
+    let translationCollectionInformations = DirectusCollectionTranslator.getTranslationCollectionSchema(context);
     let collectionFieldsInformationsDict = translationCollectionInformations?.fields || {};
 
     let collectionFields = Object.keys(collectionFieldsInformationsDict);

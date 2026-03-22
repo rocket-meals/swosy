@@ -4,36 +4,26 @@ import { FoodItemBase } from '@/components/FoodItem/FoodItem';
 import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import { DatabaseTypes } from 'repo-depkit-common';
 import styles from '../styles';
+import { FoodItemSharedRenderProps } from '@/components/FoodItem/types';
 
 interface DayItem {
     foodoffer: DatabaseTypes.Foodoffers | null;
     foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
 }
 
-interface FoodOfferListItemProps {
-    item: DayItem;
-    index: number;
+export interface FoodOfferItemRenderProps extends FoodItemSharedRenderProps {
     cardWidth: number;
     selectedCanteen: DatabaseTypes.Canteens | null;
+}
+
+interface FoodOfferListItemProps extends FoodOfferItemRenderProps {
+    item: DayItem;
+    index: number;
     handleMenuSheet: (sheet: any, props?: any) => void;
     handleImageSheet: (food: DatabaseTypes.Foods) => void;
     getInfoItemContent: (item: DatabaseTypes.FoodoffersInfoItems) => { content: any; popup_button_text?: any; popup_content?: any; } | null;
     itemGap?: number;
     previousFeedback?: any;
-    // Optimization props
-    language?: string;
-    pirateLanguage?: boolean;
-    funLanguageMode?: string | null;
-    serverInfo?: any;
-    appSettings?: any;
-    primaryColor?: string;
-    user?: any;
-    isManagement?: boolean;
-    profile?: any;
-    markings?: any[];
-    screenWidth?: number;
-    theme?: any;
-    amountColumnsForcard?: number;
 }
 
 const FoodOfferListItem: React.FC<FoodOfferListItemProps> = ({

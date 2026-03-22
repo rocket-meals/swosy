@@ -7,6 +7,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { uploadFiles } from '@directus/sdk';
 
 import SettingsList from '@/components/SettingsList';
+import { SettingsListItemBaseProps } from '@/components/SettingsList/types';
 import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -19,32 +20,30 @@ import { RootState } from '@/redux/reducer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { CollectionNames } from 'repo-depkit-common';
 
-type DirectusImageEditModalOptions = {
-	itemId: string | number;
+type DirectusImageEditModalBase = {
 	field: string;
 	collection: CollectionNames;
 	onUpdated?: () => void;
+};
+
+type DirectusImageEditModalOptions = DirectusImageEditModalBase & {
+	itemId: string | number;
 	title?: string;
 };
 
-type DirectusImageEditModalContentProps = {
+type DirectusImageEditModalContentProps = DirectusImageEditModalBase & {
 	itemId: string;
-	field: string;
-	collection: CollectionNames;
-	onUpdated?: () => void;
 	onClose: () => void;
 };
 
-type ActionItem = {
+type ActionItem = Pick<SettingsListItemBaseProps, 'onPress' | 'showSeparator'> & {
 	key: string;
 	label: string;
 	icon?: any;
 	rightElement?: any;
 	rightIcon?: any;
-	onPress?: () => void;
 	isCancel?: boolean;
 	groupPosition?: 'bottom' | 'top' | 'middle' | 'single';
-	showSeparator?: boolean;
 };
 
 const MAX_IMAGE_DIMENSION = 6000;

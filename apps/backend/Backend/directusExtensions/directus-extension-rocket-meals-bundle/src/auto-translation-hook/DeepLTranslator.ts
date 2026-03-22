@@ -1,5 +1,5 @@
 import deepl, { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node';
-import { MyTranslatorInterface } from './MyTranslatorInterface';
+import { MyTranslatorInterface, TranslationRequest } from './MyTranslatorInterface';
 import { ReplaceOptions } from "repo-depkit-common";
 
 export class DeepLTranslator implements MyTranslatorInterface {
@@ -29,7 +29,8 @@ export class DeepLTranslator implements MyTranslatorInterface {
          */
   }
 
-  async translate(text: string, source_language: string, destination_language: string) {
+  async translate(request: TranslationRequest) {
+    const { text, source_language, destination_language } = request;
     let translationResponse = null;
     let sourceLanguageCode = this.getDeepLLanguageCodeSource(source_language);
     let destinationLanguageCode = this.getDeepLLanguageCodeTarget(destination_language);
