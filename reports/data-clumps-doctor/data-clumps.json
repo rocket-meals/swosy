@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-22T18:58:16.425Z",
+  "report_timestamp": "2026-03-22T19:43:12.603Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -13,10 +13,10 @@
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 70,
-          "average": 2.363939899833055,
-          "amountSavedValuesForKeys": 1416,
+          "average": 2.3688524590163933,
+          "amountSavedValuesForKeys": 1445,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
@@ -28,45 +28,45 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3823,
-        "detection_time_ms": 66,
+        "ast_generation_time_ms": 3683,
+        "detection_time_ms": 63,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 974.72,
-          "os_memory_free": 14972559360,
-          "os_memory_total": 16767234048,
+          "os_uptime": 298.75,
+          "os_memory_free": 15022903296,
+          "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 1,
-    "amount_files_with_data_clumps": 1,
-    "amount_methods_with_data_clumps": 3,
+    "amount_classes_or_interfaces_with_data_clumps": 2,
+    "amount_files_with_data_clumps": 2,
+    "amount_methods_with_data_clumps": 6,
     "fields_to_fields_data_clump": 0,
     "parameters_to_fields_data_clump": 0,
-    "parameters_to_parameters_data_clump": 6,
-    "amount_data_clumps": 6
+    "parameters_to_parameters_data_clump": 12,
+    "amount_data_clumps": 12
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "4d5c0216cc1e9be6394f5d3843a020110b1cea0a",
-    "project_commit_hash": "4d5c0216cc1e9be6394f5d3843a020110b1cea0a",
+    "project_version": "e564b8381e0c6c4f19efd2d7becacd7341ad7d50",
+    "project_commit_hash": "e564b8381e0c6c4f19efd2d7becacd7341ad7d50",
     "project_tag": null,
-    "project_commit_date": "1774205800",
+    "project_commit_date": "1774208497",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 419,
-    "number_of_classes_or_interfaces": 856,
-    "number_of_methods": 1286,
+    "number_of_classes_or_interfaces": 855,
+    "number_of_methods": 1291,
     "number_of_data_fields": 3342,
-    "number_of_method_parameters": 1416
+    "number_of_method_parameters": 1445
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -119,16 +119,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 200,
+              "startLine": 198,
               "startColumn": 5,
-              "endLine": 200,
+              "endLine": 198,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 177,
+            "startLine": 175,
             "startColumn": 5,
-            "endLine": 177,
+            "endLine": 175,
             "endColumn": 32
           }
         },
@@ -144,16 +144,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 201,
+              "startLine": 199,
               "startColumn": 5,
-              "endLine": 201,
+              "endLine": 199,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 178,
+            "startLine": 176,
             "startColumn": 5,
-            "endLine": 178,
+            "endLine": 176,
             "endColumn": 64
           }
         },
@@ -169,16 +169,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 202,
+              "startLine": 200,
               "startColumn": 5,
-              "endLine": 202,
+              "endLine": 200,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 179,
+            "startLine": 177,
             "startColumn": 5,
-            "endLine": 179,
+            "endLine": 177,
             "endColumn": 28
           }
         }
@@ -216,16 +216,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 245,
+              "startLine": 243,
               "startColumn": 5,
-              "endLine": 245,
+              "endLine": 243,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 177,
+            "startLine": 175,
             "startColumn": 5,
-            "endLine": 177,
+            "endLine": 175,
             "endColumn": 32
           }
         },
@@ -241,16 +241,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 246,
+              "startLine": 244,
               "startColumn": 5,
-              "endLine": 246,
+              "endLine": 244,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 178,
+            "startLine": 176,
             "startColumn": 5,
-            "endLine": 178,
+            "endLine": 176,
             "endColumn": 64
           }
         },
@@ -266,16 +266,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 249,
+              "startLine": 247,
               "startColumn": 5,
-              "endLine": 249,
+              "endLine": 247,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 180,
+            "startLine": 178,
             "startColumn": 5,
-            "endLine": 180,
+            "endLine": 178,
             "endColumn": 22
           }
         }
@@ -313,16 +313,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 177,
+              "startLine": 175,
               "startColumn": 5,
-              "endLine": 177,
+              "endLine": 175,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 200,
+            "startLine": 198,
             "startColumn": 5,
-            "endLine": 200,
+            "endLine": 198,
             "endColumn": 32
           }
         },
@@ -338,16 +338,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 178,
+              "startLine": 176,
               "startColumn": 5,
-              "endLine": 178,
+              "endLine": 176,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 201,
+            "startLine": 199,
             "startColumn": 5,
-            "endLine": 201,
+            "endLine": 199,
             "endColumn": 64
           }
         },
@@ -363,16 +363,16 @@
             "type": "FileReferenceDict",
             "modifiers": [],
             "position": {
-              "startLine": 179,
+              "startLine": 177,
               "startColumn": 5,
-              "endLine": 179,
+              "endLine": 177,
               "endColumn": 28
             }
           },
           "position": {
-            "startLine": 202,
+            "startLine": 200,
             "startColumn": 5,
-            "endLine": 202,
+            "endLine": 200,
             "endColumn": 28
           }
         }
@@ -410,16 +410,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 245,
+              "startLine": 243,
               "startColumn": 5,
-              "endLine": 245,
+              "endLine": 243,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 200,
+            "startLine": 198,
             "startColumn": 5,
-            "endLine": 200,
+            "endLine": 198,
             "endColumn": 32
           }
         },
@@ -435,16 +435,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 246,
+              "startLine": 244,
               "startColumn": 5,
-              "endLine": 246,
+              "endLine": 244,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 201,
+            "startLine": 199,
             "startColumn": 5,
-            "endLine": 201,
+            "endLine": 199,
             "endColumn": 64
           }
         },
@@ -460,16 +460,16 @@
             "type": "FileDiskSpaceDict",
             "modifiers": [],
             "position": {
-              "startLine": 248,
+              "startLine": 246,
               "startColumn": 5,
-              "endLine": 248,
+              "endLine": 246,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 203,
+            "startLine": 201,
             "startColumn": 5,
-            "endLine": 203,
+            "endLine": 201,
             "endColumn": 37
           }
         }
@@ -507,16 +507,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 177,
+              "startLine": 175,
               "startColumn": 5,
-              "endLine": 177,
+              "endLine": 175,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 245,
+            "startLine": 243,
             "startColumn": 5,
-            "endLine": 245,
+            "endLine": 243,
             "endColumn": 32
           }
         },
@@ -532,16 +532,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 178,
+              "startLine": 176,
               "startColumn": 5,
-              "endLine": 178,
+              "endLine": 176,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 246,
+            "startLine": 244,
             "startColumn": 5,
-            "endLine": 246,
+            "endLine": 244,
             "endColumn": 64
           }
         },
@@ -557,16 +557,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 180,
+              "startLine": 178,
               "startColumn": 5,
-              "endLine": 180,
+              "endLine": 178,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 249,
+            "startLine": 247,
             "startColumn": 5,
-            "endLine": 249,
+            "endLine": 247,
             "endColumn": 22
           }
         }
@@ -604,16 +604,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/WorkflowRunContext\").WorkflowRunContext",
             "modifiers": [],
             "position": {
-              "startLine": 200,
+              "startLine": 198,
               "startColumn": 5,
-              "endLine": 200,
+              "endLine": 198,
               "endColumn": 32
             }
           },
           "position": {
-            "startLine": 245,
+            "startLine": 243,
             "startColumn": 5,
-            "endLine": 245,
+            "endLine": 243,
             "endColumn": 32
           }
         },
@@ -629,16 +629,16 @@
             "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper\").FilesServiceHelper",
             "modifiers": [],
             "position": {
-              "startLine": 201,
+              "startLine": 199,
               "startColumn": 5,
-              "endLine": 201,
+              "endLine": 199,
               "endColumn": 64
             }
           },
           "position": {
-            "startLine": 246,
+            "startLine": 244,
             "startColumn": 5,
-            "endLine": 246,
+            "endLine": 244,
             "endColumn": 64
           }
         },
@@ -654,22 +654,904 @@
             "type": "FileDiskSpaceDict",
             "modifiers": [],
             "position": {
-              "startLine": 203,
+              "startLine": 201,
               "startColumn": 5,
-              "endLine": 203,
+              "endLine": 201,
               "endColumn": 37
             }
           },
           "position": {
-            "startLine": 248,
+            "startLine": 246,
             "startColumn": 5,
-            "endLine": 248,
+            "endLine": 246,
             "endColumn": 37
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 1,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-foodOfferfoodWithTranslationsaboutMealsInDaysdatedevicesService": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-foodOfferfoodWithTranslationsaboutMealsInDaysdatedevicesService",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "from_class_or_interface_name": "NotifySchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "from_method_name": "processFoodFeedbackForOffer",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "to_class_or_interface_name": "NotifySchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "to_method_name": "sendNotificationToExpoPushToken",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodOffer": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodOffer",
+          "name": "foodOffer",
+          "type": "DatabaseTypes.Foodoffers",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodOffer",
+            "name": "foodOffer",
+            "type": "DatabaseTypes.Foodoffers",
+            "modifiers": [],
+            "position": {
+              "startLine": 107,
+              "startColumn": 5,
+              "endLine": 107,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 61,
+            "startColumn": 5,
+            "endLine": 61,
+            "endColumn": 40
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodWithTranslations": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodWithTranslations",
+          "name": "foodWithTranslations",
+          "type": "DatabaseTypes.Foods",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodWithTranslations",
+            "name": "foodWithTranslations",
+            "type": "DatabaseTypes.Foods",
+            "modifiers": [],
+            "position": {
+              "startLine": 108,
+              "startColumn": 5,
+              "endLine": 108,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 62,
+            "startColumn": 5,
+            "endLine": 62,
+            "endColumn": 46
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/aboutMealsInDays": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/aboutMealsInDays",
+          "name": "aboutMealsInDays",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/aboutMealsInDays",
+            "name": "aboutMealsInDays",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 110,
+              "startColumn": 5,
+              "endLine": 110,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 5,
+            "endLine": 65,
+            "endColumn": 29
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/date",
+          "name": "date",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/date",
+            "name": "date",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 111,
+              "startColumn": 5,
+              "endLine": 111,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 66,
+            "startColumn": 5,
+            "endLine": 66,
+            "endColumn": 15
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/devicesService": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/devicesService",
+          "name": "devicesService",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DevicesServiceHelper\").DevicesServiceHelper",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/devicesService",
+            "name": "devicesService",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DevicesServiceHelper\").DevicesServiceHelper",
+            "modifiers": [],
+            "position": {
+              "startLine": 113,
+              "startColumn": 5,
+              "endLine": 113,
+              "endColumn": 41
+            }
+          },
+          "position": {
+            "startLine": 67,
+            "startColumn": 5,
+            "endLine": 67,
+            "endColumn": 41
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-foodOfferfoodWithTranslationsaboutMealsInDaysdate": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-foodOfferfoodWithTranslationsaboutMealsInDaysdate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "from_class_or_interface_name": "NotifySchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "from_method_name": "processFoodFeedbackForOffer",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "to_class_or_interface_name": "NotifySchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "to_method_name": "notifyExpoPushTokenAboutFoodOffer",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodOffer": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodOffer",
+          "name": "foodOffer",
+          "type": "DatabaseTypes.Foodoffers",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodOffer",
+            "name": "foodOffer",
+            "type": "DatabaseTypes.Foodoffers",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 66,
+              "endLine": 154,
+              "endColumn": 101
+            }
+          },
+          "position": {
+            "startLine": 61,
+            "startColumn": 5,
+            "endLine": 61,
+            "endColumn": 40
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodWithTranslations": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodWithTranslations",
+          "name": "foodWithTranslations",
+          "type": "DatabaseTypes.Foods",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodWithTranslations",
+            "name": "foodWithTranslations",
+            "type": "DatabaseTypes.Foods",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 103,
+              "endLine": 154,
+              "endColumn": 144
+            }
+          },
+          "position": {
+            "startLine": 62,
+            "startColumn": 5,
+            "endLine": 62,
+            "endColumn": 46
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/aboutMealsInDays": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/aboutMealsInDays",
+          "name": "aboutMealsInDays",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/aboutMealsInDays",
+            "name": "aboutMealsInDays",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 164,
+              "endLine": 154,
+              "endColumn": 188
+            }
+          },
+          "position": {
+            "startLine": 65,
+            "startColumn": 5,
+            "endLine": 65,
+            "endColumn": 29
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/date",
+          "name": "date",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/date",
+            "name": "date",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 190,
+              "endLine": 154,
+              "endColumn": 200
+            }
+          },
+          "position": {
+            "startLine": 66,
+            "startColumn": 5,
+            "endLine": 66,
+            "endColumn": 15
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-expoPushTokenfoodOfferfoodWithTranslationslanguageaboutMealsInDaysdate": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-expoPushTokenfoodOfferfoodWithTranslationslanguageaboutMealsInDaysdate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "from_class_or_interface_name": "NotifySchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "from_method_name": "sendNotificationToExpoPushToken",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "to_class_or_interface_name": "NotifySchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "to_method_name": "notifyExpoPushTokenAboutFoodOffer",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/expoPushToken": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/expoPushToken",
+          "name": "expoPushToken",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/expoPushToken",
+            "name": "expoPushToken",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 43,
+              "endLine": 154,
+              "endColumn": 64
+            }
+          },
+          "position": {
+            "startLine": 106,
+            "startColumn": 5,
+            "endLine": 106,
+            "endColumn": 26
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodOffer": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodOffer",
+          "name": "foodOffer",
+          "type": "DatabaseTypes.Foodoffers",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodOffer",
+            "name": "foodOffer",
+            "type": "DatabaseTypes.Foodoffers",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 66,
+              "endLine": 154,
+              "endColumn": 101
+            }
+          },
+          "position": {
+            "startLine": 107,
+            "startColumn": 5,
+            "endLine": 107,
+            "endColumn": 40
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodWithTranslations": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodWithTranslations",
+          "name": "foodWithTranslations",
+          "type": "DatabaseTypes.Foods",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodWithTranslations",
+            "name": "foodWithTranslations",
+            "type": "DatabaseTypes.Foods",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 103,
+              "endLine": 154,
+              "endColumn": 144
+            }
+          },
+          "position": {
+            "startLine": 108,
+            "startColumn": 5,
+            "endLine": 108,
+            "endColumn": 46
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 146,
+              "endLine": 154,
+              "endColumn": 162
+            }
+          },
+          "position": {
+            "startLine": 109,
+            "startColumn": 5,
+            "endLine": 109,
+            "endColumn": 21
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/aboutMealsInDays": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/aboutMealsInDays",
+          "name": "aboutMealsInDays",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/aboutMealsInDays",
+            "name": "aboutMealsInDays",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 164,
+              "endLine": 154,
+              "endColumn": 188
+            }
+          },
+          "position": {
+            "startLine": 110,
+            "startColumn": 5,
+            "endLine": 110,
+            "endColumn": 29
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/date",
+          "name": "date",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/date",
+            "name": "date",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 154,
+              "startColumn": 190,
+              "endLine": 154,
+              "endColumn": 200
+            }
+          },
+          "position": {
+            "startLine": 111,
+            "startColumn": 5,
+            "endLine": 111,
+            "endColumn": 15
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-foodOfferfoodWithTranslationsaboutMealsInDaysdatedevicesService": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-foodOfferfoodWithTranslationsaboutMealsInDaysdatedevicesService",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "from_class_or_interface_name": "NotifySchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "from_method_name": "sendNotificationToExpoPushToken",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "to_class_or_interface_name": "NotifySchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "to_method_name": "processFoodFeedbackForOffer",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodOffer": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodOffer",
+          "name": "foodOffer",
+          "type": "DatabaseTypes.Foodoffers",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodOffer",
+            "name": "foodOffer",
+            "type": "DatabaseTypes.Foodoffers",
+            "modifiers": [],
+            "position": {
+              "startLine": 61,
+              "startColumn": 5,
+              "endLine": 61,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 107,
+            "startColumn": 5,
+            "endLine": 107,
+            "endColumn": 40
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodWithTranslations": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodWithTranslations",
+          "name": "foodWithTranslations",
+          "type": "DatabaseTypes.Foods",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodWithTranslations",
+            "name": "foodWithTranslations",
+            "type": "DatabaseTypes.Foods",
+            "modifiers": [],
+            "position": {
+              "startLine": 62,
+              "startColumn": 5,
+              "endLine": 62,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 108,
+            "startColumn": 5,
+            "endLine": 108,
+            "endColumn": 46
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/aboutMealsInDays": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/aboutMealsInDays",
+          "name": "aboutMealsInDays",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/aboutMealsInDays",
+            "name": "aboutMealsInDays",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 5,
+              "endLine": 65,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 110,
+            "startColumn": 5,
+            "endLine": 110,
+            "endColumn": 29
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/date",
+          "name": "date",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/date",
+            "name": "date",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 66,
+              "startColumn": 5,
+              "endLine": 66,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 111,
+            "startColumn": 5,
+            "endLine": 111,
+            "endColumn": 15
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/devicesService": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/devicesService",
+          "name": "devicesService",
+          "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DevicesServiceHelper\").DevicesServiceHelper",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/devicesService",
+            "name": "devicesService",
+            "type": "import(\"apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DevicesServiceHelper\").DevicesServiceHelper",
+            "modifiers": [],
+            "position": {
+              "startLine": 67,
+              "startColumn": 5,
+              "endLine": 67,
+              "endColumn": 41
+            }
+          },
+          "position": {
+            "startLine": 113,
+            "startColumn": 5,
+            "endLine": 113,
+            "endColumn": 41
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-expoPushTokenfoodOfferfoodWithTranslationslanguageaboutMealsInDaysdate": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken-expoPushTokenfoodOfferfoodWithTranslationslanguageaboutMealsInDaysdate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "from_class_or_interface_name": "NotifySchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "from_method_name": "notifyExpoPushTokenAboutFoodOffer",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "to_class_or_interface_name": "NotifySchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "to_method_name": "sendNotificationToExpoPushToken",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/expoPushToken": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/expoPushToken",
+          "name": "expoPushToken",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/expoPushToken",
+            "name": "expoPushToken",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 106,
+              "startColumn": 5,
+              "endLine": 106,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 43,
+            "endLine": 154,
+            "endColumn": 64
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodOffer": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodOffer",
+          "name": "foodOffer",
+          "type": "DatabaseTypes.Foodoffers",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodOffer",
+            "name": "foodOffer",
+            "type": "DatabaseTypes.Foodoffers",
+            "modifiers": [],
+            "position": {
+              "startLine": 107,
+              "startColumn": 5,
+              "endLine": 107,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 66,
+            "endLine": 154,
+            "endColumn": 101
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodWithTranslations": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodWithTranslations",
+          "name": "foodWithTranslations",
+          "type": "DatabaseTypes.Foods",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/foodWithTranslations",
+            "name": "foodWithTranslations",
+            "type": "DatabaseTypes.Foods",
+            "modifiers": [],
+            "position": {
+              "startLine": 108,
+              "startColumn": 5,
+              "endLine": 108,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 103,
+            "endLine": 154,
+            "endColumn": 144
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/language": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/language",
+          "name": "language",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/language",
+            "name": "language",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 109,
+              "startColumn": 5,
+              "endLine": 109,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 146,
+            "endLine": 154,
+            "endColumn": 162
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/aboutMealsInDays": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/aboutMealsInDays",
+          "name": "aboutMealsInDays",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/aboutMealsInDays",
+            "name": "aboutMealsInDays",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 110,
+              "startColumn": 5,
+              "endLine": 110,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 164,
+            "endLine": 154,
+            "endColumn": 188
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/date",
+          "name": "date",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/sendNotificationToExpoPushToken/parameter/date",
+            "name": "date",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 111,
+              "startColumn": 5,
+              "endLine": 111,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 190,
+            "endLine": 154,
+            "endColumn": 200
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
+        "cluster_type": 1
+      }
+    },
+    "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-foodOfferfoodWithTranslationsaboutMealsInDaysdate": {
+      "type": "data_clump",
+      "key": "parameters_to_parameters_data_clump-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer-apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer-foodOfferfoodWithTranslationsaboutMealsInDaysdate",
+      "probability": 1,
+      "from_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "from_class_or_interface_name": "NotifySchedule",
+      "from_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "from_method_name": "notifyExpoPushTokenAboutFoodOffer",
+      "from_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer",
+      "to_file_path": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts",
+      "to_class_or_interface_name": "NotifySchedule",
+      "to_class_or_interface_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule",
+      "to_method_name": "processFoodFeedbackForOffer",
+      "to_method_key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer",
+      "data_clump_type": "parameters_to_parameters_data_clump",
+      "data_clump_data": {
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodOffer": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodOffer",
+          "name": "foodOffer",
+          "type": "DatabaseTypes.Foodoffers",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodOffer",
+            "name": "foodOffer",
+            "type": "DatabaseTypes.Foodoffers",
+            "modifiers": [],
+            "position": {
+              "startLine": 61,
+              "startColumn": 5,
+              "endLine": 61,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 66,
+            "endLine": 154,
+            "endColumn": 101
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodWithTranslations": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/foodWithTranslations",
+          "name": "foodWithTranslations",
+          "type": "DatabaseTypes.Foods",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/foodWithTranslations",
+            "name": "foodWithTranslations",
+            "type": "DatabaseTypes.Foods",
+            "modifiers": [],
+            "position": {
+              "startLine": 62,
+              "startColumn": 5,
+              "endLine": 62,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 103,
+            "endLine": 154,
+            "endColumn": 144
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/aboutMealsInDays": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/aboutMealsInDays",
+          "name": "aboutMealsInDays",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/aboutMealsInDays",
+            "name": "aboutMealsInDays",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 65,
+              "startColumn": 5,
+              "endLine": 65,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 164,
+            "endLine": 154,
+            "endColumn": 188
+          }
+        },
+        "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/date": {
+          "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/notifyExpoPushTokenAboutFoodOffer/parameter/date",
+          "name": "date",
+          "type": "Date",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-notify-schedule-hook/NotifySchedule.ts/class/NotifySchedule/method/processFoodFeedbackForOffer/parameter/date",
+            "name": "date",
+            "type": "Date",
+            "modifiers": [],
+            "position": {
+              "startLine": 66,
+              "startColumn": 5,
+              "endLine": 66,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 154,
+            "startColumn": 190,
+            "endLine": 154,
+            "endColumn": 200
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 2,
         "cluster_type": 1
       }
     }
