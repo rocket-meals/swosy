@@ -53,11 +53,6 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		}
 	};
 
-	// Early return AFTER all hooks have been called
-	if (!marking) return null;
-
-	const markingText = getTextFromTranslation(marking?.translations, language);
-
 	const handleAnonymousMarking = (like: boolean) => {
 		const markingsCopy = [...(profile?.markings ?? [])];
 		const existingIndex = markingsCopy.findIndex((m: any) => m.markings_id === markingId);
@@ -158,6 +153,11 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		},
 		[user?.id, profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile]
 	);
+
+	// Early return AFTER all hooks have been called
+	if (!marking) return null;
+
+	const markingText = getTextFromTranslation(marking?.translations, language);
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>

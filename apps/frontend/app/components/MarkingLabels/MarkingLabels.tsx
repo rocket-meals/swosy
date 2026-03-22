@@ -51,12 +51,6 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 		}
 	};
 
-	// Early return AFTER all hooks have been called
-	if (!marking) return null;
-
-	const markingText = getTextFromTranslation(marking?.translations, language);
-	const iconSize = isWeb ? 24 : 22;
-
 	const handleAnonymousMarking = (like: boolean) => {
 		const profileData = { ...profile };
 		let markingFound = false;
@@ -168,6 +162,12 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 		},
 		[user?.id, profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile]
 	);
+
+	// Early return AFTER all hooks have been called
+	if (!marking) return null;
+
+	const markingText = getTextFromTranslation(marking?.translations, language);
+	const iconSize = isWeb ? 24 : 22;
 
 	return (
 		<View style={styles.row}>
