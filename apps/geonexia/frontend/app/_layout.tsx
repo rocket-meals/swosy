@@ -7,7 +7,60 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+
+// ─── Error Boundary ───────────────────────────────────────────────────────────
+
+type ErrorBoundaryState = { hasError: boolean; error: Error | null };
+
+class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+	constructor(props: { children: React.ReactNode }) {
+		super(props);
+		this.state = { hasError: false, error: null };
+	}
+
+	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+		return { hasError: true, error };
+	}
+
+	componentDidCatch(error: Error, info: React.ErrorInfo) {
+		console.error('[AppErrorBoundary] Caught error:', error);
+		console.error('[AppErrorBoundary] Component stack:', info.componentStack);
+	}
+
+	render() {
+		if (this.state.hasError) {
+			const { error } = this.state;
+			return (
+				<View style={styles.errorContainer}>
+					<Modal visible transparent animationType="slide" accessibilityViewIsModal>
+						<View style={styles.errorOverlay}>
+							<View style={styles.errorSheet}>
+								<Text style={styles.errorTitle}>🚨 App Error</Text>
+								<Text style={styles.errorSubtitle}>{error?.name ?? 'Error'}</Text>
+								<ScrollView style={styles.errorScroll}>
+									<Text style={styles.errorMessage}>{error?.message ?? 'An unexpected error occurred.'}</Text>
+									{Boolean(error?.stack) && (
+										<Text style={styles.errorStack}>{error?.stack}</Text>
+									)}
+								</ScrollView>
+								<TouchableOpacity
+									accessibilityRole="button"
+									accessibilityLabel="Dismiss error"
+									style={styles.errorButton}
+									onPress={() => this.setState({ hasError: false, error: null })}
+								>
+									<Text style={styles.errorButtonText}>Dismiss</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+					</Modal>
+				</View>
+			);
+		}
+		return this.props.children;
+	}
+}
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
@@ -50,6 +103,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 export default function Layout() {
 	return (
+		<AppErrorBoundary>
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
 				<ThemeProvider>
@@ -93,6 +147,7 @@ export default function Layout() {
 				</ThemeProvider>
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
+		</AppErrorBoundary>
 	);
 }
 
@@ -106,5 +161,58 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: '700',
 		color: '#111111',
+	},
+	errorContainer: {
+		flex: 1,
+		backgroundColor: '#fff',
+	},
+	errorOverlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.6)',
+		justifyContent: 'flex-end',
+	},
+	errorSheet: {
+		backgroundColor: '#fff',
+		borderTopLeftRadius: 16,
+		borderTopRightRadius: 16,
+		padding: 20,
+		maxHeight: '80%',
+	},
+	errorTitle: {
+		fontSize: 18,
+		fontWeight: '700',
+		color: '#b91c1c',
+		marginBottom: 4,
+	},
+	errorSubtitle: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#374151',
+		marginBottom: 12,
+	},
+	errorScroll: {
+		maxHeight: 300,
+		marginBottom: 16,
+	},
+	errorMessage: {
+		fontSize: 14,
+		color: '#374151',
+		marginBottom: 8,
+	},
+	errorStack: {
+		fontSize: 11,
+		color: '#6b7280',
+		fontFamily: 'monospace',
+	},
+	errorButton: {
+		backgroundColor: '#2563eb',
+		borderRadius: 8,
+		paddingVertical: 12,
+		alignItems: 'center',
+	},
+	errorButtonText: {
+		color: '#fff',
+		fontWeight: '600',
+		fontSize: 15,
 	},
 });

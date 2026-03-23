@@ -15792,7 +15792,6 @@ __metadata:
     expo-system-ui: "npm:~6.0.8"
     expo-task-manager: "npm:~14.0.3"
     expo-updates: "npm:~29.0.16"
-    h3-js: "npm:4.4.0"
     react: "npm:19.1.0"
     react-dom: "npm:19.1.0"
     react-native: "npm:0.81.5"
@@ -16195,13 +16194,6 @@ __metadata:
     gaxios: "npm:^6.0.0"
     jws: "npm:^4.0.0"
   checksum: 10c0/0a3dcacb1a3c4578abe1ee01c7d0bf20bffe8ded3ee73fc58885d53c00f6eb43b4e1372ff179f0da3ed5cfebd5b7c6ab8ae2776f1787e90d943691b4fe57c716
-  languageName: node
-  linkType: hard
-
-"h3-js@npm:4.4.0":
-  version: 4.4.0
-  resolution: "h3-js@npm:4.4.0"
-  checksum: 10c0/3a324b3a879601e1d012c2f67b2f78e9a480b0fa8e51c54b77ee281b421343ae735c3d892ab80c2cc8c47522ad0822ccb457b97b3792a040e41991016801f3ed
   languageName: node
   linkType: hard
 
