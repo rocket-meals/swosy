@@ -8,6 +8,7 @@
     "@expo/vector-icons": "*",
     "expo-asset": "*",
     "expo-file-system": "*",
+    "expo-location": "*",
     "react": "*",
     "react-native": "*",
     "react-native-webview": "*"
