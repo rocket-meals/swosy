@@ -22,7 +22,8 @@ const PRIMARY_COLOR = '#2563eb';
 const H3_DEFAULT_RESOLUTION = 9;
 const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
-// cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order.
+// cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
+// AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
@@ -71,10 +72,10 @@ function buildH3GeoJson(bounds: ViewportBounds, zoom: number, resolution: number
 	for (const cell of cells) {
 		if (features.length >= H3_MAX_CELLS) break;
 		const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-		const ring = [...boundary, boundary[0]]; // close the polygon ring
+		// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
 		features.push({
 			type: 'Feature',
-			geometry: { type: 'Polygon', coordinates: [ring as number[][]] },
+			geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
 			properties: { h3Index: cell },
 		});
 	}
