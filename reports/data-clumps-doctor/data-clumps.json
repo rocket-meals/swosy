@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-23T18:15:02.243Z",
+  "report_timestamp": "2026-03-23T19:48:14.750Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,16 +28,16 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3956,
-        "detection_time_ms": 70,
+        "ast_generation_time_ms": 3823,
+        "detection_time_ms": 68,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 108.93,
-          "os_memory_free": 14982107136,
-          "os_memory_total": 16771616768,
+          "os_uptime": 107.3,
+          "os_memory_free": 15018110976,
+          "os_memory_total": 16767229952,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,15 +55,15 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "8f0eefd60c76d890f56c027223766e65f0b11951",
-    "project_commit_hash": "8f0eefd60c76d890f56c027223766e65f0b11951",
+    "project_version": "9300970955820ae4f299437545a6c00ec75aed63",
+    "project_commit_hash": "9300970955820ae4f299437545a6c00ec75aed63",
     "project_tag": null,
-    "project_commit_date": "1774289608",
+    "project_commit_date": "1774295203",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 430,
-    "number_of_classes_or_interfaces": 878,
+    "number_of_files": 432,
+    "number_of_classes_or_interfaces": 884,
     "number_of_methods": 1314,
     "number_of_data_fields": 3428,
     "number_of_method_parameters": 1456
