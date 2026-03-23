@@ -23891,6 +23891,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"repo-depkit-common-ui@workspace:*, repo-depkit-common-ui@workspace:packages/common-ui":
+  version: 0.0.0-use.local
+  resolution: "repo-depkit-common-ui@workspace:packages/common-ui"
+  dependencies:
+    "@types/tinycolor2": "npm:^1.4.6"
+    tinycolor2: "npm:^1.6.0"
+    typescript: "npm:*"
+  peerDependencies:
+    "@expo/vector-icons": "*"
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
+
 "repo-depkit-common@workspace:*, repo-depkit-common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "repo-depkit-common@workspace:packages/common"
@@ -24293,6 +24307,7 @@ __metadata:
     redux-promise: "npm:^0.6.0"
     redux-thunk: "npm:^3.1.0"
     repo-depkit-common: "workspace:*"
+    repo-depkit-common-ui: "workspace:*"
     reselect: "npm:^5.1.1"
     setimmediate: "npm:^1.0.5"
     tinycolor2: "npm:^1.6.0"
