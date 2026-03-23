@@ -18,7 +18,7 @@ function escapeHtml(text: string): string {
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true }, ref) => {
+	({ initialCenter, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const webViewRef = useRef<WebView>(null);
 		const [html, setHtml] = useState<string | null>(null);
 
@@ -46,6 +46,13 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 						str: htmlContent,
 						find: '<span id="loading-text">Loading vector map…</span>',
 						replace: `<span id="loading-text">${escapeHtml(loadingText)}</span>`,
+					});
+				}
+				if (injectScript) {
+					htmlContent = StringHelper.replaceAllLiteralWithOptions({
+						str: htmlContent,
+						find: '// INJECT_SCRIPT_HERE',
+						replace: injectScript,
 					});
 				}
 				if (isMounted) {

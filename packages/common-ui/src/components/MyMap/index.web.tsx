@@ -6,7 +6,7 @@ import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 const DEFAULT_ZOOM = 16;
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true }, ref) => {
+	({ initialCenter, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const iframeRef = useRef<HTMLIFrameElement>(null);
 		const htmlBase = require('../../../assets/maplibre/index.html') as string;
 
@@ -90,6 +90,20 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			return () => window.removeEventListener('message', handler);
 		}, [onMessage, sendToMap, initialCenter, centerAtUserLocationIfNoInitialPosition]);
 
+		const handleIframeLoad = useCallback(() => {
+			if (!injectScript) return;
+			try {
+				const doc = iframeRef.current?.contentDocument;
+				if (doc) {
+					const script = doc.createElement('script');
+					script.textContent = injectScript;
+					doc.body.appendChild(script);
+				}
+			} catch {
+				// Cross-origin or CSP restriction – silently ignore.
+			}
+		}, [injectScript]);
+
 		return (
 			<View style={styles.container}>
 				<iframe
@@ -97,6 +111,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					src={iframeSrc}
 					style={{ width: '100%', height: '100%', border: 'none' }}
 					title="OSM Vector Map"
+					onLoad={handleIframeLoad}
 				/>
 			</View>
 		);
