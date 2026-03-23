@@ -15,12 +15,12 @@
 ## 🔒 Security (2/2)
 
 - **Change this action to not use user-controlled data directly in a run block.**
-  .github/actions/geonexia-expo-update/action.yml:154
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L154
+  .github/actions/geonexia-expo-update/action.yml:164
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
 - **Change this action to not use user-controlled data directly in a run block.**
-  .github/actions/geonexia-expo-update/action.yml:154
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L154
+  .github/actions/geonexia-expo-update/action.yml:164
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
 ## 🔧 Maintainability (48/1861)
 
