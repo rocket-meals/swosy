@@ -6796,5 +6796,5 @@ Key,Message,Component,Line
 "AZ0cP4sXSUO5CDbnERwj","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14257
 "AZ0cP4sXSUO5CDbnERwl","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14272
 "AZ0cP4sXSUO5CDbnERxa","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14649
-"AZ0ZsR1OrOcQDbT7T5Pe","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",235
+"AZ0ZsR1OrOcQDbT7T5Pe","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",241
 "AZ0ZJmx5-tgOj4n6nrhZ","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",140
