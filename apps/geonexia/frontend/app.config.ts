@@ -44,6 +44,12 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 				},
 			],
 		],
+		updates: {
+			url: 'https://u.expo.dev/8fbc9283-a03b-4ca0-92cd-fcb87d2e64f4',
+		},
+		runtimeVersion: {
+			policy: 'appVersion',
+		},
 		experiments: {
 			typedRoutes: true,
 		},
