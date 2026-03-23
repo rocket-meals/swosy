@@ -24,8 +24,8 @@ let _h3Available = false;
 try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     _h3 = require('./h3/libh3') as typeof import('./h3/libh3');
-    // Quick sanity-check: convert a known coordinate at the lowest resolution.
-    // If the library initialised correctly, this must return a non-empty string.
+    // Quick sanity-check: (0, 0) is a valid coordinate (Gulf of Guinea at res 0),
+    // so this will return a non-empty string if the library initialised correctly.
     const _probe = (_h3 as typeof import('./h3/libh3')).latLngToCell?.(0, 0, 0);
     if (_probe && typeof _probe === 'string' && _probe.length > 0) {
         _h3Available = true;

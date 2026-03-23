@@ -192,17 +192,22 @@ describe('H3Helper – gridDisk', () => {
 // ─── Measurement ─────────────────────────────────────────────────────────────
 
 describe('H3Helper – measurement', () => {
+    // UNITS is defined when the H3 library loads; fall back to string literals
+    // only as a safety net for environments where isAvailable() is false.
+    const KM = UNITS?.km ?? 'km';
+    const M = UNITS?.m ?? 'm';
+
     it('greatCircleDistance between two nearby points is positive and reasonable', () => {
         const a: [number, number] = [LAT, LNG];
         const b: [number, number] = [LAT + 0.01, LNG + 0.01];
-        const dist = greatCircleDistance(a, b, UNITS?.km ?? 'km');
+        const dist = greatCircleDistance(a, b, KM);
         expect(dist).toBeGreaterThan(0);
         expect(dist).toBeLessThan(5);
     });
 
     it('greatCircleDistance between identical points is 0', () => {
         const a: [number, number] = [LAT, LNG];
-        const dist = greatCircleDistance(a, a, UNITS?.m ?? 'm');
+        const dist = greatCircleDistance(a, a, M);
         expect(dist).toBe(0);
     });
 });

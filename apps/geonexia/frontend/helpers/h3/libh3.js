@@ -24,7 +24,7 @@ var libh3 = function (libh3) {
   // ensures that only real browser environments follow the WEB path; React
   // Native falls through to ENVIRONMENT_IS_SHELL which uses a straightforward
   // synchronous readBinary() → HEAPU8.set() flow.
-  ENVIRONMENT_IS_WEB = typeof window === "object" && typeof document !== "undefined" && document !== null;
+  ENVIRONMENT_IS_WEB = typeof window === "object" && typeof document !== "undefined";
   ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
   ENVIRONMENT_HAS_NODE = typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string";
   ENVIRONMENT_IS_NODE = ENVIRONMENT_HAS_NODE && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_WORKER;
