@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 1864 | 48 |
+| 🔧 Maintainability | 1874 | 48 |
 
-**Total issues:** 1866 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1876 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -22,7 +22,7 @@
   .github/actions/geonexia-expo-update/action.yml:164
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-## 🔧 Maintainability (48/1864)
+## 🔧 Maintainability (48/1874)
 
 - **This assertion is unnecessary since it does not change the type of the expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:62
