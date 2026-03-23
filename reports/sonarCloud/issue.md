@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 1877 | 48 |
+| 🐛 Reliability | 1 | 1 |
+| 🔧 Maintainability | 1882 | 47 |
 
-**Total issues:** 1879 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1885 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -22,7 +22,13 @@
   .github/actions/geonexia-expo-update/action.yml:164
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-## 🔧 Maintainability (48/1877)
+## 🐛 Reliability (1/1)
+
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
+
+## 🔧 Maintainability (47/1882)
 
 - **This assertion is unnecessary since it does not change the type of the expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:62
@@ -211,8 +217,4 @@
 - **Unexpected `await` of a non-Promise (non-"Thenable") value.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:372
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L372
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:394
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L394
 
