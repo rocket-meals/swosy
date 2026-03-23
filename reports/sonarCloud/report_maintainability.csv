@@ -9,17 +9,7 @@ Key,Message,Component,Line
 "AZ0cP4wTSUO5CDbnER0b","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",1239
 "AZ0cP4wTSUO5CDbnER0c","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",1268
 "AZ0cP4wTSUO5CDbnER0d","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",1296
-"AZ0cP4wgSUO5CDbnER0e","Remove this redundant type alias and replace its occurrences with ""string"".","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",56
-"AZ0cP4wgSUO5CDbnER0f","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",125
-"AZ0cP4wgSUO5CDbnER0g","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",133
-"AZ0cP4wgSUO5CDbnER0h","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",147
-"AZ0cP4wgSUO5CDbnER0i","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",153
-"AZ0cP4wgSUO5CDbnER0j","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",156
-"AZ0cP4wgSUO5CDbnER0k","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",162
-"AZ0cP4wgSUO5CDbnER0l","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",167
-"AZ0cP4wgSUO5CDbnER0m","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",170
-"AZ0cP4wgSUO5CDbnER0n","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",178
-"AZ0cP4wgSUO5CDbnER0o","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",180
+"AZ0cP4wgSUO5CDbnER0e","Remove this redundant type alias and replace its occurrences with ""string"".","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/H3Helper.ts",70
 "AZ0cP4sNSUO5CDbnEPwf","Unexpected var, use let or const instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",3
 "AZ0cP4sNSUO5CDbnEPwg","Refactor this function to reduce its Cognitive Complexity from 73 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",3
 "AZ0cP4sNSUO5CDbnEPwh","Unexpected var, use let or const instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",5
@@ -9999,3 +9989,13 @@ Key,Message,Component,Line
 "AZkUSvzqS4VhJojFFClV","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/utilization-canteen-hook/ParseSchedule.ts",250
 "AZkUSvo3S4VhJojFFCZv","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/hannover/StudentenwerkHannoverApartments_Parser.ts",8
 "AZkUSvo3S4VhJojFFCZw","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/hannover/StudentenwerkHannoverApartments_Parser.ts",10
+"AZkUSvpWS4VhJojFFCac","Review this redundant assignment: ""usedParser"" already holds the assigned value along all execution paths.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/index.ts",46
+"AZnlPd9GjqHa6CjL-2XS","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",9
+"AZnlPd9GjqHa6CjL-2XT","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/backend/backupRestore.sh",23
+"AZnlPd81jqHa6CjL-2XN","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackupRestore/restore.sh",46
+"AZkUSv1cS4VhJojFFCrs","Replace deprecated instructions with an up-to-date equivalent.","rocket-meals_rocket-meals:apps/backend/dockerDatabaseBackup/Dockerfile",8
+"AZkUSvzaS4VhJojFFClA","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/push-notification-hook/index.ts",50
+"AZkUSvzaS4VhJojFFClB","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/push-notification-hook/index.ts",109
+"AZkUSvxIS4VhJojFFCiB","Rename class ""DemoNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/DemoNews_Parser.ts",6
+"AZkUSvpfS4VhJojFFCaj","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/osnabrueck/StudentenwerkOsnabrueckWashingmachineParser.ts",34
+"AZlyj_2A0YdgFOBafBNY","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/washingmachines-sync-hook/testParser/DemoWashingmachineParser.ts",38
