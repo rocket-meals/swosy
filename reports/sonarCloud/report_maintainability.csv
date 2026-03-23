@@ -1,19 +1,19 @@
 Key,Message,Component,Line
 "AZ0bEqA0moGDj4fd_43r","Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read.","rocket-meals_rocket-meals:packages/common-ui/src/components/MapOverlayButtons/index.tsx",48
 "AZ0bEqA0moGDj4fd_43s","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MapOverlayButtons/index.tsx",48
-"AZ0aO9XVXlpOqkNVWdKg","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",207
+"AZ0aO9XVXlpOqkNVWdKg","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",267
 "AZ0aO-pgXlpOqkNVWdKl","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/BaseBottomSheet/index.tsx",65
 "AZ0aO-oqXlpOqkNVWdKh","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",199
 "AZ0aO-oqXlpOqkNVWdKi","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",204
 "AZ0aO-oqXlpOqkNVWdKj","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",233
 "AZ0aO-pRXlpOqkNVWdKk","'closeSheet' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/MyScrollViewModal/index.tsx",9
 "AZ0ZsRyqrOcQDbT7T5Pa","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",77
-"AZ0ZsR1OrOcQDbT7T5Pb","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",91
-"AZ0ZsR1OrOcQDbT7T5Pc","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",129
-"AZ0ZsR1OrOcQDbT7T5Pd","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",135
-"AZ0ZsR1OrOcQDbT7T5Pe","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",168
-"AZ0ZsR1OrOcQDbT7T5Pf","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",181
-"AZ0ZsR1OrOcQDbT7T5Ph","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",556
+"AZ0ZsR1OrOcQDbT7T5Pb","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",151
+"AZ0ZsR1OrOcQDbT7T5Pc","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",189
+"AZ0ZsR1OrOcQDbT7T5Pd","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",195
+"AZ0ZsR1OrOcQDbT7T5Pe","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",228
+"AZ0ZsR1OrOcQDbT7T5Pf","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",241
+"AZ0ZsR1OrOcQDbT7T5Ph","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",621
 "AZ0ZJmx5-tgOj4n6nrhW","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",57
 "AZ0ZJmx5-tgOj4n6nrhX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",97
 "AZ0ZJmx5-tgOj4n6nrhY","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",103
