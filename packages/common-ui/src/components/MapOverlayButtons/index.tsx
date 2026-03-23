@@ -28,6 +28,12 @@ export interface MapLocationButtonProps {
 	iconColor?: string;
 	activeColor?: string;
 	onLocationFound?: (location: { lat: number; lng: number }) => void;
+	/**
+	 * When provided, controls the active (following) state display from outside.
+	 * When true the button shows as active; when false it shows as inactive.
+	 * If omitted, the button manages its own active state internally.
+	 */
+	isFollowing?: boolean;
 }
 
 export function MapLocationButton({
@@ -36,8 +42,10 @@ export function MapLocationButton({
 	iconColor = '#555555',
 	activeColor = '#1a73e8',
 	onLocationFound,
+	isFollowing,
 }: MapLocationButtonProps) {
-	const [isActive, setIsActive] = useState(false);
+	const [internalActive, setInternalActive] = useState(false);
+	const showActive = isFollowing !== undefined ? isFollowing : internalActive;
 
 	const handlePress = useCallback(async () => {
 		try {
@@ -49,18 +57,20 @@ export function MapLocationButton({
 			const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
 			const { latitude, longitude } = location.coords;
 			const center = { lat: latitude, lng: longitude };
-			setIsActive(true);
+			if (isFollowing === undefined) {
+				setInternalActive(true);
+			}
 			mapRef.current?.sendToMap({ mapCenterPosition: center });
 			onLocationFound?.(center);
 		} catch (error) {
 			console.error('Location error:', error);
 			Alert.alert('Location', 'Could not determine location.');
 		}
-	}, [mapRef, onLocationFound]);
+	}, [mapRef, onLocationFound, isFollowing]);
 
 	return (
 		<TouchableOpacity style={[styles.button, { backgroundColor }]} onPress={handlePress}>
-			<MaterialIcons name="my-location" size={26} color={isActive ? activeColor : iconColor} />
+			<MaterialIcons name="my-location" size={26} color={showActive ? activeColor : iconColor} />
 		</TouchableOpacity>
 	);
 }

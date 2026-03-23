@@ -12,6 +12,7 @@ import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
+import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -251,6 +252,17 @@ export default function ActivityScreen() {
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
 
+	// Follow mode: when active the map stays centred on the user's location.
+	// Using both a ref (for synchronous reads inside callbacks) and state
+	// (to drive the button's active appearance).
+	const isFollowingRef = useRef(false);
+	const [isFollowing, setIsFollowing] = useState(false);
+
+	const setFollowMode = useCallback((val: boolean) => {
+		isFollowingRef.current = val;
+		setIsFollowing(val);
+	}, []);
+
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const startTimeRef = useRef<number>(0);
 	const routePointsRef = useRef<RoutePoint[]>([]);
@@ -280,13 +292,15 @@ export default function ActivityScreen() {
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
-			mapRef.current?.sendToMap({ hexTileLayer: { radiusMeters: 20 } });
 			// Re-send route if already recording when map (re)loads
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
 			}
+		} else if (msg.tag === 'MapInteracted') {
+			// User manually moved/zoomed the map – stop following.
+			setFollowMode(false);
 		}
-	}, [sendRouteToMap]);
+	}, [sendRouteToMap, setFollowMode]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint) => {
 		const next = [...routePointsRef.current, point];
@@ -304,6 +318,15 @@ export default function ActivityScreen() {
 
 		sendRouteToMap(next);
 		mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+
+		// In follow mode, keep the map centred on the user's position.
+		if (isFollowingRef.current) {
+			mapRef.current?.sendToMap({
+				mapCenterPosition: { lat: point.lat, lng: point.lng },
+				easeAnimation: true,
+				easeDuration: 800,
+			});
+		}
 	}, [sendRouteToMap]);
 
 	const startRecording = useCallback(async () => {
@@ -480,7 +503,7 @@ export default function ActivityScreen() {
 
 	return (
 		<View style={styles.container}>
-			<MyMap ref={mapRef} onMessage={handleMapMessage} />
+			<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
 
 			{/* Map overlay buttons – top-right */}
 			<View style={styles.mapOverlayButtons} pointerEvents="box-none">
@@ -491,6 +514,8 @@ export default function ActivityScreen() {
 					backgroundColor="#ffffff"
 					iconColor="#555555"
 					activeColor={PRIMARY_COLOR}
+					isFollowing={isFollowing}
+					onLocationFound={() => setFollowMode(true)}
 				/>
 			</View>
 
