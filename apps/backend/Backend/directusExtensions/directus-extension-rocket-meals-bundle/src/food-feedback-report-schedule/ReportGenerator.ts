@@ -1,4 +1,4 @@
-import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
+import { DatabaseTypes, DateHelper, StringHelper } from 'repo-depkit-common';
 import { ApiContext } from '../helpers/ApiContext';
 import { FieldFilter, Filter } from '@directus/types/dist/filter';
 import { AssetHelperDirectusBackend, AssetHelperTransformOptions } from '../helpers/AssetHelperDirectusBackend';
@@ -9,9 +9,9 @@ import { FoodRatingCalculator } from '../food-feedback-rating-calculate-hook/Foo
 import { EmojiHelper } from '../helpers/EmojiHelper';
 
 export class ReportStatusTrafficLightValues {
-  static RED = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.RED_CIRCLE);
-  static YELLOW = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.YELLOW_CIRCLE);
-  static GREEN = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.GREEN_CIRCLE);
+  static readonly RED = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.RED_CIRCLE);
+  static readonly YELLOW = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.YELLOW_CIRCLE);
+  static readonly GREEN = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.GREEN_CIRCLE);
 }
 
 type Interval = {
@@ -22,8 +22,6 @@ type Interval = {
 // NA = Not Available
 const VALUE_NOT_AVAILABLE = 'N/A';
 
-export type ReportStatusTrafficLightType = string;
-
 export type ReportEntryAmountStatsType = {
   amount_positive_new: number;
   amount_negative_new: number;
@@ -31,8 +29,8 @@ export type ReportEntryAmountStatsType = {
   amount_positive: number;
   amount_negative: number;
   amount_total: number;
-  status_total: ReportStatusTrafficLightType;
-  status_new: ReportStatusTrafficLightType;
+  status_total: string;
+  status_new: string;
 };
 
 export type ReportFoodEntryLabelType = ReportEntryAmountStatsType & {
@@ -49,7 +47,7 @@ export type ReportFoodEntryType = {
   comments: string[];
   comments_new: string[];
   labels: ReportFoodEntryLabelType[];
-  status_rating: ReportStatusTrafficLightType;
+  status_rating: string;
 };
 
 export type ReportCanteenEntryLabelsType = ReportEntryAmountStatsType & {
@@ -102,6 +100,13 @@ export type ReportContext = {
   canteenEntries: Record<string, DatabaseTypes.Canteens>;
 } & CommonReportContext;
 
+type CanteenFeedbackFilterParams = {
+  filterLabel: FieldFilter;
+  filterLikes: FieldFilter;
+  filterDislikes: FieldFilter;
+  filterDateUpdatedFeedbackLabelEntries: Filter[];
+};
+
 export class ReportGenerator {
   private readonly myDatabaseHelper: MyDatabaseHelper;
 
@@ -152,7 +157,6 @@ export class ReportGenerator {
     let dateStartHumanReadable = DateHelper.getHumanReadableDate(startDate, true);
     let dateEndHumanReadable = DateHelper.getHumanReadableDate(endDate, true);
     const dateHumanReadable = '[' + dateStartHumanReadable + ' - ' + dateEndHumanReadable + ']';
-    //console.log("Generate report for date: "+dateHumanReadable);
 
     let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
     const canteen_alias = canteen_alias_list.join(', ');
@@ -223,9 +227,9 @@ export class ReportGenerator {
     return report;
   }
 
-  static THRESHOLD_PERCENTAGE = 0.1;
+  static readonly THRESHOLD_PERCENTAGE = 0.1;
 
-  calculateTrafficLightStatus(amount_positive: number, amount_negative: number): ReportStatusTrafficLightType {
+  calculateTrafficLightStatus(amount_positive: number, amount_negative: number): string {
     // if there are no feedbacks, the status is orange
     let threshold_percentage = ReportGenerator.THRESHOLD_PERCENTAGE;
     // if the amount of positive is more than 10% of the amount of negative feedbacks, the status is green
@@ -243,6 +247,50 @@ export class ReportGenerator {
       return ReportStatusTrafficLightValues.RED;
     }
     return ReportStatusTrafficLightValues.YELLOW;
+  }
+
+  private initializeCanteenFeedbackDict(
+    canteenEntries: ReportContext['canteenEntries'],
+    canteenKeys: string[]
+  ): { [key: string]: ReportCanteenEntryType } {
+    const canteen_feedback_dict: { [key: string]: ReportCanteenEntryType } = {};
+    for (const canteenKey of canteenKeys) {
+      const canteen = canteenEntries[canteenKey];
+      if (canteen) {
+        canteen_feedback_dict[canteen.id] = {
+          id: canteen.id,
+          canteen_alias: canteen.alias,
+          labels: [],
+        };
+      }
+    }
+    return canteen_feedback_dict;
+  }
+
+  private async addPerCanteenLabelCounts(
+    canteenEntries: ReportContext['canteenEntries'],
+    canteenKeys: string[],
+    canteen_feedback_dict: { [key: string]: ReportCanteenEntryType },
+    feedbackFilterParams: CanteenFeedbackFilterParams,
+    alias: string
+  ) {
+    for (const canteenKey of canteenKeys) {
+      const canteen = canteenEntries[canteenKey];
+      if (canteen) {
+        const countsForCanteen = await this.getCanteenFeedbackCounts(feedbackFilterParams, canteen);
+        canteen_feedback_dict[canteen.id]?.labels.push({
+          label_alias: alias,
+          amount_positive_new: countsForCanteen.amount_positive_new,
+          amount_negative_new: countsForCanteen.amount_negative_new,
+          amount_total_new: countsForCanteen.amount_total_new,
+          amount_positive: countsForCanteen.amount_positive,
+          amount_negative: countsForCanteen.amount_negative,
+          amount_total: countsForCanteen.amount_total,
+          status_total: this.calculateTrafficLightStatus(countsForCanteen.amount_positive, countsForCanteen.amount_negative),
+          status_new: this.calculateTrafficLightStatus(countsForCanteen.amount_positive_new, countsForCanteen.amount_negative_new),
+        });
+      }
+    }
   }
 
   async getReportForCanteenFeedbacks(reportContext: ReportContext) {
@@ -288,30 +336,25 @@ export class ReportGenerator {
     let canteenKeys = Object.keys(canteenEntries);
     // If per-canteen feedbacks are to be shown
     if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
-      for (let canteenKey of canteenKeys) {
-        let canteen = canteenEntries[canteenKey];
-        if (!!canteen) {
-          let canteenSummary: ReportCanteenEntryType = {
-            id: canteen?.id,
-            canteen_alias: canteen.alias,
-            labels: [],
-          };
-          canteen_feedback_dict[canteen.id] = canteenSummary;
-        }
-      }
+      Object.assign(canteen_feedback_dict, this.initializeCanteenFeedbackDict(canteenEntries, canteenKeys));
     }
 
     for (let canteenFeedbackLabelsWithTranslation of canteenFeedbackLabelsWithTranslations) {
       let alias = this.getTranslationOfFeedbackLabel(canteenFeedbackLabelsWithTranslation);
 
-      const filterLabel = {
-        label: {
-          _eq: canteenFeedbackLabelsWithTranslation.id,
+      const feedbackFilterParams: CanteenFeedbackFilterParams = {
+        filterLabel: {
+          label: {
+            _eq: canteenFeedbackLabelsWithTranslation.id,
+          },
         },
+        filterLikes,
+        filterDislikes,
+        filterDateUpdatedFeedbackLabelEntries,
       };
 
       // Get the counts for all canteens
-      const countsAllCanteens = await this.getCanteenFeedbackCounts(filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries, null);
+      const countsAllCanteens = await this.getCanteenFeedbackCounts(feedbackFilterParams, null);
 
       canteen_feedback_all.labels.push({
         label_alias: alias,
@@ -327,24 +370,7 @@ export class ReportGenerator {
 
       // If per-canteen feedbacks are to be shown
       if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
-        for (let canteenKey of canteenKeys) {
-          let canteen = canteenEntries[canteenKey];
-          if (!!canteen) {
-            const countsForCanteen = await this.getCanteenFeedbackCounts(filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries, canteen);
-
-            canteen_feedback_dict[canteen.id]?.labels.push({
-              label_alias: alias,
-              amount_positive_new: countsForCanteen.amount_positive_new,
-              amount_negative_new: countsForCanteen.amount_negative_new,
-              amount_total_new: countsForCanteen.amount_total_new,
-              amount_positive: countsForCanteen.amount_positive,
-              amount_negative: countsForCanteen.amount_negative,
-              amount_total: countsForCanteen.amount_total,
-              status_total: this.calculateTrafficLightStatus(countsForCanteen.amount_positive, countsForCanteen.amount_negative),
-              status_new: this.calculateTrafficLightStatus(countsForCanteen.amount_positive_new, countsForCanteen.amount_negative_new),
-            });
-          }
-        }
+        await this.addPerCanteenLabelCounts(canteenEntries, canteenKeys, canteen_feedback_dict, feedbackFilterParams, alias);
       }
     }
 
@@ -352,7 +378,7 @@ export class ReportGenerator {
     let canteenFeedbackKeys = Object.keys(canteen_feedback_dict);
     for (let canteenFeedbackKey of canteenFeedbackKeys) {
       let canteenFeedback = canteen_feedback_dict[canteenFeedbackKey];
-      if (!!canteenFeedback) {
+      if (canteenFeedback) {
         canteens_feedbacks.push(canteenFeedback);
       }
     }
@@ -360,7 +386,8 @@ export class ReportGenerator {
     return canteens_feedbacks;
   }
 
-  async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: DatabaseTypes.Canteens | null = null) {
+  async getCanteenFeedbackCounts(feedbackFilterParams: CanteenFeedbackFilterParams, canteen: DatabaseTypes.Canteens | null = null) {
+    const { filterLabel, filterLikes, filterDislikes, filterDateUpdatedFeedbackLabelEntries } = feedbackFilterParams;
     const canteenFilter: FieldFilter = canteen ? { canteen: { _eq: canteen.id } } : {};
 
     const amount_positive_new = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
@@ -400,24 +427,102 @@ export class ReportGenerator {
     };
   }
 
-  async getReportForFoodFeedbacks(reportContext: ReportContext, foodAverageRating: number | undefined) {
-    const { reportSchedule, startDate, endDate, canteenEntries } = reportContext;
-    let foods: ReportFoodEntryType[] = [];
-
-    let foodDict: { [key: string]: DatabaseTypes.Foods } = {};
-    let canteenKeys = Object.keys(canteenEntries);
-    for (let canteenKey of canteenKeys) {
-      let canteenEntry = canteenEntries[canteenKey];
-      if (!!canteenEntry) {
-        let foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(startDate, endDate, canteenEntry?.id);
-        for (let foodOfferWithFood of foodOffersWithFood) {
-          let food = foodOfferWithFood?.food;
-          if (!!food && typeof food !== 'string') {
-            foodDict[food.id] = food;
-          }
+  private async buildFoodDictFromCanteens(
+    canteenEntries: ReportContext['canteenEntries'],
+    startDate: ReportContext['startDate'],
+    endDate: ReportContext['endDate']
+  ): Promise<{ [key: string]: DatabaseTypes.Foods }> {
+    const foodDict: { [key: string]: DatabaseTypes.Foods } = {};
+    for (const canteenKey of Object.keys(canteenEntries)) {
+      const canteenEntry = canteenEntries[canteenKey];
+      if (!canteenEntry) {
+        continue;
+      }
+      const foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(startDate, endDate, canteenEntry.id);
+      for (const foodOfferWithFood of foodOffersWithFood) {
+        const food = foodOfferWithFood?.food;
+        if (food && typeof food !== 'string') {
+          foodDict[food.id] = food;
         }
       }
     }
+    return foodDict;
+  }
+
+  private getImageUrlForFood(food: DatabaseTypes.Foods): string | null {
+    let image_url: string | null = null;
+    if (food.image && process.env.PUBLIC_URL) {
+      image_url = AssetHelperDirectusBackend.getAssetImageURL(food.image, AssetHelperTransformOptions.SMALL_IMAGE_TRANSFORM);
+    }
+    if (food.image_remote_url) {
+      image_url = food.image_remote_url;
+    }
+    return image_url;
+  }
+
+  private calculateFoodStatusRating(food: DatabaseTypes.Foods, foodAverageRating: number | undefined): string {
+    if (food.rating_average == null || foodAverageRating == null) {
+      return ReportStatusTrafficLightValues.YELLOW;
+    }
+    const epsilon = FoodRatingCalculator.MAX_RATING_VALUE * ReportGenerator.THRESHOLD_PERCENTAGE;
+    if (food.rating_average > foodAverageRating + epsilon) {
+      return ReportStatusTrafficLightValues.GREEN;
+    }
+    if (food.rating_average < foodAverageRating - epsilon) {
+      return ReportStatusTrafficLightValues.RED;
+    }
+    return ReportStatusTrafficLightValues.YELLOW;
+  }
+
+  private async buildFoodEntry(
+    food: DatabaseTypes.Foods,
+    reportContext: ReportContext,
+    foodAverageRating: number | undefined,
+    dictFeedbackLabelsWithTranslation: Record<string, DatabaseTypes.FoodsFeedbacksLabels>
+  ): Promise<ReportFoodEntryType> {
+    const { reportSchedule } = reportContext;
+    const food_id = food.id;
+
+    let comments: string[] = [];
+    let comments_new: string[] = [];
+
+    if (reportSchedule.show_food_comments_for_selected_period) {
+      comments_new = await this.getAllFoodFeedbacksWithCommentsForFood(reportContext, food_id);
+    }
+
+    if (reportSchedule.show_food_comments_for_all_time) {
+      const newReportContext: CommonReportContextWithNullDates = {
+        ...reportContext,
+        startDate: null,
+        endDate: null,
+      };
+      comments = await this.getAllFoodFeedbacksWithCommentsForFood(newReportContext, food_id);
+    }
+
+    const labels = await this.getReportFeedbackLabelsList(reportContext, food_id, dictFeedbackLabelsWithTranslation);
+    const image_url = this.getImageUrlForFood(food);
+    const usedRatingAverage = food.rating_average ?? 0;
+    const usedRatingAmount = food.rating_amount ?? 0;
+    const status_rating = this.calculateFoodStatusRating(food, foodAverageRating);
+
+    return {
+      id: food.id,
+      alias: food.alias,
+      image_url: image_url,
+      rating_average: usedRatingAverage,
+      rating_amount: usedRatingAmount,
+      comments: comments,
+      comments_new: comments_new,
+      labels: labels,
+      status_rating: status_rating,
+    };
+  }
+
+  async getReportForFoodFeedbacks(reportContext: ReportContext, foodAverageRating: number | undefined) {
+    const { startDate, endDate, canteenEntries } = reportContext;
+    let foods: ReportFoodEntryType[] = [];
+
+    const foodDict = await this.buildFoodDictFromCanteens(canteenEntries, startDate, endDate);
 
     let feedbackLabelsWithTranslations = await this.myDatabaseHelper.getFoodFeedbackLabelsHelper().readByQuery({
       limit: -1,
@@ -434,85 +539,14 @@ export class ReportGenerator {
     });
     const dictFeedbackLabelsWithTranslation = DictHelper.transformListToDict(feedbackLabelsWithTranslations, item => item.id);
 
-    for (let food of Object.values(foodDict)) {
-      const food_id = food?.id;
-      //console.log("Get summary for food_id: "+food?.id);
-      //console.log("food")
-      //console.log(food)
-
-      let comments: string[] = [];
-      let comments_new: string[] = [];
-
-      if (reportSchedule.show_food_comments_for_selected_period) {
-        comments_new = await this.getAllFoodFeedbacksWithCommentsForFood(reportContext, food_id);
-      }
-
-      if (reportSchedule.show_food_comments_for_all_time) {
-        let newReportContext: CommonReportContextWithNullDates = {
-          ...reportContext,
-          startDate: null,
-          endDate: null,
-        };
-        comments = await this.getAllFoodFeedbacksWithCommentsForFood(newReportContext, food_id);
-      }
-
-      let labels: ReportFoodEntryLabelType[] = [];
-      labels = await this.getReportFeedbackLabelsList(reportContext, food_id, dictFeedbackLabelsWithTranslation);
-
-      let image_url = null;
-      if (food?.image) {
-        let file_id = food?.image;
-        let publicUrl = process.env.PUBLIC_URL;
-        if (publicUrl) {
-          //image_url = publicUrl+'/assets/'+file_id
-          image_url = AssetHelperDirectusBackend.getAssetImageURL(file_id, AssetHelperTransformOptions.SMALL_IMAGE_TRANSFORM);
-        }
-      }
-      if (food?.image_remote_url) {
-        image_url = food?.image_remote_url;
-      }
-
-      let usedRatingAverage = 0;
-      if (food?.rating_average) {
-        // to fixed 2 decimal places
-        usedRatingAverage = food?.rating_average;
-      }
-
-      let usedRatingAmount = 0;
-      if (food?.rating_amount) {
-        usedRatingAmount = food?.rating_amount;
-      }
-
-      let status_rating = ReportStatusTrafficLightValues.YELLOW;
-      if (food?.rating_average != null && foodAverageRating != null) {
-        const epsilon = FoodRatingCalculator.MAX_RATING_VALUE * ReportGenerator.THRESHOLD_PERCENTAGE;
-        if (food.rating_average > foodAverageRating + epsilon) {
-          status_rating = ReportStatusTrafficLightValues.GREEN;
-        } else if (food.rating_average < foodAverageRating - epsilon) {
-          status_rating = ReportStatusTrafficLightValues.RED;
-        }
-      }
-
-      let foodSummary: ReportFoodEntryType = {
-        id: food.id,
-        alias: food.alias,
-        image_url: image_url,
-        rating_average: usedRatingAverage,
-        rating_amount: usedRatingAmount,
-        comments: comments,
-        comments_new: comments_new,
-        labels: labels,
-        status_rating: status_rating,
-      };
-
-      foods.push(foodSummary);
+    for (const food of Object.values(foodDict)) {
+      const foodEntry = await this.buildFoodEntry(food, reportContext, foodAverageRating, dictFeedbackLabelsWithTranslation);
+      foods.push(foodEntry);
     }
     return foods;
   }
 
   getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: DatabaseTypes.FoodsFeedbacksLabels | DatabaseTypes.CanteensFeedbacksLabels): string {
-    // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
-    // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
     return feedbackLabelWithTranslation?.alias || feedbackLabelWithTranslation.id;
   }
 
@@ -545,7 +579,7 @@ export class ReportGenerator {
     let feedbackLabelKeys = Object.keys(dictFeedbackLabelsWithTranslation);
     for (let feedbackLabelKey of feedbackLabelKeys) {
       let feedbackLabelWithTranslation = dictFeedbackLabelsWithTranslation[feedbackLabelKey];
-      if (!!feedbackLabelWithTranslation) {
+      if (feedbackLabelWithTranslation) {
         let feedbackLabelId = feedbackLabelWithTranslation?.id;
 
         let filterFeedbackLabelEntriesFeedbackLabelEquals: Filter = {
@@ -657,14 +691,14 @@ export class ReportGenerator {
       let comment = feedback?.comment;
       const canteen = feedback.canteen;
       let canteenAlias: string | null | undefined;
-      if (!!canteen && typeof canteen !== 'string') {
+      if (canteen && typeof canteen !== 'string') {
         canteenAlias = canteen.alias;
       }
 
       if (comment) {
         // we should sanitize the comment here just to be sure that we don't have any html tags in the comment
-        let sanitized_comment = comment.replace(/<[^>]*>?/gm, '');
-        if (!!canteenAlias) {
+        let sanitized_comment = StringHelper.replaceAllWithOptions({ str: comment, find: '<[^>]*>?', replace: '', flags: 'gm' });
+        if (canteenAlias) {
           sanitized_comment += ' [' + canteenAlias + ']';
         }
         comments.push(sanitized_comment);

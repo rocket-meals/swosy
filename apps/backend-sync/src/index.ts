@@ -11,7 +11,7 @@ async function registerAppleClientSecretChecker(){
   let hostEnvFilePath = HOST_ENV_FILE_PATH;
   let config = buildConfigFromEnv(hostEnvFilePath);
   if(config){
-    let result = await ensureAppleClientSecret(config, hostEnvFilePath);
+    await ensureAppleClientSecret(config, hostEnvFilePath);
   }
 
   // Beispiel-Registrierung: Ein Job, der alle 10 Sekunden läuft
@@ -24,7 +24,7 @@ async function registerAppleClientSecretChecker(){
         if(config){
           console.log("[AppleClientSecretChecker] Loaded config:");
           console.log(JSON.stringify(config, null, 2));
-          let result = await ensureAppleClientSecret(config, hostEnvFilePath);
+          await ensureAppleClientSecret(config, hostEnvFilePath);
 
           /**
           if(result.changed){

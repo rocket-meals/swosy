@@ -67,7 +67,7 @@ export function clusterMarkers(markers: MapMarker[], zoom: number, pixelRadius: 
 	if (!markers || markers.length === 0) return markers;
 
 	// Guard against undefined/NaN zoom (e.g. if the map hasn't reported its zoom yet)
-	const safeZoom = typeof zoom === 'number' && isFinite(zoom) ? zoom : DEFAULT_ZOOM_LEVEL;
+	const safeZoom = typeof zoom === 'number' && Number.isFinite(zoom) ? zoom : DEFAULT_ZOOM_LEVEL;
 
 	if (safeZoom >= MAX_CLUSTER_ZOOM) return markers;
 

@@ -13,7 +13,7 @@ update_env_file() {
   if grep -q "BASIC_AUTH=" .env; then
     echo
     read -p ".env file already contains BASIC_AUTH. Do you want to overwrite it? (y/n): " confirm
-    if [ "$confirm" = "y" ]; then
+    if [[ "$confirm" = "y" ]]; then
       if [[ "$OSTYPE" == "darwin"* ]]; then
         sed -i '' "s|^BASIC_AUTH=.*|BASIC_AUTH=${basic_auth_value}|" .env
       else
@@ -43,7 +43,7 @@ get_password() {
     read -p "Enter password: " password
     read -p "Confirm password: " password_confirm
 
-    if [ "$password" = "$password_confirm" ]; then
+    if [[ "$password" = "$password_confirm" ]]; then
       echo "$password"
       break
     else

@@ -6,6 +6,7 @@ import { isWeb } from '@/constants/Constants';
 import { MaterialIcons } from '@expo/vector-icons';
 import { parse, format } from 'date-fns';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
+import { StringHelper } from 'repo-depkit-common';
 
 const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
@@ -23,7 +24,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 	}, [value]);
 
 	const formatDateTimeInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, '');
+		let cleanedText = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' });
 
 		if (cleanedText.length > 2) {
 			cleanedText = cleanedText.slice(0, 2) + '.' + cleanedText.slice(2);
@@ -319,7 +320,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 	const isThirdColonManual = useRef(false);
 
 	const formatTimeInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, '');
+		let cleanedText = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' });
 
 		if (cleanedText.length > 2) {
 			cleanedText = cleanedText.slice(0, 2) + ':' + cleanedText.slice(2);
@@ -419,7 +420,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 	const isLastColonManual = useRef(false);
 
 	const formatTimestampInput = (text: string) => {
-		let cleanedText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+		let cleanedText = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' }); // Remove non-numeric characters
 
 		// Format date (DD.MM.YYYY)
 		if (cleanedText.length > 2) {

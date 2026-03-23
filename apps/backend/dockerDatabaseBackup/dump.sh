@@ -12,7 +12,7 @@ pg_dump -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -f "$FILE" -d "$PGDB"
 gzip "$FILE"
 
 # Optionally delete old backups
-if [ ! -z "$DELETE_OLDER_THAN" ]; then
+if [[ ! -z "$DELETE_OLDER_THAN" ]]; then
     echo "Deleting old backups: $DELETE_OLDER_THAN"
     find /dump/* -mmin "+$DELETE_OLDER_THAN" -exec rm {} \;
 fi

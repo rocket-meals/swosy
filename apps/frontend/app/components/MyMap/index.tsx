@@ -6,14 +6,15 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
+import { StringHelper } from 'repo-depkit-common';
 
 function escapeHtml(text: string): string {
-	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;');
+	let result = StringHelper.replaceAllLiteralWithOptions({ str: text, find: '&', replace: '&amp;' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '<', replace: '&lt;' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '>', replace: '&gt;' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: '"', replace: '&quot;' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: "'", replace: '&#39;' });
+	return result;
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, initialPitch, loadingText, onMessage }, ref) => {

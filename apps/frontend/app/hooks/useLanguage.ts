@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { configureStore } from '@/redux/store';
 import translations from '@/locales/translations.json';
 import { CHANGE_LANGUAGE, SET_FUN_LANGUAGE_MODE, SET_PIRATE_LANGUAGE } from '@/redux/Types/types';
+import { StringHelper } from 'repo-depkit-common';
 
 const changeLanguage = (language: 'en' | 'de' | 'fr' | 'ar' | 'es' | 'ru' | 'tr' | 'zh') => ({
 	type: CHANGE_LANGUAGE,
@@ -21,14 +22,20 @@ const setFunLanguageModeAction = (mode: string | null) => ({
 export const applyPirateTransformation = (text: string): string => {
 	let result = text;
 	// 1. Roll the R: r → rr, R → RR
-	result = result.replace(/r/g, 'rr').replace(/R/g, 'RR');
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'r', replace: 'rr' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'R', replace: 'RR' });
 	// 2. Vowel elongation: a → aa, o → oo
-	result = result.replace(/a/g, 'aa').replace(/A/g, 'AA');
-	result = result.replace(/o/g, 'oo').replace(/O/g, 'OO');
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'a', replace: 'aa' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'A', replace: 'AA' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'o', replace: 'oo' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'O', replace: 'OO' });
 	// 3. Consonant aspiration: b → bh, g → gh, t → th
-	result = result.replace(/b/g, 'bh').replace(/B/g, 'Bh');
-	result = result.replace(/g/g, 'gh').replace(/G/g, 'Gh');
-	result = result.replace(/t/g, 'th').replace(/T/g, 'Th');
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'b', replace: 'bh' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'B', replace: 'Bh' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'g', replace: 'gh' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'G', replace: 'Gh' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 't', replace: 'th' });
+	result = StringHelper.replaceAllLiteralWithOptions({ str: result, find: 'T', replace: 'Th' });
 	// 4. Append "Arr!" for full sentences (ending with sentence-ending punctuation)
 	if (/[.!?]\s*$/.test(text.trim())) {
 		result = result + ' Arr!';
@@ -58,22 +65,30 @@ export const applyAlternatingCaseTransformation = (text: string): string => {
 };
 
 export const applyTypoglycemiaTransformation = (text: string): string => {
-	return text.replace(/\b[a-zA-ZÄäÖöÜüß]{4,}\b/g, (word) => {
-		const first = word[0];
-		const last = word[word.length - 1];
-		const inner = word.slice(1, -1).split('').reverse().join('');
-		return first + inner + last;
+	return StringHelper.replaceAllWithCallback({
+		str: text,
+		find: /\b[a-zA-ZÄäÖöÜüß]{4,}\b/g,
+		replace: (word) => {
+			const first = word[0];
+			const last = word[word.length - 1];
+			const inner = word.slice(1, -1).split('').reverse().join('');
+			return first + inner + last;
+		},
 	});
 };
 
 export const applyGlitchTransformation = (text: string): string => {
-	return text.replace(/\b[a-zA-ZÄäÖöÜüß]+\b/g, (word) => {
-		const chars = word.split('');
-		for (let i = chars.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[chars[i], chars[j]] = [chars[j], chars[i]];
-		}
-		return chars.join('');
+	return StringHelper.replaceAllWithCallback({
+		str: text,
+		find: /\b[a-zA-ZÄäÖöÜüß]+\b/g,
+		replace: (word) => {
+			const chars = word.split('');
+			for (let i = chars.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[chars[i], chars[j]] = [chars[j], chars[i]];
+			}
+			return chars.join('');
+		},
 	});
 };
 

@@ -15,7 +15,6 @@ export class Translator {
   }
 
   async init() {
-    //console.log("Initializing Translator");
     let auth_key = await this.getAuthKey();
     if (!auth_key) {
       const message = 'Auth Key not set! Please set the key in .env file: ' + EnvVariableHelper.getEnvFieldNameForAutoTranslateApiKey();
@@ -23,7 +22,6 @@ export class Translator {
       return;
     }
     try {
-      //console.log("Auth Key found");
       await this.reloadAuthKey(auth_key);
       let correctObj = await this.getSettingsAuthKeyCorrectObject();
       await this.setSettings(correctObj);
@@ -63,14 +61,12 @@ export class Translator {
   /** Private Methods */
 
   async reloadAuthKey(auth_key: string) {
-    //console.log("Reload AuthKey");
     this.translatorImplementation = new DeepLTranslator(auth_key);
     await this.translatorImplementation.init();
     await this.reloadUsage();
   }
 
   async reloadUsage() {
-    //console.log("Reload Usage");
     const usage = await this.getUsage();
     const used = usage.used || 0;
     const limit = usage.limit || 0;

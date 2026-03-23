@@ -48,13 +48,13 @@ select_backup() {
         index=$((index + 1))
     done
 
-    if [ ${#backups[@]} -eq 0 ]; then
+    if [[ ${#backups[@]} -eq 0 ]]; then
         echo "No backup files found in $BACKUP_DIR."
         exit 1
     fi
 
     select choice in "${options[@]}"; do
-        if [ -n "$choice" ]; then
+        if [[ -n "$choice" ]]; then
             BACKUP_FILE="${backups[$REPLY-1]}"
             BACKUP_FILE_NAME=$(basename "$BACKUP_FILE")
             echo "Selected backup file: $BACKUP_FILE"
@@ -66,8 +66,8 @@ select_backup() {
 }
 
 # Main entry point
-if [ "$1" == "--restore-backup-file" ]; then
-    if [ -z "$2" ]; then
+if [[ "$1" == "--restore-backup-file" ]]; then
+    if [[ -z "$2" ]]; then
         echo "Please provide the path to the backup file."
         exit 1
     fi

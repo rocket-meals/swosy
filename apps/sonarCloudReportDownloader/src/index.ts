@@ -4,13 +4,10 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import path from 'path';
 import { execSync } from 'child_process';
+import { IssueData } from './IssueData';
+import { StringHelper } from 'repo-depkit-common';
 
-interface Issue {
-  key: string;
-  message: string;
-  component: string;
-  line?: number;
-}
+type Issue = IssueData;
 
 // Mapping von Impact Software Qualities zu Report-Namen
 const qualityToReportName: Record<string, string> = {
@@ -105,7 +102,7 @@ async function generateReport(token: string, project: string, quality: string, o
 
   console.log(`Fetched ${issues.length} ${quality} issues. Writing to ${outputFile}...`);
   const header = 'Key,Message,Component,Line\n';
-  const rows = issues.map(i => `"${i.key}","${i.message.replace(/"/g, '""')}","${i.component}",${i.line ?? ''}`);
+  const rows = issues.map(i => `"${i.key}","${StringHelper.replaceAllLiteralWithOptions({ str: i.message, find: '"', replace: '""' })}","${i.component}",${i.line ?? ''}`);
 
   // Stelle sicher, dass das Verzeichnis existiert
   fs.mkdirSync(outputDir, { recursive: true });

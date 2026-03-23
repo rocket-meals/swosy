@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
+import { StringHelper } from 'repo-depkit-common';
 
 const NumberInput = ({ id, value, onChange, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
@@ -12,11 +13,11 @@ const NumberInput = ({ id, value, onChange, error, isDisabled, custom_type, pref
 	const flag = !suffix && !prefix;
 
 	const handleTextChange = (text: string) => {
-		let formattedText = text.replace(/[^0-9,]/g, '');
+		let formattedText = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9,]', replace: '' });
 
 		const parts = formattedText.split(',');
 		if (parts.length > 2) {
-			formattedText = parts[0] + ',' + parts.slice(1).join('').replace(/,/g, '');
+			formattedText = parts[0] + ',' + StringHelper.replaceAllLiteralWithOptions({ str: parts.slice(1).join(''), find: ',', replace: '' });
 		}
 
 		onChange(id, formattedText, custom_type);

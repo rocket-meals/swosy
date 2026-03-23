@@ -18,7 +18,7 @@ interface Transaction {
   Kasse_ID: string;
 }
 
-export class Cashregisters_SWOSY implements CashregisterTransactionParserInterface {
+export class CashregistersSwosy implements CashregisterTransactionParserInterface {
   password: string = '';
   api_url: string = '';
 
@@ -31,9 +31,7 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
     const data = await this.getAsJSON(this.api_url, this.password);
     const transactions: CashregistersTransactionsForParser[] = [];
     if (data) {
-      const transactionIds = Object.keys(data);
-      for (let i = 0; i < transactionIds.length; i++) {
-        const transactionId = transactionIds[i];
+      for (const transactionId of Object.keys(data)) {
         if (transactionId) {
           const transaction = data[transactionId];
           if (transaction) {
@@ -68,71 +66,71 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
     return text;
   }
 
+  private static parseFieldValue(value: string, bez: string, parsedPart: Partial<Transaction>): void {
+    switch (bez) {
+      case BUCHUNGSNUMMER:
+        parsedPart.BUCHUNGSNUMMER = CashregistersSwosy.transformBuchungsnummer(value);
+        break;
+      case Datum: {
+        const transformedDate = CashregistersSwosy.transformDate(value);
+        if (transformedDate) {
+          parsedPart.Datum = transformedDate;
+        }
+        break;
+      }
+      case Name:
+        parsedPart.Name = value;
+        break;
+      case Menge:
+        parsedPart.Menge = Number.parseFloat(value);
+        break;
+      case Verbrauchergruppe_ID:
+        parsedPart.Verbrauchergruppe_ID = value;
+        break;
+      case Kasse_ID:
+        parsedPart.Kasse_ID = value;
+        break;
+      default:
+        break;
+    }
+  }
+
+  private static parseDataLine(line: string, bezeichnungen: string[]): Partial<Transaction> {
+    const parsedPart: Partial<Transaction> = {};
+    const parsedParts = line.split('\t');
+    for (let index = 0; index < bezeichnungen.length; index++) {
+      const value = parsedParts[index] || '';
+      const bez = bezeichnungen[index];
+      if (bez) {
+        CashregistersSwosy.parseFieldValue(value, bez, parsedPart);
+      }
+    }
+    return parsedPart;
+  }
+
   async getAsJSON(url: string, password: string): Promise<Record<string, Transaction>> {
     const text = await this.loadFromRemote(url, password);
 
     const lineSeparator = text.includes('\r') ? '\r' : '\n';
-
     const fileLines = text.split(lineSeparator);
-    //console.log(fileLines.length);
-    if (!fileLines) {
-      return {};
-    }
 
     const bezeichnungen: string[] = [];
     const data: Record<string, Transaction> = {};
 
     for (let lineNumber = 0; lineNumber < fileLines.length; lineNumber++) {
-      let rawLine = fileLines[lineNumber];
+      const rawLine = fileLines[lineNumber];
       if (rawLine === undefined) {
-        continue; // skip empty lines
+        continue;
       }
 
       const line = rawLine.trim();
 
       if (lineNumber === 0) {
-        const bez = line.split('\t');
-        for (const item of bez) {
+        for (const item of line.split('\t')) {
           bezeichnungen.push(item);
         }
-      } else {
-        if (line === '') {
-          continue;
-        }
-
-        const parsedPart: Partial<Transaction> = {};
-        const parsedParts = line.split('\t');
-
-        for (let index = 0; index < bezeichnungen.length; index++) {
-          let value = parsedParts[index] || '';
-          const bez = bezeichnungen[index];
-
-          switch (bez) {
-            case BUCHUNGSNUMMER:
-              parsedPart.BUCHUNGSNUMMER = Cashregisters_SWOSY.transformBuchungsnummer(value);
-              break;
-            case Datum:
-              let transformedDate = Cashregisters_SWOSY.transformDate(value);
-              if (!!transformedDate) {
-                parsedPart.Datum = transformedDate;
-              }
-              break;
-            case Name:
-              parsedPart.Name = value;
-              break;
-            case Menge:
-              parsedPart.Menge = parseFloat(value);
-              break;
-            case Verbrauchergruppe_ID:
-              parsedPart.Verbrauchergruppe_ID = value;
-              break;
-            case Kasse_ID:
-              parsedPart.Kasse_ID = value;
-              break;
-            default: // if the field is not known, we don't need it
-              break;
-          }
-        }
+      } else if (line !== '') {
+        const parsedPart = CashregistersSwosy.parseDataLine(line, bezeichnungen);
 
         // check if parsedPart has all required fields of Transaction
         if (parsedPart.Datum && parsedPart.Kasse_ID && parsedPart.Menge && parsedPart.Name && parsedPart.Verbrauchergruppe_ID && parsedPart.BUCHUNGSNUMMER) {
@@ -158,35 +156,18 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
       return null;
     }
 
-    const [day, month, year] = date.split('.').map(num => parseInt(num));
+    const [day, month, year] = date.split('.').map(num => Number.parseInt(num, 10));
     if (day === undefined || month === undefined || year === undefined) {
       return null;
     }
 
-    const [hour, minute, seconds] = time.split(':').map(num => parseInt(num));
+    const [hour, minute, seconds] = time.split(':').map(num => Number.parseInt(num, 10));
     if (hour === undefined || minute === undefined || seconds === undefined) {
       return null;
     }
 
-    function getLastSunday(year: number, month: number): Date {
-      const lastDay = new Date(year, month + 1, 0);
-      const dayOfWeek = lastDay.getDay();
-      return new Date(year, month, lastDay.getDate() - dayOfWeek);
-    }
-
-    const dstStart = getLastSunday(year, 2);
-    const dstEnd = getLastSunday(year, 9);
-
-    const inputDate = new Date(year, month - 1, day, hour, minute, seconds);
-    const isSummerTime = inputDate >= dstStart && inputDate < dstEnd;
-
-    let adjustedHour = hour;
-    //if(isSummerTime) { // we don't need to adjust the time as the date is without timezone
-    //    adjustedHour = hour - 1;
-    //}
-
     // expected: 2024-08-21T14:37:5
-    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${adjustedHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 
   static transformBuchungsnummer(buchungsnummer: string): string | undefined {

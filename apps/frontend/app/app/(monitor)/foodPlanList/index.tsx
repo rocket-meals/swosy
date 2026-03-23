@@ -16,7 +16,7 @@ import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { useAppSelector } from '@/redux/hooks';
 import { useMyScrollviewModalSelectFoodPlanCanteen } from '@/hooks/useMyScrollviewModalSelectFoodPlanCanteen';
@@ -93,7 +93,7 @@ const Index = () => {
 	}, [initialFoodAttributes]);
 
 	const handleSortChange = (id: string, newValue: string) => {
-		const parsed = parseInt(newValue, 10);
+		const parsed = Number.parseInt(newValue, 10);
 		if (!newValue || parsed === 0) {
 			setFoodAttributes((prev: any) => prev.map((attr: any) => (attr.id === id ? { ...attr, manualSort: undefined } : attr)));
 			return;
@@ -375,7 +375,7 @@ const Index = () => {
 								}}
 								value={value}
 								onChangeText={text => {
-									const numericValue = text.replace(/[^0-9]/g, '');
+									const numericValue = StringHelper.replaceAllWithOptions({ str: text, find: '[^0-9]', replace: '' });
 									setValue(numericValue);
 								}}
 								keyboardType="number-pad"

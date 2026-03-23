@@ -1,0 +1,58 @@
+name: "Geonexia EAS Update"
+description: "Publishes an EAS OTA update for the Geonexia frontend"
+
+inputs:
+  EXPO_TOKEN:
+    required: true
+    description: "Expo Access Token for EAS CLI"
+  ref_name:
+    required: true
+    description: "Git branch name (determines the update channel: production or preview)"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "⚙️ Setup Node.js"
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22.16.0"
+
+    - name: "⚙️ Enable Corepack"
+      run: corepack enable
+      shell: bash
+
+    - name: "📦 Get Yarn cache directory path"
+      id: yarn-cache-dir-path
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: "📦 Cache Yarn dependencies"
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: "⚙️ Setup EAS CLI"
+      uses: expo/expo-github-action@v8
+      with:
+        eas-version: latest
+        token: ${{ inputs.EXPO_TOKEN }}
+
+    - name: "📦 Install dependencies"
+      run: yarn install --immutable
+      shell: bash
+
+    - name: "🚀 Publish OTA update"
+      run: |
+        if [ "${{ inputs.ref_name }}" = "main" ] || [ "${{ inputs.ref_name }}" = "master" ]; then
+          CHANNEL="production"
+        else
+          CHANNEL="preview"
+        fi
+        eas update --auto --platform all --non-interactive --channel "$CHANNEL"
+      working-directory: ./apps/geonexia/frontend
+      shell: bash
+      env:
+        EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}

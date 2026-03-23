@@ -115,8 +115,8 @@ const AccountBalanceScreen = () => {
 		const lastTransactionAsString = answer.lastTransaction;
 		const lastTransactionDefined = lastTransactionAsString !== null && lastTransactionAsString !== undefined;
 
-		const credit_balance = nextBalanceDefined ? parseFloat(nextBalanceAsString as string) : null;
-		const credit_balance_last_transaction = lastTransactionDefined ? parseFloat(lastTransactionAsString as string) : null;
+		const credit_balance = nextBalanceDefined ? Number.parseFloat(nextBalanceAsString as string) : null;
+		const credit_balance_last_transaction = lastTransactionDefined ? Number.parseFloat(lastTransactionAsString as string) : null;
 		const credit_balance_date_updated = answer.readTime ? answer.readTime.toISOString() : new Date().toISOString();
 
 		// dispatch({

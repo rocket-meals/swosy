@@ -274,8 +274,8 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 						value={localClusterDistance}
 						onChangeText={(text) => {
 							setLocalClusterDistance(text);
-							const num = parseInt(text, 10);
-							if (!isNaN(num) && num >= 10) {
+							const num = Number.parseInt(text, 10);
+							if (!Number.isNaN(num) && num >= 10) {
 								onClusterDistanceChange(num);
 							}
 						}}
@@ -402,8 +402,8 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 							value={localPeopleCount}
 							onChangeText={(text) => {
 								setLocalPeopleCount(text);
-								const num = parseInt(text, 10);
-								if (!isNaN(num) && num >= 1) {
+								const num = Number.parseInt(text, 10);
+								if (!Number.isNaN(num) && num >= 1) {
 									onPeopleCountChange(num);
 								}
 							}}
@@ -627,9 +627,9 @@ const noop = () => {};
 function getContrastColor(hexColor: string): string {
 	const hex = hexColor.replace('#', '');
 	if (hex.length !== 6) return '#ffffff';
-	const r = parseInt(hex.slice(0, 2), 16) / 255;
-	const g = parseInt(hex.slice(2, 4), 16) / 255;
-	const b = parseInt(hex.slice(4, 6), 16) / 255;
+	const r = Number.parseInt(hex.slice(0, 2), 16) / 255;
+	const g = Number.parseInt(hex.slice(2, 4), 16) / 255;
+	const b = Number.parseInt(hex.slice(4, 6), 16) / 255;
 	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 	const WCAG_LIGHT_THRESHOLD = 0.179;
 	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';

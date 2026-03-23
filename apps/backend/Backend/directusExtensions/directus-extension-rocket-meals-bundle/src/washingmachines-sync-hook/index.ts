@@ -62,7 +62,7 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
               const time_seconds = Math.floor((cappedDurationInMilliseconds / 1000) % 60);
               const hh_mm_ss = time_hours + ':' + time_minutes + ':' + time_seconds;
 
-              const duration_in_minutes = parseInt(cappedDurationInMilliseconds / 1000 / 60 + ''); // Total duration in minutes
+              const duration_in_minutes = Number.parseInt(cappedDurationInMilliseconds / 1000 / 60 + ''); // Total duration in minutes
 
               // Round duration to the nearest 10-minute interval
               const duration_rounded_10min_calculated = Math.ceil(duration_in_minutes / 10) * 10;

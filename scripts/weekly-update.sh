@@ -12,7 +12,7 @@ log() {
 log "Starte geplantes Docker-Update in $REPO_DIR"
 cd "$REPO_DIR"
 
-if [ ! -f .env ]; then
+if [[ ! -f .env ]]; then
   echo "Fehler: .env wurde in $REPO_DIR nicht gefunden." >&2
   exit 1
 fi

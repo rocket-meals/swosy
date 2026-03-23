@@ -6,7 +6,7 @@ import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { TranslationBackendKeys, TranslationsBackend } from '../TranslationsBackend';
-import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberHelper} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberHelper, StringHelper} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
@@ -363,7 +363,7 @@ export class FormHelper {
    * (collapsed) for a connected look; groups are separated by a small gap.
    */
   private static generateBankAccountBoxesHtml(value: string): string {
-    const cleaned = value.replace(/\s/g, '').toUpperCase();
+    const cleaned = StringHelper.replaceAllWithOptions({ str: value, find: '\\s', replace: '' }).toUpperCase();
     const total = cleaned.length;
 
     let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:flex-end; gap:0; line-height:0;">';

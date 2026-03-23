@@ -16,14 +16,16 @@ export const generateCodeVerifier = async () => {
 	const printableAsciiRange = printableAsciiEnd - printableAsciiStart + 1; // Calculate the range
 
 	const array = await Crypto.getRandomBytesAsync(bytesAmount); // Generates 32 random bytes
-	return Array.from(array, byte => String.fromCharCode(printableAsciiStart + (byte % printableAsciiRange))).join('');
+	return Array.from(array, byte => String.fromCodePoint(printableAsciiStart + (byte % printableAsciiRange))).join('');
 };
 
 // Generate a code challenge using the S256 method
 export const generateCodeChallenge = async (codeVerifier: string) => {
 	const digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, codeVerifier, { encoding: Crypto.CryptoEncoding.BASE64 });
 	// Adjust the base64url encoding
-	return digest.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+	const withoutEquals = StringHelper.replaceAllLiteralWithOptions({ str: digest, find: '=', replace: '' });
+	const withDashes = StringHelper.replaceAllLiteralWithOptions({ str: withoutEquals, find: '+', replace: '-' });
+	return StringHelper.replaceAllLiteralWithOptions({ str: withDashes, find: '/', replace: '_' });
 };
 
 // Update the login status

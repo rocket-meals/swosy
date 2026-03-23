@@ -2,6 +2,7 @@ import axios from 'axios';
 import { CheerioAPI, load as cheerioLoad } from 'cheerio';
 import type { Element as CheerioElement } from 'domhandler';
 import { ApartmentParserInterface, ApartmentsForParser } from '../ApartmentParserInterface';
+import { StringHelper } from 'repo-depkit-common';
 
 export class StudentenwerkHannoverApartments_Parser implements ApartmentParserInterface {
   static baseUrl = 'https://www.studentenwerk-hannover.de';
@@ -165,14 +166,14 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
 
         data.push({
           basicData: {
-            external_identifier: 'apartment_' + name.replace(/\W+/g, '_'),
+            external_identifier: 'apartment_' + StringHelper.replaceAllWithOptions({ str: name, find: '\\W+', replace: '_' }),
             available_from: null,
             handicapped_accessible: false,
             family_friendly: false,
             singleflat: false,
           },
           buildingData: {
-            external_identifier: 'building_' + name.replace(/\W+/g, '_'),
+            external_identifier: 'building_' + StringHelper.replaceAllWithOptions({ str: name, find: '\\W+', replace: '_' }),
             url: apartmentUrl,
             alias: name,
             image_remote_url: imageUrl,

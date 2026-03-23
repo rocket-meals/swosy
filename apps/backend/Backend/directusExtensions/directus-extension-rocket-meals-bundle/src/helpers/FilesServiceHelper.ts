@@ -1,6 +1,6 @@
 import { FileServiceCreator, FileServiceFileStream, FileServiceSteamType, FilesService, MutationOptions } from './ItemsServiceCreator';
 import { ItemsServiceHelper } from './ItemsServiceHelper';
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { PrimaryKey } from '@directus/types';
 import { Readable } from 'node:stream';
 import type { Stat } from '@directus/storage';
@@ -37,7 +37,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
 
   public static sanitizeFilename(filename: string): string {
     // Replace any invalid characters with underscores
-    filename = filename.replace(/[^a-zA-Z0-9-_\.]/g, '_');
+    filename = StringHelper.replaceAllWithOptions({ str: filename, find: '[^a-zA-Z0-9-_\\.]', replace: '_' });
     // Limit the filename length to 255 characters
     if (filename.length > 255) {
       filename = filename.substring(0, 255);
