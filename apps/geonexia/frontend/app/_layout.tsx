@@ -68,15 +68,15 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const items: DrawerItem[] = [
 		{
 			key: 'index',
-			label: 'Home',
-			renderIcon: (_, color) => <Ionicons name="home-outline" size={24} color={color} />,
+			label: 'Record',
+			renderIcon: (_, color) => <Ionicons name="radio-button-on-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('index'),
 		},
 		{
-			key: 'activity/index',
-			label: 'Activity',
-			renderIcon: (_, color) => <Ionicons name="fitness-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('activity/index'),
+			key: 'activities/index',
+			label: 'Activities',
+			renderIcon: (_, color) => <Ionicons name="list-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('activities/index'),
 		},
 		{
 			key: 'settings/index',
@@ -118,19 +118,26 @@ export default function Layout() {
 						<Drawer.Screen
 							name="index"
 							options={{
-								title: 'Home',
+								title: 'Record',
 								drawerIcon: ({ color, size }) => (
-									<Ionicons name="home-outline" size={size} color={color} />
+									<Ionicons name="radio-button-on-outline" size={size} color={color} />
 								),
 							}}
 						/>
 						<Drawer.Screen
-							name="activity/index"
+							name="activities/index"
+							options={{
+								title: 'Activities',
+								drawerIcon: ({ color, size }) => (
+									<Ionicons name="list-outline" size={size} color={color} />
+								),
+							}}
+						/>
+						<Drawer.Screen
+							name="activities/[id]"
 							options={{
 								title: 'Activity',
-								drawerIcon: ({ color, size }) => (
-									<Ionicons name="fitness-outline" size={size} color={color} />
-								),
+								drawerItemStyle: { display: 'none' },
 							}}
 						/>
 						<Drawer.Screen
