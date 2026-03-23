@@ -12,10 +12,16 @@ import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
+
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { latLngToCell, gridDisk, gridDistance, cellToBoundary } from '../../helpers/H3Helper';
 
 const PRIMARY_COLOR = '#2563eb';
+
+// Debug status indicator colours
+const STATUS_SUCCESS_COLOR = '#22c55e';
+const STATUS_WARNING_COLOR = '#f59e0b';
+const STATUS_ERROR_COLOR = '#ef4444';
 
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
@@ -243,6 +249,61 @@ function formatDistance(km: number): string {
 	return `${km.toFixed(2)} km`;
 }
 
+// ─── Debug viewport info ─────────────────────────────────────────────────────
+
+type DebugViewportInfo = {
+	bounds: ViewportBounds;
+	zoom: number;
+	tileCount: number;
+};
+
+// ─── Debug Info Content (shown inside the debug modal) ───────────────────────
+
+function DebugInfoContent({ info, theme }: { info: DebugViewportInfo | null; theme: ReturnType<typeof useTheme>['theme'] }) {
+	if (!info) {
+		return (
+			<View style={styles.debugContainer}>
+				<Text style={[styles.debugNoData, { color: theme.screen.text }]}>
+					No viewport data received yet.{'\n'}Move or zoom the map to trigger an update.
+				</Text>
+			</View>
+		);
+	}
+
+	const tilesExpected = info.zoom >= H3_MIN_ZOOM;
+	const rows: { label: string; value: string }[] = [
+		{ label: 'Zoom Level', value: info.zoom.toFixed(2) },
+		{ label: 'Min Zoom for Tiles', value: String(H3_MIN_ZOOM) },
+		{ label: 'H3 Resolution', value: String(H3_DEFAULT_RESOLUTION) },
+		{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${H3_MIN_ZOOM})` },
+		{ label: 'North', value: info.bounds.north.toFixed(5) },
+		{ label: 'South', value: info.bounds.south.toFixed(5) },
+		{ label: 'East', value: info.bounds.east.toFixed(5) },
+		{ label: 'West', value: info.bounds.west.toFixed(5) },
+	];
+
+	const statusColor = !tilesExpected ? STATUS_WARNING_COLOR : info.tileCount > 0 ? STATUS_SUCCESS_COLOR : STATUS_ERROR_COLOR;
+	const statusText = !tilesExpected
+		? `⚠️ Zoom in to ≥${H3_MIN_ZOOM} to see tiles`
+		: info.tileCount > 0
+		? `✅ ${info.tileCount} H3 tiles computed`
+		: '❌ 0 tiles – H3 library may not be working';
+
+	return (
+		<View style={styles.debugContainer}>
+			<View style={[styles.debugStatusBanner, { backgroundColor: statusColor + '22', borderColor: statusColor }]}>
+				<Text style={[styles.debugStatusText, { color: statusColor }]}>{statusText}</Text>
+			</View>
+			{rows.map((row) => (
+				<View key={row.label} style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+					<Text style={[styles.debugRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text style={[styles.debugRowValue, { color: theme.screen.text }]}>{row.value}</Text>
+				</View>
+			))}
+		</View>
+	);
+}
+
 // ─── OSM Consent Screen ───────────────────────────────────────────────────────
 
 function OsmConsentScreen({ onConsent }: { onConsent: () => void }) {
@@ -325,6 +386,9 @@ export default function ActivityScreen() {
 	const isFollowingRef = useRef(false);
 	const [isFollowing, setIsFollowing] = useState(false);
 
+	// Debug: last viewport info for the debug modal (ref avoids stale closure issues).
+	const debugViewportRef = useRef<DebugViewportInfo | null>(null);
+
 	const setFollowMode = useCallback((val: boolean) => {
 		isFollowingRef.current = val;
 		setIsFollowing(val);
@@ -359,6 +423,11 @@ export default function ActivityScreen() {
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
+			// Explicitly activate the hex tile layer so that tiles are shown even if
+			// the injected script's onMapReady fired before the RN bridge was ready.
+			mapRef.current?.sendToMap({
+				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', strokeColor: PRIMARY_COLOR },
+			});
 			// Re-send route if already recording when map (re)loads
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
@@ -369,10 +438,25 @@ export default function ActivityScreen() {
 		} else if (msg.tag === 'MapViewportChanged') {
 			// Compute H3 cells for the new viewport and send GeoJSON back to the map.
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
-			const geoJson = buildH3GeoJson(vp.bounds, vp.zoom, H3_DEFAULT_RESOLUTION);
+			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+			try {
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, H3_DEFAULT_RESOLUTION);
+			} catch (err) {
+				console.warn('[ActivityScreen] buildH3GeoJson failed:', err);
+			}
+			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 		}
 	}, [sendRouteToMap, setFollowMode]);
+
+	const showDebugModal = useCallback(() => {
+		const info = debugViewportRef.current;
+		showModal({
+			title: '🔍 Hex Tile Debug',
+			onClose: closeModal,
+			children: <DebugInfoContent info={info} theme={theme} />,
+		});
+	}, [showModal, closeModal, theme]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint) => {
 		const next = [...routePointsRef.current, point];
@@ -589,6 +673,14 @@ export default function ActivityScreen() {
 					isFollowing={isFollowing}
 					onLocationFound={() => setFollowMode(true)}
 				/>
+				<View style={styles.buttonSpacer} />
+				<TouchableOpacity
+					style={styles.debugButton}
+					onPress={showDebugModal}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="bug-report" size={20} color="#555555" />
+				</TouchableOpacity>
 			</View>
 
 			{/* Start / Stop button – bottom-left */}
@@ -777,6 +869,58 @@ const styles = StyleSheet.create({
 	},
 	statsRowValue: {
 		fontSize: 15,
+		fontWeight: '600',
+	},
+	// Debug button
+	debugButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 8,
+		backgroundColor: '#ffffff',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.2,
+		shadowRadius: 2,
+		elevation: 4,
+	},
+	// Debug modal styles
+	debugContainer: {
+		paddingBottom: 12,
+	},
+	debugNoData: {
+		fontSize: 14,
+		lineHeight: 22,
+		textAlign: 'center',
+		paddingHorizontal: 20,
+		paddingVertical: 16,
+	},
+	debugStatusBanner: {
+		marginHorizontal: 16,
+		marginBottom: 12,
+		paddingVertical: 10,
+		paddingHorizontal: 14,
+		borderRadius: 8,
+		borderWidth: 1,
+	},
+	debugStatusText: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	debugRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingVertical: 10,
+		paddingHorizontal: 16,
+		borderBottomWidth: StyleSheet.hairlineWidth,
+	},
+	debugRowLabel: {
+		flex: 1,
+		fontSize: 14,
+	},
+	debugRowValue: {
+		fontSize: 14,
 		fontWeight: '600',
 	},
 });
