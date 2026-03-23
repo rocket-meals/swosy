@@ -18,7 +18,7 @@ export const HEX_TILE_SCRIPT = `
   // wants the hex-tile grid shown immediately. Send { hexTileLayer: null } to
   // hide it or { hexTileLayer: { radiusMeters, color, strokeColor } } to reconfigure.
   var hexTileActive = true;
-  var hexTileColor = 'rgba(37, 99, 235, 0.18)';
+  var hexTileColor = 'rgba(0, 0, 0, 0)';
   var hexTileStrokeColor = '#2563eb';
   var hexTileRadiusMeters = 20;
 
