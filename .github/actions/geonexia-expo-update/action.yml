@@ -149,6 +149,16 @@ runs:
       env:
         EXPO_TOKEN: ${{ inputs.EXPO_TOKEN }}
 
+    - name: "💾 Commit EAS config changes"
+      run: |
+        git config --global user.name 'Rocket Meals'
+        git config --global user.email 'nils@baumgartner-software.de'
+        git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        git diff --quiet || (git add -A && git commit -m "chore: update geonexia EAS config [skip ci]" && git push)
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+
     - name: "🚀 Publish OTA update"
       run: |
         if [ "${{ inputs.ref_name }}" = "main" ] || [ "${{ inputs.ref_name }}" = "master" ]; then
