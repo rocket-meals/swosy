@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-23T14:47:53.083Z",
+  "report_timestamp": "2026-03-23T15:15:24.318Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 89,
-          "average": 1.575896964121435,
-          "amountSavedValuesForKeys": 3426,
+          "average": 1.5737179487179487,
+          "amountSavedValuesForKeys": 3437,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -22,22 +22,22 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 89,
-          "average": 1.5912679981421272,
-          "amountSavedValuesForKeys": 3426,
+          "average": 1.5889967637540454,
+          "amountSavedValuesForKeys": 3437,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3787,
-        "detection_time_ms": 65,
+        "ast_generation_time_ms": 3819,
+        "detection_time_ms": 68,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 106.15,
-          "os_memory_free": 15040696320,
-          "os_memory_total": 16771563520,
+          "os_uptime": 165.49,
+          "os_memory_free": 14935416832,
+          "os_memory_total": 16771559424,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "a258d2c589042423bb2e37c3a24992821b10589a",
-    "project_commit_hash": "a258d2c589042423bb2e37c3a24992821b10589a",
+    "project_version": "e1043b3fc5049f47f061f4671f4eff38b0896212",
+    "project_commit_hash": "e1043b3fc5049f47f061f4671f4eff38b0896212",
     "project_tag": null,
-    "project_commit_date": "1774277177",
+    "project_commit_date": "1774278831",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 429,
-    "number_of_classes_or_interfaces": 876,
+    "number_of_classes_or_interfaces": 879,
     "number_of_methods": 1311,
-    "number_of_data_fields": 3426,
+    "number_of_data_fields": 3437,
     "number_of_method_parameters": 1453
   },
   "detector": {
@@ -945,9 +945,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 23,
               "endColumn": 14
             }
           },
@@ -970,9 +970,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 24,
               "endColumn": 14
             }
           },
@@ -995,9 +995,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 25,
               "endColumn": 26
             }
           },
@@ -1020,9 +1020,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 26,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 26,
               "endColumn": 23
             }
           },
@@ -1045,9 +1045,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 27,
               "endColumn": 20
             }
           },
@@ -1092,9 +1092,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 30,
+              "startLine": 31,
               "startColumn": 2,
-              "endLine": 30,
+              "endLine": 31,
               "endColumn": 21
             }
           },
@@ -1117,9 +1117,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 31,
+              "startLine": 32,
               "startColumn": 2,
-              "endLine": 31,
+              "endLine": 32,
               "endColumn": 26
             }
           },
@@ -1142,9 +1142,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 32,
+              "startLine": 33,
               "startColumn": 2,
-              "endLine": 32,
+              "endLine": 33,
               "endColumn": 23
             }
           },
@@ -1167,9 +1167,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 33,
+              "startLine": 34,
               "startColumn": 2,
-              "endLine": 33,
+              "endLine": 34,
               "endColumn": 22
             }
           },
@@ -1192,9 +1192,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 34,
+              "startLine": 35,
               "startColumn": 2,
-              "endLine": 34,
+              "endLine": 35,
               "endColumn": 22
             }
           },
@@ -1217,9 +1217,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 35,
+              "startLine": 36,
               "startColumn": 2,
-              "endLine": 35,
+              "endLine": 36,
               "endColumn": 22
             }
           },
@@ -1242,9 +1242,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 36,
+              "startLine": 37,
               "startColumn": 2,
-              "endLine": 36,
+              "endLine": 37,
               "endColumn": 15
             }
           },
@@ -1267,9 +1267,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 38,
               "startColumn": 2,
-              "endLine": 37,
+              "endLine": 38,
               "endColumn": 16
             }
           },
@@ -1292,9 +1292,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 39,
               "startColumn": 2,
-              "endLine": 38,
+              "endLine": 39,
               "endColumn": 25
             }
           },
@@ -1317,9 +1317,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 39,
+              "startLine": 40,
               "startColumn": 2,
-              "endLine": 39,
+              "endLine": 40,
               "endColumn": 25
             }
           },
@@ -1342,9 +1342,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 41,
               "startColumn": 2,
-              "endLine": 40,
+              "endLine": 41,
               "endColumn": 23
             }
           },
@@ -2203,9 +2203,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 14
           }
         },
@@ -2228,9 +2228,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 24,
             "endColumn": 14
           }
         },
@@ -2253,9 +2253,9 @@
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 25,
             "endColumn": 26
           }
         },
@@ -2278,9 +2278,9 @@
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 26,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 23
           }
         },
@@ -2303,9 +2303,9 @@
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 20
           }
         }
@@ -2350,9 +2350,9 @@
             }
           },
           "position": {
-            "startLine": 30,
+            "startLine": 31,
             "startColumn": 2,
-            "endLine": 30,
+            "endLine": 31,
             "endColumn": 21
           }
         },
@@ -2375,9 +2375,9 @@
             }
           },
           "position": {
-            "startLine": 31,
+            "startLine": 32,
             "startColumn": 2,
-            "endLine": 31,
+            "endLine": 32,
             "endColumn": 26
           }
         },
@@ -2400,9 +2400,9 @@
             }
           },
           "position": {
-            "startLine": 32,
+            "startLine": 33,
             "startColumn": 2,
-            "endLine": 32,
+            "endLine": 33,
             "endColumn": 23
           }
         },
@@ -2425,9 +2425,9 @@
             }
           },
           "position": {
-            "startLine": 33,
+            "startLine": 34,
             "startColumn": 2,
-            "endLine": 33,
+            "endLine": 34,
             "endColumn": 22
           }
         },
@@ -2450,9 +2450,9 @@
             }
           },
           "position": {
-            "startLine": 34,
+            "startLine": 35,
             "startColumn": 2,
-            "endLine": 34,
+            "endLine": 35,
             "endColumn": 22
           }
         },
@@ -2475,9 +2475,9 @@
             }
           },
           "position": {
-            "startLine": 35,
+            "startLine": 36,
             "startColumn": 2,
-            "endLine": 35,
+            "endLine": 36,
             "endColumn": 22
           }
         },
@@ -2500,9 +2500,9 @@
             }
           },
           "position": {
-            "startLine": 36,
+            "startLine": 37,
             "startColumn": 2,
-            "endLine": 36,
+            "endLine": 37,
             "endColumn": 15
           }
         },
@@ -2525,9 +2525,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 38,
             "startColumn": 2,
-            "endLine": 37,
+            "endLine": 38,
             "endColumn": 16
           }
         },
@@ -2550,9 +2550,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 39,
             "startColumn": 2,
-            "endLine": 38,
+            "endLine": 39,
             "endColumn": 25
           }
         },
@@ -2575,9 +2575,9 @@
             }
           },
           "position": {
-            "startLine": 39,
+            "startLine": 40,
             "startColumn": 2,
-            "endLine": 39,
+            "endLine": 40,
             "endColumn": 25
           }
         },
@@ -2600,9 +2600,9 @@
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 41,
             "startColumn": 2,
-            "endLine": 40,
+            "endLine": 41,
             "endColumn": 23
           }
         }
