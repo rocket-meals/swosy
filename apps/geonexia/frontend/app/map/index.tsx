@@ -37,7 +37,6 @@ export default function MapScreen() {
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
 	const locationSubRef = useRef<Location.LocationSubscription | null>(null);
-	const mapReadyRef = useRef(false);
 
 	const handleConsent = useCallback(() => {
 		setOsmConsent(true);
@@ -78,7 +77,6 @@ export default function MapScreen() {
 	const handleMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
-			mapReadyRef.current = true;
 			// Enable the hexagonal territory tile layer for Geonexia.
 			mapRef.current?.sendToMap({ hexTileLayer: { spacingMeters: 100 } });
 		}
