@@ -9,6 +9,7 @@ import {
 	View,
 } from 'react-native';
 import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme } from 'repo-depkit-common-ui';
 
@@ -47,6 +48,32 @@ const FLUID_BASELINE_DURATION_SECONDS = 1800;
 const FLUID_BASELINE_ML = 500;
 const GPS_TIME_INTERVAL_MS = 5000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
+
+// ─── Background task ──────────────────────────────────────────────────────────
+
+const ACTIVITY_LOCATION_TASK = 'geonexia-activity-location';
+
+// Module-level callback invoked from the background task to notify the active component.
+// This reference is set when recording starts and cleared when recording stops.
+let _onLocationUpdate: ((point: RoutePoint) => void) | null = null;
+
+TaskManager.defineTask(ACTIVITY_LOCATION_TASK, ({ data, error }: TaskManager.TaskManagerTaskBody) => {
+	if (error || !data) return;
+	const locations = (data as { locations: Location.LocationObject[] }).locations;
+	if (!Array.isArray(locations)) return;
+	for (const loc of locations) {
+		const point: RoutePoint = {
+			lat: loc.coords.latitude,
+			lng: loc.coords.longitude,
+			altitude: loc.coords.altitude,
+			speed: loc.coords.speed,
+			timestamp: loc.timestamp,
+		};
+		if (_onLocationUpdate) {
+			_onLocationUpdate(point);
+		}
+	}
+});
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -247,27 +274,24 @@ export default function ActivityScreen() {
 	const [finishedStats, setFinishedStats] = useState<RunStats | null>(null);
 	const [statsVisible, setStatsVisible] = useState(false);
 
-	const locationSubRef = useRef<Location.LocationSubscription | null>(null);
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const startTimeRef = useRef<number>(0);
 	const routePointsRef = useRef<RoutePoint[]>([]);
+	// Foreground-only fallback subscription (used when background permission is denied)
+	const fgSubRef = useRef<Location.LocationSubscription | null>(null);
 
 	useEffect(() => {
 		return () => {
-			locationSubRef.current?.remove();
+			// Cleanup on unmount: stop any active tracking
+			_onLocationUpdate = null;
+			fgSubRef.current?.remove();
 			if (timerRef.current) clearInterval(timerRef.current);
+			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
 	}, []);
 
 	const handleConsent = useCallback(() => {
 		setOsmConsent(true);
-	}, []);
-
-	const handleMapMessage = useCallback((data: object) => {
-		const msg = data as { tag?: string };
-		if (msg.tag === 'MapComponentMounted') {
-			mapRef.current?.sendToMap({ hexTileLayer: { spacingMeters: 100 } });
-		}
 	}, []);
 
 	const sendRouteToMap = useCallback((points: RoutePoint[]) => {
@@ -276,10 +300,39 @@ export default function ActivityScreen() {
 		mapRef.current.sendToMap({ routeCoordinates: coords });
 	}, []);
 
+	const handleMapMessage = useCallback((data: object) => {
+		const msg = data as { tag?: string };
+		if (msg.tag === 'MapComponentMounted') {
+			mapRef.current?.sendToMap({ hexTileLayer: { spacingMeters: 100 } });
+			// Re-send route if already recording when map (re)loads
+			if (routePointsRef.current.length > 0) {
+				sendRouteToMap(routePointsRef.current);
+			}
+		}
+	}, [sendRouteToMap]);
+
+	const handleLocationUpdate = useCallback((point: RoutePoint) => {
+		const next = [...routePointsRef.current, point];
+		routePointsRef.current = next;
+
+		let d = 0;
+		for (let i = 1; i < next.length; i++) {
+			d += haversineKm(next[i - 1].lat, next[i - 1].lng, next[i].lat, next[i].lng);
+		}
+		setLiveDistanceKm(d);
+
+		if (point.speed != null && point.speed >= 0) {
+			setLiveSpeedKmh(point.speed * 3.6);
+		}
+
+		sendRouteToMap(next);
+		mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+	}, [sendRouteToMap]);
+
 	const startRecording = useCallback(async () => {
 		try {
-			const { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
+			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
+			if (fgStatus !== 'granted') {
 				Alert.alert('GPS', 'Location permission is required for run recording.');
 				return;
 			}
@@ -290,61 +343,77 @@ export default function ActivityScreen() {
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
 			setIsRecording(true);
-
 			mapRef.current?.sendToMap({ routeCoordinates: [] });
 
 			timerRef.current = setInterval(() => {
 				setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
 			}, 1000);
 
-			const sub = await Location.watchPositionAsync(
-				{
+			// Try to request background permission; fall back to foreground-only if denied.
+			const { status: bgStatus } = await Location.requestBackgroundPermissionsAsync();
+			const useBackground = bgStatus === 'granted';
+
+			if (useBackground) {
+				_onLocationUpdate = handleLocationUpdate;
+				await Location.startLocationUpdatesAsync(ACTIVITY_LOCATION_TASK, {
 					accuracy: Location.Accuracy.BestForNavigation,
 					timeInterval: GPS_TIME_INTERVAL_MS,
 					distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
-				},
-				(loc) => {
-					const point: RoutePoint = {
-						lat: loc.coords.latitude,
-						lng: loc.coords.longitude,
-						altitude: loc.coords.altitude,
-						speed: loc.coords.speed,
-						timestamp: loc.timestamp,
-					};
-
-					const next = [...routePointsRef.current, point];
-					routePointsRef.current = next;
-
-					let d = 0;
-					for (let i = 1; i < next.length; i++) {
-						d += haversineKm(next[i - 1].lat, next[i - 1].lng, next[i].lat, next[i].lng);
-					}
-					setLiveDistanceKm(d);
-
-					const gpsSpeed = loc.coords.speed;
-					if (gpsSpeed != null && gpsSpeed >= 0) {
-						setLiveSpeedKmh(gpsSpeed * 3.6);
-					}
-
-					sendRouteToMap(next);
-				},
-			);
-
-			locationSubRef.current = sub;
+					showsBackgroundLocationIndicator: true,
+					foregroundService: {
+						notificationTitle: 'Activity Recording',
+						notificationBody: 'Geonexia is recording your activity in the background.',
+						notificationColor: PRIMARY_COLOR,
+					},
+				});
+			} else {
+				// Foreground-only fallback
+				const sub = await Location.watchPositionAsync(
+					{
+						accuracy: Location.Accuracy.BestForNavigation,
+						timeInterval: GPS_TIME_INTERVAL_MS,
+						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
+					},
+					(loc) => {
+						handleLocationUpdate({
+							lat: loc.coords.latitude,
+							lng: loc.coords.longitude,
+							altitude: loc.coords.altitude,
+							speed: loc.coords.speed,
+							timestamp: loc.timestamp,
+						});
+					},
+				);
+				fgSubRef.current = sub;
+			}
 		} catch (err) {
 			console.error('ActivityScreen startRecording error:', err);
 			Alert.alert('Error', 'Run recording could not be started.');
 			setIsRecording(false);
+			if (timerRef.current) {
+				clearInterval(timerRef.current);
+				timerRef.current = null;
+			}
 		}
-	}, [sendRouteToMap]);
+	}, [handleLocationUpdate]);
 
-	const stopRecording = useCallback(() => {
-		locationSubRef.current?.remove();
-		locationSubRef.current = null;
+	const stopRecording = useCallback(async () => {
+		_onLocationUpdate = null;
+		fgSubRef.current?.remove();
+		fgSubRef.current = null;
 
 		if (timerRef.current) {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
+		}
+
+		try {
+			const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
+			if (isTaskRunning) {
+				await Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK);
+			}
+		} catch {
+			// Ignore errors when stopping task
 		}
 
 		setIsRecording(false);
