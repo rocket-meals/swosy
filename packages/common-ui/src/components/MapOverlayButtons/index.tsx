@@ -60,7 +60,7 @@ export function MapLocationButton({
 			if (isFollowing === undefined) {
 				setInternalActive(true);
 			}
-			mapRef.current?.sendToMap({ mapCenterPosition: center });
+			mapRef.current?.sendToMap({ mapCenterPosition: center, userLocation: center });
 			onLocationFound?.(center);
 		} catch (error) {
 			console.error('Location error:', error);
