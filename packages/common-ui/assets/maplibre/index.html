@@ -6,7 +6,7 @@
     <title>OSM Vector Map</title>
     <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/h3-js@4.4.0/dist/browser/h3-js.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/h3-js@4.4.0/dist/h3-js.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
@@ -908,7 +908,7 @@
 
       // Build GeoJSON Polygon features from H3 cells covering the current viewport.
       function buildH3GeoJSON() {
-        if (!window.H3 || !map) return { type: 'FeatureCollection', features: [] };
+        if (!window.h3 || !map) return { type: 'FeatureCollection', features: [] };
         var bounds = map.getBounds();
         var north = bounds.getNorth();
         var south = bounds.getSouth();
@@ -929,7 +929,7 @@
         };
         var cells;
         try {
-          cells = H3.polygonToCells(polygon, res, false);
+          cells = h3.polygonToCells(polygon, res, false);
         } catch (e) {
           console.error('H3 polygon conversion failed:', e);
           return { type: 'FeatureCollection', features: [] };
@@ -942,7 +942,7 @@
         for (var i = 0; i < cells.length; i++) {
           var boundary;
           try {
-            boundary = H3.cellToBoundary(cells[i]);
+            boundary = h3.cellToBoundary(cells[i]);
           } catch (e) {
             continue;
           }
