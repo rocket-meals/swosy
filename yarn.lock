@@ -15763,6 +15763,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/runtime": "npm:^7.26.0"
     "@expo/vector-icons": "npm:^15.0.3"
+    "@react-navigation/drawer": "npm:^7.0.0"
     "@types/node": "npm:^24.9.1"
     "@types/react": "npm:~19.0.0"
     "@types/react-native": "npm:^0.73.0"
@@ -15784,6 +15785,7 @@ __metadata:
     react-native-screens: "npm:~4.16.0"
     react-native-web: "npm:^0.21.0"
     repo-depkit-common: "workspace:*"
+    repo-depkit-common-ui: "workspace:*"
     setimmediate: "npm:^1.0.5"
     typescript: "npm:^5.9.3"
   languageName: unknown
