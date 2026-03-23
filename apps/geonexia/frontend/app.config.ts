@@ -34,10 +34,14 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		},
 		plugins: [
 			'expo-router',
+			'expo-task-manager',
 			[
 				'expo-location',
 				{
 					locationWhenInUsePermission: 'Allow Geonexia to use your location to center the map and track your activity.',
+					locationAlwaysAndWhenInUsePermission: 'Allow Geonexia to use your location in the background to continue recording your activity.',
+					isIosBackgroundLocationEnabled: true,
+					isAndroidBackgroundLocationEnabled: true,
 				},
 			],
 			[
