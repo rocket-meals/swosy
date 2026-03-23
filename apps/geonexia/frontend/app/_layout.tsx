@@ -4,7 +4,7 @@ import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
+import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet } from 'react-native';
@@ -59,6 +59,7 @@ export default function Layout() {
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
 				<ThemeProvider>
+					<ModalProvider>
 					<StatusBar style="auto" />
 					<Drawer
 						drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -103,6 +104,7 @@ export default function Layout() {
 							}}
 						/>
 					</Drawer>
+					</ModalProvider>
 				</ThemeProvider>
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
