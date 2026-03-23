@@ -1,4 +1,19 @@
 Key,Message,Component,Line
+"AZ0YwZFETb56BCVJHZIK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",31
+"AZ0YwZFETb56BCVJHZIL","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",41
+"AZ0YwZFETb56BCVJHZIM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",50
+"AZ0YpBMgLvrw8DEQgX7e","Refactor this function to reduce its Cognitive Complexity from 28 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",34
+"AZ0YpBMgLvrw8DEQgX7f","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",50
+"AZ0YpBMgLvrw8DEQgX7g","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",52
+"AZ0YpBMgLvrw8DEQgX7h","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",90
+"AZ0YpBMgLvrw8DEQgX7i","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",90
+"AZ0YpBMgLvrw8DEQgX7j","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",95
+"AZ0YpBMgLvrw8DEQgX7k","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",96
+"AZ0YpBMgLvrw8DEQgX7l","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",96
+"AZ0YpBPILvrw8DEQgX7m","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/context/ThemeContext.tsx",50
+"AZ0YpBPZLvrw8DEQgX7n","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/ColorHelper.ts",5
+"AZ0YpBPZLvrw8DEQgX7o","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/ColorHelper.ts",20
+"AZ0YpBPZLvrw8DEQgX7p","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/ColorHelper.ts",21
 "AZ0XoCBfzF9ecMqzfrcj","The function should be named.","rocket-meals_rocket-meals:apps/geonexia/frontend/app.config.ts",3
 "AZ0XgX4uyJsjaJPaBpOF","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",648
 "AZ0VmBt-mRbbgKiJd_tm","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",40
@@ -174,15 +189,7 @@ Key,Message,Component,Line
 "AZ0TplNeufp2jxPAhS19","Use `export…from` to re-export `TooltipText`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomTooltip/index.tsx",39
 "AZ0Tpk85ufp2jxPAhSy9","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",377
 "AZ0TplGSufp2jxPAhS0g","Remove this unused import of 'Image'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",2
-"AZ0TplCtufp2jxPAhSz3","Refactor this function to reduce its Cognitive Complexity from 28 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",16
 "AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",36
-"AZ0TplCtufp2jxPAhSz4","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",33
-"AZ0TplCtufp2jxPAhSz5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",35
-"AZ0TplCtufp2jxPAhSz6","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",73
-"AZ0TplCtufp2jxPAhSz7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",73
-"AZ0TplCtufp2jxPAhSz8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",78
-"AZ0TplCtufp2jxPAhSz-","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",79
-"AZ0TplCtufp2jxPAhSz9","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsList/SettingsList.tsx",79
 "AZ0Tpk85ufp2jxPAhSy5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",77
 "AZ0TplIZufp2jxPAhS1V","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",32
 "AZ0TplIZufp2jxPAhS1W","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",67
@@ -881,7 +888,6 @@ Key,Message,Component,Line
 "AZkUSveRS4VhJojFFCVt","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",166
 "AZkUSveRS4VhJojFFCVu","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",167
 "AZkUSveRS4VhJojFFCVv","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/constants/IconNames.ts",168
-"AZkUSvfTS4VhJojFFCV6","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:apps/frontend/app/context/ThemeContext.tsx",37
 "AZkUSvUYS4VhJojFFAhp","The signature '(from: number, length?: number | undefined): string' of 'wordToHexValue_temp.substr' is deprecated.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",72
 "AZkUSvUYS4VhJojFFAhq","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",90
 "AZkUSvUYS4VhJojFFAhr","Arguments 'c' and 'a' have the same names but not the same order as the function parameters.","rocket-meals_rocket-meals:apps/frontend/app/helper/hashHelper.ts",94
