@@ -4,25 +4,29 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 2 | 2 |
+| 🔒 Security | 3 | 3 |
 | 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 1861 | 48 |
+| 🔧 Maintainability | 1861 | 47 |
 
-**Total issues:** 1863 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1864 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (2/2)
+## 🔒 Security (3/3)
 
 - **Change this action to not use user-controlled data directly in a run block.**
-  .github/actions/geonexia-expo-update/action.yml:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L49
+  .github/actions/geonexia-expo-update/action.yml:67
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L67
 
 - **Change this action to not use user-controlled data directly in a run block.**
-  .github/actions/geonexia-expo-update/action.yml:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L49
+  .github/actions/geonexia-expo-update/action.yml:79
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L79
 
-## 🔧 Maintainability (48/1861)
+- **Change this action to not use user-controlled data directly in a run block.**
+  .github/actions/geonexia-expo-update/action.yml:79
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L79
+
+## 🔧 Maintainability (47/1861)
 
 - **This assertion is unnecessary since it does not change the type of the expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:62
@@ -211,8 +215,4 @@
 - **Unexpected `await` of a non-Promise (non-"Thenable") value.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:372
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L372
-
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:394
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L394
 
