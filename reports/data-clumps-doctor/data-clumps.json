@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-23T03:31:58.228Z",
+  "report_timestamp": "2026-03-23T03:48:52.540Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 89,
-          "average": 1.5565905915230553,
-          "amountSavedValuesForKeys": 3342,
-          "amountKeys": 25
+          "average": 1.558550185873606,
+          "amountSavedValuesForKeys": 3354,
+          "amountKeys": 24
         },
         "invertedParameterToMethods": {
           "median": 1,
           "maximum": 70,
-          "average": 2.364975450081833,
-          "amountSavedValuesForKeys": 1445,
+          "average": 2.360522022838499,
+          "amountSavedValuesForKeys": 1447,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 89,
-          "average": 1.5719661335841957,
-          "amountSavedValuesForKeys": 3342,
-          "amountKeys": 26
+          "average": 1.5739089629282028,
+          "amountSavedValuesForKeys": 3354,
+          "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3443,
-        "detection_time_ms": 59,
+        "ast_generation_time_ms": 3786,
+        "detection_time_ms": 63,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 658.42,
-          "os_memory_free": 14959943680,
-          "os_memory_total": 16770519040,
+          "os_uptime": 113.63,
+          "os_memory_free": 15020306432,
+          "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3469
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 2,
-    "amount_files_with_data_clumps": 2,
+    "amount_classes_or_interfaces_with_data_clumps": 4,
+    "amount_files_with_data_clumps": 4,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 0,
+    "fields_to_fields_data_clump": 2,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 8
+    "amount_data_clumps": 10
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "fdb0e2e26f1e5a37d3d84d0b23bd5ef142297e3f",
-    "project_commit_hash": "fdb0e2e26f1e5a37d3d84d0b23bd5ef142297e3f",
+    "project_version": "b460d8a2f7e007dcc4c148254ba3fbf56a044046",
+    "project_commit_hash": "b460d8a2f7e007dcc4c148254ba3fbf56a044046",
     "project_tag": null,
-    "project_commit_date": "1774236618",
+    "project_commit_date": "1774237633",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 420,
-    "number_of_classes_or_interfaces": 856,
-    "number_of_methods": 1298,
-    "number_of_data_fields": 3342,
-    "number_of_method_parameters": 1445
+    "number_of_files": 421,
+    "number_of_classes_or_interfaces": 858,
+    "number_of_methods": 1302,
+    "number_of_data_fields": 3354,
+    "number_of_method_parameters": 1447
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -915,6 +915,200 @@
       "data_clump_type_additional": {
         "cluster_id": 2,
         "cluster_type": 1
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps",
+      "from_class_or_interface_name": "MenuItemProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/AppDrawer/types.ts",
+      "to_class_or_interface_key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem",
+      "to_class_or_interface_name": "DrawerItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/label": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 45,
+            "startColumn": 9,
+            "endLine": 45,
+            "endColumn": 23
+          }
+        },
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/hasUnread": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/hasUnread",
+          "name": "hasUnread",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/hasUnread",
+            "name": "hasUnread",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 52,
+            "startColumn": 9,
+            "endLine": 52,
+            "endColumn": 29
+          }
+        },
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/activeColor": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/activeColor",
+          "name": "activeColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/activeColor",
+            "name": "activeColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 53,
+            "startColumn": 9,
+            "endLine": 53,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/AppDrawer/types.ts",
+      "from_class_or_interface_key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem",
+      "from_class_or_interface_name": "DrawerItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps",
+      "to_class_or_interface_name": "MenuItemProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/label": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 45,
+              "startColumn": 9,
+              "endLine": 45,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/hasUnread": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/hasUnread",
+          "name": "hasUnread",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/hasUnread",
+            "name": "hasUnread",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 52,
+              "startColumn": 9,
+              "endLine": 52,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/activeColor": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/activeColor",
+          "name": "activeColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/activeColor",
+            "name": "activeColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 53,
+              "startColumn": 9,
+              "endLine": 53,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
       }
     }
   }
