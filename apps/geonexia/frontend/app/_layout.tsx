@@ -26,6 +26,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('map/index'),
 		},
 		{
+			key: 'activity/index',
+			label: 'Activity',
+			renderIcon: (_, color) => <Ionicons name="fitness-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('activity/index'),
+		},
+		{
 			key: 'settings/index',
 			label: 'Settings',
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
@@ -75,6 +81,15 @@ export default function Layout() {
 								title: 'Map',
 								drawerIcon: ({ color, size }) => (
 									<Ionicons name="map-outline" size={size} color={color} />
+								),
+							}}
+						/>
+						<Drawer.Screen
+							name="activity/index"
+							options={{
+								title: 'Activity',
+								drawerIcon: ({ color, size }) => (
+									<Ionicons name="fitness-outline" size={size} color={color} />
 								),
 							}}
 						/>
