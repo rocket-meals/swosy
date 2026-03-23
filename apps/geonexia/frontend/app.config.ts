@@ -35,6 +35,12 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		plugins: [
 			'expo-router',
 			[
+				'expo-location',
+				{
+					locationWhenInUsePermission: 'Allow Geonexia to use your location to center the map and track your activity.',
+				},
+			],
+			[
 				'expo-splash-screen',
 				{
 					image: './assets/splash.png',

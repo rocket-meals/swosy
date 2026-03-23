@@ -1,11 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle } from 'repo-depkit-common-ui';
+import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle } from 'repo-depkit-common-ui';
 
 const PRIMARY_COLOR = '#2563eb';
-
-const INITIAL_CENTER = { lat: 51.1657, lng: 10.4515 };
 
 function OsmConsentScreen({ onConsent }: { onConsent: () => void }) {
 	return (
@@ -39,8 +37,12 @@ export default function MapScreen() {
 		setOsmConsent(true);
 	}, []);
 
-	const handleMessage = useCallback((_data: object) => {
-		// Placeholder for handling messages from the map (e.g. POI clicks, map move events).
+	const handleMessage = useCallback((data: object) => {
+		const msg = data as { tag?: string };
+		if (msg.tag === 'MapComponentMounted') {
+			// Enable the hexagonal territory tile layer for Geonexia.
+			mapRef.current?.sendToMap({ hexTileLayer: { spacingMeters: 100 } });
+		}
 	}, []);
 
 	if (!osmConsent) {
@@ -55,9 +57,22 @@ export default function MapScreen() {
 		<View style={styles.container}>
 			<MyMap
 				ref={mapRef}
-				initialCenter={INITIAL_CENTER}
 				onMessage={handleMessage}
 			/>
+			<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+				<MapNorthButton
+					mapRef={mapRef}
+					backgroundColor="#ffffff"
+					iconColor="#555555"
+				/>
+				<View style={styles.buttonSpacer} />
+				<MapLocationButton
+					mapRef={mapRef}
+					backgroundColor="#ffffff"
+					iconColor="#555555"
+					activeColor={PRIMARY_COLOR}
+				/>
+			</View>
 		</View>
 	);
 }
@@ -66,6 +81,17 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#ffffff',
+	},
+	mapOverlayButtons: {
+		position: 'absolute',
+		top: 16,
+		right: 12,
+		zIndex: 20,
+		elevation: 20,
+		alignItems: 'center',
+	},
+	buttonSpacer: {
+		height: 8,
 	},
 	consentContainer: {
 		flexGrow: 1,
