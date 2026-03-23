@@ -20,12 +20,29 @@
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 let _h3: Partial<typeof import('./h3/libh3')> = {};
+let _h3Available = false;
 try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     _h3 = require('./h3/libh3') as typeof import('./h3/libh3');
+    // Quick sanity-check: convert a known coordinate at the lowest resolution.
+    // If the library initialised correctly, this must return a non-empty string.
+    const _probe = (_h3 as typeof import('./h3/libh3')).latLngToCell?.(0, 0, 0);
+    if (_probe && typeof _probe === 'string' && _probe.length > 0) {
+        _h3Available = true;
+    } else {
+        console.warn('[H3Helper] libh3.js loaded but initialisation check failed – H3 functions will be unavailable.');
+        _h3 = {};
+    }
 } catch (err) {
     console.warn('[H3Helper] libh3.js failed to load – H3 functions will be unavailable.', err);
 }
+
+/**
+ * Returns `true` when the bundled H3 library has loaded and passed its
+ * initialisation sanity-check.  When `false`, all exported H3 helpers will
+ * silently return safe empty values.
+ */
+export const isAvailable = (): boolean => _h3Available;
 
 const {
     latLngToCell: _latLngToCell,
@@ -107,11 +124,15 @@ export const cellToLatLng = (h3Index: H3Index): CoordPair =>
 
 /**
  * Return the boundary vertices of an H3 cell as [[lat, lng], …] pairs.
+ * Returns an empty array for invalid or empty cell indices.
  */
 export const cellToBoundary = (
     h3Index: H3Index,
     formatAsGeoJson = false,
-): CoordPair[] => (_cellToBoundary?.(h3Index, formatAsGeoJson) as CoordPair[]) ?? [];
+): CoordPair[] => {
+    if (!h3Index || !(_isValidCell?.(h3Index) ?? false)) return [];
+    return (_cellToBoundary?.(h3Index, formatAsGeoJson) as CoordPair[]) ?? [];
+};
 
 // ─── Cell validation ──────────────────────────────────────────────────────────
 
