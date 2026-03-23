@@ -6,10 +6,14 @@
   "private": true,
   "peerDependencies": {
     "@expo/vector-icons": "*",
+    "expo-asset": "*",
+    "expo-file-system": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-webview": "*"
   },
   "dependencies": {
+    "repo-depkit-common": "workspace:*",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {

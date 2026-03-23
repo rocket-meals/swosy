@@ -18,3 +18,6 @@ export type { SettingsListProps, SettingsListItemBaseProps } from './src/compone
 
 export { default as AppDrawer } from './src/components/AppDrawer';
 export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
+
+export { default as MyMap } from './src/components/MyMap';
+export type { MyMapHandle, MyMapProps } from './src/components/MyMap';

@@ -20,6 +20,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('index'),
 		},
 		{
+			key: 'map/index',
+			label: 'Map',
+			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('map/index'),
+		},
+		{
 			key: 'settings/index',
 			label: 'Settings',
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
@@ -60,6 +66,15 @@ export default function Layout() {
 								title: 'Home',
 								drawerIcon: ({ color, size }) => (
 									<Ionicons name="home-outline" size={size} color={color} />
+								),
+							}}
+						/>
+						<Drawer.Screen
+							name="map/index"
+							options={{
+								title: 'Map',
+								drawerIcon: ({ color, size }) => (
+									<Ionicons name="map-outline" size={size} color={color} />
 								),
 							}}
 						/>
