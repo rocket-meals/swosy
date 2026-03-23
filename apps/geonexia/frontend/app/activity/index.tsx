@@ -280,7 +280,7 @@ export default function ActivityScreen() {
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
-			mapRef.current?.sendToMap({ hexTileLayer: { spacingMeters: 100 } });
+			mapRef.current?.sendToMap({ hexTileLayer: { radiusMeters: 20 } });
 			// Re-send route if already recording when map (re)loads
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
