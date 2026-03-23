@@ -874,21 +874,23 @@
       var HEX_TILE_LAYER = 'hex-tile-circles';
       var HEX_TILE_MAX_POINTS = 4000;
       var HEX_TILE_MIN_ZOOM = 12;
+      // Approximate meters per degree of latitude (constant; longitude varies by cos(lat)).
+      var METERS_PER_LAT_DEG = 111320;
 
       // Generate hex-grid center points covering the given bounds.
       // Row spacing = spacingMeters * sin(60°) ≈ 0.866 * spacingMeters (N-S).
       // Column spacing = spacingMeters (E-W), with every other row offset by half.
       function generateHexGridPoints(bounds, spacingMeters) {
         var features = [];
-        // Earth radius ≈ 6371000 m; 1° latitude ≈ 111320 m
-        var rowSpacingDeg = (spacingMeters * Math.sqrt(3) / 2) / 111320;
+        var rowSpacingDeg = (spacingMeters * Math.sqrt(3) / 2) / METERS_PER_LAT_DEG;
         var startRow = Math.floor(bounds.south / rowSpacingDeg) - 1;
         var row = startRow;
         var lat = startRow * rowSpacingDeg;
         while (lat <= bounds.north + rowSpacingDeg) {
           var cosLat = Math.max(Math.cos(lat * Math.PI / 180), 0.0001);
-          var colSpacingDeg = spacingMeters / (111320 * cosLat);
-          var lngOffset = (((row % 2) + 2) % 2) * colSpacingDeg / 2;
+          var colSpacingDeg = spacingMeters / (METERS_PER_LAT_DEG * cosLat);
+          var rowIsOdd = Math.abs(row % 2);
+          var lngOffset = rowIsOdd * colSpacingDeg / 2;
           var startCol = Math.floor((bounds.west - lngOffset) / colSpacingDeg) - 1;
           var lng = startCol * colSpacingDeg + lngOffset;
           while (lng <= bounds.east + colSpacingDeg) {
