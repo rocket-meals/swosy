@@ -11,7 +11,12 @@
     "export:web": "expo export --platform web"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "resolver": "<rootDir>/jest.resolver.js",
+    "moduleNameMapper": {
+      "expo-modules-core/src/web/index\\.web": "<rootDir>/emptyModule.js",
+      "expo-modules-core/src/uuid/uuid\\.web": "<rootDir>/emptyModule.js"
+    }
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",

@@ -17,7 +17,14 @@ var libh3 = function (libh3) {
   var ENVIRONMENT_IS_NODE = false;
   var ENVIRONMENT_HAS_NODE = false;
   var ENVIRONMENT_IS_SHELL = false;
-  ENVIRONMENT_IS_WEB = typeof window === "object";
+  // In React Native (Hermes) `window` is set to `global` but `document` is
+  // undefined.  Treating such an environment as WEB causes the emscripten
+  // module to use an async dependency-tracking path for the memory initialiser
+  // that can fail silently in Hermes.  Requiring `document` to be present
+  // ensures that only real browser environments follow the WEB path; React
+  // Native falls through to ENVIRONMENT_IS_SHELL which uses a straightforward
+  // synchronous readBinary() → HEAPU8.set() flow.
+  ENVIRONMENT_IS_WEB = typeof window === "object" && typeof document !== "undefined";
   ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
   ENVIRONMENT_HAS_NODE = typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string";
   ENVIRONMENT_IS_NODE = ENVIRONMENT_HAS_NODE && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_WORKER;
@@ -365,7 +372,18 @@ var libh3 = function (libh3) {
   function stringToUTF8(str, outPtr, maxBytesToWrite) {
     return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
   }
-  var UTF16Decoder = typeof TextDecoder !== "undefined" ? new TextDecoder("utf-16le") : undefined;
+  // Wrap in try-catch because some environments (e.g. Expo's TextDecoder
+  // polyfill used in React Native / Hermes and in jest-expo tests) only
+  // support UTF-8 and will throw for the "utf-16le" encoding.  UTF16Decoder
+  // is only used for optional wide-string helpers; falling back to undefined
+  // is safe and does not affect H3 cell computations.
+  var UTF16Decoder = (function () {
+    try {
+      return typeof TextDecoder !== "undefined" ? new TextDecoder("utf-16le") : undefined;
+    } catch (e) {
+      return undefined;
+    }
+  })();
   function writeArrayToMemory(array, buffer) {
     HEAP8.set(array, buffer);
   }

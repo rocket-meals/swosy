@@ -14,7 +14,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { latLngToCell, gridDisk, gridDistance, cellToBoundary } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, gridDisk, gridDistance, cellToBoundary } from '../../helpers/H3Helper';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -260,10 +260,19 @@ type DebugViewportInfo = {
 // ─── Debug Info Content (shown inside the debug modal) ───────────────────────
 
 function DebugInfoContent({ info, theme }: { info: DebugViewportInfo | null; theme: ReturnType<typeof useTheme>['theme'] }) {
+	const h3Available = isH3Available();
+
 	if (!info) {
 		return (
 			<View style={styles.debugContainer}>
-				<Text style={[styles.debugNoData, { color: theme.screen.text }]}>
+				{!h3Available && (
+					<View style={[styles.debugStatusBanner, { backgroundColor: STATUS_ERROR_COLOR + '22', borderColor: STATUS_ERROR_COLOR }]}>
+						<Text selectable style={[styles.debugStatusText, { color: STATUS_ERROR_COLOR }]}>
+							❌ H3 library failed to initialise
+						</Text>
+					</View>
+				)}
+				<Text selectable style={[styles.debugNoData, { color: theme.screen.text }]}>
 					No viewport data received yet.{'\n'}Move or zoom the map to trigger an update.
 				</Text>
 			</View>
@@ -272,6 +281,7 @@ function DebugInfoContent({ info, theme }: { info: DebugViewportInfo | null; the
 
 	const tilesExpected = info.zoom >= H3_MIN_ZOOM;
 	const rows: { label: string; value: string }[] = [
+		{ label: 'H3 Library', value: h3Available ? '✅ Available' : '❌ Not available' },
 		{ label: 'Zoom Level', value: info.zoom.toFixed(2) },
 		{ label: 'Min Zoom for Tiles', value: String(H3_MIN_ZOOM) },
 		{ label: 'H3 Resolution', value: String(H3_DEFAULT_RESOLUTION) },
@@ -282,8 +292,16 @@ function DebugInfoContent({ info, theme }: { info: DebugViewportInfo | null; the
 		{ label: 'West', value: info.bounds.west.toFixed(5) },
 	];
 
-	const statusColor = !tilesExpected ? STATUS_WARNING_COLOR : info.tileCount > 0 ? STATUS_SUCCESS_COLOR : STATUS_ERROR_COLOR;
-	const statusText = !tilesExpected
+	const statusColor = !h3Available
+		? STATUS_ERROR_COLOR
+		: !tilesExpected
+		? STATUS_WARNING_COLOR
+		: info.tileCount > 0
+		? STATUS_SUCCESS_COLOR
+		: STATUS_ERROR_COLOR;
+	const statusText = !h3Available
+		? '❌ H3 library failed to initialise'
+		: !tilesExpected
 		? `⚠️ Zoom in to ≥${H3_MIN_ZOOM} to see tiles`
 		: info.tileCount > 0
 		? `✅ ${info.tileCount} H3 tiles computed`
@@ -292,12 +310,12 @@ function DebugInfoContent({ info, theme }: { info: DebugViewportInfo | null; the
 	return (
 		<View style={styles.debugContainer}>
 			<View style={[styles.debugStatusBanner, { backgroundColor: statusColor + '22', borderColor: statusColor }]}>
-				<Text style={[styles.debugStatusText, { color: statusColor }]}>{statusText}</Text>
+				<Text selectable style={[styles.debugStatusText, { color: statusColor }]}>{statusText}</Text>
 			</View>
 			{rows.map((row) => (
 				<View key={row.label} style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-					<Text style={[styles.debugRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
-					<Text style={[styles.debugRowValue, { color: theme.screen.text }]}>{row.value}</Text>
+					<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
 		</View>
