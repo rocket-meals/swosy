@@ -15769,6 +15769,7 @@ __metadata:
     "@types/react-native": "npm:^0.73.0"
     expo: "npm:54.0.20"
     expo-constants: "npm:~18.0.10"
+    expo-file-system: "npm:~19.0.17"
     expo-font: "npm:~14.0.9"
     expo-linking: "npm:~8.0.8"
     expo-router: "npm:~6.0.13"
@@ -15784,6 +15785,7 @@ __metadata:
     react-native-safe-area-context: "npm:~5.6.0"
     react-native-screens: "npm:~4.16.0"
     react-native-web: "npm:^0.21.0"
+    react-native-webview: "npm:13.15.0"
     repo-depkit-common: "workspace:*"
     repo-depkit-common-ui: "workspace:*"
     setimmediate: "npm:^1.0.5"
@@ -24033,12 +24035,16 @@ __metadata:
   resolution: "repo-depkit-common-ui@workspace:packages/common-ui"
   dependencies:
     "@types/tinycolor2": "npm:^1.4.6"
+    repo-depkit-common: "workspace:*"
     tinycolor2: "npm:^1.6.0"
     typescript: "npm:*"
   peerDependencies:
     "@expo/vector-icons": "*"
+    expo-asset: "*"
+    expo-file-system: "*"
     react: "*"
     react-native: "*"
+    react-native-webview: "*"
   languageName: unknown
   linkType: soft
 
