@@ -15,3 +15,6 @@ export { borderRadiusContainer, horizontalScreenPadding } from './src/constants/
 // Components
 export { default as SettingsList } from './src/components/SettingsList';
 export type { SettingsListProps, SettingsListItemBaseProps } from './src/components/SettingsList';
+
+export { default as AppDrawer } from './src/components/AppDrawer';
+export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';

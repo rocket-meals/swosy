@@ -4,20 +4,41 @@ import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider } from 'repo-depkit-common-ui';
-import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { StyleSheet, Text, View } from 'react-native';
+import { ThemeProvider, AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet } from 'react-native';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
+	const activeKey = props.state.routes[props.state.index].name;
+
+	const items: DrawerItem[] = [
+		{
+			key: 'index',
+			label: 'Home',
+			renderIcon: (_, color) => <Ionicons name="home-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('index'),
+		},
+		{
+			key: 'settings/index',
+			label: 'Settings',
+			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('settings/index'),
+		},
+	];
+
 	return (
-		<DrawerContentScrollView {...props}>
-			<View style={styles.drawerHeader}>
-				<Ionicons name="location-sharp" size={32} color="#2563eb" />
-				<Text style={styles.drawerTitle}>Geonexia</Text>
-			</View>
-			<DrawerItemList {...props} />
-		</DrawerContentScrollView>
+		<AppDrawer
+			renderLogo={() => (
+				<View style={styles.logoRow}>
+					<Ionicons name="location-sharp" size={32} color="#2563eb" />
+					<Text style={styles.logoTitle}>Geonexia</Text>
+				</View>
+			)}
+			items={items}
+			activeKey={activeKey}
+			primaryColor="#2563eb"
+		/>
 	);
 }
 
@@ -31,7 +52,6 @@ export default function Layout() {
 						drawerContent={(props) => <CustomDrawerContent {...props} />}
 						screenOptions={{
 							drawerActiveTintColor: '#2563eb',
-							drawerLabelStyle: styles.drawerLabel,
 						}}
 					>
 						<Drawer.Screen
@@ -60,22 +80,14 @@ export default function Layout() {
 }
 
 const styles = StyleSheet.create({
-	drawerHeader: {
+	logoRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 10,
-		paddingHorizontal: 16,
-		paddingVertical: 20,
-		borderBottomWidth: StyleSheet.hairlineWidth,
-		borderBottomColor: '#e5e7eb',
-		marginBottom: 8,
 	},
-	drawerTitle: {
+	logoTitle: {
 		fontSize: 20,
 		fontWeight: '700',
 		color: '#111111',
-	},
-	drawerLabel: {
-		fontSize: 15,
 	},
 });
