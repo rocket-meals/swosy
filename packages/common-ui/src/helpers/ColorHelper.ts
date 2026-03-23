@@ -1,5 +1,5 @@
 import Color from 'tinycolor2';
-import { Theme } from '../context/ThemeContext';
+import { Theme } from '../themes';
 
 export function getContrastRatio(foreground: string | undefined | null, background: string): number {
 	const usedForeground = foreground ? foreground : undefined;
