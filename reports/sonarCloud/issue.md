@@ -29,8 +29,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activity/index.tsx:168
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activity/index.tsx#L168
+  apps/geonexia/frontend/app/activity/index.tsx:234
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activity/index.tsx#L234
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242
