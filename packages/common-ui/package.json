@@ -6,11 +6,15 @@
   "private": true,
   "peerDependencies": {
     "@expo/vector-icons": "*",
+    "@gorhom/bottom-sheet": "*",
     "expo-asset": "*",
     "expo-file-system": "*",
     "expo-location": "*",
     "react": "*",
     "react-native": "*",
+    "react-native-gesture-handler": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
     "react-native-webview": "*"
   },
   "dependencies": {

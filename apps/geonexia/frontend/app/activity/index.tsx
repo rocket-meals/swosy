@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	Alert,
-	Modal,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -10,8 +9,9 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme } from 'repo-depkit-common-ui';
+import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -201,19 +201,9 @@ function OsmConsentScreen({ onConsent }: { onConsent: () => void }) {
 	);
 }
 
-// ─── Run Stats Modal ──────────────────────────────────────────────────────────
+// ─── Run Stats Content (used inside bottom sheet modal) ───────────────────────
 
-type RunStatsModalProps = {
-	visible: boolean;
-	stats: RunStats | null;
-	onClose: () => void;
-};
-
-function RunStatsModal({ visible, stats, onClose }: RunStatsModalProps) {
-	const { theme } = useTheme();
-
-	if (!stats) return null;
-
+function RunStatsContent({ stats, theme }: { stats: RunStats; theme: ReturnType<typeof useTheme>['theme'] }) {
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ iconName: 'straighten', label: 'Distance', value: formatDistance(stats.distanceKm) },
 		{ iconName: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
@@ -229,34 +219,22 @@ function RunStatsModal({ visible, stats, onClose }: RunStatsModalProps) {
 	];
 
 	return (
-		<Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-			<View style={styles.modalOverlay}>
-				<View style={[styles.modalSheet, { backgroundColor: theme.screen.background }]}>
-					<View style={styles.modalHeader}>
-						<Text style={[styles.modalTitle, { color: theme.screen.text }]}>🏃 Run Statistics</Text>
-						<TouchableOpacity onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-							<Ionicons name="close" size={24} color={theme.screen.icon} />
-						</TouchableOpacity>
-					</View>
-					<ScrollView>
-						{rows.map((row, index) => (
-							<View
-								key={row.label}
-								style={[
-									styles.statsRow,
-									{ borderBottomColor: theme.screen.text + '22' },
-									index === rows.length - 1 && styles.statsRowLast,
-								]}
-							>
-								<MaterialIcons name={row.iconName} size={20} color={theme.screen.icon} style={styles.statsRowIcon} />
-								<Text style={[styles.statsRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
-								<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
-							</View>
-						))}
-					</ScrollView>
+		<>
+			{rows.map((row, index) => (
+				<View
+					key={row.label}
+					style={[
+						styles.statsRow,
+						{ borderBottomColor: theme.screen.text + '22' },
+						index === rows.length - 1 && styles.statsRowLast,
+					]}
+				>
+					<MaterialIcons name={row.iconName} size={20} color={theme.screen.icon} style={styles.statsRowIcon} />
+					<Text style={[styles.statsRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
-			</View>
-		</Modal>
+			))}
+		</>
 	);
 }
 
@@ -264,6 +242,7 @@ function RunStatsModal({ visible, stats, onClose }: RunStatsModalProps) {
 
 export default function ActivityScreen() {
 	const { theme } = useTheme();
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
 
@@ -271,8 +250,6 @@ export default function ActivityScreen() {
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
-	const [finishedStats, setFinishedStats] = useState<RunStats | null>(null);
-	const [statsVisible, setStatsVisible] = useState(false);
 
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const startTimeRef = useRef<number>(0);
@@ -330,8 +307,12 @@ export default function ActivityScreen() {
 	}, [sendRouteToMap]);
 
 	const startRecording = useCallback(async () => {
+		const expoGo = isRunningInExpoGo();
+		console.log('[ActivityScreen] startRecording called. isRunningInExpoGo:', expoGo);
 		try {
+			console.log('[ActivityScreen] Requesting foreground location permission...');
 			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
+			console.log('[ActivityScreen] Foreground permission status:', fgStatus);
 			if (fgStatus !== 'granted') {
 				Alert.alert('GPS', 'Location permission is required for run recording.');
 				return;
@@ -349,11 +330,58 @@ export default function ActivityScreen() {
 				setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
 			}, 1000);
 
+			// Expo Go does not support background location. Use foreground-only tracking
+			// and inform the user about the limitation.
+			if (expoGo) {
+				console.log('[ActivityScreen] Running in Expo Go – skipping background permission, using foreground-only tracking.');
+				showModal({
+					title: 'Expo Go: Foreground Tracking Only',
+					children: (
+						<View style={styles.expoGoNoticeContainer}>
+							<Text style={[styles.expoGoNoticeText, { color: theme.screen.text }]}>
+								Background location is not supported in Expo Go.{'\n\n'}
+								Location will only be tracked while this screen is open and the app is in the foreground.
+								For full background tracking, run the app as a standalone build.
+							</Text>
+						</View>
+					),
+				});
+				const sub = await Location.watchPositionAsync(
+					{
+						accuracy: Location.Accuracy.BestForNavigation,
+						timeInterval: GPS_TIME_INTERVAL_MS,
+						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
+					},
+					(loc) => {
+						console.log('[ActivityScreen] Foreground location update:', loc.coords.latitude, loc.coords.longitude);
+						handleLocationUpdate({
+							lat: loc.coords.latitude,
+							lng: loc.coords.longitude,
+							altitude: loc.coords.altitude,
+							speed: loc.coords.speed,
+							timestamp: loc.timestamp,
+						});
+					},
+				);
+				fgSubRef.current = sub;
+				console.log('[ActivityScreen] Foreground-only watch started (Expo Go).');
+				return;
+			}
+
 			// Try to request background permission; fall back to foreground-only if denied.
-			const { status: bgStatus } = await Location.requestBackgroundPermissionsAsync();
+			console.log('[ActivityScreen] Requesting background location permission...');
+			let bgStatus: Location.PermissionStatus | null = null;
+			try {
+				const bgResult = await Location.requestBackgroundPermissionsAsync();
+				bgStatus = bgResult.status;
+				console.log('[ActivityScreen] Background permission status:', bgStatus);
+			} catch (bgErr) {
+				console.warn('[ActivityScreen] Background permission request failed (may not be supported):', bgErr);
+			}
 			const useBackground = bgStatus === 'granted';
 
 			if (useBackground) {
+				console.log('[ActivityScreen] Starting background location updates via TaskManager...');
 				_onLocationUpdate = handleLocationUpdate;
 				await Location.startLocationUpdatesAsync(ACTIVITY_LOCATION_TASK, {
 					accuracy: Location.Accuracy.BestForNavigation,
@@ -366,8 +394,9 @@ export default function ActivityScreen() {
 						notificationColor: PRIMARY_COLOR,
 					},
 				});
+				console.log('[ActivityScreen] Background location updates started.');
 			} else {
-				// Foreground-only fallback
+				console.log('[ActivityScreen] Background permission denied – falling back to foreground-only tracking.');
 				const sub = await Location.watchPositionAsync(
 					{
 						accuracy: Location.Accuracy.BestForNavigation,
@@ -375,6 +404,7 @@ export default function ActivityScreen() {
 						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					},
 					(loc) => {
+						console.log('[ActivityScreen] Foreground location update:', loc.coords.latitude, loc.coords.longitude);
 						handleLocationUpdate({
 							lat: loc.coords.latitude,
 							lng: loc.coords.longitude,
@@ -385,9 +415,13 @@ export default function ActivityScreen() {
 					},
 				);
 				fgSubRef.current = sub;
+				console.log('[ActivityScreen] Foreground-only watch started.');
 			}
 		} catch (err) {
-			console.error('ActivityScreen startRecording error:', err);
+			console.error('[ActivityScreen] startRecording error:', err);
+			if (err instanceof Error) {
+				console.error('[ActivityScreen] Error name:', err.name, '| message:', err.message);
+			}
 			Alert.alert('Error', 'Run recording could not be started.');
 			setIsRecording(false);
 			if (timerRef.current) {
@@ -395,9 +429,10 @@ export default function ActivityScreen() {
 				timerRef.current = null;
 			}
 		}
-	}, [handleLocationUpdate]);
+	}, [handleLocationUpdate, showModal, theme]);
 
 	const stopRecording = useCallback(async () => {
+		console.log('[ActivityScreen] stopRecording called.');
 		_onLocationUpdate = null;
 		fgSubRef.current?.remove();
 		fgSubRef.current = null;
@@ -409,25 +444,31 @@ export default function ActivityScreen() {
 
 		try {
 			const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
+			console.log('[ActivityScreen] Background task running:', isTaskRunning);
 			if (isTaskRunning) {
 				await Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK);
+				console.log('[ActivityScreen] Background location updates stopped.');
 			}
-		} catch {
-			// Ignore errors when stopping task
+		} catch (err) {
+			console.warn('[ActivityScreen] Error stopping background task:', err);
 		}
 
 		setIsRecording(false);
 
 		const points = routePointsRef.current;
+		console.log('[ActivityScreen] Recorded points count:', points.length);
 		if (points.length < 2) {
 			Alert.alert('Run finished', 'Too few GPS points were recorded.');
 			return;
 		}
 
 		const stats = computeStats(points);
-		setFinishedStats(stats);
-		setStatsVisible(true);
-	}, []);
+		showModal({
+			title: '🏃 Run Statistics',
+			onClose: closeModal,
+			children: <RunStatsContent stats={stats} theme={theme} />,
+		});
+	}, [showModal, closeModal, theme]);
 
 	if (!osmConsent) {
 		return (
@@ -492,12 +533,6 @@ export default function ActivityScreen() {
 					</View>
 				</View>
 			)}
-
-			<RunStatsModal
-				visible={statsVisible}
-				stats={finishedStats}
-				onClose={() => setStatsVisible(false)}
-			/>
 		</View>
 	);
 }
@@ -506,6 +541,14 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#ffffff',
+	},
+	expoGoNoticeContainer: {
+		paddingHorizontal: 20,
+		paddingBottom: 12,
+	},
+	expoGoNoticeText: {
+		fontSize: 14,
+		lineHeight: 22,
 	},
 	mapOverlayButtons: {
 		position: 'absolute',
@@ -618,30 +661,6 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 	},
 	// Stats modal styles
-	modalOverlay: {
-		flex: 1,
-		justifyContent: 'flex-end',
-		backgroundColor: '#00000055',
-	},
-	modalSheet: {
-		borderTopLeftRadius: 16,
-		borderTopRightRadius: 16,
-		maxHeight: '80%',
-		paddingBottom: 32,
-	},
-	modalHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		paddingHorizontal: 16,
-		paddingVertical: 16,
-		borderBottomWidth: StyleSheet.hairlineWidth,
-		borderBottomColor: '#00000022',
-	},
-	modalTitle: {
-		fontSize: 17,
-		fontWeight: '700',
-	},
 	statsRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
