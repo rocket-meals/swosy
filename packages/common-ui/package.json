@@ -1,0 +1,19 @@
+{
+  "name": "repo-depkit-common-ui",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "private": true,
+  "peerDependencies": {
+    "@expo/vector-icons": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "dependencies": {
+    "tinycolor2": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/tinycolor2": "^1.4.6",
+    "typescript": "*"
+  }
+}
