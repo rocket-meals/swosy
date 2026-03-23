@@ -6,9 +6,9 @@
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
 | 🐛 Reliability | 2 | 2 |
-| 🔧 Maintainability | 1890 | 46 |
+| 🔧 Maintainability | 1892 | 46 |
 
-**Total issues:** 1894 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 1896 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -29,10 +29,10 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activity/index.tsx:140
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activity/index.tsx#L140
+  apps/geonexia/frontend/app/activity/index.tsx:167
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activity/index.tsx#L167
 
-## 🔧 Maintainability (46/1890)
+## 🔧 Maintainability (46/1892)
 
 - **This assertion is unnecessary since it does not change the type of the expression.**
   apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:62
