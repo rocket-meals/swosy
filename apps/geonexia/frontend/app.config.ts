@@ -46,5 +46,10 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		experiments: {
 			typedRoutes: true,
 		},
+		extra: {
+			eas: {
+				projectId: '8fbc9283-a03b-4ca0-92cd-fcb87d2e64f4',
+			},
+		},
 	};
 };
