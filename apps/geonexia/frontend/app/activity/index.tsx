@@ -12,6 +12,7 @@ import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
+import { cellToBoundary, polygonToCells } from 'h3-js';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -49,6 +50,65 @@ const FLUID_BASELINE_DURATION_SECONDS = 1800;
 const FLUID_BASELINE_ML = 500;
 const GPS_TIME_INTERVAL_MS = 5000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
+
+// ─── H3 hex grid constants ────────────────────────────────────────────────────
+
+// Resolution 11 has an average edge length of ~25 m, which closely matches
+// the original 20 m circumradius hexagons from the previous Web-Mercator grid.
+const HEX_TILE_RESOLUTION = 11;
+const HEX_TILE_MIN_ZOOM = 14;
+const HEX_TILE_MAX_CELLS = 5000;
+
+type H3GeoJSONFeature = {
+	type: 'Feature';
+	geometry: { type: 'Polygon'; coordinates: number[][][] };
+	properties: { id: string };
+};
+
+type H3FeatureCollection = {
+	type: 'FeatureCollection';
+	features: H3GeoJSONFeature[];
+};
+
+type ViewportChangedMessage = {
+	tag: 'ViewportChanged';
+	west: number;
+	south: number;
+	east: number;
+	north: number;
+	zoom: number;
+};
+
+// Builds a GeoJSON FeatureCollection of H3 hex cells covering the given viewport.
+// Called on the React Native side using h3-js so the WebView stays dependency-free.
+function buildH3GeoJSON(
+	west: number, south: number, east: number, north: number, zoom: number,
+): H3FeatureCollection {
+	if (zoom < HEX_TILE_MIN_ZOOM) {
+		return { type: 'FeatureCollection', features: [] };
+	}
+	// polygonToCells expects [lat, lng] coordinate pairs (clockwise ring).
+	const viewportPolygon: [number, number][] = [
+		[north, west],
+		[north, east],
+		[south, east],
+		[south, west],
+		[north, west],
+	];
+	const cells = polygonToCells(viewportPolygon, HEX_TILE_RESOLUTION);
+	const features = cells.slice(0, HEX_TILE_MAX_CELLS).map((h3Index): H3GeoJSONFeature => {
+		// cellToBoundary returns [lat, lng] pairs; GeoJSON needs [lng, lat].
+		const boundary = cellToBoundary(h3Index);
+		const ring = boundary.map(([lat, lng]) => [lng, lat]);
+		ring.push(ring[0]); // close the ring
+		return {
+			type: 'Feature',
+			geometry: { type: 'Polygon', coordinates: [ring] },
+			properties: { id: h3Index },
+		};
+	});
+	return { type: 'FeatureCollection', features };
+}
 
 // ─── Background task ──────────────────────────────────────────────────────────
 
@@ -299,6 +359,11 @@ export default function ActivityScreen() {
 		} else if (msg.tag === 'MapInteracted') {
 			// User manually moved/zoomed the map – stop following.
 			setFollowMode(false);
+		} else if (msg.tag === 'ViewportChanged') {
+			// Map viewport changed – compute H3 hex cells and send GeoJSON back.
+			const vp = msg as ViewportChangedMessage;
+			const geojson = buildH3GeoJSON(vp.west, vp.south, vp.east, vp.north, vp.zoom);
+			mapRef.current?.sendToMap({ hexTileGeoJSON: geojson });
 		}
 	}, [sendRouteToMap, setFollowMode]);
 
