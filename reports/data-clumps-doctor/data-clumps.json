@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-23T04:14:50.469Z",
+  "report_timestamp": "2026-03-23T04:53:25.392Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 89,
-          "average": 1.5599442379182156,
-          "amountSavedValuesForKeys": 3357,
+          "average": 1.5614849187935034,
+          "amountSavedValuesForKeys": 3365,
           "amountKeys": 24
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 70,
-          "average": 2.3637846655791193,
-          "amountSavedValuesForKeys": 1449,
+          "average": 2.3615635179153096,
+          "amountSavedValuesForKeys": 1450,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 89,
-          "average": 1.5753167526982637,
-          "amountSavedValuesForKeys": 3357,
+          "average": 1.576850984067479,
+          "amountSavedValuesForKeys": 3365,
           "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3794,
-        "detection_time_ms": 62,
+        "ast_generation_time_ms": 3787,
+        "detection_time_ms": 65,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 362.79,
-          "os_memory_free": 15008178176,
+          "os_uptime": 113.38,
+          "os_memory_free": 14934065152,
           "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,29 +44,29 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 6,
-    "amount_files_with_data_clumps": 6,
+    "amount_classes_or_interfaces_with_data_clumps": 8,
+    "amount_files_with_data_clumps": 7,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 4,
+    "fields_to_fields_data_clump": 6,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 12
+    "amount_data_clumps": 14
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "40623d83d290b00e129525c0a083cb76b8a13124",
-    "project_commit_hash": "40623d83d290b00e129525c0a083cb76b8a13124",
+    "project_version": "4ddba702d2e653234e72bc9293dc03bd6eaad233",
+    "project_commit_hash": "4ddba702d2e653234e72bc9293dc03bd6eaad233",
     "project_tag": null,
-    "project_commit_date": "1774239189",
+    "project_commit_date": "1774241505",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 422,
-    "number_of_classes_or_interfaces": 860,
-    "number_of_methods": 1304,
-    "number_of_data_fields": 3357,
-    "number_of_method_parameters": 1449
+    "number_of_files": 423,
+    "number_of_classes_or_interfaces": 862,
+    "number_of_methods": 1305,
+    "number_of_data_fields": 3365,
+    "number_of_method_parameters": 1450
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1045,7 +1045,7 @@
               "startLine": 6,
               "startColumn": 2,
               "endLine": 6,
-              "endColumn": 46
+              "endColumn": 47
             }
           },
           "position": {
@@ -1208,6 +1208,200 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-mapRefbackgroundColoriconColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-mapRefbackgroundColoriconColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps",
+      "from_class_or_interface_name": "MapLocationButtonProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps",
+      "to_class_or_interface_name": "MapNorthButtonProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/mapRef": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/mapRef",
+          "name": "mapRef",
+          "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/mapRef",
+            "name": "mapRef",
+            "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 46
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/backgroundColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/iconColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/iconColor",
+          "name": "iconColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/iconColor",
+            "name": "iconColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 2,
+            "endLine": 28,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 5,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-mapRefbackgroundColoriconColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-mapRefbackgroundColoriconColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps",
+      "from_class_or_interface_name": "MapNorthButtonProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps",
+      "to_class_or_interface_name": "MapLocationButtonProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/mapRef": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/mapRef",
+          "name": "mapRef",
+          "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/mapRef",
+            "name": "mapRef",
+            "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 46
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/backgroundColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/iconColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/iconColor",
+          "name": "iconColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/iconColor",
+            "name": "iconColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 5,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/MyMap/MyMapHelper.tsx-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyMap/MyMapHelper.tsx-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText",
@@ -1246,7 +1440,7 @@
             "startLine": 6,
             "startColumn": 2,
             "endLine": 6,
-            "endColumn": 46
+            "endColumn": 47
           }
         },
         "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch": {
