@@ -13,8 +13,74 @@ import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
+import { latLngToCell, gridDisk, gridDistance, cellToBoundary } from '../../helpers/H3Helper';
 
 const PRIMARY_COLOR = '#2563eb';
+
+// ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
+
+const H3_DEFAULT_RESOLUTION = 9;
+const H3_MAX_CELLS = 5000;
+const H3_MIN_ZOOM = 14;
+// cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order.
+const H3_GEOJSON_ORDER = true;
+
+type ViewportBounds = { north: number; south: number; east: number; west: number };
+
+type H3GeoJsonFeature = {
+	type: 'Feature';
+	geometry: { type: 'Polygon'; coordinates: number[][][] };
+	properties: { h3Index: string };
+};
+
+type H3FeatureCollection = {
+	type: 'FeatureCollection';
+	features: H3GeoJsonFeature[];
+};
+
+function buildH3GeoJson(bounds: ViewportBounds, zoom: number, resolution: number): H3FeatureCollection {
+	if (zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
+
+	const centerLat = (bounds.north + bounds.south) / 2;
+	const centerLng = (bounds.east + bounds.west) / 2;
+	const centerCell = latLngToCell(centerLat, centerLng, resolution);
+
+	// Determine how many grid rings are needed to cover all four viewport corners.
+	const corners: Array<[number, number]> = [
+		[bounds.north, bounds.east],
+		[bounds.north, bounds.west],
+		[bounds.south, bounds.east],
+		[bounds.south, bounds.west],
+	];
+	let maxK = 0;
+	for (const [lat, lng] of corners) {
+		try {
+			const cornerCell = latLngToCell(lat, lng, resolution);
+			const dist = gridDistance(centerCell, cornerCell);
+			if (dist > maxK) maxK = dist;
+		} catch (err) {
+			// gridDistance can throw when cells span different icosahedron faces.
+			console.warn('[H3] gridDistance failed for corner cell:', err);
+		}
+	}
+
+	const k = Math.min(maxK + 1, 30);
+	const cells = gridDisk(centerCell, k);
+
+	const features: H3GeoJsonFeature[] = [];
+	for (const cell of cells) {
+		if (features.length >= H3_MAX_CELLS) break;
+		const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+		const ring = [...boundary, boundary[0]]; // close the polygon ring
+		features.push({
+			type: 'Feature',
+			geometry: { type: 'Polygon', coordinates: [ring as number[][]] },
+			properties: { h3Index: cell },
+		});
+	}
+
+	return { type: 'FeatureCollection', features };
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -299,6 +365,11 @@ export default function ActivityScreen() {
 		} else if (msg.tag === 'MapInteracted') {
 			// User manually moved/zoomed the map – stop following.
 			setFollowMode(false);
+		} else if (msg.tag === 'MapViewportChanged') {
+			// Compute H3 cells for the new viewport and send GeoJSON back to the map.
+			const vp = msg as { bounds: ViewportBounds; zoom: number };
+			const geoJson = buildH3GeoJson(vp.bounds, vp.zoom, H3_DEFAULT_RESOLUTION);
+			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 		}
 	}, [sendRouteToMap, setFollowMode]);
 
