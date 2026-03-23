@@ -3,6 +3,7 @@ import type { ConfigContext, ExpoConfig } from '@expo/config';
 module.exports = function ({ config }: ConfigContext): ExpoConfig {
 	return {
 		...config,
+		owner: 'baumgartner-software',
 		name: 'Geonexia',
 		slug: 'geonexia',
 		version: '1.0.0',
