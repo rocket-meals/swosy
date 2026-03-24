@@ -35,6 +35,8 @@ const STATUS_ERROR_COLOR = '#ef4444';
 const H3_DEFAULT_RESOLUTION = 9;
 const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
+const H3_RESOLUTION_MIN = 0;
+const H3_RESOLUTION_MAX = 15;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -61,9 +63,12 @@ function buildH3GeoJson(
 ): H3FeatureCollection {
 	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
 
+	// H3 requires an integer resolution (0–15); clamp and round fractional values.
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(resolution)));
+
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
-	const centerCell = latLngToCell(centerLat, centerLng, resolution);
+	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
 
 	// Determine how many grid rings are needed to cover all four viewport corners.
 	const corners: Array<[number, number]> = [
@@ -75,7 +80,7 @@ function buildH3GeoJson(
 	let maxK = 0;
 	for (const [lat, lng] of corners) {
 		try {
-			const cornerCell = latLngToCell(lat, lng, resolution);
+			const cornerCell = latLngToCell(lat, lng, h3Res);
 			const dist = gridDistance(centerCell, cornerCell);
 			if (dist > maxK) maxK = dist;
 		} catch (err) {
@@ -104,7 +109,7 @@ function buildH3GeoJson(
 
 // ─── Debug position controller ───────────────────────────────────────────────
 
-const DEBUG_MOVE_SPEED_KMH = 120;
+const DEBUG_MOVE_SPEED_KMH = 500;
 const DEBUG_MOVE_SPEED_MAX_KMH = 9999;
 const DEBUG_MOVE_INTERVAL_MS = 100;
 
@@ -367,8 +372,8 @@ type DebugInfoContentProps = {
 	onSpeedChange: (speed: number) => void;
 };
 
-const H3_RESOLUTION_MIN = 0;
-const H3_RESOLUTION_MAX = 15;
+// Precision factor for rounding fractional H3 resolution values (1 decimal place).
+const H3_RESOLUTION_DECIMAL_PRECISION = 10;
 
 function DebugInfoContent({
 	info,
@@ -391,19 +396,12 @@ function DebugInfoContent({
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
 
-	const decrementResolution = useCallback(() => {
+	const adjustResolution = useCallback((delta: number) => {
 		setH3Resolution((prev) => {
-			const next = Math.max(H3_RESOLUTION_MIN, prev - 1);
-			onH3ResolutionChange(next);
-			return next;
-		});
-	}, [onH3ResolutionChange]);
-
-	const incrementResolution = useCallback(() => {
-		setH3Resolution((prev) => {
-			const next = Math.min(H3_RESOLUTION_MAX, prev + 1);
-			onH3ResolutionChange(next);
-			return next;
+			const next = Math.round((prev + delta) * H3_RESOLUTION_DECIMAL_PRECISION) / H3_RESOLUTION_DECIMAL_PRECISION;
+			const clamped = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, next));
+			onH3ResolutionChange(clamped);
+			return clamped;
 		});
 	}, [onH3ResolutionChange]);
 
@@ -475,22 +473,56 @@ function DebugInfoContent({
 			{/* H3 Grid Resolution picker */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>H3 Grid Resolution</Text>
-				<View style={styles.resolutionPicker}>
-					<TouchableOpacity
-						style={[styles.resolutionButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-						onPress={decrementResolution}
-						disabled={h3Resolution <= H3_RESOLUTION_MIN}
-					>
-						<Text style={styles.resolutionButtonText}>−</Text>
-					</TouchableOpacity>
-					<Text style={[styles.resolutionValue, { color: theme.screen.text }]}>{h3Resolution}</Text>
-					<TouchableOpacity
-						style={[styles.resolutionButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-						onPress={incrementResolution}
-						disabled={h3Resolution >= H3_RESOLUTION_MAX}
-					>
-						<Text style={styles.resolutionButtonText}>+</Text>
-					</TouchableOpacity>
+				<View style={styles.resolutionPickerMultiRow}>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
+							onPress={() => adjustResolution(-1)}
+							disabled={h3Resolution <= H3_RESOLUTION_MIN}
+						>
+							<Text style={styles.resolutionButtonText}>−</Text>
+						</TouchableOpacity>
+						<Text style={[styles.resolutionValue, { color: theme.screen.text }]}>
+							{Number.isInteger(h3Resolution) ? h3Resolution : h3Resolution.toFixed(1)}
+						</Text>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
+							onPress={() => adjustResolution(1)}
+							disabled={h3Resolution >= H3_RESOLUTION_MAX}
+						>
+							<Text style={styles.resolutionButtonText}>+</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
+							onPress={() => adjustResolution(-0.5)}
+							disabled={h3Resolution <= H3_RESOLUTION_MIN}
+						>
+							<Text style={styles.resolutionFineButtonText}>−0.5</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
+							onPress={() => adjustResolution(-0.1)}
+							disabled={h3Resolution <= H3_RESOLUTION_MIN}
+						>
+							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
+							onPress={() => adjustResolution(0.1)}
+							disabled={h3Resolution >= H3_RESOLUTION_MAX}
+						>
+							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
+							onPress={() => adjustResolution(0.5)}
+							disabled={h3Resolution >= H3_RESOLUTION_MAX}
+						>
+							<Text style={styles.resolutionFineButtonText}>+0.5</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</View>
 
@@ -858,7 +890,7 @@ export default function RecordScreen() {
 				timestamp: Date.now(),
 			});
 		} else {
-			mapRef.current?.sendToMap({ userLocation: { lat, lng, transitionDuration: DEBUG_MOVE_INTERVAL_MS } });
+			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
 			if (isFollowingRef.current) {
 				mapRef.current?.sendToMap({
 					mapCenterPosition: { lat, lng },
@@ -1487,6 +1519,16 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 8,
 	},
+	resolutionPickerMultiRow: {
+		flexDirection: 'column',
+		alignItems: 'flex-end',
+		gap: 4,
+	},
+	resolutionPickerRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+	},
 	resolutionButton: {
 		width: 30,
 		height: 30,
@@ -1504,8 +1546,21 @@ const styles = StyleSheet.create({
 	resolutionValue: {
 		fontSize: 16,
 		fontWeight: '700',
-		minWidth: 24,
+		minWidth: 36,
 		textAlign: 'center',
+	},
+	resolutionFineButton: {
+		height: 26,
+		borderRadius: 6,
+		backgroundColor: PRIMARY_COLOR,
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingHorizontal: 6,
+	},
+	resolutionFineButtonText: {
+		color: '#ffffff',
+		fontSize: 11,
+		fontWeight: '700',
 	},
 	debugSpeedInput: {
 		fontSize: 15,
