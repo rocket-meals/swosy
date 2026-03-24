@@ -17,11 +17,15 @@ import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { MapLocationButton, MapNorthButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
+import { useDispatch } from 'react-redux';
+import { MapLocationButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
-import { isAvailable as isH3Available, latLngToCell, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { HexTileRecord } from '../helpers/HexTileStorage';
+import { markVisited, markEnclosed } from '../store/hexTileSlice';
+import { store } from '../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -46,7 +50,7 @@ type ViewportBounds = { north: number; south: number; east: number; west: number
 type H3GeoJsonFeature = {
 	type: 'Feature';
 	geometry: { type: 'Polygon'; coordinates: number[][][] };
-	properties: { h3Index: string; visited: boolean };
+	properties: { h3Index: string; level: number };
 };
 
 type H3FeatureCollection = {
@@ -59,7 +63,7 @@ function buildH3GeoJson(
 	zoom: number,
 	resolution: number,
 	showAlways: boolean,
-	visitedHexIds: Set<string>,
+	hexTileRecords: Record<string, HexTileRecord>,
 ): H3FeatureCollection {
 	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
 
@@ -100,7 +104,7 @@ function buildH3GeoJson(
 		features.push({
 			type: 'Feature',
 			geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-			properties: { h3Index: cell, visited: visitedHexIds.has(cell) },
+			properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
 		});
 	}
 
@@ -260,6 +264,103 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 		Math.sin(dLat / 2) ** 2 +
 		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Compute the forward bearing (0–360°, clockwise from North) from point 1 to point 2.
+ */
+function computeBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
+	const φ1 = (lat1 * Math.PI) / 180;
+	const φ2 = (lat2 * Math.PI) / 180;
+	const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+	const y = Math.sin(Δλ) * Math.cos(φ2);
+	const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+	return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+/**
+ * Ray-casting point-in-polygon test.
+ * Polygon is an array of [lng, lat] pairs.
+ */
+function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number]>): boolean {
+	let inside = false;
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const [xi, yi] = polygon[i];
+		const [xj, yj] = polygon[j];
+		const intersect =
+			yi > lat !== yj > lat &&
+			lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+		if (intersect) inside = !inside;
+	}
+	return inside;
+}
+
+/**
+ * Given a completed run route, find all H3 cells that are enclosed by the
+ * route polygon (i.e. inside the loop). Returns an empty array when:
+ *   – the route has fewer than 3 points,
+ *   – the start and end are more than 300 m apart (not a loop), or
+ *   – the H3 library is unavailable.
+ */
+function findEnclosedCells(routePoints: RoutePoint[], resolution: number): string[] {
+	if (!isH3Available() || routePoints.length < 3) return [];
+
+	const first = routePoints[0];
+	const last = routePoints[routePoints.length - 1];
+	if (haversineKm(first.lat, first.lng, last.lat, last.lng) > 0.3) return [];
+
+	// Route polygon in [lng, lat] order (same as GeoJSON).
+	const polygon: Array<[number, number]> = routePoints.map((p) => [p.lng, p.lat]);
+
+	// Bounding box of the route with a small padding.
+	const lats = routePoints.map((p) => p.lat);
+	const lngs = routePoints.map((p) => p.lng);
+	const bounds: ViewportBounds = {
+		north: Math.max(...lats) + 0.001,
+		south: Math.min(...lats) - 0.001,
+		east: Math.max(...lngs) + 0.001,
+		west: Math.min(...lngs) - 0.001,
+	};
+
+	// Enumerate all H3 cells in the bounding box using the same gridDisk logic
+	// as buildH3GeoJson, but with showAlways=true and a high zoom.
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(resolution)));
+	const centerLat = (bounds.north + bounds.south) / 2;
+	const centerLng = (bounds.east + bounds.west) / 2;
+	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
+
+	let maxK = 0;
+	const corners: Array<[number, number]> = [
+		[bounds.north, bounds.east],
+		[bounds.north, bounds.west],
+		[bounds.south, bounds.east],
+		[bounds.south, bounds.west],
+	];
+	for (const [lat, lng] of corners) {
+		try {
+			const cornerCell = latLngToCell(lat, lng, h3Res);
+			const dist = gridDistance(centerCell, cornerCell);
+			if (dist > maxK) maxK = dist;
+		} catch {
+			// ignore
+		}
+	}
+
+	const cells = gridDisk(centerCell, Math.min(maxK + 1, 30));
+	const enclosed: string[] = [];
+	for (const cell of cells) {
+		try {
+			// cellToLatLng returns [lat, lng]; reorder to [lng, lat] for the test.
+			const [cellLat, cellLng] = cellToLatLng(cell);
+			if (pointInPolygon(cellLng, cellLat, polygon)) {
+				enclosed.push(cell);
+			}
+		} catch {
+			// ignore invalid cells
+		}
+	}
+
+	return enclosed;
 }
 
 function computeStats(points: RoutePoint[]): RunStats {
@@ -676,6 +777,13 @@ export default function RecordScreen() {
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
 
+	// Heading mode: when active during recording, the map rotates to face the
+	// direction of travel. Toggled by the compass button.
+	const isHeadingModeRef = useRef(false);
+	const [isHeadingMode, setIsHeadingMode] = useState(false);
+
+	const dispatch = useDispatch();
+
 	const setFollowMode = useCallback((val: boolean) => {
 		isFollowingRef.current = val;
 		setIsFollowing(val);
@@ -687,7 +795,8 @@ export default function RecordScreen() {
 	// Foreground-only fallback subscription (used when background permission is denied)
 	const fgSubRef = useRef<Location.LocationSubscription | null>(null);
 
-	// Visited H3 hex cells during the active recording
+	// Visited H3 hex cells during the active recording (used for immediate GeoJSON updates;
+	// persistent data lives in the Redux store)
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
 	// Current player position (updated from real GPS and from debug gamepad)
 	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -753,7 +862,7 @@ export default function RecordScreen() {
 		if (!vp || !mapRef.current) return;
 		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 		try {
-			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, visitedHexIdsRef.current);
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
 		} catch (err) {
 			console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 		}
@@ -785,8 +894,10 @@ export default function RecordScreen() {
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
+			// Activate hex tile layer. strokeColor is intentionally omitted so that
+			// the default gray value defined in hexTileScript.ts is preserved.
 			mapRef.current?.sendToMap({
-				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', strokeColor: PRIMARY_COLOR },
+				hexTileLayer: { color: 'rgba(0, 0, 0, 0)' },
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
@@ -801,7 +912,7 @@ export default function RecordScreen() {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, visitedHexIdsRef.current);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
 			} catch (err) {
 				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 			}
@@ -839,14 +950,24 @@ export default function RecordScreen() {
 		// Update debug player position so the gamepad continues from the real GPS location
 		debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
 
-		// Track the visited H3 cell for this position
+		// Track the visited H3 cell and dispatch to Redux for persistent storage
 		if (isH3Available()) {
 			try {
 				const cell = latLngToCell(point.lat, point.lng, h3ResolutionRef.current);
-				if (cell) visitedHexIdsRef.current.add(cell);
+				if (cell) {
+					visitedHexIdsRef.current.add(cell);
+					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+				}
 			} catch (err) {
 				console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
 			}
+		}
+
+		// If heading mode is active, rotate the map smoothly to face movement direction.
+		if (isHeadingModeRef.current && next.length >= 2) {
+			const prev = next[next.length - 2];
+			const bearing = computeBearing(prev.lat, prev.lng, point.lat, point.lng);
+			mapRef.current?.sendToMap({ bearing, easeAnimation: true, easeDuration: 500 });
 		}
 
 		let d = 0;
@@ -862,19 +983,19 @@ export default function RecordScreen() {
 		sendRouteToMap(next);
 		centerMapOnPosition({ lat: point.lat, lng: point.lng });
 
-		// Refresh hex GeoJSON to show the updated visited-cell tint
+		// Refresh hex GeoJSON to show updated tile levels (includes the just-dispatched visit)
 		const vp = debugViewportRef.current;
 		if (vp && mapRef.current) {
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, visitedHexIdsRef.current);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
 			} catch (err) {
 				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
 			}
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 		}
-	}, [centerMapOnPosition, sendRouteToMap]);
+	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
 
 	// Moves the player to a new position (used by the debug gamepad).
 	// When recording is active, feeds a synthetic RoutePoint to the normal tracking pipeline.
@@ -926,6 +1047,11 @@ export default function RecordScreen() {
 			setIsRecording(true);
 			setFollowMode(true);
 			mapRef.current?.sendToMap({ routeCoordinates: [] });
+
+			// Switch to heading mode and increase pitch for an immersive running view
+			isHeadingModeRef.current = true;
+			setIsHeadingMode(true);
+			mapRef.current?.sendToMap({ pitch: 60, easeAnimation: true });
 
 			timerRef.current = setInterval(() => {
 				setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
@@ -1058,6 +1184,12 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
 
+		// Exit heading mode and restore default pitch/bearing
+		isHeadingModeRef.current = false;
+		setIsHeadingMode(false);
+		mapRef.current?.sendToMap({ pitch: 20, easeAnimation: true });
+		mapRef.current?.sendToMap({ resetBearing: true });
+
 		const points = routePointsRef.current;
 		console.log('[RecordScreen] Recorded points count:', points.length);
 		if (points.length < 2) {
@@ -1067,6 +1199,27 @@ export default function RecordScreen() {
 
 		const stats = computeStats(points);
 		const endedAt = Date.now();
+
+		// Detect enclosed tiles when the route forms a closed loop and persist them
+		try {
+			const enclosed = findEnclosedCells(points, h3ResolutionRef.current);
+			if (enclosed.length > 0) {
+				dispatch(markEnclosed({ h3Indices: enclosed, timestamp: endedAt }));
+				// Refresh the map to show the newly enclosed tiles
+				const vp = debugViewportRef.current;
+				if (vp && mapRef.current) {
+					let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+					try {
+						geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+					} catch {
+						// ignore
+					}
+					mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+				}
+			}
+		} catch (err) {
+			console.warn('[RecordScreen] Enclosed tile detection failed:', err);
+		}
 
 		// Save activity to persistent storage
 		const activity = {
@@ -1087,7 +1240,7 @@ export default function RecordScreen() {
 			onClose: closeModal,
 			children: <RunStatsContent stats={stats} theme={theme} />,
 		});
-	}, [showModal, closeModal, theme]);
+	}, [showModal, closeModal, theme, dispatch]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
@@ -1106,6 +1259,26 @@ export default function RecordScreen() {
 		}, 1000);
 		isPausedRef.current = false;
 		setIsPaused(false);
+	}, []);
+
+	/**
+	 * Compass / North button handler:
+	 *   – During a run: toggles between heading mode (map follows movement direction)
+	 *     and north mode (bearing reset to 0°).
+	 *   – Outside a run: always resets bearing to north.
+	 */
+	const handleCompassPress = useCallback(() => {
+		if (isRecordingRef.current) {
+			const nextHeadingMode = !isHeadingModeRef.current;
+			isHeadingModeRef.current = nextHeadingMode;
+			setIsHeadingMode(nextHeadingMode);
+			if (!nextHeadingMode) {
+				// Switched back to north mode – reset bearing
+				mapRef.current?.sendToMap({ resetBearing: true });
+			}
+		} else {
+			mapRef.current?.sendToMap({ resetBearing: true });
+		}
 	}, []);
 
 	// Compute live pace and avg speed from elapsed time and distance
@@ -1128,7 +1301,21 @@ export default function RecordScreen() {
 
 				{/* Map overlay buttons – top-right */}
 				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
-					<MapNorthButton mapRef={mapRef} backgroundColor="#ffffff" iconColor="#555555" />
+					{/* Compass / heading-mode toggle button */}
+					<TouchableOpacity
+						style={[
+							styles.compassButton,
+							isHeadingMode && { backgroundColor: PRIMARY_COLOR },
+						]}
+						onPress={handleCompassPress}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons
+							name={isHeadingMode ? 'navigation' : 'explore'}
+							size={26}
+							color={isHeadingMode ? '#ffffff' : '#555555'}
+						/>
+					</TouchableOpacity>
 					<View style={styles.buttonSpacer} />
 					<MapLocationButton
 						mapRef={mapRef}
@@ -1294,6 +1481,19 @@ const styles = StyleSheet.create({
 	},
 	buttonSpacer: {
 		height: 8,
+	},
+	compassButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 8,
+		backgroundColor: '#ffffff',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		elevation: 3,
 	},
 	debugButton: {
 		width: 36,

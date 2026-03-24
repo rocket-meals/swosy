@@ -1,5 +1,5 @@
 import 'setimmediate';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -8,6 +8,10 @@ import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider }
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Provider } from 'react-redux';
+import { store } from '../store/store';
+import { loadPersistedState } from '../store/hexTileSlice';
+import { loadHexTileState } from '../helpers/HexTileStorage';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
@@ -102,7 +106,18 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 export default function Layout() {
+	useEffect(() => {
+		loadHexTileState()
+			.then((records) => {
+				store.dispatch(loadPersistedState(records));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted hex tile state:', err);
+			});
+	}, []);
+
 	return (
+		<Provider store={store}>
 		<AppErrorBoundary>
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
@@ -157,6 +172,7 @@ export default function Layout() {
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
 		</AppErrorBoundary>
+		</Provider>
 	);
 }
 

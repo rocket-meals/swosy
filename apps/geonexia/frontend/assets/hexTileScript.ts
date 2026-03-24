@@ -24,8 +24,12 @@ export const HEX_TILE_SCRIPT = `
   // via the H3Helper; this script only renders the GeoJSON it receives.
   var hexTileActive = true;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
-  var hexTileStrokeColor = '#2563eb';
-  var VISITED_HEX_COLOR = 'rgba(34, 197, 94, 0.35)';
+  // Hex border: subtle gray, low opacity
+  var hexTileStrokeColor = '#9ca3af';
+  // Level-based fill colours (level 0 = transparent, 1–3 = light→strong green)
+  var HEX_COLOR_LEVEL_1 = 'rgba(187, 247, 208, 0.45)';
+  var HEX_COLOR_LEVEL_2 = 'rgba(74, 222, 128, 0.55)';
+  var HEX_COLOR_LEVEL_3 = 'rgba(21, 128, 61, 0.65)';
 
   // ── MapLibre source / layer IDs ───────────────────────────────────────────
   var HEX_TILE_SOURCE = 'hex-tile-source';
@@ -60,7 +64,12 @@ export const HEX_TILE_SCRIPT = `
       type: 'fill',
       source: HEX_TILE_SOURCE,
       paint: {
-        'fill-color': ['case', ['boolean', ['get', 'visited'], false], VISITED_HEX_COLOR, hexTileColor],
+        'fill-color': ['case',
+          ['>=', ['get', 'level'], 3], HEX_COLOR_LEVEL_3,
+          ['>=', ['get', 'level'], 2], HEX_COLOR_LEVEL_2,
+          ['>=', ['get', 'level'], 1], HEX_COLOR_LEVEL_1,
+          hexTileColor
+        ],
         'fill-opacity': 1,
       },
     });
@@ -68,7 +77,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_TILE_STROKE_LAYER,
       type: 'line',
       source: HEX_TILE_SOURCE,
-      paint: { 'line-color': hexTileStrokeColor, 'line-width': 1, 'line-opacity': 0.6 },
+      paint: { 'line-color': hexTileStrokeColor, 'line-width': 0.8, 'line-opacity': 0.35 },
     });
     notifyViewport();
   }
