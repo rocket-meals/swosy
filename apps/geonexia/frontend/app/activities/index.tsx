@@ -1,17 +1,23 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
+	Alert,
 	FlatList,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from 'repo-depkit-common-ui';
+import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { useDispatch } from 'react-redux';
 
-import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
+import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
+import { startRun, markVisited } from '../../store/hexTileSlice';
+import { AppDispatch } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -98,9 +104,60 @@ function ActivityListItem({ activity, onPress, theme }: ActivityListItemProps) {
 	);
 }
 
+// ─── Import Content (shown inside bottom sheet modal) ─────────────────────────
+
+const H3_IMPORT_RESOLUTION = 10;
+
+function ImportContent({
+	onImport,
+	onCancel,
+	theme,
+}: {
+	onImport: (code: string) => void;
+	onCancel: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	const [code, setCode] = useState('');
+	return (
+		<View style={styles.importContainer}>
+			<Text style={[styles.importDescription, { color: theme.screen.text }]}>
+				Paste the export code from the "Share Activity" button of another run.
+			</Text>
+			<TextInput
+				style={[styles.importInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
+				placeholder="Paste export code here…"
+				placeholderTextColor={theme.screen.icon}
+				value={code}
+				onChangeText={setCode}
+				multiline
+				numberOfLines={5}
+				autoCapitalize="none"
+				autoCorrect={false}
+			/>
+			<TouchableOpacity
+				style={[styles.importConfirmButton, { backgroundColor: PRIMARY_COLOR, opacity: code.trim().length === 0 ? 0.4 : 1 }]}
+				onPress={() => onImport(code.trim())}
+				disabled={code.trim().length === 0}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="file-download" size={18} color="#ffffff" />
+				<Text style={styles.importConfirmButtonText}>Import Run</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.importCancelButton} onPress={onCancel} activeOpacity={0.8}>
+				<Text style={[styles.importCancelButtonText, { color: theme.screen.text }]}>Cancel</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Activities Screen ────────────────────────────────────────────────────────
+
 export default function ActivitiesScreen() {
 	const { theme } = useTheme();
 	const router = useRouter();
+	const navigation = useNavigation();
+	const dispatch = useDispatch<AppDispatch>();
+	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
 	const [loading, setLoading] = useState(true);
 
@@ -113,6 +170,72 @@ export default function ActivitiesScreen() {
 
 	// Reload when screen comes into focus (e.g. after returning from detail or record)
 	useFocusEffect(loadData);
+
+	const applyImportedHexTiles = useCallback((activity: SavedActivity) => {
+		if (!isH3Available()) return;
+		dispatch(startRun());
+		const h3Set = new Set<string>();
+		for (const point of activity.routePoints) {
+			try {
+				const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
+				if (cell && !h3Set.has(cell)) {
+					h3Set.add(cell);
+					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+				}
+			} catch {
+				// Skip invalid points
+			}
+		}
+	}, [dispatch]);
+
+	const handleImport = useCallback((code: string) => {
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(code);
+		} catch {
+			Alert.alert('Import Failed', 'The code is not valid JSON.');
+			return;
+		}
+		const activity = parsed as SavedActivity;
+		if (
+			typeof activity.id !== 'string' ||
+			typeof activity.startedAt !== 'number' ||
+			!Array.isArray(activity.routePoints)
+		) {
+			Alert.alert('Import Failed', 'The data does not look like a valid activity.');
+			return;
+		}
+		saveActivity(activity);
+		applyImportedHexTiles(activity);
+		closeImportModal();
+		loadData();
+		Alert.alert('Imported', 'The run has been imported successfully.');
+	}, [applyImportedHexTiles, closeImportModal, loadData]);
+
+	const openImportModal = useCallback(() => {
+		showImportModal({
+			title: '📥 Import Run',
+			children: (
+				<ImportContent
+					onImport={handleImport}
+					onCancel={closeImportModal}
+					theme={theme}
+				/>
+			),
+			keyboardShouldPersistTaps: 'handled',
+		});
+	}, [showImportModal, handleImport, closeImportModal, theme]);
+
+	// Show import button in the header
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
+					<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+				</TouchableOpacity>
+			),
+		});
+	}, [navigation, openImportModal]);
 
 	const handleActivityPress = useCallback((id: string) => {
 		router.push(`/activities/${id}`);
@@ -215,5 +338,48 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		textAlign: 'center',
 		lineHeight: 20,
+	},
+	headerImportButton: {
+		marginRight: 12,
+		padding: 4,
+	},
+	importContainer: {
+		paddingTop: 4,
+		gap: 12,
+	},
+	importDescription: {
+		fontSize: 14,
+		lineHeight: 20,
+	},
+	importInput: {
+		borderWidth: 1,
+		borderRadius: 8,
+		padding: 10,
+		fontSize: 12,
+		fontFamily: 'monospace',
+		minHeight: 100,
+		textAlignVertical: 'top',
+	},
+	importConfirmButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
+	importConfirmButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	importCancelButton: {
+		alignItems: 'center',
+		paddingVertical: 10,
+		borderRadius: 10,
+	},
+	importCancelButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
 	},
 });
