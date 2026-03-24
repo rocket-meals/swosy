@@ -1029,7 +1029,13 @@ export default function RecordScreen() {
 		// Track the visited H3 cell and dispatch to Redux for persistent storage
 		if (isH3Available()) {
 			try {
-				const cell = latLngToCell(point.lat, point.lng, h3ResolutionRef.current);
+				// Use the same rounded integer resolution as buildH3GeoJson so that the visited
+				// cell ID matches the keys in the GeoJSON and the Redux records.  Without rounding,
+				// a fractional resolution such as 10.5 is truncated to 10 by H3's C layer, while
+				// buildH3GeoJson uses Math.round(10.5) = 11 – causing a cell-ID mismatch and
+				// keeping every visited tile at level 0 (transparent) throughout the run.
+				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(h3ResolutionRef.current)));
+				const cell = latLngToCell(point.lat, point.lng, h3Res);
 				if (cell) {
 					visitedHexIdsRef.current.add(cell);
 					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
