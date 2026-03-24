@@ -468,6 +468,10 @@ export default function RecordScreen() {
 	const isFollowingRef = useRef(false);
 	const [isFollowing, setIsFollowing] = useState(false);
 
+	const [isPaused, setIsPaused] = useState(false);
+	const isPausedRef = useRef(false);
+	const accumulatedSecondsRef = useRef(0);
+
 	// Debug: last viewport info for the debug modal (ref avoids stale closure issues).
 	const debugViewportRef = useRef<DebugViewportInfo | null>(null);
 
@@ -584,6 +588,7 @@ export default function RecordScreen() {
 	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint) => {
+		if (isPausedRef.current) return;
 		const next = [...routePointsRef.current, point];
 		routePointsRef.current = next;
 
@@ -623,6 +628,9 @@ export default function RecordScreen() {
 
 			routePointsRef.current = [];
 			startTimeRef.current = Date.now();
+			accumulatedSecondsRef.current = 0;
+			isPausedRef.current = false;
+			setIsPaused(false);
 			setElapsedSeconds(0);
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
@@ -630,7 +638,7 @@ export default function RecordScreen() {
 			mapRef.current?.sendToMap({ routeCoordinates: [] });
 
 			timerRef.current = setInterval(() => {
-				setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+				setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 			}, 1000);
 
 			if (expoGo) {
@@ -754,6 +762,9 @@ export default function RecordScreen() {
 		}
 
 		setIsRecording(false);
+		setIsPaused(false);
+		isPausedRef.current = false;
+		accumulatedSecondsRef.current = 0;
 
 		const points = routePointsRef.current;
 		console.log('[RecordScreen] Recorded points count:', points.length);
@@ -786,8 +797,28 @@ export default function RecordScreen() {
 		});
 	}, [showModal, closeModal, theme]);
 
-	// Compute live pace from elapsed time and distance
+	const pauseRecording = useCallback(() => {
+		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
+		if (timerRef.current) {
+			clearInterval(timerRef.current);
+			timerRef.current = null;
+		}
+		isPausedRef.current = true;
+		setIsPaused(true);
+	}, []);
+
+	const resumeRecording = useCallback(() => {
+		startTimeRef.current = Date.now();
+		timerRef.current = setInterval(() => {
+			setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
+		}, 1000);
+		isPausedRef.current = false;
+		setIsPaused(false);
+	}, []);
+
+	// Compute live pace and avg speed from elapsed time and distance
 	const livePaceMinPerKm = liveDistanceKm > 0 ? elapsedSeconds / 60 / liveDistanceKm : null;
+	const liveAvgSpeedKmh = elapsedSeconds > 0 ? (liveDistanceKm / elapsedSeconds) * 3600 : 0;
 
 	if (!osmConsent) {
 		return (
@@ -832,51 +863,63 @@ export default function RecordScreen() {
 				<MaterialIcons name="list" size={20} color="#555555" />
 			</TouchableOpacity>
 
-			{/* Start / Stop button – bottom-left */}
-			<View style={styles.startStopContainer} pointerEvents="box-none">
-				<TouchableOpacity
-					style={[styles.startStopButton, { backgroundColor: isRecording ? '#e53935' : '#43a047' }]}
-					onPress={isRecording ? stopRecording : startRecording}
-					activeOpacity={0.8}
-				>
-					<MaterialIcons name={isRecording ? 'stop' : 'directions-run'} size={26} color="white" />
-				</TouchableOpacity>
-			</View>
-
-			{/* Live stats while recording */}
-			{isRecording && (
-				<View
-					style={[styles.liveBar, { backgroundColor: theme.screen.background + 'ee' }]}
-					pointerEvents="none"
-				>
-					<View style={styles.liveStatCard}>
-						<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
-						<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-							{liveDistanceKm < 1
-								? (liveDistanceKm * 1000).toFixed(0)
-								: liveDistanceKm.toFixed(2)}
-						</Text>
-						<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
-							{liveDistanceKm < 1 ? 'm' : 'km'}
-						</Text>
-					</View>
-					<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-					<View style={styles.liveStatCard}>
-						<MaterialIcons name="speed" size={20} color={PRIMARY_COLOR} />
-						<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-							{livePaceMinPerKm != null ? formatPace(livePaceMinPerKm) : '--:--'}
-						</Text>
-						<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>min/km</Text>
-					</View>
-					<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-					<View style={styles.liveStatCard}>
-						<MaterialIcons name="timer" size={20} color={theme.screen.icon} />
-						<Text style={[styles.liveStatSmallValue, { color: theme.screen.text }]}>
-							{formatDuration(elapsedSeconds)}
-						</Text>
-					</View>
+			{/* Stats bar with recording controls – always visible */}
+			<View style={[styles.liveBar, { backgroundColor: theme.screen.background + 'ee' }]}>
+				<View style={styles.liveStatCard}>
+					<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
+					<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+						{isRecording
+							? (liveDistanceKm < 1 ? (liveDistanceKm * 1000).toFixed(0) : liveDistanceKm.toFixed(2))
+							: '--'}
+					</Text>
+					<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
+						{isRecording && liveDistanceKm < 1 ? 'm' : 'km'}
+					</Text>
 				</View>
-			)}
+				<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+				<View style={styles.liveStatCard}>
+					<MaterialIcons name="speed" size={20} color={PRIMARY_COLOR} />
+					<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+						{isRecording && livePaceMinPerKm != null ? formatPace(livePaceMinPerKm) : '--:--'}
+					</Text>
+					<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>min/km</Text>
+				</View>
+				<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+				<View style={styles.liveStatCard}>
+					<MaterialIcons name="directions-run" size={20} color={theme.screen.icon} />
+					<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+						{isRecording ? liveAvgSpeedKmh.toFixed(1) : '--'}
+					</Text>
+					<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>km/h</Text>
+				</View>
+				<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+				{!isRecording ? (
+					<TouchableOpacity
+						style={[styles.recordButton, { backgroundColor: '#43a047' }]}
+						onPress={startRecording}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="play-arrow" size={28} color="white" />
+					</TouchableOpacity>
+				) : (
+					<View style={styles.recordButtonGroup}>
+						<TouchableOpacity
+							style={[styles.recordButton, { backgroundColor: isPaused ? '#43a047' : '#f59e0b' }]}
+							onPress={isPaused ? resumeRecording : pauseRecording}
+							activeOpacity={0.8}
+						>
+							<MaterialIcons name={isPaused ? 'play-arrow' : 'pause'} size={24} color="white" />
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.recordButton, { backgroundColor: '#e53935' }]}
+							onPress={stopRecording}
+							activeOpacity={0.8}
+						>
+							<MaterialIcons name="stop" size={24} color="white" />
+						</TouchableOpacity>
+					</View>
+				)}
+			</View>
 		</View>
 	);
 }
@@ -941,10 +984,10 @@ const styles = StyleSheet.create({
 		shadowRadius: 4,
 		elevation: 6,
 	},
-	// Live stats bar
+	// Stats + recording controls bar
 	liveBar: {
 		position: 'absolute',
-		bottom: 100,
+		bottom: 24,
 		left: 8,
 		right: 8,
 		borderRadius: 14,
@@ -971,7 +1014,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 4,
 	},
 	liveStatBigValue: {
-		fontSize: 26,
+		fontSize: 22,
 		fontWeight: '700',
 		letterSpacing: -0.5,
 	},
@@ -980,10 +1023,27 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 	},
 	liveStatUnit: {
-		fontSize: 11,
+		fontSize: 10,
 		fontWeight: '500',
 		textTransform: 'uppercase',
 		letterSpacing: 0.5,
+	},
+	recordButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 3,
+		elevation: 4,
+	},
+	recordButtonGroup: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
 	},
 	// Consent styles
 	consentContainer: {
