@@ -896,8 +896,9 @@ export default function RecordScreen() {
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
 
 	// Follow mode: when active the map stays centred on the user's location.
-	const isFollowingRef = useRef(false);
-	const [isFollowing, setIsFollowing] = useState(false);
+	// Starts as true so the map tracks the user by default.
+	const isFollowingRef = useRef(true);
+	const [isFollowing, setIsFollowing] = useState(true);
 
 	const [isPaused, setIsPaused] = useState(false);
 	const isPausedRef = useRef(false);
