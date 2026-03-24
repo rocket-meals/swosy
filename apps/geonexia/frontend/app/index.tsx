@@ -12,13 +12,14 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
@@ -459,6 +460,24 @@ type DebugViewportInfo = {
 	tileCount: number;
 };
 
+// ─── Run Share Data ───────────────────────────────────────────────────────────
+
+/** Data exported at the end of a run for sharing as JSON / QR code. */
+type RunShareData = {
+	startedAt: number;
+	endedAt: number;
+	durationSeconds: number;
+	distanceKm: number;
+	tiles: {
+		/** H3 resolution used during the run */
+		h3Resolution: number;
+		/** Tiles visited by the user: [h3Index, level] pairs */
+		visited: Array<[string, number]>;
+		/** Tiles enclosed by the run loop (not walked on): [h3Index, level] pairs */
+		enclosed: Array<[string, number]>;
+	};
+};
+
 // ─── Debug Info Content (shown inside the debug modal) ───────────────────────
 
 type DebugInfoContentProps = {
@@ -707,9 +726,62 @@ function OsmConsentScreen({ onConsent }: { onConsent: () => void }) {
 	);
 }
 
+// ─── Run Share Content (shown inside bottom sheet modal) ──────────────────────
+
+const QR_MAX_BYTES = 2953;
+
+function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme: ReturnType<typeof useTheme>['theme'] }) {
+	const compact = JSON.stringify(shareData);
+	const pretty = JSON.stringify(shareData, null, 2);
+	const showQr = compact.length <= QR_MAX_BYTES;
+
+	const handleCopy = useCallback(async () => {
+		await Clipboard.setStringAsync(compact);
+		Alert.alert('Copied', 'Run data copied to clipboard.');
+	}, [compact]);
+
+	return (
+		<View>
+			<ScrollView
+				horizontal
+				style={styles.shareCodeScroll}
+				contentContainerStyle={styles.shareCodeContent}
+				showsHorizontalScrollIndicator={false}
+			>
+				<Text style={[styles.shareCodeText, { color: theme.screen.text }]} selectable>
+					{pretty}
+				</Text>
+			</ScrollView>
+			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleCopy} activeOpacity={0.8}>
+				<MaterialIcons name="content-copy" size={18} color="#ffffff" />
+				<Text style={styles.shareButtonText}>Copy JSON</Text>
+			</TouchableOpacity>
+			{showQr && (
+				<View style={styles.shareQrContainer}>
+					<QrCode value={compact} size={220} />
+				</View>
+			)}
+			{!showQr && (
+				<Text style={[styles.shareQrHint, { color: theme.screen.text + '88' }]}>
+					QR code not available – run data exceeds size limit. Use "Copy JSON" instead.
+				</Text>
+			)}
+		</View>
+	);
+}
+
 // ─── Run Stats Content (used inside bottom sheet modal) ───────────────────────
 
-function RunStatsContent({ stats, theme }: { stats: RunStats; theme: ReturnType<typeof useTheme>['theme'] }) {
+function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: ReturnType<typeof useTheme>['theme']; shareData: RunShareData }) {
+	const { show: showShareModal } = useMyScrollViewModal();
+
+	const handleShare = useCallback(() => {
+		showShareModal({
+			title: '📤 Share Run',
+			children: <RunShareContent shareData={shareData} theme={theme} />,
+		});
+	}, [showShareModal, shareData, theme]);
+
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ iconName: 'straighten', label: 'Distance', value: formatDistance(stats.distanceKm) },
 		{ iconName: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
@@ -740,6 +812,10 @@ function RunStatsContent({ stats, theme }: { stats: RunStats; theme: ReturnType<
 					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
+			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
+				<MaterialIcons name="share" size={18} color="#ffffff" />
+				<Text style={styles.shareButtonText}>Share Run</Text>
+			</TouchableOpacity>
 		</>
 	);
 }
@@ -1201,11 +1277,14 @@ export default function RecordScreen() {
 		const stats = computeStats(points);
 		const endedAt = Date.now();
 
-		// Detect enclosed tiles when the route forms a closed loop and persist them
+		// Detect enclosed tiles when the route forms a closed loop and persist them.
+		// Tiles already visited during the run are excluded from the enclosed set.
+		let enclosedCells: string[] = [];
 		try {
-			const enclosed = findEnclosedCells(points, h3ResolutionRef.current);
-			if (enclosed.length > 0) {
-				dispatch(markEnclosed({ h3Indices: enclosed, timestamp: endedAt }));
+			const allEnclosed = findEnclosedCells(points, h3ResolutionRef.current);
+			enclosedCells = allEnclosed.filter((cell) => !visitedHexIdsRef.current.has(cell));
+			if (enclosedCells.length > 0) {
+				dispatch(markEnclosed({ h3Indices: enclosedCells, timestamp: endedAt }));
 				// Refresh the map to show the newly enclosed tiles
 				const vp = debugViewportRef.current;
 				if (vp && mapRef.current) {
@@ -1236,10 +1315,24 @@ export default function RecordScreen() {
 			console.warn('[RecordScreen] Failed to save activity:', err);
 		}
 
+		// Build share data from the final Redux state (after all dispatches above).
+		const finalRecords = store.getState().hexTiles.records;
+		const shareData: RunShareData = {
+			startedAt: startTimeRef.current,
+			endedAt,
+			durationSeconds: stats.durationSeconds,
+			distanceKm: stats.distanceKm,
+			tiles: {
+				h3Resolution: Math.round(h3ResolutionRef.current),
+				visited: Array.from(visitedHexIdsRef.current).map((id) => [id, finalRecords[id]?.level ?? 0]),
+				enclosed: enclosedCells.map((id) => [id, finalRecords[id]?.level ?? 0]),
+			},
+		};
+
 		showModal({
 			title: '🏃 Run Statistics',
 			onClose: closeModal,
-			children: <RunStatsContent stats={stats} theme={theme} />,
+			children: <RunStatsContent stats={stats} theme={theme} shareData={shareData} />,
 		});
 	}, [showModal, closeModal, theme, dispatch]);
 
@@ -1683,6 +1776,49 @@ const styles = StyleSheet.create({
 	statsRowValue: {
 		fontSize: 15,
 		fontWeight: '600',
+	},
+	// Share styles
+	shareButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginHorizontal: 16,
+		marginTop: 16,
+		marginBottom: 8,
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
+	shareButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	shareCodeScroll: {
+		marginHorizontal: 16,
+		marginTop: 8,
+		borderRadius: 8,
+		backgroundColor: '#1e1e1e',
+		maxHeight: 220,
+	},
+	shareCodeContent: {
+		padding: 12,
+	},
+	shareCodeText: {
+		fontFamily: 'monospace',
+		fontSize: 12,
+	},
+	shareQrContainer: {
+		alignItems: 'center',
+		marginTop: 16,
+		marginBottom: 8,
+	},
+	shareQrHint: {
+		textAlign: 'center',
+		fontSize: 13,
+		marginHorizontal: 16,
+		marginTop: 12,
+		marginBottom: 8,
 	},
 	// Debug modal styles
 	debugContainer: {
