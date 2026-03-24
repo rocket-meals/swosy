@@ -8,6 +8,7 @@ import {
 	StyleSheet,
 	Switch,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -104,6 +105,7 @@ function buildH3GeoJson(
 // ─── Debug position controller ───────────────────────────────────────────────
 
 const DEBUG_MOVE_SPEED_KMH = 120;
+const DEBUG_MOVE_SPEED_MAX_KMH = 9999;
 const DEBUG_MOVE_INTERVAL_MS = 100;
 
 const JOYSTICK_OUTER_RADIUS = 60;
@@ -115,11 +117,12 @@ function getJoystickDelta(
 	dy: number,
 	lat: number,
 	maxDisplacement: number,
+	speedKmh: number,
 ): { dLat: number; dLng: number } {
 	const dist = Math.sqrt(dx * dx + dy * dy);
 	if (dist < 2) return { dLat: 0, dLng: 0 };
 	const ratio = Math.min(dist / maxDisplacement, 1.0);
-	const speedMs = (DEBUG_MOVE_SPEED_KMH / 3.6) * ratio;
+	const speedMs = (speedKmh / 3.6) * ratio;
 	const metersPerTick = speedMs * (DEBUG_MOVE_INTERVAL_MS / 1000);
 	const LAT_DEG_PER_METER = 1 / 111320;
 	const cosLat = Math.cos((lat * Math.PI) / 180);
@@ -134,10 +137,11 @@ function getJoystickDelta(
 
 type JoystickControllerProps = {
 	positionRef: React.MutableRefObject<{ lat: number; lng: number } | null>;
+	speedKmhRef: React.MutableRefObject<number>;
 	onMove: (lat: number, lng: number) => void;
 };
 
-function JoystickController({ positionRef, onMove }: JoystickControllerProps) {
+function JoystickController({ positionRef, speedKmhRef, onMove }: JoystickControllerProps) {
 	const knobX = useRef(new Animated.Value(0)).current;
 	const knobY = useRef(new Animated.Value(0)).current;
 	const knobOffsetRef = useRef({ x: 0, y: 0 });
@@ -163,7 +167,7 @@ function JoystickController({ positionRef, onMove }: JoystickControllerProps) {
 					const pos = positionRef.current;
 					if (!pos) return;
 					const { x, y } = knobOffsetRef.current;
-					const { dLat, dLng } = getJoystickDelta(x, y, pos.lat, JOYSTICK_MAX_DISPLACEMENT);
+					const { dLat, dLng } = getJoystickDelta(x, y, pos.lat, JOYSTICK_MAX_DISPLACEMENT, speedKmhRef.current);
 					const newLat = pos.lat + dLat;
 					const newLng = pos.lng + dLng;
 					positionRef.current = { lat: newLat, lng: newLng };
@@ -356,8 +360,11 @@ type DebugInfoContentProps = {
 	theme: ReturnType<typeof useTheme>['theme'];
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
+	initialSpeed: number;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
+	onZoomAdjust: (delta: number) => void;
+	onSpeedChange: (speed: number) => void;
 };
 
 const H3_RESOLUTION_MIN = 0;
@@ -368,12 +375,16 @@ function DebugInfoContent({
 	theme,
 	initialShowGridAlways,
 	initialH3Resolution,
+	initialSpeed,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
+	onZoomAdjust,
+	onSpeedChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
+	const [speedText, setSpeedText] = useState(String(initialSpeed));
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -395,6 +406,14 @@ function DebugInfoContent({
 			return next;
 		});
 	}, [onH3ResolutionChange]);
+
+	const handleSpeedTextChange = useCallback((text: string) => {
+		setSpeedText(text);
+		const parsed = parseFloat(text);
+		if (!isNaN(parsed) && parsed > 0) {
+			onSpeedChange(Math.min(parsed, DEBUG_MOVE_SPEED_MAX_KMH));
+		}
+	}, [onSpeedChange]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
 
@@ -420,7 +439,6 @@ function DebugInfoContent({
 
 	const viewportRows: { label: string; value: string }[] = info
 		? [
-			{ label: 'Zoom Level', value: info.zoom.toFixed(2) },
 			{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${H3_MIN_ZOOM})` },
 			{ label: 'North', value: info.bounds.north.toFixed(5) },
 			{ label: 'South', value: info.bounds.south.toFixed(5) },
@@ -474,6 +492,41 @@ function DebugInfoContent({
 						<Text style={styles.resolutionButtonText}>+</Text>
 					</TouchableOpacity>
 				</View>
+			</View>
+
+			{/* Zoom Level row with ±0.1 buttons */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Zoom Level</Text>
+				<View style={styles.resolutionPicker}>
+					<TouchableOpacity
+						style={styles.resolutionButton}
+						onPress={() => onZoomAdjust(-0.1)}
+					>
+						<Text style={styles.resolutionButtonText}>−</Text>
+					</TouchableOpacity>
+					<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+						{info != null ? info.zoom.toFixed(2) : '—'}
+					</Text>
+					<TouchableOpacity
+						style={styles.resolutionButton}
+						onPress={() => onZoomAdjust(0.1)}
+					>
+						<Text style={styles.resolutionButtonText}>+</Text>
+					</TouchableOpacity>
+				</View>
+			</View>
+
+			{/* Joystick Speed row */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Joystick Speed (km/h)</Text>
+				<TextInput
+					style={[styles.debugSpeedInput, { color: theme.screen.text, borderColor: theme.screen.text + '44' }]}
+					value={speedText}
+					onChangeText={handleSpeedTextChange}
+					keyboardType="decimal-pad"
+					returnKeyType="done"
+					selectTextOnFocus
+				/>
 			</View>
 
 			{/* Min zoom info row */}
@@ -606,6 +659,8 @@ export default function RecordScreen() {
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
 	// Current player position (updated from real GPS and from debug gamepad)
 	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
+	// Joystick speed, configurable from the debug modal
+	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 
@@ -674,6 +729,15 @@ export default function RecordScreen() {
 		recomputeH3();
 	}, [recomputeH3]);
 
+	const handleZoomAdjust = useCallback((delta: number) => {
+		const currentZoom = debugViewportRef.current?.zoom ?? 14;
+		mapRef.current?.sendToMap({ zoomTo: currentZoom + delta, easeDuration: 200 });
+	}, []);
+
+	const handleSpeedChange = useCallback((speed: number) => {
+		debugMoveSpeedKmhRef.current = speed;
+	}, []);
+
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
@@ -709,12 +773,15 @@ export default function RecordScreen() {
 					theme={theme}
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
+					initialSpeed={debugMoveSpeedKmhRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
+					onZoomAdjust={handleZoomAdjust}
+					onSpeedChange={handleSpeedChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint) => {
 		if (isPausedRef.current) return;
@@ -779,16 +846,16 @@ export default function RecordScreen() {
 				lat,
 				lng,
 				altitude: null,
-				speed: DEBUG_MOVE_SPEED_KMH / 3.6,
+				speed: debugMoveSpeedKmhRef.current / 3.6,
 				timestamp: Date.now(),
 			});
 		} else {
-			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
+			mapRef.current?.sendToMap({ userLocation: { lat, lng, transitionDuration: DEBUG_MOVE_INTERVAL_MS } });
 			if (isFollowingRef.current) {
 				mapRef.current?.sendToMap({
 					mapCenterPosition: { lat, lng },
 					easeAnimation: true,
-					easeDuration: 200,
+					easeDuration: DEBUG_MOVE_INTERVAL_MS,
 				});
 			}
 		}
@@ -1044,6 +1111,7 @@ export default function RecordScreen() {
 			<View style={styles.gamepadOverlay} pointerEvents="box-none">
 					<JoystickController
 						positionRef={debugPlayerPositionRef}
+						speedKmhRef={debugMoveSpeedKmhRef}
 						onMove={handleDebugMove}
 					/>
 				</View>
@@ -1428,6 +1496,16 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '700',
 		minWidth: 24,
+		textAlign: 'center',
+	},
+	debugSpeedInput: {
+		fontSize: 15,
+		fontWeight: '600',
+		borderWidth: 1,
+		borderRadius: 6,
+		paddingVertical: 4,
+		paddingHorizontal: 10,
+		minWidth: 72,
 		textAlign: 'center',
 	},
 	// Joystick controller overlay
