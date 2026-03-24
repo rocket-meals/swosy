@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	Alert,
+	SafeAreaView,
 	ScrollView,
 	StyleSheet,
 	Switch,
@@ -472,6 +473,8 @@ export default function RecordScreen() {
 	const isPausedRef = useRef(false);
 	const accumulatedSecondsRef = useRef(0);
 
+	const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
+
 	// Debug: last viewport info for the debug modal (ref avoids stale closure issues).
 	const debugViewportRef = useRef<DebugViewportInfo | null>(null);
 
@@ -822,105 +825,154 @@ export default function RecordScreen() {
 
 	if (!osmConsent) {
 		return (
-			<View style={styles.container}>
+			<SafeAreaView style={styles.container}>
 				<OsmConsentScreen onConsent={handleConsent} />
-			</View>
+			</SafeAreaView>
 		);
 	}
 
 	return (
-		<View style={styles.container}>
-			<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+		<SafeAreaView style={styles.container}>
+			{/* Map fills remaining space above the panel */}
+			<View style={styles.mapWrapper}>
+				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
 
-			{/* Map overlay buttons – top-right */}
-			<View style={styles.mapOverlayButtons} pointerEvents="box-none">
-				<MapNorthButton mapRef={mapRef} backgroundColor="#ffffff" iconColor="#555555" />
-				<View style={styles.buttonSpacer} />
-				<MapLocationButton
-					mapRef={mapRef}
-					backgroundColor="#ffffff"
-					iconColor="#555555"
-					activeColor={PRIMARY_COLOR}
-					isFollowing={isFollowing}
-					onLocationFound={() => setFollowMode(true)}
-				/>
-				<View style={styles.buttonSpacer} />
+				{/* Map overlay buttons – top-right */}
+				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
+					<MapNorthButton mapRef={mapRef} backgroundColor="#ffffff" iconColor="#555555" />
+					<View style={styles.buttonSpacer} />
+					<MapLocationButton
+						mapRef={mapRef}
+						backgroundColor="#ffffff"
+						iconColor="#555555"
+						activeColor={PRIMARY_COLOR}
+						isFollowing={isFollowing}
+						onLocationFound={() => setFollowMode(true)}
+					/>
+					<View style={styles.buttonSpacer} />
+					<TouchableOpacity
+						style={styles.debugButton}
+						onPress={showDebugModal}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="bug-report" size={20} color="#555555" />
+					</TouchableOpacity>
+				</View>
+
+				{/* Activities button – top-left */}
 				<TouchableOpacity
-					style={styles.debugButton}
-					onPress={showDebugModal}
+					style={styles.activitiesButton}
+					onPress={() => router.push('/activities')}
 					activeOpacity={0.8}
 				>
-					<MaterialIcons name="bug-report" size={20} color="#555555" />
+					<MaterialIcons name="list" size={20} color="#555555" />
 				</TouchableOpacity>
 			</View>
 
-			{/* Activities button – top-left */}
-			<TouchableOpacity
-				style={styles.activitiesButton}
-				onPress={() => router.push('/activities')}
-				activeOpacity={0.8}
-			>
-				<MaterialIcons name="list" size={20} color="#555555" />
-			</TouchableOpacity>
-
-			{/* Stats bar with recording controls – always visible */}
-			<View style={[styles.liveBar, { backgroundColor: theme.screen.background + 'ee' }]}>
-				<View style={styles.liveStatCard}>
-					<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
-					<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-						{isRecording
-							? (liveDistanceKm < 1 ? (liveDistanceKm * 1000).toFixed(0) : liveDistanceKm.toFixed(2))
-							: '--'}
-					</Text>
-					<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
-						{isRecording && liveDistanceKm < 1 ? 'm' : 'km'}
-					</Text>
-				</View>
-				<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-				<View style={styles.liveStatCard}>
-					<MaterialIcons name="speed" size={20} color={PRIMARY_COLOR} />
-					<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-						{isRecording && livePaceMinPerKm != null ? formatPace(livePaceMinPerKm) : '--:--'}
-					</Text>
-					<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>min/km</Text>
-				</View>
-				<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-				<View style={styles.liveStatCard}>
-					<MaterialIcons name="directions-run" size={20} color={theme.screen.icon} />
-					<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
-						{isRecording ? liveAvgSpeedKmh.toFixed(1) : '--'}
-					</Text>
-					<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>km/h</Text>
-				</View>
-				<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
-				{!isRecording ? (
-					<TouchableOpacity
-						style={[styles.recordButton, { backgroundColor: '#43a047' }]}
-						onPress={startRecording}
-						activeOpacity={0.8}
-					>
-						<MaterialIcons name="play-arrow" size={28} color="white" />
-					</TouchableOpacity>
-				) : (
-					<View style={styles.recordButtonGroup}>
+			{/* Bottom control panel */}
+			<View style={[styles.liveBar, { backgroundColor: theme.screen.background }]}>
+				{isPanelCollapsed ? (
+					/* Collapsed: only show expand chevron */
+					<View style={styles.liveBarCollapsedRow}>
 						<TouchableOpacity
-							style={[styles.recordButton, { backgroundColor: isPaused ? '#43a047' : '#f59e0b' }]}
-							onPress={isPaused ? resumeRecording : pauseRecording}
-							activeOpacity={0.8}
+							style={styles.chevronButton}
+							onPress={() => setIsPanelCollapsed(false)}
+							activeOpacity={0.7}
 						>
-							<MaterialIcons name={isPaused ? 'play-arrow' : 'pause'} size={24} color="white" />
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.recordButton, { backgroundColor: '#e53935' }]}
-							onPress={stopRecording}
-							activeOpacity={0.8}
-						>
-							<MaterialIcons name="stop" size={24} color="white" />
+							<MaterialIcons name="expand-less" size={24} color={theme.screen.icon} />
 						</TouchableOpacity>
 					</View>
+				) : (
+					<>
+						{/* Stats row */}
+						<View style={styles.liveBarStatsRow}>
+							<View style={styles.liveStatCard}>
+								<MaterialIcons name="straighten" size={20} color={PRIMARY_COLOR} />
+								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+									{isRecording
+										? (liveDistanceKm < 1 ? (liveDistanceKm * 1000).toFixed(0) : liveDistanceKm.toFixed(2))
+										: '--'}
+								</Text>
+								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>
+									{isRecording && liveDistanceKm < 1 ? 'm' : 'km'}
+								</Text>
+							</View>
+							<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+							<View style={styles.liveStatCard}>
+								<MaterialIcons name="speed" size={20} color={PRIMARY_COLOR} />
+								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+									{isRecording && livePaceMinPerKm != null ? formatPace(livePaceMinPerKm) : '--:--'}
+								</Text>
+								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>min/km</Text>
+							</View>
+							<View style={[styles.liveVerticalDivider, { backgroundColor: theme.screen.text + '33' }]} />
+							<View style={styles.liveStatCard}>
+								<MaterialIcons name="directions-run" size={20} color={theme.screen.icon} />
+								<Text style={[styles.liveStatBigValue, { color: theme.screen.text }]}>
+									{isRecording ? liveAvgSpeedKmh.toFixed(1) : '--'}
+								</Text>
+								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>km/h</Text>
+							</View>
+						</View>
+
+						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
+						<View style={styles.liveBarControlsRow}>
+							{/* Stop button – left side, only visible while recording */}
+							<View style={styles.liveBarSideSlot}>
+								{isRecording && (
+									<TouchableOpacity
+										style={[styles.stopButton, { backgroundColor: '#e53935' }]}
+										onPress={stopRecording}
+										activeOpacity={0.8}
+									>
+										<MaterialIcons name="stop" size={24} color="white" />
+									</TouchableOpacity>
+								)}
+							</View>
+
+							{/* Central record / pause button */}
+							<TouchableOpacity
+								style={[
+									styles.mainRecordButton,
+									{
+										backgroundColor: !isRecording
+											? '#43a047'
+											: isPaused
+											? '#43a047'
+											: '#f59e0b',
+									},
+								]}
+								onPress={
+									!isRecording
+										? startRecording
+										: isPaused
+										? resumeRecording
+										: pauseRecording
+								}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons
+									name={!isRecording ? 'play-arrow' : isPaused ? 'play-arrow' : 'pause'}
+									size={32}
+									color="white"
+								/>
+							</TouchableOpacity>
+
+							{/* Chevron-down collapse button – right side */}
+							<View style={styles.liveBarSideSlot}>
+								<TouchableOpacity
+									style={styles.chevronButton}
+									onPress={() => setIsPanelCollapsed(true)}
+									activeOpacity={0.7}
+								>
+									<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+						</View>
+					</>
 				)}
 			</View>
-		</View>
+		</SafeAreaView>
 	);
 }
 
@@ -928,6 +980,9 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#ffffff',
+	},
+	mapWrapper: {
+		flex: 1,
 	},
 	expoGoNoticeContainer: {
 		paddingHorizontal: 20,
@@ -965,43 +1020,48 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.2,
 		shadowRadius: 2,
 	},
-	startStopContainer: {
-		position: 'absolute',
-		bottom: 32,
-		left: 16,
-		zIndex: 30,
-		elevation: 30,
-	},
-	startStopButton: {
-		width: 56,
-		height: 56,
-		borderRadius: 28,
+	debugButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 8,
+		backgroundColor: '#ffffff',
 		alignItems: 'center',
 		justifyContent: 'center',
 		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.35,
-		shadowRadius: 4,
-		elevation: 6,
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.2,
+		shadowRadius: 2,
+		elevation: 4,
 	},
 	// Stats + recording controls bar
 	liveBar: {
-		position: 'absolute',
-		bottom: 24,
-		left: 8,
-		right: 8,
-		borderRadius: 14,
+		borderTopWidth: StyleSheet.hairlineWidth,
+		borderTopColor: '#00000022',
+		paddingBottom: 8,
+	},
+	liveBarCollapsedRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		paddingVertical: 6,
+	},
+	liveBarStatsRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-evenly',
-		paddingVertical: 12,
+		paddingTop: 12,
 		paddingHorizontal: 8,
-		zIndex: 25,
-		elevation: 25,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.2,
-		shadowRadius: 4,
+	},
+	liveBarControlsRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingHorizontal: 24,
+		paddingTop: 12,
+	},
+	liveBarSideSlot: {
+		width: 52,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	liveStatCard: {
 		flex: 1,
@@ -1044,6 +1104,37 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
+	},
+	mainRecordButton: {
+		width: 60,
+		height: 60,
+		borderRadius: 30,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 3 },
+		shadowOpacity: 0.35,
+		shadowRadius: 5,
+		elevation: 6,
+	},
+	stopButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 3,
+		elevation: 4,
+	},
+	chevronButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	// Consent styles
 	consentContainer: {
