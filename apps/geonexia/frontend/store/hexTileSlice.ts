@@ -63,7 +63,7 @@ const hexTileSlice = createSlice({
 				rec.visitCount += 1;
 				const newLevel = computeHexTileLevel(rec);
 				const startLevel = state.runStartLevels[h3Index] ?? 0;
-				rec.level = Math.min(newLevel, startLevel + 1);
+				rec.level = Math.min(newLevel, startLevel + 2);
 			}
 		},
 
@@ -81,7 +81,7 @@ const hexTileSlice = createSlice({
 				rec.enclosedCount += 1;
 				const newLevel = computeHexTileLevel(rec);
 				const startLevel = state.runStartLevels[h3Index] ?? 0;
-				rec.level = Math.min(newLevel, startLevel + 1);
+				rec.level = Math.min(newLevel, startLevel + 2);
 			}
 		},
 

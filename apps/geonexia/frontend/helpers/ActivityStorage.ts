@@ -103,6 +103,21 @@ export function deleteActivity(id: string): void {
 	}
 }
 
+export function deleteAllActivities(): void {
+	try {
+		const dir = getActivitiesDir();
+		if (!dir.exists) return;
+		const entries = dir.list();
+		for (const entry of entries) {
+			if (entry instanceof File && entry.name.endsWith('.json')) {
+				entry.delete();
+			}
+		}
+	} catch {
+		// Ignore errors
+	}
+}
+
 // ─── OSM consent persistence ──────────────────────────────────────────────────
 
 export function saveOsmConsent(consented: boolean): void {
