@@ -11,7 +11,9 @@ import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'rea
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
 import { loadPersistedState } from '../store/hexTileSlice';
+import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadHexTileState } from '../helpers/HexTileStorage';
+import { loadSportType } from '../helpers/SportTypeStorage';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
@@ -113,6 +115,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted hex tile state:', err);
+			});
+		loadSportType()
+			.then((type) => {
+				store.dispatch(loadSportTypeAction(type));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted sport type:', err);
 			});
 	}, []);
 

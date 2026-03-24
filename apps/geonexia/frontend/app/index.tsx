@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
 	Alert,
 	Animated,
@@ -16,17 +16,18 @@ import * as Clipboard from 'expo-clipboard';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useDispatch } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal } from 'repo-depkit-common-ui';
+import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter, useNavigation } from 'expo-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed } from '../store/hexTileSlice';
-import { store } from '../store/store';
+import { setSportType, SPORT_TYPES } from '../store/sportTypeSlice';
+import { store, RootState } from '../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -820,14 +821,74 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 	);
 }
 
+// ─── Hex Tile Info Content ─────────────────────────────────────────────────────
+
+function formatTimestamp(ts: number | null): string {
+	if (ts === null) return '—';
+	return new Date(ts).toLocaleString(undefined, {
+		day: '2-digit',
+		month: 'short',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	});
+}
+
+function HexTileInfoContent({
+	h3Index,
+	record,
+	theme,
+}: {
+	h3Index: string;
+	record: HexTileRecord | null;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	const rows: { label: string; value: string }[] = [
+		{ label: 'H3 Index', value: h3Index },
+		{ label: 'Level', value: record ? String(record.level) : '0' },
+		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
+		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
+		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
+		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
+	];
+	return (
+		<View style={styles.hexInfoContainer}>
+			{rows.map((row, i) => (
+				<View
+					key={row.label}
+					style={[
+						styles.hexInfoRow,
+						{ borderBottomColor: theme.screen.text + '18' },
+						i === rows.length - 1 && { borderBottomWidth: 0 },
+					]}
+				>
+					<Text style={[styles.hexInfoLabel, { color: theme.screen.icon }]}>{row.label}</Text>
+					<Text style={[styles.hexInfoValue, { color: theme.screen.text }]}>{row.value}</Text>
+				</View>
+			))}
+		</View>
+	);
+}
+
 // ─── Record Screen ─────────────────────────────────────────────────────────────
 
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const router = useRouter();
+	const navigation = useNavigation();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
+
+	// Redux selectors
+	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
+	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
+	const prevResetTokenRef = useRef<number | null>(null);
+
+	const activeSport = useMemo(
+		() => SPORT_TYPES.find((s) => s.type === selectedSportType) ?? SPORT_TYPES[0],
+		[selectedSportType],
+	);
 
 	const [isRecording, setIsRecording] = useState(false);
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -859,6 +920,36 @@ export default function RecordScreen() {
 	const [isHeadingMode, setIsHeadingMode] = useState(false);
 
 	const dispatch = useDispatch();
+
+	// Header: activities navigation button (coloured so it's clearly visible)
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				<TouchableOpacity
+					onPress={() => router.push('/activities')}
+					style={styles.headerActivitiesButton}
+					activeOpacity={0.7}
+				>
+					<MaterialIcons name="directions-run" size={24} color={PRIMARY_COLOR} />
+				</TouchableOpacity>
+			),
+		});
+	}, [navigation, router]);
+
+	// When the hex tile data is reset, reload the map with an empty GeoJSON so
+	// the old (now deleted) tiles are cleared immediately without an app restart.
+	useEffect(() => {
+		if (prevResetTokenRef.current === null) {
+			// First render: record the initial token, don't treat it as a reset.
+			prevResetTokenRef.current = resetToken;
+			return;
+		}
+		if (resetToken === prevResetTokenRef.current) return;
+		prevResetTokenRef.current = resetToken;
+		mapRef.current?.sendToMap({
+			hexTileGeoJson: { type: 'FeatureCollection', features: [] },
+		});
+	}, [resetToken]);
 
 	const setFollowMode = useCallback((val: boolean) => {
 		isFollowingRef.current = val;
@@ -967,6 +1058,16 @@ export default function RecordScreen() {
 		debugMoveSpeedKmhRef.current = speed;
 	}, []);
 
+	const showHexTileModal = useCallback((h3Index: string, record: HexTileRecord | null) => {
+		showModal({
+			title: '🗺️ Hex Tile Info',
+			onClose: closeModal,
+			children: (
+				<HexTileInfoContent h3Index={h3Index} record={record} theme={theme} />
+			),
+		});
+	}, [showModal, closeModal, theme]);
+
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
@@ -994,8 +1095,14 @@ export default function RecordScreen() {
 			}
 			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
+		} else if (msg.tag === 'HexTileClicked') {
+			const clickedMsg = msg as { h3Index?: string };
+			if (clickedMsg.h3Index) {
+				const tileRecord = store.getState().hexTiles.records[clickedMsg.h3Index] ?? null;
+				showHexTileModal(clickedMsg.h3Index, tileRecord);
+			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal]);
 
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
@@ -1017,6 +1124,51 @@ export default function RecordScreen() {
 			),
 		});
 	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange]);
+
+	const showActivityTypeModal = useCallback(() => {
+		showModal({
+			title: '🏃 Select Activity Type',
+			onClose: closeModal,
+			children: (
+				<View>
+					<SettingsListGroupTitle title="Sport" />
+					{SPORT_TYPES.map((sportDef, i) => {
+						const position =
+							i === 0 ? 'top' : i === SPORT_TYPES.length - 1 ? 'bottom' : 'middle';
+						const icon =
+							sportDef.iconLibrary === 'MaterialCommunityIcons' ? (
+								<MaterialCommunityIcons
+									name={sportDef.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+									size={22}
+									color="#ffffff"
+								/>
+							) : (
+								<MaterialIcons
+									name={sportDef.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
+									size={22}
+									color="#ffffff"
+								/>
+							);
+						return (
+							<SettingsListSelectOptionSingle
+								key={sportDef.type}
+								label={sportDef.label}
+								leftIcon={icon}
+								iconBgColor={sportDef.color}
+								selectionColor={sportDef.color}
+								isSelected={selectedSportType === sportDef.type}
+								onPress={() => {
+									dispatch(setSportType(sportDef.type));
+									closeModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, dispatch, selectedSportType]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint) => {
 		if (isPausedRef.current) return;
@@ -1496,15 +1648,35 @@ export default function RecordScreen() {
 
 						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
 						<View style={styles.liveBarControlsRow}>
-							{/* Stop button – left side, only visible while recording */}
+							{/* Left side: stop button when recording, activity type picker otherwise */}
 							<View style={styles.liveBarSideSlot}>
-								{isRecording && (
+								{isRecording ? (
 									<TouchableOpacity
 										style={[styles.stopButton, { backgroundColor: '#e53935' }]}
 										onPress={stopRecording}
 										activeOpacity={0.8}
 									>
 										<MaterialIcons name="stop" size={32} color="white" />
+									</TouchableOpacity>
+								) : (
+									<TouchableOpacity
+										style={[styles.activityTypeButton, { backgroundColor: activeSport.color + '22' }]}
+										onPress={showActivityTypeModal}
+										activeOpacity={0.8}
+									>
+										{activeSport.iconLibrary === 'MaterialCommunityIcons' ? (
+											<MaterialCommunityIcons
+												name={activeSport.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+												size={28}
+												color={activeSport.color}
+											/>
+										) : (
+											<MaterialIcons
+												name={activeSport.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
+												size={28}
+												color={activeSport.color}
+											/>
+										)}
 									</TouchableOpacity>
 								)}
 							</View>
@@ -1936,5 +2108,40 @@ const styles = StyleSheet.create({
 		height: JOYSTICK_KNOB_RADIUS * 2,
 		borderRadius: JOYSTICK_KNOB_RADIUS,
 		backgroundColor: 'rgba(255, 255, 255, 0.85)',
+	},
+	// Header button
+	headerActivitiesButton: {
+		marginRight: 12,
+		padding: 4,
+	},
+	// Activity type picker button
+	activityTypeButton: {
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	// Hex tile info modal
+	hexInfoContainer: {
+		paddingBottom: 8,
+	},
+	hexInfoRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingVertical: 10,
+		paddingHorizontal: 16,
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		gap: 8,
+	},
+	hexInfoLabel: {
+		flex: 1,
+		fontSize: 14,
+	},
+	hexInfoValue: {
+		fontSize: 14,
+		fontWeight: '600',
+		flexShrink: 1,
+		textAlign: 'right',
 	},
 });
