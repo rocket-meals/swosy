@@ -664,6 +664,16 @@ export default function RecordScreen() {
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 
+	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }) => {
+		if (!mapRef.current) return;
+		mapRef.current.sendToMap({ userLocation: { lat: pos.lat, lng: pos.lng } });
+		mapRef.current.sendToMap({
+			mapCenterPosition: { lat: pos.lat, lng: pos.lng },
+			easeAnimation: true,
+			easeDuration: 800,
+		});
+	}, []);
+
 	// Load persisted OSM consent on mount
 	useEffect(() => {
 		loadOsmConsent().then((consented) => {
@@ -687,11 +697,13 @@ export default function RecordScreen() {
 		Location.getLastKnownPositionAsync()
 			.then((loc) => {
 				if (loc && !debugPlayerPositionRef.current) {
-					debugPlayerPositionRef.current = { lat: loc.coords.latitude, lng: loc.coords.longitude };
+					const pos = { lat: loc.coords.latitude, lng: loc.coords.longitude };
+					debugPlayerPositionRef.current = pos;
+					centerMapOnPosition(pos);
 				}
 			})
 			.catch((err) => { console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err); });
-	}, [osmConsent]);
+	}, [osmConsent, centerMapOnPosition]);
 
 	const handleConsent = useCallback(() => {
 		setOsmConsent(true);
@@ -747,6 +759,10 @@ export default function RecordScreen() {
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
 			}
+			const pos = debugPlayerPositionRef.current;
+			if (pos) {
+				centerMapOnPosition(pos);
+			}
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
@@ -760,7 +776,7 @@ export default function RecordScreen() {
 			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 		}
-	}, [sendRouteToMap, setFollowMode]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode]);
 
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
@@ -812,15 +828,7 @@ export default function RecordScreen() {
 		}
 
 		sendRouteToMap(next);
-		mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
-
-		if (isFollowingRef.current) {
-			mapRef.current?.sendToMap({
-				mapCenterPosition: { lat: point.lat, lng: point.lng },
-				easeAnimation: true,
-				easeDuration: 800,
-			});
-		}
+		centerMapOnPosition({ lat: point.lat, lng: point.lng });
 
 		// Refresh hex GeoJSON to show the updated visited-cell tint
 		const vp = debugViewportRef.current;
@@ -834,7 +842,7 @@ export default function RecordScreen() {
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 		}
-	}, [sendRouteToMap]);
+	}, [centerMapOnPosition, sendRouteToMap]);
 
 	// Moves the player to a new position (used by the debug gamepad).
 	// When recording is active, feeds a synthetic RoutePoint to the normal tracking pipeline.
@@ -884,6 +892,7 @@ export default function RecordScreen() {
 			setLiveSpeedKmh(null);
 			isRecordingRef.current = true;
 			setIsRecording(true);
+			setFollowMode(true);
 			mapRef.current?.sendToMap({ routeCoordinates: [] });
 
 			timerRef.current = setInterval(() => {
@@ -987,7 +996,7 @@ export default function RecordScreen() {
 				timerRef.current = null;
 			}
 		}
-	}, [handleLocationUpdate, showModal, theme]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme]);
 
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
