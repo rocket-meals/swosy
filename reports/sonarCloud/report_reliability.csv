@@ -1,4 +1,7 @@
 Key,Message,Component,Line
+"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",225
+"AZ0eWxL7RvqNgnlDLcVp","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",48
+"AZ0eWxNyRvqNgnlDLcVu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",46
 "AZ0cP4wTSUO5CDbnER0T","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",242
 "AZ0cP4wTSUO5CDbnER0U","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",243
 "AZ0cP4wTSUO5CDbnER0V","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",261
@@ -6796,5 +6799,4 @@ Key,Message,Component,Line
 "AZ0cP4sXSUO5CDbnERwg","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14275
 "AZ0cP4sXSUO5CDbnERwl","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14290
 "AZ0cP4sXSUO5CDbnERxa","Remove this ""==="" check; it will always be false. Did you mean to use ""==""?","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/libh3.js",14667
-"AZ0ZsR1OrOcQDbT7T5Pe","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activity/index.tsx",241
 "AZ0ZJmx5-tgOj4n6nrhZ","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",140
