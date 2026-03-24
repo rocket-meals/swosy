@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsListEditable from '../SettingsListEditable/SettingsListEditable';
 import type { SettingsListProps } from '../SettingsList/types';
@@ -117,8 +118,9 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 }) => {
 	const { theme } = useTheme();
 	const { show, close } = useMyScrollViewModal();
+	const settingsCtx = useSettingsContext();
 	const isEditable = editable && !isDisabled;
-	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? theme.primary;
 
 	const openCalendar = useCallback(() => {
 		if (!isEditable) return;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch } from 'react-native';
 import type { PropsWithChildren } from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
 
@@ -29,8 +30,9 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
 	...props
 }) => {
 	const { theme } = useTheme();
+	const settingsCtx = useSettingsContext();
 	const isDisabled = disabled || !!isAccountRequired;
-	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? theme.primary;
 
 	return (
 		<SettingsList

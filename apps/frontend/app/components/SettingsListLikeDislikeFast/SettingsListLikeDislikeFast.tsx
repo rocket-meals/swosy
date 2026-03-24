@@ -7,13 +7,13 @@ import { useAppSelector } from '@/redux/hooks';
 export type { SettingsListLikeDislikeFastProps };
 
 const SettingsListLikeDislikeFast: React.FC<SettingsListLikeDislikeFastProps> = (props) => {
-	const { primaryColor, appSettings } = useAppSelector((state) => state.settings);
-	const accentColor = appSettings?.foods_area_color ?? primaryColor;
+	const { appSettings } = useAppSelector((state) => state.settings);
+	const foodsColor = appSettings?.foods_area_color ?? undefined;
 
 	return (
 		<CommonSettingsListLikeDislikeFast
 			{...props}
-			primaryColor={props.primaryColor ?? accentColor}
+			primaryColor={props.primaryColor ?? foodsColor}
 		/>
 	);
 };

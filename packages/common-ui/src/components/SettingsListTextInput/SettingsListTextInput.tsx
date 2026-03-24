@@ -12,6 +12,7 @@ import {
 import type { KeyboardTypeOptions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
@@ -181,9 +182,10 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 }) => {
 	const { theme } = useTheme();
 	const { show, close } = useMyScrollViewModal();
+	const settingsCtx = useSettingsContext();
 	const resolvedTitle = useMemo(() => modalTitle ?? title ?? label ?? '', [label, modalTitle, title]);
 	const resolvedInitialValue = initialValue ?? value ?? '';
-	const resolvedPrimaryColor = primaryColor ?? theme.primary;
+	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? theme.primary;
 
 	const resolvedRightIcon = useMemo(
 		() =>

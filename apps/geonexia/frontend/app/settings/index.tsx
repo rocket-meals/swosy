@@ -23,7 +23,6 @@ export default function SettingsScreen() {
 			<ScrollView contentContainerStyle={styles.listContent}>
 				<SettingsListGroupTitle title="Appearance" />
 				<SettingsList
-					primaryColor={PRIMARY_COLOR}
 					iconBgColor={PRIMARY_COLOR}
 					leftIcon={
 						<MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" />
@@ -37,7 +36,6 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="Notifications" />
 				<SettingsListBoolean
-					primaryColor={NOTIFICATION_COLOR}
 					iconBgColor={NOTIFICATION_COLOR}
 					leftIcon={<Ionicons name="notifications-outline" size={22} color="#ffffff" />}
 					label="Push Notifications"
@@ -50,7 +48,6 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="About" />
 				<SettingsList
-					primaryColor={NEUTRAL_COLOR}
 					iconBgColor={NEUTRAL_COLOR}
 					leftIcon={<Feather name="info" size={22} color="#ffffff" />}
 					label="App Version"
@@ -58,7 +55,6 @@ export default function SettingsScreen() {
 					groupPosition="top"
 				/>
 				<SettingsList
-					primaryColor={NEUTRAL_COLOR}
 					iconBgColor={NEUTRAL_COLOR}
 					leftIcon={<Feather name="code" size={22} color="#ffffff" />}
 					label="Open Source"

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 
 export interface SettingsListLikeDislikeFastProps {
@@ -28,7 +29,8 @@ const SettingsListLikeDislikeFast: React.FC<SettingsListLikeDislikeFastProps> = 
 	primaryColor,
 }) => {
 	const { theme, isDark } = useTheme();
-	const accentColor = primaryColor ?? theme.primary;
+	const settingsCtx = useSettingsContext();
+	const accentColor = primaryColor ?? settingsCtx?.primaryColor ?? theme.primary;
 	const contrastColor = myContrastColor(accentColor, theme, isDark);
 	const iconSize = isWeb ? 24 : 22;
 

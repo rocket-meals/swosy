@@ -5,6 +5,10 @@ export type { Theme } from './src/themes';
 // Theme context
 export { ThemeProvider, useTheme } from './src/context/ThemeContext';
 
+// Settings context
+export { SettingsProvider, useSettingsContext } from './src/context/SettingsContext';
+export type { SettingsContextType } from './src/context/SettingsContext';
+
 // Helpers
 export { myContrastColor, getContrastRatio, getColorAsHex } from './src/helpers/ColorHelper';
 export { accountRequiredStyles } from './src/helpers/accountRequiredStyles';
