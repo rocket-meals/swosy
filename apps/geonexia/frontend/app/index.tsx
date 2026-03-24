@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	Alert,
-	Pressable,
+	Animated,
+	PanResponder,
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
@@ -102,67 +103,89 @@ function buildH3GeoJson(
 
 // ─── Debug position controller ───────────────────────────────────────────────
 
-const DEBUG_MOVE_SPEED_KMH = 40;
+const DEBUG_MOVE_SPEED_KMH = 120;
 const DEBUG_MOVE_INTERVAL_MS = 100;
 
-type Direction = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW';
+const JOYSTICK_OUTER_RADIUS = 60;
+const JOYSTICK_KNOB_RADIUS = 22;
+const JOYSTICK_MAX_DISPLACEMENT = JOYSTICK_OUTER_RADIUS - JOYSTICK_KNOB_RADIUS;
 
-function getDirectionDelta(dir: Direction, lat: number): { dLat: number; dLng: number } {
-	const speedMs = DEBUG_MOVE_SPEED_KMH / 3.6;
+function getJoystickDelta(
+	dx: number,
+	dy: number,
+	lat: number,
+	maxDisplacement: number,
+): { dLat: number; dLng: number } {
+	const dist = Math.sqrt(dx * dx + dy * dy);
+	if (dist < 2) return { dLat: 0, dLng: 0 };
+	const ratio = Math.min(dist / maxDisplacement, 1.0);
+	const speedMs = (DEBUG_MOVE_SPEED_KMH / 3.6) * ratio;
 	const metersPerTick = speedMs * (DEBUG_MOVE_INTERVAL_MS / 1000);
 	const LAT_DEG_PER_METER = 1 / 111320;
 	const cosLat = Math.cos((lat * Math.PI) / 180);
 	const LNG_DEG_PER_METER = cosLat > 0.001 ? 1 / (111320 * cosLat) : 1 / 111320;
-	const straight = metersPerTick;
-	const diag = metersPerTick / Math.SQRT2;
-	switch (dir) {
-		case 'N':  return { dLat:  straight * LAT_DEG_PER_METER, dLng: 0 };
-		case 'S':  return { dLat: -straight * LAT_DEG_PER_METER, dLng: 0 };
-		case 'E':  return { dLat: 0, dLng:  straight * LNG_DEG_PER_METER };
-		case 'W':  return { dLat: 0, dLng: -straight * LNG_DEG_PER_METER };
-		case 'NE': return { dLat:  diag * LAT_DEG_PER_METER, dLng:  diag * LNG_DEG_PER_METER };
-		case 'NW': return { dLat:  diag * LAT_DEG_PER_METER, dLng: -diag * LNG_DEG_PER_METER };
-		case 'SE': return { dLat: -diag * LAT_DEG_PER_METER, dLng:  diag * LNG_DEG_PER_METER };
-		case 'SW': return { dLat: -diag * LAT_DEG_PER_METER, dLng: -diag * LNG_DEG_PER_METER };
-	}
+	const nx = dx / dist;
+	const ny = dy / dist;
+	return {
+		dLat: -ny * metersPerTick * LAT_DEG_PER_METER,
+		dLng: nx * metersPerTick * LNG_DEG_PER_METER,
+	};
 }
 
-const GAMEPAD_DIRS: Array<{ dir: Direction | null; label: string }> = [
-	{ dir: 'NW', label: '↖' }, { dir: 'N',  label: '↑' }, { dir: 'NE', label: '↗' },
-	{ dir: 'W',  label: '←' }, { dir: null, label: ''   }, { dir: 'E',  label: '→' },
-	{ dir: 'SW', label: '↙' }, { dir: 'S',  label: '↓' }, { dir: 'SE', label: '↘' },
-];
-
-type DebugPositionControllerProps = {
+type JoystickControllerProps = {
 	positionRef: React.MutableRefObject<{ lat: number; lng: number } | null>;
 	onMove: (lat: number, lng: number) => void;
 };
 
-function DebugPositionController({ positionRef, onMove }: DebugPositionControllerProps) {
+function JoystickController({ positionRef, onMove }: JoystickControllerProps) {
+	const knobX = useRef(new Animated.Value(0)).current;
+	const knobY = useRef(new Animated.Value(0)).current;
+	const knobOffsetRef = useRef({ x: 0, y: 0 });
 	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-	const activeDirectionRef = useRef<Direction | null>(null);
-
-	const startMoving = useCallback((dir: Direction) => {
-		if (intervalRef.current) clearInterval(intervalRef.current);
-		activeDirectionRef.current = dir;
-		intervalRef.current = setInterval(() => {
-			const pos = positionRef.current;
-			if (!pos) return;
-			const { dLat, dLng } = getDirectionDelta(activeDirectionRef.current!, pos.lat);
-			const newLat = pos.lat + dLat;
-			const newLng = pos.lng + dLng;
-			positionRef.current = { lat: newLat, lng: newLng };
-			onMove(newLat, newLng);
-		}, DEBUG_MOVE_INTERVAL_MS);
-	}, [positionRef, onMove]);
 
 	const stopMoving = useCallback(() => {
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 			intervalRef.current = null;
 		}
-		activeDirectionRef.current = null;
-	}, []);
+		knobOffsetRef.current = { x: 0, y: 0 };
+		Animated.spring(knobX, { toValue: 0, useNativeDriver: true }).start();
+		Animated.spring(knobY, { toValue: 0, useNativeDriver: true }).start();
+	}, [knobX, knobY]);
+
+	const panResponder = useRef(
+		PanResponder.create({
+			onStartShouldSetPanResponder: () => true,
+			onMoveShouldSetPanResponder: () => true,
+			onPanResponderGrant: () => {
+				if (intervalRef.current) clearInterval(intervalRef.current);
+				intervalRef.current = setInterval(() => {
+					const pos = positionRef.current;
+					if (!pos) return;
+					const { x, y } = knobOffsetRef.current;
+					const { dLat, dLng } = getJoystickDelta(x, y, pos.lat, JOYSTICK_MAX_DISPLACEMENT);
+					const newLat = pos.lat + dLat;
+					const newLng = pos.lng + dLng;
+					positionRef.current = { lat: newLat, lng: newLng };
+					onMove(newLat, newLng);
+				}, DEBUG_MOVE_INTERVAL_MS);
+			},
+			onPanResponderMove: (_, gestureState) => {
+				const dist = Math.sqrt(gestureState.dx ** 2 + gestureState.dy ** 2);
+				let cx = gestureState.dx;
+				let cy = gestureState.dy;
+				if (dist > JOYSTICK_MAX_DISPLACEMENT) {
+					cx = (cx / dist) * JOYSTICK_MAX_DISPLACEMENT;
+					cy = (cy / dist) * JOYSTICK_MAX_DISPLACEMENT;
+				}
+				knobX.setValue(cx);
+				knobY.setValue(cy);
+				knobOffsetRef.current = { x: cx, y: cy };
+			},
+			onPanResponderRelease: () => stopMoving(),
+			onPanResponderTerminate: () => stopMoving(),
+		}),
+	).current;
 
 	useEffect(() => {
 		return () => {
@@ -171,25 +194,13 @@ function DebugPositionController({ positionRef, onMove }: DebugPositionControlle
 	}, []);
 
 	return (
-		<View style={styles.gamepadGrid}>
-			{[0, 1, 2].map((row) => (
-				<View key={row} style={styles.gamepadRow}>
-					{GAMEPAD_DIRS.slice(row * 3, row * 3 + 3).map(({ dir, label }, col) =>
-						dir !== null ? (
-							<Pressable
-								key={col}
-								style={styles.gamepadButton}
-								onPressIn={() => startMoving(dir)}
-								onPressOut={stopMoving}
-							>
-								<Text style={styles.gamepadButtonText}>{label}</Text>
-							</Pressable>
-						) : (
-							<View key={col} style={styles.gamepadButtonCenter} />
-						),
-					)}
-				</View>
-			))}
+		<View style={styles.joystickOuter} {...panResponder.panHandlers}>
+			<Animated.View
+				style={[
+					styles.joystickKnob,
+					{ transform: [{ translateX: knobX }, { translateY: knobY }] },
+				]}
+			/>
 		</View>
 	);
 }
@@ -1029,9 +1040,9 @@ export default function RecordScreen() {
 					</TouchableOpacity>
 				</View>
 
-				{/* Debug gamepad controller – bottom-left overlay */}
-				<View style={styles.gamepadOverlay} pointerEvents="box-none">
-					<DebugPositionController
+				{/* Joystick controller – bottom-left overlay */}
+			<View style={styles.gamepadOverlay} pointerEvents="box-none">
+					<JoystickController
 						positionRef={debugPlayerPositionRef}
 						onMove={handleDebugMove}
 					/>
@@ -1419,7 +1430,7 @@ const styles = StyleSheet.create({
 		minWidth: 24,
 		textAlign: 'center',
 	},
-	// Gamepad controller overlay
+	// Joystick controller overlay
 	gamepadOverlay: {
 		position: 'absolute',
 		bottom: 16,
@@ -1427,31 +1438,18 @@ const styles = StyleSheet.create({
 		zIndex: 20,
 		elevation: 20,
 	},
-	gamepadGrid: {
+	joystickOuter: {
+		width: JOYSTICK_OUTER_RADIUS * 2,
+		height: JOYSTICK_OUTER_RADIUS * 2,
+		borderRadius: JOYSTICK_OUTER_RADIUS,
 		backgroundColor: 'rgba(0, 0, 0, 0.30)',
-		borderRadius: 12,
-		padding: 6,
-		gap: 4,
-	},
-	gamepadRow: {
-		flexDirection: 'row',
-		gap: 4,
-	},
-	gamepadButton: {
-		width: 40,
-		height: 40,
-		borderRadius: 8,
-		backgroundColor: 'rgba(255, 255, 255, 0.85)',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	gamepadButtonCenter: {
-		width: 40,
-		height: 40,
-	},
-	gamepadButtonText: {
-		fontSize: 18,
-		color: '#333333',
-		fontWeight: '600',
+	joystickKnob: {
+		width: JOYSTICK_KNOB_RADIUS * 2,
+		height: JOYSTICK_KNOB_RADIUS * 2,
+		borderRadius: JOYSTICK_KNOB_RADIUS,
+		backgroundColor: 'rgba(255, 255, 255, 0.85)',
 	},
 });
