@@ -859,28 +859,22 @@ export default function RecordScreen() {
 					</TouchableOpacity>
 				</View>
 
-				{/* Activities button – top-left */}
-				<TouchableOpacity
-					style={styles.activitiesButton}
-					onPress={() => router.push('/activities')}
-					activeOpacity={0.8}
-				>
-					<MaterialIcons name="list" size={20} color="#555555" />
-				</TouchableOpacity>
-			</View>
+				</View>
 
 			{/* Bottom control panel */}
 			<View style={[styles.liveBar, { backgroundColor: theme.screen.background }]}>
 				{isPanelCollapsed ? (
-					/* Collapsed: only show expand chevron */
+					/* Collapsed: only show expand chevron – aligned right to match expanded position */
 					<View style={styles.liveBarCollapsedRow}>
-						<TouchableOpacity
-							style={styles.chevronButton}
-							onPress={() => setIsPanelCollapsed(false)}
-							activeOpacity={0.7}
-						>
-							<MaterialIcons name="expand-less" size={24} color={theme.screen.icon} />
-						</TouchableOpacity>
+						<View style={styles.liveBarSideSlot}>
+							<TouchableOpacity
+								style={styles.chevronButton}
+								onPress={() => setIsPanelCollapsed(false)}
+								activeOpacity={0.7}
+							>
+								<MaterialIcons name="expand-less" size={24} color={theme.screen.icon} />
+							</TouchableOpacity>
+						</View>
 					</View>
 				) : (
 					<>
@@ -925,7 +919,7 @@ export default function RecordScreen() {
 										onPress={stopRecording}
 										activeOpacity={0.8}
 									>
-										<MaterialIcons name="stop" size={24} color="white" />
+										<MaterialIcons name="stop" size={32} color="white" />
 									</TouchableOpacity>
 								)}
 							</View>
@@ -1003,23 +997,6 @@ const styles = StyleSheet.create({
 	buttonSpacer: {
 		height: 8,
 	},
-	activitiesButton: {
-		position: 'absolute',
-		top: 16,
-		left: 12,
-		width: 36,
-		height: 36,
-		borderRadius: 8,
-		backgroundColor: '#ffffff',
-		alignItems: 'center',
-		justifyContent: 'center',
-		zIndex: 20,
-		elevation: 20,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.2,
-		shadowRadius: 2,
-	},
 	debugButton: {
 		width: 36,
 		height: 36,
@@ -1041,7 +1018,8 @@ const styles = StyleSheet.create({
 	},
 	liveBarCollapsedRow: {
 		flexDirection: 'row',
-		justifyContent: 'center',
+		justifyContent: 'flex-end',
+		paddingHorizontal: 24,
 		paddingVertical: 6,
 	},
 	liveBarStatsRow: {
@@ -1059,7 +1037,7 @@ const styles = StyleSheet.create({
 		paddingTop: 12,
 	},
 	liveBarSideSlot: {
-		width: 52,
+		width: 60,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
@@ -1118,16 +1096,16 @@ const styles = StyleSheet.create({
 		elevation: 6,
 	},
 	stopButton: {
-		width: 44,
-		height: 44,
-		borderRadius: 22,
+		width: 60,
+		height: 60,
+		borderRadius: 30,
 		alignItems: 'center',
 		justifyContent: 'center',
 		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.3,
-		shadowRadius: 3,
-		elevation: 4,
+		shadowOffset: { width: 0, height: 3 },
+		shadowOpacity: 0.35,
+		shadowRadius: 5,
+		elevation: 6,
 	},
 	chevronButton: {
 		width: 36,
