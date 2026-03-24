@@ -56,6 +56,10 @@ export type { MyMapHandle, MyMapProps } from './src/components/MyMap';
 export { MapNorthButton, MapLocationButton } from './src/components/MapOverlayButtons';
 export type { MapNorthButtonProps, MapLocationButtonProps } from './src/components/MapOverlayButtons';
 
+export { default as QrCode } from './src/components/QrCode';
+export { QrCodeEcl } from './src/components/QrCode';
+export type { QrCodeProps } from './src/components/QrCode';
+
 export { default as BaseBottomSheet } from './src/components/BaseBottomSheet';
 export type { BaseBottomSheetProps } from './src/components/BaseBottomSheet';
 
