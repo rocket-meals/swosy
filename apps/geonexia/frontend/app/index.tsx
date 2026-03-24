@@ -1195,8 +1195,12 @@ export default function RecordScreen() {
 				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(h3ResolutionRef.current)));
 				const cell = latLngToCell(point.lat, point.lng, h3Res);
 				if (cell) {
-					visitedHexIdsRef.current.add(cell);
-					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+					// Only count each tile once per run so the level can rise by at most
+					// one step during a single activity.
+					if (!visitedHexIdsRef.current.has(cell)) {
+						visitedHexIdsRef.current.add(cell);
+						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+					}
 				}
 			} catch (err) {
 				console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);

@@ -57,7 +57,10 @@ const hexTileSlice = createSlice({
 
 		/**
 		 * Record that the user visited the given tiles during a run.
-		 * Called once per GPS update for each newly visited cell.
+		 * Each tile is dispatched at most once per run (enforced in the recording
+		 * screen), so visitCount increases by at most 1 per run.
+		 * The level cap of startLevel + 1 additionally ensures a tile can never
+		 * rise by more than one step within a single activity.
 		 */
 		markVisited(
 			state,
@@ -71,12 +74,14 @@ const hexTileSlice = createSlice({
 				rec.walkedOn = true;
 				const newLevel = computeHexTileLevel(rec);
 				const startLevel = state.runStartLevels[h3Index] ?? 0;
-				rec.level = Math.min(newLevel, startLevel + 2);
+				rec.level = Math.min(newLevel, startLevel + 1);
 			}
 		},
 
 		/**
 		 * Record that the given tiles were enclosed by a completed run loop.
+		 * The level cap of startLevel + 1 ensures that even combined visit +
+		 * enclosure bonuses cannot push a tile up more than one step per run.
 		 */
 		markEnclosed(
 			state,
@@ -89,7 +94,7 @@ const hexTileSlice = createSlice({
 				rec.enclosedCount += 1;
 				const newLevel = computeHexTileLevel(rec);
 				const startLevel = state.runStartLevels[h3Index] ?? 0;
-				rec.level = Math.min(newLevel, startLevel + 2);
+				rec.level = Math.min(newLevel, startLevel + 1);
 			}
 		},
 
