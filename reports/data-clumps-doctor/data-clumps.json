@@ -1,72 +1,72 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-22T22:36:50.655Z",
+  "report_timestamp": "2026-03-23T22:39:53.846Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 89,
-          "average": 1.5568499534016775,
-          "amountSavedValuesForKeys": 3341,
+          "average": 1.572930955647005,
+          "amountSavedValuesForKeys": 3440,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 70,
-          "average": 2.364975450081833,
-          "amountSavedValuesForKeys": 1445,
+          "average": 2.3636363636363638,
+          "amountSavedValuesForKeys": 1456,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 89,
-          "average": 1.572235294117647,
-          "amountSavedValuesForKeys": 3341,
+          "average": 1.5881809787626961,
+          "amountSavedValuesForKeys": 3440,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3904,
-        "detection_time_ms": 72,
+        "ast_generation_time_ms": 3891,
+        "detection_time_ms": 71,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 128.47,
-          "os_memory_free": 14968332288,
-          "os_memory_total": 16767234048,
+          "os_uptime": 467.33,
+          "os_memory_free": 14989881344,
+          "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 2,
-    "amount_files_with_data_clumps": 2,
+    "amount_classes_or_interfaces_with_data_clumps": 20,
+    "amount_files_with_data_clumps": 13,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 0,
+    "fields_to_fields_data_clump": 18,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 8
+    "amount_data_clumps": 26
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "5d83cad767c80b914e1a9df906ee36d39974a3bb",
-    "project_commit_hash": "5d83cad767c80b914e1a9df906ee36d39974a3bb",
+    "project_version": "a75efd03d2eb422f3b9ebff98ff35bacab8fd54a",
+    "project_commit_hash": "a75efd03d2eb422f3b9ebff98ff35bacab8fd54a",
     "project_tag": null,
-    "project_commit_date": "1774218912",
+    "project_commit_date": "1774305507",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 419,
-    "number_of_classes_or_interfaces": 855,
-    "number_of_methods": 1298,
-    "number_of_data_fields": 3341,
-    "number_of_method_parameters": 1445
+    "number_of_files": 432,
+    "number_of_classes_or_interfaces": 888,
+    "number_of_methods": 1314,
+    "number_of_data_fields": 3440,
+    "number_of_method_parameters": 1456
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -915,6 +915,2702 @@
       "data_clump_type_additional": {
         "cluster_id": 2,
         "cluster_type": 1
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint",
+      "from_class_or_interface_name": "RoutePoint",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint",
+      "to_class_or_interface_name": "RoutePoint",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/lat": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/lat",
+          "name": "lat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lat",
+            "name": "lat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 95,
+              "startColumn": 2,
+              "endLine": 95,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 14
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/lng": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/lng",
+          "name": "lng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lng",
+            "name": "lng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 96,
+              "startColumn": 2,
+              "endLine": 96,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 14
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/altitude": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/altitude",
+          "name": "altitude",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/altitude",
+            "name": "altitude",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 97,
+              "startColumn": 2,
+              "endLine": 97,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 26
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/speed": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/speed",
+          "name": "speed",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/speed",
+            "name": "speed",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 98,
+              "startColumn": 2,
+              "endLine": 98,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 23
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/timestamp": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/timestamp",
+          "name": "timestamp",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/timestamp",
+            "name": "timestamp",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 99,
+              "startColumn": 2,
+              "endLine": 99,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
+      "from_class_or_interface_name": "RunStats",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats",
+      "to_class_or_interface_name": "RunStats",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/distanceKm": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/distanceKm",
+          "name": "distanceKm",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/distanceKm",
+            "name": "distanceKm",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 103,
+              "startColumn": 2,
+              "endLine": 103,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 21
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/durationSeconds": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/durationSeconds",
+          "name": "durationSeconds",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/durationSeconds",
+            "name": "durationSeconds",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 104,
+              "startColumn": 2,
+              "endLine": 104,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 26
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/paceMinPerKm": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/paceMinPerKm",
+          "name": "paceMinPerKm",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/paceMinPerKm",
+            "name": "paceMinPerKm",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 105,
+              "startColumn": 2,
+              "endLine": 105,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 2,
+            "endLine": 22,
+            "endColumn": 23
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 106,
+              "startColumn": 2,
+              "endLine": 106,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 107,
+              "startColumn": 2,
+              "endLine": 107,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 108,
+              "startColumn": 2,
+              "endLine": 108,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/kcal": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/kcal",
+          "name": "kcal",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/kcal",
+            "name": "kcal",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 109,
+              "startColumn": 2,
+              "endLine": 109,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 15
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/steps": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/steps",
+          "name": "steps",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/steps",
+            "name": "steps",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 110,
+              "startColumn": 2,
+              "endLine": 110,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 16
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/elevationGainM": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/elevationGainM",
+          "name": "elevationGainM",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationGainM",
+            "name": "elevationGainM",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 111,
+              "startColumn": 2,
+              "endLine": 111,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 2,
+            "endLine": 28,
+            "endColumn": 25
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/elevationLossM": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/elevationLossM",
+          "name": "elevationLossM",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationLossM",
+            "name": "elevationLossM",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 112,
+              "startColumn": 2,
+              "endLine": 112,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 25
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/fluidNeedsMl": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/fluidNeedsMl",
+          "name": "fluidNeedsMl",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/fluidNeedsMl",
+            "name": "fluidNeedsMl",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 113,
+              "startColumn": 2,
+              "endLine": 113,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps",
+      "from_class_or_interface_name": "MenuItemProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/AppDrawer/types.ts",
+      "to_class_or_interface_key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem",
+      "to_class_or_interface_name": "DrawerItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/label": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 45,
+            "startColumn": 9,
+            "endLine": 45,
+            "endColumn": 23
+          }
+        },
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/hasUnread": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/hasUnread",
+          "name": "hasUnread",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/hasUnread",
+            "name": "hasUnread",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 52,
+            "startColumn": 9,
+            "endLine": 52,
+            "endColumn": 29
+          }
+        },
+        "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/activeColor": {
+          "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/activeColor",
+          "name": "activeColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/activeColor",
+            "name": "activeColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 53,
+            "startColumn": 9,
+            "endLine": 53,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 5,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType",
+      "from_class_or_interface_name": "ModalContextType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType",
+      "to_class_or_interface_name": "ModalContextType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/open": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/open",
+          "name": "open",
+          "type": "(content: ReactNode, options?: ModalOptions) => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/open",
+            "name": "open",
+            "type": "(content: ReactNode, options?: ModalOptions) => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 61
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 9,
+            "endLine": 20,
+            "endColumn": 68
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/close": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/close",
+          "name": "close",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/close",
+            "name": "close",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 9,
+            "endLine": 21,
+            "endColumn": 27
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/openAndDiscardOthers": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/openAndDiscardOthers",
+          "name": "openAndDiscardOthers",
+          "type": "(content: ReactNode, options?: ModalOptions) => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/openAndDiscardOthers",
+            "name": "openAndDiscardOthers",
+            "type": "(content: ReactNode, options?: ModalOptions) => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 2,
+              "endLine": 22,
+              "endColumn": 77
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 9,
+            "endLine": 22,
+            "endColumn": 84
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/closeAll": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/closeAll",
+          "name": "closeAll",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/closeAll",
+            "name": "closeAll",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 9,
+            "endLine": 23,
+            "endColumn": 30
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleheaderBackgroundColoroverlayStyle": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleheaderBackgroundColoroverlayStyle",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
+      "from_class_or_interface_name": "ModalOptions",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
+      "to_class_or_interface_name": "ModalOptions",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
+          "name": "backgroundStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
+            "name": "backgroundStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 9,
+            "endLine": 7,
+            "endColumn": 31
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor",
+          "name": "headerBackgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor",
+            "name": "headerBackgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 33
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 9,
+            "endLine": 8,
+            "endColumn": 40
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle",
+          "name": "overlayStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle",
+            "name": "overlayStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 9,
+            "endLine": 9,
+            "endColumn": 28
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 7,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-contentbackgroundStyleoverlayStyleheaderBackgroundColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-contentbackgroundStyleoverlayStyleheaderBackgroundColor",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem",
+      "from_class_or_interface_name": "ModalStackItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem",
+      "to_class_or_interface_name": "ModalStackItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/content": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/content",
+          "name": "content",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/content",
+            "name": "content",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 9,
+            "endLine": 13,
+            "endColumn": 28
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle",
+          "name": "backgroundStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle",
+            "name": "backgroundStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 9,
+            "endLine": 14,
+            "endColumn": 30
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle",
+          "name": "overlayStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle",
+            "name": "overlayStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 9,
+            "endLine": 15,
+            "endColumn": 27
+          }
+        },
+        "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/headerBackgroundColor": {
+          "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/headerBackgroundColor",
+          "name": "headerBackgroundColor",
+          "type": "string | undefined",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/headerBackgroundColor",
+            "name": "headerBackgroundColor",
+            "type": "string | undefined",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 44
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 9,
+            "endLine": 16,
+            "endColumn": 51
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/MyMap/MyMapHelper.tsx-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/MyMap/MyMapHelper.tsx-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/MyMap/MyMapHelper.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps",
+      "from_class_or_interface_name": "MyMapProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps",
+      "to_class_or_interface_name": "MyMapProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialCenter": {
+          "key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialCenter",
+          "name": "initialCenter",
+          "type": "{ lat: number; lng: number; }",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialCenter",
+            "name": "initialCenter",
+            "type": "{ lat: number; lng: number; }",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 47
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 46
+          }
+        },
+        "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch": {
+          "key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch",
+          "name": "initialPitch",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch",
+            "name": "initialPitch",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 24
+          }
+        },
+        "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/loadingText": {
+          "key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/loadingText",
+          "name": "loadingText",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/loadingText",
+            "name": "loadingText",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx-apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps-packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps-titlebackgroundColorchildrenuseFlatListdataListHeaderComponentListFooterComponentshowsVerticalScrollIndicatorkeyboardShouldPersistTapsdisableHorizontalPadding": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx-apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps-packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps-titlebackgroundColorchildrenuseFlatListdataListHeaderComponentListFooterComponentshowsVerticalScrollIndicatorkeyboardShouldPersistTapsdisableHorizontalPadding",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps",
+      "from_class_or_interface_name": "MyScrollViewModalProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MyScrollViewModal/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps",
+      "to_class_or_interface_name": "MyScrollViewModalProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/title": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 3,
+            "endLine": 8,
+            "endColumn": 18
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/backgroundColor": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 3,
+            "endLine": 10,
+            "endColumn": 28
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/children": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/children",
+          "name": "children",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/children",
+            "name": "children",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 3,
+            "endLine": 11,
+            "endColumn": 24
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/useFlatList": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/useFlatList",
+          "name": "useFlatList",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/useFlatList",
+            "name": "useFlatList",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 3,
+            "endLine": 13,
+            "endColumn": 25
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/data": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/data",
+          "name": "data",
+          "type": "any[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/data",
+            "name": "data",
+            "type": "any[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 3,
+            "endLine": 14,
+            "endColumn": 16
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/ListHeaderComponent": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/ListHeaderComponent",
+          "name": "ListHeaderComponent",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/ListHeaderComponent",
+            "name": "ListHeaderComponent",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 34
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 3,
+            "endLine": 17,
+            "endColumn": 35
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/ListFooterComponent": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/ListFooterComponent",
+          "name": "ListFooterComponent",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/ListFooterComponent",
+            "name": "ListFooterComponent",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 34
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 3,
+            "endLine": 18,
+            "endColumn": 35
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/showsVerticalScrollIndicator": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/showsVerticalScrollIndicator",
+          "name": "showsVerticalScrollIndicator",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/showsVerticalScrollIndicator",
+            "name": "showsVerticalScrollIndicator",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 41
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 3,
+            "endLine": 20,
+            "endColumn": 42
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/keyboardShouldPersistTaps": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/keyboardShouldPersistTaps",
+          "name": "keyboardShouldPersistTaps",
+          "type": "\"always\" | \"never\" | \"handled\"",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/keyboardShouldPersistTaps",
+            "name": "keyboardShouldPersistTaps",
+            "type": "\"always\" | \"never\" | \"handled\"",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 61
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 62
+          }
+        },
+        "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/disableHorizontalPadding": {
+          "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/disableHorizontalPadding",
+          "name": "disableHorizontalPadding",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/disableHorizontalPadding",
+            "name": "disableHorizontalPadding",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 3,
+            "endLine": 23,
+            "endColumn": 38
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint",
+      "from_class_or_interface_name": "RoutePoint",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint",
+      "to_class_or_interface_name": "RoutePoint",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lat": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lat",
+          "name": "lat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/lat",
+            "name": "lat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 95,
+            "startColumn": 2,
+            "endLine": 95,
+            "endColumn": 14
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lng": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lng",
+          "name": "lng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/lng",
+            "name": "lng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 14
+            }
+          },
+          "position": {
+            "startLine": 96,
+            "startColumn": 2,
+            "endLine": 96,
+            "endColumn": 14
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/altitude": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/altitude",
+          "name": "altitude",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/altitude",
+            "name": "altitude",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 97,
+            "startColumn": 2,
+            "endLine": 97,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/speed": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/speed",
+          "name": "speed",
+          "type": "number | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/speed",
+            "name": "speed",
+            "type": "number | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 98,
+            "startColumn": 2,
+            "endLine": 98,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/timestamp": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/timestamp",
+          "name": "timestamp",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint/memberField/timestamp",
+            "name": "timestamp",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 99,
+            "startColumn": 2,
+            "endLine": 99,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 3,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats",
+      "from_class_or_interface_name": "RunStats",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
+      "to_class_or_interface_name": "RunStats",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/distanceKm": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/distanceKm",
+          "name": "distanceKm",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/distanceKm",
+            "name": "distanceKm",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 103,
+            "startColumn": 2,
+            "endLine": 103,
+            "endColumn": 21
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/durationSeconds": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/durationSeconds",
+          "name": "durationSeconds",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/durationSeconds",
+            "name": "durationSeconds",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 104,
+            "startColumn": 2,
+            "endLine": 104,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/paceMinPerKm": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/paceMinPerKm",
+          "name": "paceMinPerKm",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/paceMinPerKm",
+            "name": "paceMinPerKm",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 2,
+              "endLine": 22,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 105,
+            "startColumn": 2,
+            "endLine": 105,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 106,
+            "startColumn": 2,
+            "endLine": 106,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 107,
+            "startColumn": 2,
+            "endLine": 107,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 108,
+            "startColumn": 2,
+            "endLine": 108,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/kcal": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/kcal",
+          "name": "kcal",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/kcal",
+            "name": "kcal",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 15
+            }
+          },
+          "position": {
+            "startLine": 109,
+            "startColumn": 2,
+            "endLine": 109,
+            "endColumn": 15
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/steps": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/steps",
+          "name": "steps",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/steps",
+            "name": "steps",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 110,
+            "startColumn": 2,
+            "endLine": 110,
+            "endColumn": 16
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationGainM": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationGainM",
+          "name": "elevationGainM",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/elevationGainM",
+            "name": "elevationGainM",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 111,
+            "startColumn": 2,
+            "endLine": 111,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationLossM": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationLossM",
+          "name": "elevationLossM",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/elevationLossM",
+            "name": "elevationLossM",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 112,
+            "startColumn": 2,
+            "endLine": 112,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/fluidNeedsMl": {
+          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/fluidNeedsMl",
+          "name": "fluidNeedsMl",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/fluidNeedsMl",
+            "name": "fluidNeedsMl",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 113,
+            "startColumn": 2,
+            "endLine": 113,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/AppDrawer/types.ts",
+      "from_class_or_interface_key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem",
+      "from_class_or_interface_name": "DrawerItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps",
+      "to_class_or_interface_name": "MenuItemProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/label": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/label",
+          "name": "label",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/label",
+            "name": "label",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 45,
+              "startColumn": 9,
+              "endLine": 45,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/hasUnread": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/hasUnread",
+          "name": "hasUnread",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/hasUnread",
+            "name": "hasUnread",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 52,
+              "startColumn": 9,
+              "endLine": 52,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/activeColor": {
+          "key": "packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem/memberField/activeColor",
+          "name": "activeColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps/memberField/activeColor",
+            "name": "activeColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 53,
+              "startColumn": 9,
+              "endLine": 53,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 5,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType",
+      "from_class_or_interface_name": "ModalContextType",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType",
+      "to_class_or_interface_name": "ModalContextType",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/open": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/open",
+          "name": "open",
+          "type": "(content: ReactNode, options?: ModalOptions) => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/open",
+            "name": "open",
+            "type": "(content: ReactNode, options?: ModalOptions) => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 9,
+              "endLine": 20,
+              "endColumn": 68
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 61
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/close": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/close",
+          "name": "close",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/close",
+            "name": "close",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 9,
+              "endLine": 21,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/openAndDiscardOthers": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/openAndDiscardOthers",
+          "name": "openAndDiscardOthers",
+          "type": "(content: ReactNode, options?: ModalOptions) => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/openAndDiscardOthers",
+            "name": "openAndDiscardOthers",
+            "type": "(content: ReactNode, options?: ModalOptions) => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 9,
+              "endLine": 22,
+              "endColumn": 84
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 2,
+            "endLine": 22,
+            "endColumn": 77
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/closeAll": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/closeAll",
+          "name": "closeAll",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType/memberField/closeAll",
+            "name": "closeAll",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 9,
+              "endLine": 23,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleheaderBackgroundColoroverlayStyle": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions-backgroundStyleheaderBackgroundColoroverlayStyle",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
+      "from_class_or_interface_name": "ModalOptions",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions",
+      "to_class_or_interface_name": "ModalOptions",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
+          "name": "backgroundStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/backgroundStyle",
+            "name": "backgroundStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 9,
+              "endLine": 7,
+              "endColumn": 31
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor",
+          "name": "headerBackgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/headerBackgroundColor",
+            "name": "headerBackgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 9,
+              "endLine": 8,
+              "endColumn": 40
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 33
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle",
+          "name": "overlayStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalOptions/memberField/overlayStyle",
+            "name": "overlayStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 9,
+              "endLine": 9,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 7,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-contentbackgroundStyleoverlayStyleheaderBackgroundColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem-contentbackgroundStyleoverlayStyleheaderBackgroundColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem",
+      "from_class_or_interface_name": "ModalStackItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem",
+      "to_class_or_interface_name": "ModalStackItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/content": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/content",
+          "name": "content",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/content",
+            "name": "content",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 9,
+              "endLine": 13,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 21
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle",
+          "name": "backgroundStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/backgroundStyle",
+            "name": "backgroundStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 9,
+              "endLine": 14,
+              "endColumn": 30
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle",
+          "name": "overlayStyle",
+          "type": "any",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/overlayStyle",
+            "name": "overlayStyle",
+            "type": "any",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 9,
+              "endLine": 15,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/headerBackgroundColor": {
+          "key": "packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/headerBackgroundColor",
+          "name": "headerBackgroundColor",
+          "type": "string | undefined",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalStackItem/memberField/headerBackgroundColor",
+            "name": "headerBackgroundColor",
+            "type": "string | undefined",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 9,
+              "endLine": 16,
+              "endColumn": 51
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 44
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 8,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-mapRefbackgroundColoriconColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-mapRefbackgroundColoriconColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps",
+      "from_class_or_interface_name": "MapLocationButtonProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps",
+      "to_class_or_interface_name": "MapNorthButtonProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/mapRef": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/mapRef",
+          "name": "mapRef",
+          "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/mapRef",
+            "name": "mapRef",
+            "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 46
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/backgroundColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/iconColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/iconColor",
+          "name": "iconColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/iconColor",
+            "name": "iconColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 2,
+            "endLine": 28,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-mapRefbackgroundColoriconColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MapOverlayButtons/index.tsx-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps-packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps-mapRefbackgroundColoriconColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps",
+      "from_class_or_interface_name": "MapNorthButtonProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/MapOverlayButtons/index.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps",
+      "to_class_or_interface_name": "MapLocationButtonProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/mapRef": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/mapRef",
+          "name": "mapRef",
+          "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/mapRef",
+            "name": "mapRef",
+            "type": "React.RefObject<import(\"packages/common-ui/src/components/MyMap/MyMapHelper\").MyMapHandle>",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 46
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/backgroundColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/iconColor": {
+          "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapNorthButtonProps/memberField/iconColor",
+          "name": "iconColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/MapOverlayButtons/index.tsx/interface/MapLocationButtonProps/memberField/iconColor",
+            "name": "iconColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyMap/MyMapHelper.tsx-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyMap/MyMapHelper.tsx-packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps-initialCenterinitialPitchloadingText",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps",
+      "from_class_or_interface_name": "MyMapProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/MyMap/MyMapHelper.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps",
+      "to_class_or_interface_name": "MyMapProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialCenter": {
+          "key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialCenter",
+          "name": "initialCenter",
+          "type": "{ lat: number; lng: number; }",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialCenter",
+            "name": "initialCenter",
+            "type": "{ lat: number; lng: number; }",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 46
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 47
+          }
+        },
+        "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch": {
+          "key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch",
+          "name": "initialPitch",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/initialPitch",
+            "name": "initialPitch",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/loadingText": {
+          "key": "packages/common-ui/src/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/loadingText",
+          "name": "loadingText",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyMap/MyMapHelper.tsx/interface/MyMapProps/memberField/loadingText",
+            "name": "loadingText",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 9,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/MyScrollViewModal/index.tsx-packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps-apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps-titlebackgroundColorchildrenuseFlatListdataListHeaderComponentListFooterComponentshowsVerticalScrollIndicatorkeyboardShouldPersistTapsdisableHorizontalPadding": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/MyScrollViewModal/index.tsx-packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps-apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps-titlebackgroundColorchildrenuseFlatListdataListHeaderComponentListFooterComponentshowsVerticalScrollIndicatorkeyboardShouldPersistTapsdisableHorizontalPadding",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/MyScrollViewModal/index.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps",
+      "from_class_or_interface_name": "MyScrollViewModalProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps",
+      "to_class_or_interface_name": "MyScrollViewModalProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/title": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 3,
+              "endLine": 8,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 17
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/backgroundColor": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/backgroundColor",
+          "name": "backgroundColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/backgroundColor",
+            "name": "backgroundColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 3,
+              "endLine": 10,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/children": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/children",
+          "name": "children",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/children",
+            "name": "children",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 3,
+              "endLine": 11,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/useFlatList": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/useFlatList",
+          "name": "useFlatList",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/useFlatList",
+            "name": "useFlatList",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 3,
+              "endLine": 13,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/data": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/data",
+          "name": "data",
+          "type": "any[]",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/data",
+            "name": "data",
+            "type": "any[]",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 3,
+              "endLine": 14,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 15
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/ListHeaderComponent": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/ListHeaderComponent",
+          "name": "ListHeaderComponent",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/ListHeaderComponent",
+            "name": "ListHeaderComponent",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 3,
+              "endLine": 17,
+              "endColumn": 35
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 34
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/ListFooterComponent": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/ListFooterComponent",
+          "name": "ListFooterComponent",
+          "type": "ReactNode",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/ListFooterComponent",
+            "name": "ListFooterComponent",
+            "type": "ReactNode",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 3,
+              "endLine": 18,
+              "endColumn": 35
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 34
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/showsVerticalScrollIndicator": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/showsVerticalScrollIndicator",
+          "name": "showsVerticalScrollIndicator",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/showsVerticalScrollIndicator",
+            "name": "showsVerticalScrollIndicator",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 3,
+              "endLine": 20,
+              "endColumn": 42
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 41
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/keyboardShouldPersistTaps": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/keyboardShouldPersistTaps",
+          "name": "keyboardShouldPersistTaps",
+          "type": "\"always\" | \"never\" | \"handled\"",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/keyboardShouldPersistTaps",
+            "name": "keyboardShouldPersistTaps",
+            "type": "\"always\" | \"never\" | \"handled\"",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 3,
+              "endLine": 21,
+              "endColumn": 62
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 61
+          }
+        },
+        "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/disableHorizontalPadding": {
+          "key": "packages/common-ui/src/components/MyScrollViewModal/index.tsx/interface/MyScrollViewModalProps/memberField/disableHorizontalPadding",
+          "name": "disableHorizontalPadding",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/MyScrollViewModal/MyScrollViewModal.tsx/interface/MyScrollViewModalProps/memberField/disableHorizontalPadding",
+            "name": "disableHorizontalPadding",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 3,
+              "endLine": 23,
+              "endColumn": 38
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 37
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 2
       }
     }
   }

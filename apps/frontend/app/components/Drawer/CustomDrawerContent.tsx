@@ -1,9 +1,8 @@
-import { Image, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect } from 'react';
 import { AntDesign, Entypo, EvilIcons, Feather, FontAwesome, FontAwesome5, FontAwesome6, Foundation, Ionicons, MaterialCommunityIcons, Octicons, SimpleLineIcons, Zocial } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useTheme } from '@/hooks/useTheme';
-import { styles } from './styles';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'expo-router';
@@ -16,9 +15,7 @@ import { getTitleFromTranslation } from '@/helper/resourceHelper';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { IconProps } from '@expo/vector-icons/build/createIconSet';
-import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { ServerInfoHelper } from '@/helper/ServerInfoHelper';
 import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
@@ -26,6 +23,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
+import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -52,23 +50,24 @@ interface MenuItemProps {
         action?: () => void;
         position: number;
         hasUnread?: boolean;
+        activeColor?: string;
 }
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation, state }) => {
 	const { translate, translateDynamic } = useLanguage();
 	const toast = useToast();
-	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const router = useRouter();
         const wikisHelper = new WikisHelper();
         const activeIndex = state.index;
-        const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
+        const { isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
         const { chats } = useAppSelector((state) => state.chats);
-        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis, selectedTheme: mode } = useAppSelector((state) => state.settings);
+        const { serverInfo, primaryColor: projectColor, language, appSettings, wikis } = useAppSelector((state) => state.settings);
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const { openConfirmLogoutModal } = useConfirmLogoutModal();
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
+        const { theme } = useTheme();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -77,79 +76,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : projectColor;
 	const news_area_color = appSettings?.news_area_color ? appSettings?.news_area_color : projectColor;
 
-	const getContrastColor = (routeName: string) => {
-		let backgroundColor = projectColor;
-
+	const getRouteActiveColor = (routeName: string): string | undefined => {
 		switch (routeName) {
-			case 'account-balance/index':
-				backgroundColor = balance_area_color;
-				break;
-			case 'course-timetable/index':
-				backgroundColor = course_timetable_area_color;
-				break;
-			case 'campus':
-				backgroundColor = campus_area_color;
-				break;
-			case 'foodoffers':
-				backgroundColor = foods_area_color;
-				break;
-			case 'housing':
-				backgroundColor = housing_area_color;
-				break;
-			case 'news/index':
-				backgroundColor = news_area_color;
-				break;
-			default:
-				backgroundColor = projectColor;
+			case 'account-balance/index': return balance_area_color;
+			case 'course-timetable/index': return course_timetable_area_color;
+			case 'campus': return campus_area_color;
+			case 'foodoffers': return foods_area_color;
+			case 'housing': return housing_area_color;
+			case 'news/index': return news_area_color;
+			default: return projectColor;
 		}
-
-		return myContrastColor(backgroundColor, theme, mode === 'dark');
 	};
-
-	const isActive = (routeName: string) => {
-		const activeRoute = state.routes[activeIndex].name;
-		return activeRoute === routeName;
-	};
-
-	const getMenuItemStyle = (routeName: string) => {
-		let activeBackgroundColor = 'transparent';
-
-		if (isActive(routeName)) {
-			switch (routeName) {
-				case 'account-balance/index':
-					activeBackgroundColor = balance_area_color;
-					break;
-				case 'course-timetable/index':
-					activeBackgroundColor = course_timetable_area_color;
-					break;
-				case 'campus':
-					activeBackgroundColor = campus_area_color;
-					break;
-				case 'foodoffers':
-					activeBackgroundColor = foods_area_color;
-					break;
-				case 'housing':
-					activeBackgroundColor = housing_area_color;
-					break;
-				case 'news/index':
-					activeBackgroundColor = news_area_color;
-					break;
-				default:
-					activeBackgroundColor = projectColor;
-					break;
-			}
-		}
-
-		return {
-			...styles.menuItem,
-			backgroundColor: activeBackgroundColor,
-		};
-	};
-
-	const getMenuLabelStyle = (routeName: string) => ({
-		...styles.menuLabel,
-		color: isActive(routeName) ? getContrastColor(routeName) : theme.inactiveText,
-	});
 
         const openInBrowser = async (url: string) => {
                 try {
@@ -198,6 +135,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'foodoffers',
 				route: 'foodoffers',
 				position: 1,
+				activeColor: foods_area_color,
 			});
 		}
 
@@ -209,6 +147,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'account-balance/index',
 				route: 'account-balance/index',
 				position: 3,
+				activeColor: balance_area_color,
 			});
 		}
 
@@ -220,6 +159,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'campus',
 				route: 'campus',
 				position: 5,
+				activeColor: campus_area_color,
 			});
 		}
 
@@ -231,6 +171,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'housing',
 				route: 'housing',
 				position: 6,
+				activeColor: housing_area_color,
 			});
 		}
 
@@ -242,6 +183,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 				activeKey: 'news/index',
 				route: 'news/index',
 				position: 7,
+				activeColor: news_area_color,
 			});
 		}
 
@@ -253,6 +195,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 activeKey: 'course-timetable/index',
                                 route: 'course-timetable/index',
                                 position: 8,
+                                activeColor: course_timetable_area_color,
                         });
                 }
 
@@ -351,94 +294,83 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		return menuItems;
 	};
 
-	return (
-		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
-			<ScrollView style={{ ...styles.container, backgroundColor: theme.drawerBg }} contentContainerStyle={styles.contentContainer}>
-				<View style={styles.content}>
-					<TouchableOpacity style={styles.header} onPress={() => navigation.navigate('foodoffers')}>
-						<View style={styles.logoContainer}>
-							<Image
-								source={{
-									uri: getImageUrl(serverInfo?.info?.project?.project_logo) ?? undefined,
-								}}
-								style={styles.logo}
-							/>
-						</View>
-						<Text style={{ ...styles.heading, color: theme.drawerHeading }}>{ServerInfoHelper.getServerName(serverInfo)}</Text>
-					</TouchableOpacity>
-                                        <View style={styles.menuContainer}>
-                                                {generateMenuItems().map((item, index) => (
-                                                        <TouchableOpacity
-                                                                key={index}
-                                                                style={getMenuItemStyle(item.activeKey)}
-                                                                onPress={() => (item.route ? navigation.navigate(item.route) : item.action?.())}
-                                                        >
-                                                                <View style={styles.menuIconWrapper}>
-                                                                        <item.iconLibName
-                                                                                name={item.iconName}
-                                                                                size={24}
-                                                                                color={isActive(item.activeKey) ? getContrastColor(item.activeKey) : theme.inactiveIcon}
-                                                                        />
-                                                                        {item.hasUnread ? (
-                                                                                <View
-                                                                                        style={[
-                                                                                                styles.notificationDot,
-                                                                                                {
-                                                                                                        backgroundColor: theme.accent,
-                                                                                                        borderColor: theme.drawerBg,
-                                                                                                },
-                                                                                        ]}
-                                                                                />
-                                                                        ) : null}
-                                                                </View>
-                                                                <Text style={getMenuLabelStyle(item.activeKey)}>{item.label}</Text>
-                                                        </TouchableOpacity>
-                                                ))}
-                                                <View style={styles.divider} />
-						<TouchableOpacity style={getMenuItemStyle('settings/index')} onPress={() => navigation.navigate('settings/index')}>
-							<View style={styles.menuIconWrapper}>
-								<Ionicons name="settings-outline" size={28} color={isActive('settings/index') ? getContrastColor('settings/index') : theme.inactiveIcon} />
-							</View>
-							<Text style={getMenuLabelStyle('settings/index')}>{translate(TranslationKeys.settings)}</Text>
-						</TouchableOpacity>
-                                                <TouchableOpacity
-                                                        style={getMenuItemStyle('faq-living/index')}
-                                                        onPress={openConfirmLogoutModal}
-                                                >
-							<View style={styles.menuIconWrapper}>
-								<MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
-							</View>
-							<Text style={getMenuLabelStyle('faq-living/index')}>{logoutButtonLabel}</Text>
-                                                </TouchableOpacity>
-                                                <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
-                                        </View>
-                                </View>
+	const toDrawerItems = (menuProps: MenuItemProps[]): DrawerItem[] =>
+		menuProps.map((item) => ({
+			key: item.activeKey,
+			label: item.label,
+			renderIcon: (_, color) => <item.iconLibName name={item.iconName as never} size={24} color={color} />,
+			onPress: () => (item.route ? navigation.navigate(item.route) : item.action?.()),
+			hasUnread: item.hasUnread,
+			activeColor: item.activeColor,
+		}));
 
-				<View style={styles.footer}>
-					{wikis &&
-						wikis?.map((wiki: any, index: number) => {
-							if (wiki?.custom_id && !wiki?.url && wiki?.show_in_drawer_as_bottom_item) {
-								return (
-									<React.Fragment key={index}>
-										<TouchableOpacity
-											onPress={() =>
-												router.push({
-													pathname: '/wikis',
-													params: { custom_id: wiki?.custom_id },
-												})
-											}
-										>
-											<Text style={{ ...styles.link, color: theme.drawer.link }}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
-										</TouchableOpacity>
-										{index + 1 < wikis?.length - 1 && <Text style={{ ...styles.bar, color: theme.drawer.link }}>|</Text>}
-									</React.Fragment>
-								);
-							}
-						})}
-				</View>
-			</ScrollView>
-		</SafeAreaView>
+	const bottomItems: DrawerItem[] = [
+		{
+			key: 'settings/index',
+			label: translate(TranslationKeys.settings),
+			renderIcon: (_, color) => <Ionicons name="settings-outline" size={28} color={color} />,
+			onPress: () => navigation.navigate('settings/index'),
+			activeColor: getRouteActiveColor('settings/index'),
+		},
+		{
+			key: 'logout',
+			label: logoutButtonLabel,
+			renderIcon: (_, color) => <MaterialCommunityIcons name="logout" size={28} color={color} />,
+			onPress: openConfirmLogoutModal,
+		},
+	];
+
+	const footerContent = (
+		<>
+			{wikis &&
+				wikis?.map((wiki: any, index: number) => {
+					if (wiki?.custom_id && !wiki?.url && wiki?.show_in_drawer_as_bottom_item) {
+						return (
+							<React.Fragment key={index}>
+								<TouchableOpacity
+									onPress={() =>
+										router.push({
+											pathname: '/wikis',
+											params: { custom_id: wiki?.custom_id },
+										})
+									}
+								>
+									<Text style={[styles.link, { color: theme.drawer.link }]}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
+								</TouchableOpacity>
+								{index + 1 < wikis?.length - 1 && <Text style={[styles.bar, { color: theme.drawer.divider }]}>|</Text>}
+							</React.Fragment>
+						);
+					}
+				})}
+			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
+		</>
+	);
+
+	const activeKey = state.routes[activeIndex].name;
+	const logoUri = getImageUrl(serverInfo?.info?.project?.project_logo) ?? undefined;
+
+	return (
+		<AppDrawer
+			logoSource={logoUri ? { uri: logoUri } : undefined}
+			title={ServerInfoHelper.getServerName(serverInfo)}
+			onLogoPress={() => navigation.navigate('foodoffers')}
+			items={toDrawerItems(generateMenuItems())}
+			bottomItems={bottomItems}
+			activeKey={activeKey}
+			primaryColor={projectColor}
+			footerContent={footerContent}
+		/>
 	);
 };
 
 export default CustomDrawerContent;
+
+const styles = StyleSheet.create({
+	link: {
+		fontSize: 14,
+		paddingHorizontal: 2,
+	},
+	bar: {
+		marginHorizontal: 10,
+	},
+});

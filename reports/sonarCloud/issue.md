@@ -5,214 +5,214 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 0 | 0 |
-| 🔧 Maintainability | 1861 | 48 |
+| 🐛 Reliability | 6799 | 48 |
+| 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 1863 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16801 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
 ## 🔒 Security (2/2)
 
 - **Change this action to not use user-controlled data directly in a run block.**
-  .github/actions/geonexia-expo-update/action.yml:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L49
+  .github/actions/geonexia-expo-update/action.yml:164
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
 - **Change this action to not use user-controlled data directly in a run block.**
-  .github/actions/geonexia-expo-update/action.yml:49
-  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L49
+  .github/actions/geonexia-expo-update/action.yml:164
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-## 🔧 Maintainability (48/1861)
+## 🐛 Reliability (48/6799)
 
-- **This assertion is unnecessary since it does not change the type of the expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:62
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts#L62
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx#L140
 
-- **This assertion is unnecessary since it does not change the type of the expression.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts:80
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodParserInterface.ts#L80
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/geonexia/frontend/app/activity/index.tsx:241
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activity/index.tsx#L241
 
-- **Prefer using an optional chain expression instead, as it's more concise and easier to read.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts:648
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts#L648
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:242
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L242
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:95
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L95
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:243
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L243
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:166
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L166
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:261
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L261
 
-- **Member 'config' is never reassigned; mark it as `readonly`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:45
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L45
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:307
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L307
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:47
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L47
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/h3core.js:307
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L307
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:48
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L48
+- **Remove this "===" check; it will always be false. Did you mean to use "=="?**
+  apps/geonexia/frontend/helpers/h3/h3core.js:785
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L785
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:70
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L70
+- **Use `Math.trunc` instead of `>> 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:188
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L188
 
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:131
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L131
+- **Use `Math.trunc` instead of `>> 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:191
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L191
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:143
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L143
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:200
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
 
-- **Handle this exception or don't catch it at all.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:167
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L167
+- **Use `Math.trunc` instead of `~~`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:200
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:193
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L193
+- **Use `Math.trunc` instead of `~~`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:200
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L200
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:230
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L230
+- **Use `Math.trunc` instead of `>> 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:217
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L217
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:246
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L246
+- **Use `Math.trunc` instead of `>> 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:219
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L219
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:273
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L273
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:312
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L312
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:299
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L299
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:317
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L317
 
-- **Prefer `return value` over `return Promise.resolve(value)`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts:455
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerConnector.ts#L455
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:327
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L327
 
-- **Prefer `node:path` over `path`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerFileContentReader.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerFileContentReader.ts#L1
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:330
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L330
 
-- **Prefer `node:fs` over `fs`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerFileContentReader.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/helper/maxManager/MaxManagerFileContentReader.ts#L2
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:344
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L344
 
-- **Unexpected lexical declaration in case block.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:37
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L37
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:346
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L346
 
-- **Unexpected lexical declaration in case block.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:38
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L38
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:597
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L597
 
-- **Unexpected lexical declaration in case block.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:41
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L41
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:616
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L616
 
-- **Unexpected lexical declaration in case block.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:46
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L46
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:618
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L618
 
-- **Unexpected lexical declaration in case block.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:53
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L53
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:621
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L621
 
-- **Unexpected lexical declaration in case block.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:73
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L73
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:640
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L640
 
-- **Replace this "switch" statement by "if" statements to increase readability.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts:70
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/index.ts#L70
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:687
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L687
 
-- **Expected a `for-of` loop instead of a `for` loop with this simple iteration.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts:30
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts#L30
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:688
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L688
 
-- **Remove this useless assignment to variable "hint".**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts:45
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts#L45
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:725
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L725
 
-- **Redundant double negation.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts:32
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts#L32
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:728
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L728
 
-- **Redundant double negation.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts:34
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTL1Parser.ts#L34
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:730
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L730
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTranslationFields.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/MarkingTranslationFields.ts#L2
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:733
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L733
 
-- **Unnecessary use of conditional expression for default assignment.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/FoodAndMarkingWebParserMuenster.ts:11
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/FoodAndMarkingWebParserMuenster.ts#L11
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:736
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L736
 
-- **Prefer `node:path` over `path`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/MaxManagerFileContentReaderMuenster.ts:1
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/MaxManagerFileContentReaderMuenster.ts#L1
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:740
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L740
 
-- **Prefer `node:fs` over `fs`.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/MaxManagerFileContentReaderMuenster.ts:2
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/muenster/MaxManagerFileContentReaderMuenster.ts#L2
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:741
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L741
 
-- **Rename class "FoodTL1Parser_RawReportTestReaderOsnabrueck" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts:3
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck.ts#L3
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:745
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L745
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts:8
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts#L8
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:746
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L746
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts:6
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts#L6
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:750
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L750
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts:9
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts#L9
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:752
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L752
 
-- **Make this public static property readonly.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts:61
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/osnabrueck/FoodTL1ParserOsnabrueck.ts#L61
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:754
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L754
 
-- **The signature '(item: DatabaseTypes.Markings, config: TranslationUpdateConfig<DatabaseTypes.MarkingsTranslations>): Promise<void>' of 'TranslationHelper.updateItemTranslations' is deprecated.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:950
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L950
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:755
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L755
 
-- **Remove this commented out code.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:138
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L138
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:756
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L756
 
-- **Complete the task associated to this "TODO" comment.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:225
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L225
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:758
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L758
 
-- **Complete the task associated to this "TODO" comment.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:260
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L260
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:759
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L759
 
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:277
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L277
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:759
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L759
 
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:324
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L324
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:759
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L759
 
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:372
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L372
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:760
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L760
 
-- **Unexpected `await` of a non-Promise (non-"Thenable") value.**
-  apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts:394
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts#L394
+- **Use `Math.trunc` instead of `| 0`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:761
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L761
 

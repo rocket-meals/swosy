@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function WelcomeScreen() {
+export default function HomeScreen() {
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<View style={styles.content}>
+				<Ionicons name="location-sharp" size={64} color="#2563eb" />
 				<Text style={styles.title}>Geonexia</Text>
 				<Text style={styles.subtitle}>Welcome</Text>
 			</View>
-		</SafeAreaView>
+		</View>
 	);
 }
 
