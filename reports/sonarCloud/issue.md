@@ -45,16 +45,16 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L52
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:614
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L614
+  apps/geonexia/frontend/app/index.tsx:626
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L626
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:615
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L615
+  apps/geonexia/frontend/app/index.tsx:627
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L627
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:528
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L528
+  apps/geonexia/frontend/app/index.tsx:540
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L540
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242

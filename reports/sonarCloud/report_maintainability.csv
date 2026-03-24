@@ -1,9 +1,10 @@
 Key,Message,Component,Line
+"AZ0iK_MvJ_uSqP-Ktx9P","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1372
 "AZ0h92ZqBBDVKv5Iflcn","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",237
-"AZ0h92ZqBBDVKv5Iflco","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1321
-"AZ0h5hfSFphZiB-rzBA0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",932
-"AZ0hKwO-lh6YZmF8bBA6","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",920
-"AZ0hKwO-lh6YZmF8bBA8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1285
+"AZ0h92ZqBBDVKv5Iflco","Refactor this function to reduce its Cognitive Complexity from 21 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1333
+"AZ0h5hfSFphZiB-rzBA0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",944
+"AZ0hKwO-lh6YZmF8bBA6","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",932
+"AZ0hKwO-lh6YZmF8bBA8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1297
 "AZ0g-E4sY2nYllnnSuWD","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",102
 "AZ0g-E4sY2nYllnnSuWE","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",147
 "AZ0g-E7-Y2nYllnnSuWF","'expo-router' imported multiple times.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",11
@@ -11,16 +12,16 @@ Key,Message,Component,Line
 "AZ0g-E7-Y2nYllnnSuWH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",232
 "AZ0g-E8wY2nYllnnSuWI","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",25
 "AZ0gvA-Mar6aFTbyyukA","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",60
-"AZ0gqxSuu7sWfngUT9HJ","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",817
-"AZ0gqxSuu7sWfngUT9HK","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",859
+"AZ0gqxSuu7sWfngUT9HJ","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",829
+"AZ0gqxSuu7sWfngUT9HK","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",871
 "AZ0gqyupu7sWfngUT9HL","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/components/QrCode/index.tsx",7
 "AZ0gqyupu7sWfngUT9HM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/QrCode/index.tsx",7
 "AZ0gqyupu7sWfngUT9HN","Use `export…from` to re-export `QrCodeEcl`.","rocket-meals_rocket-meals:packages/common-ui/src/components/QrCode/index.tsx",55
 "AZ0gqyupu7sWfngUT9HO","Use `export…from` to re-export `QrCodeProps`.","rocket-meals_rocket-meals:packages/common-ui/src/components/QrCode/index.tsx",56
-"AZ0gXN4d8BW5-kmhjssT","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",394
-"AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",614
-"AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",615
-"AZ0f20341Vggm5n3IPhF","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",744
+"AZ0gXN4d8BW5-kmhjssT","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",406
+"AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",626
+"AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",627
+"AZ0f20341Vggm5n3IPhF","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",756
 "AZ0flHc93b07Lomn1R-K","Prefer `Math.hypot(…)` over `Math.sqrt(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",200
 "AZ0flHc93b07Lomn1R-L","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",202
 "AZ0flHc93b07Lomn1R-N","Prefer `Math.hypot(…)` over `Math.sqrt(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",284
@@ -30,36 +31,36 @@ Key,Message,Component,Line
 "AZ0fd-MHapyM9SrSXIMN","Use `export…from` to re-export `SettingsListEditableProps`.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListEditable/SettingsListEditable.tsx",6
 "AZ0fd-icapyM9SrSXIMQ","Use `export…from` to re-export `SettingsListLikeDislikeFastProps`.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx",7
 "AZ0feAdTapyM9SrSXIMY","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:packages/common-ui/src/context/SettingsContext.tsx",17
-"AZ0fRcxE1nRAhM5Ur7uo","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1869
-"AZ0fRcxE1nRAhM5Ur7up","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1871
-"AZ0fRcxE1nRAhM5Ur7uq","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1877
-"AZ0fRcxE1nRAhM5Ur7ur","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1879
-"AZ0fRcxE1nRAhM5Ur7us","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1886
-"AZ0fRcxE1nRAhM5Ur7ut","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1886
+"AZ0fRcxE1nRAhM5Ur7uo","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1888
+"AZ0fRcxE1nRAhM5Ur7up","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1890
+"AZ0fRcxE1nRAhM5Ur7uq","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1896
+"AZ0fRcxE1nRAhM5Ur7ur","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1898
+"AZ0fRcxE1nRAhM5Ur7us","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1905
+"AZ0fRcxE1nRAhM5Ur7ut","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1905
 "AZ0feAb5apyM9SrSXIMW","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx",33
 "AZ0feAb5apyM9SrSXIMX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListSelectOption/SettingsListSelectOption.tsx",35
-"AZ0fKKJJdghgBKdKARgS","Refactor this function to reduce its Cognitive Complexity from 40 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",982
-"AZ0fKKJJdghgBKdKARgT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1804
-"AZ0eWxOWRvqNgnlDLcVw","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",451
-"AZ0eWxOWRvqNgnlDLcVx","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",489
-"AZ0eWxOWRvqNgnlDLcVy","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",495
-"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",528
-"AZ0eWxOWRvqNgnlDLcV0","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",582
-"AZ0eWxOWRvqNgnlDLcV1","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",582
-"AZ0eWxOWRvqNgnlDLcV2","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",622
-"AZ0eWxOWRvqNgnlDLcV3","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",624
-"AZ0eWxOWRvqNgnlDLcV4","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",626
-"AZ0eWxOWRvqNgnlDLcV5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",626
-"AZ0eWxOWRvqNgnlDLcV6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",628
-"AZ0eWxOWRvqNgnlDLcV7","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",632
-"AZ0eWxOWRvqNgnlDLcV8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",634
-"AZ0eWxOWRvqNgnlDLcV-","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",636
-"AZ0eWxOWRvqNgnlDLcV9","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",636
-"AZ0eWxOWRvqNgnlDLcV_","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",638
-"AZ0eWxOWRvqNgnlDLcWA","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",789
-"AZ0eWxOWRvqNgnlDLcWC","Remove this useless assignment to variable ""liveSpeedKmh"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1005
-"AZ0eWxOWRvqNgnlDLcWD","Remove this useless assignment to variable ""showGridAlways"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1023
-"AZ0eWxOWRvqNgnlDLcWE","Remove this useless assignment to variable ""h3Resolution"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1025
+"AZ0fKKJJdghgBKdKARgS","Refactor this function to reduce its Cognitive Complexity from 40 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",994
+"AZ0fKKJJdghgBKdKARgT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1823
+"AZ0eWxOWRvqNgnlDLcVw","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",463
+"AZ0eWxOWRvqNgnlDLcVx","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",501
+"AZ0eWxOWRvqNgnlDLcVy","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",507
+"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",540
+"AZ0eWxOWRvqNgnlDLcV0","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",594
+"AZ0eWxOWRvqNgnlDLcV1","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",594
+"AZ0eWxOWRvqNgnlDLcV2","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",634
+"AZ0eWxOWRvqNgnlDLcV3","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",636
+"AZ0eWxOWRvqNgnlDLcV4","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",638
+"AZ0eWxOWRvqNgnlDLcV5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",638
+"AZ0eWxOWRvqNgnlDLcV6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",640
+"AZ0eWxOWRvqNgnlDLcV7","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",644
+"AZ0eWxOWRvqNgnlDLcV8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",646
+"AZ0eWxOWRvqNgnlDLcV-","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",648
+"AZ0eWxOWRvqNgnlDLcV9","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",648
+"AZ0eWxOWRvqNgnlDLcV_","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",650
+"AZ0eWxOWRvqNgnlDLcWA","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",801
+"AZ0eWxOWRvqNgnlDLcWC","Remove this useless assignment to variable ""liveSpeedKmh"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1017
+"AZ0eWxOWRvqNgnlDLcWD","Remove this useless assignment to variable ""showGridAlways"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1035
+"AZ0eWxOWRvqNgnlDLcWE","Remove this useless assignment to variable ""h3Resolution"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1037
 "AZ0eWxL7RvqNgnlDLcVp","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",50
 "AZ0eWxL7RvqNgnlDLcVq","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",301
 "AZ0eWxNyRvqNgnlDLcVt","'expo-router' imported multiple times.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",12
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvw1S4VhJojFFCh3","Rename class ""StudentenwerkOsnabrueckNews_Parser"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",12
 "AZkUSvw1S4VhJojFFCh4","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",13
 "AZkUSvw1S4VhJojFFCh5","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",14
-"AZkUSvw1S4VhJojFFCh7","Useless constructor.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/osnabrueck/StudentenwerkOsnabrueckNews_Parser.ts",17
