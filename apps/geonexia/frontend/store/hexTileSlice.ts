@@ -8,11 +8,17 @@ export type HexTileSliceState = {
 	records: Record<string, HexTileRecord>;
 	/** Snapshot of tile levels at the start of the current run (transient, not persisted) */
 	runStartLevels: Record<string, number>;
+	/**
+	 * Monotonically increasing counter that is bumped on every full data reset.
+	 * Screens can watch this value to detect resets and refresh their map views.
+	 */
+	resetToken: number;
 };
 
 const initialState: HexTileSliceState = {
 	records: {},
 	runStartLevels: {},
+	resetToken: 0,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -87,13 +93,16 @@ const hexTileSlice = createSlice({
 
 		/**
 		 * Replace the entire state with data loaded from persistent storage.
-		 * Called once at app startup.
+		 * Called once at app startup and again after a full data reset.
+		 * Bumps `resetToken` on every call so that the record screen can detect
+		 * resets and reload the map with fresh (empty) tile data.
 		 */
 		loadPersistedState(
 			state,
 			action: PayloadAction<Record<string, HexTileRecord>>,
 		) {
 			state.records = action.payload;
+			state.resetToken += 1;
 		},
 	},
 });
