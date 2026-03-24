@@ -24,6 +24,11 @@ export type HexTileRecord = {
 	enclosedCount: number;
 	/** Colour level 0–3, recomputed after each update */
 	level: number;
+	/**
+	 * Whether the user has physically walked on this tile (i.e. GPS tracked).
+	 * Tiles that are only enclosed (but not walked on) remain false.
+	 */
+	walkedOn: boolean;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────

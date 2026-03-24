@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
 	Alert,
 	Animated,
@@ -17,6 +17,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
@@ -879,6 +880,7 @@ function HexTileInfoContent({
 	const rows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
 		{ label: 'Level', value: record ? String(record.level) : '0' },
+		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
 		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
 		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
@@ -908,12 +910,16 @@ function HexTileInfoContent({
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const navigation = useNavigation();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
 
 	// Redux selectors
 	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
+	const activeTileCount = useSelector((state: RootState) =>
+		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
+	);
 	const prevResetTokenRef = useRef<number | null>(null);
 
 	const activeSport = useMemo(
@@ -958,6 +964,13 @@ export default function RecordScreen() {
 	const joystickActiveRef = useRef(false);
 
 	const dispatch = useDispatch();
+
+	// Header: show tile count in title; no activities icon (removed per UX request)
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			title: `${activeTileCount} Felder`,
+		});
+	}, [navigation, activeTileCount]);
 
 	// When the hex tile data is reset, reload the map with an empty GeoJSON so
 	// the old (now deleted) tiles are cleared immediately without an app restart.
