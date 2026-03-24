@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-24T00:22:01.275Z",
+  "report_timestamp": "2026-03-24T05:37:23.435Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
-          "maximum": 89,
-          "average": 1.572930955647005,
-          "amountSavedValuesForKeys": 3440,
+          "median": 1.5,
+          "maximum": 90,
+          "average": 1.5728597449908925,
+          "amountSavedValuesForKeys": 3454,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -20,23 +20,23 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
-          "maximum": 89,
-          "average": 1.5881809787626961,
-          "amountSavedValuesForKeys": 3440,
+          "median": 1,
+          "maximum": 90,
+          "average": 1.5880459770114943,
+          "amountSavedValuesForKeys": 3454,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3800,
-        "detection_time_ms": 68,
+        "ast_generation_time_ms": 3722,
+        "detection_time_ms": 66,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 108.54,
-          "os_memory_free": 15012102144,
+          "os_uptime": 107.58,
+          "os_memory_free": 14998466560,
           "os_memory_total": 16767234048,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "84ac92dcf847e89b75500c2d6862d26383af8b43",
-    "project_commit_hash": "84ac92dcf847e89b75500c2d6862d26383af8b43",
+    "project_version": "8c5731c5b5fb51299946a0218bd2051e9f7cef79",
+    "project_commit_hash": "8c5731c5b5fb51299946a0218bd2051e9f7cef79",
     "project_tag": null,
-    "project_commit_date": "1774305888",
+    "project_commit_date": "1774330554",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 432,
-    "number_of_classes_or_interfaces": 888,
+    "number_of_files": 434,
+    "number_of_classes_or_interfaces": 891,
     "number_of_methods": 1314,
-    "number_of_data_fields": 3440,
+    "number_of_data_fields": 3454,
     "number_of_method_parameters": 1456
   },
   "detector": {
@@ -917,17 +917,17 @@
         "cluster_type": 1
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-latlngaltitudespeedtimestamp": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-latlngaltitudespeedtimestamp",
       "probability": 1,
       "from_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
       "from_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint",
       "from_class_or_interface_name": "RoutePoint",
       "from_method_name": null,
       "from_method_key": null,
-      "to_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
-      "to_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint",
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint",
       "to_class_or_interface_name": "RoutePoint",
       "to_method_key": null,
       "to_method_name": null,
@@ -940,14 +940,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lat",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/lat",
             "name": "lat",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 95,
+              "startLine": 6,
               "startColumn": 2,
-              "endLine": 95,
+              "endLine": 6,
               "endColumn": 14
             }
           },
@@ -965,14 +965,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lng",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/lng",
             "name": "lng",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 96,
+              "startLine": 7,
               "startColumn": 2,
-              "endLine": 96,
+              "endLine": 7,
               "endColumn": 14
             }
           },
@@ -990,14 +990,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/altitude",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/altitude",
             "name": "altitude",
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 97,
+              "startLine": 8,
               "startColumn": 2,
-              "endLine": 97,
+              "endLine": 8,
               "endColumn": 26
             }
           },
@@ -1015,14 +1015,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/speed",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/speed",
             "name": "speed",
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 98,
+              "startLine": 9,
               "startColumn": 2,
-              "endLine": 98,
+              "endLine": 9,
               "endColumn": 23
             }
           },
@@ -1040,14 +1040,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/timestamp",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/timestamp",
             "name": "timestamp",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 99,
+              "startLine": 10,
               "startColumn": 2,
-              "endLine": 99,
+              "endLine": 10,
               "endColumn": 20
             }
           },
@@ -1064,17 +1064,17 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl": {
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl",
       "probability": 1,
       "from_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
       "from_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
       "from_class_or_interface_name": "RunStats",
       "from_method_name": null,
       "from_method_key": null,
-      "to_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
-      "to_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats",
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats",
       "to_class_or_interface_name": "RunStats",
       "to_method_key": null,
       "to_method_name": null,
@@ -1087,14 +1087,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/distanceKm",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/distanceKm",
             "name": "distanceKm",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 103,
+              "startLine": 14,
               "startColumn": 2,
-              "endLine": 103,
+              "endLine": 14,
               "endColumn": 21
             }
           },
@@ -1112,14 +1112,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/durationSeconds",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/durationSeconds",
             "name": "durationSeconds",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 104,
+              "startLine": 15,
               "startColumn": 2,
-              "endLine": 104,
+              "endLine": 15,
               "endColumn": 26
             }
           },
@@ -1137,14 +1137,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/paceMinPerKm",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/paceMinPerKm",
             "name": "paceMinPerKm",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 105,
+              "startLine": 16,
               "startColumn": 2,
-              "endLine": 105,
+              "endLine": 16,
               "endColumn": 23
             }
           },
@@ -1162,14 +1162,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/maxSpeedKmh",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh",
             "name": "maxSpeedKmh",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 106,
+              "startLine": 17,
               "startColumn": 2,
-              "endLine": 106,
+              "endLine": 17,
               "endColumn": 22
             }
           },
@@ -1187,14 +1187,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/minSpeedKmh",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh",
             "name": "minSpeedKmh",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 107,
+              "startLine": 18,
               "startColumn": 2,
-              "endLine": 107,
+              "endLine": 18,
               "endColumn": 22
             }
           },
@@ -1212,14 +1212,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/avgSpeedKmh",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh",
             "name": "avgSpeedKmh",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 108,
+              "startLine": 19,
               "startColumn": 2,
-              "endLine": 108,
+              "endLine": 19,
               "endColumn": 22
             }
           },
@@ -1237,14 +1237,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/kcal",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/kcal",
             "name": "kcal",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 109,
+              "startLine": 20,
               "startColumn": 2,
-              "endLine": 109,
+              "endLine": 20,
               "endColumn": 15
             }
           },
@@ -1262,14 +1262,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/steps",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/steps",
             "name": "steps",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 110,
+              "startLine": 21,
               "startColumn": 2,
-              "endLine": 110,
+              "endLine": 21,
               "endColumn": 16
             }
           },
@@ -1287,14 +1287,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationGainM",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/elevationGainM",
             "name": "elevationGainM",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 111,
+              "startLine": 22,
               "startColumn": 2,
-              "endLine": 111,
+              "endLine": 22,
               "endColumn": 25
             }
           },
@@ -1312,14 +1312,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationLossM",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/elevationLossM",
             "name": "elevationLossM",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 112,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 112,
+              "endLine": 23,
               "endColumn": 25
             }
           },
@@ -1337,14 +1337,14 @@
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/fluidNeedsMl",
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/fluidNeedsMl",
             "name": "fluidNeedsMl",
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 113,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 113,
+              "endLine": 24,
               "endColumn": 23
             }
           },
@@ -2168,12 +2168,12 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp",
       "probability": 1,
-      "from_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
-      "from_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint",
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint",
       "from_class_or_interface_name": "RoutePoint",
       "from_method_name": null,
       "from_method_key": null,
@@ -2184,8 +2184,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lat": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lat",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/lat": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/lat",
           "name": "lat",
           "type": "number",
           "probability": 1,
@@ -2203,14 +2203,14 @@
             }
           },
           "position": {
-            "startLine": 95,
+            "startLine": 6,
             "startColumn": 2,
-            "endLine": 95,
+            "endLine": 6,
             "endColumn": 14
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lng": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/lng",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/lng": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/lng",
           "name": "lng",
           "type": "number",
           "probability": 1,
@@ -2228,14 +2228,14 @@
             }
           },
           "position": {
-            "startLine": 96,
+            "startLine": 7,
             "startColumn": 2,
-            "endLine": 96,
+            "endLine": 7,
             "endColumn": 14
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/altitude": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/altitude",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/altitude": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/altitude",
           "name": "altitude",
           "type": "number | null",
           "probability": 1,
@@ -2253,14 +2253,14 @@
             }
           },
           "position": {
-            "startLine": 97,
+            "startLine": 8,
             "startColumn": 2,
-            "endLine": 97,
+            "endLine": 8,
             "endColumn": 26
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/speed": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/speed",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/speed": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/speed",
           "name": "speed",
           "type": "number | null",
           "probability": 1,
@@ -2278,14 +2278,14 @@
             }
           },
           "position": {
-            "startLine": 98,
+            "startLine": 9,
             "startColumn": 2,
-            "endLine": 98,
+            "endLine": 9,
             "endColumn": 23
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/timestamp": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RoutePoint/memberField/timestamp",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/timestamp": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint/memberField/timestamp",
           "name": "timestamp",
           "type": "number",
           "probability": 1,
@@ -2303,9 +2303,9 @@
             }
           },
           "position": {
-            "startLine": 99,
+            "startLine": 10,
             "startColumn": 2,
-            "endLine": 99,
+            "endLine": 10,
             "endColumn": 20
           }
         }
@@ -2315,12 +2315,12 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl": {
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl": {
       "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/activity/index.tsx-apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-distanceKmdurationSecondspaceMinPerKmmaxSpeedKmhminSpeedKmhavgSpeedKmhkcalstepselevationGainMelevationLossMfluidNeedsMl",
       "probability": 1,
-      "from_file_path": "apps/geonexia/frontend/app/activity/index.tsx",
-      "from_class_or_interface_key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats",
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats",
       "from_class_or_interface_name": "RunStats",
       "from_method_name": null,
       "from_method_key": null,
@@ -2331,8 +2331,8 @@
       "to_method_name": null,
       "data_clump_type": "fields_to_fields_data_clump",
       "data_clump_data": {
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/distanceKm": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/distanceKm",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/distanceKm": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/distanceKm",
           "name": "distanceKm",
           "type": "number",
           "probability": 1,
@@ -2350,14 +2350,14 @@
             }
           },
           "position": {
-            "startLine": 103,
+            "startLine": 14,
             "startColumn": 2,
-            "endLine": 103,
+            "endLine": 14,
             "endColumn": 21
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/durationSeconds": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/durationSeconds",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/durationSeconds": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/durationSeconds",
           "name": "durationSeconds",
           "type": "number",
           "probability": 1,
@@ -2375,14 +2375,14 @@
             }
           },
           "position": {
-            "startLine": 104,
+            "startLine": 15,
             "startColumn": 2,
-            "endLine": 104,
+            "endLine": 15,
             "endColumn": 26
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/paceMinPerKm": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/paceMinPerKm",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/paceMinPerKm": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/paceMinPerKm",
           "name": "paceMinPerKm",
           "type": "number",
           "probability": 1,
@@ -2400,14 +2400,14 @@
             }
           },
           "position": {
-            "startLine": 105,
+            "startLine": 16,
             "startColumn": 2,
-            "endLine": 105,
+            "endLine": 16,
             "endColumn": 23
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/maxSpeedKmh": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/maxSpeedKmh",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh",
           "name": "maxSpeedKmh",
           "type": "number",
           "probability": 1,
@@ -2425,14 +2425,14 @@
             }
           },
           "position": {
-            "startLine": 106,
+            "startLine": 17,
             "startColumn": 2,
-            "endLine": 106,
+            "endLine": 17,
             "endColumn": 22
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/minSpeedKmh": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/minSpeedKmh",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh",
           "name": "minSpeedKmh",
           "type": "number",
           "probability": 1,
@@ -2450,14 +2450,14 @@
             }
           },
           "position": {
-            "startLine": 107,
+            "startLine": 18,
             "startColumn": 2,
-            "endLine": 107,
+            "endLine": 18,
             "endColumn": 22
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/avgSpeedKmh": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/avgSpeedKmh",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh",
           "name": "avgSpeedKmh",
           "type": "number",
           "probability": 1,
@@ -2475,14 +2475,14 @@
             }
           },
           "position": {
-            "startLine": 108,
+            "startLine": 19,
             "startColumn": 2,
-            "endLine": 108,
+            "endLine": 19,
             "endColumn": 22
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/kcal": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/kcal",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/kcal": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/kcal",
           "name": "kcal",
           "type": "number",
           "probability": 1,
@@ -2500,14 +2500,14 @@
             }
           },
           "position": {
-            "startLine": 109,
+            "startLine": 20,
             "startColumn": 2,
-            "endLine": 109,
+            "endLine": 20,
             "endColumn": 15
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/steps": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/steps",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/steps": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/steps",
           "name": "steps",
           "type": "number",
           "probability": 1,
@@ -2525,14 +2525,14 @@
             }
           },
           "position": {
-            "startLine": 110,
+            "startLine": 21,
             "startColumn": 2,
-            "endLine": 110,
+            "endLine": 21,
             "endColumn": 16
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationGainM": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationGainM",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/elevationGainM": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/elevationGainM",
           "name": "elevationGainM",
           "type": "number",
           "probability": 1,
@@ -2550,14 +2550,14 @@
             }
           },
           "position": {
-            "startLine": 111,
+            "startLine": 22,
             "startColumn": 2,
-            "endLine": 111,
+            "endLine": 22,
             "endColumn": 25
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationLossM": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/elevationLossM",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/elevationLossM": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/elevationLossM",
           "name": "elevationLossM",
           "type": "number",
           "probability": 1,
@@ -2575,14 +2575,14 @@
             }
           },
           "position": {
-            "startLine": 112,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 112,
+            "endLine": 23,
             "endColumn": 25
           }
         },
-        "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/fluidNeedsMl": {
-          "key": "apps/geonexia/frontend/app/activity/index.tsx/interface/RunStats/memberField/fluidNeedsMl",
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/fluidNeedsMl": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/fluidNeedsMl",
           "name": "fluidNeedsMl",
           "type": "number",
           "probability": 1,
@@ -2600,9 +2600,9 @@
             }
           },
           "position": {
-            "startLine": 113,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 113,
+            "endLine": 24,
             "endColumn": 23
           }
         }
