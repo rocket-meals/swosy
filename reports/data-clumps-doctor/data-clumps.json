@@ -1,42 +1,42 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-24T10:17:17.374Z",
+  "report_timestamp": "2026-03-24T10:48:36.875Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
-          "maximum": 90,
-          "average": 1.5728597449908925,
-          "amountSavedValuesForKeys": 3454,
+          "median": 1,
+          "maximum": 91,
+          "average": 1.5941043083900226,
+          "amountSavedValuesForKeys": 3515,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
           "median": 1.5,
           "maximum": 70,
-          "average": 2.3636363636363638,
-          "amountSavedValuesForKeys": 1456,
+          "average": 2.366883116883117,
+          "amountSavedValuesForKeys": 1458,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
-          "maximum": 90,
-          "average": 1.5880459770114943,
-          "amountSavedValuesForKeys": 3454,
+          "median": 1.5,
+          "maximum": 91,
+          "average": 1.6094322344322345,
+          "amountSavedValuesForKeys": 3515,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3800,
-        "detection_time_ms": 68,
+        "ast_generation_time_ms": 3826,
+        "detection_time_ms": 69,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 107.61,
-          "os_memory_free": 14973878272,
+          "os_uptime": 105.35,
+          "os_memory_free": 15004221440,
           "os_memory_total": 16771563520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,29 +44,29 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 20,
-    "amount_files_with_data_clumps": 13,
+    "amount_classes_or_interfaces_with_data_clumps": 28,
+    "amount_files_with_data_clumps": 20,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 18,
+    "fields_to_fields_data_clump": 28,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 26
+    "amount_data_clumps": 36
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "e6100581e61b4366ca94eb655b4d371276476a18",
-    "project_commit_hash": "e6100581e61b4366ca94eb655b4d371276476a18",
+    "project_version": "874b57c6e2154d8174df6b0821fe21d1559a0400",
+    "project_commit_hash": "874b57c6e2154d8174df6b0821fe21d1559a0400",
     "project_tag": null,
-    "project_commit_date": "1774347346",
+    "project_commit_date": "1774349097",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 434,
-    "number_of_classes_or_interfaces": 891,
-    "number_of_methods": 1314,
-    "number_of_data_fields": 3454,
-    "number_of_method_parameters": 1456
+    "number_of_files": 441,
+    "number_of_classes_or_interfaces": 908,
+    "number_of_methods": 1318,
+    "number_of_data_fields": 3515,
+    "number_of_method_parameters": 1458
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -1458,6 +1458,275 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-valueisDisabledprefixsuffixerror": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-valueisDisabledprefixsuffixerror",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
+      "from_class_or_interface_name": "DropdownSheetProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn",
+      "to_class_or_interface_name": "SettingsListDatePropsOwn",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/value": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 3,
+            "endLine": 16,
+            "endColumn": 17
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
+          "name": "isDisabled",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/isDisabled",
+            "name": "isDisabled",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 3,
+            "endLine": 20,
+            "endColumn": 24
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/prefix": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/prefix",
+          "name": "prefix",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/prefix",
+            "name": "prefix",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 2,
+              "endLine": 22,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 26
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/suffix": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/suffix",
+          "name": "suffix",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/suffix",
+            "name": "suffix",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 3,
+            "endLine": 22,
+            "endColumn": 26
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error": {
+          "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
+          "name": "error",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/error",
+            "name": "error",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 3,
+            "endLine": 23,
+            "endColumn": 18
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/types.ts-apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-iderrorisDisabledcustom_type": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/DropdownInput/types.ts-apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-iderrorisDisabledcustom_type",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/DropdownInput/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps",
+      "from_class_or_interface_name": "FormInputBaseProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn",
+      "to_class_or_interface_name": "SettingsListDatePropsOwn",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/id": {
+          "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 2,
+            "startColumn": 2,
+            "endLine": 2,
+            "endColumn": 13
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/error": {
+          "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/error",
+          "name": "error",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/error",
+            "name": "error",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 4,
+            "startColumn": 2,
+            "endLine": 4,
+            "endColumn": 17
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/isDisabled": {
+          "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/isDisabled",
+          "name": "isDisabled",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/isDisabled",
+            "name": "isDisabled",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 5,
+            "startColumn": 2,
+            "endLine": 5,
+            "endColumn": 23
+          }
+        },
+        "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/custom_type": {
+          "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/custom_type",
+          "name": "custom_type",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/custom_type",
+            "name": "custom_type",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 6,
+            "startColumn": 2,
+            "endLine": 6,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/frontend/app/components/GlobalModal/ModalProvider.tsx-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll",
@@ -1576,7 +1845,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     },
@@ -1673,7 +1942,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 7,
+        "cluster_id": 8,
         "cluster_type": 2
       }
     },
@@ -1795,7 +2064,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
+        "cluster_id": 9,
         "cluster_type": 2
       }
     },
@@ -1892,7 +2161,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -2164,8 +2433,277 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/SettingsListLikeDislike/types.ts-apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-likelikeLoadingdislikeLoadinglikeCountdislikeCount": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/SettingsListLikeDislike/types.ts-apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-likelikeLoadingdislikeLoadinglikeCountdislikeCount",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/SettingsListLikeDislike/types.ts",
+      "from_class_or_interface_key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps",
+      "from_class_or_interface_name": "SettingsListLikeDislikeProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps",
+      "to_class_or_interface_name": "SettingsListLikeDislikeFastProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/like": {
+          "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/like",
+          "name": "like",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/like",
+            "name": "like",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 35
+            }
+          },
+          "position": {
+            "startLine": 2,
+            "startColumn": 2,
+            "endLine": 2,
+            "endColumn": 35
+          }
+        },
+        "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/likeLoading": {
+          "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/likeLoading",
+          "name": "likeLoading",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeLoading",
+            "name": "likeLoading",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 24
+          }
+        },
+        "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/dislikeLoading": {
+          "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/dislikeLoading",
+          "name": "dislikeLoading",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/dislikeLoading",
+            "name": "dislikeLoading",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 8,
+            "startColumn": 2,
+            "endLine": 8,
+            "endColumn": 27
+          }
+        },
+        "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/likeCount": {
+          "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/likeCount",
+          "name": "likeCount",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeCount",
+            "name": "likeCount",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 21
+          }
+        },
+        "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/dislikeCount": {
+          "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/dislikeCount",
+          "name": "dislikeCount",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/dislikeCount",
+            "name": "dislikeCount",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/components/SettingsListTextInput.tsx-apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-placeholderkeyboardTypeinputStyleautoFocus": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/components/SettingsListTextInput.tsx-apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-placeholderkeyboardTypeinputStyleautoFocus",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/components/SettingsListTextInput.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps",
+      "from_class_or_interface_name": "TextInputBaseProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps",
+      "to_class_or_interface_name": "ModalSheetProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/placeholder": {
+          "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/placeholder",
+          "name": "placeholder",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/placeholder",
+            "name": "placeholder",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 2,
+              "endLine": 48,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/keyboardType": {
+          "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/keyboardType",
+          "name": "keyboardType",
+          "type": "KeyboardTypeOptions",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/keyboardType",
+            "name": "keyboardType",
+            "type": "KeyboardTypeOptions",
+            "modifiers": [],
+            "position": {
+              "startLine": 52,
+              "startColumn": 2,
+              "endLine": 52,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 37
+          }
+        },
+        "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/inputStyle": {
+          "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/inputStyle",
+          "name": "inputStyle",
+          "type": "object",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/inputStyle",
+            "name": "inputStyle",
+            "type": "object",
+            "modifiers": [],
+            "position": {
+              "startLine": 55,
+              "startColumn": 2,
+              "endLine": 55,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/autoFocus": {
+          "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/autoFocus",
+          "name": "autoFocus",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/autoFocus",
+            "name": "autoFocus",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 56,
+              "startColumn": 2,
+              "endLine": 56,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 2,
+            "endLine": 28,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
@@ -2827,7 +3365,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 6,
+        "cluster_id": 7,
         "cluster_type": 2
       }
     },
@@ -2924,7 +3462,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 7,
+        "cluster_id": 8,
         "cluster_type": 2
       }
     },
@@ -3046,7 +3584,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 8,
+        "cluster_id": 9,
         "cluster_type": 2
       }
     },
@@ -3143,7 +3681,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -3240,7 +3778,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -3337,7 +3875,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 9,
+        "cluster_id": 10,
         "cluster_type": 2
       }
     },
@@ -3609,8 +4147,740 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-initialValueprimaryColorsaveLabel": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-initialValueprimaryColorsaveLabel",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps",
+      "from_class_or_interface_name": "DatePickerSheetProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps",
+      "to_class_or_interface_name": "ModalSheetProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/initialValue": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/initialValue",
+          "name": "initialValue",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/initialValue",
+            "name": "initialValue",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 47,
+              "startColumn": 2,
+              "endLine": 47,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 2,
+            "endLine": 48,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/primaryColor": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/primaryColor",
+          "name": "primaryColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/primaryColor",
+            "name": "primaryColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 59,
+              "startColumn": 2,
+              "endLine": 59,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 50,
+            "startColumn": 2,
+            "endLine": 50,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/saveLabel": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/saveLabel",
+          "name": "saveLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/saveLabel",
+            "name": "saveLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 49,
+              "startColumn": 2,
+              "endLine": 49,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 51,
+            "startColumn": 2,
+            "endLine": 51,
+            "endColumn": 20
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps-iderrorcustom_typeisDisabled": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps-iderrorcustom_typeisDisabled",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn",
+      "from_class_or_interface_name": "SettingsListDatePropsOwn",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/DropdownInput/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps",
+      "to_class_or_interface_name": "FormInputBaseProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/id": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 2,
+              "startColumn": 2,
+              "endLine": 2,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 13
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/error": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/error",
+          "name": "error",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/error",
+            "name": "error",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 4,
+              "startColumn": 2,
+              "endLine": 4,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 17
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/custom_type": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/custom_type",
+          "name": "custom_type",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/custom_type",
+            "name": "custom_type",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 6,
+              "startColumn": 2,
+              "endLine": 6,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/isDisabled": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/isDisabled",
+          "name": "isDisabled",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/types.ts/interface/FormInputBaseProps/memberField/isDisabled",
+            "name": "isDisabled",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 5,
+              "startColumn": 2,
+              "endLine": 5,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-valueerrorisDisabledprefixsuffix": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn-apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps-valueerrorisDisabledprefixsuffix",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn",
+      "from_class_or_interface_name": "SettingsListDatePropsOwn",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps",
+      "to_class_or_interface_name": "DropdownSheetProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/value": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/value",
+          "name": "value",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/value",
+            "name": "value",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 3,
+              "endLine": 16,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/error": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/error",
+          "name": "error",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/error",
+            "name": "error",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 3,
+              "endLine": 23,
+              "endColumn": 18
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 17
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/isDisabled": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/isDisabled",
+          "name": "isDisabled",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/isDisabled",
+            "name": "isDisabled",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 3,
+              "endLine": 20,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/prefix": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/prefix",
+          "name": "prefix",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/prefix",
+            "name": "prefix",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 3,
+              "endLine": 21,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 2,
+            "endLine": 22,
+            "endColumn": 18
+          }
+        },
+        "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/suffix": {
+          "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/SettingsListDatePropsOwn/memberField/suffix",
+          "name": "suffix",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/DropdownInput/DropdownSheet.tsx/interface/DropdownSheetProps/memberField/suffix",
+            "name": "suffix",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 3,
+              "endLine": 22,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 18
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 6,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps-likelikeLoadingdislikeLoadinglikeCountdislikeCount": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps-likelikeLoadingdislikeLoadinglikeCountdislikeCount",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps",
+      "from_class_or_interface_name": "SettingsListLikeDislikeFastProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/SettingsListLikeDislike/types.ts",
+      "to_class_or_interface_key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps",
+      "to_class_or_interface_name": "SettingsListLikeDislikeProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/like": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/like",
+          "name": "like",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/like",
+            "name": "like",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 2,
+              "startColumn": 2,
+              "endLine": 2,
+              "endColumn": 35
+            }
+          },
+          "position": {
+            "startLine": 9,
+            "startColumn": 2,
+            "endLine": 9,
+            "endColumn": 35
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeLoading": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeLoading",
+          "name": "likeLoading",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/likeLoading",
+            "name": "likeLoading",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/dislikeLoading": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/dislikeLoading",
+          "name": "dislikeLoading",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/dislikeLoading",
+            "name": "dislikeLoading",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 8,
+              "startColumn": 2,
+              "endLine": 8,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 27
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeCount": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeCount",
+          "name": "likeCount",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/likeCount",
+            "name": "likeCount",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 9,
+              "startColumn": 2,
+              "endLine": 9,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 21
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/dislikeCount": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/dislikeCount",
+          "name": "dislikeCount",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps/memberField/dislikeCount",
+            "name": "dislikeCount",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps-initialValuesaveLabelprimaryColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps-initialValuesaveLabelprimaryColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps",
+      "from_class_or_interface_name": "ModalSheetProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps",
+      "to_class_or_interface_name": "DatePickerSheetProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/initialValue": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/initialValue",
+          "name": "initialValue",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/initialValue",
+            "name": "initialValue",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 48,
+              "startColumn": 2,
+              "endLine": 48,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 2,
+            "endLine": 47,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/saveLabel": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/saveLabel",
+          "name": "saveLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/saveLabel",
+            "name": "saveLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 51,
+              "startColumn": 2,
+              "endLine": 51,
+              "endColumn": 20
+            }
+          },
+          "position": {
+            "startLine": 49,
+            "startColumn": 2,
+            "endLine": 49,
+            "endColumn": 20
+          }
+        },
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/primaryColor": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/primaryColor",
+          "name": "primaryColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps/memberField/primaryColor",
+            "name": "primaryColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 50,
+              "startColumn": 2,
+              "endLine": 50,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 59,
+            "startColumn": 2,
+            "endLine": 59,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps-placeholderkeyboardTypeinputStyleautoFocus": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps-placeholderkeyboardTypeinputStyleautoFocus",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps",
+      "from_class_or_interface_name": "ModalSheetProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/components/SettingsListTextInput.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps",
+      "to_class_or_interface_name": "TextInputBaseProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/placeholder": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/placeholder",
+          "name": "placeholder",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/placeholder",
+            "name": "placeholder",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 48,
+            "startColumn": 2,
+            "endLine": 48,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/keyboardType": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/keyboardType",
+          "name": "keyboardType",
+          "type": "KeyboardTypeOptions",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/keyboardType",
+            "name": "keyboardType",
+            "type": "KeyboardTypeOptions",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 37
+            }
+          },
+          "position": {
+            "startLine": 52,
+            "startColumn": 2,
+            "endLine": 52,
+            "endColumn": 37
+          }
+        },
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/inputStyle": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/inputStyle",
+          "name": "inputStyle",
+          "type": "object",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/inputStyle",
+            "name": "inputStyle",
+            "type": "object",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 55,
+            "startColumn": 2,
+            "endLine": 55,
+            "endColumn": 22
+          }
+        },
+        "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/autoFocus": {
+          "key": "packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps/memberField/autoFocus",
+          "name": "autoFocus",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps/memberField/autoFocus",
+            "name": "autoFocus",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 56,
+            "startColumn": 2,
+            "endLine": 56,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 3
       }
     }
   }
