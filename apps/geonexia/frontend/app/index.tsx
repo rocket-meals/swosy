@@ -846,6 +846,7 @@ function HexTileInfoContent({
 	const rows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
 		{ label: 'Level', value: record ? String(record.level) : '0' },
+		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
 		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
 		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
@@ -883,6 +884,9 @@ export default function RecordScreen() {
 	// Redux selectors
 	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
+	const activeTileCount = useSelector((state: RootState) =>
+		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
+	);
 	const prevResetTokenRef = useRef<number | null>(null);
 
 	const activeSport = useMemo(
@@ -922,9 +926,10 @@ export default function RecordScreen() {
 
 	const dispatch = useDispatch();
 
-	// Header: activities navigation button (coloured so it's clearly visible)
+	// Header: tile count + activities navigation button
 	useLayoutEffect(() => {
 		navigation.setOptions({
+			title: `${activeTileCount} Felder`,
 			headerRight: () => (
 				<TouchableOpacity
 					onPress={() => router.push('/activities')}
@@ -935,7 +940,7 @@ export default function RecordScreen() {
 				</TouchableOpacity>
 			),
 		});
-	}, [navigation, router]);
+	}, [navigation, router, activeTileCount]);
 
 	// When the hex tile data is reset, reload the map with an empty GeoJSON so
 	// the old (now deleted) tiles are cleared immediately without an app restart.

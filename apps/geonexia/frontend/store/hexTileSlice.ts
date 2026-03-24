@@ -32,6 +32,7 @@ function getOrCreate(records: Record<string, HexTileRecord>, h3Index: string): H
 			visitCount: 0,
 			enclosedCount: 0,
 			level: 0,
+			walkedOn: false,
 		};
 	}
 	return records[h3Index];
@@ -67,6 +68,7 @@ const hexTileSlice = createSlice({
 				const rec = getOrCreate(state.records, h3Index);
 				rec.lastVisitedAt = timestamp;
 				rec.visitCount += 1;
+				rec.walkedOn = true;
 				const newLevel = computeHexTileLevel(rec);
 				const startLevel = state.runStartLevels[h3Index] ?? 0;
 				rec.level = Math.min(newLevel, startLevel + 2);
