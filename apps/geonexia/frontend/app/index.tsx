@@ -24,7 +24,7 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
-import { markVisited, markEnclosed } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed } from '../store/hexTileSlice';
 import { store } from '../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -36,7 +36,7 @@ const STATUS_ERROR_COLOR = '#ef4444';
 
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
-const H3_DEFAULT_RESOLUTION = 9;
+const H3_DEFAULT_RESOLUTION = 10.5;
 const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
@@ -1036,6 +1036,7 @@ export default function RecordScreen() {
 
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
+			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
 			isPausedRef.current = false;
