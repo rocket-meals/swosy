@@ -17,10 +17,10 @@ export type SportTypeDefinition = {
 
 export const SPORT_TYPES: SportTypeDefinition[] = [
 	{ type: 'run', label: 'Run', iconLibrary: 'MaterialIcons', iconName: 'directions-run', color: '#2563eb' },
-	{ type: 'walk', label: 'Walk', iconLibrary: 'MaterialIcons', iconName: 'directions-walk', color: '#16a34a' },
-	{ type: 'bicycle', label: 'Bicycle', iconLibrary: 'MaterialIcons', iconName: 'directions-bike', color: '#d97706' },
-	{ type: 'motorcycle', label: 'Motorcycle', iconLibrary: 'MaterialCommunityIcons', iconName: 'motorbike', color: '#dc2626' },
-	{ type: 'swim', label: 'Swim', iconLibrary: 'MaterialIcons', iconName: 'pool', color: '#0891b2' },
+	{ type: 'walk', label: 'Walk', iconLibrary: 'MaterialIcons', iconName: 'directions-walk', color: '#2563eb' },
+	{ type: 'bicycle', label: 'Bicycle', iconLibrary: 'MaterialIcons', iconName: 'directions-bike', color: '#2563eb' },
+	{ type: 'motorcycle', label: 'Motorcycle', iconLibrary: 'MaterialCommunityIcons', iconName: 'motorbike', color: '#2563eb' },
+	{ type: 'swim', label: 'Swim', iconLibrary: 'MaterialIcons', iconName: 'pool', color: '#2563eb' },
 ];
 
 // ─── State type ───────────────────────────────────────────────────────────────
