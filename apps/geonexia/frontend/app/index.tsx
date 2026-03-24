@@ -364,6 +364,18 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 }
 
 /**
+ * Compute the forward bearing (0–360°, clockwise from North) from point 1 to point 2.
+ */
+function computeBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
+	const φ1 = (lat1 * Math.PI) / 180;
+	const φ2 = (lat2 * Math.PI) / 180;
+	const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+	const y = Math.sin(Δλ) * Math.cos(φ2);
+	const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+	return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+/**
  * Ray-casting point-in-polygon test.
  * Polygon is an array of [lng, lat] pairs.
  */
@@ -1353,6 +1365,13 @@ export default function RecordScreen() {
 			} catch (err) {
 				console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
 			}
+		}
+
+		// If heading mode is active, rotate the map smoothly to face movement direction.
+		if (isHeadingModeRef.current && next.length >= 2) {
+			const prev = next[next.length - 2];
+			const bearing = computeBearing(prev.lat, prev.lng, point.lat, point.lng);
+			mapRef.current?.sendToMap({ bearing, easeAnimation: true, easeDuration: 500 });
 		}
 
 		let d = 0;
