@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	Alert,
+	Pressable,
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
@@ -41,7 +42,7 @@ type ViewportBounds = { north: number; south: number; east: number; west: number
 type H3GeoJsonFeature = {
 	type: 'Feature';
 	geometry: { type: 'Polygon'; coordinates: number[][][] };
-	properties: { h3Index: string };
+	properties: { h3Index: string; visited: boolean };
 };
 
 type H3FeatureCollection = {
@@ -54,6 +55,7 @@ function buildH3GeoJson(
 	zoom: number,
 	resolution: number,
 	showAlways: boolean,
+	visitedHexIds: Set<string>,
 ): H3FeatureCollection {
 	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
 
@@ -91,11 +93,105 @@ function buildH3GeoJson(
 		features.push({
 			type: 'Feature',
 			geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-			properties: { h3Index: cell },
+			properties: { h3Index: cell, visited: visitedHexIds.has(cell) },
 		});
 	}
 
 	return { type: 'FeatureCollection', features };
+}
+
+// ─── Debug position controller ───────────────────────────────────────────────
+
+const DEBUG_MOVE_SPEED_KMH = 40;
+const DEBUG_MOVE_INTERVAL_MS = 100;
+
+type Direction = 'N' | 'NE' | 'E' | 'SE' | 'S' | 'SW' | 'W' | 'NW';
+
+function getDirectionDelta(dir: Direction, lat: number): { dLat: number; dLng: number } {
+	const speedMs = DEBUG_MOVE_SPEED_KMH / 3.6;
+	const metersPerTick = speedMs * (DEBUG_MOVE_INTERVAL_MS / 1000);
+	const LAT_DEG_PER_METER = 1 / 111320;
+	const cosLat = Math.cos((lat * Math.PI) / 180);
+	const LNG_DEG_PER_METER = cosLat > 0.001 ? 1 / (111320 * cosLat) : 1 / 111320;
+	const straight = metersPerTick;
+	const diag = metersPerTick / Math.SQRT2;
+	switch (dir) {
+		case 'N':  return { dLat:  straight * LAT_DEG_PER_METER, dLng: 0 };
+		case 'S':  return { dLat: -straight * LAT_DEG_PER_METER, dLng: 0 };
+		case 'E':  return { dLat: 0, dLng:  straight * LNG_DEG_PER_METER };
+		case 'W':  return { dLat: 0, dLng: -straight * LNG_DEG_PER_METER };
+		case 'NE': return { dLat:  diag * LAT_DEG_PER_METER, dLng:  diag * LNG_DEG_PER_METER };
+		case 'NW': return { dLat:  diag * LAT_DEG_PER_METER, dLng: -diag * LNG_DEG_PER_METER };
+		case 'SE': return { dLat: -diag * LAT_DEG_PER_METER, dLng:  diag * LNG_DEG_PER_METER };
+		case 'SW': return { dLat: -diag * LAT_DEG_PER_METER, dLng: -diag * LNG_DEG_PER_METER };
+	}
+}
+
+const GAMEPAD_DIRS: Array<{ dir: Direction | null; label: string }> = [
+	{ dir: 'NW', label: '↖' }, { dir: 'N',  label: '↑' }, { dir: 'NE', label: '↗' },
+	{ dir: 'W',  label: '←' }, { dir: null, label: ''   }, { dir: 'E',  label: '→' },
+	{ dir: 'SW', label: '↙' }, { dir: 'S',  label: '↓' }, { dir: 'SE', label: '↘' },
+];
+
+type DebugPositionControllerProps = {
+	positionRef: React.MutableRefObject<{ lat: number; lng: number } | null>;
+	onMove: (lat: number, lng: number) => void;
+};
+
+function DebugPositionController({ positionRef, onMove }: DebugPositionControllerProps) {
+	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const activeDirectionRef = useRef<Direction | null>(null);
+
+	const startMoving = useCallback((dir: Direction) => {
+		if (intervalRef.current) clearInterval(intervalRef.current);
+		activeDirectionRef.current = dir;
+		intervalRef.current = setInterval(() => {
+			const pos = positionRef.current;
+			if (!pos) return;
+			const { dLat, dLng } = getDirectionDelta(activeDirectionRef.current!, pos.lat);
+			const newLat = pos.lat + dLat;
+			const newLng = pos.lng + dLng;
+			positionRef.current = { lat: newLat, lng: newLng };
+			onMove(newLat, newLng);
+		}, DEBUG_MOVE_INTERVAL_MS);
+	}, [positionRef, onMove]);
+
+	const stopMoving = useCallback(() => {
+		if (intervalRef.current) {
+			clearInterval(intervalRef.current);
+			intervalRef.current = null;
+		}
+		activeDirectionRef.current = null;
+	}, []);
+
+	useEffect(() => {
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+		};
+	}, []);
+
+	return (
+		<View style={styles.gamepadGrid}>
+			{[0, 1, 2].map((row) => (
+				<View key={row} style={styles.gamepadRow}>
+					{GAMEPAD_DIRS.slice(row * 3, row * 3 + 3).map(({ dir, label }, col) =>
+						dir !== null ? (
+							<Pressable
+								key={col}
+								style={styles.gamepadButton}
+								onPressIn={() => startMoving(dir)}
+								onPressOut={stopMoving}
+							>
+								<Text style={styles.gamepadButtonText}>{label}</Text>
+							</Pressable>
+						) : (
+							<View key={col} style={styles.gamepadButtonCenter} />
+						),
+					)}
+				</View>
+			))}
+		</View>
+	);
 }
 
 // ─── Computation constants ────────────────────────────────────────────────────
@@ -495,6 +591,13 @@ export default function RecordScreen() {
 	// Foreground-only fallback subscription (used when background permission is denied)
 	const fgSubRef = useRef<Location.LocationSubscription | null>(null);
 
+	// Visited H3 hex cells during the active recording
+	const visitedHexIdsRef = useRef<Set<string>>(new Set());
+	// Current player position (updated from real GPS and from debug gamepad)
+	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
+	// Mirrors isRecording state for use inside callbacks without stale closures
+	const isRecordingRef = useRef(false);
+
 	// Load persisted OSM consent on mount
 	useEffect(() => {
 		loadOsmConsent().then((consented) => {
@@ -512,6 +615,18 @@ export default function RecordScreen() {
 		};
 	}, []);
 
+	// Pre-populate debug player position from last known location once consent is given
+	useEffect(() => {
+		if (!osmConsent) return;
+		Location.getLastKnownPositionAsync()
+			.then((loc) => {
+				if (loc && !debugPlayerPositionRef.current) {
+					debugPlayerPositionRef.current = { lat: loc.coords.latitude, lng: loc.coords.longitude };
+				}
+			})
+			.catch((err) => { console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err); });
+	}, [osmConsent]);
+
 	const handleConsent = useCallback(() => {
 		setOsmConsent(true);
 		saveOsmConsent(true);
@@ -528,7 +643,7 @@ export default function RecordScreen() {
 		if (!vp || !mapRef.current) return;
 		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 		try {
-			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current);
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, visitedHexIdsRef.current);
 		} catch (err) {
 			console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 		}
@@ -563,7 +678,7 @@ export default function RecordScreen() {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, visitedHexIdsRef.current);
 			} catch (err) {
 				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 			}
@@ -595,6 +710,19 @@ export default function RecordScreen() {
 		const next = [...routePointsRef.current, point];
 		routePointsRef.current = next;
 
+		// Update debug player position so the gamepad continues from the real GPS location
+		debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+
+		// Track the visited H3 cell for this position
+		if (isH3Available()) {
+			try {
+				const cell = latLngToCell(point.lat, point.lng, h3ResolutionRef.current);
+				if (cell) visitedHexIdsRef.current.add(cell);
+			} catch (err) {
+				console.warn('[RecordScreen] latLngToCell failed for visited hex tracking:', err);
+			}
+		}
+
 		let d = 0;
 		for (let i = 1; i < next.length; i++) {
 			d += haversineKm(next[i - 1].lat, next[i - 1].lng, next[i].lat, next[i].lng);
@@ -615,7 +743,45 @@ export default function RecordScreen() {
 				easeDuration: 800,
 			});
 		}
+
+		// Refresh hex GeoJSON to show the updated visited-cell tint
+		const vp = debugViewportRef.current;
+		if (vp && mapRef.current) {
+			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+			try {
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, visitedHexIdsRef.current);
+			} catch (err) {
+				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
+			}
+			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
+			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+		}
 	}, [sendRouteToMap]);
+
+	// Moves the player to a new position (used by the debug gamepad).
+	// When recording is active, feeds a synthetic RoutePoint to the normal tracking pipeline.
+	// When not recording, only updates the visual player marker and follow-mode.
+	const handleDebugMove = useCallback((lat: number, lng: number) => {
+		debugPlayerPositionRef.current = { lat, lng };
+		if (isRecordingRef.current) {
+			handleLocationUpdate({
+				lat,
+				lng,
+				altitude: null,
+				speed: DEBUG_MOVE_SPEED_KMH / 3.6,
+				timestamp: Date.now(),
+			});
+		} else {
+			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
+			if (isFollowingRef.current) {
+				mapRef.current?.sendToMap({
+					mapCenterPosition: { lat, lng },
+					easeAnimation: true,
+					easeDuration: 200,
+				});
+			}
+		}
+	}, [handleLocationUpdate]);
 
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
@@ -630,6 +796,7 @@ export default function RecordScreen() {
 			}
 
 			routePointsRef.current = [];
+			visitedHexIdsRef.current = new Set();
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
 			isPausedRef.current = false;
@@ -637,6 +804,7 @@ export default function RecordScreen() {
 			setElapsedSeconds(0);
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
+			isRecordingRef.current = true;
 			setIsRecording(true);
 			mapRef.current?.sendToMap({ routeCoordinates: [] });
 
@@ -734,6 +902,7 @@ export default function RecordScreen() {
 				console.error('[RecordScreen] Error name:', err.name, '| message:', err.message);
 			}
 			Alert.alert('Error', 'Run recording could not be started.');
+			isRecordingRef.current = false;
 			setIsRecording(false);
 			if (timerRef.current) {
 				clearInterval(timerRef.current);
@@ -764,6 +933,7 @@ export default function RecordScreen() {
 			console.warn('[RecordScreen] Error stopping background task:', err);
 		}
 
+		isRecordingRef.current = false;
 		setIsRecording(false);
 		setIsPaused(false);
 		isPausedRef.current = false;
@@ -857,6 +1027,14 @@ export default function RecordScreen() {
 					>
 						<MaterialIcons name="bug-report" size={20} color="#555555" />
 					</TouchableOpacity>
+				</View>
+
+				{/* Debug gamepad controller – bottom-left overlay */}
+				<View style={styles.gamepadOverlay} pointerEvents="box-none">
+					<DebugPositionController
+						positionRef={debugPlayerPositionRef}
+						onMove={handleDebugMove}
+					/>
 				</View>
 
 				</View>
@@ -1185,20 +1363,6 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		fontWeight: '600',
 	},
-	// Debug button
-	debugButton: {
-		width: 36,
-		height: 36,
-		borderRadius: 8,
-		backgroundColor: '#ffffff',
-		alignItems: 'center',
-		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.2,
-		shadowRadius: 2,
-		elevation: 4,
-	},
 	// Debug modal styles
 	debugContainer: {
 		paddingBottom: 12,
@@ -1254,5 +1418,40 @@ const styles = StyleSheet.create({
 		fontWeight: '700',
 		minWidth: 24,
 		textAlign: 'center',
+	},
+	// Gamepad controller overlay
+	gamepadOverlay: {
+		position: 'absolute',
+		bottom: 16,
+		left: 12,
+		zIndex: 20,
+		elevation: 20,
+	},
+	gamepadGrid: {
+		backgroundColor: 'rgba(0, 0, 0, 0.30)',
+		borderRadius: 12,
+		padding: 6,
+		gap: 4,
+	},
+	gamepadRow: {
+		flexDirection: 'row',
+		gap: 4,
+	},
+	gamepadButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 8,
+		backgroundColor: 'rgba(255, 255, 255, 0.85)',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	gamepadButtonCenter: {
+		width: 40,
+		height: 40,
+	},
+	gamepadButtonText: {
+		fontSize: 18,
+		color: '#333333',
+		fontWeight: '600',
 	},
 });
