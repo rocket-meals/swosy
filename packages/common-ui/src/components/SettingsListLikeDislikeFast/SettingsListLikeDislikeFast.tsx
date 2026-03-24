@@ -33,13 +33,13 @@ const SettingsListLikeDislikeFast: React.FC<SettingsListLikeDislikeFastProps> = 
 	const iconSize = isWeb ? 24 : 22;
 
 	const likeButtonStyle = useMemo(
-		() => [styles.likeButton, like ? { backgroundColor: accentColor } : undefined],
-		[like, accentColor]
+		() => [styles.likeButton, { borderColor: theme.screen.text }, like ? { backgroundColor: accentColor } : undefined],
+		[like, accentColor, theme.screen.text]
 	);
 
 	const dislikeButtonStyle = useMemo(
-		() => [styles.dislikeButton, like === false ? { backgroundColor: accentColor } : undefined],
-		[like, accentColor]
+		() => [styles.dislikeButton, { borderColor: theme.screen.text }, like === false ? { backgroundColor: accentColor } : undefined],
+		[like, accentColor, theme.screen.text]
 	);
 
 	return (
@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
 		borderRightWidth: 0,
 		borderTopLeftRadius: 5,
 		borderBottomLeftRadius: 5,
-		borderColor: '#2E2E2E',
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -109,7 +108,6 @@ const styles = StyleSheet.create({
 		borderLeftWidth: 1,
 		borderTopRightRadius: 5,
 		borderBottomRightRadius: 5,
-		borderColor: '#2E2E2E',
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',

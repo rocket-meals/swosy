@@ -20,6 +20,7 @@ type SettingsListDatePropsOwn = {
 	editable?: boolean;
 	prefix?: string;
 	suffix?: string;
+	saveLabel?: string;
 };
 
 export type SettingsListDateProps = PropsWithChildren<
@@ -110,6 +111,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 	editable = true,
 	prefix,
 	suffix,
+	saveLabel = 'Save',
 	primaryColor,
 	...settingsListProps
 }) => {
@@ -133,7 +135,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 				<DatePickerSheet
 					initialValue={initialValue}
 					primaryColor={resolvedPrimaryColor}
-					saveLabel="Speichern"
+					saveLabel={saveLabel}
 					onConfirm={(formatted) => {
 						const parts = parseDateParts(formatted);
 						if (!parts) return;
@@ -145,7 +147,7 @@ const SettingsListDate: React.FC<SettingsListDateProps> = ({
 				/>
 			),
 		});
-	}, [close, custom_type, id, isEditable, label, onChange, onError, placeholder, resolvedPrimaryColor, show, value]);
+	}, [close, custom_type, id, isEditable, label, onChange, onError, placeholder, resolvedPrimaryColor, saveLabel, show, value]);
 
 	const decoratedValue = value ? `${prefix ?? ''}${value}${suffix ?? ''}` : '';
 

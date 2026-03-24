@@ -160,7 +160,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	modalTitle,
 	placeholder,
-	saveLabel = 'Speichern',
+	saveLabel = 'Save',
 	onSave,
 	initialValue,
 	multiline,

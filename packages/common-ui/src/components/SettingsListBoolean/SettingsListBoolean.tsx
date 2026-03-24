@@ -22,8 +22,8 @@ const SettingsListBoolean: React.FC<SettingsListBooleanProps> = ({
 	isEnabled,
 	onToggle,
 	disabled = false,
-	valueActive = 'Aktiv',
-	valueInactive = 'Inaktiv',
+	valueActive = 'Active',
+	valueInactive = 'Inactive',
 	isAccountRequired,
 	primaryColor,
 	...props
