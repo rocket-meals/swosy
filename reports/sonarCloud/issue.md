@@ -37,8 +37,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L46
 
 - **Duplicate name 'debugButton'.**
-  apps/geonexia/frontend/app/index.tsx:1211
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1211
+  apps/geonexia/frontend/app/index.tsx:1189
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1189
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/index.tsx:226
