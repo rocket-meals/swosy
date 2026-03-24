@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+	Alert,
 	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, SettingsList, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
 import { loadActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
@@ -51,10 +53,57 @@ function formatPace(minPerKm: number): string {
 	return `${m}:${String(s).padStart(2, '0')} min/km`;
 }
 
+// ─── Share Content (shown inside bottom sheet modal) ──────────────────────────
+
+const QR_MAX_BYTES = 2953;
+
+function ShareContent({ activity, theme }: { activity: SavedActivity; theme: ReturnType<typeof useTheme>['theme'] }) {
+	const compact = JSON.stringify(activity);
+	const pretty = JSON.stringify(activity, null, 2);
+	const showQr = compact.length <= QR_MAX_BYTES;
+
+	const handleCopy = useCallback(async () => {
+		await Clipboard.setStringAsync(compact);
+		Alert.alert('Copied', 'Activity data copied to clipboard.');
+	}, [compact]);
+
+	return (
+		<View>
+			<ScrollView
+				horizontal
+				style={styles.shareCodeScroll}
+				contentContainerStyle={styles.shareCodeContent}
+				showsHorizontalScrollIndicator={false}
+			>
+				<Text style={[styles.shareCodeText, { color: theme.screen.text }]} selectable>
+					{pretty}
+				</Text>
+			</ScrollView>
+			<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleCopy} activeOpacity={0.8}>
+				<MaterialIcons name="content-copy" size={18} color="#ffffff" />
+				<Text style={styles.shareButtonText}>Copy JSON</Text>
+			</TouchableOpacity>
+			{showQr && (
+				<View style={styles.shareQrContainer}>
+					<QrCode value={compact} size={220} />
+				</View>
+			)}
+			{!showQr && (
+				<Text style={[styles.shareQrHint, { color: theme.screen.text + '88' }]}>
+					QR code not available – activity data exceeds size limit. Use "Copy JSON" instead.
+				</Text>
+			)}
+		</View>
+	);
+}
+
+// ─── Activity Detail Screen ───────────────────────────────────────────────────
+
 export default function ActivityDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
 	const router = useRouter();
+	const { show: showShareModal } = useMyScrollViewModal();
 	const mapRef = useRef<MyMapHandle>(null);
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
@@ -91,6 +140,14 @@ export default function ActivityDetailScreen() {
 			setMapMounted(true);
 		}
 	}, []);
+
+	const handleShare = useCallback(() => {
+		if (!activity) return;
+		showShareModal({
+			title: '📤 Share Activity',
+			children: <ShareContent activity={activity} theme={theme} />,
+		});
+	}, [activity, showShareModal, theme]);
 
 	if (notFound) {
 		return (
@@ -162,6 +219,10 @@ export default function ActivityDetailScreen() {
 						}
 					/>
 				))}
+				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
+					<MaterialIcons name="share" size={18} color="#ffffff" />
+					<Text style={styles.shareButtonText}>Share Activity</Text>
+				</TouchableOpacity>
 			</ScrollView>
 		</View>
 	);
@@ -208,5 +269,44 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 15,
 		fontWeight: '600',
+	},
+	shareButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 16,
+		marginBottom: 8,
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
+	shareButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	shareCodeScroll: {
+		maxHeight: 200,
+		marginHorizontal: 16,
+		marginTop: 12,
+	},
+	shareCodeContent: {
+		paddingBottom: 8,
+	},
+	shareCodeText: {
+		fontFamily: 'monospace',
+		fontSize: 12,
+	},
+	shareQrContainer: {
+		alignItems: 'center',
+		marginTop: 12,
+		marginBottom: 8,
+	},
+	shareQrHint: {
+		fontSize: 13,
+		textAlign: 'center',
+		marginHorizontal: 16,
+		marginTop: 8,
+		marginBottom: 8,
 	},
 });
