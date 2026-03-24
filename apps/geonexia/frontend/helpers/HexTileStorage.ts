@@ -29,24 +29,34 @@ export type HexTileRecord = {
 	 * Tiles that are only enclosed (but not walked on) remain false.
 	 */
 	walkedOn: boolean;
+	/**
+	 * Edge crossing counts accumulated across all runs.
+	 * Key = neighbouring H3 cell index; value = number of times that shared
+	 * border was crossed (entry + exit combined) across all recorded runs.
+	 * Used to render the sandy walk-path overlay on the map.
+	 */
+	edgeCrossings: Record<string, number>;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
 
 /**
  * Compute the colour level (0–3) for a hex tile based on its visit and
- * enclosure counts. Enclosure carries more weight (×3) than direct visits.
+ * enclosure counts. The level is determined by whichever count is higher,
+ * so that both visiting and enclosing a tile independently progress its colour.
  *
- * Thresholds (score = visitCount + enclosedCount × 3):
+ * score = max(visitCount, enclosedCount)
+ *
+ * Thresholds:
  *   score 0          → level 0 (transparent)
- *   score 1–4        → level 1 (light green)
- *   score 5–11       → level 2 (medium green)
- *   score 12+        → level 3 (strong green)
+ *   score 1–3        → level 1 (light green)
+ *   score 4–9        → level 2 (medium green)
+ *   score 10+        → level 3 (strong green)
  */
 export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | 'enclosedCount'>): number {
-	const score = record.visitCount + record.enclosedCount * 3;
-	if (score >= 12) return 3;
-	if (score >= 5) return 2;
+	const score = Math.max(record.visitCount, record.enclosedCount);
+	if (score >= 10) return 3;
+	if (score >= 4) return 2;
 	if (score >= 1) return 1;
 	return 0;
 }

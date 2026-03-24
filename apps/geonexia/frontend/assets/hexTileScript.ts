@@ -34,6 +34,9 @@ export const HEX_TILE_SCRIPT = `
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
   var HEX_BORDER_OPACITY = 0.85;
+  // Walk path: sandy brown/earth tone for tiles the user has physically walked on
+  var WALK_PATH_COLOR = 'rgba(180, 130, 60, 0.85)';
+  var WALK_PATH_WIDTH = 2.5;
 
   // ── MapLibre source / layer IDs ───────────────────────────────────────────
   var HEX_TILE_SOURCE = 'hex-tile-source';
@@ -41,6 +44,8 @@ export const HEX_TILE_SCRIPT = `
   var HEX_TILE_STROKE_LAYER = 'hex-tile-stroke';
   var HEX_BORDER_SOURCE = 'hex-border-source';
   var HEX_BORDER_LAYER = 'hex-border-layer';
+  var HEX_WALK_PATH_SOURCE = 'hex-walk-path-source';
+  var HEX_WALK_PATH_LAYER = 'hex-walk-path-layer';
 
   // ── Empty FeatureCollection used as initial / cleared state ───────────────
   var EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -147,11 +152,27 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': HEX_BORDER_OPACITY,
       },
     });
+    // Walk path: sandy brown lines connecting centres of adjacent visited tiles
+    map.addSource(HEX_WALK_PATH_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_WALK_PATH_LAYER,
+      type: 'line',
+      source: HEX_WALK_PATH_SOURCE,
+      paint: {
+        'line-color': WALK_PATH_COLOR,
+        'line-width': WALK_PATH_WIDTH,
+        'line-opacity': 1,
+        'line-cap': 'round',
+        'line-join': 'round',
+      },
+    });
     notifyViewport();
   }
 
   function removeHexTileLayer() {
     if (!map) return;
+    if (map.getLayer(HEX_WALK_PATH_LAYER)) map.removeLayer(HEX_WALK_PATH_LAYER);
+    if (map.getSource(HEX_WALK_PATH_SOURCE)) map.removeSource(HEX_WALK_PATH_SOURCE);
     if (map.getLayer(HEX_BORDER_LAYER)) map.removeLayer(HEX_BORDER_LAYER);
     if (map.getSource(HEX_BORDER_SOURCE)) map.removeSource(HEX_BORDER_SOURCE);
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
@@ -193,6 +214,11 @@ export const HEX_TILE_SCRIPT = `
       // Recompute territory border edges whenever tile data changes
       var borderSrc = map && map.getSource(HEX_BORDER_SOURCE);
       if (borderSrc) borderSrc.setData(buildBorderEdges(fc.features || []));
+    }
+    if (data.hexWalkPathGeoJson !== undefined) {
+      if (!hexTileActive) return;
+      var walkSrc = map && map.getSource(HEX_WALK_PATH_SOURCE);
+      if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
     }
   };
 
