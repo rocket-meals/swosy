@@ -25,6 +25,7 @@ export const HEX_TILE_SCRIPT = `
   var hexTileActive = true;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   var hexTileStrokeColor = '#2563eb';
+  var VISITED_HEX_COLOR = 'rgba(34, 197, 94, 0.35)';
 
   // ── MapLibre source / layer IDs ───────────────────────────────────────────
   var HEX_TILE_SOURCE = 'hex-tile-source';
@@ -58,7 +59,10 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_TILE_FILL_LAYER,
       type: 'fill',
       source: HEX_TILE_SOURCE,
-      paint: { 'fill-color': hexTileColor, 'fill-opacity': 1 },
+      paint: {
+        'fill-color': ['case', ['boolean', ['get', 'visited'], false], VISITED_HEX_COLOR, hexTileColor],
+        'fill-opacity': 1,
+      },
     });
     map.addLayer({
       id: HEX_TILE_STROKE_LAYER,
