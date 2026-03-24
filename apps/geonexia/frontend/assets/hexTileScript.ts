@@ -30,14 +30,70 @@ export const HEX_TILE_SCRIPT = `
   var HEX_COLOR_LEVEL_1 = 'rgba(187, 247, 208, 0.45)';
   var HEX_COLOR_LEVEL_2 = 'rgba(74, 222, 128, 0.55)';
   var HEX_COLOR_LEVEL_3 = 'rgba(21, 128, 61, 0.65)';
+  // Territory border: thick, dark line between level-0 and level>0 tiles
+  var HEX_BORDER_COLOR = '#1e3a1e';
+  var HEX_BORDER_WIDTH = 2.5;
+  var HEX_BORDER_OPACITY = 0.85;
 
   // ── MapLibre source / layer IDs ───────────────────────────────────────────
   var HEX_TILE_SOURCE = 'hex-tile-source';
   var HEX_TILE_FILL_LAYER = 'hex-tile-fill';
   var HEX_TILE_STROKE_LAYER = 'hex-tile-stroke';
+  var HEX_BORDER_SOURCE = 'hex-border-source';
+  var HEX_BORDER_LAYER = 'hex-border-layer';
 
   // ── Empty FeatureCollection used as initial / cleared state ───────────────
   var EMPTY_FC = { type: 'FeatureCollection', features: [] };
+
+  // ── Compute territory border edges ────────────────────────────────────────
+  // Returns a GeoJSON FeatureCollection of LineString features representing
+  // the edges that lie between a level-0 tile and a level>0 tile.
+  // The GeoJSON received from React Native includes ALL tiles in the viewport
+  // (level 0 and above), so shared edges between adjacent tiles appear twice.
+  // A border edge is therefore one that appears exactly twice and where one
+  // tile is level 0 and the other is level > 0.
+  function buildBorderEdges(features) {
+    // 6 decimal places ≈ 0.1 m precision at the equator – sufficient to
+    // uniquely identify shared hex polygon vertices without floating-point drift.
+    var PRECISION = 6;
+    function edgeKey(v1, v2) {
+      var s1 = v1[0].toFixed(PRECISION) + ',' + v1[1].toFixed(PRECISION);
+      var s2 = v2[0].toFixed(PRECISION) + ',' + v2[1].toFixed(PRECISION);
+      return s1 < s2 ? s1 + '|' + s2 : s2 + '|' + s1;
+    }
+
+    var edgeMap = {};
+    for (var i = 0; i < features.length; i++) {
+      var feature = features[i];
+      var level = (feature.properties && feature.properties.level) || 0;
+      var ring = feature.geometry && feature.geometry.coordinates && feature.geometry.coordinates[0];
+      if (!ring) continue;
+      for (var j = 0; j < ring.length - 1; j++) {
+        var key = edgeKey(ring[j], ring[j + 1]);
+        if (!edgeMap[key]) {
+          edgeMap[key] = { coords: [ring[j], ring[j + 1]], minLevel: level, maxLevel: level, count: 0 };
+        }
+        if (level < edgeMap[key].minLevel) edgeMap[key].minLevel = level;
+        if (level > edgeMap[key].maxLevel) edgeMap[key].maxLevel = level;
+        edgeMap[key].count += 1;
+      }
+    }
+
+    var borderFeatures = [];
+    for (var k in edgeMap) {
+      var entry = edgeMap[k];
+      // Border: shared between a level-0 tile and a level>0 tile
+      if (entry.count === 2 && entry.minLevel === 0 && entry.maxLevel > 0) {
+        borderFeatures.push({
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: entry.coords },
+          properties: {},
+        });
+      }
+    }
+
+    return { type: 'FeatureCollection', features: borderFeatures };
+  }
 
   // ── Notify React Native about the current viewport ────────────────────────
   function notifyViewport() {
@@ -79,11 +135,25 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: { 'line-color': hexTileStrokeColor, 'line-width': 0.8, 'line-opacity': 0.35 },
     });
+    // Territory border: separate source/layer for thick dark boundary lines
+    map.addSource(HEX_BORDER_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_BORDER_LAYER,
+      type: 'line',
+      source: HEX_BORDER_SOURCE,
+      paint: {
+        'line-color': HEX_BORDER_COLOR,
+        'line-width': HEX_BORDER_WIDTH,
+        'line-opacity': HEX_BORDER_OPACITY,
+      },
+    });
     notifyViewport();
   }
 
   function removeHexTileLayer() {
     if (!map) return;
+    if (map.getLayer(HEX_BORDER_LAYER)) map.removeLayer(HEX_BORDER_LAYER);
+    if (map.getSource(HEX_BORDER_SOURCE)) map.removeSource(HEX_BORDER_SOURCE);
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
     if (map.getLayer(HEX_TILE_FILL_LAYER)) map.removeLayer(HEX_TILE_FILL_LAYER);
     if (map.getSource(HEX_TILE_SOURCE)) map.removeSource(HEX_TILE_SOURCE);
@@ -118,7 +188,11 @@ export const HEX_TILE_SCRIPT = `
     if (data.hexTileGeoJson !== undefined) {
       if (!hexTileActive) return;
       var src = map && map.getSource(HEX_TILE_SOURCE);
-      if (src) src.setData(data.hexTileGeoJson || EMPTY_FC);
+      var fc = data.hexTileGeoJson || EMPTY_FC;
+      if (src) src.setData(fc);
+      // Recompute territory border edges whenever tile data changes
+      var borderSrc = map && map.getSource(HEX_BORDER_SOURCE);
+      if (borderSrc) borderSrc.setData(buildBorderEdges(fc.features || []));
     }
   };
 
