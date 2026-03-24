@@ -1028,6 +1028,7 @@ export default function RecordScreen() {
 
 		// Start compass heading subscription once the user has consented to location usage
 		let headingSub: Location.LocationSubscription | null = null;
+		let active = true;
 		Location.watchHeadingAsync((headingData) => {
 			// Prefer true heading; fall back to magnetic heading
 			const deg = headingData.trueHeading >= 0 ? headingData.trueHeading : headingData.magHeading;
@@ -1041,7 +1042,11 @@ export default function RecordScreen() {
 				mapRef.current?.sendToMap({ bearing: deg, easeAnimation: true, easeDuration: 200 });
 			}
 		}).then((sub) => {
-			headingSub = sub;
+			if (active) {
+				headingSub = sub;
+			} else {
+				sub.remove();
+			}
 		}).catch((err) => {
 			console.warn('[RecordScreen] watchHeadingAsync failed:', err);
 		});
@@ -1058,6 +1063,7 @@ export default function RecordScreen() {
 			.catch((err) => { console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err); });
 
 		return () => {
+			active = false;
 			headingSub?.remove();
 		};
 	}, [osmConsent, centerMapOnPosition]);
