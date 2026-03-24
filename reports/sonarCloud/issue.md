@@ -4,25 +4,33 @@
 
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
-| 🔒 Security | 2 | 2 |
-| 🐛 Reliability | 6801 | 48 |
+| 🔒 Security | 4 | 4 |
+| 🐛 Reliability | 6801 | 46 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16803 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16805 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
-## 🔒 Security (2/2)
+## 🔒 Security (4/4)
 
-- **Change this action to not use user-controlled data directly in a run block.**
+- **inputs.working-directory is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/check-build-number/action.yml:22
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L22
+
+- **inputs.working-directory is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
+  .github/actions/check-build-number/action.yml:23
+  https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/check-build-number/action.yml#L23
+
+- **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/geonexia-expo-update/action.yml:164
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-- **Change this action to not use user-controlled data directly in a run block.**
+- **inputs.ref_name is vulnerable to script injection: values of inputs are provided by whoever triggers the workflow. Change this action to not use user-controlled data directly in a run block, for example by assigning this expression to an environment variable.**
   .github/actions/geonexia-expo-update/action.yml:164
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-## 🐛 Reliability (48/6801)
+## 🐛 Reliability (46/6801)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -37,8 +45,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L46
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:322
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L322
+  apps/geonexia/frontend/app/index.tsx:333
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L333
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242
@@ -203,14 +211,6 @@
 - **Use `Math.trunc` instead of `| 0`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:758
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L758
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:759
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L759
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:759
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L759
 
 - **Use `Math.trunc` instead of `| 0`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:759
