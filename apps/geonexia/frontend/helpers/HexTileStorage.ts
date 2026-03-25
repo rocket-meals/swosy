@@ -30,6 +30,16 @@ export type HexTileRecord = {
 	 * Tiles that are only enclosed (but not walked on) remain false.
 	 */
 	walkedOn: boolean;
+	/**
+	 * Key of the selected terrain tile image (e.g. "Grass/grass_01").
+	 * Null or undefined means no custom tile image.
+	 */
+	tileImage?: string | null;
+	/**
+	 * Filename (without .glb extension) of the selected 3-D model placed on
+	 * this tile (e.g. "building-castle").  Null or undefined means no model.
+	 */
+	model?: string | null;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────

@@ -111,8 +111,22 @@ const hexTileSlice = createSlice({
 			state.records = action.payload;
 			state.resetToken += 1;
 		},
+
+		/**
+		 * Set the custom tile image and/or model for a specific hex tile.
+		 * Pass `null` to explicitly clear a value; omit the key to leave it unchanged.
+		 */
+		setHexTileCustomization(
+			state,
+			action: PayloadAction<{ h3Index: string; tileImage?: string | null; model?: string | null }>,
+		) {
+			const { h3Index, tileImage, model } = action.payload;
+			const rec = getOrCreate(state.records, h3Index);
+			if (tileImage !== undefined) rec.tileImage = tileImage;
+			if (model !== undefined) rec.model = model;
+		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

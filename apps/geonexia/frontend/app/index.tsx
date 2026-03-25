@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
 	Alert,
 	Animated,
+	Image,
 	PanResponder,
 	SafeAreaView,
 	ScrollView,
@@ -22,10 +23,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
+import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
+import { MODEL_GROUPS } from '../assets/modelList';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
@@ -956,16 +959,20 @@ function formatTimestamp(ts: number | null): string {
 	});
 }
 
-function HexTileInfoContent({
-	h3Index,
-	record,
-	theme,
-}: {
-	h3Index: string;
-	record: HexTileRecord | null;
-	theme: ReturnType<typeof useTheme>['theme'];
-}) {
-	const rows: { label: string; value: string }[] = [
+const TILE_THUMB_SIZE = 64;
+const TILE_THUMB_GAP = 6;
+
+function HexTileInfoContent({ h3Index }: { h3Index: string }) {
+	const { theme } = useTheme();
+	const dispatch = useDispatch();
+	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
+
+	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
+
+	const currentTileImage = record?.tileImage ?? null;
+	const currentModel = record?.model ?? null;
+
+	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
 		{ label: 'Level', value: record ? String(record.level) : '0' },
 		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
@@ -977,17 +984,145 @@ function HexTileInfoContent({
 
 	return (
 		<View style={styles.hexInfoContainer}>
-			{rows.map((row, i) => (
+			{/* ── Stats rows ── */}
+			{infoRows.map((row, i) => (
 				<View
 					key={row.label}
 					style={[
 						styles.hexInfoRow,
 						{ borderBottomColor: theme.screen.text + '18' },
-						i === rows.length - 1 && { borderBottomWidth: 0 },
+						i === infoRows.length - 1 && { borderBottomWidth: 0 },
 					]}
 				>
 					<Text style={[styles.hexInfoLabel, { color: theme.screen.icon }]}>{row.label}</Text>
 					<Text style={[styles.hexInfoValue, { color: theme.screen.text }]}>{row.value}</Text>
+				</View>
+			))}
+
+			{/* ── Tile Image section ── */}
+			<SettingsListGroupTitle title="Tile Image" />
+
+			{/* Category tabs */}
+			<ScrollView
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				contentContainerStyle={styles.tilePickerCategoryRow}
+			>
+				{TERRAIN_CATEGORIES.map((cat) => {
+					const isActive = selectedCategory === cat;
+					return (
+						<TouchableOpacity
+							key={cat}
+							onPress={() => setSelectedCategory(cat)}
+							style={[
+								styles.tilePickerCategoryTab,
+								{
+									backgroundColor: isActive ? PRIMARY_COLOR : theme.screen.text + '18',
+								},
+							]}
+						>
+							<Text
+								style={[
+									styles.tilePickerCategoryLabel,
+									{ color: isActive ? '#ffffff' : theme.screen.text },
+								]}
+							>
+								{cat}
+							</Text>
+						</TouchableOpacity>
+					);
+				})}
+			</ScrollView>
+
+			{/* Thumbnail row */}
+			<ScrollView
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				contentContainerStyle={styles.tilePickerThumbRow}
+			>
+				{TERRAIN_ASSETS[selectedCategory].map((asset) => {
+					const isSelected = currentTileImage === asset.key;
+					return (
+						<TouchableOpacity
+							key={asset.key}
+							onPress={() =>
+								dispatch(
+									setHexTileCustomization({
+										h3Index,
+										tileImage: isSelected ? null : asset.key,
+									}),
+								)
+							}
+							style={[
+								styles.tilePickerThumb,
+								isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
+							]}
+						>
+							<Image
+								source={asset.source}
+								style={styles.tilePickerThumbImage}
+								resizeMode="cover"
+							/>
+						</TouchableOpacity>
+					);
+				})}
+			</ScrollView>
+
+			{currentTileImage && (
+				<View style={styles.tilePickerCurrentRow}>
+					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
+						Selected: {currentTileImage}
+					</Text>
+					<TouchableOpacity
+						onPress={() => dispatch(setHexTileCustomization({ h3Index, tileImage: null }))}
+					>
+						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
+					</TouchableOpacity>
+				</View>
+			)}
+
+			{/* ── Model section ── */}
+			<SettingsListGroupTitle title="Model" />
+
+			{currentModel && (
+				<View style={styles.tilePickerCurrentRow}>
+					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
+						Selected: {currentModel}
+					</Text>
+					<TouchableOpacity
+						onPress={() => dispatch(setHexTileCustomization({ h3Index, model: null }))}
+					>
+						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
+					</TouchableOpacity>
+				</View>
+			)}
+
+			{MODEL_GROUPS.map((group) => (
+				<View key={group.label}>
+					<Text style={[styles.modelGroupLabel, { color: theme.screen.icon }]}>
+						{group.label}
+					</Text>
+					{group.models.map((modelEntry, idx) => {
+						const position =
+							idx === 0 ? 'top' : idx === group.models.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={modelEntry.key}
+								label={modelEntry.label}
+								isSelected={currentModel === modelEntry.key}
+								selectionColor={PRIMARY_COLOR}
+								groupPosition={position}
+								onPress={() =>
+									dispatch(
+										setHexTileCustomization({
+											h3Index,
+											model: currentModel === modelEntry.key ? null : modelEntry.key,
+										}),
+									)
+								}
+							/>
+						);
+					})}
 				</View>
 			))}
 		</View>
@@ -1227,15 +1362,15 @@ export default function RecordScreen() {
 		debugMoveSpeedKmhRef.current = speed;
 	}, []);
 
-	const showHexTileModal = useCallback((h3Index: string, record: HexTileRecord | null) => {
+	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
 			onClose: closeModal,
 			children: (
-				<HexTileInfoContent h3Index={h3Index} record={record} theme={theme} />
+				<HexTileInfoContent h3Index={h3Index} />
 			),
 		});
-	}, [showModal, closeModal, theme]);
+	}, [showModal, closeModal]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
@@ -1270,8 +1405,7 @@ export default function RecordScreen() {
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string };
 			if (clickedMsg.h3Index) {
-				const tileRecord = store.getState().hexTiles.records[clickedMsg.h3Index] ?? null;
-				showHexTileModal(clickedMsg.h3Index, tileRecord);
+				showHexTileModal(clickedMsg.h3Index);
 			}
 		}
 	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal]);
@@ -2427,5 +2561,65 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		flexShrink: 1,
 		textAlign: 'right',
+	},
+	// Tile image picker
+	tilePickerCategoryRow: {
+		flexDirection: 'row',
+		gap: TILE_THUMB_GAP,
+		paddingHorizontal: 16,
+		paddingBottom: 10,
+	},
+	tilePickerCategoryTab: {
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 16,
+	},
+	tilePickerCategoryLabel: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	tilePickerThumbRow: {
+		flexDirection: 'row',
+		gap: TILE_THUMB_GAP,
+		paddingHorizontal: 16,
+		paddingBottom: 10,
+	},
+	tilePickerThumb: {
+		width: TILE_THUMB_SIZE,
+		height: TILE_THUMB_SIZE,
+		borderRadius: 6,
+		overflow: 'hidden',
+		borderWidth: 2,
+		borderColor: 'transparent',
+	},
+	tilePickerThumbImage: {
+		width: TILE_THUMB_SIZE,
+		height: TILE_THUMB_SIZE,
+	},
+	tilePickerCurrentRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingHorizontal: 16,
+		paddingBottom: 8,
+	},
+	tilePickerCurrentLabel: {
+		fontSize: 12,
+		flex: 1,
+	},
+	tilePickerClearBtn: {
+		fontSize: 13,
+		fontWeight: '600',
+		paddingLeft: 8,
+	},
+	// Model picker
+	modelGroupLabel: {
+		fontSize: 12,
+		fontWeight: '700',
+		textTransform: 'uppercase',
+		letterSpacing: 0.8,
+		paddingHorizontal: 16,
+		paddingTop: 12,
+		paddingBottom: 4,
 	},
 });
