@@ -1423,19 +1423,20 @@ export default function RecordScreen() {
 	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
 
 	// Moves the player to a new position (used by the debug gamepad).
-	// During recording, the joystick only drives the visual player marker and
-	// map centre; it does NOT record synthetic route points and does NOT overwrite
-	// debugPlayerPositionRef so that GPS remains the authoritative position source.
-	// When not recording, the joystick has full control of the player position.
+	// During recording the joystick acts as a GPS substitute: every movement is
+	// forwarded to handleLocationUpdate so route points are recorded just like
+	// real GPS fixes.  When not recording the joystick has full control of the
+	// player position without recording anything.
 	const handleDebugMove = useCallback((lat: number, lng: number) => {
 		if (isRecordingRef.current) {
-			// Visual-only update: move the player marker and pan the map without
-			// touching the GPS-driven shared position ref.
-			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
-			mapRef.current?.sendToMap({
-				mapCenterPosition: { lat, lng },
-				easeAnimation: true,
-				easeDuration: DEBUG_MOVE_INTERVAL_MS,
+			// Record the joystick position as a proper route point so the route
+			// is built up the same way real GPS data would build it.
+			handleLocationUpdate({
+				lat,
+				lng,
+				altitude: null,
+				speed: debugMoveSpeedKmhRef.current / 3.6,
+				timestamp: Date.now(),
 			});
 		} else {
 			debugPlayerPositionRef.current = { lat, lng };
@@ -1448,7 +1449,7 @@ export default function RecordScreen() {
 				});
 			}
 		}
-	}, []);
+	}, [handleLocationUpdate]);
 
 	// Called by the joystick when the movement direction changes.
 	// Updates the view cone and, in heading mode, the map bearing.
