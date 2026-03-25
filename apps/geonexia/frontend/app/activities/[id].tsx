@@ -147,6 +147,7 @@ export default function ActivityDetailScreen() {
 	const autoRotateBearingRef = useRef(0);
 	const autoRotateActiveRef = useRef(false);
 	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 
 	// Clean up auto-rotate interval on unmount
 	useEffect(() => {
@@ -217,6 +218,9 @@ export default function ActivityDetailScreen() {
 			const maxLat = Math.max(...lats);
 			const minLng = Math.min(...lngs);
 			const maxLng = Math.max(...lngs);
+			const centerLat = (minLat + maxLat) / 2;
+			const centerLng = (minLng + maxLng) / 2;
+			routeCenterRef.current = { lat: centerLat, lng: centerLng };
 			mapRef.current.sendToMap({
 				fitBounds: [[minLng, minLat], [maxLng, maxLat]],
 				fitBoundsPadding: 50,
@@ -224,6 +228,7 @@ export default function ActivityDetailScreen() {
 				bearing: 0,
 			});
 		} else if (points.length === 1) {
+			routeCenterRef.current = { lat: points[0].lat, lng: points[0].lng };
 			mapRef.current.sendToMap({
 				mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
 				pitch: 45,
@@ -231,7 +236,7 @@ export default function ActivityDetailScreen() {
 			});
 		}
 
-		// Start slow auto-rotate
+		// Start slow auto-rotate, keeping the camera anchored on the route centre
 		autoRotateBearingRef.current = 0;
 		autoRotateActiveRef.current = true;
 		if (autoRotateIntervalRef.current !== null) {
@@ -241,8 +246,10 @@ export default function ActivityDetailScreen() {
 			if (!autoRotateActiveRef.current || !mapRef.current) return;
 			const deltaDeg = AUTO_ROTATE_SPEED_DEG_PER_S * (AUTO_ROTATE_TICK_MS / 1000);
 			autoRotateBearingRef.current = (autoRotateBearingRef.current + deltaDeg) % 360;
+			const center = routeCenterRef.current;
 			mapRef.current.sendToMap({
 				bearing: autoRotateBearingRef.current,
+				...(center ? { mapCenterPosition: center } : {}),
 				easeAnimation: true,
 				easeDuration: AUTO_ROTATE_TICK_MS,
 			});
@@ -344,7 +351,7 @@ export default function ActivityDetailScreen() {
 		>
 			{/* Map – 1:1 square at the top */}
 			<View style={styles.mapContainer}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} />
 			</View>
 
 			{/* Stats list */}
