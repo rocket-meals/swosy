@@ -209,7 +209,7 @@ export default function Layout() {
 									),
 								}}
 							/>
-					<Drawer.Screen
+							<Drawer.Screen
 								name="model-test/index"
 								options={{
 									title: '3D Model Test',
