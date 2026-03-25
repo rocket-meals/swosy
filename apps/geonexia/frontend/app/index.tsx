@@ -1258,6 +1258,11 @@ export default function RecordScreen() {
 			url: string;
 			coordinates: [[number, number], [number, number], [number, number], [number, number]];
 			opacity: number;
+			// Actual H3 hex vertices in [lng, lat] order for precise canvas clipping.
+			polygonCoords: [number, number][];
+			// Bearing from hex center to its first vertex (radians, 0 = North, CW positive).
+			// Used to rotate the texture so it aligns with the H3 hex orientation.
+			rotation: number;
 		};
 		type GlbModel = {
 			id: string;
@@ -1290,6 +1295,14 @@ export default function RecordScreen() {
 								if (lng < minLng) minLng = lng;
 								if (lng > maxLng) maxLng = lng;
 							}
+							// Compute rotation: bearing from hex center to first vertex (radians from North, CW).
+							// Used to align the terrain texture with the H3 hex orientation.
+							const centerLat = (minLat + maxLat) / 2;
+							const centerLng = (minLng + maxLng) / 2;
+							const v0 = boundary[0];
+							const dlat = v0[0] - centerLat;
+							const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
+							const rotation = Math.atan2(dlng, dlat);
 							imageOverlays.push({
 								id: `tile-img-${h3Index}`,
 								url,
@@ -1301,6 +1314,9 @@ export default function RecordScreen() {
 									[minLng, minLat],
 								],
 								opacity: 0.9,
+								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
+								polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
+								rotation,
 							});
 						}
 					}
