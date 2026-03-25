@@ -30,13 +30,6 @@ export type HexTileRecord = {
 	 * Tiles that are only enclosed (but not walked on) remain false.
 	 */
 	walkedOn: boolean;
-	/**
-	 * Edge crossing counts accumulated across all runs.
-	 * Key = neighbouring H3 cell index; value = number of times that shared
-	 * border was crossed (entry + exit combined) across all recorded runs.
-	 * Used to render the sandy walk-path overlay on the map.
-	 */
-	edgeCrossings: Record<string, number>;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
