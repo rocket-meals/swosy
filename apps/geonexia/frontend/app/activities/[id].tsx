@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,6 +15,9 @@ import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useThem
 
 import { deleteActivity, loadActivity, RoutePoint, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
+
+const AUTO_ROTATE_TICK_MS = 100;
+const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -140,6 +144,18 @@ export default function ActivityDetailScreen() {
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
+	const autoRotateBearingRef = useRef(0);
+	const autoRotateActiveRef = useRef(false);
+	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+	// Clean up auto-rotate interval on unmount
+	useEffect(() => {
+		return () => {
+			if (autoRotateIntervalRef.current !== null) {
+				clearInterval(autoRotateIntervalRef.current);
+			}
+		};
+	}, []);
 
 	// Show back arrow instead of drawer hamburger
 	useLayoutEffect(() => {
@@ -192,19 +208,65 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
-		// Center the map on the first route point if available
-		const first = activity.routePoints[0];
-		if (first) {
+		// Calculate bounds from all route points and fit the camera
+		const points = activity.routePoints;
+		if (points.length >= 2) {
+			const lats = points.map((p) => p.lat);
+			const lngs = points.map((p) => p.lng);
+			const minLat = Math.min(...lats);
+			const maxLat = Math.max(...lats);
+			const minLng = Math.min(...lngs);
+			const maxLng = Math.max(...lngs);
 			mapRef.current.sendToMap({
-				mapCenterPosition: { lat: first.lat, lng: first.lng },
+				fitBounds: [[minLng, minLat], [maxLng, maxLat]],
+				fitBoundsPadding: 50,
+				pitch: 45,
+				bearing: 0,
+			});
+		} else if (points.length === 1) {
+			mapRef.current.sendToMap({
+				mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
+				pitch: 45,
+				bearing: 0,
 			});
 		}
-	}, [mapMounted, activity, buildRouteSegments]);
 
+		// Start slow auto-rotate
+		autoRotateBearingRef.current = 0;
+		autoRotateActiveRef.current = true;
+		if (autoRotateIntervalRef.current !== null) {
+			clearInterval(autoRotateIntervalRef.current);
+		}
+		autoRotateIntervalRef.current = setInterval(() => {
+			if (!autoRotateActiveRef.current || !mapRef.current) return;
+			const deltaDeg = AUTO_ROTATE_SPEED_DEG_PER_S * (AUTO_ROTATE_TICK_MS / 1000);
+			autoRotateBearingRef.current = (autoRotateBearingRef.current + deltaDeg) % 360;
+			mapRef.current.sendToMap({
+				bearing: autoRotateBearingRef.current,
+				easeAnimation: true,
+				easeDuration: AUTO_ROTATE_TICK_MS,
+			});
+		}, AUTO_ROTATE_TICK_MS);
+
+		return () => {
+			if (autoRotateIntervalRef.current !== null) {
+				clearInterval(autoRotateIntervalRef.current);
+				autoRotateIntervalRef.current = null;
+			}
+			autoRotateActiveRef.current = false;
+		};
+	}, [mapMounted, activity, buildRouteSegments]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
+		} else if (msg.tag === 'MapInteracted') {
+			// Stop auto-rotate when user interacts with the map
+			autoRotateActiveRef.current = false;
+			if (autoRotateIntervalRef.current !== null) {
+				clearInterval(autoRotateIntervalRef.current);
+				autoRotateIntervalRef.current = null;
+			}
 		}
 	}, []);
 
