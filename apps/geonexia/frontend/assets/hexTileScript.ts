@@ -152,7 +152,11 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_TILE_STROKE_LAYER,
       type: 'line',
       source: HEX_TILE_SOURCE,
-      paint: { 'line-color': hexTileStrokeColor, 'line-width': 0.8, 'line-opacity': 0.35 },
+      paint: {
+        'line-color': hexTileStrokeColor,
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 12, 1.0, 15, 0.7],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.4, 15, 0.3],
+      },
     });
     // Territory border: separate source/layer for thick dark boundary lines
     map.addSource(HEX_BORDER_SOURCE, { type: 'geojson', data: EMPTY_FC });
