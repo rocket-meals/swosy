@@ -1683,6 +1683,7 @@ export default function RecordScreen() {
 			endedAt,
 			routePoints: points,
 			stats,
+			sportType: selectedSportType,
 		};
 		try {
 			saveActivity(activity);
