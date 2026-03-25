@@ -4,6 +4,7 @@ export interface MyMapHandle {
 
 export interface MyMapProps {
 	initialCenter?: { lat: number; lng: number };
+	initialZoom?: number;
 	initialPitch?: number;
 	loadingText?: string;
 	onMessage: (data: object) => void;

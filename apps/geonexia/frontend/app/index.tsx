@@ -2160,7 +2160,7 @@ export default function RecordScreen() {
 		<SafeAreaView style={styles.container}>
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				<MyMap ref={mapRef} initialZoom={17} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
 
 				{/* Map overlay buttons – top-right */}
 				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
