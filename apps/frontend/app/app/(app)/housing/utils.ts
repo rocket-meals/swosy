@@ -5,13 +5,19 @@ export const sortApartmentsIntelligently = (apartments: DatabaseTypes.Apartments
 	if (!apartments) return apartments;
 
 	return [...apartments].sort((a: any, b: any) => {
-		const isFreeA = !a.available_from;
-		const isFreeB = !b.available_from;
+		const dateA = a.available_from ? new Date(a.available_from).getTime() : null;
+		const dateB = b.available_from ? new Date(b.available_from).getTime() : null;
 
-		if (isFreeA && !isFreeB) return -1;
-		if (!isFreeA && isFreeB) return 1;
+		if (dateA !== dateB) {
+			if (dateA === null) return -1;
+			if (dateB === null) return 1;
+			if (dateA !== dateB) return dateA - dateB;
+		}
 
-		return (a.distance || 0) - (b.distance || 0);
+		const distanceDiff = (a.distance || 0) - (b.distance || 0);
+		if (distanceDiff !== 0) return distanceDiff;
+
+		return (a.alias || '').localeCompare(b.alias || '');
 	});
 };
 

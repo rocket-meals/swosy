@@ -1,5 +1,5 @@
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
@@ -11,8 +11,8 @@ import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomT
 import { TranslationKeys } from '@/locales/keys';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
-import AvailableFromModal from '../AvailableFromModal';
 import useMyScrollviewModalDistanceInformation from '@/hooks/useMyScrollviewModalDistanceInformation';
+import useMyScrollviewModalApartmentAvailableFrom from '@/hooks/useMyScrollviewModalApartmentAvailableFrom';
 import useApartmentDetailsModal from '@/hooks/useApartmentDetailsModal';
 
 const ApartmentItem: React.FC<BuildingItemProps> = ({
@@ -29,7 +29,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
 }) => {
 	const { openDistanceInformationModal } = useMyScrollviewModalDistanceInformation();
 	const { openApartmentDetailsModal } = useApartmentDetailsModal();
-	const [showFreeModal, setShowFreeModal] = useState(false);
+	const { openApartmentAvailableFromModal } = useMyScrollviewModalApartmentAvailableFrom();
 
 	const contrastColor = myContrastColor(housingAreaColor || theme.primary, theme, mode === 'dark');
 
@@ -78,7 +78,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
 									...styles.freeBadge,
 									backgroundColor: housingAreaColor,
 								}}
-								onPress={() => setShowFreeModal(true)}
+								onPress={() => openApartmentAvailableFromModal(apartment.available_from as string)}
 							>
 								<MaterialCommunityIcons name="door-open" size={20} color={contrastColor} />
 								<Text style={{ ...styles.freeBadgeText, color: contrastColor }}>{translate(TranslationKeys.free_rooms)}</Text>
@@ -112,7 +112,6 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
 			>
 				<Text style={{ ...styles.campusName, color: theme.screen.text }}>{isWeb ? excerpt(apartment?.alias, 70) : excerpt(apartment?.alias, 40)}</Text>
 			</CardWithText>
-			<AvailableFromModal visible={showFreeModal} onClose={() => setShowFreeModal(false)} availableFrom={String(apartment?.available_from)} />
 		</>
 	);
 };
