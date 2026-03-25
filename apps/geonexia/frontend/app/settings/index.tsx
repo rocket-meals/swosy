@@ -1,111 +1,141 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import { SettingsList } from 'repo-depkit-common-ui';
+import React, { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
+import {
+	SettingsList,
+	SettingsListBoolean,
+	SettingsListGroupTitle,
+	useMyScrollViewModal,
+	useTheme,
+} from 'repo-depkit-common-ui';
 import Constants from 'expo-constants';
+import { useDispatch } from 'react-redux';
+
+import { deleteAllActivities } from '../../helpers/ActivityStorage';
+import { loadPersistedState } from '../../store/hexTileSlice';
+import { AppDispatch } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
+const NOTIFICATION_COLOR = '#16a34a';
+const NEUTRAL_COLOR = '#6b7280';
+const DANGER_COLOR = '#dc2626';
+
+// ─── Reset Confirm Content ────────────────────────────────────────────────────
+
+function ResetConfirmContent({
+	onConfirm,
+	onCancel,
+	theme,
+}: {
+	onConfirm: () => void;
+	onCancel: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	return (
+		<View style={styles.resetConfirmContainer}>
+			<Text style={[styles.resetConfirmText, { color: theme.screen.text }]}>
+				All activities and hex tile progress will be permanently deleted. This action cannot be undone.
+			</Text>
+			<TouchableOpacity
+				style={[styles.resetConfirmButton, { backgroundColor: DANGER_COLOR }]}
+				onPress={onConfirm}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="delete-forever" size={18} color="#ffffff" />
+				<Text style={styles.resetConfirmButtonText}>Reset All Data</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.resetCancelButton} onPress={onCancel} activeOpacity={0.8}>
+				<Text style={[styles.resetCancelButtonText, { color: theme.screen.text }]}>Cancel</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Settings Screen ──────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
 	const [darkMode, setDarkMode] = useState(false);
 	const [notifications, setNotifications] = useState(true);
+	const { theme } = useTheme();
+	const dispatch = useDispatch<AppDispatch>();
+	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
-	const items = [
-		{
-			key: 'appearance-header',
-			type: 'header',
-			label: 'Appearance',
-		},
-		{
-			key: 'theme',
-			type: 'item',
-			label: 'Dark Mode',
-			value: darkMode ? 'On' : 'Off',
-			iconBgColor: PRIMARY_COLOR,
-			leftIcon: (
-				<MaterialCommunityIcons
-					name="theme-light-dark"
-					size={22}
-					color="#ffffff"
+	const handleResetAllData = useCallback(() => {
+		showResetModal({
+			title: '⚠️ Reset All Data',
+			children: (
+				<ResetConfirmContent
+					onConfirm={() => {
+						deleteAllActivities();
+						dispatch(loadPersistedState({}));
+						closeResetModal();
+					}}
+					onCancel={closeResetModal}
+					theme={theme}
 				/>
 			),
-			rightIcon: <Ionicons name="chevron-forward" size={20} color="#9ca3af" />,
-			handleFunction: () => setDarkMode((prev) => !prev),
-			groupPosition: 'single' as const,
-		},
-		{
-			key: 'notifications-header',
-			type: 'header',
-			label: 'Notifications',
-		},
-		{
-			key: 'push-notifications',
-			type: 'item',
-			label: 'Push Notifications',
-			value: notifications ? 'Enabled' : 'Disabled',
-			iconBgColor: '#16a34a',
-			leftIcon: (
-				<Ionicons name="notifications-outline" size={22} color="#ffffff" />
-			),
-			rightIcon: <Ionicons name="chevron-forward" size={20} color="#9ca3af" />,
-			handleFunction: () => setNotifications((prev) => !prev),
-			groupPosition: 'single' as const,
-		},
-		{
-			key: 'about-header',
-			type: 'header',
-			label: 'About',
-		},
-		{
-			key: 'version',
-			type: 'item',
-			label: 'App Version',
-			value: appVersion,
-			iconBgColor: '#6b7280',
-			leftIcon: <Feather name="info" size={22} color="#ffffff" />,
-			groupPosition: 'top' as const,
-		},
-		{
-			key: 'open-source',
-			type: 'item',
-			label: 'Open Source',
-			value: 'View licenses',
-			iconBgColor: '#6b7280',
-			leftIcon: <Feather name="code" size={22} color="#ffffff" />,
-			rightIcon: <Ionicons name="chevron-forward" size={20} color="#9ca3af" />,
-			handleFunction: () => {},
-			groupPosition: 'bottom' as const,
-		},
-	];
+		});
+	}, [showResetModal, closeResetModal, dispatch, theme]);
 
 	return (
 		<View style={styles.container}>
-			<FlatList
-				data={items}
-				keyExtractor={(item) => item.key}
-				contentContainerStyle={styles.listContent}
-				renderItem={({ item }) => {
-					if (item.type === 'header') {
-						return (
-							<Text style={styles.sectionHeader}>{item.label}</Text>
-						);
+			<ScrollView contentContainerStyle={styles.listContent}>
+				<SettingsListGroupTitle title="Appearance" />
+				<SettingsList
+					iconBgColor={PRIMARY_COLOR}
+					leftIcon={
+						<MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" />
 					}
-					return (
-						<SettingsList
-							primaryColor={item.iconBgColor ?? PRIMARY_COLOR}
-							iconBgColor={item.iconBgColor}
-							leftIcon={item.leftIcon}
-							label={item.label}
-							value={item.value}
-							rightIcon={item.rightIcon}
-							handleFunction={item.handleFunction}
-							groupPosition={item.groupPosition}
-						/>
-					);
-				}}
-			/>
+					label="Dark Mode"
+					value={darkMode ? 'On' : 'Off'}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => setDarkMode((prev) => !prev)}
+					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Notifications" />
+				<SettingsListBoolean
+					iconBgColor={NOTIFICATION_COLOR}
+					leftIcon={<Ionicons name="notifications-outline" size={22} color="#ffffff" />}
+					label="Push Notifications"
+					isEnabled={notifications}
+					onToggle={() => setNotifications((prev) => !prev)}
+					valueActive="Enabled"
+					valueInactive="Disabled"
+					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Daten Verwaltung" />
+				<SettingsList
+					iconBgColor={DANGER_COLOR}
+					leftIcon={<MaterialIcons name="delete-forever" size={22} color="#ffffff" />}
+					label="Alle Daten zurücksetzen"
+					value="Activities & Hex Tiles"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleResetAllData}
+					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="About" />
+				<SettingsList
+					iconBgColor={NEUTRAL_COLOR}
+					leftIcon={<Feather name="info" size={22} color="#ffffff" />}
+					label="App Version"
+					value={appVersion}
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={NEUTRAL_COLOR}
+					leftIcon={<Feather name="code" size={22} color="#ffffff" />}
+					label="Open Source"
+					value="View licenses"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => {}}
+					groupPosition="bottom"
+				/>
+			</ScrollView>
 		</View>
 	);
 }
@@ -118,14 +148,35 @@ const styles = StyleSheet.create({
 	listContent: {
 		paddingVertical: 16,
 	},
-	sectionHeader: {
-		fontSize: 13,
+	resetConfirmContainer: {
+		paddingTop: 8,
+		gap: 4,
+	},
+	resetConfirmText: {
+		fontSize: 15,
+		lineHeight: 22,
+		marginBottom: 8,
+	},
+	resetConfirmButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
+	resetConfirmButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
 		fontWeight: '600',
-		color: '#6b7280',
-		textTransform: 'uppercase',
-		letterSpacing: 0.6,
-		paddingHorizontal: 16,
-		paddingTop: 16,
-		paddingBottom: 6,
+	},
+	resetCancelButton: {
+		alignItems: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+	},
+	resetCancelButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
 	},
 });

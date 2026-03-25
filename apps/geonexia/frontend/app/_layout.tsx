@@ -1,13 +1,19 @@
 import 'setimmediate';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider } from 'repo-depkit-common-ui';
+import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Provider } from 'react-redux';
+import { store } from '../store/store';
+import { loadPersistedState } from '../store/hexTileSlice';
+import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
+import { loadHexTileState } from '../helpers/HexTileStorage';
+import { loadSportType } from '../helpers/SportTypeStorage';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
@@ -68,15 +74,15 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const items: DrawerItem[] = [
 		{
 			key: 'index',
-			label: 'Home',
-			renderIcon: (_, color) => <Ionicons name="home-outline" size={24} color={color} />,
+			label: 'Record',
+			renderIcon: (_, color) => <Ionicons name="radio-button-on-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('index'),
 		},
 		{
-			key: 'activity/index',
-			label: 'Activity',
-			renderIcon: (_, color) => <Ionicons name="fitness-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('activity/index'),
+			key: 'activities/index',
+			label: 'Activities',
+			renderIcon: (_, color) => <Ionicons name="list-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('activities/index'),
 		},
 		{
 			key: 'settings/index',
@@ -102,52 +108,80 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 export default function Layout() {
+	useEffect(() => {
+		loadHexTileState()
+			.then((records) => {
+				store.dispatch(loadPersistedState(records));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted hex tile state:', err);
+			});
+		loadSportType()
+			.then((type) => {
+				store.dispatch(loadSportTypeAction(type));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted sport type:', err);
+			});
+	}, []);
+
 	return (
+		<Provider store={store}>
 		<AppErrorBoundary>
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
 				<ThemeProvider>
-					<ModalProvider>
-					<StatusBar style="auto" />
-					<Drawer
-						drawerContent={(props) => <CustomDrawerContent {...props} />}
-						screenOptions={{
-							drawerActiveTintColor: '#2563eb',
-						}}
-					>
-						<Drawer.Screen
-							name="index"
-							options={{
-								title: 'Home',
-								drawerIcon: ({ color, size }) => (
-									<Ionicons name="home-outline" size={size} color={color} />
-								),
+					<SettingsProvider primaryColor="#2563eb">
+						<ModalProvider>
+						<StatusBar style="auto" />
+						<Drawer
+							drawerContent={(props) => <CustomDrawerContent {...props} />}
+							screenOptions={{
+								drawerActiveTintColor: '#2563eb',
 							}}
-						/>
-						<Drawer.Screen
-							name="activity/index"
-							options={{
-								title: 'Activity',
-								drawerIcon: ({ color, size }) => (
-									<Ionicons name="fitness-outline" size={size} color={color} />
-								),
-							}}
-						/>
-						<Drawer.Screen
-							name="settings/index"
-							options={{
-								title: 'Settings',
-								drawerIcon: ({ color, size }) => (
-									<Ionicons name="settings-outline" size={size} color={color} />
-								),
-							}}
-						/>
-					</Drawer>
-					</ModalProvider>
+						>
+							<Drawer.Screen
+								name="index"
+								options={{
+									title: 'Record',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="radio-button-on-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="activities/index"
+								options={{
+									title: 'Activities',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="list-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="activities/[id]"
+								options={{
+									title: 'Activity',
+									drawerItemStyle: { display: 'none' },
+								}}
+							/>
+							<Drawer.Screen
+								name="settings/index"
+								options={{
+									title: 'Settings',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="settings-outline" size={size} color={color} />
+									),
+								}}
+							/>
+						</Drawer>
+						</ModalProvider>
+					</SettingsProvider>
 				</ThemeProvider>
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
 		</AppErrorBoundary>
+		</Provider>
 	);
 }
 

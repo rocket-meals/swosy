@@ -1,0 +1,385 @@
+import React, { useCallback, useLayoutEffect, useState } from 'react';
+import {
+	Alert,
+	FlatList,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from 'react-native';
+import { useFocusEffect, useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { useDispatch } from 'react-redux';
+
+import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
+import { startRun, markVisited } from '../../store/hexTileSlice';
+import { AppDispatch } from '../../store/store';
+
+const PRIMARY_COLOR = '#2563eb';
+
+function formatDate(timestamp: number): string {
+	const d = new Date(timestamp);
+	return d.toLocaleDateString(undefined, {
+		day: '2-digit',
+		month: 'short',
+		year: 'numeric',
+	});
+}
+
+function formatTime(timestamp: number): string {
+	const d = new Date(timestamp);
+	return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDuration(totalSeconds: number): string {
+	const h = Math.floor(totalSeconds / 3600);
+	const m = Math.floor((totalSeconds % 3600) / 60);
+	const s = Math.floor(totalSeconds % 60);
+	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function formatDistance(km: number): string {
+	if (km < 1) return `${Math.round(km * 1000)} m`;
+	return `${km.toFixed(2)} km`;
+}
+
+function formatPace(minPerKm: number): string {
+	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
+	const m = Math.floor(minPerKm);
+	const s = Math.round((minPerKm - m) * 60);
+	return `${m}:${String(s).padStart(2, '0')} /km`;
+}
+
+type ActivityListItemProps = {
+	activity: SavedActivity;
+	onPress: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+function ActivityListItem({ activity, onPress, theme }: ActivityListItemProps) {
+	const { stats } = activity;
+	return (
+		<TouchableOpacity
+			style={[styles.itemCard, { backgroundColor: theme.screen.background, borderColor: theme.screen.text + '18' }]}
+			onPress={onPress}
+			activeOpacity={0.75}
+		>
+			<View style={[styles.itemIconWrapper, { backgroundColor: PRIMARY_COLOR + '18' }]}>
+				<MaterialIcons name="directions-run" size={26} color={PRIMARY_COLOR} />
+			</View>
+			<View style={styles.itemContent}>
+				<Text style={[styles.itemDate, { color: theme.screen.text }]}>
+					{formatDate(activity.startedAt)}
+					{'  '}
+					<Text style={[styles.itemTime, { color: theme.screen.icon }]}>{formatTime(activity.startedAt)}</Text>
+				</Text>
+				<View style={styles.itemStats}>
+					<View style={styles.itemStatChip}>
+						<MaterialIcons name="straighten" size={13} color={PRIMARY_COLOR} />
+						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
+							{formatDistance(stats.distanceKm)}
+						</Text>
+					</View>
+					<View style={styles.itemStatChip}>
+						<MaterialIcons name="speed" size={13} color={PRIMARY_COLOR} />
+						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
+							{formatPace(stats.paceMinPerKm)}
+						</Text>
+					</View>
+					<View style={styles.itemStatChip}>
+						<MaterialIcons name="timer" size={13} color={theme.screen.icon} />
+						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
+							{formatDuration(stats.durationSeconds)}
+						</Text>
+					</View>
+				</View>
+			</View>
+			<MaterialIcons name="chevron-right" size={22} color={theme.screen.icon} />
+		</TouchableOpacity>
+	);
+}
+
+// ─── Import Content (shown inside bottom sheet modal) ─────────────────────────
+
+const H3_IMPORT_RESOLUTION = 10;
+
+function ImportContent({
+	onImport,
+	onCancel,
+	theme,
+}: {
+	onImport: (code: string) => void;
+	onCancel: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	const [code, setCode] = useState('');
+	return (
+		<View style={styles.importContainer}>
+			<Text style={[styles.importDescription, { color: theme.screen.text }]}>
+				Paste the export code from the "Share Activity" button of another run.
+			</Text>
+			<TextInput
+				style={[styles.importInput, { color: theme.screen.text, borderColor: theme.screen.text + '33', backgroundColor: theme.screen.background }]}
+				placeholder="Paste export code here…"
+				placeholderTextColor={theme.screen.icon}
+				value={code}
+				onChangeText={setCode}
+				multiline
+				numberOfLines={5}
+				autoCapitalize="none"
+				autoCorrect={false}
+			/>
+			<TouchableOpacity
+				style={[styles.importConfirmButton, { backgroundColor: PRIMARY_COLOR, opacity: code.trim().length === 0 ? 0.4 : 1 }]}
+				onPress={() => onImport(code.trim())}
+				disabled={code.trim().length === 0}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="file-download" size={18} color="#ffffff" />
+				<Text style={styles.importConfirmButtonText}>Import Run</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.importCancelButton} onPress={onCancel} activeOpacity={0.8}>
+				<Text style={[styles.importCancelButtonText, { color: theme.screen.text }]}>Cancel</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Activities Screen ────────────────────────────────────────────────────────
+
+export default function ActivitiesScreen() {
+	const { theme } = useTheme();
+	const router = useRouter();
+	const navigation = useNavigation();
+	const dispatch = useDispatch<AppDispatch>();
+	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+	const [activities, setActivities] = useState<SavedActivity[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	const loadData = useCallback(() => {
+		setLoading(true);
+		loadActivities()
+			.then(setActivities)
+			.finally(() => setLoading(false));
+	}, []);
+
+	// Reload when screen comes into focus (e.g. after returning from detail or record)
+	useFocusEffect(loadData);
+
+	const applyImportedHexTiles = useCallback((activity: SavedActivity) => {
+		if (!isH3Available()) return;
+		dispatch(startRun());
+		const h3Set = new Set<string>();
+		for (const point of activity.routePoints) {
+			try {
+				const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
+				if (cell && !h3Set.has(cell)) {
+					h3Set.add(cell);
+					dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+				}
+			} catch {
+				// Skip invalid points
+			}
+		}
+	}, [dispatch]);
+
+	const handleImport = useCallback((code: string) => {
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(code);
+		} catch {
+			Alert.alert('Import Failed', 'The code is not valid JSON.');
+			return;
+		}
+		const activity = parsed as SavedActivity;
+		if (
+			typeof activity.id !== 'string' ||
+			typeof activity.startedAt !== 'number' ||
+			!Array.isArray(activity.routePoints)
+		) {
+			Alert.alert('Import Failed', 'The data does not look like a valid activity.');
+			return;
+		}
+		saveActivity(activity);
+		applyImportedHexTiles(activity);
+		closeImportModal();
+		loadData();
+		Alert.alert('Imported', 'The run has been imported successfully.');
+	}, [applyImportedHexTiles, closeImportModal, loadData]);
+
+	const openImportModal = useCallback(() => {
+		showImportModal({
+			title: '📥 Import Run',
+			children: (
+				<ImportContent
+					onImport={handleImport}
+					onCancel={closeImportModal}
+					theme={theme}
+				/>
+			),
+			keyboardShouldPersistTaps: 'handled',
+		});
+	}, [showImportModal, handleImport, closeImportModal, theme]);
+
+	// Show import button in the header
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
+					<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+				</TouchableOpacity>
+			),
+		});
+	}, [navigation, openImportModal]);
+
+	const handleActivityPress = useCallback((id: string) => {
+		router.push(`/activities/${id}`);
+	}, [router]);
+
+	if (!loading && activities.length === 0) {
+		return (
+			<View style={[styles.emptyContainer, { backgroundColor: theme.screen.background }]}>
+				<Ionicons name="fitness-outline" size={64} color={theme.screen.icon} />
+				<Text style={[styles.emptyTitle, { color: theme.screen.text }]}>No activities yet</Text>
+				<Text style={[styles.emptySubtitle, { color: theme.screen.icon }]}>
+					Start recording to see your activities here.
+				</Text>
+			</View>
+		);
+	}
+
+	return (
+		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+			<FlatList
+				data={activities}
+				keyExtractor={(item) => item.id}
+				contentContainerStyle={styles.listContent}
+				renderItem={({ item }) => (
+					<ActivityListItem
+						activity={item}
+						onPress={() => handleActivityPress(item.id)}
+						theme={theme}
+					/>
+				)}
+			/>
+		</View>
+	);
+}
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	listContent: {
+		paddingHorizontal: 16,
+		paddingTop: 12,
+		paddingBottom: 24,
+		gap: 10,
+	},
+	itemCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		borderRadius: 12,
+		borderWidth: 1,
+		paddingVertical: 12,
+		paddingHorizontal: 14,
+		gap: 12,
+	},
+	itemIconWrapper: {
+		width: 46,
+		height: 46,
+		borderRadius: 23,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	itemContent: {
+		flex: 1,
+		gap: 6,
+	},
+	itemDate: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	itemTime: {
+		fontSize: 13,
+		fontWeight: '400',
+	},
+	itemStats: {
+		flexDirection: 'row',
+		gap: 10,
+		flexWrap: 'wrap',
+	},
+	itemStatChip: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 3,
+	},
+	itemStatText: {
+		fontSize: 13,
+		fontWeight: '500',
+	},
+	emptyContainer: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 12,
+		paddingHorizontal: 32,
+	},
+	emptyTitle: {
+		fontSize: 20,
+		fontWeight: '700',
+	},
+	emptySubtitle: {
+		fontSize: 14,
+		textAlign: 'center',
+		lineHeight: 20,
+	},
+	headerImportButton: {
+		marginRight: 12,
+		padding: 4,
+	},
+	importContainer: {
+		paddingTop: 4,
+		gap: 12,
+	},
+	importDescription: {
+		fontSize: 14,
+		lineHeight: 20,
+	},
+	importInput: {
+		borderWidth: 1,
+		borderRadius: 8,
+		padding: 10,
+		fontSize: 12,
+		fontFamily: 'monospace',
+		minHeight: 100,
+		textAlignVertical: 'top',
+	},
+	importConfirmButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
+	importConfirmButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	importCancelButton: {
+		alignItems: 'center',
+		paddingVertical: 10,
+		borderRadius: 10,
+	},
+	importCancelButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
+	},
+});

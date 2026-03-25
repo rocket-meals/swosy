@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { accountRequiredStyles } from '../../helpers/accountRequiredStyles';
 import { borderRadiusContainer, horizontalScreenPadding } from '../../constants/ui';
@@ -33,10 +34,11 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	onAccountRequired,
 }) => {
 	const { theme, isDark } = useTheme();
-	const resolvedPrimaryColor = primaryColor ?? lightTheme.primary;
+	const settingsCtx = useSettingsContext();
+	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? lightTheme.primary;
 
 	const pressHandler = isAccountRequired
-		? onAccountRequired
+		? (onAccountRequired ?? settingsCtx?.onAccountRequired)
 		: (onPress || handleFunction);
 	const Container: any = pressHandler ? TouchableOpacity : View;
 	const iconBg = iconBackgroundColor || iconBgColor || resolvedPrimaryColor;
