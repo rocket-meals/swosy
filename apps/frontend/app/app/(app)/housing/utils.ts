@@ -9,8 +9,8 @@ export const sortApartmentsIntelligently = (apartments: DatabaseTypes.Apartments
 		const dateB = b.available_from ? new Date(b.available_from).getTime() : null;
 
 		if (dateA !== dateB) {
-			if (dateA === null) return -1;
-			if (dateB === null) return 1;
+			if (dateA === null) return 1;
+			if (dateB === null) return -1;
 			if (dateA !== dateB) return dateA - dateB;
 		}
 
