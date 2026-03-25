@@ -5,20 +5,37 @@ import {
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
+	SettingsListSelectOption,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
 import Constants from 'expo-constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteAllActivities } from '../../helpers/ActivityStorage';
 import { loadPersistedState } from '../../store/hexTileSlice';
-import { AppDispatch } from '../../store/store';
+import { setThemeMode } from '../../store/themeSlice';
+import type { ThemeMode } from '../../store/themeSlice';
+import { AppDispatch, RootState } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 const NOTIFICATION_COLOR = '#16a34a';
 const NEUTRAL_COLOR = '#6b7280';
 const DANGER_COLOR = '#dc2626';
+
+const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
+	{ id: 'light', label: 'Light', icon: <MaterialCommunityIcons name="white-balance-sunny" size={22} color="#ffffff" /> },
+	{ id: 'dark', label: 'Dark', icon: <MaterialCommunityIcons name="moon-waning-crescent" size={22} color="#ffffff" /> },
+	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
+];
+
+function themeModeLabel(mode: ThemeMode): string {
+	switch (mode) {
+		case 'light': return 'Light';
+		case 'dark': return 'Dark';
+		case 'systematic': return 'System';
+	}
+}
 
 // ─── Reset Confirm Content ────────────────────────────────────────────────────
 
@@ -54,13 +71,31 @@ function ResetConfirmContent({
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
 export default function SettingsScreen() {
-	const [darkMode, setDarkMode] = useState(false);
 	const [notifications, setNotifications] = useState(true);
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
+	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+
+	const handleOpenThemeSelection = useCallback(() => {
+		showModal({
+			title: '🎨 Theme',
+			children: (
+				<SettingsListSelectOption
+					options={THEME_OPTIONS}
+					selectedOption={selectedTheme}
+					onSelect={(option) => {
+						dispatch(setThemeMode(option.id));
+						closeModal();
+					}}
+					iconBgColor={PRIMARY_COLOR}
+				/>
+			),
+		});
+	}, [showModal, closeModal, dispatch, selectedTheme]);
 
 	const handleResetAllData = useCallback(() => {
 		showResetModal({
@@ -80,20 +115,20 @@ export default function SettingsScreen() {
 	}, [showResetModal, closeResetModal, dispatch, theme]);
 
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView contentContainerStyle={styles.listContent}>
 				<SettingsListGroupTitle title="Appearance" />
-				<SettingsList
-					iconBgColor={PRIMARY_COLOR}
-					leftIcon={
-						<MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" />
-					}
-					label="Dark Mode"
-					value={darkMode ? 'On' : 'Off'}
-					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={() => setDarkMode((prev) => !prev)}
-					groupPosition="single"
-				/>
+			<SettingsList
+				iconBgColor={PRIMARY_COLOR}
+				leftIcon={
+					<MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" />
+				}
+				label="Theme"
+				value={themeModeLabel(selectedTheme)}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenThemeSelection}
+				groupPosition="single"
+			/>
 
 				<SettingsListGroupTitle title="Notifications" />
 				<SettingsListBoolean

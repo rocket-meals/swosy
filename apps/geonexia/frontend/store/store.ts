@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import hexTileReducer from './hexTileSlice';
 import sportTypeReducer from './sportTypeSlice';
+import themeReducer from './themeSlice';
 import { HexTileRecord, saveHexTileState } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
+import { saveThemeMode } from '../helpers/ThemeStorage';
 import type { SportType } from './sportTypeSlice';
+import type { ThemeMode } from './themeSlice';
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -11,6 +14,7 @@ export const store = configureStore({
 	reducer: {
 		hexTiles: hexTileReducer,
 		sportType: sportTypeReducer,
+		theme: themeReducer,
 	},
 });
 
@@ -21,6 +25,9 @@ let _lastSavedRecords: Record<string, HexTileRecord> | null = null;
 
 // Auto-persist sport type to disk whenever the selected type changes.
 let _lastSavedSportType: SportType | null = null;
+
+// Auto-persist theme mode to disk whenever the selected mode changes.
+let _lastSavedThemeMode: ThemeMode | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -39,6 +46,12 @@ store.subscribe(() => {
 	if (selectedType !== _lastSavedSportType) {
 		_lastSavedSportType = selectedType;
 		saveSportType(selectedType);
+	}
+
+	const { selectedMode } = state.theme;
+	if (selectedMode !== _lastSavedThemeMode) {
+		_lastSavedThemeMode = selectedMode;
+		saveThemeMode(selectedMode);
 	}
 });
 
