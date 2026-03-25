@@ -975,6 +975,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentModel = record?.model ?? null;
+	const currentBillboard = record?.billboard ?? null;
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -1129,6 +1130,37 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					})}
 				</View>
 			))}
+
+			{/* ── Billboard section ── */}
+			<SettingsListGroupTitle title="Billboard" />
+
+			{currentBillboard && (
+				<View style={styles.tilePickerCurrentRow}>
+					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
+						Selected: {currentBillboard}
+					</Text>
+					<TouchableOpacity
+						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
+					>
+						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
+					</TouchableOpacity>
+				</View>
+			)}
+
+			<SettingsListSelectOptionSingle
+				label="🌲 Tree"
+				isSelected={currentBillboard === 'tree'}
+				selectionColor={PRIMARY_COLOR}
+				groupPosition="top"
+				onPress={() =>
+					dispatch(
+						setHexTileCustomization({
+							h3Index,
+							billboard: currentBillboard === 'tree' ? null : 'tree',
+						}),
+					)
+				}
+			/>
 		</View>
 	);
 }
@@ -1207,16 +1239,16 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage || r.model)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.model ?? ''}`)
+			.filter(([, r]) => r.tileImage || r.model || r.billboard)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.model ?? ''}|${r.billboard ?? ''}`)
 			.sort()
 			.join(';'),
 	);
 
-	// Load a bundled asset (PNG or GLB) and return a local file:// URI (native) or bundled asset URL
-	// (web).  On native, the asset is copied to the shared cache directory that the map WebView can
-	// read (allowingReadAccessToURL / allowFileAccess).  Results are cached in assetUrlCacheRef so
-	// each file is copied only once per session.
+	// Load a bundled asset (PNG or GLB) and return a base64 data URI (native) or the bundled
+	// asset URL (web).  Using data URIs avoids canvas-taint security errors when drawing PNG files
+	// onto an HTML Canvas, and also avoids XHR-blocked-by-file-origin issues for GLB models.
+	// Results are cached in assetUrlCacheRef so each file is read only once per session.
 	const loadAssetUrl = useCallback(async (cacheKey: string, moduleId: number, mimeType: string): Promise<string | null> => {
 		const cached = assetUrlCacheRef.current.get(cacheKey);
 		if (cached) return cached;
@@ -1228,18 +1260,12 @@ export default function RecordScreen() {
 				url = asset.uri;
 			} else {
 				if (!asset.localUri) return null;
-				// Copy the asset into the same cache directory that MyMap writes its HTML to so
-				// the WebView's file:// origin can fetch it directly without URL validation errors.
-				const ext = mimeType === 'model/gltf-binary' ? 'glb' : 'png';
-				const safeKey = cacheKey.replace(/[^a-zA-Z0-9_]/g, '_');
-				const assetDir = (FileSystem.cacheDirectory ?? '') + 'mymap_v1/assets/';
-				const destPath = assetDir + safeKey + '.' + ext;
-				await FileSystem.makeDirectoryAsync(assetDir, { intermediates: true });
-				const info = await FileSystem.getInfoAsync(destPath);
-				if (!info.exists) {
-					await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
-				}
-				url = destPath;
+				// Read the asset as a base64-encoded data URI so the WebView can use it
+				// directly without any file:// cross-origin or canvas-taint restrictions.
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:${mimeType};base64,${base64}`;
 			}
 			assetUrlCacheRef.current.set(cacheKey, url);
 			return url;
@@ -1283,9 +1309,15 @@ export default function RecordScreen() {
 			rotateY: number;
 			rotateZ: number;
 		};
+		type BillboardMarker = {
+			id: string;
+			type: string;
+			position: { lng: number; lat: number };
+		};
 
 		const imageOverlays: ImageOverlay[] = [];
 		const glbModels: GlbModel[] = [];
+		const billboards: BillboardMarker[] = [];
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			// ── Tile image overlay ──────────────────────────────────────────────
@@ -1378,10 +1410,21 @@ export default function RecordScreen() {
 					}
 				}
 			}
+
+			// ── Billboard marker ────────────────────────────────────────────────
+			if (record.billboard) {
+				const center = cellToLatLng(h3Index); // [lat, lng]
+				billboards.push({
+					id: `tile-billboard-${h3Index}`,
+					type: record.billboard,
+					position: { lng: center[1], lat: center[0] },
+				});
+			}
 		}
 
 		mapRef.current.sendToMap({ imageOverlays });
 		mapRef.current.sendToMap({ glbModels });
+		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
 	// Re-send customizations whenever tile image / model selections change.

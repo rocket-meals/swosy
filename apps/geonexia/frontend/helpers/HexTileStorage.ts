@@ -40,6 +40,12 @@ export type HexTileRecord = {
 	 * this tile (e.g. "building-castle").  Null or undefined means no model.
 	 */
 	model?: string | null;
+	/**
+	 * Key of the selected billboard placed on this tile (e.g. "tree").
+	 * Billboards are upright 2-D sprites rendered as map markers.
+	 * Null or undefined means no billboard.
+	 */
+	billboard?: string | null;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
