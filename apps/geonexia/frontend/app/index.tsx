@@ -38,7 +38,7 @@ const STATUS_ERROR_COLOR = '#ef4444';
 
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
-const H3_DEFAULT_RESOLUTION = 10.5;
+const H3_DEFAULT_RESOLUTION = 11;
 const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
@@ -1350,6 +1350,15 @@ export default function RecordScreen() {
 		// unrealistically high for the selected sport, discard the point as a GPS
 		// glitch / noise spike.
 		if (!fromJoystick) {
+			// While the joystick is actively held during a recording, skip GPS
+			// route points entirely. The joystick is providing the authoritative
+			// position; adding a real GPS fix would create a visible jump in the
+			// recorded route from the virtual joystick position back to the
+			// physical GPS location.
+			if (isRecordingRef.current && joystickActiveRef.current) {
+				return;
+			}
+
 			const lastAccepted = lastAcceptedGpsPointRef.current;
 			if (lastAccepted) {
 				const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
