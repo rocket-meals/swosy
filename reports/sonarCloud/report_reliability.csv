@@ -1,6 +1,5 @@
 Key,Message,Component,Line
-"AZ0mz3qrJp73I62kOa_f","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1234
-"AZ0l8P0X4f4TF5V4_eK6","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1212
+"AZ0l8P0X4f4TF5V4_eK6","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1244
 "AZ0kFsZATj4M-vqty-rP","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/statistics/index.tsx",44
 "AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",660
 "AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",661
