@@ -106,12 +106,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('statistics/index'),
 		},
 		{
-			key: 'model-test/index',
-			label: '3D Model Test',
-			renderIcon: (_, color) => <Ionicons name="cube-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('model-test/index'),
-		},
-		{
 			key: 'settings/index',
 			label: 'Settings',
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
@@ -206,15 +200,6 @@ export default function Layout() {
 									title: 'Statistics',
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="bar-chart-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="model-test/index"
-								options={{
-									title: '3D Model Test',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="cube-outline" size={size} color={color} />
 									),
 								}}
 							/>
