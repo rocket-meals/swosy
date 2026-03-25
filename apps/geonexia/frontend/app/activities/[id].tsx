@@ -158,20 +158,23 @@ export default function ActivityDetailScreen() {
 		};
 	}, []);
 
-	// Show back arrow instead of drawer hamburger
+	// Show back arrow instead of drawer hamburger; use theme colors so it stays
+	// visible in both light and dark mode.
 	useLayoutEffect(() => {
 		navigation.setOptions({
+			headerStyle: { backgroundColor: theme.header.background },
+			headerTintColor: theme.header.text,
 			headerLeft: () => (
 				<TouchableOpacity
-					onPress={() => router.back()}
+					onPress={() => router.navigate('/activities')}
 					style={styles.headerBackButton}
 					activeOpacity={0.7}
 				>
-					<MaterialIcons name="arrow-back" size={24} color={theme.screen.text} />
+					<MaterialIcons name="arrow-back" size={24} color={theme.header.text} />
 				</TouchableOpacity>
 			),
 		});
-	}, [navigation, router, theme.screen.text]);
+	}, [navigation, router, theme.header.background, theme.header.text]);
 
 	useEffect(() => {
 		if (!id) { setNotFound(true); return; }
@@ -221,9 +224,15 @@ export default function ActivityDetailScreen() {
 			const centerLat = (minLat + maxLat) / 2;
 			const centerLng = (minLng + maxLng) / 2;
 			routeCenterRef.current = { lat: centerLat, lng: centerLng };
+			// Expand the bounding box to 1.5× the route span so the route is
+			// not clipped at the edges (adds 25 % padding on every side).
+			const latSpan = maxLat - minLat;
+			const lngSpan = maxLng - minLng;
+			const latPad = latSpan * 0.25;
+			const lngPad = lngSpan * 0.25;
 			mapRef.current.sendToMap({
-				fitBounds: [[minLng, minLat], [maxLng, maxLat]],
-				fitBoundsPadding: 50,
+				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+				fitBoundsPadding: 20,
 				pitch: 45,
 				bearing: 0,
 			});
@@ -308,7 +317,7 @@ export default function ActivityDetailScreen() {
 			<View style={[styles.centeredContainer, { backgroundColor: theme.screen.background }]}>
 				<MaterialIcons name="error-outline" size={48} color={theme.screen.icon} />
 				<Text style={[styles.notFoundText, { color: theme.screen.text }]}>Activity not found.</Text>
-				<TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+				<TouchableOpacity style={styles.backButton} onPress={() => router.navigate('/activities')}>
 					<Text style={styles.backButtonText}>Go back</Text>
 				</TouchableOpacity>
 			</View>
