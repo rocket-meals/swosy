@@ -20,7 +20,7 @@ function escapeHtml(text: string): string {
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 	({ initialCenter, initialZoom, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const webViewRef = useRef<WebView>(null);
-		const [html, setHtml] = useState<string | null>(null);
+		const [htmlUri, setHtmlUri] = useState<string | null>(null);
 
 		// Refs used to coordinate auto-centering on user location (only when no initialCenter is given).
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
