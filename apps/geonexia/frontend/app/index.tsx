@@ -27,8 +27,6 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import { MODEL_GROUPS } from '../assets/modelList';
-import { MODEL_ASSETS } from '../assets/modelAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
@@ -974,7 +972,6 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
 
 	const currentTileImage = record?.tileImage ?? null;
-	const currentModel = record?.model ?? null;
 	const currentBillboard = record?.billboard ?? null;
 
 	const infoRows: { label: string; value: string }[] = [
@@ -1086,51 +1083,6 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			)}
 
-			{/* ── Model section ── */}
-			<SettingsListGroupTitle title="Model" />
-
-			{currentModel && (
-				<View style={styles.tilePickerCurrentRow}>
-					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						Selected: {currentModel}
-					</Text>
-					<TouchableOpacity
-						onPress={() => dispatch(setHexTileCustomization({ h3Index, model: null }))}
-					>
-						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
-					</TouchableOpacity>
-				</View>
-			)}
-
-			{MODEL_GROUPS.map((group) => (
-				<View key={group.label}>
-					<Text style={[styles.modelGroupLabel, { color: theme.screen.icon }]}>
-						{group.label}
-					</Text>
-					{group.models.map((modelEntry, idx) => {
-						const position =
-							idx === 0 ? 'top' : idx === group.models.length - 1 ? 'bottom' : 'middle';
-						return (
-							<SettingsListSelectOptionSingle
-								key={modelEntry.key}
-								label={modelEntry.label}
-								isSelected={currentModel === modelEntry.key}
-								selectionColor={PRIMARY_COLOR}
-								groupPosition={position}
-								onPress={() =>
-									dispatch(
-										setHexTileCustomization({
-											h3Index,
-											model: currentModel === modelEntry.key ? null : modelEntry.key,
-										}),
-									)
-								}
-							/>
-						);
-					})}
-				</View>
-			))}
-
 			{/* ── Billboard section ── */}
 			<SettingsListGroupTitle title="Billboard" />
 
@@ -1239,15 +1191,15 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage || r.model || r.billboard)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.model ?? ''}|${r.billboard ?? ''}`)
+			.filter(([, r]) => r.tileImage || r.billboard)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}`)
 			.sort()
 			.join(';'),
 	);
 
-	// Load a bundled asset (PNG or GLB) and return a base64 data URI (native) or the bundled
+	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
 	// asset URL (web).  Using data URIs avoids canvas-taint security errors when drawing PNG files
-	// onto an HTML Canvas, and also avoids XHR-blocked-by-file-origin issues for GLB models.
+	// onto an HTML Canvas.
 	// Results are cached in assetUrlCacheRef so each file is read only once per session.
 	const loadAssetUrl = useCallback(async (cacheKey: string, moduleId: number, mimeType: string): Promise<string | null> => {
 		const cached = assetUrlCacheRef.current.get(cacheKey);
@@ -1275,7 +1227,7 @@ export default function RecordScreen() {
 		}
 	}, []);
 
-	// Build and send imageOverlays + glbModels to the map based on current Redux state.
+	// Build and send imageOverlays + billboards to the map based on current Redux state.
 	const loadAndSendCustomizations = useCallback(async () => {
 		if (!mapWebViewReadyRef.current || !mapRef.current) return;
 
@@ -1300,15 +1252,6 @@ export default function RecordScreen() {
 			// Used to rotate the texture so it aligns with the H3 hex orientation.
 			rotation: number;
 		};
-		type GlbModel = {
-			id: string;
-			url: string;
-			position: { lng: number; lat: number; altitude: number };
-			scale: number;
-			rotateX: number;
-			rotateY: number;
-			rotateZ: number;
-		};
 		type BillboardMarker = {
 			id: string;
 			type: string;
@@ -1316,7 +1259,6 @@ export default function RecordScreen() {
 		};
 
 		const imageOverlays: ImageOverlay[] = [];
-		const glbModels: GlbModel[] = [];
 		const billboards: BillboardMarker[] = [];
 
 		for (const [h3Index, record] of Object.entries(records)) {
@@ -1368,49 +1310,6 @@ export default function RecordScreen() {
 				}
 			}
 
-			// ── 3D model ────────────────────────────────────────────────────────
-			if (record.model) {
-				const moduleId = MODEL_ASSETS[record.model];
-				if (moduleId !== undefined) {
-					const url = await loadAssetUrl(`model:${record.model}`, moduleId, 'model/gltf-binary');
-					if (url) {
-						const center = cellToLatLng(h3Index); // [lat, lng]
-						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
-
-						// Derive scale from the center-to-vertex distance so the model
-						// fills the tile regardless of H3 resolution.
-						// 100 m is a safe fallback when boundary data is unavailable.
-						let scale = 100;
-						if (boundary.length >= 1) {
-							// Haversine distance from the hex centre to its first vertex.
-							const EARTH_RADIUS_METERS = 6371000;
-							const lat1 = center[0] * Math.PI / 180;
-							const lat2 = boundary[0][0] * Math.PI / 180;
-							const dlat = lat2 - lat1;
-							const dlng = (boundary[0][1] - center[1]) * Math.PI / 180;
-							const sinHalfDlat = Math.sin(dlat / 2);
-							const sinHalfDlng = Math.sin(dlng / 2);
-							const a = sinHalfDlat * sinHalfDlat
-								+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
-							const distToVertex = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a));
-							// 1.8 × radius ≈ 90% of diameter – model fills the tile
-							// without overflowing into neighbouring cells.
-							scale = distToVertex * 1.8;
-						}
-
-						glbModels.push({
-							id: `tile-model-${h3Index}`,
-							url,
-							position: { lng: center[1], lat: center[0], altitude: 0 },
-							scale,
-							rotateX: Math.PI / 2,
-							rotateY: 0,
-							rotateZ: 0,
-						});
-					}
-				}
-			}
-
 			// ── Billboard marker ────────────────────────────────────────────────
 			if (record.billboard) {
 				const center = cellToLatLng(h3Index); // [lat, lng]
@@ -1423,7 +1322,6 @@ export default function RecordScreen() {
 		}
 
 		mapRef.current.sendToMap({ imageOverlays });
-		mapRef.current.sendToMap({ glbModels });
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
@@ -1631,7 +1529,7 @@ export default function RecordScreen() {
 			if (pos) {
 				centerMapOnPosition(pos);
 			}
-			// Send any already-selected tile images / models to the map.
+			// Send any already-selected tile images / billboards to the map.
 			loadAndSendCustomizations();
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
@@ -2857,15 +2755,5 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 		paddingLeft: 8,
-	},
-	// Model picker
-	modelGroupLabel: {
-		fontSize: 12,
-		fontWeight: '700',
-		textTransform: 'uppercase',
-		letterSpacing: 0.8,
-		paddingHorizontal: 16,
-		paddingTop: 12,
-		paddingBottom: 4,
 	},
 });
