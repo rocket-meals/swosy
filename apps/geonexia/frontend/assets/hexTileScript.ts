@@ -26,10 +26,12 @@ export const HEX_TILE_SCRIPT = `
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   // Hex border: subtle gray, low opacity
   var hexTileStrokeColor = '#9ca3af';
-  // Level-based fill colours (level 0 = transparent, 1–3 = light→strong green)
-  var HEX_COLOR_LEVEL_1 = 'rgba(187, 247, 208, 0.45)';
-  var HEX_COLOR_LEVEL_2 = 'rgba(74, 222, 128, 0.55)';
-  var HEX_COLOR_LEVEL_3 = 'rgba(21, 128, 61, 0.65)';
+  // Level-based fill colours: level 1 = lightest green, level 10 = darkest green.
+  // Levels 1–10 are interpolated linearly between these two endpoints.
+  var HEX_COLOR_LEVEL_MIN = '#bbf7d0'; // level  1 – light mint green
+  var HEX_COLOR_LEVEL_MAX = '#15803d'; // level 10 – dark forest green
+  var HEX_OPACITY_LEVEL_MIN = 0.45;   // level  1
+  var HEX_OPACITY_LEVEL_MAX = 0.65;   // level 10
   // Territory border: thick, dark line between level-0 and level>0 tiles
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
@@ -87,8 +89,13 @@ export const HEX_TILE_SCRIPT = `
     var borderFeatures = [];
     for (var k in edgeMap) {
       var entry = edgeMap[k];
-      // Border: shared between a level-0 tile and a level>0 tile
-      if (entry.count === 2 && entry.minLevel === 0 && entry.maxLevel > 0) {
+      // Interior border: shared by exactly two tiles, one level-0 and one level>0.
+      // Outer boundary: the edge belongs to only one tile in the viewport (count===1)
+      // because the neighbouring tile lies outside the rendered disk – that
+      // neighbour is implicitly unvisited (level 0), so the edge is still a border.
+      var isInteriorBorder = entry.count === 2 && entry.minLevel === 0 && entry.maxLevel > 0;
+      var isOuterBorder = entry.count === 1 && entry.maxLevel > 0;
+      if (isInteriorBorder || isOuterBorder) {
         borderFeatures.push({
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: entry.coords },
@@ -126,12 +133,19 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'fill-color': ['case',
-          ['>=', ['get', 'level'], 3], HEX_COLOR_LEVEL_3,
-          ['>=', ['get', 'level'], 2], HEX_COLOR_LEVEL_2,
-          ['>=', ['get', 'level'], 1], HEX_COLOR_LEVEL_1,
-          hexTileColor
+          ['==', ['get', 'level'], 0], hexTileColor,
+          ['interpolate', ['linear'], ['get', 'level'],
+            1, HEX_COLOR_LEVEL_MIN,
+            10, HEX_COLOR_LEVEL_MAX
+          ]
         ],
-        'fill-opacity': 1,
+        'fill-opacity': ['case',
+          ['==', ['get', 'level'], 0], 0,
+          ['interpolate', ['linear'], ['get', 'level'],
+            1, HEX_OPACITY_LEVEL_MIN,
+            10, HEX_OPACITY_LEVEL_MAX
+          ]
+        ],
       },
     });
     map.addLayer({
@@ -158,12 +172,14 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_WALK_PATH_LAYER,
       type: 'line',
       source: HEX_WALK_PATH_SOURCE,
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round',
+      },
       paint: {
         'line-color': WALK_PATH_COLOR,
         'line-width': WALK_PATH_WIDTH,
         'line-opacity': 1,
-        'line-cap': 'round',
-        'line-join': 'round',
       },
     });
     notifyViewport();

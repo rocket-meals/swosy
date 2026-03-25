@@ -231,13 +231,17 @@ type JoystickControllerProps = {
 	isHeadingModeRef: React.MutableRefObject<boolean>;
 	currentHeadingRef: React.MutableRefObject<number>;
 	joystickActiveRef: React.MutableRefObject<boolean>;
+	isRecordingRef: React.MutableRefObject<boolean>;
 	onHeadingChange: (bearing: number) => void;
 };
 
-function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef, currentHeadingRef, joystickActiveRef, onHeadingChange }: JoystickControllerProps) {
+function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef, currentHeadingRef, joystickActiveRef, isRecordingRef, onHeadingChange }: JoystickControllerProps) {
 	const knobX = useRef(new Animated.Value(0)).current;
 	const knobY = useRef(new Animated.Value(0)).current;
 	const knobOffsetRef = useRef({ x: 0, y: 0 });
+	// Tracks the joystick's own position during a gesture so it accumulates
+	// movement independently of positionRef (which GPS may update concurrently).
+	const internalPosRef = useRef<{ lat: number; lng: number } | null>(null);
 	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	// Keep callback ref up-to-date without recreating PanResponder
@@ -246,6 +250,7 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 
 	const stopMoving = useCallback(() => {
 		joystickActiveRef.current = false;
+		internalPosRef.current = null;
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 			intervalRef.current = null;
@@ -261,9 +266,14 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 			onMoveShouldSetPanResponder: () => true,
 			onPanResponderGrant: () => {
 				joystickActiveRef.current = true;
+				// Snapshot the current GPS/player position so the joystick accumulates
+				// its own movement from here without touching positionRef.
+				internalPosRef.current = positionRef.current ? { ...positionRef.current } : null;
 				if (intervalRef.current) clearInterval(intervalRef.current);
 				intervalRef.current = setInterval(() => {
-					const pos = positionRef.current;
+					// Use internal position for delta accumulation; fall back to positionRef
+					// only if internal position was never initialised.
+					const pos = internalPosRef.current ?? positionRef.current;
 					if (!pos) return;
 					const { x, y } = knobOffsetRef.current;
 					const heading = isHeadingModeRef.current ? currentHeadingRef.current : undefined;
@@ -276,7 +286,15 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 					}
 					const newLat = pos.lat + dLat;
 					const newLng = pos.lng + dLng;
-					positionRef.current = { lat: newLat, lng: newLng };
+					// Always advance the joystick's own internal position so movement
+					// accumulates smoothly even while GPS is updating positionRef.
+					internalPosRef.current = { lat: newLat, lng: newLng };
+					// During recording, GPS is the authoritative position source, so we
+					// must NOT overwrite positionRef (= debugPlayerPositionRef) from the
+					// joystick. Only when idle may we update the shared position ref.
+					if (!isRecordingRef.current) {
+						positionRef.current = { lat: newLat, lng: newLng };
+					}
 					onMove(newLat, newLng);
 				}, DEBUG_MOVE_INTERVAL_MS);
 			},
@@ -1405,19 +1423,22 @@ export default function RecordScreen() {
 	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
 
 	// Moves the player to a new position (used by the debug gamepad).
-	// When recording is active, feeds a synthetic RoutePoint to the normal tracking pipeline.
-	// When not recording, only updates the visual player marker and follow-mode.
+	// During recording, the joystick only drives the visual player marker and
+	// map centre; it does NOT record synthetic route points and does NOT overwrite
+	// debugPlayerPositionRef so that GPS remains the authoritative position source.
+	// When not recording, the joystick has full control of the player position.
 	const handleDebugMove = useCallback((lat: number, lng: number) => {
-		debugPlayerPositionRef.current = { lat, lng };
 		if (isRecordingRef.current) {
-			handleLocationUpdate({
-				lat,
-				lng,
-				altitude: null,
-				speed: debugMoveSpeedKmhRef.current / 3.6,
-				timestamp: Date.now(),
+			// Visual-only update: move the player marker and pan the map without
+			// touching the GPS-driven shared position ref.
+			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
+			mapRef.current?.sendToMap({
+				mapCenterPosition: { lat, lng },
+				easeAnimation: true,
+				easeDuration: DEBUG_MOVE_INTERVAL_MS,
 			});
 		} else {
+			debugPlayerPositionRef.current = { lat, lng };
 			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
 			if (isFollowingRef.current) {
 				mapRef.current?.sendToMap({
@@ -1427,7 +1448,7 @@ export default function RecordScreen() {
 				});
 			}
 		}
-	}, [handleLocationUpdate]);
+	}, []);
 
 	// Called by the joystick when the movement direction changes.
 	// Updates the view cone and, in heading mode, the map bearing.
@@ -1791,6 +1812,7 @@ export default function RecordScreen() {
 						isHeadingModeRef={isHeadingModeRef}
 						currentHeadingRef={currentHeadingRef}
 						joystickActiveRef={joystickActiveRef}
+						isRecordingRef={isRecordingRef}
 						onHeadingChange={handleHeadingChange}
 					/>
 				</View>
