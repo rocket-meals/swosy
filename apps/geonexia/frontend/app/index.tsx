@@ -4,6 +4,7 @@ import {
 	Animated,
 	Image,
 	PanResponder,
+	Platform,
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
@@ -17,6 +18,8 @@ import * as Clipboard from 'expo-clipboard';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
 import { MODEL_GROUPS } from '../assets/modelList';
+import { MODEL_ASSETS } from '../assets/modelAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
@@ -1189,7 +1193,174 @@ export default function RecordScreen() {
 
 	const dispatch = useDispatch();
 
-	// Header: show tile count in title; no activities icon (removed per UX request)
+	// ── Tile image / model overlay sync ────────────────────────────────────────
+
+	// True once the MapLibre WebView has fired MapComponentMounted and is ready
+	// to receive overlay messages.
+	const mapWebViewReadyRef = useRef(false);
+
+	// Cache: asset key → base64 data URL, so assets are only read from disk once.
+	const assetUrlCacheRef = useRef<Map<string, string>>(new Map());
+
+	// Stable string that represents the current tile customizations.
+	// Primitive return value means useSelector will only trigger a re-render when
+	// the actual customization values change (not on every GPS update).
+	const hexTileCustomizationsKey = useSelector((state: RootState) =>
+		Object.entries(state.hexTiles.records)
+			.filter(([, r]) => r.tileImage || r.model)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.model ?? ''}`)
+			.sort()
+			.join(';'),
+	);
+
+	// Load a bundled asset (PNG or GLB) and return a base64 data URL.
+	// Results are cached in assetUrlCacheRef so each file is read only once.
+	const loadAssetUrl = useCallback(async (cacheKey: string, moduleId: number, mimeType: string): Promise<string | null> => {
+		const cached = assetUrlCacheRef.current.get(cacheKey);
+		if (cached) return cached;
+		try {
+			const asset = Asset.fromModule(moduleId);
+			await asset.downloadAsync();
+			let url: string;
+			if (Platform.OS === 'web') {
+				url = asset.uri;
+			} else {
+				if (!asset.localUri) return null;
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:${mimeType};base64,${base64}`;
+			}
+			assetUrlCacheRef.current.set(cacheKey, url);
+			return url;
+		} catch (e) {
+			console.warn(`[RecordScreen] Failed to load asset ${cacheKey}:`, e);
+			return null;
+		}
+	}, []);
+
+	// Build and send imageOverlays + glbModels to the map based on current Redux state.
+	const loadAndSendCustomizations = useCallback(async () => {
+		if (!mapWebViewReadyRef.current || !mapRef.current) return;
+
+		const records = store.getState().hexTiles.records;
+
+		// Flat lookup: terrain asset key → module ID
+		const terrainLookup = new Map<string, number>();
+		for (const assets of Object.values(TERRAIN_ASSETS)) {
+			for (const entry of assets) {
+				terrainLookup.set(entry.key, entry.source as number);
+			}
+		}
+
+		type ImageOverlay = {
+			id: string;
+			url: string;
+			coordinates: [[number, number], [number, number], [number, number], [number, number]];
+			opacity: number;
+		};
+		type GlbModel = {
+			id: string;
+			url: string;
+			position: { lng: number; lat: number; altitude: number };
+			scale: number;
+			rotateX: number;
+			rotateY: number;
+			rotateZ: number;
+		};
+
+		const imageOverlays: ImageOverlay[] = [];
+		const glbModels: GlbModel[] = [];
+
+		for (const [h3Index, record] of Object.entries(records)) {
+			// ── Tile image overlay ──────────────────────────────────────────────
+			if (record.tileImage) {
+				const moduleId = terrainLookup.get(record.tileImage);
+				if (moduleId !== undefined) {
+					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/png');
+					if (url) {
+						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
+						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
+						if (boundary.length >= 3) {
+							let minLat = Infinity, maxLat = -Infinity;
+							let minLng = Infinity, maxLng = -Infinity;
+							for (const [lat, lng] of boundary) {
+								if (lat < minLat) minLat = lat;
+								if (lat > maxLat) maxLat = lat;
+								if (lng < minLng) minLng = lng;
+								if (lng > maxLng) maxLng = lng;
+							}
+							imageOverlays.push({
+								id: `tile-img-${h3Index}`,
+								url,
+								// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
+								coordinates: [
+									[minLng, maxLat],
+									[maxLng, maxLat],
+									[maxLng, minLat],
+									[minLng, minLat],
+								],
+								opacity: 0.9,
+							});
+						}
+					}
+				}
+			}
+
+			// ── 3D model ────────────────────────────────────────────────────────
+			if (record.model) {
+				const moduleId = MODEL_ASSETS[record.model];
+				if (moduleId !== undefined) {
+					const url = await loadAssetUrl(`model:${record.model}`, moduleId, 'model/gltf-binary');
+					if (url) {
+						const center = cellToLatLng(h3Index); // [lat, lng]
+						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
+
+						// Derive scale from the center-to-vertex distance so the model
+						// fills the tile regardless of H3 resolution.
+						// 100 m is a safe fallback when boundary data is unavailable.
+						let scale = 100;
+						if (boundary.length >= 1) {
+							// Haversine distance from the hex centre to its first vertex.
+							const EARTH_RADIUS_METERS = 6371000;
+							const lat1 = center[0] * Math.PI / 180;
+							const lat2 = boundary[0][0] * Math.PI / 180;
+							const dlat = lat2 - lat1;
+							const dlng = (boundary[0][1] - center[1]) * Math.PI / 180;
+							const sinHalfDlat = Math.sin(dlat / 2);
+							const sinHalfDlng = Math.sin(dlng / 2);
+							const a = sinHalfDlat * sinHalfDlat
+								+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
+							const distToVertex = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a));
+							// 1.8 × radius ≈ 90% of diameter – model fills the tile
+							// without overflowing into neighbouring cells.
+							scale = distToVertex * 1.8;
+						}
+
+						glbModels.push({
+							id: `tile-model-${h3Index}`,
+							url,
+							position: { lng: center[1], lat: center[0], altitude: 0 },
+							scale,
+							rotateX: Math.PI / 2,
+							rotateY: 0,
+							rotateZ: 0,
+						});
+					}
+				}
+			}
+		}
+
+		mapRef.current.sendToMap({ imageOverlays });
+		mapRef.current.sendToMap({ glbModels });
+	}, [loadAssetUrl]);
+
+	// Re-send customizations whenever tile image / model selections change.
+	useEffect(() => {
+		loadAndSendCustomizations();
+	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+
+
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: `${activeTileCount} Felder`,
@@ -1375,6 +1546,7 @@ export default function RecordScreen() {
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
+			mapWebViewReadyRef.current = true;
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
 			mapRef.current?.sendToMap({
@@ -1387,6 +1559,8 @@ export default function RecordScreen() {
 			if (pos) {
 				centerMapOnPosition(pos);
 			}
+			// Send any already-selected tile images / models to the map.
+			loadAndSendCustomizations();
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
@@ -1408,7 +1582,7 @@ export default function RecordScreen() {
 				showHexTileModal(clickedMsg.h3Index);
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations]);
 
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;

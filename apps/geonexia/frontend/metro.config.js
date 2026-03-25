@@ -20,5 +20,9 @@ module.exports = (() => {
 		path: require.resolve('./emptyModule.js'),
 	};
 
+	// Register .glb (GLTF binary) as a bundled asset so Metro copies the
+	// hex-kit 3D model files and expo-asset can resolve them at runtime.
+	config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'glb'];
+
 	return config;
 })();
