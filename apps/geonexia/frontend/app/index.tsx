@@ -22,11 +22,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, recordEdgeCrossings } from '../store/hexTileSlice';
-import { setSportType, SPORT_TYPES } from '../store/sportTypeSlice';
+import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -342,6 +342,12 @@ const FLUID_BASELINE_DURATION_SECONDS = 1800;
 const FLUID_BASELINE_ML = 500;
 const GPS_TIME_INTERVAL_MS = 5000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
+/**
+ * Maximum number of intermediate H3 cells to fill in when a GPS gap is detected
+ * (i.e. the straight-line H3 path between two accepted GPS fixes is longer than 1
+ * cell). Prevents marking enormous numbers of tiles when the gap is very large.
+ */
+const GPS_PATH_INTERPOLATION_MAX_CELLS = 200;
 
 // ─── Background task ──────────────────────────────────────────────────────────
 
@@ -1114,6 +1120,16 @@ export default function RecordScreen() {
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
+	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
+	// Reset to null at the start of each recording.
+	const lastAcceptedGpsPointRef = useRef<RoutePoint | null>(null);
+	// Set to true once the user moves the player via the joystick during a recording.
+	// While true, incoming GPS updates no longer override the visual player position.
+	// Reset to false when a new recording starts or ends.
+	const movedPlayerManuallyRef = useRef(false);
+	// Ref mirror of selectedSportType so callbacks can read it without stale closures.
+	const selectedSportTypeRef = useRef<SportType>(selectedSportType);
+	selectedSportTypeRef.current = selectedSportType;
 
 	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }) => {
 		if (!mapRef.current) return;
@@ -1348,13 +1364,42 @@ export default function RecordScreen() {
 		});
 	}, [showModal, closeModal, dispatch, selectedSportType]);
 
-	const handleLocationUpdate = useCallback((point: RoutePoint) => {
+	const handleLocationUpdate = useCallback((point: RoutePoint, fromJoystick = false) => {
 		if (isPausedRef.current) return;
+
+		// ── GPS speed filter (real GPS only) ─────────────────────────────────────
+		// If the implied speed between the last accepted GPS fix and this one is
+		// unrealistically high for the selected sport, discard the point as a GPS
+		// glitch / noise spike.
+		if (!fromJoystick) {
+			const lastAccepted = lastAcceptedGpsPointRef.current;
+			if (lastAccepted) {
+				const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
+				const dtSec = (point.timestamp - lastAccepted.timestamp) / 1000;
+				if (dtSec > 0) {
+					const impliedSpeedKmh = (distKm / dtSec) * 3600;
+					const activeSportDef = SPORT_TYPES.find((s) => s.type === selectedSportTypeRef.current);
+					const maxSpeedKmh = activeSportDef?.maxSpeedKmh ?? 250;
+					if (impliedSpeedKmh > maxSpeedKmh) {
+						console.warn(
+							`[RecordScreen] GPS point filtered: implied speed ${impliedSpeedKmh.toFixed(1)} km/h` +
+							` exceeds max ${maxSpeedKmh} km/h for sport "${selectedSportTypeRef.current}".`,
+						);
+						return;
+					}
+				}
+			}
+			lastAcceptedGpsPointRef.current = point;
+		}
+
 		const next = [...routePointsRef.current, point];
 		routePointsRef.current = next;
 
-		// Update debug player position so the gamepad continues from the real GPS location
-		debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+		// Update the visual player position only from GPS and only when the user
+		// has not already overridden it via the joystick during this recording.
+		if (!fromJoystick && !movedPlayerManuallyRef.current) {
+			debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+		}
 
 		// Track the visited H3 cell and dispatch to Redux for persistent storage
 		if (isH3Available()) {
@@ -1367,6 +1412,40 @@ export default function RecordScreen() {
 				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(h3ResolutionRef.current)));
 				const cell = latLngToCell(point.lat, point.lng, h3Res);
 				if (cell) {
+					// ── GPS gap interpolation ─────────────────────────────────────────
+					// When moving from lastCellRef to the new cell, fill in all H3 cells
+					// on the straight-line path between them. This handles GPS dropouts
+					// where the device had no signal for several updates: tiles the user
+					// actually passed through are still counted as visited.
+					if (lastCellRef.current && cell !== lastCellRef.current) {
+						try {
+							const pathCells = gridPathCells(lastCellRef.current, cell);
+							// pathCells[0] is lastCellRef (already visited), pathCells[last] is
+							// `cell` which will be processed below. Only fill when the gap is
+							// within a reasonable bound to avoid marking thousands of tiles on a
+							// very long GPS outage.
+							// pathCells.length - 2 is the number of intermediate cells (excludes
+							// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
+							// exactly that many intermediate cells at most.
+							if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
+								for (let i = 1; i < pathCells.length - 1; i++) {
+									const intermediate = pathCells[i];
+									if (!visitedHexIdsRef.current.has(intermediate)) {
+										visitedHexIdsRef.current.add(intermediate);
+										dispatch(markVisited({ h3Indices: [intermediate], timestamp: point.timestamp }));
+									}
+									if (intermediate !== cellSequenceRef.current[cellSequenceRef.current.length - 1]) {
+										cellSequenceRef.current.push(intermediate);
+									}
+								}
+							}
+						} catch (pathErr) {
+							// gridPathCells can throw when the two cells are on different
+							// icosahedron faces – log at warn level for diagnosability and continue.
+							console.warn('[RecordScreen] gridPathCells failed during gap interpolation:', pathErr);
+						}
+					}
+
 					// Only count each tile once per run so the level can rise by at most
 					// one step during a single activity.
 					if (!visitedHexIdsRef.current.has(cell)) {
@@ -1403,7 +1482,13 @@ export default function RecordScreen() {
 		}
 
 		sendRouteToMap(next);
-		centerMapOnPosition({ lat: point.lat, lng: point.lng });
+
+		// Centre the map on the new position:
+		//  – Joystick updates always re-centre (the user is actively navigating).
+		//  – GPS updates only re-centre when the user has not overridden with the joystick.
+		if (fromJoystick || !movedPlayerManuallyRef.current) {
+			centerMapOnPosition({ lat: point.lat, lng: point.lng });
+		}
 
 		// Refresh hex GeoJSON to show updated tile levels (includes the just-dispatched visit)
 		const vp = debugViewportRef.current;
@@ -1429,6 +1514,9 @@ export default function RecordScreen() {
 	// player position without recording anything.
 	const handleDebugMove = useCallback((lat: number, lng: number) => {
 		if (isRecordingRef.current) {
+			// Mark that the user has taken manual control of the player position so
+			// that subsequent real GPS updates no longer override it visually.
+			movedPlayerManuallyRef.current = true;
 			// Record the joystick position as a proper route point so the route
 			// is built up the same way real GPS data would build it.
 			handleLocationUpdate({
@@ -1437,7 +1525,7 @@ export default function RecordScreen() {
 				altitude: null,
 				speed: debugMoveSpeedKmhRef.current / 3.6,
 				timestamp: Date.now(),
-			});
+			}, true);
 		} else {
 			debugPlayerPositionRef.current = { lat, lng };
 			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
@@ -1476,6 +1564,8 @@ export default function RecordScreen() {
 			visitedHexIdsRef.current = new Set();
 			cellSequenceRef.current = [];
 			lastCellRef.current = null;
+			lastAcceptedGpsPointRef.current = null;
+			movedPlayerManuallyRef.current = false;
 			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
@@ -1626,6 +1716,7 @@ export default function RecordScreen() {
 		setIsPaused(false);
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
+		movedPlayerManuallyRef.current = false;
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;
