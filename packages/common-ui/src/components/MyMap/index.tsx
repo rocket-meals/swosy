@@ -18,7 +18,7 @@ function escapeHtml(text: string): string {
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
+	({ initialCenter, initialZoom, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const webViewRef = useRef<WebView>(null);
 		const [html, setHtml] = useState<string | null>(null);
 
@@ -34,11 +34,18 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				await htmlAsset.downloadAsync();
 				let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
 				if (initialCenter) {
+					const zoomArg = initialZoom !== undefined ? `${initialZoom}` : 'null';
 					const pitch = initialPitch !== undefined ? `, ${initialPitch}` : '';
 					htmlContent = StringHelper.replaceAllLiteralWithOptions({
 						str: htmlContent,
 						find: 'initMap(null, null);',
-						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], null${pitch});`,
+						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}${pitch});`,
+					});
+				} else if (initialZoom !== undefined) {
+					htmlContent = StringHelper.replaceAllLiteralWithOptions({
+						str: htmlContent,
+						find: 'initMap(null, null);',
+						replace: `initMap(null, ${initialZoom});`,
 					});
 				}
 				if (loadingText) {
@@ -89,7 +96,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					// callback will send it when MapComponentMounted is received.
 					if (mapReadyRef.current && !initCenterSentRef.current) {
 						initCenterSentRef.current = true;
-						sendToMap({ mapCenterPosition: locationForInitRef.current, animate: false });
+						sendToMap({ mapCenterPosition: locationForInitRef.current, zoom: initialZoom, animate: false });
 					}
 				} catch {
 					// ignore – map stays at its default center
@@ -110,7 +117,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 						mapReadyRef.current = true;
 						if (locationForInitRef.current && !initCenterSentRef.current) {
 							initCenterSentRef.current = true;
-							sendToMap({ mapCenterPosition: locationForInitRef.current, animate: false });
+							sendToMap({ mapCenterPosition: locationForInitRef.current, zoom: initialZoom, animate: false });
 						}
 					}
 					onMessage(data);
