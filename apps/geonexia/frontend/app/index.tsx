@@ -25,7 +25,7 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, recordEdgeCrossings } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
@@ -118,7 +118,7 @@ function buildH3GeoJson(
 type WalkPathFeature = {
 	type: 'Feature';
 	geometry: { type: 'LineString'; coordinates: number[][] };
-	properties: { count: number };
+	properties: Record<string, never>;
 };
 
 type WalkPathFeatureCollection = {
@@ -129,12 +129,11 @@ type WalkPathFeatureCollection = {
 /**
  * Build a GeoJSON FeatureCollection of LineString features representing the
  * walk paths across all visited tiles. For each pair of adjacent cells that
- * share an edge crossing, a line is drawn from one cell's centre to the other.
- * Lines are deduplicated (each crossing drawn once) by comparing H3 indices.
+ * are both walked-on, a line is drawn from one cell's centre to the other.
+ * Lines are deduplicated (each pair drawn once) by comparing H3 indices.
  *
  * Only considers cells that appear in `viewportCells` so that the output stays
- * bounded to the visible map area; edges that leave the viewport are clipped at
- * the viewport-cell centre (i.e. the line ends at the visible cell's centre).
+ * bounded to the visible map area.
  */
 function buildWalkPathGeoJson(
 	viewportCells: string[],
@@ -145,16 +144,20 @@ function buildWalkPathGeoJson(
 
 	for (const cell of viewportCells) {
 		const record = hexTileRecords[cell];
-		if (!record?.walkedOn || !record.edgeCrossings) continue;
+		if (!record?.walkedOn) continue;
 
 		const [centerLat, centerLng] = cellToLatLng(cell);
 
-		for (const [neighborH3, count] of Object.entries(record.edgeCrossings)) {
+		// Find all immediate H3 neighbours (ring 1, excluding the cell itself)
+		const neighbours = gridDisk(cell, 1).filter((neighbor) => neighbor !== cell);
+
+		for (const neighborH3 of neighbours) {
 			// Deduplicate edges: each pair (cell, neighbor) is drawn exactly once by
 			// the tile whose H3 index is lexicographically smaller.
 			if (cell >= neighborH3) continue;
-			// Only draw if at least one endpoint is in the viewport.
+			// Only draw if the neighbour is also in the viewport and was walked on.
 			if (!viewportSet.has(neighborH3)) continue;
+			if (!hexTileRecords[neighborH3]?.walkedOn) continue;
 
 			const [nLat, nLng] = cellToLatLng(neighborH3);
 			features.push({
@@ -166,7 +169,7 @@ function buildWalkPathGeoJson(
 						[nLng, nLat],
 					],
 				},
-				properties: { count },
+				properties: {},
 			});
 		}
 	}
@@ -972,9 +975,6 @@ function HexTileInfoContent({
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
 
-	const edgeCrossings = record?.edgeCrossings ?? {};
-	const edgeEntries = Object.entries(edgeCrossings).sort((a, b) => b[1] - a[1]);
-
 	return (
 		<View style={styles.hexInfoContainer}>
 			{rows.map((row, i) => (
@@ -983,32 +983,13 @@ function HexTileInfoContent({
 					style={[
 						styles.hexInfoRow,
 						{ borderBottomColor: theme.screen.text + '18' },
-						i === rows.length - 1 && edgeEntries.length === 0 && { borderBottomWidth: 0 },
+						i === rows.length - 1 && { borderBottomWidth: 0 },
 					]}
 				>
 					<Text style={[styles.hexInfoLabel, { color: theme.screen.icon }]}>{row.label}</Text>
 					<Text style={[styles.hexInfoValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
-			{edgeEntries.length > 0 && (
-				<View style={[styles.hexInfoRow, { borderBottomColor: theme.screen.text + '18' }]}>
-					<Text style={[styles.hexInfoLabel, { color: theme.screen.icon }]}>Edge Crossings</Text>
-					<View style={{ flex: 1, alignItems: 'flex-end' }}>
-						{edgeEntries.map(([neighbor, count], i) => (
-							<Text
-								key={neighbor}
-								style={[
-									styles.hexInfoValue,
-									{ color: theme.screen.text },
-									i === edgeEntries.length - 1 && { marginBottom: 0 },
-								]}
-							>
-								to {neighbor.slice(0, 8)}: {count}x
-							</Text>
-						))}
-					</View>
-				</View>
-			)}
 		</View>
 	);
 }
@@ -1109,9 +1090,6 @@ export default function RecordScreen() {
 	// Visited H3 hex cells during the active recording (used for immediate GeoJSON updates;
 	// persistent data lives in the Redux store)
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
-	// Ordered sequence of cell indices for the current run (consecutive duplicates collapsed).
-	// Used to compute per-tile edge crossing counts at the end of the run.
-	const cellSequenceRef = useRef<string[]>([]);
 	// The last H3 cell visited; used to detect cell transitions in handleLocationUpdate.
 	const lastCellRef = useRef<string | null>(null);
 	// Current player position (updated from real GPS and from debug gamepad)
@@ -1434,9 +1412,6 @@ export default function RecordScreen() {
 										visitedHexIdsRef.current.add(intermediate);
 										dispatch(markVisited({ h3Indices: [intermediate], timestamp: point.timestamp }));
 									}
-									if (intermediate !== cellSequenceRef.current[cellSequenceRef.current.length - 1]) {
-										cellSequenceRef.current.push(intermediate);
-									}
 								}
 							}
 						} catch (pathErr) {
@@ -1452,10 +1427,7 @@ export default function RecordScreen() {
 						visitedHexIdsRef.current.add(cell);
 						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
 					}
-					// Track ordered cell transitions for edge-crossing computation at end of run.
-					// Push to the sequence whenever the user moves into a different cell.
 					if (cell !== lastCellRef.current) {
-						cellSequenceRef.current.push(cell);
 						lastCellRef.current = cell;
 					}
 				}
@@ -1562,7 +1534,6 @@ export default function RecordScreen() {
 
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
-			cellSequenceRef.current = [];
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
@@ -1745,11 +1716,6 @@ export default function RecordScreen() {
 			}
 		} catch (err) {
 			console.warn('[RecordScreen] Enclosed tile detection failed:', err);
-		}
-
-		// Record edge crossings from the ordered cell sequence of this run.
-		if (cellSequenceRef.current.length > 1) {
-			dispatch(recordEdgeCrossings({ h3Sequence: cellSequenceRef.current }));
 		}
 
 		// Refresh the map to show newly enclosed tiles and updated walk path.
