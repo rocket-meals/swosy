@@ -1,13 +1,13 @@
 Key,Message,Component,Line
 "AZ0mz3qrJp73I62kOa_f","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1234
 "AZ0mz3qrJp73I62kOa_g","Use concise character class syntax '\W' instead of '[^a-zA-Z0-9_]'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1234
-"AZ0mz3oVJp73I62kOa_d","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",94
-"AZ0mz3oVJp73I62kOa_e","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",190
+"AZ0mz3oVJp73I62kOa_d","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",117
+"AZ0mz3oVJp73I62kOa_e","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",219
 "AZ0mPlq3vX_PW5NlnggN","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",216
 "AZ0mPmKivX_PW5NlnggO","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.tsx",43
-"AZ0mPlo3vX_PW5NlnggK","This assertion is unnecessary since the receiver accepts the original type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",92
-"AZ0mPlo3vX_PW5NlnggL","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",186
-"AZ0mPlo3vX_PW5NlnggM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",187
+"AZ0mPlo3vX_PW5NlnggK","This assertion is unnecessary since the receiver accepts the original type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",99
+"AZ0mPlo3vX_PW5NlnggL","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",215
+"AZ0mPlo3vX_PW5NlnggM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/model-test/index.tsx",216
 "AZ0l8P0X4f4TF5V4_eK7","Refactor this function to reduce its Cognitive Complexity from 67 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1253
 "AZ0lz9tK_bGaREZrM0Cb","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",969
 "AZ0lz9tK_bGaREZrM0Cc","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1111
