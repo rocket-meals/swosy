@@ -85,6 +85,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('activities/index'),
 		},
 		{
+			key: 'statistics/index',
+			label: 'Statistics',
+			renderIcon: (_, color) => <Ionicons name="bar-chart-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('statistics/index'),
+		},
+		{
 			key: 'settings/index',
 			label: 'Settings',
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
@@ -163,6 +169,15 @@ export default function Layout() {
 								options={{
 									title: 'Activity',
 									drawerItemStyle: { display: 'none' },
+								}}
+							/>
+							<Drawer.Screen
+								name="statistics/index"
+								options={{
+									title: 'Statistics',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="bar-chart-outline" size={size} color={color} />
+									),
 								}}
 							/>
 							<Drawer.Screen
