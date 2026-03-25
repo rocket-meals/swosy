@@ -245,20 +245,27 @@ export default function ActivityDetailScreen() {
 			});
 		}
 
-		// Start slow auto-rotate, keeping the camera anchored on the route centre
+		// Start slow auto-rotate after the fitBounds animation finishes.
+		// fitBounds sets pitch=45 and the correct zoom; starting the interval
+		// immediately would call easeTo within 100 ms and cancel that animation,
+		// locking in the wrong pitch/zoom. Waiting ~1200 ms lets fitBounds
+		// complete before we begin rotating.
+		// We only update bearing (no mapCenterPosition) so that zoom and pitch
+		// established by fitBounds are never overwritten by the interval ticks.
 		autoRotateBearingRef.current = 0;
 		autoRotateActiveRef.current = true;
 		if (autoRotateIntervalRef.current !== null) {
 			clearInterval(autoRotateIntervalRef.current);
 		}
+		const FIT_BOUNDS_ANIMATION_DELAY_MS = 1200;
+		let startDelayTicks = Math.ceil(FIT_BOUNDS_ANIMATION_DELAY_MS / AUTO_ROTATE_TICK_MS);
 		autoRotateIntervalRef.current = setInterval(() => {
+			if (startDelayTicks > 0) { startDelayTicks -= 1; return; }
 			if (!autoRotateActiveRef.current || !mapRef.current) return;
 			const deltaDeg = AUTO_ROTATE_SPEED_DEG_PER_S * (AUTO_ROTATE_TICK_MS / 1000);
 			autoRotateBearingRef.current = (autoRotateBearingRef.current + deltaDeg) % 360;
-			const center = routeCenterRef.current;
 			mapRef.current.sendToMap({
 				bearing: autoRotateBearingRef.current,
-				...(center ? { mapCenterPosition: center } : {}),
 				easeAnimation: true,
 				easeDuration: AUTO_ROTATE_TICK_MS,
 			});
