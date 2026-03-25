@@ -18,23 +18,26 @@ import { MODEL_ASSETS } from '../../assets/modelAssets';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type ViewerStatus = { type: 'idle' | 'loading' | 'ready' | 'error'; message: string };
-type ModelEntry = { key: string; label: string };
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const ALL_MODELS: ModelEntry[] = MODEL_GROUPS.flatMap((g) => g.models);
 const PRIMARY_COLOR = '#2563eb';
-// Cache directory used for both the viewer HTML and the model GLB files.  Must match the
-// allowingReadAccessToURL / allowFileAccess settings on the WebView below.
+// Cache directory for the viewer HTML file.  GLB models are no longer copied here;
+// they are loaded as base64 data URIs directly from the asset bundle instead.
 const MODEL_VIEWER_CACHE_DIR = (FileSystem.cacheDirectory ?? '') + 'model_viewer_v1/';
 const MODEL_VIEWER_HTML_PATH = MODEL_VIEWER_CACHE_DIR + 'index.html';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
- * On native: copies the GLB asset to a local cache file and returns its file:// URI so the
- * WebView (loaded from the same directory) can fetch it via XHR without URL validation errors.
- * On web: returns the bundled asset URI directly.
+ * On native: reads the GLB asset from disk and returns it as a base64 data URI so the
+ * WebView can pass it to loader.parse() without any XHR / file:// access restrictions.
+ * On web: returns the bundled asset URI directly (XHR works fine in the browser).
+ *
+ * Previous approach (file:// URI + copyAsync) failed on Android because the WebView's
+ * XHR cannot access file:// URLs from JavaScript, even with allowFileAccess={true}.
+ * Three.js GLTFLoader uses XHR internally, which triggered the error:
+ *   "Load error: [object XMLHttpRequestProgressEvent]"
  */
 async function loadModelToCache(moduleId: number): Promise<string | null> {
 	try {
@@ -45,15 +48,17 @@ async function loadModelToCache(moduleId: number): Promise<string | null> {
 			console.warn('[ModelTest] asset.localUri is null after downloadAsync, moduleId:', moduleId);
 			return null;
 		}
-		// Overwrite with a fixed filename; the viewer only ever shows one model at a time.
-		const destPath = MODEL_VIEWER_CACHE_DIR + 'model.glb';
-		await FileSystem.makeDirectoryAsync(MODEL_VIEWER_CACHE_DIR, { intermediates: true });
-		const info = await FileSystem.getInfoAsync(destPath);
-		if (info.exists) {
-			await FileSystem.deleteAsync(destPath, { idempotent: true });
+		// Read the GLB as base64 and wrap in a data URI.
+		// The viewer HTML's loadModel() handles data: URIs by calling loader.parse() directly,
+		// which avoids XHR entirely and works reliably on all platforms.
+		const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+			encoding: FileSystem.EncodingType.Base64,
+		});
+		if (!base64) {
+			console.warn('[ModelTest] base64 result is empty for moduleId:', moduleId);
+			return null;
 		}
-		await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
-		return destPath;
+		return `data:model/gltf-binary;base64,${base64}`;
 	} catch (e) {
 		console.error('[ModelTest] loadModelToCache failed:', e);
 		return null;
