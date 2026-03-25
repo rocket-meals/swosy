@@ -32,12 +32,16 @@ async function loadModelAsBase64(moduleId: number): Promise<string | null> {
 		const asset = Asset.fromModule(moduleId);
 		await asset.downloadAsync();
 		if (Platform.OS === 'web') return asset.uri;
-		if (!asset.localUri) return null;
+		if (!asset.localUri) {
+			console.warn('[ModelTest] asset.localUri is null after downloadAsync, moduleId:', moduleId);
+			return null;
+		}
 		const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
 			encoding: FileSystem.EncodingType.Base64,
 		});
 		return `data:model/gltf-binary;base64,${base64}`;
-	} catch {
+	} catch (e) {
+		console.error('[ModelTest] loadModelAsBase64 failed:', e);
 		return null;
 	}
 }
@@ -91,11 +95,13 @@ export default function ModelTestScreen() {
 			return;
 		}
 
+		setStatus({ type: 'loading', message: `Reading ${key} from disk…` });
 		const url = await loadModelAsBase64(moduleId);
 		if (!url) {
 			setStatus({ type: 'error', message: `Failed to read model file for: ${key}` });
 			return;
 		}
+		setStatus({ type: 'loading', message: `Sending ${key} to viewer (${Math.round(url.length / 1024)} KB)…` });
 
 		if (htmlReadyRef.current) {
 			sendToViewer({ loadModel: { url, name: key } });
@@ -110,7 +116,7 @@ export default function ModelTestScreen() {
 			if (data.tag === 'ViewerReady') {
 				htmlReadyRef.current = true;
 				setViewerReady(true);
-				setStatus({ type: 'ready', message: 'Viewer ready – select a model below' });
+				setStatus({ type: 'ready', message: 'Ready – tap model selector to load a model' });
 				if (pendingModelKeyRef.current) {
 					const key = pendingModelKeyRef.current;
 					pendingModelKeyRef.current = null;
@@ -122,9 +128,11 @@ export default function ModelTestScreen() {
 				setStatus((prev) => ({ ...prev, message: data.message ?? '' }));
 			} else if (data.tag === 'error') {
 				setStatus({ type: 'error', message: data.message ?? 'Unknown error' });
+			} else if (data.tag === 'debug') {
+				setStatus((prev) => ({ ...prev, message: `[dbg] ${data.message ?? ''}` }));
 			}
 		} catch {
-			// ignore
+			// JSON.parse may fail for non-JSON messages from the WebView; safely ignore
 		}
 	}, [selectedKey, loadModel]);
 

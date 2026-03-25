@@ -4805,22 +4805,27 @@
           var msg = err && (err.message || String(err));
           showError('Load error: ' + msg);
           setStatus('Load failed');
-          sendToRN({ tag: 'modelError', message: msg });
+          sendToRN({ tag: 'error', message: 'Model load error: ' + msg });
         }
 
         if (url && url.indexOf('data:') === 0) {
           try {
             var comma = url.indexOf(',');
             var base64 = url.substring(comma + 1);
+            sendToRN({ tag: 'debug', message: 'Decoding base64, length=' + base64.length });
             var binary = atob(base64);
             var bytes = new Uint8Array(binary.length);
             for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            sendToRN({ tag: 'debug', message: 'Parsing GLB buffer, bytes=' + bytes.length });
             loader.parse(bytes.buffer, '', onLoad, onError);
           } catch (e) {
             onError(e);
           }
         } else {
-          loader.load(url, onLoad, undefined, onError);
+          sendToRN({ tag: 'debug', message: 'Fetching URL: ' + url });
+          loader.load(url, onLoad, function (xhr) {
+            sendToRN({ tag: 'debug', message: 'Load progress: ' + Math.round(xhr.loaded / (xhr.total || 1) * 100) + '%' });
+          }, onError);
         }
       }
 
@@ -4846,6 +4851,7 @@
       // ── Message handling from React Native ────────────────────────────────
       function handleMessage(data) {
         if (data.loadModel) {
+          sendToRN({ tag: 'debug', message: 'handleMessage: loadModel key=' + (data.loadModel.name || '?') + ' urlLen=' + ((data.loadModel.url || '').length) });
           loadModel(data.loadModel.url, data.loadModel.name);
         }
         if (data.params) {
@@ -4865,10 +4871,20 @@
       }
 
       window.addEventListener('message', function (e) {
-        try { handleMessage(JSON.parse(e.data)); } catch (ex) {}
+        try {
+          var data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+          handleMessage(data);
+        } catch (ex) {
+          sendToRN({ tag: 'error', message: 'Message parse error: ' + ex });
+        }
       });
       document.addEventListener('message', function (e) {
-        try { handleMessage(JSON.parse(e.data)); } catch (ex) {}
+        try {
+          var data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+          handleMessage(data);
+        } catch (ex) {
+          sendToRN({ tag: 'error', message: 'Message parse error: ' + ex });
+        }
       });
 
       // ── Animation loop ────────────────────────────────────────────────────
