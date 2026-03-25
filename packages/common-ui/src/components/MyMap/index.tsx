@@ -20,7 +20,13 @@ function escapeHtml(text: string): string {
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 	({ initialCenter, initialZoom, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const webViewRef = useRef<WebView>(null);
-		const [html, setHtml] = useState<string | null>(null);
+		// The HTML is written to a local cache file and loaded via a file:// URI so that the WebView
+		// has a proper file:// origin and can fetch sibling local assets (e.g. GLB models, PNG tiles)
+		// without the "URL is not valid or contains user credentials" error that occurs when loading
+		// resources from a null-origin WebView (source={{ html }}).
+		// Note: this file (index.tsx) is the native-only implementation; the web build uses
+		// index.web.tsx which serves the map via an iframe and doesn't need this approach.
+		const [htmlUri, setHtmlUri] = useState<string | null>(null);
 
 		// Refs used to coordinate auto-centering on user location (only when no initialCenter is given).
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -63,7 +69,15 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					});
 				}
 				if (isMounted) {
-					setHtml(htmlContent);
+					// Write the (possibly patched) HTML to a local cache file so the WebView can be
+					// loaded from a file:// URI instead of inline HTML.  A file:// origin allows the
+					// WebView to fetch sibling local assets (GLB models, PNG tiles) without the
+					// browser rejecting them as invalid URLs.
+					const cacheDir = (FileSystem.cacheDirectory ?? '') + 'mymap_v1/';
+					const htmlFilePath = cacheDir + 'index.html';
+					await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true });
+					await FileSystem.writeAsStringAsync(htmlFilePath, htmlContent);
+					setHtmlUri(htmlFilePath);
 				}
 			};
 			loadHtml();
@@ -130,14 +144,15 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 
 		const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {
 			const url = request.url;
-			if (!url || url === 'about:blank' || url === 'about:srcdoc') {
+			// Allow the initial file:// HTML load and any in-page file:// resource navigations.
+			if (!url || url === 'about:blank' || url === 'about:srcdoc' || url.startsWith('file://')) {
 				return true;
 			}
 			Linking.openURL(url).catch(() => {});
 			return false;
 		}, []);
 
-		if (!html) {
+		if (!htmlUri) {
 			return <View style={styles.container} />;
 		}
 
@@ -146,10 +161,13 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				<WebView
 					ref={webViewRef}
 					style={styles.webView}
-					source={{ html }}
+					source={{ uri: htmlUri }}
 					javaScriptEnabled={true}
 					domStorageEnabled={true}
 					originWhitelist={['*']}
+					// Allow reading local files from the cache directory (needed for GLB models / images).
+					allowFileAccess={true}
+					allowingReadAccessToURL={FileSystem.cacheDirectory ?? ''}
 					onMessage={handleMessage}
 					onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 				/>

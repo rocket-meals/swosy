@@ -24,10 +24,19 @@ type ModelEntry = { key: string; label: string };
 
 const ALL_MODELS: ModelEntry[] = MODEL_GROUPS.flatMap((g) => g.models);
 const PRIMARY_COLOR = '#2563eb';
+// Cache directory used for both the viewer HTML and the model GLB files.  Must match the
+// allowingReadAccessToURL / allowFileAccess settings on the WebView below.
+const MODEL_VIEWER_CACHE_DIR = (FileSystem.cacheDirectory ?? '') + 'model_viewer_v1/';
+const MODEL_VIEWER_HTML_PATH = MODEL_VIEWER_CACHE_DIR + 'index.html';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function loadModelAsBase64(moduleId: number): Promise<string | null> {
+/**
+ * On native: copies the GLB asset to a local cache file and returns its file:// URI so the
+ * WebView (loaded from the same directory) can fetch it via XHR without URL validation errors.
+ * On web: returns the bundled asset URI directly.
+ */
+async function loadModelToCache(moduleId: number): Promise<string | null> {
 	try {
 		const asset = Asset.fromModule(moduleId);
 		await asset.downloadAsync();
@@ -36,12 +45,17 @@ async function loadModelAsBase64(moduleId: number): Promise<string | null> {
 			console.warn('[ModelTest] asset.localUri is null after downloadAsync, moduleId:', moduleId);
 			return null;
 		}
-		const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-			encoding: FileSystem.EncodingType.Base64,
-		});
-		return `data:model/gltf-binary;base64,${base64}`;
+		// Overwrite with a fixed filename; the viewer only ever shows one model at a time.
+		const destPath = MODEL_VIEWER_CACHE_DIR + 'model.glb';
+		await FileSystem.makeDirectoryAsync(MODEL_VIEWER_CACHE_DIR, { intermediates: true });
+		const info = await FileSystem.getInfoAsync(destPath);
+		if (info.exists) {
+			await FileSystem.deleteAsync(destPath, { idempotent: true });
+		}
+		await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
+		return destPath;
 	} catch (e) {
-		console.error('[ModelTest] loadModelAsBase64 failed:', e);
+		console.error('[ModelTest] loadModelToCache failed:', e);
 		return null;
 	}
 }
@@ -52,6 +66,8 @@ export default function ModelTestScreen() {
 	const { theme } = useTheme();
 	const webViewRef = useRef<WebView>(null);
 
+	// Native uses a file:// URI source; web uses inline HTML.
+	const [htmlFileUri, setHtmlFileUri] = useState<string | null>(null);
 	const [html, setHtml] = useState<string | null>(null);
 	const [viewerReady, setViewerReady] = useState(false);
 	const [status, setStatus] = useState<ViewerStatus>({ type: 'idle', message: 'Loading viewer…' });
@@ -69,7 +85,17 @@ export default function ModelTestScreen() {
 				const htmlAsset = Asset.fromModule(require('../../assets/modelViewer.html'));
 				await htmlAsset.downloadAsync();
 				const content = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-				if (mounted) setHtml(content);
+				if (!mounted) return;
+				if (Platform.OS !== 'web') {
+					// Write to a local cache file so the WebView loads from a file:// URI.
+					// This gives it a proper file:// origin and lets it fetch sibling GLB assets
+					// directly, avoiding "URL is not valid or contains user credentials" errors.
+					await FileSystem.makeDirectoryAsync(MODEL_VIEWER_CACHE_DIR, { intermediates: true });
+					await FileSystem.writeAsStringAsync(MODEL_VIEWER_HTML_PATH, content);
+					setHtmlFileUri(MODEL_VIEWER_HTML_PATH);
+				} else {
+					setHtml(content);
+				}
 			} catch (e) {
 				if (mounted) setStatus({ type: 'error', message: `Failed to load viewer: ${e}` });
 			}
@@ -95,13 +121,13 @@ export default function ModelTestScreen() {
 			return;
 		}
 
-		setStatus({ type: 'loading', message: `Reading ${key} from disk…` });
-		const url = await loadModelAsBase64(moduleId);
+		setStatus({ type: 'loading', message: `Loading model ${key}…` });
+		const url = await loadModelToCache(moduleId);
 		if (!url) {
 			setStatus({ type: 'error', message: `Failed to read model file for: ${key}` });
 			return;
 		}
-		setStatus({ type: 'loading', message: `Sending ${key} to viewer (${Math.round(url.length / 1024)} KB)…` });
+		setStatus({ type: 'loading', message: `Sending ${key} to viewer…` });
 
 		if (htmlReadyRef.current) {
 			sendToViewer({ loadModel: { url, name: key } });
@@ -156,6 +182,8 @@ export default function ModelTestScreen() {
 		status.type === 'ready' ? '#22c55e' :
 		theme.screen.text;
 
+	const isViewerReady = Platform.OS !== 'web' ? htmlFileUri !== null : html !== null;
+
 	return (
 		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			{/* Header */}
@@ -168,14 +196,16 @@ export default function ModelTestScreen() {
 
 			{/* 3D Viewer */}
 			<View style={styles.viewerContainer}>
-				{html ? (
+				{isViewerReady ? (
 					<WebView
 						ref={webViewRef}
 						style={styles.webView}
-						source={{ html }}
+						source={Platform.OS !== 'web' && htmlFileUri ? { uri: htmlFileUri } : { html: html! }}
 						javaScriptEnabled
 						domStorageEnabled
 						originWhitelist={['*']}
+						allowFileAccess={true}
+						allowingReadAccessToURL={FileSystem.cacheDirectory ?? ''}
 						onMessage={handleMessage}
 					/>
 				) : (

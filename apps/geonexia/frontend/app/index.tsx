@@ -1213,8 +1213,10 @@ export default function RecordScreen() {
 			.join(';'),
 	);
 
-	// Load a bundled asset (PNG or GLB) and return a base64 data URL.
-	// Results are cached in assetUrlCacheRef so each file is read only once.
+	// Load a bundled asset (PNG or GLB) and return a local file:// URI (native) or bundled asset URL
+	// (web).  On native, the asset is copied to the shared cache directory that the map WebView can
+	// read (allowingReadAccessToURL / allowFileAccess).  Results are cached in assetUrlCacheRef so
+	// each file is copied only once per session.
 	const loadAssetUrl = useCallback(async (cacheKey: string, moduleId: number, mimeType: string): Promise<string | null> => {
 		const cached = assetUrlCacheRef.current.get(cacheKey);
 		if (cached) return cached;
@@ -1226,10 +1228,18 @@ export default function RecordScreen() {
 				url = asset.uri;
 			} else {
 				if (!asset.localUri) return null;
-				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-					encoding: FileSystem.EncodingType.Base64,
-				});
-				url = `data:${mimeType};base64,${base64}`;
+				// Copy the asset into the same cache directory that MyMap writes its HTML to so
+				// the WebView's file:// origin can fetch it directly without URL validation errors.
+				const ext = mimeType === 'model/gltf-binary' ? 'glb' : 'png';
+				const safeKey = cacheKey.replace(/[^a-zA-Z0-9_]/g, '_');
+				const assetDir = (FileSystem.cacheDirectory ?? '') + 'mymap_v1/assets/';
+				const destPath = assetDir + safeKey + '.' + ext;
+				await FileSystem.makeDirectoryAsync(assetDir, { intermediates: true });
+				const info = await FileSystem.getInfoAsync(destPath);
+				if (!info.exists) {
+					await FileSystem.copyAsync({ from: asset.localUri, to: destPath });
+				}
+				url = destPath;
 			}
 			assetUrlCacheRef.current.set(cacheKey, url);
 			return url;
