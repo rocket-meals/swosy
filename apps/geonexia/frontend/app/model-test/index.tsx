@@ -27,6 +27,31 @@ const PRIMARY_COLOR = '#2563eb';
 const MODEL_VIEWER_CACHE_DIR = (FileSystem.cacheDirectory ?? '') + 'model_viewer_v1/';
 const MODEL_VIEWER_HTML_PATH = MODEL_VIEWER_CACHE_DIR + 'index.html';
 
+// The shared texture referenced by all GLB files as "Textures/colormap.png".
+// It must be pre-loaded as a base64 data URI and sent to the WebView so that
+// THREE.js GLTFLoader can resolve it without any XHR / file:// access.
+const COLORMAP_ASSET = require('../../assets/models/Textures/colormap.png');
+// The key must match the relative URI as written inside the GLB JSON chunk.
+const COLORMAP_TEXTURE_KEY = 'Textures/colormap.png';
+
+/** Reads a bundled asset and returns a base64 data URI, or null on failure. */
+async function assetToDataUri(moduleId: number, mimeType: string): Promise<string | null> {
+	try {
+		const asset = Asset.fromModule(moduleId);
+		await asset.downloadAsync();
+		if (Platform.OS === 'web') return asset.uri;
+		if (!asset.localUri) return null;
+		const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+			encoding: FileSystem.EncodingType.Base64,
+		});
+		if (!base64) return null;
+		return `data:${mimeType};base64,${base64}`;
+	} catch (e) {
+		console.error('[ModelTest] assetToDataUri failed:', e);
+		return null;
+	}
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
@@ -40,29 +65,7 @@ const MODEL_VIEWER_HTML_PATH = MODEL_VIEWER_CACHE_DIR + 'index.html';
  *   "Load error: [object XMLHttpRequestProgressEvent]"
  */
 async function loadModelToCache(moduleId: number): Promise<string | null> {
-	try {
-		const asset = Asset.fromModule(moduleId);
-		await asset.downloadAsync();
-		if (Platform.OS === 'web') return asset.uri;
-		if (!asset.localUri) {
-			console.warn('[ModelTest] asset.localUri is null after downloadAsync, moduleId:', moduleId);
-			return null;
-		}
-		// Read the GLB as base64 and wrap in a data URI.
-		// The viewer HTML's loadModel() handles data: URIs by calling loader.parse() directly,
-		// which avoids XHR entirely and works reliably on all platforms.
-		const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-			encoding: FileSystem.EncodingType.Base64,
-		});
-		if (!base64) {
-			console.warn('[ModelTest] base64 result is empty for moduleId:', moduleId);
-			return null;
-		}
-		return `data:model/gltf-binary;base64,${base64}`;
-	} catch (e) {
-		console.error('[ModelTest] loadModelToCache failed:', e);
-		return null;
-	}
+	return assetToDataUri(moduleId, 'model/gltf-binary');
 }
 
 // ── Model Viewer Screen ───────────────────────────────────────────────────────
@@ -81,28 +84,49 @@ export default function ModelTestScreen() {
 	const [showGrid, setShowGrid] = useState(true);
 	const htmlReadyRef = useRef(false);
 	const pendingModelKeyRef = useRef<string | null>(null);
+	// Shared colormap texture data URI (loaded once, sent to viewer on ready)
+	const colormapDataUriRef = useRef<string | null>(null);
 
-	// Load viewer HTML from expo asset
+	// Load viewer HTML and the shared colormap texture in parallel
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
-			try {
-				const htmlAsset = Asset.fromModule(require('../../assets/modelViewer.html'));
-				await htmlAsset.downloadAsync();
-				const content = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
-				if (!mounted) return;
-				if (Platform.OS !== 'web') {
-					// Write to a local cache file so the WebView loads from a file:// URI.
-					// This gives it a proper file:// origin and lets it fetch sibling GLB assets
-					// directly, avoiding "URL is not valid or contains user credentials" errors.
+			const [htmlResult, colormapUri] = await Promise.all([
+				(async () => {
+					try {
+						const htmlAsset = Asset.fromModule(require('../../assets/modelViewer.html'));
+						await htmlAsset.downloadAsync();
+						const content = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
+						return { content, error: null };
+					} catch (e) {
+						return { content: null, error: e };
+					}
+				})(),
+				assetToDataUri(COLORMAP_ASSET, 'image/png'),
+			]);
+
+			if (!mounted) return;
+
+			if (htmlResult.error || !htmlResult.content) {
+				setStatus({ type: 'error', message: `Failed to load viewer: ${htmlResult.error}` });
+				return;
+			}
+
+			colormapDataUriRef.current = colormapUri;
+
+			if (Platform.OS !== 'web') {
+				// Write to a local cache file so the WebView loads from a file:// URI.
+				// This gives it a proper file:// origin and lets it fetch sibling GLB assets
+				// directly, avoiding "URL is not valid or contains user credentials" errors.
+				try {
 					await FileSystem.makeDirectoryAsync(MODEL_VIEWER_CACHE_DIR, { intermediates: true });
-					await FileSystem.writeAsStringAsync(MODEL_VIEWER_HTML_PATH, content);
+					await FileSystem.writeAsStringAsync(MODEL_VIEWER_HTML_PATH, htmlResult.content);
 					setHtmlFileUri(MODEL_VIEWER_HTML_PATH);
-				} else {
-					setHtml(content);
+				} catch (e) {
+					setStatus({ type: 'error', message: `Failed to write viewer: ${e}` });
 				}
-			} catch (e) {
-				if (mounted) setStatus({ type: 'error', message: `Failed to load viewer: ${e}` });
+			} else {
+				setHtml(htmlResult.content);
 			}
 		})();
 		return () => { mounted = false; };
@@ -147,11 +171,16 @@ export default function ModelTestScreen() {
 			if (data.tag === 'ViewerReady') {
 				htmlReadyRef.current = true;
 				setViewerReady(true);
-				setStatus({ type: 'ready', message: 'Ready – tap model selector to load a model' });
-				if (pendingModelKeyRef.current) {
-					const key = pendingModelKeyRef.current;
-					pendingModelKeyRef.current = null;
-					loadModel(key);
+				setStatus({ type: 'ready', message: 'Ready – loading first model…' });
+				// Send the shared colormap texture so GLTFLoader can resolve it without XHR
+				if (colormapDataUriRef.current) {
+					sendToViewer({ setTextures: { [COLORMAP_TEXTURE_KEY]: colormapDataUriRef.current } });
+				}
+				// Auto-load first model or any pending model
+				const autoKey = pendingModelKeyRef.current ?? MODEL_GROUPS[0]?.models[0]?.key ?? null;
+				pendingModelKeyRef.current = null;
+				if (autoKey) {
+					loadModel(autoKey);
 				}
 			} else if (data.tag === 'modelLoaded') {
 				setStatus({ type: 'ready', message: `✓ ${data.message || selectedKey}` });
@@ -160,12 +189,12 @@ export default function ModelTestScreen() {
 			} else if (data.tag === 'error') {
 				setStatus({ type: 'error', message: data.message ?? 'Unknown error' });
 			} else if (data.tag === 'debug') {
-				setStatus((prev) => ({ ...prev, message: `[dbg] ${data.message ?? ''}` }));
+				console.log('[ModelTest WebView]', data.message);
 			}
 		} catch {
 			// JSON.parse may fail for non-JSON messages from the WebView; safely ignore
 		}
-	}, [selectedKey, loadModel]);
+	}, [selectedKey, loadModel, sendToViewer]);
 
 	const toggleGrid = useCallback(() => {
 		const next = !showGrid;

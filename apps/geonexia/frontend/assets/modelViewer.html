@@ -4771,7 +4771,10 @@
       // Current model root
       var currentModel = null;
 
-      var loader = new THREE.GLTFLoader();
+      // Texture data-URI map: populated via setTextures message from React Native.
+      // Keys are relative texture paths as referenced in GLB files (e.g. 'Textures/colormap.png').
+      // This allows loader.parse() to resolve textures without any XHR / file:// access.
+      var textureDataMap = {};
 
       function loadModel(url, name) {
         if (currentModel) {
@@ -4802,11 +4805,27 @@
         }
 
         function onError(err) {
-          var msg = err && (err.message || String(err));
+          var msg = (err && (err.message || (err.type ? '[Event: ' + err.type + ']' : String(err)))) || 'unknown error';
           showError('Load error: ' + msg);
-          setStatus('Load failed');
-          sendToRN({ tag: 'error', message: 'Model load error: ' + msg });
+          // Note: do NOT call setStatus here – showError already sends the error tag to RN
+          // so the status bar will show the real error message instead of a generic one.
+          sendToRN({ tag: 'debug', message: 'onError detail: ' + String(err) });
         }
+
+        // Build a LoadingManager that redirects texture fetches to pre-loaded data URIs.
+        // This is required because WebView XHR cannot access file:// URIs on Android,
+        // so all external assets referenced by the GLB must be served as data: URIs.
+        var manager = new THREE.LoadingManager();
+        manager.setURLModifier(function (href) {
+          // Exact match
+          if (textureDataMap[href]) return textureDataMap[href];
+          // Suffix match (handles absolute or differently-rooted paths)
+          for (var key in textureDataMap) {
+            if (href.slice(-key.length) === key) return textureDataMap[key];
+          }
+          return href;
+        });
+        var gltfLoader = new THREE.GLTFLoader(manager);
 
         if (url && url.indexOf('data:') === 0) {
           try {
@@ -4817,13 +4836,13 @@
             var bytes = new Uint8Array(binary.length);
             for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
             sendToRN({ tag: 'debug', message: 'Parsing GLB buffer, bytes=' + bytes.length });
-            loader.parse(bytes.buffer, '', onLoad, onError);
+            gltfLoader.parse(bytes.buffer, '', onLoad, onError);
           } catch (e) {
             onError(e);
           }
         } else {
           sendToRN({ tag: 'debug', message: 'Fetching URL: ' + url });
-          loader.load(url, onLoad, function (xhr) {
+          gltfLoader.load(url, onLoad, function (xhr) {
             sendToRN({ tag: 'debug', message: 'Load progress: ' + Math.round(xhr.loaded / (xhr.total || 1) * 100) + '%' });
           }, onError);
         }
@@ -4850,8 +4869,17 @@
 
       // ── Message handling from React Native ────────────────────────────────
       function handleMessage(data) {
+        if (data.setTextures) {
+          // Merge provided texture data URIs into the global map.
+          // Keys are the relative paths as referenced inside GLB files (e.g. 'Textures/colormap.png').
+          var t = data.setTextures;
+          for (var k in t) {
+            textureDataMap[k] = t[k];
+          }
+          sendToRN({ tag: 'debug', message: 'Textures registered: ' + Object.keys(textureDataMap).join(', ') });
+        }
         if (data.loadModel) {
-          sendToRN({ tag: 'debug', message: 'handleMessage: loadModel key=' + (data.loadModel.name || '?') + ' urlLen=' + ((data.loadModel.url || '').length) });
+          sendToRN({ tag: 'debug', message: 'handleMessage: loadModel key=' + (data.loadModel.name || '?') + ' urlLen=' + ((data.loadModel.url || '').length) + ' textures=' + Object.keys(textureDataMap).length });
           loadModel(data.loadModel.url, data.loadModel.name);
         }
         if (data.params) {
