@@ -38,7 +38,7 @@ const STATUS_ERROR_COLOR = '#ef4444';
 
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
-const H3_DEFAULT_RESOLUTION = 11;
+const H3_DEFAULT_RESOLUTION = 10;
 const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
