@@ -5,11 +5,12 @@ import { File, Paths } from 'expo-file-system';
 /**
  * Persistent record for a single H3 hex tile, tracking visit and enclosure history.
  *
- * `level` is a computed 0–3 score that drives the map colour range:
- *   0 = unvisited / never enclosed  → transparent
- *   1 = lightly visited or enclosed  → light green
- *   2 = moderately visited or enclosed → medium green
- *   3 = frequently visited or enclosed → strong green
+ * `level` is a computed 0–10 score that drives the map colour gradient:
+ *   0  = unvisited / never enclosed  → transparent
+ *   1  = lightest green (e.g. enclosed once)
+ *   10 = darkest green  (e.g. visited 5+ times)
+ *
+ * Formula: level = min(10, visitCount * 2 + enclosedCount)
  */
 export type HexTileRecord = {
 	/** H3 cell index (e.g. "89283082813ffff") */
@@ -22,7 +23,7 @@ export type HexTileRecord = {
 	visitCount: number;
 	/** Total number of times this tile was enclosed by a completed run loop */
 	enclosedCount: number;
-	/** Colour level 0–3, recomputed after each update */
+	/** Colour level 0–10, recomputed after each update */
 	level: number;
 	/**
 	 * Whether the user has physically walked on this tile (i.e. GPS tracked).
@@ -41,24 +42,22 @@ export type HexTileRecord = {
 // ─── Level computation ────────────────────────────────────────────────────────
 
 /**
- * Compute the colour level (0–3) for a hex tile based on its visit and
- * enclosure counts. The level is determined by whichever count is higher,
- * so that both visiting and enclosing a tile independently progress its colour.
+ * Compute the colour level (0–10) for a hex tile based on its visit and
+ * enclosure counts.
  *
- * score = max(visitCount, enclosedCount)
+ * Formula: level = min(10, visitCount * 2 + enclosedCount)
  *
- * Thresholds:
- *   score 0          → level 0 (transparent)
- *   score 1–3        → level 1 (light green)
- *   score 4–9        → level 2 (medium green)
- *   score 10+        → level 3 (strong green)
+ *   0  = unvisited / never enclosed (transparent)
+ *   1  = lightest green (e.g. enclosed once, never walked)
+ *   10 = darkest green  (e.g. visited 5 times)
+ *
+ * Visiting a tile contributes twice as much as being enclosed, so active
+ * running has more visual impact than passive territory capture.
  */
 export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | 'enclosedCount'>): number {
-	const score = Math.max(record.visitCount, record.enclosedCount);
-	if (score >= 10) return 3;
-	if (score >= 4) return 2;
-	if (score >= 1) return 1;
-	return 0;
+	const score = record.visitCount * 2 + record.enclosedCount;
+	if (score <= 0) return 0;
+	return Math.min(10, score);
 }
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
