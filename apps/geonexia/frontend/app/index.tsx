@@ -1029,6 +1029,9 @@ const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
 const SPRITE_THUMB_SIZE = 52;
 const SPRITE_THUMB_GAP = 4;
+/** Reference scale factor for the townhall sprite; SPRITE_BILLBOARD_SIZEM corresponds to this scale. */
+const TOWNHALL_SCALE_FACTOR = 7.0;
+/** Geographic size in metres for a townhall billboard at H3 level 10. */
 const SPRITE_BILLBOARD_SIZEM = 60;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
@@ -1511,11 +1514,16 @@ export default function RecordScreen() {
 						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
 					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
 				}
-				// Individual object sprites use a fixed geographic size independent of
-				// the hex diameter so they appear as appropriately-scaled game objects.
-				const billboardSizem = record.billboard.startsWith('objects:')
-					? SPRITE_BILLBOARD_SIZEM
-					: sizem;
+				// Individual object sprites use a per-sprite geographic size derived from
+				// their scaleFactor (relative to townhall = 7.0 = SPRITE_BILLBOARD_SIZEM).
+				let billboardSizem = sizem;
+				if (record.billboard.startsWith('objects:')) {
+					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
+					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
+						? OBJECT_SPRITES[spriteIdx] : undefined;
+					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
+					billboardSizem = SPRITE_BILLBOARD_SIZEM * (scale / TOWNHALL_SCALE_FACTOR);
+				}
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
 					type: record.billboard,
