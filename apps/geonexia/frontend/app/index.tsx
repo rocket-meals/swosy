@@ -34,6 +34,9 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '..
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const OBJECTS_SVG_MODULE = require('../assets/objects/hexagonVector_objects.svg') as number;
+
 const PRIMARY_COLOR = '#2563eb';
 
 // Debug status indicator colours
@@ -1113,6 +1116,20 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					)
 				}
 			/>
+			<SettingsListSelectOptionSingle
+				label="🏗️ Objects"
+				isSelected={currentBillboard === 'objects'}
+				selectionColor={PRIMARY_COLOR}
+				groupPosition="bottom"
+				onPress={() =>
+					dispatch(
+						setHexTileCustomization({
+							h3Index,
+							billboard: currentBillboard === 'objects' ? null : 'objects',
+						}),
+					)
+				}
+			/>
 		</View>
 	);
 }
@@ -1341,6 +1358,11 @@ export default function RecordScreen() {
 		}
 
 		mapRef.current.sendToMap({ imageOverlays });
+		// Register image-based billboard types so the map can render them.
+		const objectsUrl = await loadAssetUrl('objects/hexagonVector_objects.svg', OBJECTS_SVG_MODULE, 'image/svg+xml');
+		if (objectsUrl) {
+			mapRef.current.sendToMap({ billboardImages: { objects: { url: objectsUrl, ratio: 841 / 1587 } } });
+		}
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
