@@ -617,7 +617,7 @@ describe('H3 half-resolution subdivision', () => {
         const edgeGaps = result.features.filter(
             (f) => (f as { properties: { isEdgeGap?: boolean } }).properties.isEdgeGap === true,
         );
-        // Round each ring vertex to 6 decimal places to build a canonical key.
+        // Format each ring vertex to 6 decimal places to build a canonical key.
         const seen = new Set<string>();
         for (const f of edgeGaps) {
             const feature = f as { geometry: { coordinates: number[][][] } };

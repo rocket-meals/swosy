@@ -185,7 +185,7 @@ function buildH3GeoJson(
 			if (features.length >= H3_MAX_CELLS) break;
 			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
 			const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
-			const centerTile = tiles[0]; // index 0 is always the center tile
+			const centerTile = tiles[0]; // index 0 is the center tile (empty for invalid cells)
 			if (!centerTile) continue;
 			features.push({
 				type: 'Feature',
