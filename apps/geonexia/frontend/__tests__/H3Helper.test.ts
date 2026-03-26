@@ -322,8 +322,9 @@ describe('H3 half-resolution subdivision', () => {
 
     /**
      * Mirrors the half-resolution path of buildH3GeoJson in app/index.tsx.
-     * Uses cellToHalfResolutionTiles to produce 1 center + 6 petal polygons
-     * per parent cell, plus vertex gap triangles between center tiles.
+     * Renders only center tiles per parent cell (petals omitted), plus
+     * edge gap hexagons between every neighbouring pair of center tiles,
+     * plus vertex gap triangles at every shared outer vertex.
      */
     function buildH3GeoJsonHalf(bounds: { north: number; south: number; east: number; west: number }, zoom: number, resolution: number) {
         if (zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection' as const, features: [] };
@@ -359,10 +360,12 @@ describe('H3 half-resolution subdivision', () => {
         const features: object[] = [];
 
         if (isHalfResolution) {
+            // Center tiles only (petals replaced by edge gap hexagons).
             for (const parentCell of parentCells) {
                 if (features.length >= H3_MAX_CELLS) break;
                 const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
                 for (const tile of tiles) {
+                    if (!tile.isCenter) continue;
                     if (features.length >= H3_MAX_CELLS) break;
                     features.push({
                         type: 'Feature',
@@ -370,6 +373,73 @@ describe('H3 half-resolution subdivision', () => {
                         properties: { h3Index: parentCell },
                     });
                 }
+            }
+
+            // Edge gap hexagons – mirrors the production buildH3GeoJson logic.
+            const EDGE_KEY_PRECISION = 8;
+            type TestEdgeEntry = {
+                outerFirst: [number, number];
+                outerSecond: [number, number];
+                innerFirst: [number, number];
+                innerSecond: [number, number];
+                h3Index: string;
+                level: number;
+            };
+            const edgeMap: Record<string, TestEdgeEntry[]> = {};
+
+            for (const pc of parentCells) {
+                const pcLevel = 0; // test has no hexTileRecords; all levels are 0
+                const [cLat, cLng] = cellToLatLng(pc);
+                const outer = cellToBoundary(pc, false);
+                const n = outer.length;
+                for (let i = 0; i < n; i++) {
+                    const j = (i + 1) % n;
+                    const [pLat, pLng] = outer[i];
+                    const [qLat, qLng] = outer[j];
+                    const pKey = `${pLat.toFixed(EDGE_KEY_PRECISION)},${pLng.toFixed(EDGE_KEY_PRECISION)}`;
+                    const qKey = `${qLat.toFixed(EDGE_KEY_PRECISION)},${qLng.toFixed(EDGE_KEY_PRECISION)}`;
+                    const edgeKey = pKey < qKey ? `${pKey}|${qKey}` : `${qKey}|${pKey}`;
+                    if (!edgeMap[edgeKey]) edgeMap[edgeKey] = [];
+                    edgeMap[edgeKey].push({
+                        outerFirst: [pLat, pLng],
+                        outerSecond: [qLat, qLng],
+                        innerFirst: [cLat + (pLat - cLat) * 0.5, cLng + (pLng - cLng) * 0.5],
+                        innerSecond: [cLat + (qLat - cLat) * 0.5, cLng + (qLng - cLng) * 0.5],
+                        h3Index: pc,
+                        level: pcLevel,
+                    });
+                }
+            }
+
+            for (const entries of Object.values(edgeMap)) {
+                if (entries.length !== 2 || features.length >= H3_MAX_CELLS) continue;
+                const [entA, entB] = entries;
+                const aFirstKey = `${entA.outerFirst[0].toFixed(EDGE_KEY_PRECISION)},${entA.outerFirst[1].toFixed(EDGE_KEY_PRECISION)}`;
+                const bFirstKey = `${entB.outerFirst[0].toFixed(EDGE_KEY_PRECISION)},${entB.outerFirst[1].toFixed(EDGE_KEY_PRECISION)}`;
+                const bMatchesAFirst = bFirstKey === aFirstKey;
+                const innerB_P = bMatchesAFirst ? entB.innerFirst : entB.innerSecond;
+                const innerB_Q = bMatchesAFirst ? entB.innerSecond : entB.innerFirst;
+                const P = entA.outerFirst;
+                const Q = entA.outerSecond;
+                const innerA_P = entA.innerFirst;
+                const innerA_Q = entA.innerSecond;
+                const best = entA.level >= entB.level ? entA : entB;
+                features.push({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [innerA_P[1], innerA_P[0]],
+                            [P[1], P[0]],
+                            [innerB_P[1], innerB_P[0]],
+                            [innerB_Q[1], innerB_Q[0]],
+                            [Q[1], Q[0]],
+                            [innerA_Q[1], innerA_Q[0]],
+                            [innerA_P[1], innerA_P[0]],
+                        ]],
+                    },
+                    properties: { h3Index: best.h3Index, level: best.level, isGapHexagon: true },
+                });
             }
 
             // Vertex gap triangles – mirrors the production buildH3GeoJson logic.
@@ -542,6 +612,74 @@ describe('H3 half-resolution subdivision', () => {
             (f) => (f as { properties: { isGapTriangle?: boolean } }).properties.isGapTriangle === true,
         );
         expect(gapTriangles).toHaveLength(0);
+    });
+
+    // ── Edge gap hexagon tests ─────────────────────────────────────────────
+
+    it('fractional resolution includes edge gap hexagons between neighbouring center tiles', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapHexagons = result.features.filter(
+            (f) => (f as { properties: { isGapHexagon?: boolean } }).properties.isGapHexagon === true,
+        );
+        // Every interior edge between two neighbouring cells in the disk
+        // should produce exactly one gap hexagon.
+        expect(gapHexagons.length).toBeGreaterThan(0);
+    });
+
+    it('edge gap hexagons have 7-point closed rings (6 unique vertices + closing vertex)', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapHexagons = result.features.filter(
+            (f) => (f as { properties: { isGapHexagon?: boolean } }).properties.isGapHexagon === true,
+        );
+        for (const f of gapHexagons) {
+            const feature = f as { geometry: { coordinates: number[][][] } };
+            const ring = feature.geometry.coordinates[0];
+            // Hexagon: 6 unique vertices + 1 closing vertex = 7 points
+            expect(ring).toHaveLength(7);
+            // Ring is closed (first === last)
+            expect(ring[0][0]).toBeCloseTo(ring[6][0], 10);
+            expect(ring[0][1]).toBeCloseTo(ring[6][1], 10);
+        }
+    });
+
+    it('edge gap hexagon features have a valid h3Index at the base resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapHexagons = result.features.filter(
+            (f) => (f as { properties: { isGapHexagon?: boolean } }).properties.isGapHexagon === true,
+        );
+        for (const f of gapHexagons) {
+            const feature = f as { properties: { h3Index: string } };
+            expect(isValidCell(feature.properties.h3Index)).toBe(true);
+            expect(getResolution(feature.properties.h3Index)).toBe(BASE_RES);
+        }
+    });
+
+    it('no edge gap hexagons are produced for whole-number resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
+        const gapHexagons = result.features.filter(
+            (f) => (f as { properties: { isGapHexagon?: boolean } }).properties.isGapHexagon === true,
+        );
+        expect(gapHexagons).toHaveLength(0);
+    });
+
+    it('each gap hexagon has no duplicate adjacent vertices in its ring', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapHexagons = result.features.filter(
+            (f) => (f as { properties: { isGapHexagon?: boolean } }).properties.isGapHexagon === true,
+        );
+        for (const f of gapHexagons) {
+            const feature = f as { geometry: { coordinates: number[][][] } };
+            const ring = feature.geometry.coordinates[0];
+            // Check the 6 unique vertices (indices 0-5) are all distinct
+            for (let i = 0; i < 6; i++) {
+                for (let j = i + 1; j < 6; j++) {
+                    const samePoint =
+                        Math.abs(ring[i][0] - ring[j][0]) < 1e-8 &&
+                        Math.abs(ring[i][1] - ring[j][1]) < 1e-8;
+                    expect(samePoint).toBe(false);
+                }
+            }
+        }
     });
 });
 
