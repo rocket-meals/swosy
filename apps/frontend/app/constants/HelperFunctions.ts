@@ -241,7 +241,7 @@ export function formatFoodInformationValue(value: string | number | null | undef
 }
 
 export const getpreviousFeedback = (feedbacks: any, foodId: string) => {
-	const feedback = feedbacks.filter((feedback: any) => feedback.food === foodId);
+	const feedback = (Array.isArray(feedbacks) ? feedbacks : []).filter((feedback: any) => feedback.food === foodId);
 	if (feedback.length > 0) {
 		return feedback[0];
 	} else {
@@ -250,7 +250,7 @@ export const getpreviousFeedback = (feedbacks: any, foodId: string) => {
 };
 
 export const getFoodOffer = (foodOffers: any, offerId: string) => {
-	const foodOffer = foodOffers.filter((offer: any) => offer.id === offerId);
+	const foodOffer = (Array.isArray(foodOffers) ? foodOffers : []).filter((offer: any) => offer.id === offerId);
 	if (foodOffer.length > 0) {
 		return foodOffer[0];
 	} else {

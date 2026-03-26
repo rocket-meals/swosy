@@ -743,17 +743,17 @@ const OsmVectorMapScreen: React.FC = () => {
 		});
 	}, []);
 
-	const organisationsDict = useMemo(
-		() =>
-			(organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
-				(acc, org) => {
-					acc[org.id] = org;
-					return acc;
-				},
-				{},
-			),
-		[organisations],
-	);
+	// const organisationsDict = useMemo(
+	// 	() =>
+	// 		(organisations as DatabaseTypes.Organizations[]).reduce<Record<string, DatabaseTypes.Organizations>>(
+	// 			(acc, org) => {
+	// 				acc[org.id] = org;
+	// 				return acc;
+	// 			},
+	// 			{},
+	// 		),
+	// 	[organisations],
+	// );
 
 	const buildingIdToOrgsDict = useMemo(
 		() => BuildingsHelper.getBuildingIdToOrganizationsDict(buildingsOrganizations, organisationsDict),

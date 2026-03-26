@@ -31,7 +31,7 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DebugView from '@/components/DebugView';
-import ProjectButton from '@/components/ProjectButton';
+import AppButton from '@/components/AppButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 
 enum BalanceStateLowerBound {
@@ -306,7 +306,7 @@ const AccountBalanceScreen = () => {
 			<Text style={{ ...styles.balance, color: theme.header.text }}>{profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '? €'}</Text>
 			{(isWeb || !isNfcSupported) && <Text style={{ ...styles.subText, color: theme.header.text }}>{translate(TranslationKeys.nfcNotSupported)}</Text>}
 			{!isWeb && isNfcEnabled && isNfcSupported && (
-				<ProjectButton
+				<AppButton
 					style={{ width: '80%' }}
 					onPress={async () => {
 						try {

@@ -5,7 +5,7 @@ import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 
-import ProjectButton from '@/components/ProjectButton';
+import AppButton from '@/components/AppButton';
 import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -174,7 +174,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 			/>
 
 			<View style={styles.buttonContainer}>
-				<ProjectButton
+				<AppButton
 					text={saveLabel}
 					onPress={handlePressSave}
 				/>
