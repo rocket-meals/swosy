@@ -308,7 +308,7 @@ describe('H3Helper – viewport GeoJSON integration', () => {
 
 // ─── Half-resolution (fractional) subdivision tests ───────────────────────────
 
-import { cellToChildren, cellToParent, cellToHalfResolutionTiles } from '../helpers/H3Helper';
+import { cellToChildren, cellToParent, cellToHalfResolutionTiles, computeEdgeGapHexagon } from '../helpers/H3Helper';
 
 describe('H3 half-resolution subdivision', () => {
     const BASE_RES = 9;
@@ -322,8 +322,8 @@ describe('H3 half-resolution subdivision', () => {
 
     /**
      * Mirrors the half-resolution path of buildH3GeoJson in app/index.tsx.
-     * Uses cellToHalfResolutionTiles to produce 1 center + 6 petal polygons
-     * per parent cell, plus vertex gap triangles between center tiles.
+     * Renders only the center tile per cell; edge-gap hexagons fill the space
+     * between adjacent inner hexes; vertex gap triangles fill 3-way corners.
      */
     function buildH3GeoJsonHalf(bounds: { north: number; south: number; east: number; west: number }, zoom: number, resolution: number) {
         if (zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection' as const, features: [] };
@@ -359,15 +359,37 @@ describe('H3 half-resolution subdivision', () => {
         const features: object[] = [];
 
         if (isHalfResolution) {
+            // Center tiles only (no petals) – mirrors the production logic.
             for (const parentCell of parentCells) {
                 if (features.length >= H3_MAX_CELLS) break;
                 const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
-                for (const tile of tiles) {
-                    if (features.length >= H3_MAX_CELLS) break;
+                const centerTile = tiles[0];
+                if (!centerTile) continue;
+                features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Polygon', coordinates: [centerTile.polygon] },
+                    properties: { h3Index: parentCell, isCenter: true },
+                });
+            }
+
+            // Edge-gap hexagons – mirrors the production buildH3GeoJson logic.
+            const parentCellSet = new Set(parentCells);
+            const processedEdges = new Set<string>();
+            for (const pc of parentCells) {
+                if (features.length >= H3_MAX_CELLS) break;
+                const neighbors = gridDisk(pc, 1).filter((n) => n !== pc);
+                for (const nb of neighbors) {
+                    if (!parentCellSet.has(nb)) continue;
+                    const edgeKey = pc < nb ? `${pc}:${nb}` : `${nb}:${pc}`;
+                    if (processedEdges.has(edgeKey)) continue;
+                    processedEdges.add(edgeKey);
+
+                    const gapPoly = computeEdgeGapHexagon(pc, nb, H3_GEOJSON_ORDER);
+                    if (!gapPoly || features.length >= H3_MAX_CELLS) continue;
                     features.push({
                         type: 'Feature',
-                        geometry: { type: 'Polygon', coordinates: [tile.polygon] },
-                        properties: { h3Index: parentCell },
+                        geometry: { type: 'Polygon', coordinates: [gapPoly] },
+                        properties: { h3Index: pc, isEdgeGap: true },
                     });
                 }
             }
@@ -429,8 +451,8 @@ describe('H3 half-resolution subdivision', () => {
     it('fractional resolution produces more features than the equivalent whole-number resolution', () => {
         const whole = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
         const half = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
-        // Each parent hex produces 7 tiles (1 center + 6 petals), so half-resolution
-        // should produce ~7× more features than the whole-number resolution.
+        // Half-resolution produces center tiles + edge-gap hexagons + vertex gap triangles,
+        // which is more features than whole-number resolution (1 per cell).
         expect(half.features.length).toBeGreaterThan(whole.features.length);
     });
 
@@ -543,9 +565,247 @@ describe('H3 half-resolution subdivision', () => {
         );
         expect(gapTriangles).toHaveLength(0);
     });
+
+    // ── Edge-gap hexagon integration tests ────────────────────────────────
+
+    it('fractional resolution includes edge-gap hexagons between adjacent cells', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const edgeGaps = result.features.filter(
+            (f) => (f as { properties: { isEdgeGap?: boolean } }).properties.isEdgeGap === true,
+        );
+        expect(edgeGaps.length).toBeGreaterThan(0);
+    });
+
+    it('edge-gap hexagons have 7-point closed rings in GeoJSON mode (6 vertices + closing)', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const edgeGaps = result.features.filter(
+            (f) => (f as { properties: { isEdgeGap?: boolean } }).properties.isEdgeGap === true,
+        );
+        for (const f of edgeGaps) {
+            const feature = f as { geometry: { coordinates: number[][][] } };
+            const ring = feature.geometry.coordinates[0];
+            // 6 unique vertices + 1 closing vertex = 7 points
+            expect(ring).toHaveLength(7);
+            // Ring is closed
+            expect(ring[0][0]).toBeCloseTo(ring[6][0], 10);
+            expect(ring[0][1]).toBeCloseTo(ring[6][1], 10);
+        }
+    });
+
+    it('edge-gap hexagons have a valid h3Index at the base resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const edgeGaps = result.features.filter(
+            (f) => (f as { properties: { isEdgeGap?: boolean } }).properties.isEdgeGap === true,
+        );
+        for (const f of edgeGaps) {
+            const feature = f as { properties: { h3Index: string } };
+            expect(isValidCell(feature.properties.h3Index)).toBe(true);
+            expect(getResolution(feature.properties.h3Index)).toBe(BASE_RES);
+        }
+    });
+
+    it('no edge-gap hexagons are produced for whole-number resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
+        const edgeGaps = result.features.filter(
+            (f) => (f as { properties: { isEdgeGap?: boolean } }).properties.isEdgeGap === true,
+        );
+        expect(edgeGaps).toHaveLength(0);
+    });
+
+    it('each edge-gap hexagon is produced exactly once (no duplicates)', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const edgeGaps = result.features.filter(
+            (f) => (f as { properties: { isEdgeGap?: boolean } }).properties.isEdgeGap === true,
+        );
+        // Format each ring vertex to 6 decimal places to build a canonical key.
+        const seen = new Set<string>();
+        for (const f of edgeGaps) {
+            const feature = f as { geometry: { coordinates: number[][][] } };
+            const ring = feature.geometry.coordinates[0];
+            // Build a normalised key from sorted vertex strings (order-independent).
+            const verts = ring.slice(0, -1).map(([lng, lat]) => `${lng.toFixed(6)},${lat.toFixed(6)}`);
+            verts.sort();
+            const key = verts.join('|');
+            expect(seen.has(key)).toBe(false);
+            seen.add(key);
+        }
+    });
 });
 
-// ─── cellToHalfResolutionTiles unit tests ─────────────────────────────────────
+// ─── computeEdgeGapHexagon unit tests ─────────────────────────────────────────
+
+describe('H3Helper – computeEdgeGapHexagon', () => {
+    const cell = latLngToCell(LAT, LNG, RES);
+
+    it('returns null for an empty cellA', () => {
+        expect(computeEdgeGapHexagon('', cell)).toBeNull();
+    });
+
+    it('returns null for an empty cellB', () => {
+        expect(computeEdgeGapHexagon(cell, '')).toBeNull();
+    });
+
+    it('returns null for an invalid cellA', () => {
+        expect(computeEdgeGapHexagon('not-a-cell', cell)).toBeNull();
+    });
+
+    it('returns null for an invalid cellB', () => {
+        expect(computeEdgeGapHexagon(cell, 'not-a-cell')).toBeNull();
+    });
+
+    it('returns null for non-adjacent cells (grid distance > 1)', () => {
+        // Pick a cell that is 2 rings away from `cell`.
+        const ring1 = new Set(gridDisk(cell, 1));
+        const farCell = gridDisk(cell, 2).find((c) => !ring1.has(c));
+        expect(farCell).toBeTruthy();
+        if (farCell) {
+            expect(computeEdgeGapHexagon(cell, farCell)).toBeNull();
+        }
+    });
+
+    it('returns 6 vertices for two adjacent cells in non-GeoJSON mode', () => {
+        const neighbor = gridDisk(cell, 1).filter((n) => n !== cell)[0];
+        const poly = computeEdgeGapHexagon(cell, neighbor);
+        expect(poly).not.toBeNull();
+        expect(poly).toHaveLength(6);
+    });
+
+    it('returns 7 points (closed ring) in GeoJSON mode', () => {
+        const neighbor = gridDisk(cell, 1).filter((n) => n !== cell)[0];
+        const poly = computeEdgeGapHexagon(cell, neighbor, true);
+        expect(poly).not.toBeNull();
+        expect(poly).toHaveLength(7);
+        const first = poly![0];
+        const last = poly![6];
+        expect(first[0]).toBeCloseTo(last[0], 10);
+        expect(first[1]).toBeCloseTo(last[1], 10);
+    });
+
+    it('GeoJSON mode returns [lng, lat] order (lng ≈ 8, lat ≈ 52 for Osnabrück)', () => {
+        const neighbor = gridDisk(cell, 1).filter((n) => n !== cell)[0];
+        const poly = computeEdgeGapHexagon(cell, neighbor, true);
+        expect(poly).not.toBeNull();
+        const [lng0, lat0] = poly![0];
+        expect(lng0).toBeGreaterThan(7);
+        expect(lng0).toBeLessThan(10);
+        expect(lat0).toBeGreaterThan(50);
+        expect(lat0).toBeLessThan(55);
+    });
+
+    it('is symmetric: (A,B) and (B,A) produce the same set of vertices', () => {
+        const neighbor = gridDisk(cell, 1).filter((n) => n !== cell)[0];
+        const polyAB = computeEdgeGapHexagon(cell, neighbor);
+        const polyBA = computeEdgeGapHexagon(neighbor, cell);
+        expect(polyAB).not.toBeNull();
+        expect(polyBA).not.toBeNull();
+        // Both should carry the same 6 vertex positions (set equality, order may differ).
+        const toSet = (verts: [number, number][]) =>
+            new Set(verts.map(([a, b]) => `${a.toFixed(8)},${b.toFixed(8)}`));
+        const setAB = toSet(polyAB as [number, number][]);
+        const setBA = toSet(polyBA as [number, number][]);
+        expect(setAB.size).toBe(6);
+        expect(setBA.size).toBe(6);
+        for (const v of setAB) {
+            expect(setBA.has(v)).toBe(true);
+        }
+    });
+
+    it('polygon contains both shared outer vertices (P and Q)', () => {
+        const neighbor = gridDisk(cell, 1).filter((n) => n !== cell)[0];
+        const outerA = cellToBoundary(cell, false) as [number, number][];
+        const outerB = cellToBoundary(neighbor, false) as [number, number][];
+        const TOLERANCE = 1e-7;
+
+        // Find the two shared outer vertices.
+        const sharedVerts: [number, number][] = [];
+        for (const vA of outerA) {
+            for (const vB of outerB) {
+                if (
+                    Math.abs(vA[0] - vB[0]) < TOLERANCE &&
+                    Math.abs(vA[1] - vB[1]) < TOLERANCE
+                ) {
+                    sharedVerts.push(vA);
+                    break;
+                }
+            }
+        }
+        expect(sharedVerts).toHaveLength(2);
+
+        const poly = computeEdgeGapHexagon(cell, neighbor) as [number, number][];
+        expect(poly).not.toBeNull();
+        for (const sv of sharedVerts) {
+            const found = poly.some(
+                ([lat, lng]) =>
+                    Math.abs(lat - sv[0]) < TOLERANCE && Math.abs(lng - sv[1]) < TOLERANCE,
+            );
+            expect(found).toBe(true);
+        }
+    });
+
+    it('polygon contains the 4 inner vertices of both cells at the shared edge', () => {
+        const neighbor = gridDisk(cell, 1).filter((n) => n !== cell)[0];
+        const [cALat, cALng] = cellToLatLng(cell);
+        const [cBLat, cBLng] = cellToLatLng(neighbor);
+        const outerA = cellToBoundary(cell, false) as [number, number][];
+        const outerB = cellToBoundary(neighbor, false) as [number, number][];
+        const TOLERANCE = 1e-7;
+
+        // Identify P and Q.
+        const sharedVerts: [number, number][] = [];
+        for (const vA of outerA) {
+            for (const vB of outerB) {
+                if (
+                    Math.abs(vA[0] - vB[0]) < TOLERANCE &&
+                    Math.abs(vA[1] - vB[1]) < TOLERANCE
+                ) {
+                    sharedVerts.push(vA);
+                    break;
+                }
+            }
+        }
+        expect(sharedVerts).toHaveLength(2);
+
+        const [P, Q] = sharedVerts;
+        const SCALE = 0.5;
+        const expectedInner: [number, number][] = [
+            [cALat + (P[0] - cALat) * SCALE, cALng + (P[1] - cALng) * SCALE],
+            [cALat + (Q[0] - cALat) * SCALE, cALng + (Q[1] - cALng) * SCALE],
+            [cBLat + (P[0] - cBLat) * SCALE, cBLng + (P[1] - cBLng) * SCALE],
+            [cBLat + (Q[0] - cBLat) * SCALE, cBLng + (Q[1] - cBLng) * SCALE],
+        ];
+
+        const poly = computeEdgeGapHexagon(cell, neighbor) as [number, number][];
+        expect(poly).not.toBeNull();
+        for (const iv of expectedInner) {
+            const found = poly.some(
+                ([lat, lng]) =>
+                    Math.abs(lat - iv[0]) < TOLERANCE && Math.abs(lng - iv[1]) < TOLERANCE,
+            );
+            expect(found).toBe(true);
+        }
+    });
+
+    it('works for all 6 neighbours of a cell', () => {
+        const neighbors = gridDisk(cell, 1).filter((n) => n !== cell);
+        expect(neighbors).toHaveLength(6);
+        for (const nb of neighbors) {
+            const poly = computeEdgeGapHexagon(cell, nb);
+            expect(poly).not.toBeNull();
+            expect(poly).toHaveLength(6);
+        }
+    });
+
+    it('works at different resolutions (res 5 and res 12)', () => {
+        for (const res of [5, 12]) {
+            const c = latLngToCell(LAT, LNG, res);
+            const neighbors = gridDisk(c, 1).filter((n) => n !== c);
+            const poly = computeEdgeGapHexagon(c, neighbors[0]);
+            expect(poly).not.toBeNull();
+            expect(poly).toHaveLength(6);
+        }
+    });
+});
+
 
 describe('H3Helper – cellToHalfResolutionTiles', () => {
     const cell = latLngToCell(LAT, LNG, RES);
