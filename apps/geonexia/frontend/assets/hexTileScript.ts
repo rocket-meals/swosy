@@ -41,10 +41,14 @@ export const HEX_TILE_SCRIPT = `
   var WALK_PATH_WIDTH = 2.5;
 
   // ── MapLibre source / layer IDs ───────────────────────────────────────────
+  // Colors cycling through vertices: red, yellow, green, blue, orange, purple
+  var VERTEX_COLORS = ['#ef4444', '#facc15', '#22c55e', '#3b82f6', '#f97316', '#a855f7'];
+
   var HEX_TILE_SOURCE = 'hex-tile-source';
   var HEX_TILE_FILL_LAYER = 'hex-tile-fill';
   var HEX_TILE_STROKE_LAYER = 'hex-tile-stroke';
   var HEX_VERTEX_CIRCLE_LAYER = 'hex-vertex-circle';
+  var HEX_VERTEX_SQUARE_LAYER = 'hex-vertex-square';
   var HEX_BORDER_SOURCE = 'hex-border-source';
   var HEX_BORDER_LAYER = 'hex-border-layer';
   var HEX_WALK_PATH_SOURCE = 'hex-walk-path-source';
@@ -160,19 +164,67 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.4, 15, 0.3],
       },
     });
-    // Vertex circle markers: red circles at the outer corner points of hex tiles,
-    // shown only at half-resolution zoom levels (isVertex=true Point features).
+    // Vertex circle markers: coloured circles (red/yellow/green/blue/orange/purple)
+    // at the outer corner points of hex tiles, shown only at half-resolution zoom
+    // levels (isVertex=true Point features).  Color cycles via colorIndex 0–5.
+    // Register square icon images for the symbol layer below.
+    var SQUARE_PX = 16;
+    for (var ci = 0; ci < VERTEX_COLORS.length; ci++) {
+      var sqCanvas = document.createElement('canvas');
+      sqCanvas.width = SQUARE_PX;
+      sqCanvas.height = SQUARE_PX;
+      var sqCtx = sqCanvas.getContext('2d');
+      if (!sqCtx) continue;
+      sqCtx.fillStyle = VERTEX_COLORS[ci];
+      sqCtx.fillRect(0, 0, SQUARE_PX, SQUARE_PX);
+      sqCtx.strokeStyle = '#ffffff';
+      sqCtx.lineWidth = 2;
+      sqCtx.strokeRect(1, 1, SQUARE_PX - 2, SQUARE_PX - 2);
+      if (!map.hasImage('vertex-square-' + ci)) {
+        map.addImage('vertex-square-' + ci, sqCanvas);
+      }
+    }
     map.addLayer({
       id: HEX_VERTEX_CIRCLE_LAYER,
       type: 'circle',
       source: HEX_TILE_SOURCE,
       filter: ['==', ['get', 'isVertex'], true],
       paint: {
-        'circle-color': '#ef4444',
+        'circle-color': ['match', ['get', 'colorIndex'],
+          0, VERTEX_COLORS[0],
+          1, VERTEX_COLORS[1],
+          2, VERTEX_COLORS[2],
+          3, VERTEX_COLORS[3],
+          4, VERTEX_COLORS[4],
+          5, VERTEX_COLORS[5],
+          VERTEX_COLORS[0]
+        ],
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 12, 5, 15, 8],
         'circle-opacity': 0.9,
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 1,
+      },
+    });
+    // Vertex square markers: coloured squares at the same corner points,
+    // rendered on top of the circles as additional visual markers.
+    map.addLayer({
+      id: HEX_VERTEX_SQUARE_LAYER,
+      type: 'symbol',
+      source: HEX_TILE_SOURCE,
+      filter: ['==', ['get', 'isVertex'], true],
+      layout: {
+        'icon-image': ['match', ['get', 'colorIndex'],
+          0, 'vertex-square-0',
+          1, 'vertex-square-1',
+          2, 'vertex-square-2',
+          3, 'vertex-square-3',
+          4, 'vertex-square-4',
+          5, 'vertex-square-5',
+          'vertex-square-0'
+        ],
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.75, 15, 1.2],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
       },
     });
     // Territory border: separate source/layer for thick dark boundary lines
@@ -225,6 +277,7 @@ export const HEX_TILE_SCRIPT = `
     if (map.getSource(HEX_WALK_PATH_SOURCE)) map.removeSource(HEX_WALK_PATH_SOURCE);
     if (map.getLayer(HEX_BORDER_LAYER)) map.removeLayer(HEX_BORDER_LAYER);
     if (map.getSource(HEX_BORDER_SOURCE)) map.removeSource(HEX_BORDER_SOURCE);
+    if (map.getLayer(HEX_VERTEX_SQUARE_LAYER)) map.removeLayer(HEX_VERTEX_SQUARE_LAYER);
     if (map.getLayer(HEX_VERTEX_CIRCLE_LAYER)) map.removeLayer(HEX_VERTEX_CIRCLE_LAYER);
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
     if (map.getLayer(HEX_TILE_FILL_LAYER)) map.removeLayer(HEX_TILE_FILL_LAYER);
