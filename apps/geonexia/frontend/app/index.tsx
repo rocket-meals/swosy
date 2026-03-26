@@ -121,8 +121,10 @@ type ViewportBounds = { north: number; south: number; east: number; west: number
 
 type H3GeoJsonFeature = {
 	type: 'Feature';
-	geometry: { type: 'Polygon'; coordinates: number[][][] };
-	properties: { h3Index: string; level: number };
+	geometry:
+		| { type: 'Polygon'; coordinates: number[][][] }
+		| { type: 'Point'; coordinates: number[] };
+	properties: { h3Index: string; level: number; isCenter?: boolean; isVertex?: boolean };
 };
 
 type H3FeatureCollection = {
@@ -271,6 +273,24 @@ function buildH3GeoJson(
 					]],
 				},
 				properties: { h3Index: best.h3Index, level: best.level, isCenter: false },
+			});
+		}
+
+		// ── Vertex circle markers ─────────────────────────────────────────────
+		// At each outer vertex (corner) of the hex grid, place a red circle
+		// marker so that the corners of the half-resolution tiles are clearly
+		// visible. The outer vertex coordinate is the vtxMap key; the level
+		// is taken from the highest-level adjacent cell (rounded whole level).
+		for (const [key, entries] of Object.entries(vtxMap)) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const commaIdx = key.indexOf(',');
+			const oLat = parseFloat(key.slice(0, commaIdx));
+			const oLng = parseFloat(key.slice(commaIdx + 1));
+			const best = entries.reduce((m, e) => (e.level > m.level ? e : m), entries[0]);
+			features.push({
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [oLng, oLat] },
+				properties: { h3Index: best.h3Index, level: best.level, isVertex: true },
 			});
 		}
 	} else {

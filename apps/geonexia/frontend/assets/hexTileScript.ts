@@ -44,6 +44,7 @@ export const HEX_TILE_SCRIPT = `
   var HEX_TILE_SOURCE = 'hex-tile-source';
   var HEX_TILE_FILL_LAYER = 'hex-tile-fill';
   var HEX_TILE_STROKE_LAYER = 'hex-tile-stroke';
+  var HEX_VERTEX_CIRCLE_LAYER = 'hex-vertex-circle';
   var HEX_BORDER_SOURCE = 'hex-border-source';
   var HEX_BORDER_LAYER = 'hex-border-layer';
   var HEX_WALK_PATH_SOURCE = 'hex-walk-path-source';
@@ -159,6 +160,21 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.4, 15, 0.3],
       },
     });
+    // Vertex circle markers: red circles at the outer corner points of hex tiles,
+    // shown only at half-resolution zoom levels (isVertex=true Point features).
+    map.addLayer({
+      id: HEX_VERTEX_CIRCLE_LAYER,
+      type: 'circle',
+      source: HEX_TILE_SOURCE,
+      filter: ['==', ['get', 'isVertex'], true],
+      paint: {
+        'circle-color': '#ef4444',
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 12, 5, 15, 8],
+        'circle-opacity': 0.9,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 1,
+      },
+    });
     // Territory border: separate source/layer for thick dark boundary lines
     map.addSource(HEX_BORDER_SOURCE, { type: 'geojson', data: EMPTY_FC });
     map.addLayer({
@@ -209,6 +225,7 @@ export const HEX_TILE_SCRIPT = `
     if (map.getSource(HEX_WALK_PATH_SOURCE)) map.removeSource(HEX_WALK_PATH_SOURCE);
     if (map.getLayer(HEX_BORDER_LAYER)) map.removeLayer(HEX_BORDER_LAYER);
     if (map.getSource(HEX_BORDER_SOURCE)) map.removeSource(HEX_BORDER_SOURCE);
+    if (map.getLayer(HEX_VERTEX_CIRCLE_LAYER)) map.removeLayer(HEX_VERTEX_CIRCLE_LAYER);
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
     if (map.getLayer(HEX_TILE_FILL_LAYER)) map.removeLayer(HEX_TILE_FILL_LAYER);
     if (map.getSource(HEX_TILE_SOURCE)) map.removeSource(HEX_TILE_SOURCE);
