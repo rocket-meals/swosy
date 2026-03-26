@@ -1,12 +1,15 @@
 Key,Message,Component,Line
+"AZ0qYwiD49M6W32bVavq","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/objectSprites.ts",15
+"AZ0qYwiD49M6W32bVavr","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/objectSprites.ts",16
+"AZ0qYwiD49M6W32bVavs","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/objectSprites.ts",61
 "AZ0qQsdkwNvxBfmg7NNw","Unnecessary escape character: \/.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1137
 "AZ0qQsdkwNvxBfmg7NNx","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1195
-"AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/fix_viewbox.py",28
-"AZ0qQsaFwNvxBfmg7NNp","Replace the unused local variable ""sf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNq","Replace the unused local variable ""rx"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNr","Replace the unused local variable ""laf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNs","Replace the unused local variable ""xrot"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/fix_viewbox.py",167
-"AZ0qQsaFwNvxBfmg7NNt","Replace the unused local variable ""ry"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/fix_viewbox.py",167
+"AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
+"AZ0qQsaFwNvxBfmg7NNp","Replace the unused local variable ""sf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
+"AZ0qQsaFwNvxBfmg7NNq","Replace the unused local variable ""rx"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
+"AZ0qQsaFwNvxBfmg7NNr","Replace the unused local variable ""laf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
+"AZ0qQsaFwNvxBfmg7NNs","Replace the unused local variable ""xrot"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
+"AZ0qQsaFwNvxBfmg7NNt","Replace the unused local variable ""ry"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
 "AZ0pY7cUJ_U2KSmzGO3m","Unnecessary escape character: \/.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1101
 "AZ0pY7cUJ_U2KSmzGO3n","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1272
 "AZ0pY7cUJ_U2KSmzGO3o","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1279
@@ -9996,6 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvreS4VhJojFFCcB","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",634
 "AZkUSvreS4VhJojFFCbo","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",209
 "AZkUSvreS4VhJojFFCbp","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",234
-"AZkUSvreS4VhJojFFCbq","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",245
-"AZkUSvreS4VhJojFFCbr","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",269
-"AZkUSvreS4VhJojFFCcC","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",652
