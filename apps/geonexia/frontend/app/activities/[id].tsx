@@ -13,13 +13,103 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
-import { deleteActivity, loadActivity, RoutePoint, SavedActivity } from '../../helpers/ActivityStorage';
+import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
+import { SPORT_TYPES } from '../../store/sportTypeSlice';
 
 const AUTO_ROTATE_TICK_MS = 100;
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
+
+// ─── Stats / filter helpers ───────────────────────────────────────────────────
+
+const DEFAULT_RUNNER_WEIGHT_KG = 75;
+const KCAL_PER_KG_PER_KM = 0.9;
+const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
+const FLUID_BASELINE_DURATION_SECONDS = 1800;
+const FLUID_BASELINE_ML = 500;
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+	const R = 6371;
+	const dLat = ((lat2 - lat1) * Math.PI) / 180;
+	const dLng = ((lng2 - lng1) * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) ** 2 +
+		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Remove GPS points that imply an unrealistic speed relative to the last
+ * accepted point.  Only the offending candidate is dropped; the previous
+ * accepted point keeps serving as the reference for subsequent candidates.
+ * Example: A→B ok, B→C 400 km/h → C removed, B→D 300 km/h → D removed,
+ * B→E 10 km/h → E kept; now E is the new reference.
+ */
+function filterUnrealisticPoints(points: RoutePoint[], maxSpeedKmh: number): RoutePoint[] {
+	if (points.length < 2) return [...points];
+	const result: RoutePoint[] = [points[0]];
+	let lastAccepted = points[0];
+	for (let i = 1; i < points.length; i++) {
+		const candidate = points[i];
+		const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, candidate.lat, candidate.lng);
+		const dtHours = (candidate.timestamp - lastAccepted.timestamp) / 3_600_000;
+		const speedKmh = dtHours > 0 ? distKm / dtHours : 0;
+		if (speedKmh <= maxSpeedKmh) {
+			result.push(candidate);
+			lastAccepted = candidate;
+		}
+		// else: candidate is unrealistic – skip it, keep lastAccepted as reference
+	}
+	return result;
+}
+
+function computeActivityStats(points: RoutePoint[]): RunStats {
+	if (points.length < 2) {
+		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
+		return {
+			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
+			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0,
+			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
+		};
+	}
+	let distanceKm = 0;
+	let elevationGainM = 0;
+	let elevationLossM = 0;
+	const speedsKmh: number[] = [];
+	for (let i = 1; i < points.length; i++) {
+		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+		distanceKm += segKm;
+		if (points[i].altitude != null && points[i - 1].altitude != null) {
+			const diff = (points[i].altitude as number) - (points[i - 1].altitude as number);
+			if (diff > 0) elevationGainM += diff;
+			else elevationLossM += Math.abs(diff);
+		}
+		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
+		const gpsSpeed = points[i].speed;
+		const segSpeedKmh =
+			gpsSpeed != null && gpsSpeed >= 0
+				? gpsSpeed * 3.6
+				: dtSec > 0
+				? (segKm / dtSec) * 3600
+				: 0;
+		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+	}
+	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
+	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
+	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
+	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
+	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
+	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
+	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
+	return {
+		distanceKm, durationSeconds, paceMinPerKm,
+		maxSpeedKmh, minSpeedKmh, avgSpeedKmh,
+		kcal, steps, elevationGainM, elevationLossM, fluidNeedsMl,
+	};
+}
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -302,6 +392,37 @@ export default function ActivityDetailScreen() {
 		}
 	}, []);
 
+	const handleFilterUnrealisticPoints = useCallback(() => {
+		if (!activity) return;
+		const sportDef = SPORT_TYPES.find((s) => s.type === activity.sportType);
+		const maxSpeed = sportDef?.maxSpeedKmh ?? 90;
+		const sportLabel = sportDef?.label ?? 'Default';
+		Alert.alert(
+			'Filter unrealistic Points',
+			`Remove GPS points that imply a speed above ${maxSpeed} km/h (${sportLabel} limit)?\n\nThis will permanently update the saved activity.`,
+			[
+				{ text: 'Cancel', style: 'cancel' },
+				{
+					text: 'Filter',
+					onPress: () => {
+						const filtered = filterUnrealisticPoints(activity.routePoints, maxSpeed);
+						const removedCount = activity.routePoints.length - filtered.length;
+						const newStats = computeActivityStats(filtered);
+						const updated: SavedActivity = { ...activity, routePoints: filtered, stats: newStats };
+						saveActivity(updated);
+						setActivity(updated);
+						Alert.alert(
+							'Done',
+							removedCount > 0
+								? `Removed ${removedCount} unrealistic point${removedCount !== 1 ? 's' : ''}.`
+								: 'No unrealistic points found.',
+						);
+					},
+				},
+			],
+		);
+	}, [activity]);
+
 	const handleShare = useCallback(() => {
 		if (!activity) return;
 		showShareModal({
@@ -405,6 +526,15 @@ export default function ActivityDetailScreen() {
 						}
 					/>
 				))}
+				<View style={styles.filterRow}>
+					<SettingsList
+						leftIcon={<MaterialIcons name="filter-list" size={20} color="#ffffff" />}
+						iconBackgroundColor="#f59e0b"
+						title="Filter unrealistic Points"
+						groupPosition="single"
+						onPress={handleFilterUnrealisticPoints}
+					/>
+				</View>
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
 					<Text style={styles.shareButtonText}>Share Activity</Text>
@@ -538,5 +668,8 @@ const styles = StyleSheet.create({
 		marginHorizontal: 16,
 		marginTop: 8,
 		marginBottom: 8,
+	},
+	filterRow: {
+		marginTop: 16,
 	},
 });
