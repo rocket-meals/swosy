@@ -65,12 +65,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L52
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:1546
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1546
+  apps/geonexia/frontend/app/index.tsx:1549
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1549
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:1547
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1547
+  apps/geonexia/frontend/app/index.tsx:1550
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1550
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/index.tsx:1304
