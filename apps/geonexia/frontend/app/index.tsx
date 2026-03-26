@@ -1032,7 +1032,7 @@ const SPRITE_THUMB_GAP = 4;
 /** Reference scale factor for the townhall sprite; SPRITE_BILLBOARD_SIZEM corresponds to this scale. */
 const TOWNHALL_SCALE_FACTOR = 7.0;
 /** Geographic size in metres for a townhall billboard at H3 level 10. */
-const SPRITE_BILLBOARD_SIZEM = 60;
+const SPRITE_BILLBOARD_SIZEM = 420;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
