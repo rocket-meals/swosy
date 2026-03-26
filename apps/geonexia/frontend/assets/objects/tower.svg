@@ -34,4 +34,5 @@
     <path stroke="none" fill="#D26F49" d="M849.55 632.5 L857.35 636.15 857.3 646.5 852.85 648.75 849.5 642.85 849.55 632.5" />
     <path stroke="none" fill="#D5E5E5" d="M839.55 655.6 L844.85 648.4 862.4 656.65 863.95 667 839.55 655.6" />
   </g>
+  <circle id="anchor-point" cx="858.33" cy="670.64" r="0" fill="none" stroke="none"/>
 </svg>
