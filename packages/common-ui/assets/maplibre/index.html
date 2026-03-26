@@ -4681,7 +4681,7 @@
             // Sprite-sheet billboard: render only the selected sprite using CSS background clipping.
             var imgDef = BILLBOARD_IMAGES[baseType];
             var spriteIdx = parseInt(spriteIdxStr, 10);
-            sprite = imgDef.sprites[spriteIdx];
+            sprite = (!isNaN(spriteIdx) && spriteIdx >= 0) ? imgDef.sprites[spriteIdx] : undefined;
             if (sprite) {
               sheetW = imgDef.sheetW;
               sheetH = imgDef.sheetH;

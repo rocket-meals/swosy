@@ -973,6 +973,7 @@ const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
 const SPRITE_THUMB_SIZE = 52;
 const SPRITE_THUMB_GAP = 4;
+const SPRITE_THUMB_PADDING = 4;
 /** Geographic width in metres for an individual object-sprite billboard. */
 const SPRITE_BILLBOARD_SIZEM = 30;
 
@@ -1144,7 +1145,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					{OBJECT_SPRITES.map((sprite, idx) => {
 						const spriteKey = `objects:${idx}`;
 						const isSelected = currentBillboard === spriteKey;
-						const scale = (SPRITE_THUMB_SIZE - 4) / Math.max(sprite.w, sprite.h);
+						const scale = (SPRITE_THUMB_SIZE - SPRITE_THUMB_PADDING) / Math.max(sprite.w, sprite.h);
 						const scaledW = OBJECT_SPRITES_SHEET_WIDTH * scale;
 						const scaledH = OBJECT_SPRITES_SHEET_HEIGHT * scale;
 						const offsetX = (SPRITE_THUMB_SIZE - sprite.w * scale) / 2 - sprite.x * scale;
@@ -1165,19 +1166,17 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 									isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
 								]}
 							>
-								<View style={styles.spriteThumbClip}>
-									<Image
-										source={OBJECTS_SVG_MODULE}
-										style={{
-											width: scaledW,
-											height: scaledH,
-											position: 'absolute',
-											left: offsetX,
-											top: offsetY,
-										}}
-										resizeMode="stretch"
-									/>
-								</View>
+								<Image
+									source={OBJECTS_SVG_MODULE}
+									style={{
+										width: scaledW,
+										height: scaledH,
+										position: 'absolute',
+										left: offsetX,
+										top: offsetY,
+									}}
+									resizeMode="stretch"
+								/>
 							</TouchableOpacity>
 						);
 					})}
@@ -2892,10 +2891,5 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 		borderWidth: 2,
 		borderColor: 'transparent',
-	},
-	spriteThumbClip: {
-		width: SPRITE_THUMB_SIZE,
-		height: SPRITE_THUMB_SIZE,
-		overflow: 'hidden',
 	},
 });
