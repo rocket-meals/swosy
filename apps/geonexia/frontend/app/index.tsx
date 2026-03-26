@@ -221,7 +221,7 @@ function buildH3GeoJson(
 				features.push({
 					type: 'Feature',
 					geometry: { type: 'Polygon', coordinates: [gapPoly as number[][]] },
-					properties: { h3Index: bestH3Index, level: bestLevel, isCenter: false, isEdgeGap: true },
+					properties: { h3Index: bestH3Index, level: bestLevel, isCenter: false },
 				});
 			}
 		}
