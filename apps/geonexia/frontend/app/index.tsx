@@ -99,6 +99,7 @@ async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
 }
 
 const PRIMARY_COLOR = '#2563eb';
+const DEBUG_BILLBOARD_ANCHOR_COLOR = '#ff69b4';
 
 // Debug status indicator colours
 const STATUS_SUCCESS_COLOR = '#22c55e';
@@ -678,10 +679,12 @@ type DebugInfoContentProps = {
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
 	initialSpeed: number;
+	initialShowBillboardAnchors: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
+	onShowBillboardAnchorsChange: (val: boolean) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -693,20 +696,28 @@ function DebugInfoContent({
 	initialShowGridAlways,
 	initialH3Resolution,
 	initialSpeed,
+	initialShowBillboardAnchors,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
+	onShowBillboardAnchorsChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
+	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		setShowBillboardAnchors(val);
+		onShowBillboardAnchorsChange(val);
+	}, [onShowBillboardAnchorsChange]);
 
 	const adjustResolution = useCallback((delta: number) => {
 		setH3Resolution((prev) => {
@@ -778,6 +789,17 @@ function DebugInfoContent({
 					value={showGridAlways}
 					onValueChange={handleShowGridAlwaysChange}
 					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Billboard Anchors debug toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Billboard Anchors 🩷</Text>
+				<Switch
+					value={showBillboardAnchors}
+					onValueChange={handleShowBillboardAnchorsChange}
+					trackColor={{ true: DEBUG_BILLBOARD_ANCHOR_COLOR }}
 					thumbColor="#ffffff"
 				/>
 			</View>
@@ -1032,7 +1054,7 @@ const SPRITE_THUMB_GAP = 4;
 /** Reference scale factor for the townhall sprite; SPRITE_BILLBOARD_SIZEM corresponds to this scale. */
 const TOWNHALL_SCALE_FACTOR = 7.0;
 /** Geographic size in metres for a townhall billboard at H3 level 10. */
-const SPRITE_BILLBOARD_SIZEM = 420;
+const SPRITE_BILLBOARD_SIZEM = 210;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -1346,6 +1368,9 @@ export default function RecordScreen() {
 	const [showGridAlways, setShowGridAlways] = useState(false);
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
+
+	// Debug: show pink anchor dots on billboard markers.
+	const showBillboardAnchorsRef = useRef(false);
 
 	// Heading mode: when active during recording, the map rotates to face the
 	// direction of travel. Toggled by the compass button.
@@ -1712,6 +1737,11 @@ export default function RecordScreen() {
 		recomputeH3();
 	}, [recomputeH3]);
 
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		showBillboardAnchorsRef.current = val;
+		mapRef.current?.sendToMap({ billboardDebugAnchors: val });
+	}, []);
+
 	const handleH3ResolutionChange = useCallback((val: number) => {
 		h3ResolutionRef.current = val;
 		setH3Resolution(val);
@@ -1790,14 +1820,16 @@ export default function RecordScreen() {
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
+					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
+					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleShowBillboardAnchorsChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
