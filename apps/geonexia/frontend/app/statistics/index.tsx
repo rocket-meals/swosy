@@ -207,21 +207,21 @@ export default function StatisticsScreen() {
 				{/* Overview */}
 				<SettingsListGroupTitle title="Übersicht" />
 				<SettingsList
-					iconBgColor="#7c3aed"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="bar-chart-outline" size={22} color="#ffffff" />}
 					label="Aktivitäten"
 					value={String(stats.count)}
 					groupPosition="top"
 				/>
 				<SettingsList
-					iconBgColor="#2563eb"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialIcons name="straighten" size={22} color="#ffffff" />}
 					label="Gesamtstrecke"
 					value={formatDistance(stats.totalDistanceKm)}
 					groupPosition="middle"
 				/>
 				<SettingsList
-					iconBgColor="#0891b2"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="time-outline" size={22} color="#ffffff" />}
 					label="Gesamtdauer"
 					value={formatDuration(stats.totalDurationSeconds)}
@@ -231,21 +231,21 @@ export default function StatisticsScreen() {
 				{/* Speed */}
 				<SettingsListGroupTitle title="Geschwindigkeit" />
 				<SettingsList
-					iconBgColor="#dc2626"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
 					label="Höchstgeschwindigkeit"
 					value={stats.count > 0 ? formatSpeed(stats.maxSpeedKmh) : '—'}
 					groupPosition="top"
 				/>
 				<SettingsList
-					iconBgColor="#ea580c"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
 					label="Ø Geschwindigkeit"
 					value={stats.count > 0 ? formatSpeed(avgSpeed) : '—'}
 					groupPosition="middle"
 				/>
 				<SettingsList
-					iconBgColor="#d97706"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialIcons name="timer" size={22} color="#ffffff" />}
 					label="Beste Pace"
 					value={stats.count > 0 && bestPace > 0 ? formatPace(bestPace) : '—'}
@@ -255,14 +255,14 @@ export default function StatisticsScreen() {
 				{/* Elevation */}
 				<SettingsListGroupTitle title="Höhenprofil" />
 				<SettingsList
-					iconBgColor="#16a34a"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="trending-up-outline" size={22} color="#ffffff" />}
 					label="Höhengewinn"
 					value={stats.count > 0 ? `${Math.round(stats.totalElevationGainM)} m` : '—'}
 					groupPosition="top"
 				/>
 				<SettingsList
-					iconBgColor="#059669"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="trending-down-outline" size={22} color="#ffffff" />}
 					label="Höhenverlust"
 					value={stats.count > 0 ? `${Math.round(stats.totalElevationLossM)} m` : '—'}
@@ -272,21 +272,21 @@ export default function StatisticsScreen() {
 				{/* Health */}
 				<SettingsListGroupTitle title="Gesundheit" />
 				<SettingsList
-					iconBgColor="#f59e0b"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialCommunityIcons name="fire" size={22} color="#ffffff" />}
 					label="Kalorien"
 					value={stats.count > 0 ? `${Math.round(stats.totalKcal)} kcal` : '—'}
 					groupPosition="top"
 				/>
 				<SettingsList
-					iconBgColor="#8b5cf6"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<FontAwesome5 name="shoe-prints" size={18} color="#ffffff" />}
 					label="Schritte"
 					value={stats.count > 0 ? stats.totalSteps.toLocaleString() : '—'}
 					groupPosition="middle"
 				/>
 				<SettingsList
-					iconBgColor="#0ea5e9"
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="water-outline" size={22} color="#ffffff" />}
 					label="Flüssigkeitsbedarf"
 					value={stats.count > 0 ? `${Math.round(stats.totalFluidNeedsMl)} ml` : '—'}
