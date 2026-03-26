@@ -272,7 +272,7 @@ function buildH3GeoJson(
 			const best = entA.level >= entB.level ? entA : entB;
 
 			// Gap hexagon in GeoJSON [lng, lat] order with closed ring:
-			// innerA_P → P → innerB_P → innerB_Q → Q → innerA_Q → (close)
+			// innerA_P → P → innerB_P → innerB_Q → Q → innerA_Q → innerA_P
 			features.push({
 				type: 'Feature',
 				geometry: {
