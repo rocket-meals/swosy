@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
 	Alert,
 	Animated,
-	Image,
 	PanResponder,
 	Platform,
 	SafeAreaView,
@@ -66,6 +65,37 @@ async function loadAllObjectSvgDataUrls(): Promise<string[]> {
 	cachedObjectSvgDataUrls.push(...results);
 	cachedObjectSvgDataUrlsLoaded = true;
 	return cachedObjectSvgDataUrls;
+}
+
+/** Module-level cache mapping terrain asset key → base64 data URI. */
+const cachedTerrainSvgDataUrls = new Map<string, string>();
+let cachedTerrainSvgDataUrlsLoaded = false;
+
+async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
+	if (cachedTerrainSvgDataUrlsLoaded) return cachedTerrainSvgDataUrls;
+	for (const entries of Object.values(TERRAIN_ASSETS)) {
+		for (const entry of entries) {
+			try {
+				const asset = Asset.fromModule(entry.source as number);
+				await asset.downloadAsync();
+				let url: string;
+				if (Platform.OS === 'web') {
+					url = asset.uri ?? '';
+				} else {
+					if (!asset.localUri) continue;
+					const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+						encoding: FileSystem.EncodingType.Base64,
+					});
+					url = `data:image/svg+xml;base64,${base64}`;
+				}
+				cachedTerrainSvgDataUrls.set(entry.key, url);
+			} catch (e) {
+				console.warn(`[loadAllTerrainSvgDataUrls] Failed for ${entry.key}:`, e);
+			}
+		}
+	}
+	cachedTerrainSvgDataUrlsLoaded = true;
+	return cachedTerrainSvgDataUrls;
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -1008,6 +1038,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
 	const [objectSvgUrls, setObjectSvgUrls] = useState<string[]>([]);
+	const [terrainSvgUrls, setTerrainSvgUrls] = useState<Map<string, string>>(new Map());
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentBillboard = record?.billboard ?? null;
@@ -1016,6 +1047,13 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	useEffect(() => {
 		loadAllObjectSvgDataUrls().then(urls => {
 			setObjectSvgUrls(urls);
+		});
+	}, []);
+
+	// Load all terrain SVGs as base64 data URIs for use in the tile picker WebView.
+	useEffect(() => {
+		loadAllTerrainSvgDataUrls().then(urls => {
+			setTerrainSvgUrls(new Map(urls));
 		});
 	}, []);
 
@@ -1028,6 +1066,42 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
+
+	// Build the HTML for the WebView-based tile picker using individual terrain SVG data URIs.
+	const tilePickerHtml = useMemo(() => {
+		if (terrainSvgUrls.size === 0) return null;
+		const thumbSize = TILE_THUMB_SIZE;
+		const gap = TILE_THUMB_GAP;
+
+		const tileItems = TERRAIN_ASSETS[selectedCategory].map((asset) => {
+			const url = terrainSvgUrls.get(asset.key) ?? '';
+			const isSelected = currentTileImage === asset.key;
+			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
+			return `<div class="tile" data-key="${asset.key}" style="border:${border};"><img src="${url}" /></div>`;
+		}).join('');
+
+		return [
+			'<!DOCTYPE html><html>',
+			'<head>',
+			'<meta name="viewport" content="width=device-width,initial-scale=1">',
+			'<style>',
+			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
+			`html,body{background:transparent;overflow:hidden;}`,
+			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
+			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
+			`.tile img{width:100%;height:100%;object-fit:cover;}`,
+			'</style>',
+			'</head>',
+			'<body>',
+			`<div class="row">${tileItems}</div>`,
+			'<script>',
+			`document.querySelectorAll('.tile').forEach(function(el){`,
+			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
+			`});`,
+			'<\/script>',
+			'</body></html>',
+		].join('');
+	}, [terrainSvgUrls, selectedCategory, currentTileImage]);
 
 	// Build the HTML for the WebView-based sprite picker using individual SVG data URIs.
 	const spritePickerHtml = useMemo(() => {
@@ -1118,38 +1192,28 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			</ScrollView>
 
 			{/* Thumbnail row */}
-			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={styles.tilePickerThumbRow}
-			>
-				{TERRAIN_ASSETS[selectedCategory].map((asset) => {
-					const isSelected = currentTileImage === asset.key;
-					return (
-						<TouchableOpacity
-							key={asset.key}
-							onPress={() =>
-								dispatch(
-									setHexTileCustomization({
-										h3Index,
-										tileImage: isSelected ? null : asset.key,
-									}),
-								)
-							}
-							style={[
-								styles.tilePickerThumb,
-								isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
-							]}
-						>
-							<Image
-								source={asset.source}
-								style={styles.tilePickerThumbImage}
-								resizeMode="cover"
-							/>
-						</TouchableOpacity>
-					);
-				})}
-			</ScrollView>
+			{tilePickerHtml != null ? (
+				<WebView
+					source={{ html: tilePickerHtml }}
+					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
+					originWhitelist={['*']}
+					scrollEnabled={true}
+					onMessage={event => {
+						const key = event.nativeEvent.data;
+						if (!key) return;
+						dispatch(
+							setHexTileCustomization({
+								h3Index,
+								tileImage: currentTileImage === key ? null : key,
+							}),
+						);
+					}}
+				/>
+			) : (
+				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
+					Loading…
+				</Text>
+			)}
 
 			{currentTileImage && (
 				<View style={styles.tilePickerCurrentRow}>
@@ -2873,24 +2937,6 @@ const styles = StyleSheet.create({
 	tilePickerCategoryLabel: {
 		fontSize: 13,
 		fontWeight: '600',
-	},
-	tilePickerThumbRow: {
-		flexDirection: 'row',
-		gap: TILE_THUMB_GAP,
-		paddingHorizontal: 16,
-		paddingBottom: 10,
-	},
-	tilePickerThumb: {
-		width: TILE_THUMB_SIZE,
-		height: TILE_THUMB_SIZE,
-		borderRadius: 6,
-		overflow: 'hidden',
-		borderWidth: 2,
-		borderColor: 'transparent',
-	},
-	tilePickerThumbImage: {
-		width: TILE_THUMB_SIZE,
-		height: TILE_THUMB_SIZE,
 	},
 	tilePickerCurrentRow: {
 		flexDirection: 'row',

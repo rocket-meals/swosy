@@ -1,30 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1587 841">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="1416 356.6 74 78.8">
   <defs>
     <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.006866455078125 -0.006866455078125 0.0206298828125 -0.0206298828125 476.1 157.9)" id="gradient0">
-      <stop offset="0" stop-color="#FFCC00"/>
-      <stop offset="1" stop-color="#ECBC00"/>
+      <stop offset="0" stop-color="#FFCC00" />
+      <stop offset="1" stop-color="#ECBC00" />
     </linearGradient>
     <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0 0.00567626953125 -0.01031494140625 0 267 595.55)" id="gradient1">
-      <stop offset="0" stop-color="#FFCC00"/>
-      <stop offset="1" stop-color="#FF9900"/>
+      <stop offset="0" stop-color="#FFCC00" />
+      <stop offset="1" stop-color="#FF9900" />
     </linearGradient>
     <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.0078277587890625 -0.0078277587890625 0.0093231201171875 -0.0093231201171875 179 64.8)" id="gradient2">
-      <stop offset="0" stop-color="#B9C6C6"/>
-      <stop offset="1" stop-color="#D4E2E2"/>
+      <stop offset="0" stop-color="#B9C6C6" />
+      <stop offset="1" stop-color="#D4E2E2" />
     </linearGradient>
     <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0.0075531005859375 -0.0075531005859375 0.0093231201171875 0.0093231201171875 155.2 64)" id="gradient3">
-      <stop offset="0" stop-color="#B9C6C6"/>
-      <stop offset="1" stop-color="#D4E2E2"/>
+      <stop offset="0" stop-color="#B9C6C6" />
+      <stop offset="1" stop-color="#D4E2E2" />
     </linearGradient>
     <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0 0.00567626953125 -0.01031494140625 0 227.35 648.8)" id="gradient4">
-      <stop offset="0" stop-color="#FFCC00"/>
-      <stop offset="1" stop-color="#FF9900"/>
+      <stop offset="0" stop-color="#FFCC00" />
+      <stop offset="1" stop-color="#FF9900" />
     </linearGradient>
   </defs>
   <g>
-    <path stroke="none" fill="#5A6B6B" d="M1469.4 375.45 L1454.15 368.4 1438.1 374.6 1429.55 391.1 1428.4 412.05 1452.35 423.35 1477.4 413.55 1478.35 392.6 1469.4 375.45 M1455 366.6 L1470.25 373.65 Q1470.85 373.9 1471.2 374.55 L1480.15 391.7 1480.35 392.7 1479.4 413.65 1479.05 414.75 Q1478.7 415.2 1478.15 415.45 L1453.1 425.25 1452.3 425.35 1451.5 425.15 1427.55 413.85 Q1427 413.6 1426.7 413.1 1426.35 412.55 1426.4 411.95 L1427.55 391 1427.8 390.2 1436.35 373.7 Q1436.65 373 1437.4 372.75 L1453.45 366.55 1455 366.6"/>
-    <path stroke="none" fill="#A4AFAF" d="M1438.1 374.6 L1454.15 368.4 1469.4 375.45 1468.65 388.95 1452.6 395.25 1452.35 423.35 1428.4 412.05 1437.45 388.1 1438.1 374.6"/>
-    <path stroke="none" fill="#879393" d="M1438.1 374.6 L1437.45 388.1 1428.4 412.05 1429.55 391.1 1438.1 374.6 M1468.65 388.95 L1469.4 375.45 1478.35 392.6 1477.4 413.55 1468.65 388.95"/>
-    <path stroke="none" fill="#B5C2C2" d="M1468.65 388.95 L1477.4 413.55 1452.35 423.35 1452.6 395.25 1468.65 388.95"/>
+    <path stroke="none" fill="#5A6B6B" d="M1469.4 375.45 L1454.15 368.4 1438.1 374.6 1429.55 391.1 1428.4 412.05 1452.35 423.35 1477.4 413.55 1478.35 392.6 1469.4 375.45 M1455 366.6 L1470.25 373.65 Q1470.85 373.9 1471.2 374.55 L1480.15 391.7 1480.35 392.7 1479.4 413.65 1479.05 414.75 Q1478.7 415.2 1478.15 415.45 L1453.1 425.25 1452.3 425.35 1451.5 425.15 1427.55 413.85 Q1427 413.6 1426.7 413.1 1426.35 412.55 1426.4 411.95 L1427.55 391 1427.8 390.2 1436.35 373.7 Q1436.65 373 1437.4 372.75 L1453.45 366.55 1455 366.6" />
+    <path stroke="none" fill="#A4AFAF" d="M1438.1 374.6 L1454.15 368.4 1469.4 375.45 1468.65 388.95 1452.6 395.25 1452.35 423.35 1428.4 412.05 1437.45 388.1 1438.1 374.6" />
+    <path stroke="none" fill="#879393" d="M1438.1 374.6 L1437.45 388.1 1428.4 412.05 1429.55 391.1 1438.1 374.6 M1468.65 388.95 L1469.4 375.45 1478.35 392.6 1477.4 413.55 1468.65 388.95" />
+    <path stroke="none" fill="#B5C2C2" d="M1468.65 388.95 L1477.4 413.55 1452.35 423.35 1452.6 395.25 1468.65 388.95" />
   </g>
 </svg>
