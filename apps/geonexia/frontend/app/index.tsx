@@ -28,7 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToHalfResolutionTiles } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
@@ -148,7 +148,6 @@ function buildH3GeoJson(
 		H3_RESOLUTION_MIN,
 		Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
 	);
-	const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
 
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
@@ -178,20 +177,19 @@ function buildH3GeoJson(
 
 	const features: H3GeoJsonFeature[] = [];
 	if (isHalfResolution) {
-		// Subdivide each parent cell into its children.  All children inherit the
-		// parent's colour level and the parent's h3Index is stored in the feature
-		// so that click events and walk-path lookups resolve to the correct record.
+		// Subdivide each parent cell into 1 center tile (2/3-scaled inner hex)
+		// and 6 petal tiles (trapezoids covering the space between the inner hex
+		// and each outer edge).  All tiles inherit the parent's colour level and
+		// h3Index so that click events and walk-path lookups resolve correctly.
 		for (const parentCell of parentCells) {
 			if (features.length >= H3_MAX_CELLS) break;
 			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
-			const children = cellToChildren(parentCell, childRes);
-			for (const child of children) {
+			const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
+			for (const tile of tiles) {
 				if (features.length >= H3_MAX_CELLS) break;
-				const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
-				// H3_GEOJSON_ORDER=true already closes the ring.
 				features.push({
 					type: 'Feature',
-					geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+					geometry: { type: 'Polygon', coordinates: [tile.polygon as number[][]] },
 					properties: { h3Index: parentCell, level: parentLevel },
 				});
 			}
