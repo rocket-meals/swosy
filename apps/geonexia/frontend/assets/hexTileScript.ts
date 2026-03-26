@@ -153,7 +153,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_TILE_STROKE_LAYER,
       type: 'line',
       source: HEX_TILE_SOURCE,
-      filter: ['any', ['==', ['get', 'isCenter'], true], ['==', ['get', 'isEdgeGap'], true]],
+      filter: ['any', ['!', ['has', 'isCenter']], ['==', ['get', 'isCenter'], true]],
       paint: {
         'line-color': hexTileStrokeColor,
         'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 12, 1.0, 15, 0.7],
