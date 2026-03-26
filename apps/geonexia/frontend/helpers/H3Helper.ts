@@ -305,6 +305,91 @@ export function cellToHalfResolutionTiles(
     return tiles;
 }
 
+/**
+ * Compute the edge-gap hexagon between two adjacent H3 cells in the
+ * half-resolution tile scheme.
+ *
+ * When each parent cell is rendered as a 1/2-scaled inner hex (center tile),
+ * the space between two adjacent inner hexes along their shared edge is a
+ * hexagonal gap bounded by:
+ *   – the two inner vertices of `cellA` that face the shared edge,
+ *   – the two shared outer vertices (P and Q), and
+ *   – the two inner vertices of `cellB` that face the shared edge.
+ *
+ * Vertex order: `iAP → P → iBP → iBQ → Q → iAQ` (6 vertices).
+ *
+ * In GeoJSON mode (`formatAsGeoJson=true`):
+ *   - Coordinates are `[lng, lat]` instead of `[lat, lng]`.
+ *   - The ring is closed (first vertex repeated at the end), giving 7 points.
+ *
+ * @param cellA           First H3 cell (any integer resolution).
+ * @param cellB           Second H3 cell; must be a grid-distance-1 neighbour of `cellA`.
+ * @param formatAsGeoJson Coordinate order and ring closure (default: `false`).
+ * @returns               6-vertex polygon (7 in GeoJSON closed-ring mode), or
+ *                        `null` when the cells are invalid or not adjacent.
+ */
+export function computeEdgeGapHexagon(
+    cellA: H3Index,
+    cellB: H3Index,
+    formatAsGeoJson = false,
+): CoordPair[] | null {
+    if (!cellA || !cellB) return null;
+    if (!(_isValidCell?.(cellA) ?? false) || !(_isValidCell?.(cellB) ?? false)) return null;
+
+    const [cALat, cALng] = cellToLatLng(cellA);
+    const [cBLat, cBLng] = cellToLatLng(cellB);
+    const outerA = cellToBoundary(cellA, false) as [number, number][];
+    const outerB = cellToBoundary(cellB, false) as [number, number][];
+    if (outerA.length < 3 || outerB.length < 3) return null;
+
+    const TOLERANCE = 1e-7;
+    const vertEq = (v1: [number, number], v2: [number, number]): boolean =>
+        Math.abs(v1[0] - v2[0]) < TOLERANCE && Math.abs(v1[1] - v2[1]) < TOLERANCE;
+
+    // Find the shared edge in A's boundary: two consecutive vertices of A that
+    // both appear in B's boundary.
+    const nA = outerA.length;
+    let sharedEdgeIdx = -1;
+    for (let i = 0; i < nA; i++) {
+        const j = (i + 1) % nA;
+        const vI = outerA[i];
+        const vJ = outerA[j];
+        let iInB = false;
+        let jInB = false;
+        for (const uK of outerB) {
+            if (vertEq(vI, uK)) iInB = true;
+            if (vertEq(vJ, uK)) jInB = true;
+        }
+        if (iInB && jInB) {
+            sharedEdgeIdx = i;
+            break;
+        }
+    }
+
+    if (sharedEdgeIdx < 0) return null; // Not adjacent
+
+    const P = outerA[sharedEdgeIdx];
+    const Q = outerA[(sharedEdgeIdx + 1) % nA];
+
+    const SCALE = 0.5;
+    // Inner vertices of A facing the shared edge
+    const iAP: CoordPair = [cALat + (P[0] - cALat) * SCALE, cALng + (P[1] - cALng) * SCALE];
+    const iAQ: CoordPair = [cALat + (Q[0] - cALat) * SCALE, cALng + (Q[1] - cALng) * SCALE];
+    // Inner vertices of B facing the shared edge
+    const iBP: CoordPair = [cBLat + (P[0] - cBLat) * SCALE, cBLng + (P[1] - cBLng) * SCALE];
+    const iBQ: CoordPair = [cBLat + (Q[0] - cBLat) * SCALE, cBLng + (Q[1] - cBLng) * SCALE];
+
+    // Edge-gap hexagon: iAP → P → iBP → iBQ → Q → iAQ
+    const verts: CoordPair[] = [iAP, P as CoordPair, iBP, iBQ, Q as CoordPair, iAQ];
+
+    if (formatAsGeoJson) {
+        const ring = verts.map(([lat, lng]) => [lng, lat] as CoordPair);
+        ring.push(ring[0]);
+        return ring;
+    }
+    return verts;
+}
+
 // ─── Measurement ──────────────────────────────────────────────────────────────
 
 export const greatCircleDistance = (

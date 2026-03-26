@@ -28,7 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToHalfResolutionTiles } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToHalfResolutionTiles, computeEdgeGapHexagon } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
@@ -177,21 +177,49 @@ function buildH3GeoJson(
 
 	const features: H3GeoJsonFeature[] = [];
 	if (isHalfResolution) {
-		// Subdivide each parent cell into 1 center tile (1/2-scaled inner hex)
-		// and 6 petal tiles (trapezoids covering the space between the inner hex
-		// and each outer edge).  All tiles inherit the parent's colour level and
-		// h3Index so that click events and walk-path lookups resolve correctly.
-		// isCenter is passed through so the stroke layer can hide petal outlines.
+		// Render only the center tile (1/2-scaled inner hex) for each parent cell.
+		// Petals are NOT rendered – the space between adjacent inner hexes is
+		// filled by edge-gap hexagons (computed below) so there is no overlapping
+		// geometry between neighbouring cells.
 		for (const parentCell of parentCells) {
 			if (features.length >= H3_MAX_CELLS) break;
 			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
 			const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
-			for (const tile of tiles) {
-				if (features.length >= H3_MAX_CELLS) break;
+			const centerTile = tiles[0]; // index 0 is always the center tile
+			if (!centerTile) continue;
+			features.push({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [centerTile.polygon as number[][]] },
+				properties: { h3Index: parentCell, level: parentLevel, isCenter: true },
+			});
+		}
+
+		// ── Edge-gap hexagons ─────────────────────────────────────────────
+		// Between each pair of adjacent parent cells, fill the hexagonal gap
+		// that lies between their 1/2-scaled inner hexes.  Each edge is processed
+		// exactly once (deduplication via a sorted key).
+		const parentCellSet = new Set(parentCells);
+		const processedEdges = new Set<string>();
+		for (const pc of parentCells) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const neighbors = gridDisk(pc, 1).filter((n) => n !== pc);
+			for (const nb of neighbors) {
+				if (!parentCellSet.has(nb)) continue;
+				const edgeKey = pc < nb ? `${pc}:${nb}` : `${nb}:${pc}`;
+				if (processedEdges.has(edgeKey)) continue;
+				processedEdges.add(edgeKey);
+
+				const gapPoly = computeEdgeGapHexagon(pc, nb, H3_GEOJSON_ORDER);
+				if (!gapPoly || features.length >= H3_MAX_CELLS) continue;
+
+				const pcLevel = hexTileRecords[pc]?.level ?? 0;
+				const nbLevel = hexTileRecords[nb]?.level ?? 0;
+				const bestH3Index = pcLevel >= nbLevel ? pc : nb;
+				const bestLevel = Math.max(pcLevel, nbLevel);
 				features.push({
 					type: 'Feature',
-					geometry: { type: 'Polygon', coordinates: [tile.polygon as number[][]] },
-					properties: { h3Index: parentCell, level: parentLevel, isCenter: tile.isCenter },
+					geometry: { type: 'Polygon', coordinates: [gapPoly as number[][]] },
+					properties: { h3Index: bestH3Index, level: bestLevel, isCenter: false },
 				});
 			}
 		}
