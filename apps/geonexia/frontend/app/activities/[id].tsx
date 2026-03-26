@@ -200,6 +200,23 @@ export default function ActivityDetailScreen() {
 		return segments;
 	}, []);
 
+	// Compute the bounding box of a route using a loop (avoids spread-operator stack
+	// overflow for routes with thousands of GPS points).
+	const computeRouteBounds = useCallback((points: RoutePoint[]) => {
+		if (points.length === 0) return null;
+		let minLat = points[0].lat;
+		let maxLat = points[0].lat;
+		let minLng = points[0].lng;
+		let maxLng = points[0].lng;
+		for (const p of points) {
+			if (p.lat < minLat) minLat = p.lat;
+			if (p.lat > maxLat) maxLat = p.lat;
+			if (p.lng < minLng) minLng = p.lng;
+			if (p.lng > maxLng) maxLng = p.lng;
+		}
+		return { minLat, maxLat, minLng, maxLng };
+	}, []);
+
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
 		if (!mapMounted || !activity || !mapRef.current) return;
@@ -212,24 +229,16 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
-		// Calculate bounds from all route points and fit the camera
+		// Fit the camera to the full route extent
 		const points = activity.routePoints;
 		if (points.length >= 2) {
-			const lats = points.map((p) => p.lat);
-			const lngs = points.map((p) => p.lng);
-			const minLat = Math.min(...lats);
-			const maxLat = Math.max(...lats);
-			const minLng = Math.min(...lngs);
-			const maxLng = Math.max(...lngs);
-			const centerLat = (minLat + maxLat) / 2;
-			const centerLng = (minLng + maxLng) / 2;
-			routeCenterRef.current = { lat: centerLat, lng: centerLng };
+			const bounds = computeRouteBounds(points)!;
+			const { minLat, maxLat, minLng, maxLng } = bounds;
+			routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
 			// Expand the bounding box to 1.5× the route span so the route is
 			// not clipped at the edges (adds 25 % padding on every side).
-			const latSpan = maxLat - minLat;
-			const lngSpan = maxLng - minLng;
-			const latPad = latSpan * 0.25;
-			const lngPad = lngSpan * 0.25;
+			const latPad = (maxLat - minLat) * 0.25;
+			const lngPad = (maxLng - minLng) * 0.25;
 			mapRef.current.sendToMap({
 				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
 				fitBoundsPadding: 20,
@@ -278,7 +287,7 @@ export default function ActivityDetailScreen() {
 			}
 			autoRotateActiveRef.current = false;
 		};
-	}, [mapMounted, activity, buildRouteSegments]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
@@ -341,6 +350,13 @@ export default function ActivityDetailScreen() {
 
 	const { stats } = activity;
 
+	// Compute the route centre so the map starts at the correct position immediately.
+	const routeInitialCenter = (() => {
+		const bounds = computeRouteBounds(activity.routePoints);
+		if (!bounds) return undefined;
+		return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
+	})();
+
 	const statsRows: { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ icon: 'event', label: 'Date', value: formatDate(activity.startedAt) },
 		{ icon: 'access-time', label: 'Start Time', value: formatTime(activity.startedAt) },
@@ -367,7 +383,7 @@ export default function ActivityDetailScreen() {
 		>
 			{/* Map – 1:1 square at the top */}
 			<View style={styles.mapContainer}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} />
+				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} initialCenter={routeInitialCenter} initialPitch={45} />
 			</View>
 
 			{/* Stats list */}
