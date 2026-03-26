@@ -1060,7 +1060,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			'<style>',
 			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
 			`html,body{background:transparent;overflow:hidden;}`,
-			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:max-content;min-width:100%;}`,
+			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
 			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;background-image:url('${objectsSvgDataUrl}');background-repeat:no-repeat;}`,
 			'</style>',
 			'</head>',
@@ -1220,7 +1220,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 						source={{ html: spritePickerHtml }}
 						style={{ height: SPRITE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
 						originWhitelist={['*']}
-						scrollEnabled={false}
+						scrollEnabled={true}
 						onMessage={event => {
 							const idx = parseInt(event.nativeEvent.data, 10);
 							if (isNaN(idx)) return;
