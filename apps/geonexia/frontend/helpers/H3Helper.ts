@@ -214,6 +214,97 @@ export const getRes0Cells = (): H3Index[] => (_getRes0Cells?.() as H3Index[]) ??
 export const getPentagons = (res: number): H3Index[] =>
     (_getPentagons?.(res) as H3Index[]) ?? [];
 
+// ─── Half-resolution tile geometry ────────────────────────────────────────────
+
+/** A single polygon produced by {@link cellToHalfResolutionTiles}. */
+export type HalfResolutionTile = {
+    /** `true` for the single center tile (the 2/3-scaled inner hex). */
+    isCenter: boolean;
+    /**
+     * Polygon vertices.
+     * - `formatAsGeoJson=false` (default): `[lat, lng]` pairs, ring is NOT closed.
+     * - `formatAsGeoJson=true`: `[lng, lat]` pairs, ring IS closed (first vertex
+     *   repeated at the end), matching the GeoJSON Polygon ring convention.
+     */
+    polygon: CoordPair[];
+    /** The parent H3 cell at its integer resolution. */
+    parentH3Index: H3Index;
+};
+
+/**
+ * Split a parent hex cell into half-resolution tiles:
+ *   - **1 center tile** – the parent hex boundary scaled to 2/3 around its
+ *     centroid (the "solid" inner hexagon).
+ *   - **6 petal tiles** – trapezoids that fill the remaining space between the
+ *     2/3-scaled inner hex and each outer edge of the parent hex.  Each petal
+ *     is bounded by two inner-hex vertices and the two corresponding outer-hex
+ *     vertices, creating the visual "half" that faces the adjacent neighbour.
+ *
+ * In GeoJSON mode (`formatAsGeoJson=true`):
+ *   - Coordinates are `[lng, lat]` instead of `[lat, lng]`.
+ *   - Each polygon ring is closed (first vertex repeated at the end).
+ *
+ * Pentagon cells (5-sided) follow the same logic and produce 1 + 5 tiles.
+ *
+ * @param parentCell      A valid H3 cell at any integer resolution.
+ * @param formatAsGeoJson Coordinate order and ring closure (default: `false`).
+ * @returns Array of 7 tiles: index 0 = center, indices 1–6 = petals.
+ *          Returns an empty array when the input is invalid or unavailable.
+ */
+export function cellToHalfResolutionTiles(
+    parentCell: H3Index,
+    formatAsGeoJson = false,
+): HalfResolutionTile[] {
+    if (!parentCell || !(_isValidCell?.(parentCell) ?? false)) return [];
+
+    const [centerLat, centerLng] = cellToLatLng(parentCell);
+    const outerVerts = cellToBoundary(parentCell, false); // [[lat, lng], …]
+    if (outerVerts.length < 3) return [];
+
+    const SCALE = 2 / 3;
+    const innerVerts: CoordPair[] = outerVerts.map(
+        ([lat, lng]) =>
+            [
+                centerLat + (lat - centerLat) * SCALE,
+                centerLng + (lng - centerLng) * SCALE,
+            ] as CoordPair,
+    );
+
+    /** Convert [lat, lng] verts to the requested format, closing the ring when needed. */
+    const toRing = (verts: CoordPair[]): CoordPair[] => {
+        if (formatAsGeoJson) {
+            const ring: CoordPair[] = verts.map(([lat, lng]) => [lng, lat] as CoordPair);
+            ring.push(ring[0]);
+            return ring;
+        }
+        return verts;
+    };
+
+    const tiles: HalfResolutionTile[] = [];
+
+    // Center tile: the 2/3-scaled inner hex
+    tiles.push({
+        isCenter: true,
+        polygon: toRing(innerVerts),
+        parentH3Index: parentCell,
+    });
+
+    // Petal tiles: one per outer edge of the parent hex
+    const n = outerVerts.length;
+    for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        // Trapezoid: inner[i] → outer[i] → outer[j] → inner[j]
+        const petal: CoordPair[] = [innerVerts[i], outerVerts[i], outerVerts[j], innerVerts[j]];
+        tiles.push({
+            isCenter: false,
+            polygon: toRing(petal),
+            parentH3Index: parentCell,
+        });
+    }
+
+    return tiles;
+}
+
 // ─── Measurement ──────────────────────────────────────────────────────────────
 
 export const greatCircleDistance = (

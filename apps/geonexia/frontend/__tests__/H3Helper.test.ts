@@ -308,7 +308,7 @@ describe('H3Helper – viewport GeoJSON integration', () => {
 
 // ─── Half-resolution (fractional) subdivision tests ───────────────────────────
 
-import { cellToChildren, cellToParent } from '../helpers/H3Helper';
+import { cellToChildren, cellToParent, cellToHalfResolutionTiles } from '../helpers/H3Helper';
 
 describe('H3 half-resolution subdivision', () => {
     const BASE_RES = 9;
@@ -322,6 +322,8 @@ describe('H3 half-resolution subdivision', () => {
 
     /**
      * Mirrors the half-resolution path of buildH3GeoJson in app/index.tsx.
+     * Uses cellToHalfResolutionTiles to produce 1 center + 6 petal polygons
+     * per parent cell.
      */
     function buildH3GeoJsonHalf(bounds: { north: number; south: number; east: number; west: number }, zoom: number, resolution: number) {
         if (zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection' as const, features: [] };
@@ -330,7 +332,6 @@ describe('H3 half-resolution subdivision', () => {
             H3_RESOLUTION_MIN,
             Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
         );
-        const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
 
         const centerLat = (bounds.north + bounds.south) / 2;
         const centerLng = (bounds.east + bounds.west) / 2;
@@ -360,13 +361,12 @@ describe('H3 half-resolution subdivision', () => {
         if (isHalfResolution) {
             for (const parentCell of parentCells) {
                 if (features.length >= H3_MAX_CELLS) break;
-                const children = cellToChildren(parentCell, childRes);
-                for (const child of children) {
+                const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
+                for (const tile of tiles) {
                     if (features.length >= H3_MAX_CELLS) break;
-                    const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
                     features.push({
                         type: 'Feature',
-                        geometry: { type: 'Polygon', coordinates: [boundary] },
+                        geometry: { type: 'Polygon', coordinates: [tile.polygon] },
                         properties: { h3Index: parentCell },
                     });
                 }
@@ -389,7 +389,8 @@ describe('H3 half-resolution subdivision', () => {
     it('fractional resolution produces more features than the equivalent whole-number resolution', () => {
         const whole = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
         const half = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
-        // Each parent hex has 7 children, so half-resolution should produce ~7x more features.
+        // Each parent hex produces 7 tiles (1 center + 6 petals), so half-resolution
+        // should produce ~7× more features than the whole-number resolution.
         expect(half.features.length).toBeGreaterThan(whole.features.length);
     });
 
@@ -403,14 +404,14 @@ describe('H3 half-resolution subdivision', () => {
         }
     });
 
-    it('features from fractional resolution have polygon geometry at the child resolution', () => {
+    it('features from fractional resolution have closed GeoJSON polygon rings', () => {
         const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
         expect(result.features.length).toBeGreaterThan(0);
-        // The polygon covers the child cell boundary; verify ring is closed.
         for (const f of result.features) {
             const feature = f as { geometry: { coordinates: number[][][] } };
             const ring = feature.geometry.coordinates[0];
             expect(ring.length).toBeGreaterThan(0);
+            // First and last vertices must be identical (closed ring).
             const first = ring[0];
             const last = ring[ring.length - 1];
             expect(first[0]).toBeCloseTo(last[0], 10);
@@ -418,12 +419,19 @@ describe('H3 half-resolution subdivision', () => {
         }
     });
 
-    it('each child cell belongs to the parent stored in h3Index', () => {
-        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
-        expect(result.features.length).toBeGreaterThan(0);
-        // Verify a sample of features: the polygon's vertices should be inside
-        // the parent cell.  We verify this indirectly: the child cell returned
-        // by cellToChildren round-trips to the same parent via cellToParent.
+    it('each parent cell yields exactly 7 features (1 center + 6 petals)', () => {
+        // Pick the single center cell and verify it produces exactly 7 features.
+        const centerLat = (BOUNDS.north + BOUNDS.south) / 2;
+        const centerLng = (BOUNDS.east + BOUNDS.west) / 2;
+        const parentCell = latLngToCell(centerLat, centerLng, BASE_RES);
+        const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
+        expect(tiles).toHaveLength(7);
+        expect(tiles[0].isCenter).toBe(true);
+        expect(tiles.filter((t) => !t.isCenter)).toHaveLength(6);
+    });
+
+    it('H3 library cellToChildren round-trips correctly via cellToParent', () => {
+        // Verifies that child cells returned by H3 round-trip to the same parent.
         const parentCell = latLngToCell(
             (BOUNDS.north + BOUNDS.south) / 2,
             (BOUNDS.east + BOUNDS.west) / 2,
@@ -447,5 +455,133 @@ describe('H3 half-resolution subdivision', () => {
     it('produces 0 features when zoom is below H3_MIN_ZOOM regardless of fractional resolution', () => {
         const result = buildH3GeoJsonHalf(BOUNDS, 13, BASE_RES + 0.5);
         expect(result.features).toHaveLength(0);
+    });
+});
+
+// ─── cellToHalfResolutionTiles unit tests ─────────────────────────────────────
+
+describe('H3Helper – cellToHalfResolutionTiles', () => {
+    const cell = latLngToCell(LAT, LNG, RES);
+
+    it('returns 7 tiles for a standard hexagonal cell (1 center + 6 petals)', () => {
+        const tiles = cellToHalfResolutionTiles(cell);
+        expect(tiles).toHaveLength(7);
+    });
+
+    it('first tile is the center tile (isCenter=true)', () => {
+        const tiles = cellToHalfResolutionTiles(cell);
+        expect(tiles[0].isCenter).toBe(true);
+    });
+
+    it('the remaining 6 tiles are petals (isCenter=false)', () => {
+        const tiles = cellToHalfResolutionTiles(cell);
+        for (const t of tiles.slice(1)) {
+            expect(t.isCenter).toBe(false);
+        }
+    });
+
+    it('all tiles reference the correct parent h3Index', () => {
+        const tiles = cellToHalfResolutionTiles(cell);
+        for (const t of tiles) {
+            expect(t.parentH3Index).toBe(cell);
+        }
+    });
+
+    it('center polygon has 6 vertices in non-GeoJSON mode (ring not closed)', () => {
+        const tiles = cellToHalfResolutionTiles(cell, false);
+        expect(tiles[0].polygon).toHaveLength(6);
+    });
+
+    it('each petal polygon has 4 vertices in non-GeoJSON mode (ring not closed)', () => {
+        const tiles = cellToHalfResolutionTiles(cell, false);
+        for (const t of tiles.slice(1)) {
+            expect(t.polygon).toHaveLength(4);
+        }
+    });
+
+    it('GeoJSON mode: center polygon is closed and has 7 points (6 + closing vertex)', () => {
+        const tiles = cellToHalfResolutionTiles(cell, true);
+        const center = tiles[0];
+        expect(center.polygon).toHaveLength(7);
+        // First and last vertices must be identical.
+        expect(center.polygon[0][0]).toBeCloseTo(center.polygon[6][0], 10);
+        expect(center.polygon[0][1]).toBeCloseTo(center.polygon[6][1], 10);
+    });
+
+    it('GeoJSON mode: each petal polygon is closed and has 5 points (4 + closing vertex)', () => {
+        const tiles = cellToHalfResolutionTiles(cell, true);
+        for (const t of tiles.slice(1)) {
+            expect(t.polygon).toHaveLength(5);
+            const first = t.polygon[0];
+            const last = t.polygon[t.polygon.length - 1];
+            expect(first[0]).toBeCloseTo(last[0], 10);
+            expect(first[1]).toBeCloseTo(last[1], 10);
+        }
+    });
+
+    it('GeoJSON mode: coordinates are [lng, lat] order', () => {
+        const tiles = cellToHalfResolutionTiles(cell, true);
+        // For Osnabrück area: lng ≈ 8, lat ≈ 52.
+        // GeoJSON order is [lng, lat], so the first element should be ~8.
+        const [lng0, lat0] = tiles[0].polygon[0];
+        expect(lng0).toBeGreaterThan(7);
+        expect(lng0).toBeLessThan(10);
+        expect(lat0).toBeGreaterThan(50);
+        expect(lat0).toBeLessThan(55);
+    });
+
+    it('center tile vertices are at exactly 2/3 distance from the centroid', () => {
+        const [centerLat, centerLng] = cellToLatLng(cell);
+        const outer = cellToBoundary(cell, false) as [number, number][];
+        const tiles = cellToHalfResolutionTiles(cell, false);
+        const inner = tiles[0].polygon as [number, number][];
+
+        for (let i = 0; i < outer.length; i++) {
+            const outerDist = Math.hypot(
+                outer[i][0] - centerLat,
+                outer[i][1] - centerLng,
+            );
+            const innerDist = Math.hypot(
+                inner[i][0] - centerLat,
+                inner[i][1] - centerLng,
+            );
+            expect(innerDist / outerDist).toBeCloseTo(2 / 3, 5);
+        }
+    });
+
+    it('petal vertices connect inner and outer hex edges in the correct order', () => {
+        const outer = cellToBoundary(cell, false) as [number, number][];
+        const tiles = cellToHalfResolutionTiles(cell, false);
+        const inner = tiles[0].polygon as [number, number][];
+        const n = outer.length;
+
+        for (let i = 0; i < n; i++) {
+            const j = (i + 1) % n;
+            const petal = tiles[i + 1].polygon as [number, number][];
+            // Expected order: inner[i], outer[i], outer[j], inner[j]
+            expect(petal[0][0]).toBeCloseTo(inner[i][0], 8);
+            expect(petal[0][1]).toBeCloseTo(inner[i][1], 8);
+            expect(petal[1][0]).toBeCloseTo(outer[i][0], 8);
+            expect(petal[1][1]).toBeCloseTo(outer[i][1], 8);
+            expect(petal[2][0]).toBeCloseTo(outer[j][0], 8);
+            expect(petal[2][1]).toBeCloseTo(outer[j][1], 8);
+            expect(petal[3][0]).toBeCloseTo(inner[j][0], 8);
+            expect(petal[3][1]).toBeCloseTo(inner[j][1], 8);
+        }
+    });
+
+    it('returns an empty array for an invalid cell', () => {
+        expect(cellToHalfResolutionTiles('')).toEqual([]);
+        expect(cellToHalfResolutionTiles('not-a-cell')).toEqual([]);
+    });
+
+    it('works at different resolutions (res 5 and res 12)', () => {
+        for (const res of [5, 12]) {
+            const c = latLngToCell(LAT, LNG, res);
+            const tiles = cellToHalfResolutionTiles(c);
+            // Standard hexagonal cells produce exactly 7 tiles (1 center + 6 petals).
+            expect(tiles).toHaveLength(7);
+            expect(tiles[0].isCenter).toBe(true);
+        }
     });
 });
