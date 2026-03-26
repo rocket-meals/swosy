@@ -277,11 +277,10 @@ function buildH3GeoJson(
 		}
 
 		// ── Vertex circle markers ─────────────────────────────────────────────
-		// At each outer vertex (corner) of the hex grid, place a coloured circle
-		// marker (and a matching square) so that the corners of the half-resolution
-		// tiles are clearly visible.  Colors cycle through 6 values (red, yellow,
-		// green, blue, orange, purple) using a modulo counter.
-		let vertexColorIdx = 0;
+		// At each outer vertex (corner) of the hex grid, place a red circle
+		// marker so that the corners of the half-resolution tiles are clearly
+		// visible. The outer vertex coordinate is the vtxMap key; the level
+		// is taken from the highest-level adjacent cell (rounded whole level).
 		for (const [key, entries] of Object.entries(vtxMap)) {
 			if (features.length >= H3_MAX_CELLS) break;
 			const commaIdx = key.indexOf(',');
@@ -291,9 +290,8 @@ function buildH3GeoJson(
 			features.push({
 				type: 'Feature',
 				geometry: { type: 'Point', coordinates: [oLng, oLat] },
-				properties: { h3Index: best.h3Index, level: best.level, isVertex: true, colorIndex: vertexColorIdx % 6 },
+				properties: { h3Index: best.h3Index, level: best.level, isVertex: true },
 			});
-			vertexColorIdx++;
 		}
 	} else {
 		for (const cell of parentCells) {
