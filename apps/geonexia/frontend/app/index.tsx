@@ -195,6 +195,55 @@ function buildH3GeoJson(
 				});
 			}
 		}
+
+		// ── Vertex gap triangles ──────────────────────────────────────────
+		// At each vertex of the original hex grid, 3 parent cells meet.
+		// Their half-scaled inner hexes (center tiles) leave a small
+		// triangular gap between them.  We fill each gap with a triangle
+		// whose corners are the three inner vertices (one per meeting cell).
+		// A vertex map groups inner vertices by their shared outer vertex
+		// (rounded to 8 decimal places ≈ 1 mm), so each gap triangle is
+		// emitted exactly once regardless of the drawing order.
+		const VERTEX_KEY_PRECISION = 8;
+		type VtxEntry = { lat: number; lng: number; h3Index: string; level: number };
+		const vtxMap: Record<string, VtxEntry[]> = {};
+
+		for (const pc of parentCells) {
+			const pcLevel = hexTileRecords[pc]?.level ?? 0;
+			const [cLat, cLng] = cellToLatLng(pc);
+			const outer = cellToBoundary(pc, false); // [lat, lng] pairs
+			for (let v = 0; v < outer.length; v++) {
+				const [oLat, oLng] = outer[v];
+				const key = `${oLat.toFixed(VERTEX_KEY_PRECISION)},${oLng.toFixed(VERTEX_KEY_PRECISION)}`;
+				if (!vtxMap[key]) vtxMap[key] = [];
+				vtxMap[key].push({
+					lat: cLat + (oLat - cLat) * 0.5,
+					lng: cLng + (oLng - cLng) * 0.5,
+					h3Index: pc,
+					level: pcLevel,
+				});
+			}
+		}
+
+		for (const entries of Object.values(vtxMap)) {
+			if (entries.length < 3 || features.length >= H3_MAX_CELLS) continue;
+			const [a, b, c] = entries;
+			const maxLvl = Math.max(a.level, b.level, c.level);
+			const best = entries.reduce((m, e) => (e.level > m.level ? e : m), entries[0]);
+			features.push({
+				type: 'Feature',
+				geometry: {
+					type: 'Polygon',
+					coordinates: [[
+						[a.lng, a.lat],
+						[b.lng, b.lat],
+						[c.lng, c.lat],
+						[a.lng, a.lat], // close ring
+					]],
+				},
+				properties: { h3Index: best.h3Index, level: maxLvl, isCenter: false },
+			});
+		}
 	} else {
 		for (const cell of parentCells) {
 			if (features.length >= H3_MAX_CELLS) break;

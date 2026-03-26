@@ -323,7 +323,7 @@ describe('H3 half-resolution subdivision', () => {
     /**
      * Mirrors the half-resolution path of buildH3GeoJson in app/index.tsx.
      * Uses cellToHalfResolutionTiles to produce 1 center + 6 petal polygons
-     * per parent cell.
+     * per parent cell, plus vertex gap triangles between center tiles.
      */
     function buildH3GeoJsonHalf(bounds: { north: number; south: number; east: number; west: number }, zoom: number, resolution: number) {
         if (zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection' as const, features: [] };
@@ -370,6 +370,43 @@ describe('H3 half-resolution subdivision', () => {
                         properties: { h3Index: parentCell },
                     });
                 }
+            }
+
+            // Vertex gap triangles – mirrors the production buildH3GeoJson logic.
+            const VERTEX_KEY_PRECISION = 8;
+            const vtxMap: Record<string, Array<{ lat: number; lng: number; h3Index: string }>> = {};
+
+            for (const pc of parentCells) {
+                const [cLat, cLng] = cellToLatLng(pc);
+                const outer = cellToBoundary(pc, false);
+                for (let v = 0; v < outer.length; v++) {
+                    const [oLat, oLng] = outer[v];
+                    const key = `${oLat.toFixed(VERTEX_KEY_PRECISION)},${oLng.toFixed(VERTEX_KEY_PRECISION)}`;
+                    if (!vtxMap[key]) vtxMap[key] = [];
+                    vtxMap[key].push({
+                        lat: cLat + (oLat - cLat) * 0.5,
+                        lng: cLng + (oLng - cLng) * 0.5,
+                        h3Index: pc,
+                    });
+                }
+            }
+
+            for (const entries of Object.values(vtxMap)) {
+                if (entries.length < 3 || features.length >= H3_MAX_CELLS) continue;
+                const [a, b, c] = entries;
+                features.push({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [a.lng, a.lat],
+                            [b.lng, b.lat],
+                            [c.lng, c.lat],
+                            [a.lng, a.lat],
+                        ]],
+                    },
+                    properties: { h3Index: a.h3Index, isGapTriangle: true },
+                });
             }
         } else {
             for (const cell of parentCells) {
@@ -455,6 +492,53 @@ describe('H3 half-resolution subdivision', () => {
     it('produces 0 features when zoom is below H3_MIN_ZOOM regardless of fractional resolution', () => {
         const result = buildH3GeoJsonHalf(BOUNDS, 13, BASE_RES + 0.5);
         expect(result.features).toHaveLength(0);
+    });
+
+    // ── Vertex gap triangle tests ──────────────────────────────────────────
+
+    it('fractional resolution includes vertex gap triangles between center tiles', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapTriangles = result.features.filter(
+            (f) => (f as { properties: { isGapTriangle?: boolean } }).properties.isGapTriangle === true,
+        );
+        // There should be at least 1 gap triangle in the viewport
+        expect(gapTriangles.length).toBeGreaterThan(0);
+    });
+
+    it('gap triangles have 4-point closed rings (triangle + closing vertex)', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapTriangles = result.features.filter(
+            (f) => (f as { properties: { isGapTriangle?: boolean } }).properties.isGapTriangle === true,
+        );
+        for (const f of gapTriangles) {
+            const feature = f as { geometry: { coordinates: number[][][] } };
+            const ring = feature.geometry.coordinates[0];
+            // Triangle: 3 unique vertices + 1 closing vertex = 4 points
+            expect(ring).toHaveLength(4);
+            // Ring is closed
+            expect(ring[0][0]).toBeCloseTo(ring[3][0], 10);
+            expect(ring[0][1]).toBeCloseTo(ring[3][1], 10);
+        }
+    });
+
+    it('gap triangle features have a valid h3Index at the base resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        const gapTriangles = result.features.filter(
+            (f) => (f as { properties: { isGapTriangle?: boolean } }).properties.isGapTriangle === true,
+        );
+        for (const f of gapTriangles) {
+            const feature = f as { properties: { h3Index: string } };
+            expect(isValidCell(feature.properties.h3Index)).toBe(true);
+            expect(getResolution(feature.properties.h3Index)).toBe(BASE_RES);
+        }
+    });
+
+    it('no gap triangles are produced for whole-number resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
+        const gapTriangles = result.features.filter(
+            (f) => (f as { properties: { isGapTriangle?: boolean } }).properties.isGapTriangle === true,
+        );
+        expect(gapTriangles).toHaveLength(0);
     });
 });
 
