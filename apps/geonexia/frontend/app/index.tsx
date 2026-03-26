@@ -27,6 +27,11 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
+import {
+	OBJECT_SPRITES,
+	OBJECT_SPRITES_SHEET_WIDTH,
+	OBJECT_SPRITES_SHEET_HEIGHT,
+} from '../assets/objects/objectSprites';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
@@ -966,6 +971,10 @@ function formatTimestamp(ts: number | null): string {
 
 const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
+const SPRITE_THUMB_SIZE = 52;
+const SPRITE_THUMB_GAP = 4;
+/** Geographic width in metres for an individual object-sprite billboard. */
+const SPRITE_BILLBOARD_SIZEM = 30;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -1116,20 +1125,64 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					)
 				}
 			/>
-			<SettingsListSelectOptionSingle
-				label="🏗️ Objects"
-				isSelected={currentBillboard === 'objects'}
-				selectionColor={PRIMARY_COLOR}
-				groupPosition="bottom"
-				onPress={() =>
-					dispatch(
-						setHexTileCustomization({
-							h3Index,
-							billboard: currentBillboard === 'objects' ? null : 'objects',
-						}),
-					)
-				}
-			/>
+
+			{/* Object sprite picker */}
+			<View
+				style={[
+					styles.spriteSectionContainer,
+					{ borderColor: theme.screen.text + '20', backgroundColor: theme.screen.text + '08' },
+				]}
+			>
+				<Text style={[styles.spriteSectionLabel, { color: theme.screen.text }]}>
+					🏗️ Objects
+				</Text>
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={styles.spritePickerRow}
+				>
+					{OBJECT_SPRITES.map((sprite, idx) => {
+						const spriteKey = `objects:${idx}`;
+						const isSelected = currentBillboard === spriteKey;
+						const scale = (SPRITE_THUMB_SIZE - 4) / Math.max(sprite.w, sprite.h);
+						const scaledW = OBJECT_SPRITES_SHEET_WIDTH * scale;
+						const scaledH = OBJECT_SPRITES_SHEET_HEIGHT * scale;
+						const offsetX = (SPRITE_THUMB_SIZE - sprite.w * scale) / 2 - sprite.x * scale;
+						const offsetY = (SPRITE_THUMB_SIZE - sprite.h * scale) / 2 - sprite.y * scale;
+						return (
+							<TouchableOpacity
+								key={idx}
+								onPress={() =>
+									dispatch(
+										setHexTileCustomization({
+											h3Index,
+											billboard: isSelected ? null : spriteKey,
+										}),
+									)
+								}
+								style={[
+									styles.spriteThumb,
+									isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
+								]}
+							>
+								<View style={styles.spriteThumbClip}>
+									<Image
+										source={OBJECTS_SVG_MODULE}
+										style={{
+											width: scaledW,
+											height: scaledH,
+											position: 'absolute',
+											left: offsetX,
+											top: offsetY,
+										}}
+										resizeMode="stretch"
+									/>
+								</View>
+							</TouchableOpacity>
+						);
+					})}
+				</ScrollView>
+			</View>
 		</View>
 	);
 }
@@ -1348,11 +1401,16 @@ export default function RecordScreen() {
 						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
 					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
 				}
+				// Individual object sprites use a fixed geographic size independent of
+				// the hex diameter so they appear as appropriately-scaled game objects.
+				const billboardSizem = record.billboard.startsWith('objects:')
+					? SPRITE_BILLBOARD_SIZEM
+					: sizem;
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
 					type: record.billboard,
 					position: { lng: center[1], lat: center[0] },
-					sizem,
+					sizem: billboardSizem,
 				});
 			}
 		}
@@ -1361,7 +1419,17 @@ export default function RecordScreen() {
 		// Register image-based billboard types so the map can render them.
 		const objectsUrl = await loadAssetUrl('objects/hexagonVector_objects.svg', OBJECTS_SVG_MODULE, 'image/svg+xml');
 		if (objectsUrl) {
-			mapRef.current.sendToMap({ billboardImages: { objects: { url: objectsUrl, ratio: 841 / 1587 } } });
+			mapRef.current.sendToMap({
+				billboardImages: {
+					objects: {
+						url: objectsUrl,
+						ratio: OBJECT_SPRITES_SHEET_HEIGHT / OBJECT_SPRITES_SHEET_WIDTH,
+						sprites: OBJECT_SPRITES,
+						sheetW: OBJECT_SPRITES_SHEET_WIDTH,
+						sheetH: OBJECT_SPRITES_SHEET_HEIGHT,
+					},
+				},
+			});
 		}
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
@@ -2796,5 +2864,38 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 		paddingLeft: 8,
+	},
+	// Object sprite picker
+	spriteSectionContainer: {
+		marginHorizontal: 16,
+		marginBottom: 10,
+		borderRadius: 8,
+		borderWidth: StyleSheet.hairlineWidth,
+		paddingTop: 8,
+	},
+	spriteSectionLabel: {
+		fontSize: 13,
+		fontWeight: '600',
+		paddingHorizontal: 12,
+		paddingBottom: 6,
+	},
+	spritePickerRow: {
+		flexDirection: 'row',
+		gap: SPRITE_THUMB_GAP,
+		paddingHorizontal: 12,
+		paddingBottom: 10,
+	},
+	spriteThumb: {
+		width: SPRITE_THUMB_SIZE,
+		height: SPRITE_THUMB_SIZE,
+		borderRadius: 6,
+		overflow: 'hidden',
+		borderWidth: 2,
+		borderColor: 'transparent',
+	},
+	spriteThumbClip: {
+		width: SPRITE_THUMB_SIZE,
+		height: SPRITE_THUMB_SIZE,
+		overflow: 'hidden',
 	},
 });
