@@ -228,7 +228,8 @@ function buildH3GeoJson(
 		for (const entries of Object.values(vtxMap)) {
 			if (entries.length < 3 || features.length >= H3_MAX_CELLS) continue;
 			const [a, b, c] = entries;
-			const maxLvl = Math.max(a.level, b.level, c.level);
+			// Use the cell with the highest level as the representative for the
+			// gap triangle so click events resolve to the most-visited tile.
 			const best = entries.reduce((m, e) => (e.level > m.level ? e : m), entries[0]);
 			features.push({
 				type: 'Feature',
@@ -241,7 +242,7 @@ function buildH3GeoJson(
 						[a.lng, a.lat], // close ring
 					]],
 				},
-				properties: { h3Index: best.h3Index, level: maxLvl, isCenter: false },
+				properties: { h3Index: best.h3Index, level: best.level, isCenter: false },
 			});
 		}
 	} else {

@@ -374,9 +374,10 @@ describe('H3 half-resolution subdivision', () => {
 
             // Vertex gap triangles – mirrors the production buildH3GeoJson logic.
             const VERTEX_KEY_PRECISION = 8;
-            const vtxMap: Record<string, Array<{ lat: number; lng: number; h3Index: string }>> = {};
+            const vtxMap: Record<string, Array<{ lat: number; lng: number; h3Index: string; level: number }>> = {};
 
             for (const pc of parentCells) {
+                const pcLevel = 0; // test has no hexTileRecords; all levels are 0
                 const [cLat, cLng] = cellToLatLng(pc);
                 const outer = cellToBoundary(pc, false);
                 for (let v = 0; v < outer.length; v++) {
@@ -387,6 +388,7 @@ describe('H3 half-resolution subdivision', () => {
                         lat: cLat + (oLat - cLat) * 0.5,
                         lng: cLng + (oLng - cLng) * 0.5,
                         h3Index: pc,
+                        level: pcLevel,
                     });
                 }
             }
@@ -394,6 +396,7 @@ describe('H3 half-resolution subdivision', () => {
             for (const entries of Object.values(vtxMap)) {
                 if (entries.length < 3 || features.length >= H3_MAX_CELLS) continue;
                 const [a, b, c] = entries;
+                const best = entries.reduce((m, e) => (e.level > m.level ? e : m), entries[0]);
                 features.push({
                     type: 'Feature',
                     geometry: {
@@ -405,7 +408,7 @@ describe('H3 half-resolution subdivision', () => {
                             [a.lng, a.lat],
                         ]],
                     },
-                    properties: { h3Index: a.h3Index, isGapTriangle: true },
+                    properties: { h3Index: best.h3Index, level: best.level, isGapTriangle: true },
                 });
             }
         } else {
