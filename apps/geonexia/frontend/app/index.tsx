@@ -1256,8 +1256,6 @@ export default function RecordScreen() {
 			id: string;
 			type: string;
 			position: { lng: number; lat: number };
-			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
-			sizem: number;
 		};
 
 		const imageOverlays: ImageOverlay[] = [];
@@ -1315,32 +1313,28 @@ export default function RecordScreen() {
 			// ── Billboard marker ────────────────────────────────────────────────
 			if (record.billboard) {
 				const center = cellToLatLng(h3Index); // [lat, lng]
-				const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
-				// Compute hex diameter (centre-to-first-vertex × 2) in metres so the
-				// billboard scales proportionally to the PNG tile overlay on zoom.
-				let sizem = 72; // safe fallback for H3 resolution 10
-				if (boundary.length >= 1) {
-					const EARTH_RADIUS_METERS = 6371000;
-					const lat1 = center[0] * Math.PI / 180;
-					const lat2 = boundary[0][0] * Math.PI / 180;
-					const dlat = lat2 - lat1;
-					const dlng = (boundary[0][1] - center[1]) * Math.PI / 180;
-					const sinHalfDlat = Math.sin(dlat / 2);
-					const sinHalfDlng = Math.sin(dlng / 2);
-					const a = sinHalfDlat * sinHalfDlat
-						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
-					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
-				}
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
 					type: record.billboard,
 					position: { lng: center[1], lat: center[0] },
-					sizem,
 				});
 			}
 		}
 
 		mapRef.current.sendToMap({ imageOverlays });
+
+		// Send the SVG asset for the tree billboard type so the map can render it
+		// as a proper image instead of the built-in placeholder polygons.
+		const treeSvgDataUrl = await loadAssetUrl(
+			'billboard:tree',
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
+			require('../assets/objekts/hexagonVector_objects.svg') as number,
+			'image/svg+xml',
+		);
+		if (treeSvgDataUrl) {
+			mapRef.current.sendToMap({ billboardSvgAssets: { tree: treeSvgDataUrl } });
+		}
+
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
