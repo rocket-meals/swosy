@@ -1325,6 +1325,8 @@ export default function RecordScreen() {
 
 		// Send the SVG asset for the tree billboard type so the map can render it
 		// as a proper image instead of the built-in placeholder polygons.
+		// Note: 'billboard:tree' is a cache key (prefixed to avoid collisions with
+		// terrain asset keys); the map receives the asset under the type key 'tree'.
 		const treeSvgDataUrl = await loadAssetUrl(
 			'billboard:tree',
 			// eslint-disable-next-line @typescript-eslint/no-require-imports
