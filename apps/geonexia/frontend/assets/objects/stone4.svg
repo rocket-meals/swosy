@@ -28,4 +28,5 @@
     <path stroke="none" fill="#A4AFAF" d="M192.95 466.9 L192.1 467.85 183.25 470.3 182.2 461.75 184.3 460.35 192.95 466.9" />
     <path stroke="none" fill="#B5C2C2" d="M176.8 481.55 L183.25 470.3 192.1 467.85 196.95 479.8 184.95 485.35 176.8 481.55" />
   </g>
+  <circle id="anchor-point" cx="188.38" cy="486.13" r="0" fill="none" stroke="none"/>
 </svg>

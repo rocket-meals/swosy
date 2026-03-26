@@ -1466,6 +1466,8 @@ export default function RecordScreen() {
 			position: { lng: number; lat: number };
 			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
 			sizem: number;
+			/** Vertical anchor as a fraction of image height (0=top, 1=bottom). The geographic coordinate attaches here. */
+			anchorY: number;
 		};
 
 		const imageOverlays: ImageOverlay[] = [];
@@ -1542,18 +1544,21 @@ export default function RecordScreen() {
 				// Individual object sprites use a per-sprite geographic size derived from
 				// their scaleFactor (relative to townhall = 7.0 = SPRITE_BILLBOARD_SIZEM).
 				let billboardSizem = sizem;
+				let billboardAnchorY = 1.0;
 				if (record.billboard.startsWith('objects:')) {
 					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
 					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
 						? OBJECT_SPRITES[spriteIdx] : undefined;
 					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
 					billboardSizem = SPRITE_BILLBOARD_SIZEM * (scale / TOWNHALL_SCALE_FACTOR);
+					billboardAnchorY = sprite ? sprite.anchorY : 1.0;
 				}
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
 					type: record.billboard,
 					position: { lng: center[1], lat: center[0] },
 					sizem: billboardSizem,
+					anchorY: billboardAnchorY,
 				});
 			}
 		}
