@@ -177,17 +177,16 @@ function buildH3GeoJson(
 
 	const features: H3GeoJsonFeature[] = [];
 	if (isHalfResolution) {
-		// Render only the center tile (1/2-scaled inner hex) for each parent
-		// cell.  The six petal trapezoids are intentionally omitted here because
-		// the space between neighbouring center tiles is filled by explicit
-		// edge gap hexagons (see below), giving a cleaner visual where each
-		// cell appears as a distinct smaller hex connected to its neighbours.
+		// Subdivide each parent cell into 1 center tile (1/2-scaled inner hex)
+		// and 6 petal tiles (trapezoids covering the space between the inner hex
+		// and each outer edge).  All tiles inherit the parent's colour level and
+		// h3Index so that click events and walk-path lookups resolve correctly.
+		// isCenter is passed through so the stroke layer can hide petal outlines.
 		for (const parentCell of parentCells) {
 			if (features.length >= H3_MAX_CELLS) break;
 			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
 			const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
 			for (const tile of tiles) {
-				if (!tile.isCenter) continue; // petals replaced by edge gap hexagons
 				if (features.length >= H3_MAX_CELLS) break;
 				features.push({
 					type: 'Feature',
@@ -195,100 +194,6 @@ function buildH3GeoJson(
 					properties: { h3Index: parentCell, level: parentLevel, isCenter: tile.isCenter },
 				});
 			}
-		}
-
-		// ── Edge gap hexagons ──────────────────────────────────────────────
-		// Between every pair of neighbouring center tiles there is a hexagonal
-		// gap whose 6 vertices are:
-		//   · innerA_P, innerA_Q – the two 50%-scaled inner vertices of cell A
-		//     that face the shared outer edge P–Q
-		//   · P, Q              – the two shared outer vertices of the original
-		//     hex grid (from the level-10 cell boundary)
-		//   · innerB_P, innerB_Q – the matching inner vertices of cell B
-		//
-		// We detect neighbour pairs by building an edge map keyed on the
-		// sorted pair of outer-vertex position strings (8 decimal places ≈
-		// 1 mm at the equator).  An edge that appears exactly twice comes from
-		// two neighbouring cells and produces one gap hexagon.  Edges at the
-		// boundary of the rendered disk appear only once and are skipped.
-		const EDGE_KEY_PRECISION = 8;
-		type EdgeEntry = {
-			outerFirst: [number, number];  // [lat, lng] of first outer vertex in winding order
-			outerSecond: [number, number]; // [lat, lng] of second outer vertex
-			innerFirst: [number, number];  // 50%-scaled inner vertex at outerFirst
-			innerSecond: [number, number]; // 50%-scaled inner vertex at outerSecond
-			h3Index: string;
-			level: number;
-		};
-		const edgeMap: Record<string, EdgeEntry[]> = {};
-
-		for (const pc of parentCells) {
-			const pcLevel = hexTileRecords[pc]?.level ?? 0;
-			const [cLat, cLng] = cellToLatLng(pc);
-			const outer = cellToBoundary(pc, false); // [lat, lng] pairs, ring not closed
-			const n = outer.length;
-			for (let i = 0; i < n; i++) {
-				const j = (i + 1) % n;
-				const [pLat, pLng] = outer[i];
-				const [qLat, qLng] = outer[j];
-				const pKey = `${pLat.toFixed(EDGE_KEY_PRECISION)},${pLng.toFixed(EDGE_KEY_PRECISION)}`;
-				const qKey = `${qLat.toFixed(EDGE_KEY_PRECISION)},${qLng.toFixed(EDGE_KEY_PRECISION)}`;
-				// Canonical sorted key so both neighbouring cells produce the
-				// same string for the shared edge regardless of winding order.
-				const edgeKey = pKey < qKey ? `${pKey}|${qKey}` : `${qKey}|${pKey}`;
-				if (!edgeMap[edgeKey]) edgeMap[edgeKey] = [];
-				edgeMap[edgeKey].push({
-					outerFirst: [pLat, pLng],
-					outerSecond: [qLat, qLng],
-					innerFirst: [cLat + (pLat - cLat) * 0.5, cLng + (pLng - cLng) * 0.5],
-					innerSecond: [cLat + (qLat - cLat) * 0.5, cLng + (qLng - cLng) * 0.5],
-					h3Index: pc,
-					level: pcLevel,
-				});
-			}
-		}
-
-		for (const entries of Object.values(edgeMap)) {
-			if (entries.length !== 2 || features.length >= H3_MAX_CELLS) continue;
-			const [entA, entB] = entries;
-
-			// H3 traverses the shared edge in opposite directions for the two
-			// neighbouring cells.  Detect the alignment by comparing rounded
-			// vertex keys so we can correctly assign B's inner vertices to the
-			// P and Q ends of A's winding.
-			const aFirstKey = `${entA.outerFirst[0].toFixed(EDGE_KEY_PRECISION)},${entA.outerFirst[1].toFixed(EDGE_KEY_PRECISION)}`;
-			const bFirstKey = `${entB.outerFirst[0].toFixed(EDGE_KEY_PRECISION)},${entB.outerFirst[1].toFixed(EDGE_KEY_PRECISION)}`;
-			const bMatchesAFirst = bFirstKey === aFirstKey;
-			const innerB_P = bMatchesAFirst ? entB.innerFirst : entB.innerSecond;
-			const innerB_Q = bMatchesAFirst ? entB.innerSecond : entB.innerFirst;
-
-			const P = entA.outerFirst;   // [lat, lng]
-			const Q = entA.outerSecond;
-			const innerA_P = entA.innerFirst;
-			const innerA_Q = entA.innerSecond;
-
-			// Use the neighbour with the higher visit level as the representative
-			// so that click events resolve to the most-visited adjacent tile.
-			const best = entA.level >= entB.level ? entA : entB;
-
-			// Gap hexagon in GeoJSON [lng, lat] order with closed ring:
-			// innerA_P → P → innerB_P → innerB_Q → Q → innerA_Q → innerA_P
-			features.push({
-				type: 'Feature',
-				geometry: {
-					type: 'Polygon',
-					coordinates: [[
-						[innerA_P[1], innerA_P[0]],
-						[P[1], P[0]],
-						[innerB_P[1], innerB_P[0]],
-						[innerB_Q[1], innerB_Q[0]],
-						[Q[1], Q[0]],
-						[innerA_Q[1], innerA_Q[0]],
-						[innerA_P[1], innerA_P[0]], // close ring
-					]],
-				},
-				properties: { h3Index: best.h3Index, level: best.level, isCenter: false },
-			});
 		}
 
 		// ── Vertex gap triangles ──────────────────────────────────────────
