@@ -28,7 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
@@ -139,8 +139,16 @@ function buildH3GeoJson(
 ): H3FeatureCollection {
 	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
 
-	// H3 requires an integer resolution (0–15); clamp and round fractional values.
-	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(resolution)));
+	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
+	// resolution and visually subdivide each parent cell into its children at
+	// the next resolution level.  Whole-number resolutions use the existing
+	// behaviour (round to nearest integer so e.g. 10.9 still maps to res 11).
+	const isHalfResolution = resolution % 1 !== 0;
+	const h3Res = Math.max(
+		H3_RESOLUTION_MIN,
+		Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
+	);
+	const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
 
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
@@ -166,18 +174,39 @@ function buildH3GeoJson(
 	}
 
 	const k = Math.min(maxK + 1, 30);
-	const cells = gridDisk(centerCell, k);
+	const parentCells = gridDisk(centerCell, k);
 
 	const features: H3GeoJsonFeature[] = [];
-	for (const cell of cells) {
-		if (features.length >= H3_MAX_CELLS) break;
-		const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-		// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
-		features.push({
-			type: 'Feature',
-			geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-			properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
-		});
+	if (isHalfResolution) {
+		// Subdivide each parent cell into its children.  All children inherit the
+		// parent's colour level and the parent's h3Index is stored in the feature
+		// so that click events and walk-path lookups resolve to the correct record.
+		for (const parentCell of parentCells) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
+			const children = cellToChildren(parentCell, childRes);
+			for (const child of children) {
+				if (features.length >= H3_MAX_CELLS) break;
+				const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
+				// H3_GEOJSON_ORDER=true already closes the ring.
+				features.push({
+					type: 'Feature',
+					geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+					properties: { h3Index: parentCell, level: parentLevel },
+				});
+			}
+		}
+	} else {
+		for (const cell of parentCells) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+			// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
+			features.push({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+				properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
+			});
+		}
 	}
 
 	return { type: 'FeatureCollection', features };
@@ -518,7 +547,9 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 
 	// Enumerate all H3 cells in the bounding box using the same gridDisk logic
 	// as buildH3GeoJson, but with showAlways=true and a high zoom.
-	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(resolution)));
+	// Use Math.floor to match buildH3GeoJson's base-resolution logic for
+	// fractional resolutions (e.g. 10.5 → base res 10).
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
 	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
@@ -1796,7 +1827,7 @@ export default function RecordScreen() {
 				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 			}
 			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
-			const viewportCells = geoJson.features.map((f) => f.properties.h3Index);
+			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
@@ -1925,12 +1956,12 @@ export default function RecordScreen() {
 		// Track the visited H3 cell and dispatch to Redux for persistent storage
 		if (isH3Available()) {
 			try {
-				// Use the same rounded integer resolution as buildH3GeoJson so that the visited
-				// cell ID matches the keys in the GeoJSON and the Redux records.  Without rounding,
-				// a fractional resolution such as 10.5 is truncated to 10 by H3's C layer, while
-				// buildH3GeoJson uses Math.round(10.5) = 11 – causing a cell-ID mismatch and
-				// keeping every visited tile at level 0 (transparent) throughout the run.
-				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(h3ResolutionRef.current)));
+				// Use the same base integer resolution as buildH3GeoJson so that the
+				// visited cell ID matches the keys in the GeoJSON and the Redux records.
+				// For fractional resolutions (e.g. 10.5) buildH3GeoJson uses Math.floor
+				// as the base and subdivides into children; visits are tracked at the base
+				// (parent) resolution so the colour update propagates to all sub-tiles.
+				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 				const cell = latLngToCell(point.lat, point.lng, h3Res);
 				if (cell) {
 					// ── GPS gap interpolation ─────────────────────────────────────────
@@ -2015,7 +2046,7 @@ export default function RecordScreen() {
 				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
 			}
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
-			const viewportCells = geoJson.features.map((f) => f.properties.h3Index);
+			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
@@ -2270,7 +2301,7 @@ export default function RecordScreen() {
 			} catch {
 				// ignore
 			}
-			const viewportCells = geoJson.features.map((f) => f.properties.h3Index);
+			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });

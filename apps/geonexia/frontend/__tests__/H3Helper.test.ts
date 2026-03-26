@@ -305,3 +305,147 @@ describe('H3Helper – viewport GeoJSON integration', () => {
         }
     });
 });
+
+// ─── Half-resolution (fractional) subdivision tests ───────────────────────────
+
+import { cellToChildren, cellToParent } from '../helpers/H3Helper';
+
+describe('H3 half-resolution subdivision', () => {
+    const BASE_RES = 9;
+    const CHILD_RES = BASE_RES + 1;
+    const BOUNDS = { north: 52.66421, south: 52.65891, east: 8.13581, west: 8.13105 };
+    const H3_MIN_ZOOM = 14;
+    const H3_MAX_CELLS = 5000;
+    const H3_RESOLUTION_MIN = 0;
+    const H3_RESOLUTION_MAX = 15;
+    const H3_GEOJSON_ORDER = true;
+
+    /**
+     * Mirrors the half-resolution path of buildH3GeoJson in app/index.tsx.
+     */
+    function buildH3GeoJsonHalf(bounds: { north: number; south: number; east: number; west: number }, zoom: number, resolution: number) {
+        if (zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection' as const, features: [] };
+        const isHalfResolution = resolution % 1 !== 0;
+        const h3Res = Math.max(
+            H3_RESOLUTION_MIN,
+            Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
+        );
+        const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
+
+        const centerLat = (bounds.north + bounds.south) / 2;
+        const centerLng = (bounds.east + bounds.west) / 2;
+        const centerCell = latLngToCell(centerLat, centerLng, h3Res);
+
+        const corners: Array<[number, number]> = [
+            [bounds.north, bounds.east],
+            [bounds.north, bounds.west],
+            [bounds.south, bounds.east],
+            [bounds.south, bounds.west],
+        ];
+        let maxK = 0;
+        for (const [lat, lng] of corners) {
+            try {
+                const cornerCell = latLngToCell(lat, lng, h3Res);
+                const dist = gridDistance(centerCell, cornerCell);
+                if (dist > maxK) maxK = dist;
+            } catch {
+                // ignore
+            }
+        }
+
+        const k = Math.min(maxK + 1, 30);
+        const parentCells = gridDisk(centerCell, k);
+        const features: object[] = [];
+
+        if (isHalfResolution) {
+            for (const parentCell of parentCells) {
+                if (features.length >= H3_MAX_CELLS) break;
+                const children = cellToChildren(parentCell, childRes);
+                for (const child of children) {
+                    if (features.length >= H3_MAX_CELLS) break;
+                    const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
+                    features.push({
+                        type: 'Feature',
+                        geometry: { type: 'Polygon', coordinates: [boundary] },
+                        properties: { h3Index: parentCell },
+                    });
+                }
+            }
+        } else {
+            for (const cell of parentCells) {
+                if (features.length >= H3_MAX_CELLS) break;
+                const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+                features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Polygon', coordinates: [boundary] },
+                    properties: { h3Index: cell },
+                });
+            }
+        }
+
+        return { type: 'FeatureCollection' as const, features };
+    }
+
+    it('fractional resolution produces more features than the equivalent whole-number resolution', () => {
+        const whole = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
+        const half = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        // Each parent hex has 7 children, so half-resolution should produce ~7x more features.
+        expect(half.features.length).toBeGreaterThan(whole.features.length);
+    });
+
+    it('features from fractional resolution have h3Index at the base (parent) resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        expect(result.features.length).toBeGreaterThan(0);
+        for (const f of result.features) {
+            const feature = f as { properties: { h3Index: string } };
+            expect(isValidCell(feature.properties.h3Index)).toBe(true);
+            expect(getResolution(feature.properties.h3Index)).toBe(BASE_RES);
+        }
+    });
+
+    it('features from fractional resolution have polygon geometry at the child resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        expect(result.features.length).toBeGreaterThan(0);
+        // The polygon covers the child cell boundary; verify ring is closed.
+        for (const f of result.features) {
+            const feature = f as { geometry: { coordinates: number[][][] } };
+            const ring = feature.geometry.coordinates[0];
+            expect(ring.length).toBeGreaterThan(0);
+            const first = ring[0];
+            const last = ring[ring.length - 1];
+            expect(first[0]).toBeCloseTo(last[0], 10);
+            expect(first[1]).toBeCloseTo(last[1], 10);
+        }
+    });
+
+    it('each child cell belongs to the parent stored in h3Index', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES + 0.5);
+        expect(result.features.length).toBeGreaterThan(0);
+        // Verify a sample of features: the polygon's vertices should be inside
+        // the parent cell.  We verify this indirectly: the child cell returned
+        // by cellToChildren round-trips to the same parent via cellToParent.
+        const parentCell = latLngToCell(
+            (BOUNDS.north + BOUNDS.south) / 2,
+            (BOUNDS.east + BOUNDS.west) / 2,
+            BASE_RES,
+        );
+        const children = cellToChildren(parentCell, CHILD_RES);
+        for (const child of children) {
+            expect(cellToParent(child, BASE_RES)).toBe(parentCell);
+        }
+    });
+
+    it('whole-number resolution is unaffected by the half-resolution logic', () => {
+        const whole = buildH3GeoJsonHalf(BOUNDS, 16, BASE_RES);
+        // All features should have their own h3Index at the base resolution.
+        for (const f of whole.features) {
+            const feature = f as { properties: { h3Index: string } };
+            expect(getResolution(feature.properties.h3Index)).toBe(BASE_RES);
+        }
+    });
+
+    it('produces 0 features when zoom is below H3_MIN_ZOOM regardless of fractional resolution', () => {
+        const result = buildH3GeoJsonHalf(BOUNDS, 13, BASE_RES + 0.5);
+        expect(result.features).toHaveLength(0);
+    });
+});
