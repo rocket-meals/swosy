@@ -4,16 +4,19 @@ import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider } from 'repo-depkit-common-ui';
+import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
 import { loadPersistedState } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
+import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadHexTileState } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
+import { loadThemeMode } from '../helpers/ThemeStorage';
+import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
@@ -68,6 +71,18 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, Er
 	}
 }
 
+// Syncs the persisted theme from Redux into the common-ui ThemeContext
+function ThemeSyncBridge() {
+	const selectedMode = useSelector((state: RootState) => state.theme.selectedMode);
+	const { setThemeMode } = useTheme();
+
+	useEffect(() => {
+		setThemeMode(selectedMode);
+	}, [selectedMode, setThemeMode]);
+
+	return null;
+}
+
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
 
@@ -83,6 +98,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			label: 'Activities',
 			renderIcon: (_, color) => <Ionicons name="list-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('activities/index'),
+		},
+		{
+			key: 'statistics/index',
+			label: 'Statistics',
+			renderIcon: (_, color) => <Ionicons name="bar-chart-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('statistics/index'),
 		},
 		{
 			key: 'settings/index',
@@ -123,6 +144,13 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted sport type:', err);
 			});
+		loadThemeMode()
+			.then((mode) => {
+				store.dispatch(loadThemeModeAction(mode));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted theme mode:', err);
+			});
 	}, []);
 
 	return (
@@ -131,6 +159,7 @@ export default function Layout() {
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
 				<ThemeProvider>
+					<ThemeSyncBridge />
 					<SettingsProvider primaryColor="#2563eb">
 						<ModalProvider>
 						<StatusBar style="auto" />
@@ -163,6 +192,15 @@ export default function Layout() {
 								options={{
 									title: 'Activity',
 									drawerItemStyle: { display: 'none' },
+								}}
+							/>
+							<Drawer.Screen
+								name="statistics/index"
+								options={{
+									title: 'Statistics',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="bar-chart-outline" size={size} color={color} />
+									),
 								}}
 							/>
 							<Drawer.Screen

@@ -33,7 +33,6 @@ function getOrCreate(records: Record<string, HexTileRecord>, h3Index: string): H
 			enclosedCount: 0,
 			level: 0,
 			walkedOn: false,
-			edgeCrossings: {},
 		};
 	}
 	return records[h3Index];
@@ -100,28 +99,6 @@ const hexTileSlice = createSlice({
 		},
 
 		/**
-		 * Record edge crossings for a completed run from the ordered sequence of
-		 * H3 cells traversed. For each consecutive (prev, curr) pair, the shared
-		 * border edge is counted once on both tiles.
-		 * Called at the end of a run, after markVisited / markEnclosed.
-		 */
-		recordEdgeCrossings(
-			state,
-			action: PayloadAction<{ h3Sequence: string[] }>,
-		) {
-			const { h3Sequence } = action.payload;
-			for (let i = 1; i < h3Sequence.length; i++) {
-				const prev = h3Sequence[i - 1];
-				const curr = h3Sequence[i];
-				if (prev === curr) continue;
-				const prevRec = getOrCreate(state.records, prev);
-				const currRec = getOrCreate(state.records, curr);
-				prevRec.edgeCrossings[curr] = (prevRec.edgeCrossings[curr] ?? 0) + 1;
-				currRec.edgeCrossings[prev] = (currRec.edgeCrossings[prev] ?? 0) + 1;
-			}
-		},
-
-		/**
 		 * Replace the entire state with data loaded from persistent storage.
 		 * Called once at app startup and again after a full data reset.
 		 * Bumps `resetToken` on every call so that the record screen can detect
@@ -131,16 +108,25 @@ const hexTileSlice = createSlice({
 			state,
 			action: PayloadAction<Record<string, HexTileRecord>>,
 		) {
-			const records = action.payload;
-			// Ensure edgeCrossings exists for records loaded from older persisted data.
-			for (const rec of Object.values(records)) {
-				if (!rec.edgeCrossings) rec.edgeCrossings = {};
-			}
-			state.records = records;
+			state.records = action.payload;
 			state.resetToken += 1;
+		},
+
+		/**
+		 * Set the custom tile image and/or billboard for a specific hex tile.
+		 * Pass `null` to explicitly clear a value; omit the key to leave it unchanged.
+		 */
+		setHexTileCustomization(
+			state,
+			action: PayloadAction<{ h3Index: string; tileImage?: string | null; billboard?: string | null }>,
+		) {
+			const { h3Index, tileImage, billboard } = action.payload;
+			const rec = getOrCreate(state.records, h3Index);
+			if (tileImage !== undefined) rec.tileImage = tileImage;
+			if (billboard !== undefined) rec.billboard = billboard;
 		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, recordEdgeCrossings, loadPersistedState } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

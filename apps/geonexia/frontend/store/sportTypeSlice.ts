@@ -13,14 +13,20 @@ export type SportTypeDefinition = {
 	iconName: string;
 	/** Accent colour used for this sport type */
 	color: string;
+	/**
+	 * Maximum realistic speed in km/h for this sport.
+	 * GPS points that imply a higher speed relative to the previous accepted point
+	 * are discarded as noise / GPS glitches.
+	 */
+	maxSpeedKmh: number;
 };
 
 export const SPORT_TYPES: SportTypeDefinition[] = [
-	{ type: 'run', label: 'Run', iconLibrary: 'MaterialIcons', iconName: 'directions-run', color: '#2563eb' },
-	{ type: 'walk', label: 'Walk', iconLibrary: 'MaterialIcons', iconName: 'directions-walk', color: '#2563eb' },
-	{ type: 'bicycle', label: 'Bicycle', iconLibrary: 'MaterialIcons', iconName: 'directions-bike', color: '#2563eb' },
-	{ type: 'motorcycle', label: 'Motorcycle', iconLibrary: 'MaterialCommunityIcons', iconName: 'motorbike', color: '#2563eb' },
-	{ type: 'swim', label: 'Swim', iconLibrary: 'MaterialIcons', iconName: 'pool', color: '#2563eb' },
+	{ type: 'run',        label: 'Run',        iconLibrary: 'MaterialIcons',            iconName: 'directions-run',  color: '#2563eb', maxSpeedKmh: 40  },
+	{ type: 'walk',       label: 'Walk',       iconLibrary: 'MaterialIcons',            iconName: 'directions-walk', color: '#2563eb', maxSpeedKmh: 15  },
+	{ type: 'bicycle',    label: 'Bicycle',    iconLibrary: 'MaterialIcons',            iconName: 'directions-bike', color: '#2563eb', maxSpeedKmh: 90  },
+	{ type: 'motorcycle', label: 'Motorcycle', iconLibrary: 'MaterialCommunityIcons',   iconName: 'motorbike',       color: '#2563eb', maxSpeedKmh: 250 },
+	{ type: 'swim',       label: 'Swim',       iconLibrary: 'MaterialIcons',            iconName: 'pool',            color: '#2563eb', maxSpeedKmh: 10  },
 ];
 
 // ─── State type ───────────────────────────────────────────────────────────────

@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
 	Alert,
 	Animated,
+	Image,
 	PanResponder,
+	Platform,
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
@@ -16,17 +18,20 @@ import * as Clipboard from 'expo-clipboard';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { isRunningInExpoGo } from 'expo';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary } from '../helpers/H3Helper';
+import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, recordEdgeCrossings } from '../store/hexTileSlice';
-import { setSportType, SPORT_TYPES } from '../store/sportTypeSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
+import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -38,7 +43,7 @@ const STATUS_ERROR_COLOR = '#ef4444';
 
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
-const H3_DEFAULT_RESOLUTION = 10.5;
+const H3_DEFAULT_RESOLUTION = 10;
 const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
@@ -118,7 +123,7 @@ function buildH3GeoJson(
 type WalkPathFeature = {
 	type: 'Feature';
 	geometry: { type: 'LineString'; coordinates: number[][] };
-	properties: { count: number };
+	properties: Record<string, never>;
 };
 
 type WalkPathFeatureCollection = {
@@ -129,12 +134,11 @@ type WalkPathFeatureCollection = {
 /**
  * Build a GeoJSON FeatureCollection of LineString features representing the
  * walk paths across all visited tiles. For each pair of adjacent cells that
- * share an edge crossing, a line is drawn from one cell's centre to the other.
- * Lines are deduplicated (each crossing drawn once) by comparing H3 indices.
+ * are both walked-on, a line is drawn from one cell's centre to the other.
+ * Lines are deduplicated (each pair drawn once) by comparing H3 indices.
  *
  * Only considers cells that appear in `viewportCells` so that the output stays
- * bounded to the visible map area; edges that leave the viewport are clipped at
- * the viewport-cell centre (i.e. the line ends at the visible cell's centre).
+ * bounded to the visible map area.
  */
 function buildWalkPathGeoJson(
 	viewportCells: string[],
@@ -145,16 +149,20 @@ function buildWalkPathGeoJson(
 
 	for (const cell of viewportCells) {
 		const record = hexTileRecords[cell];
-		if (!record?.walkedOn || !record.edgeCrossings) continue;
+		if (!record?.walkedOn) continue;
 
 		const [centerLat, centerLng] = cellToLatLng(cell);
 
-		for (const [neighborH3, count] of Object.entries(record.edgeCrossings)) {
+		// Find all immediate H3 neighbours (ring 1, excluding the cell itself)
+		const neighbours = gridDisk(cell, 1).filter((neighbor) => neighbor !== cell);
+
+		for (const neighborH3 of neighbours) {
 			// Deduplicate edges: each pair (cell, neighbor) is drawn exactly once by
 			// the tile whose H3 index is lexicographically smaller.
 			if (cell >= neighborH3) continue;
-			// Only draw if at least one endpoint is in the viewport.
+			// Only draw if the neighbour is also in the viewport and was walked on.
 			if (!viewportSet.has(neighborH3)) continue;
+			if (!hexTileRecords[neighborH3]?.walkedOn) continue;
 
 			const [nLat, nLng] = cellToLatLng(neighborH3);
 			features.push({
@@ -166,7 +174,7 @@ function buildWalkPathGeoJson(
 						[nLng, nLat],
 					],
 				},
-				properties: { count },
+				properties: {},
 			});
 		}
 	}
@@ -231,13 +239,17 @@ type JoystickControllerProps = {
 	isHeadingModeRef: React.MutableRefObject<boolean>;
 	currentHeadingRef: React.MutableRefObject<number>;
 	joystickActiveRef: React.MutableRefObject<boolean>;
+	isRecordingRef: React.MutableRefObject<boolean>;
 	onHeadingChange: (bearing: number) => void;
 };
 
-function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef, currentHeadingRef, joystickActiveRef, onHeadingChange }: JoystickControllerProps) {
+function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef, currentHeadingRef, joystickActiveRef, isRecordingRef, onHeadingChange }: JoystickControllerProps) {
 	const knobX = useRef(new Animated.Value(0)).current;
 	const knobY = useRef(new Animated.Value(0)).current;
 	const knobOffsetRef = useRef({ x: 0, y: 0 });
+	// Tracks the joystick's own position during a gesture so it accumulates
+	// movement independently of positionRef (which GPS may update concurrently).
+	const internalPosRef = useRef<{ lat: number; lng: number } | null>(null);
 	const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	// Keep callback ref up-to-date without recreating PanResponder
@@ -246,6 +258,7 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 
 	const stopMoving = useCallback(() => {
 		joystickActiveRef.current = false;
+		internalPosRef.current = null;
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 			intervalRef.current = null;
@@ -261,9 +274,14 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 			onMoveShouldSetPanResponder: () => true,
 			onPanResponderGrant: () => {
 				joystickActiveRef.current = true;
+				// Snapshot the current GPS/player position so the joystick accumulates
+				// its own movement from here without touching positionRef.
+				internalPosRef.current = positionRef.current ? { ...positionRef.current } : null;
 				if (intervalRef.current) clearInterval(intervalRef.current);
 				intervalRef.current = setInterval(() => {
-					const pos = positionRef.current;
+					// Use internal position for delta accumulation; fall back to positionRef
+					// only if internal position was never initialised.
+					const pos = internalPosRef.current ?? positionRef.current;
 					if (!pos) return;
 					const { x, y } = knobOffsetRef.current;
 					const heading = isHeadingModeRef.current ? currentHeadingRef.current : undefined;
@@ -276,7 +294,15 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 					}
 					const newLat = pos.lat + dLat;
 					const newLng = pos.lng + dLng;
-					positionRef.current = { lat: newLat, lng: newLng };
+					// Always advance the joystick's own internal position so movement
+					// accumulates smoothly even while GPS is updating positionRef.
+					internalPosRef.current = { lat: newLat, lng: newLng };
+					// During recording, GPS is the authoritative position source, so we
+					// must NOT overwrite positionRef (= debugPlayerPositionRef) from the
+					// joystick. Only when idle may we update the shared position ref.
+					if (!isRecordingRef.current) {
+						positionRef.current = { lat: newLat, lng: newLng };
+					}
 					onMove(newLat, newLng);
 				}, DEBUG_MOVE_INTERVAL_MS);
 			},
@@ -324,6 +350,12 @@ const FLUID_BASELINE_DURATION_SECONDS = 1800;
 const FLUID_BASELINE_ML = 500;
 const GPS_TIME_INTERVAL_MS = 5000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
+/**
+ * Maximum number of intermediate H3 cells to fill in when a GPS gap is detected
+ * (i.e. the straight-line H3 path between two accepted GPS fixes is longer than 1
+ * cell). Prevents marking enormous numbers of tiles when the gap is very large.
+ */
+const GPS_PATH_INTERPOLATION_MAX_CELLS = 200;
 
 // ─── Background task ──────────────────────────────────────────────────────────
 
@@ -929,16 +961,20 @@ function formatTimestamp(ts: number | null): string {
 	});
 }
 
-function HexTileInfoContent({
-	h3Index,
-	record,
-	theme,
-}: {
-	h3Index: string;
-	record: HexTileRecord | null;
-	theme: ReturnType<typeof useTheme>['theme'];
-}) {
-	const rows: { label: string; value: string }[] = [
+const TILE_THUMB_SIZE = 64;
+const TILE_THUMB_GAP = 6;
+
+function HexTileInfoContent({ h3Index }: { h3Index: string }) {
+	const { theme } = useTheme();
+	const dispatch = useDispatch();
+	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
+
+	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
+
+	const currentTileImage = record?.tileImage ?? null;
+	const currentBillboard = record?.billboard ?? null;
+
+	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
 		{ label: 'Level', value: record ? String(record.level) : '0' },
 		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
@@ -948,43 +984,135 @@ function HexTileInfoContent({
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
 
-	const edgeCrossings = record?.edgeCrossings ?? {};
-	const edgeEntries = Object.entries(edgeCrossings).sort((a, b) => b[1] - a[1]);
-
 	return (
 		<View style={styles.hexInfoContainer}>
-			{rows.map((row, i) => (
+			{/* ── Stats rows ── */}
+			{infoRows.map((row, i) => (
 				<View
 					key={row.label}
 					style={[
 						styles.hexInfoRow,
 						{ borderBottomColor: theme.screen.text + '18' },
-						i === rows.length - 1 && edgeEntries.length === 0 && { borderBottomWidth: 0 },
+						i === infoRows.length - 1 && { borderBottomWidth: 0 },
 					]}
 				>
 					<Text style={[styles.hexInfoLabel, { color: theme.screen.icon }]}>{row.label}</Text>
 					<Text style={[styles.hexInfoValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
-			{edgeEntries.length > 0 && (
-				<View style={[styles.hexInfoRow, { borderBottomColor: theme.screen.text + '18' }]}>
-					<Text style={[styles.hexInfoLabel, { color: theme.screen.icon }]}>Edge Crossings</Text>
-					<View style={{ flex: 1, alignItems: 'flex-end' }}>
-						{edgeEntries.map(([neighbor, count], i) => (
+
+			{/* ── Tile Image section ── */}
+			<SettingsListGroupTitle title="Tile Image" />
+
+			{/* Category tabs */}
+			<ScrollView
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				contentContainerStyle={styles.tilePickerCategoryRow}
+			>
+				{TERRAIN_CATEGORIES.map((cat) => {
+					const isActive = selectedCategory === cat;
+					return (
+						<TouchableOpacity
+							key={cat}
+							onPress={() => setSelectedCategory(cat)}
+							style={[
+								styles.tilePickerCategoryTab,
+								{
+									backgroundColor: isActive ? PRIMARY_COLOR : theme.screen.text + '18',
+								},
+							]}
+						>
 							<Text
-								key={neighbor}
 								style={[
-									styles.hexInfoValue,
-									{ color: theme.screen.text },
-									i === edgeEntries.length - 1 && { marginBottom: 0 },
+									styles.tilePickerCategoryLabel,
+									{ color: isActive ? '#ffffff' : theme.screen.text },
 								]}
 							>
-								to {neighbor.slice(0, 8)}: {count}x
+								{cat}
 							</Text>
-						))}
-					</View>
+						</TouchableOpacity>
+					);
+				})}
+			</ScrollView>
+
+			{/* Thumbnail row */}
+			<ScrollView
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				contentContainerStyle={styles.tilePickerThumbRow}
+			>
+				{TERRAIN_ASSETS[selectedCategory].map((asset) => {
+					const isSelected = currentTileImage === asset.key;
+					return (
+						<TouchableOpacity
+							key={asset.key}
+							onPress={() =>
+								dispatch(
+									setHexTileCustomization({
+										h3Index,
+										tileImage: isSelected ? null : asset.key,
+									}),
+								)
+							}
+							style={[
+								styles.tilePickerThumb,
+								isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
+							]}
+						>
+							<Image
+								source={asset.source}
+								style={styles.tilePickerThumbImage}
+								resizeMode="cover"
+							/>
+						</TouchableOpacity>
+					);
+				})}
+			</ScrollView>
+
+			{currentTileImage && (
+				<View style={styles.tilePickerCurrentRow}>
+					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
+						Selected: {currentTileImage}
+					</Text>
+					<TouchableOpacity
+						onPress={() => dispatch(setHexTileCustomization({ h3Index, tileImage: null }))}
+					>
+						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
+					</TouchableOpacity>
 				</View>
 			)}
+
+			{/* ── Billboard section ── */}
+			<SettingsListGroupTitle title="Billboard" />
+
+			{currentBillboard && (
+				<View style={styles.tilePickerCurrentRow}>
+					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
+						Selected: {currentBillboard}
+					</Text>
+					<TouchableOpacity
+						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
+					>
+						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
+					</TouchableOpacity>
+				</View>
+			)}
+
+			<SettingsListSelectOptionSingle
+				label="🌲 Tree"
+				isSelected={currentBillboard === 'tree'}
+				selectionColor={PRIMARY_COLOR}
+				groupPosition="top"
+				onPress={() =>
+					dispatch(
+						setHexTileCustomization({
+							h3Index,
+							billboard: currentBillboard === 'tree' ? null : 'tree',
+						}),
+					)
+				}
+			/>
 		</View>
 	);
 }
@@ -1049,7 +1177,179 @@ export default function RecordScreen() {
 
 	const dispatch = useDispatch();
 
-	// Header: show tile count in title; no activities icon (removed per UX request)
+	// ── Tile image / model overlay sync ────────────────────────────────────────
+
+	// True once the MapLibre WebView has fired MapComponentMounted and is ready
+	// to receive overlay messages.
+	const mapWebViewReadyRef = useRef(false);
+
+	// Cache: asset key → base64 data URL, so assets are only read from disk once.
+	const assetUrlCacheRef = useRef<Map<string, string>>(new Map());
+
+	// Stable string that represents the current tile customizations.
+	// Primitive return value means useSelector will only trigger a re-render when
+	// the actual customization values change (not on every GPS update).
+	const hexTileCustomizationsKey = useSelector((state: RootState) =>
+		Object.entries(state.hexTiles.records)
+			.filter(([, r]) => r.tileImage || r.billboard)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}`)
+			.sort()
+			.join(';'),
+	);
+
+	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
+	// asset URL (web).  Using data URIs avoids canvas-taint security errors when drawing PNG files
+	// onto an HTML Canvas.
+	// Results are cached in assetUrlCacheRef so each file is read only once per session.
+	const loadAssetUrl = useCallback(async (cacheKey: string, moduleId: number, mimeType: string): Promise<string | null> => {
+		const cached = assetUrlCacheRef.current.get(cacheKey);
+		if (cached) return cached;
+		try {
+			const asset = Asset.fromModule(moduleId);
+			await asset.downloadAsync();
+			let url: string;
+			if (Platform.OS === 'web') {
+				url = asset.uri;
+			} else {
+				if (!asset.localUri) return null;
+				// Read the asset as a base64-encoded data URI so the WebView can use it
+				// directly without any file:// cross-origin or canvas-taint restrictions.
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:${mimeType};base64,${base64}`;
+			}
+			assetUrlCacheRef.current.set(cacheKey, url);
+			return url;
+		} catch (e) {
+			console.warn(`[RecordScreen] Failed to load asset ${cacheKey}:`, e);
+			return null;
+		}
+	}, []);
+
+	// Build and send imageOverlays + billboards to the map based on current Redux state.
+	const loadAndSendCustomizations = useCallback(async () => {
+		if (!mapWebViewReadyRef.current || !mapRef.current) return;
+
+		const records = store.getState().hexTiles.records;
+
+		// Flat lookup: terrain asset key → module ID
+		const terrainLookup = new Map<string, number>();
+		for (const assets of Object.values(TERRAIN_ASSETS)) {
+			for (const entry of assets) {
+				terrainLookup.set(entry.key, entry.source as number);
+			}
+		}
+
+		type ImageOverlay = {
+			id: string;
+			url: string;
+			coordinates: [[number, number], [number, number], [number, number], [number, number]];
+			opacity: number;
+			// Actual H3 hex vertices in [lng, lat] order for precise canvas clipping.
+			polygonCoords: [number, number][];
+			// Bearing from hex center to its first vertex (radians, 0 = North, CW positive).
+			// Used to rotate the texture so it aligns with the H3 hex orientation.
+			rotation: number;
+		};
+		type BillboardMarker = {
+			id: string;
+			type: string;
+			position: { lng: number; lat: number };
+			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
+			sizem: number;
+		};
+
+		const imageOverlays: ImageOverlay[] = [];
+		const billboards: BillboardMarker[] = [];
+
+		for (const [h3Index, record] of Object.entries(records)) {
+			// ── Tile image overlay ──────────────────────────────────────────────
+			if (record.tileImage) {
+				const moduleId = terrainLookup.get(record.tileImage);
+				if (moduleId !== undefined) {
+					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/png');
+					if (url) {
+						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
+						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
+						if (boundary.length >= 3) {
+							let minLat = Infinity, maxLat = -Infinity;
+							let minLng = Infinity, maxLng = -Infinity;
+							for (const [lat, lng] of boundary) {
+								if (lat < minLat) minLat = lat;
+								if (lat > maxLat) maxLat = lat;
+								if (lng < minLng) minLng = lng;
+								if (lng > maxLng) maxLng = lng;
+							}
+							// Compute the geographic bearing (azimuth) from the hex center to its first
+							// vertex. Math.cos(centerLat) corrects the longitude delta for the fact that
+							// 1° of longitude covers less ground at higher latitudes. atan2(x, y) with
+							// (dlng, dlat) gives the angle measured clockwise from North, which is the
+							// standard geographic convention (0 = North, π/2 = East).
+							const centerLat = (minLat + maxLat) / 2;
+							const centerLng = (minLng + maxLng) / 2;
+							const v0 = boundary[0];
+							const dlat = v0[0] - centerLat;
+							const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
+							const rotation = Math.atan2(dlng, dlat); // radians CW from North
+							imageOverlays.push({
+								id: `tile-img-${h3Index}`,
+								url,
+								// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
+								coordinates: [
+									[minLng, maxLat],
+									[maxLng, maxLat],
+									[maxLng, minLat],
+									[minLng, minLat],
+								],
+								opacity: 0.9,
+								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
+								polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
+								rotation,
+							});
+						}
+					}
+				}
+			}
+
+			// ── Billboard marker ────────────────────────────────────────────────
+			if (record.billboard) {
+				const center = cellToLatLng(h3Index); // [lat, lng]
+				const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
+				// Compute hex diameter (centre-to-first-vertex × 2) in metres so the
+				// billboard scales proportionally to the PNG tile overlay on zoom.
+				let sizem = 72; // safe fallback for H3 resolution 10
+				if (boundary.length >= 1) {
+					const EARTH_RADIUS_METERS = 6371000;
+					const lat1 = center[0] * Math.PI / 180;
+					const lat2 = boundary[0][0] * Math.PI / 180;
+					const dlat = lat2 - lat1;
+					const dlng = (boundary[0][1] - center[1]) * Math.PI / 180;
+					const sinHalfDlat = Math.sin(dlat / 2);
+					const sinHalfDlng = Math.sin(dlng / 2);
+					const a = sinHalfDlat * sinHalfDlat
+						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
+					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
+				}
+				billboards.push({
+					id: `tile-billboard-${h3Index}`,
+					type: record.billboard,
+					position: { lng: center[1], lat: center[0] },
+					sizem,
+				});
+			}
+		}
+
+		mapRef.current.sendToMap({ imageOverlays });
+		mapRef.current.sendToMap({ billboards });
+	}, [loadAssetUrl]);
+
+	// Re-send customizations whenever tile image / model selections change.
+	useEffect(() => {
+		loadAndSendCustomizations();
+	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+
+
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: `${activeTileCount} Felder`,
@@ -1085,9 +1385,6 @@ export default function RecordScreen() {
 	// Visited H3 hex cells during the active recording (used for immediate GeoJSON updates;
 	// persistent data lives in the Redux store)
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
-	// Ordered sequence of cell indices for the current run (consecutive duplicates collapsed).
-	// Used to compute per-tile edge crossing counts at the end of the run.
-	const cellSequenceRef = useRef<string[]>([]);
 	// The last H3 cell visited; used to detect cell transitions in handleLocationUpdate.
 	const lastCellRef = useRef<string | null>(null);
 	// Current player position (updated from real GPS and from debug gamepad)
@@ -1096,6 +1393,16 @@ export default function RecordScreen() {
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
+	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
+	// Reset to null at the start of each recording.
+	const lastAcceptedGpsPointRef = useRef<RoutePoint | null>(null);
+	// Set to true once the user moves the player via the joystick during a recording.
+	// While true, incoming GPS updates no longer override the visual player position.
+	// Reset to false when a new recording starts or ends.
+	const movedPlayerManuallyRef = useRef(false);
+	// Ref mirror of selectedSportType so callbacks can read it without stale closures.
+	const selectedSportTypeRef = useRef<SportType>(selectedSportType);
+	selectedSportTypeRef.current = selectedSportType;
 
 	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }) => {
 		if (!mapRef.current) return;
@@ -1215,19 +1522,20 @@ export default function RecordScreen() {
 		debugMoveSpeedKmhRef.current = speed;
 	}, []);
 
-	const showHexTileModal = useCallback((h3Index: string, record: HexTileRecord | null) => {
+	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
 			onClose: closeModal,
 			children: (
-				<HexTileInfoContent h3Index={h3Index} record={record} theme={theme} />
+				<HexTileInfoContent h3Index={h3Index} />
 			),
 		});
-	}, [showModal, closeModal, theme]);
+	}, [showModal, closeModal]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
+			mapWebViewReadyRef.current = true;
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
 			mapRef.current?.sendToMap({
@@ -1240,6 +1548,8 @@ export default function RecordScreen() {
 			if (pos) {
 				centerMapOnPosition(pos);
 			}
+			// Send any already-selected tile images / billboards to the map.
+			loadAndSendCustomizations();
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
@@ -1258,11 +1568,10 @@ export default function RecordScreen() {
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string };
 			if (clickedMsg.h3Index) {
-				const tileRecord = store.getState().hexTiles.records[clickedMsg.h3Index] ?? null;
-				showHexTileModal(clickedMsg.h3Index, tileRecord);
+				showHexTileModal(clickedMsg.h3Index);
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations]);
 
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
@@ -1330,13 +1639,51 @@ export default function RecordScreen() {
 		});
 	}, [showModal, closeModal, dispatch, selectedSportType]);
 
-	const handleLocationUpdate = useCallback((point: RoutePoint) => {
+	const handleLocationUpdate = useCallback((point: RoutePoint, fromJoystick = false) => {
 		if (isPausedRef.current) return;
+
+		// ── GPS speed filter (real GPS only) ─────────────────────────────────────
+		// If the implied speed between the last accepted GPS fix and this one is
+		// unrealistically high for the selected sport, discard the point as a GPS
+		// glitch / noise spike.
+		if (!fromJoystick) {
+			// While the joystick is actively held during a recording, skip GPS
+			// route points entirely. The joystick is providing the authoritative
+			// position; adding a real GPS fix would create a visible jump in the
+			// recorded route from the virtual joystick position back to the
+			// physical GPS location.
+			if (isRecordingRef.current && joystickActiveRef.current) {
+				return;
+			}
+
+			const lastAccepted = lastAcceptedGpsPointRef.current;
+			if (lastAccepted) {
+				const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
+				const dtSec = (point.timestamp - lastAccepted.timestamp) / 1000;
+				if (dtSec > 0) {
+					const impliedSpeedKmh = (distKm / dtSec) * 3600;
+					const activeSportDef = SPORT_TYPES.find((s) => s.type === selectedSportTypeRef.current);
+					const maxSpeedKmh = activeSportDef?.maxSpeedKmh ?? 250;
+					if (impliedSpeedKmh > maxSpeedKmh) {
+						console.warn(
+							`[RecordScreen] GPS point filtered: implied speed ${impliedSpeedKmh.toFixed(1)} km/h` +
+							` exceeds max ${maxSpeedKmh} km/h for sport "${selectedSportTypeRef.current}".`,
+						);
+						return;
+					}
+				}
+			}
+			lastAcceptedGpsPointRef.current = point;
+		}
+
 		const next = [...routePointsRef.current, point];
 		routePointsRef.current = next;
 
-		// Update debug player position so the gamepad continues from the real GPS location
-		debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+		// Update the visual player position only from GPS and only when the user
+		// has not already overridden it via the joystick during this recording.
+		if (!fromJoystick && !movedPlayerManuallyRef.current) {
+			debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+		}
 
 		// Track the visited H3 cell and dispatch to Redux for persistent storage
 		if (isH3Available()) {
@@ -1349,16 +1696,44 @@ export default function RecordScreen() {
 				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(h3ResolutionRef.current)));
 				const cell = latLngToCell(point.lat, point.lng, h3Res);
 				if (cell) {
+					// ── GPS gap interpolation ─────────────────────────────────────────
+					// When moving from lastCellRef to the new cell, fill in all H3 cells
+					// on the straight-line path between them. This handles GPS dropouts
+					// where the device had no signal for several updates: tiles the user
+					// actually passed through are still counted as visited.
+					if (lastCellRef.current && cell !== lastCellRef.current) {
+						try {
+							const pathCells = gridPathCells(lastCellRef.current, cell);
+							// pathCells[0] is lastCellRef (already visited), pathCells[last] is
+							// `cell` which will be processed below. Only fill when the gap is
+							// within a reasonable bound to avoid marking thousands of tiles on a
+							// very long GPS outage.
+							// pathCells.length - 2 is the number of intermediate cells (excludes
+							// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
+							// exactly that many intermediate cells at most.
+							if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
+								for (let i = 1; i < pathCells.length - 1; i++) {
+									const intermediate = pathCells[i];
+									if (!visitedHexIdsRef.current.has(intermediate)) {
+										visitedHexIdsRef.current.add(intermediate);
+										dispatch(markVisited({ h3Indices: [intermediate], timestamp: point.timestamp }));
+									}
+								}
+							}
+						} catch (pathErr) {
+							// gridPathCells can throw when the two cells are on different
+							// icosahedron faces – log at warn level for diagnosability and continue.
+							console.warn('[RecordScreen] gridPathCells failed during gap interpolation:', pathErr);
+						}
+					}
+
 					// Only count each tile once per run so the level can rise by at most
 					// one step during a single activity.
 					if (!visitedHexIdsRef.current.has(cell)) {
 						visitedHexIdsRef.current.add(cell);
 						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
 					}
-					// Track ordered cell transitions for edge-crossing computation at end of run.
-					// Push to the sequence whenever the user moves into a different cell.
 					if (cell !== lastCellRef.current) {
-						cellSequenceRef.current.push(cell);
 						lastCellRef.current = cell;
 					}
 				}
@@ -1385,7 +1760,13 @@ export default function RecordScreen() {
 		}
 
 		sendRouteToMap(next);
-		centerMapOnPosition({ lat: point.lat, lng: point.lng });
+
+		// Centre the map on the new position:
+		//  – Joystick updates always re-centre (the user is actively navigating).
+		//  – GPS updates only re-centre when the user has not overridden with the joystick.
+		if (fromJoystick || !movedPlayerManuallyRef.current) {
+			centerMapOnPosition({ lat: point.lat, lng: point.lng });
+		}
 
 		// Refresh hex GeoJSON to show updated tile levels (includes the just-dispatched visit)
 		const vp = debugViewportRef.current;
@@ -1405,19 +1786,26 @@ export default function RecordScreen() {
 	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
 
 	// Moves the player to a new position (used by the debug gamepad).
-	// When recording is active, feeds a synthetic RoutePoint to the normal tracking pipeline.
-	// When not recording, only updates the visual player marker and follow-mode.
+	// During recording the joystick acts as a GPS substitute: every movement is
+	// forwarded to handleLocationUpdate so route points are recorded just like
+	// real GPS fixes.  When not recording the joystick has full control of the
+	// player position without recording anything.
 	const handleDebugMove = useCallback((lat: number, lng: number) => {
-		debugPlayerPositionRef.current = { lat, lng };
 		if (isRecordingRef.current) {
+			// Mark that the user has taken manual control of the player position so
+			// that subsequent real GPS updates no longer override it visually.
+			movedPlayerManuallyRef.current = true;
+			// Record the joystick position as a proper route point so the route
+			// is built up the same way real GPS data would build it.
 			handleLocationUpdate({
 				lat,
 				lng,
 				altitude: null,
 				speed: debugMoveSpeedKmhRef.current / 3.6,
 				timestamp: Date.now(),
-			});
+			}, true);
 		} else {
+			debugPlayerPositionRef.current = { lat, lng };
 			mapRef.current?.sendToMap({ userLocation: { lat, lng } });
 			if (isFollowingRef.current) {
 				mapRef.current?.sendToMap({
@@ -1452,8 +1840,9 @@ export default function RecordScreen() {
 
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
-			cellSequenceRef.current = [];
 			lastCellRef.current = null;
+			lastAcceptedGpsPointRef.current = null;
+			movedPlayerManuallyRef.current = false;
 			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
@@ -1604,6 +1993,7 @@ export default function RecordScreen() {
 		setIsPaused(false);
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
+		movedPlayerManuallyRef.current = false;
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;
@@ -1634,11 +2024,6 @@ export default function RecordScreen() {
 			console.warn('[RecordScreen] Enclosed tile detection failed:', err);
 		}
 
-		// Record edge crossings from the ordered cell sequence of this run.
-		if (cellSequenceRef.current.length > 1) {
-			dispatch(recordEdgeCrossings({ h3Sequence: cellSequenceRef.current }));
-		}
-
 		// Refresh the map to show newly enclosed tiles and updated walk path.
 		const vp = debugViewportRef.current;
 		if (vp && mapRef.current) {
@@ -1661,6 +2046,7 @@ export default function RecordScreen() {
 			endedAt,
 			routePoints: points,
 			stats,
+			sportType: selectedSportType,
 		};
 		try {
 			saveActivity(activity);
@@ -1744,7 +2130,7 @@ export default function RecordScreen() {
 		<SafeAreaView style={styles.container}>
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				<MyMap ref={mapRef} initialZoom={17} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
 
 				{/* Map overlay buttons – top-right */}
 				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
@@ -1791,6 +2177,7 @@ export default function RecordScreen() {
 						isHeadingModeRef={isHeadingModeRef}
 						currentHeadingRef={currentHeadingRef}
 						joystickActiveRef={joystickActiveRef}
+						isRecordingRef={isRecordingRef}
 						onHeadingChange={handleHeadingChange}
 					/>
 				</View>
@@ -2337,5 +2724,55 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		flexShrink: 1,
 		textAlign: 'right',
+	},
+	// Tile image picker
+	tilePickerCategoryRow: {
+		flexDirection: 'row',
+		gap: TILE_THUMB_GAP,
+		paddingHorizontal: 16,
+		paddingBottom: 10,
+	},
+	tilePickerCategoryTab: {
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 16,
+	},
+	tilePickerCategoryLabel: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	tilePickerThumbRow: {
+		flexDirection: 'row',
+		gap: TILE_THUMB_GAP,
+		paddingHorizontal: 16,
+		paddingBottom: 10,
+	},
+	tilePickerThumb: {
+		width: TILE_THUMB_SIZE,
+		height: TILE_THUMB_SIZE,
+		borderRadius: 6,
+		overflow: 'hidden',
+		borderWidth: 2,
+		borderColor: 'transparent',
+	},
+	tilePickerThumbImage: {
+		width: TILE_THUMB_SIZE,
+		height: TILE_THUMB_SIZE,
+	},
+	tilePickerCurrentRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingHorizontal: 16,
+		paddingBottom: 8,
+	},
+	tilePickerCurrentLabel: {
+		fontSize: 12,
+		flex: 1,
+	},
+	tilePickerClearBtn: {
+		fontSize: 13,
+		fontWeight: '600',
+		paddingLeft: 8,
 	},
 });

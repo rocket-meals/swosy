@@ -1,4 +1,5 @@
 import { Directory, File, Paths } from 'expo-file-system';
+import { SportType } from '../store/sportTypeSlice';
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
@@ -30,6 +31,8 @@ export type SavedActivity = {
 	endedAt: number;
 	routePoints: RoutePoint[];
 	stats: RunStats;
+	/** Sport type recorded for this activity. Optional for backward-compat with older saves. */
+	sportType?: SportType;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

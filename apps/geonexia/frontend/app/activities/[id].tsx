@@ -7,6 +7,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,6 +15,9 @@ import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useThem
 
 import { deleteActivity, loadActivity, RoutePoint, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
+
+const AUTO_ROTATE_TICK_MS = 100;
+const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -140,21 +144,37 @@ export default function ActivityDetailScreen() {
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
+	const autoRotateBearingRef = useRef(0);
+	const autoRotateActiveRef = useRef(false);
+	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 
-	// Show back arrow instead of drawer hamburger
+	// Clean up auto-rotate interval on unmount
+	useEffect(() => {
+		return () => {
+			if (autoRotateIntervalRef.current !== null) {
+				clearInterval(autoRotateIntervalRef.current);
+			}
+		};
+	}, []);
+
+	// Show back arrow instead of drawer hamburger; use theme colors so it stays
+	// visible in both light and dark mode.
 	useLayoutEffect(() => {
 		navigation.setOptions({
+			headerStyle: { backgroundColor: theme.header.background },
+			headerTintColor: theme.header.text,
 			headerLeft: () => (
 				<TouchableOpacity
-					onPress={() => router.back()}
+					onPress={() => router.navigate('/activities')}
 					style={styles.headerBackButton}
 					activeOpacity={0.7}
 				>
-					<MaterialIcons name="arrow-back" size={24} color={theme.screen.text} />
+					<MaterialIcons name="arrow-back" size={24} color={theme.header.text} />
 				</TouchableOpacity>
 			),
 		});
-	}, [navigation, router, theme.screen.text]);
+	}, [navigation, router, theme.header.background, theme.header.text]);
 
 	useEffect(() => {
 		if (!id) { setNotFound(true); return; }
@@ -192,19 +212,84 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
-		// Center the map on the first route point if available
-		const first = activity.routePoints[0];
-		if (first) {
+		// Calculate bounds from all route points and fit the camera
+		const points = activity.routePoints;
+		if (points.length >= 2) {
+			const lats = points.map((p) => p.lat);
+			const lngs = points.map((p) => p.lng);
+			const minLat = Math.min(...lats);
+			const maxLat = Math.max(...lats);
+			const minLng = Math.min(...lngs);
+			const maxLng = Math.max(...lngs);
+			const centerLat = (minLat + maxLat) / 2;
+			const centerLng = (minLng + maxLng) / 2;
+			routeCenterRef.current = { lat: centerLat, lng: centerLng };
+			// Expand the bounding box to 1.5× the route span so the route is
+			// not clipped at the edges (adds 25 % padding on every side).
+			const latSpan = maxLat - minLat;
+			const lngSpan = maxLng - minLng;
+			const latPad = latSpan * 0.25;
+			const lngPad = lngSpan * 0.25;
 			mapRef.current.sendToMap({
-				mapCenterPosition: { lat: first.lat, lng: first.lng },
+				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+				fitBoundsPadding: 20,
+				pitch: 45,
+				bearing: 0,
+			});
+		} else if (points.length === 1) {
+			routeCenterRef.current = { lat: points[0].lat, lng: points[0].lng };
+			mapRef.current.sendToMap({
+				mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
+				pitch: 45,
+				bearing: 0,
 			});
 		}
-	}, [mapMounted, activity, buildRouteSegments]);
 
+		// Start slow auto-rotate after the fitBounds animation finishes.
+		// fitBounds sets pitch=45 and the correct zoom; starting the interval
+		// immediately would call easeTo within 100 ms and cancel that animation,
+		// locking in the wrong pitch/zoom. Waiting ~1200 ms lets fitBounds
+		// complete before we begin rotating.
+		// We only update bearing (no mapCenterPosition) so that zoom and pitch
+		// established by fitBounds are never overwritten by the interval ticks.
+		autoRotateBearingRef.current = 0;
+		autoRotateActiveRef.current = true;
+		if (autoRotateIntervalRef.current !== null) {
+			clearInterval(autoRotateIntervalRef.current);
+		}
+		const FIT_BOUNDS_ANIMATION_DELAY_MS = 1200;
+		let startDelayTicks = Math.ceil(FIT_BOUNDS_ANIMATION_DELAY_MS / AUTO_ROTATE_TICK_MS);
+		autoRotateIntervalRef.current = setInterval(() => {
+			if (startDelayTicks > 0) { startDelayTicks -= 1; return; }
+			if (!autoRotateActiveRef.current || !mapRef.current) return;
+			const deltaDeg = AUTO_ROTATE_SPEED_DEG_PER_S * (AUTO_ROTATE_TICK_MS / 1000);
+			autoRotateBearingRef.current = (autoRotateBearingRef.current + deltaDeg) % 360;
+			mapRef.current.sendToMap({
+				bearing: autoRotateBearingRef.current,
+				easeAnimation: true,
+				easeDuration: AUTO_ROTATE_TICK_MS,
+			});
+		}, AUTO_ROTATE_TICK_MS);
+
+		return () => {
+			if (autoRotateIntervalRef.current !== null) {
+				clearInterval(autoRotateIntervalRef.current);
+				autoRotateIntervalRef.current = null;
+			}
+			autoRotateActiveRef.current = false;
+		};
+	}, [mapMounted, activity, buildRouteSegments]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
+		} else if (msg.tag === 'MapInteracted') {
+			// Stop auto-rotate when user interacts with the map
+			autoRotateActiveRef.current = false;
+			if (autoRotateIntervalRef.current !== null) {
+				clearInterval(autoRotateIntervalRef.current);
+				autoRotateIntervalRef.current = null;
+			}
 		}
 	}, []);
 
@@ -239,7 +324,7 @@ export default function ActivityDetailScreen() {
 			<View style={[styles.centeredContainer, { backgroundColor: theme.screen.background }]}>
 				<MaterialIcons name="error-outline" size={48} color={theme.screen.icon} />
 				<Text style={[styles.notFoundText, { color: theme.screen.text }]}>Activity not found.</Text>
-				<TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+				<TouchableOpacity style={styles.backButton} onPress={() => router.navigate('/activities')}>
 					<Text style={styles.backButtonText}>Go back</Text>
 				</TouchableOpacity>
 			</View>
@@ -282,7 +367,7 @@ export default function ActivityDetailScreen() {
 		>
 			{/* Map – 1:1 square at the top */}
 			<View style={styles.mapContainer}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} />
 			</View>
 
 			{/* Stats list */}
