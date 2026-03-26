@@ -65,36 +65,36 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L52
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:1629
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1629
+  apps/geonexia/frontend/app/index.tsx:1657
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1657
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:1630
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1630
+  apps/geonexia/frontend/app/index.tsx:1658
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1658
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:1384
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1384
+  apps/geonexia/frontend/app/index.tsx:1412
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1412
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:1385
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1385
+  apps/geonexia/frontend/app/index.tsx:1413
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1413
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:1484
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1484
+  apps/geonexia/frontend/app/index.tsx:1512
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1512
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:813
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L813
+  apps/geonexia/frontend/app/index.tsx:841
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L841
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:814
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L814
+  apps/geonexia/frontend/app/index.tsx:842
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L842
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:717
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L717
+  apps/geonexia/frontend/app/index.tsx:745
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L745
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/statistics/index.tsx:44
