@@ -59,7 +59,16 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay ?? false} loop={false} />;
+			return (
+				<LottieView
+					ref={animationRef}
+					source={animationJson}
+					resizeMode="contain"
+					style={isWeb() ? { width: 250, height: 250 } : { width: '100%', height: '100%' }}
+					autoPlay={autoPlay ?? false}
+					loop={false}
+				/>
+			);
 		}
 	}, [autoPlay, animationJson]);
 

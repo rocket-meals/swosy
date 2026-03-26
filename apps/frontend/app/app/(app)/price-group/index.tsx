@@ -99,8 +99,16 @@ const Index = () => {
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			// @ts-expect-error LottieView type issue - LottieView has autoPlay prop but types don't reflect it
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay} loop={false} />;
+			return (
+				<LottieView
+					ref={animationRef}
+					source={animationJson}
+					resizeMode="contain"
+					style={isWeb ? { width: 220, height: 220 } : { width: '100%', height: '100%' }}
+					autoPlay={autoPlay ?? false}
+					loop={false}
+				/>
+			);
 		}
 	}, [autoPlay, animationJson]);
 	const updatePricing = async (option: string) => {

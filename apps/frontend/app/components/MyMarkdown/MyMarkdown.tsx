@@ -5,10 +5,9 @@ import MarkdownIt from 'markdown-it';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import RenderHtml, { CustomBlockRenderer, CustomMixedRenderer, CustomTextualRenderer, HTMLContentModel, HTMLElementModel } from 'react-native-render-html';
 import { useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/reducer';
-import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
+import AppButton from '../AppButton';
 
 export interface MyMarkdownProps {
 	content: string;
@@ -116,7 +115,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 				iconLeft = <Ionicons name="navigate" size={24} color={contrastColor} />;
 			}
 
-			return <ProjectButton text={text} onPress={handlePress} iconLeft={iconLeft} />;
+			return <AppButton text={text} onPress={handlePress} iconLeft={iconLeft} />;
 		},
 		sub: (props: any) => {
 			const { data } = props.tnode;

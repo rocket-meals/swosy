@@ -36,7 +36,14 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 				</View>
 
 				<View style={styles.gifContainer}>
-					<LottieView ref={animationRef} source={updatedAnimationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={false} loop={false} />
+					<LottieView
+						ref={animationRef}
+						source={updatedAnimationJson}
+						resizeMode="contain"
+						style={isWeb ? { width: 180, height: 180 } : { width: '100%', height: '100%' }}
+						autoPlay={false}
+						loop={false}
+					/>
 				</View>
 				<Text style={{ ...styles.attentionSheetHeading, color: theme.sheet.text }}>{translate(TranslationKeys.attention)}</Text>
 				<View style={{ ...styles.attentionContent, width: isWeb ? '80%' : '100%' }}>

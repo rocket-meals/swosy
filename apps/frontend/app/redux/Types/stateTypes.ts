@@ -51,6 +51,8 @@ export type SettingsState = {
         primaryColor: string;
         appSettings: DatabaseTypes.AppSettings;
         language: string;
+        pirateLanguage: boolean;
+        funLanguageMode: string | null;
         firstDayOfTheWeek: { id: string; name: string };
         drawerPosition: 'left' | 'right' | 'system';
         selectedCustomer: ConfigCustomerEnum | null;
