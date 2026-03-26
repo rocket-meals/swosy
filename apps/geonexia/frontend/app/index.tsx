@@ -23,6 +23,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
+import { WebView } from 'react-native-webview';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
@@ -41,6 +42,32 @@ import { store, RootState } from '../store/store';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const OBJECTS_SVG_MODULE = require('../assets/objects/hexagonVector_objects.svg') as number;
+
+/** Module-level cache so the SVG data URI is only computed once per app session. */
+const cachedObjectsSvgDataUrl: { value: string | null } = { value: null };
+
+async function loadObjectsSvgDataUrl(): Promise<string | null> {
+	if (cachedObjectsSvgDataUrl.value !== null) return cachedObjectsSvgDataUrl.value;
+	try {
+		const asset = Asset.fromModule(OBJECTS_SVG_MODULE);
+		await asset.downloadAsync();
+		let url: string;
+		if (Platform.OS === 'web') {
+			url = asset.uri ?? '';
+		} else {
+			if (!asset.localUri) return null;
+			const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+				encoding: FileSystem.EncodingType.Base64,
+			});
+			url = `data:image/svg+xml;base64,${base64}`;
+		}
+		cachedObjectsSvgDataUrl.value = url || null;
+		return cachedObjectsSvgDataUrl.value;
+	} catch (e) {
+		console.warn('[loadObjectsSvgDataUrl] Failed:', e);
+		return null;
+	}
+}
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -975,7 +1002,7 @@ const SPRITE_THUMB_SIZE = 52;
 const SPRITE_THUMB_GAP = 4;
 const SPRITE_THUMB_PADDING = 4;
 /** Geographic width in metres for an individual object-sprite billboard. */
-const SPRITE_BILLBOARD_SIZEM = 30;
+const SPRITE_BILLBOARD_SIZEM = 60;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -983,9 +1010,17 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
+	const [objectsSvgDataUrl, setObjectsSvgDataUrl] = useState<string | null>(null);
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentBillboard = record?.billboard ?? null;
+
+	// Load the SVG sprite sheet as a base64 data URI so it can be rendered in a WebView.
+	useEffect(() => {
+		loadObjectsSvgDataUrl().then(url => {
+			if (url) setObjectsSvgDataUrl(url);
+		});
+	}, []);
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -996,6 +1031,49 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
+
+	// Build the HTML for the WebView-based sprite picker so that SVG sprites are
+	// rendered via CSS background-position, which works on both iOS and Android.
+	const spritePickerHtml = useMemo(() => {
+		if (!objectsSvgDataUrl) return null;
+		const thumbSize = SPRITE_THUMB_SIZE;
+		const padding = SPRITE_THUMB_PADDING;
+		const sheetW = OBJECT_SPRITES_SHEET_WIDTH;
+		const sheetH = OBJECT_SPRITES_SHEET_HEIGHT;
+		const gap = SPRITE_THUMB_GAP;
+
+		const spriteItems = OBJECT_SPRITES.map((sprite, idx) => {
+			const scale = (thumbSize - padding) / Math.max(sprite.w, sprite.h);
+			const bgSizeW = (sheetW * scale).toFixed(1);
+			const bgSizeH = (sheetH * scale).toFixed(1);
+			const bgPosX = (-sprite.x * scale + (thumbSize - sprite.w * scale) / 2).toFixed(1);
+			const bgPosY = (-sprite.y * scale + (thumbSize - sprite.h * scale) / 2).toFixed(1);
+			const isSelected = currentBillboard === `objects:${idx}`;
+			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
+			return `<div class="sprite" data-idx="${idx}" style="border:${border};background-size:${bgSizeW}px ${bgSizeH}px;background-position:${bgPosX}px ${bgPosY}px;"></div>`;
+		}).join('');
+
+		return [
+			'<!DOCTYPE html><html>',
+			'<head>',
+			'<meta name="viewport" content="width=device-width,initial-scale=1">',
+			'<style>',
+			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
+			`html,body{background:transparent;overflow:hidden;}`,
+			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:max-content;min-width:100%;}`,
+			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;background-image:url('${objectsSvgDataUrl}');background-repeat:no-repeat;}`,
+			'</style>',
+			'</head>',
+			'<body>',
+			`<div class="row">${spriteItems}</div>`,
+			'<script>',
+			`document.querySelectorAll('.sprite').forEach(function(el){`,
+			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.idx);});`,
+			`});`,
+			'<\/script>',
+			'</body></html>',
+		].join('');
+	}, [objectsSvgDataUrl, currentBillboard]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1137,50 +1215,29 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				<Text style={[styles.spriteSectionLabel, { color: theme.screen.text }]}>
 					🏗️ Objects
 				</Text>
-				<ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					contentContainerStyle={styles.spritePickerRow}
-				>
-					{OBJECT_SPRITES.map((sprite, idx) => {
-						const spriteKey = `objects:${idx}`;
-						const isSelected = currentBillboard === spriteKey;
-						const scale = (SPRITE_THUMB_SIZE - SPRITE_THUMB_PADDING) / Math.max(sprite.w, sprite.h);
-						const scaledW = OBJECT_SPRITES_SHEET_WIDTH * scale;
-						const scaledH = OBJECT_SPRITES_SHEET_HEIGHT * scale;
-						const offsetX = (SPRITE_THUMB_SIZE - sprite.w * scale) / 2 - sprite.x * scale;
-						const offsetY = (SPRITE_THUMB_SIZE - sprite.h * scale) / 2 - sprite.y * scale;
-						return (
-							<TouchableOpacity
-								key={idx}
-								onPress={() =>
-									dispatch(
-										setHexTileCustomization({
-											h3Index,
-											billboard: isSelected ? null : spriteKey,
-										}),
-									)
-								}
-								style={[
-									styles.spriteThumb,
-									isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
-								]}
-							>
-								<Image
-									source={OBJECTS_SVG_MODULE}
-									style={{
-										width: scaledW,
-										height: scaledH,
-										position: 'absolute',
-										left: offsetX,
-										top: offsetY,
-									}}
-									resizeMode="stretch"
-								/>
-							</TouchableOpacity>
-						);
-					})}
-				</ScrollView>
+				{spritePickerHtml != null ? (
+					<WebView
+						source={{ html: spritePickerHtml }}
+						style={{ height: SPRITE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
+						originWhitelist={['*']}
+						scrollEnabled={false}
+						onMessage={event => {
+							const idx = parseInt(event.nativeEvent.data, 10);
+							if (isNaN(idx)) return;
+							const spriteKey = `objects:${idx}`;
+							dispatch(
+								setHexTileCustomization({
+									h3Index,
+									billboard: currentBillboard === spriteKey ? null : spriteKey,
+								}),
+							);
+						}}
+					/>
+				) : (
+					<Text style={[styles.spriteSectionLabel, { color: theme.screen.text + '80' }]}>
+						Loading…
+					</Text>
+				)}
 			</View>
 		</View>
 	);
@@ -2877,19 +2934,5 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		paddingHorizontal: 12,
 		paddingBottom: 6,
-	},
-	spritePickerRow: {
-		flexDirection: 'row',
-		gap: SPRITE_THUMB_GAP,
-		paddingHorizontal: 12,
-		paddingBottom: 10,
-	},
-	spriteThumb: {
-		width: SPRITE_THUMB_SIZE,
-		height: SPRITE_THUMB_SIZE,
-		borderRadius: 6,
-		overflow: 'hidden',
-		borderWidth: 2,
-		borderColor: 'transparent',
 	},
 });
