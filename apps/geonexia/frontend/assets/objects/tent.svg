@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1587 841">
+  <defs>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.006866455078125 -0.006866455078125 0.0206298828125 -0.0206298828125 476.1 157.9)" id="gradient0">
+      <stop offset="0" stop-color="#FFCC00"/>
+      <stop offset="1" stop-color="#ECBC00"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0 0.00567626953125 -0.01031494140625 0 267 595.55)" id="gradient1">
+      <stop offset="0" stop-color="#FFCC00"/>
+      <stop offset="1" stop-color="#FF9900"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.0078277587890625 -0.0078277587890625 0.0093231201171875 -0.0093231201171875 179 64.8)" id="gradient2">
+      <stop offset="0" stop-color="#B9C6C6"/>
+      <stop offset="1" stop-color="#D4E2E2"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0.0075531005859375 -0.0075531005859375 0.0093231201171875 0.0093231201171875 155.2 64)" id="gradient3">
+      <stop offset="0" stop-color="#B9C6C6"/>
+      <stop offset="1" stop-color="#D4E2E2"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0 0.00567626953125 -0.01031494140625 0 227.35 648.8)" id="gradient4">
+      <stop offset="0" stop-color="#FFCC00"/>
+      <stop offset="1" stop-color="#FF9900"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <path stroke="none" fill="#1A5577" d="M236.25 421.05 L246.55 403.8 246.55 402.75 Q246.55 402.1 246.95 401.55 247.35 401 248.05 400.85 L250.4 400.2 251.7 400.25 252.65 401.15 253.6 402.85 253.85 403.8 253.85 403.9 263 413.7 263.3 414.1 272.6 431.6 272.8 432.75 272.35 433.85 271.4 434.5 265.55 436.25 264.25 436.2 Q263.6 435.95 263.25 435.35 L262.25 433.75 262.25 435.7 Q262.25 436.35 261.85 436.9 261.45 437.45 260.8 437.65 L258.4 438.35 257.05 438.25 Q256.4 437.95 256.05 437.3 L255.85 436.85 255.05 438.65 254.55 439.3 253.8 439.75 247.9 441.5 246.55 441.4 Q245.85 441.1 245.55 440.5 L236.2 423 235.95 422 Q235.95 421.5 236.25 421.05"/>
+    <path stroke="none" fill="#BB8044" d="M251.85 404.65 L251.85 405.45 250.65 404.2 249.5 406.15 248.55 404.35 248.55 402.75 250.9 402.1 251.85 403.8 251.85 404.65 M258.6 418.05 L259.3 417.85 260.25 419.6 260.25 421.2 257.85 421.9 256.95 420.1 256.95 418.5 257.7 418.3 258.6 418.05 M256.95 429.45 L256.95 429.4 259.05 424.7 260.25 426.65 260.25 426.7 260.25 435.7 257.85 436.4 256.95 434.6 256.95 429.45"/>
+    <path stroke="none" fill="#23719F" d="M250.65 404.2 L251.85 405.45 251.85 404.65 261.5 415.05 270.8 432.55 260.25 421.2 260.25 419.6 259.3 417.85 258.6 418.05 258.15 418.15 250.65 404.2"/>
+    <path stroke="none" fill="#2F95D0" d="M250.65 404.2 L258.15 418.15 257.7 418.3 256.95 418.5 256.95 420.1 257.85 421.9 260.25 421.2 270.8 432.55 264.95 434.3 260.25 426.7 260.25 426.65 259.05 424.7 256.95 429.4 256.95 429.45 253.2 437.8 247.3 439.55 237.95 422.05 248.55 404.35 249.5 406.15 250.65 404.2"/>
+  </g>
+</svg>
