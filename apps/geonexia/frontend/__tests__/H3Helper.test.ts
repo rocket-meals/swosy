@@ -530,7 +530,7 @@ describe('H3Helper – cellToHalfResolutionTiles', () => {
         expect(lat0).toBeLessThan(55);
     });
 
-    it('center tile vertices are at exactly 2/3 distance from the centroid', () => {
+    it('center tile vertices are at exactly 1/2 distance from the centroid', () => {
         const [centerLat, centerLng] = cellToLatLng(cell);
         const outer = cellToBoundary(cell, false) as [number, number][];
         const tiles = cellToHalfResolutionTiles(cell, false);
@@ -545,7 +545,7 @@ describe('H3Helper – cellToHalfResolutionTiles', () => {
                 inner[i][0] - centerLat,
                 inner[i][1] - centerLng,
             );
-            expect(innerDist / outerDist).toBeCloseTo(2 / 3, 5);
+            expect(innerDist / outerDist).toBeCloseTo(1 / 2, 5);
         }
     });
 

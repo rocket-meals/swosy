@@ -177,10 +177,11 @@ function buildH3GeoJson(
 
 	const features: H3GeoJsonFeature[] = [];
 	if (isHalfResolution) {
-		// Subdivide each parent cell into 1 center tile (2/3-scaled inner hex)
+		// Subdivide each parent cell into 1 center tile (1/2-scaled inner hex)
 		// and 6 petal tiles (trapezoids covering the space between the inner hex
 		// and each outer edge).  All tiles inherit the parent's colour level and
 		// h3Index so that click events and walk-path lookups resolve correctly.
+		// isCenter is passed through so the stroke layer can hide petal outlines.
 		for (const parentCell of parentCells) {
 			if (features.length >= H3_MAX_CELLS) break;
 			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
@@ -190,7 +191,7 @@ function buildH3GeoJson(
 				features.push({
 					type: 'Feature',
 					geometry: { type: 'Polygon', coordinates: [tile.polygon as number[][]] },
-					properties: { h3Index: parentCell, level: parentLevel },
+					properties: { h3Index: parentCell, level: parentLevel, isCenter: tile.isCenter },
 				});
 			}
 		}

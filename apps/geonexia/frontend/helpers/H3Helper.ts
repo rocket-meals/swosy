@@ -218,7 +218,7 @@ export const getPentagons = (res: number): H3Index[] =>
 
 /** A single polygon produced by {@link cellToHalfResolutionTiles}. */
 export type HalfResolutionTile = {
-    /** `true` for the single center tile (the 2/3-scaled inner hex). */
+    /** `true` for the single center tile (the 1/2-scaled inner hex). */
     isCenter: boolean;
     /**
      * Polygon vertices.
@@ -233,10 +233,10 @@ export type HalfResolutionTile = {
 
 /**
  * Split a parent hex cell into half-resolution tiles:
- *   - **1 center tile** – the parent hex boundary scaled to 2/3 around its
+ *   - **1 center tile** – the parent hex boundary scaled to 1/2 around its
  *     centroid (the "solid" inner hexagon).
  *   - **6 petal tiles** – trapezoids that fill the remaining space between the
- *     2/3-scaled inner hex and each outer edge of the parent hex.  Each petal
+ *     1/2-scaled inner hex and each outer edge of the parent hex.  Each petal
  *     is bounded by two inner-hex vertices and the two corresponding outer-hex
  *     vertices, creating the visual "half" that faces the adjacent neighbour.
  *
@@ -261,7 +261,7 @@ export function cellToHalfResolutionTiles(
     const outerVerts = cellToBoundary(parentCell, false); // [[lat, lng], …]
     if (outerVerts.length < 3) return [];
 
-    const SCALE = 2 / 3;
+    const SCALE = 1 / 2;
     const innerVerts: CoordPair[] = outerVerts.map(
         ([lat, lng]) =>
             [
@@ -282,7 +282,7 @@ export function cellToHalfResolutionTiles(
 
     const tiles: HalfResolutionTile[] = [];
 
-    // Center tile: the 2/3-scaled inner hex
+    // Center tile: the 1/2-scaled inner hex
     tiles.push({
         isCenter: true,
         polygon: toRing(innerVerts),
