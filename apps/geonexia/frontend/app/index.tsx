@@ -28,11 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import {
-	OBJECT_SPRITES,
-	OBJECT_SPRITES_SHEET_WIDTH,
-	OBJECT_SPRITES_SHEET_HEIGHT,
-} from '../assets/objects/objectSprites';
+import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
@@ -40,33 +36,36 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '..
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const OBJECTS_SVG_MODULE = require('../assets/objects/hexagonVector_objects.svg') as number;
+/** Module-level cache so individual SVG data URIs are only computed once per app session. */
+const cachedObjectSvgDataUrls: string[] = [];
+let cachedObjectSvgDataUrlsLoaded = false;
 
-/** Module-level cache so the SVG data URI is only computed once per app session. */
-const cachedObjectsSvgDataUrl: { value: string | null } = { value: null };
-
-async function loadObjectsSvgDataUrl(): Promise<string | null> {
-	if (cachedObjectsSvgDataUrl.value !== null) return cachedObjectsSvgDataUrl.value;
-	try {
-		const asset = Asset.fromModule(OBJECTS_SVG_MODULE);
-		await asset.downloadAsync();
-		let url: string;
-		if (Platform.OS === 'web') {
-			url = asset.uri ?? '';
-		} else {
-			if (!asset.localUri) return null;
-			const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-				encoding: FileSystem.EncodingType.Base64,
-			});
-			url = `data:image/svg+xml;base64,${base64}`;
+async function loadAllObjectSvgDataUrls(): Promise<string[]> {
+	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
+	const results: string[] = [];
+	for (const sprite of OBJECT_SPRITES) {
+		try {
+			const asset = Asset.fromModule(sprite.source);
+			await asset.downloadAsync();
+			let url: string;
+			if (Platform.OS === 'web') {
+				url = asset.uri ?? '';
+			} else {
+				if (!asset.localUri) { results.push(''); continue; }
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:image/svg+xml;base64,${base64}`;
+			}
+			results.push(url);
+		} catch (e) {
+			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${sprite.name}:`, e);
+			results.push('');
 		}
-		cachedObjectsSvgDataUrl.value = url || null;
-		return cachedObjectsSvgDataUrl.value;
-	} catch (e) {
-		console.warn('[loadObjectsSvgDataUrl] Failed:', e);
-		return null;
 	}
+	cachedObjectSvgDataUrls.push(...results);
+	cachedObjectSvgDataUrlsLoaded = true;
+	return cachedObjectSvgDataUrls;
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -1000,8 +999,6 @@ const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
 const SPRITE_THUMB_SIZE = 52;
 const SPRITE_THUMB_GAP = 4;
-const SPRITE_THUMB_PADDING = 4;
-/** Geographic width in metres for an individual object-sprite billboard. */
 const SPRITE_BILLBOARD_SIZEM = 60;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
@@ -1010,15 +1007,15 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
-	const [objectsSvgDataUrl, setObjectsSvgDataUrl] = useState<string | null>(null);
+	const [objectSvgUrls, setObjectSvgUrls] = useState<string[]>([]);
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentBillboard = record?.billboard ?? null;
 
-	// Load the SVG sprite sheet as a base64 data URI so it can be rendered in a WebView.
+	// Load all individual object SVGs as base64 data URIs for use in the sprite picker WebView.
 	useEffect(() => {
-		loadObjectsSvgDataUrl().then(url => {
-			if (url) setObjectsSvgDataUrl(url);
+		loadAllObjectSvgDataUrls().then(urls => {
+			setObjectSvgUrls(urls);
 		});
 	}, []);
 
@@ -1032,25 +1029,17 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
 
-	// Build the HTML for the WebView-based sprite picker so that SVG sprites are
-	// rendered via CSS background-position, which works on both iOS and Android.
+	// Build the HTML for the WebView-based sprite picker using individual SVG data URIs.
 	const spritePickerHtml = useMemo(() => {
-		if (!objectsSvgDataUrl) return null;
+		if (objectSvgUrls.length === 0) return null;
 		const thumbSize = SPRITE_THUMB_SIZE;
-		const padding = SPRITE_THUMB_PADDING;
-		const sheetW = OBJECT_SPRITES_SHEET_WIDTH;
-		const sheetH = OBJECT_SPRITES_SHEET_HEIGHT;
 		const gap = SPRITE_THUMB_GAP;
 
 		const spriteItems = OBJECT_SPRITES.map((sprite, idx) => {
-			const scale = (thumbSize - padding) / Math.max(sprite.w, sprite.h);
-			const bgSizeW = (sheetW * scale).toFixed(1);
-			const bgSizeH = (sheetH * scale).toFixed(1);
-			const bgPosX = (-sprite.x * scale + (thumbSize - sprite.w * scale) / 2).toFixed(1);
-			const bgPosY = (-sprite.y * scale + (thumbSize - sprite.h * scale) / 2).toFixed(1);
+			const url = objectSvgUrls[idx] ?? '';
 			const isSelected = currentBillboard === `objects:${idx}`;
 			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
-			return `<div class="sprite" data-idx="${idx}" style="border:${border};background-size:${bgSizeW}px ${bgSizeH}px;background-position:${bgPosX}px ${bgPosY}px;"></div>`;
+			return `<div class="sprite" data-idx="${idx}" style="border:${border};"><img src="${url}" /></div>`;
 		}).join('');
 
 		return [
@@ -1061,7 +1050,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
 			`html,body{background:transparent;overflow:hidden;}`,
 			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
-			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;background-image:url('${objectsSvgDataUrl}');background-repeat:no-repeat;}`,
+			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
+			`.sprite img{width:100%;height:100%;object-fit:contain;}`,
 			'</style>',
 			'</head>',
 			'<body>',
@@ -1073,7 +1063,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			'<\/script>',
 			'</body></html>',
 		].join('');
-	}, [objectsSvgDataUrl, currentBillboard]);
+	}, [objectSvgUrls, currentBillboard]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1394,7 +1384,7 @@ export default function RecordScreen() {
 			if (record.tileImage) {
 				const moduleId = terrainLookup.get(record.tileImage);
 				if (moduleId !== undefined) {
-					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/png');
+					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/svg+xml');
 					if (url) {
 						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
 						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
@@ -1472,20 +1462,17 @@ export default function RecordScreen() {
 		}
 
 		mapRef.current.sendToMap({ imageOverlays });
-		// Register image-based billboard types so the map can render them.
-		const objectsUrl = await loadAssetUrl('objects/hexagonVector_objects.svg', OBJECTS_SVG_MODULE, 'image/svg+xml');
-		if (objectsUrl) {
-			mapRef.current.sendToMap({
-				billboardImages: {
-					objects: {
-						url: objectsUrl,
-						ratio: OBJECT_SPRITES_SHEET_HEIGHT / OBJECT_SPRITES_SHEET_WIDTH,
-						sprites: OBJECT_SPRITES,
-						sheetW: OBJECT_SPRITES_SHEET_WIDTH,
-						sheetH: OBJECT_SPRITES_SHEET_HEIGHT,
-					},
-				},
-			});
+		// Register each individual object SVG as a billboard image so the map can render them.
+		const billboardImages: Record<string, { url: string; ratio: number }> = {};
+		for (let idx = 0; idx < OBJECT_SPRITES.length; idx++) {
+			const sprite = OBJECT_SPRITES[idx];
+			const url = await loadAssetUrl(`objects:${idx}`, sprite.source as number, 'image/svg+xml');
+			if (url) {
+				billboardImages[`objects:${idx}`] = { url, ratio: 1 };
+			}
+		}
+		if (Object.keys(billboardImages).length > 0) {
+			mapRef.current.sendToMap({ billboardImages });
 		}
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
