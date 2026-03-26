@@ -1,9 +1,11 @@
 Key,Message,Component,Line
-"AZ0l8P0X4f4TF5V4_eK6","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1213
+"AZ0pY7cUJ_U2KSmzGO3o","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1225
+"AZ0pY7cUJ_U2KSmzGO3p","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1226
+"AZ0l8P0X4f4TF5V4_eK6","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1322
 "AZ0kFsZATj4M-vqty-rP","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/statistics/index.tsx",44
-"AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",661
-"AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",662
-"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",575
+"AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",693
+"AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",694
+"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",607
 "AZ0eWxL7RvqNgnlDLcVp","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",54
 "AZ0eWxNyRvqNgnlDLcVu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",52
 "AZ0cP4wTSUO5CDbnER0T","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",242
