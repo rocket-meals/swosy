@@ -2024,7 +2024,7 @@ export default function RecordScreen() {
 			// position; adding a real GPS fix would create a visible jump in the
 			// recorded route from the virtual joystick position back to the
 			// physical GPS location.
-			if (isRecordingRef.current && joystickActiveRef.current) {
+			if (isRecordingRef.current && (joystickActiveRef.current || movedPlayerManuallyRef.current)) {
 				return;
 			}
 
@@ -2528,7 +2528,10 @@ export default function RecordScreen() {
 						iconColor="#555555"
 						activeColor={PRIMARY_COLOR}
 						isFollowing={isFollowing}
-						onLocationFound={() => setFollowMode(true)}
+						onLocationFound={() => {
+							movedPlayerManuallyRef.current = false;
+							setFollowMode(true);
+						}}
 					/>
 					<View style={styles.buttonSpacer} />
 					<TouchableOpacity
