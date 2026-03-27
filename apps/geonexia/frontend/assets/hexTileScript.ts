@@ -320,7 +320,6 @@ export const HEX_TILE_SCRIPT = `
   window._mapExtensions.onMapReady = function (m) {
     addHexTileLayer();
     m.on('moveend', notifyViewport);
-    m.on('zoom', notifyViewport);
     m.on('zoomend', notifyViewport);
     m.on('styledata', function () {
       if (hexTileActive && !m.getSource(HEX_TILE_SOURCE)) addHexTileLayer();
