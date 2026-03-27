@@ -4769,7 +4769,7 @@
           anchorDot.style.display = 'block';
           wrapperEl.appendChild(anchorDot);
           // Use anchor:'bottom-left' so the bottom-left corner of the billboard
-          // sits exactly at the hex tile's geographic centre coordinate.
+          // sits exactly at the hex tile's geographic center coordinate.
           var marker = new maplibregl.Marker({ element: wrapperEl, anchor: 'bottom-left' })
             .setLngLat([bb.position.lng, bb.position.lat])
             .addTo(map);
