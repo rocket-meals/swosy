@@ -1529,10 +1529,6 @@ export default function RecordScreen() {
 			position: { lng: number; lat: number };
 			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
 			sizem: number;
-			/** Vertical anchor as a fraction of image height (0=top, 1=bottom). The geographic coordinate attaches here. */
-			anchorY: number;
-			/** The 6 outer vertices of the H3 hex cell as [lng, lat] pairs, used to compute the visual centroid when the map is pitched. */
-			hexBoundary?: [number, number][];
 		};
 
 		const imageOverlays: ImageOverlay[] = [];
@@ -1610,22 +1606,18 @@ export default function RecordScreen() {
 				// their scaleFactor (relative to townhall = 7.0), scaled to the actual hex
 				// cell size so billboards fit correctly at any H3 level.
 				let billboardSizem = sizem;
-				let billboardAnchorY = 0.5;
 				if (record.billboard.startsWith('objects:')) {
 					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
 					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
 						? OBJECT_SPRITES[spriteIdx] : undefined;
 					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
 					billboardSizem = sizem * (scale / TOWNHALL_SCALE_FACTOR);
-					billboardAnchorY = sprite ? sprite.anchorY : 0.5;
 				}
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
 					type: record.billboard,
 					position: { lng: center[1], lat: center[0] },
 					sizem: billboardSizem,
-					anchorY: billboardAnchorY,
-					hexBoundary: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
 				});
 			}
 		}
@@ -1643,6 +1635,20 @@ export default function RecordScreen() {
 		if (Object.keys(billboardImages).length > 0) {
 			mapRef.current.sendToMap({ billboardImages });
 		}
+
+		// Static townhall billboard at the Berlin yellow marker position.
+		const BERLIN_LAT = 52.5200;
+		const BERLIN_LNG = 13.4050;
+		const TOWNHALL_IDX = 47; // townhall is at index 47 in OBJECT_SPRITES
+		const townhallSprite = OBJECT_SPRITES[TOWNHALL_IDX];
+		const berlinSizem = 72 * (townhallSprite.scaleFactor / TOWNHALL_SCALE_FACTOR);
+		billboards.push({
+			id: 'static-berlin-townhall',
+			type: `objects:${TOWNHALL_IDX}`,
+			position: { lng: BERLIN_LNG, lat: BERLIN_LAT },
+			sizem: berlinSizem,
+		});
+
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
@@ -1814,9 +1820,8 @@ export default function RecordScreen() {
 		recomputeH3();
 	}, [recomputeH3]);
 
-	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
-		showBillboardAnchorsRef.current = val;
-		mapRef.current?.sendToMap({ billboardDebugAnchors: val });
+	const handleShowBillboardAnchorsChange = useCallback((_val: boolean) => {
+		// Billboard anchor debug toggle removed; kept for API compatibility.
 	}, []);
 
 	const handleH3ResolutionChange = useCallback((val: number) => {
@@ -1852,6 +1857,12 @@ export default function RecordScreen() {
 			// the default gray value defined in hexTileScript.ts is preserved.
 			mapRef.current?.sendToMap({
 				hexTileLayer: { color: 'rgba(0, 0, 0, 0)' },
+			});
+			// Yellow marker at Berlin for reference
+			mapRef.current?.sendToMap({
+				staticMarkers: [
+					{ id: 'berlin', lat: 52.5200, lng: 13.4050, color: '#facc15', sizePx: 16 },
+				],
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);

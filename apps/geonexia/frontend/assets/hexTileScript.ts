@@ -48,9 +48,33 @@ export const HEX_TILE_SCRIPT = `
   var HEX_BORDER_LAYER = 'hex-border-layer';
   var HEX_WALK_PATH_SOURCE = 'hex-walk-path-source';
   var HEX_WALK_PATH_LAYER = 'hex-walk-path-layer';
+  var HEX_VERTICES_SOURCE = 'hex-vertices-source';
+  var HEX_VERTICES_LAYER = 'hex-vertices-layer';
 
   // ── Empty FeatureCollection used as initial / cleared state ───────────────
   var EMPTY_FC = { type: 'FeatureCollection', features: [] };
+
+  // ── Build GeoJSON FeatureCollection of unique hex polygon vertices ───────
+  // Extracts every corner point from the polygon rings and deduplicates them.
+  // Used to render green dots at all hex tile corner positions.
+  function buildVerticesGeoJson(features) {
+    var PRECISION = 6;
+    var seen = {};
+    var points = [];
+    for (var i = 0; i < features.length; i++) {
+      var ring = features[i].geometry && features[i].geometry.coordinates && features[i].geometry.coordinates[0];
+      if (!ring) continue;
+      // Polygon rings are closed (last vertex === first); skip the last to avoid duplicates.
+      for (var j = 0; j < ring.length - 1; j++) {
+        var key = ring[j][0].toFixed(PRECISION) + ',' + ring[j][1].toFixed(PRECISION);
+        if (!seen[key]) {
+          seen[key] = true;
+          points.push({ type: 'Feature', geometry: { type: 'Point', coordinates: ring[j] }, properties: {} });
+        }
+      }
+    }
+    return { type: 'FeatureCollection', features: points };
+  }
 
   // ── Compute territory border edges ────────────────────────────────────────
   // Returns a GeoJSON FeatureCollection of LineString features representing
@@ -203,6 +227,20 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': 1,
       },
     });
+    // Hex tile corner vertices: green dots at every polygon vertex
+    map.addSource(HEX_VERTICES_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_VERTICES_LAYER,
+      type: 'circle',
+      source: HEX_VERTICES_SOURCE,
+      paint: {
+        'circle-radius': 4,
+        'circle-color': '#22c55e',
+        'circle-stroke-width': 1,
+        'circle-stroke-color': '#166534',
+        'circle-opacity': 0.9,
+      },
+    });
     // Raise any route track / segment layers above the hex tile layers so the
     // GPS route is always rendered on top of the hex grid.  These layers are
     // created lazily (only once the first routeCoordinates message arrives), so
@@ -221,6 +259,8 @@ export const HEX_TILE_SCRIPT = `
 
   function removeHexTileLayer() {
     if (!map) return;
+    if (map.getLayer(HEX_VERTICES_LAYER)) map.removeLayer(HEX_VERTICES_LAYER);
+    if (map.getSource(HEX_VERTICES_SOURCE)) map.removeSource(HEX_VERTICES_SOURCE);
     if (map.getLayer(HEX_WALK_PATH_LAYER)) map.removeLayer(HEX_WALK_PATH_LAYER);
     if (map.getSource(HEX_WALK_PATH_SOURCE)) map.removeSource(HEX_WALK_PATH_SOURCE);
     if (map.getLayer(HEX_BORDER_LAYER)) map.removeLayer(HEX_BORDER_LAYER);
@@ -264,6 +304,9 @@ export const HEX_TILE_SCRIPT = `
       // Recompute territory border edges whenever tile data changes
       var borderSrc = map && map.getSource(HEX_BORDER_SOURCE);
       if (borderSrc) borderSrc.setData(buildBorderEdges(fc.features || []));
+      // Update green corner-vertex dots
+      var verticesSrc = map && map.getSource(HEX_VERTICES_SOURCE);
+      if (verticesSrc) verticesSrc.setData(buildVerticesGeoJson(fc.features || []));
     }
     if (data.hexWalkPathGeoJson !== undefined) {
       if (!hexTileActive) return;
