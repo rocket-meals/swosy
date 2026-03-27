@@ -88,7 +88,47 @@ const BUILDINGS_3D = [
     },
 ];
 
-type LayerGroup = 'poi' | 'parking' | 'transit' | 'roadLabels';
+// Simple SVG icons for demo billboard symbols.
+// Each billboard is a world-space symbol: it scales with zoom like a 3-D object.
+// baseIconSize = desired pixels at zoom 15 / atlas size (128).
+const DEMO_BILLBOARD_ATLAS_SIZE = 128;
+function svgToBillboardUrl(svg: string): string {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+const DEMO_BILLBOARD_SVGS: Record<string, string> = {
+    'demo-house': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="16,1 1,13 1,31 12,31 12,20 20,20 20,31 31,31 31,13" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/><polygon points="16,1 -1,13 33,13" fill="#b45309"/></svg>',
+    'demo-tree':  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="16,1 3,14 9,14 5,26 27,26 23,14 29,14" fill="#16a34a" stroke="#15803d" stroke-width="1.5"/><rect x="13" y="25" width="6" height="5" fill="#7c2d12"/></svg>',
+    'demo-pin':   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="13" r="12" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><polygon points="16,25 10,31 22,31" fill="#dc2626"/><circle cx="16" cy="13" r="5" fill="white"/></svg>',
+};
+
+// Three demo billboard symbols placed near the demo center.
+// They appear at 48–64 px at zoom 15 and scale naturally with zoom.
+const DEMO_BILLBOARDS = [
+    {
+        id: 'demo-billboard-house',
+        position: { lat: DEMO_CENTER.lat + 0.0004, lng: DEMO_CENTER.lng - 0.0008 },
+        imageId: 'demo-house',
+        imageUrl: svgToBillboardUrl(DEMO_BILLBOARD_SVGS['demo-house']!),
+        baseIconSize: 48 / DEMO_BILLBOARD_ATLAS_SIZE,
+    },
+    {
+        id: 'demo-billboard-tree',
+        position: { lat: DEMO_CENTER.lat - 0.0004, lng: DEMO_CENTER.lng + 0.0008 },
+        imageId: 'demo-tree',
+        imageUrl: svgToBillboardUrl(DEMO_BILLBOARD_SVGS['demo-tree']!),
+        baseIconSize: 40 / DEMO_BILLBOARD_ATLAS_SIZE,
+    },
+    {
+        id: 'demo-billboard-pin',
+        position: { lat: DEMO_CENTER.lat + 0.0008, lng: DEMO_CENTER.lng + 0.0004 },
+        imageId: 'demo-pin',
+        imageUrl: svgToBillboardUrl(DEMO_BILLBOARD_SVGS['demo-pin']!),
+        baseIconSize: 56 / DEMO_BILLBOARD_ATLAS_SIZE,
+    },
+];
+
+
 
 const LAYER_TOGGLE_BUTTONS: { group: LayerGroup; label: string; emoji: string }[] = [
     { group: 'poi',        label: 'Shops/POI',   emoji: '🏪' },
@@ -181,6 +221,7 @@ const MapWithCustomImagesAndBuildings = ({ onExperimentalClickOnBuildings }: Pro
                 maxPitch: MAX_PITCH,
                 imageOverlays: IMAGE_OVERLAYS,
                 buildings3d: BUILDINGS_3D,
+                billboardSymbols: DEMO_BILLBOARDS,
                 enableBuildingClick: true,
                 poiClickEnabled: true,
             });
