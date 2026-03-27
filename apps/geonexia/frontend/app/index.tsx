@@ -1608,14 +1608,14 @@ export default function RecordScreen() {
 				// their scaleFactor (relative to townhall = 7.0), scaled to the actual hex
 				// cell size so billboards fit correctly at any H3 level.
 				let billboardSizem = sizem;
-				let billboardAnchorY = 1.0;
+				let billboardAnchorY = 0.5;
 				if (record.billboard.startsWith('objects:')) {
 					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
 					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
 						? OBJECT_SPRITES[spriteIdx] : undefined;
 					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
 					billboardSizem = sizem * (scale / TOWNHALL_SCALE_FACTOR);
-					billboardAnchorY = sprite ? sprite.anchorY : 1.0;
+					billboardAnchorY = sprite ? sprite.anchorY : 0.5;
 				}
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
