@@ -50,6 +50,9 @@ export type { SettingsListDateProps } from './src/components/SettingsListDate';
 export { default as SettingsListCoordinate } from './src/components/SettingsListCoordinate';
 export type { SettingsListCoordinateProps, LinkCoordinate } from './src/components/SettingsListCoordinate';
 
+export { default as SettingsListProgress } from './src/components/SettingsListProgress';
+export type { SettingsListProgressProps } from './src/components/SettingsListProgress';
+
 export { default as AppDrawer } from './src/components/AppDrawer';
 export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
 
