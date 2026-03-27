@@ -26,7 +26,6 @@ export interface FeatureWishesScreenTexts {
 	filterAllLabel?: string;
 	approveLabel?: string;
 	approvedLabel?: string;
-	closeLabel?: string;
 }
 
 export interface FeatureWishesScreenProps {
@@ -95,12 +94,11 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	const filterAllLabel = texts?.filterAllLabel ?? 'Alle';
 	const approveLabel = texts?.approveLabel ?? 'Genehmigen';
 	const approvedLabel = texts?.approvedLabel ?? 'Genehmigt';
-	const closeLabel = texts?.closeLabel ?? 'Schließen';
 
-	const visibleItems = useMemo(
-		() => (isAdmin && showPendingOnly ? items.filter((i) => !i.approved) : items),
-		[items, isAdmin, showPendingOnly]
-	);
+	const visibleItems = useMemo(() => {
+		const filtered = isAdmin && showPendingOnly ? items.filter((i) => !i.approved) : items;
+		return [...filtered].sort((a, b) => b.likeCount - a.likeCount);
+	}, [items, isAdmin, showPendingOnly]);
 
 	const handleLike = useCallback(
 		(id: string) => {
@@ -139,16 +137,14 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 						isAdmin={isAdmin}
 						approveLabel={approveLabel}
 						approvedLabel={approvedLabel}
-						closeLabel={closeLabel}
 						primaryColor={resolvedPrimaryColor}
 						onApprove={() => handleApprove(item.id)}
-						onClose={close}
 						theme={theme}
 					/>
 				),
 			});
 		},
-		[show, close, isAdmin, approveLabel, approvedLabel, closeLabel, resolvedPrimaryColor, handleApprove, theme]
+		[show, close, isAdmin, approveLabel, approvedLabel, resolvedPrimaryColor, handleApprove, theme]
 	);
 
 	const renderItem = useCallback(
@@ -235,10 +231,8 @@ interface DetailContentProps {
 	isAdmin: boolean;
 	approveLabel: string;
 	approvedLabel: string;
-	closeLabel: string;
 	primaryColor: string;
 	onApprove: () => void;
-	onClose: () => void;
 	theme: Theme;
 }
 
@@ -247,10 +241,8 @@ const DetailContent: React.FC<DetailContentProps> = ({
 	isAdmin,
 	approveLabel,
 	approvedLabel,
-	closeLabel,
 	primaryColor,
 	onApprove,
-	onClose,
 	theme,
 }) => {
 	const { isDark } = useTheme();
@@ -280,11 +272,6 @@ const DetailContent: React.FC<DetailContentProps> = ({
 					</Text>
 				</View>
 			)}
-			<Pressable style={[detailStyles.closeButton, { backgroundColor: theme.screen.iconBg }]} onPress={onClose}>
-				<Text style={[detailStyles.closeButtonText, { color: theme.screen.text }]}>
-					{closeLabel}
-				</Text>
-			</Pressable>
 		</View>
 	);
 };
@@ -356,15 +343,5 @@ const detailStyles = StyleSheet.create({
 	approvedText: {
 		fontSize: 13,
 		fontWeight: '600',
-	},
-	closeButton: {
-		paddingVertical: 12,
-		paddingHorizontal: 20,
-		borderRadius: borderRadiusContainer,
-		alignItems: 'center',
-	},
-	closeButtonText: {
-		fontSize: 15,
-		fontWeight: '500',
 	},
 });
