@@ -6,6 +6,7 @@ import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
 import { borderRadiusContainer, horizontalScreenPadding } from '../../constants/ui';
 import { lightTheme } from '../../themes';
+import type { Theme } from '../../themes';
 import SettingsList from '../SettingsList';
 import SettingsListLikeButton from '../SettingsListLikeButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
@@ -38,35 +39,35 @@ const DEFAULT_ITEMS: FeatureWishItem[] = [
 	{
 		id: '1',
 		title: 'Dark Mode',
-		description: 'Einen Dark Mode für die gesamte App einführen, um die Augen zu schonen und Akku zu sparen.',
+		description: 'Add a dark mode for the entire app to reduce eye strain and save battery life.',
 		likeCount: 42,
 		approved: true,
 	},
 	{
 		id: '2',
-		title: 'Wochenplan als Widget',
-		description: 'Den Wochenplan als Widget auf dem Homescreen anzeigen, damit man direkt sehen kann, was es gibt.',
+		title: 'Weekly Plan Widget',
+		description: 'Show the weekly meal plan as a home screen widget so users can see what is available at a glance.',
 		likeCount: 31,
 		approved: true,
 	},
 	{
 		id: '3',
-		title: 'Kalorienzähler',
-		description: 'Eine Funktion zum Zählen der täglichen Kalorienzufuhr basierend auf den gegessenen Gerichten hinzufügen.',
+		title: 'Calorie Counter',
+		description: 'Add a feature to track daily calorie intake based on the meals consumed in the canteen.',
 		likeCount: 28,
 		approved: false,
 	},
 	{
 		id: '4',
-		title: 'Favoriten-Liste',
-		description: 'Gerichte als Favoriten markieren und eine eigene Liste mit Lieblingsgerichten erstellen können.',
+		title: 'Favorites List',
+		description: 'Allow users to mark dishes as favorites and create a personal list of favorite meals.',
 		likeCount: 19,
 		approved: false,
 	},
 	{
 		id: '5',
-		title: 'Push-Benachrichtigungen für Lieblingsessen',
-		description: 'Benachrichtigungen erhalten, wenn ein bestimmtes Lieblingsgericht im Angebot ist.',
+		title: 'Push Notifications for Favorite Meals',
+		description: 'Receive notifications when a specific favorite dish is available on the menu.',
 		likeCount: 15,
 		approved: true,
 	},
@@ -89,7 +90,7 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 
 	const introText =
 		texts?.introText ??
-		'Hier kannst du dir Features wünschen. Like Vorschläge, die du gut findest!';
+		'Here you can wish for features. Like suggestions you find good!';
 	const filterPendingLabel = texts?.filterPendingLabel ?? 'Neue Anfragen';
 	const filterAllLabel = texts?.filterAllLabel ?? 'Alle';
 	const approveLabel = texts?.approveLabel ?? 'Genehmigen';
@@ -238,7 +239,7 @@ interface DetailContentProps {
 	primaryColor: string;
 	onApprove: () => void;
 	onClose: () => void;
-	theme: any;
+	theme: Theme;
 }
 
 const DetailContent: React.FC<DetailContentProps> = ({
