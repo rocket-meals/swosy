@@ -121,6 +121,32 @@ const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
+
+// Average H3 hexagon edge lengths in km for each integer resolution 0–15.
+// Source: https://h3geo.org/docs/core-library/restable
+const H3_EDGE_LENGTH_KM: readonly number[] = [
+	1107.712591, // 0
+	418.676005,  // 1
+	158.244655,  // 2
+	59.810857,   // 3
+	22.606379,   // 4
+	8.544408,    // 5
+	3.229482,    // 6
+	1.220629,    // 7
+	0.461354,    // 8
+	0.174375,    // 9
+	0.065907,    // 10  ← default resolution
+	0.024910,    // 11
+	0.009415,    // 12
+	0.003559,    // 13
+	0.001348,    // 14
+	0.000509,    // 15
+];
+
+// Base billboard size unit in pixels at H3 resolution 10.
+// townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
+// All other sprites are scaled by their own scaleFactor relative to this unit.
+const BILLBOARD_UNIT_PX = 48 / 7; // ≈ 6.857 → townhall = 48 px at res 10
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -1540,7 +1566,15 @@ export default function RecordScreen() {
 			iconAnchor: [number, number];
 		};
 		const billboardMarkers: BillboardMarker[] = [];
-		const BILLBOARD_SIZE = 48;
+
+		// Scale billboard pixel size by the current H3 resolution so that billboards
+		// stay proportional to the hexagon visual size.  At resolution 10 (default),
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
+		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
+		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
+		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
+		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			if (!record.billboard) continue;
@@ -1564,23 +1598,29 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
+			// Compute the pixel size for this sprite, applying its scaleFactor and the
+			// current H3 resolution scale.  Minimum 8 px to keep tiny sprites visible.
+			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio));
+			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
+			// The X anchor is always the horizontal center of the square icon.
+			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
 			billboardMarkers.push({
 				id: `billboard-${h3Index}`,
 				position: { lat, lng },
 				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
-				size: [BILLBOARD_SIZE, BILLBOARD_SIZE],
-				// Center the image exactly on the geographic coordinate (= purple dot position).
-				iconAnchor: [BILLBOARD_SIZE / 2, BILLBOARD_SIZE / 2],
+				size: [billboardSizePx, billboardSizePx],
+				iconAnchor: [billboardSizePx / 2, anchorYPx],
 			});
 		}
 
 		mapRef.current.sendToMap({ imageOverlays, mapMarkers: billboardMarkers });
 	}, [loadAssetUrl]);
 
-	// Re-send customizations whenever tile image / model selections change.
+	// Re-send customizations whenever tile image / model selections change, or when the
+	// H3 resolution changes (billboard pixel sizes depend on the current resolution).
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+	}, [hexTileCustomizationsKey, loadAndSendCustomizations, h3Resolution]);
 
 
 	useLayoutEffect(() => {
