@@ -53,6 +53,15 @@ function filterUnrealisticPoints(points: RoutePoint[], maxSpeedKmh: number): Rou
 	let lastAccepted = points[0];
 	for (let i = 1; i < points.length; i++) {
 		const candidate = points[i];
+		// Also reject if the GPS sensor itself reported an unrealistic speed.
+		// computeActivityStats() uses point.speed preferentially, so without this check
+		// a point with e.g. 500 km/h GPS-reported speed would survive the coordinate
+		// filter and still inflate the Max Speed stat.
+		const gpsSpeedKmh =
+			candidate.speed != null && candidate.speed >= 0 ? candidate.speed * 3.6 : 0;
+		if (gpsSpeedKmh > maxSpeedKmh) {
+			continue; // GPS-reported speed is unrealistic – skip, keep lastAccepted as reference
+		}
 		const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, candidate.lat, candidate.lng);
 		const dtHours = (candidate.timestamp - lastAccepted.timestamp) / 3_600_000;
 		const speedKmh = dtHours > 0 ? distKm / dtHours : 0;
