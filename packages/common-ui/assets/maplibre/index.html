@@ -4596,96 +4596,6 @@
       }
 
 
-      // ── Billboard markers (upright SVG sprites on map, zoom-scaled) ──────────────
-      // Billboards are placed at exact lat/lng coordinates with anchor:'bottom'
-      // so the bottom of the image sits on the geographic coordinate point.
-      // Width in pixels = sizem / metersPerPixel(zoom, lat); height is automatic.
-
-      // id → { marker, imgEl, lat, sizem }
-      var activeBillboards = {};
-
-      // Image-based billboard types registered at runtime via billboardImages message.
-      // Each entry: { url, ratio }
-      var BILLBOARD_IMAGES = {};
-
-      // Metres represented by one CSS pixel at the given zoom level and latitude.
-      function billboardMetersPerPixel(zoom, lat) {
-        return 40075016.686 * Math.cos(lat * Math.PI / 180) / (256 * Math.pow(2, zoom));
-      }
-
-      // Update all active billboard widths to match the current map zoom.
-      // After resizing, marker.setLngLat() is called to force MapLibre to recompute
-      // the anchor offset with the updated element dimensions so the billboard stays
-      // exactly on its geographic coordinate.
-      function refreshBillboardSizes() {
-        if (!map) return;
-        var zoom = map.getZoom();
-        var keys = Object.keys(activeBillboards);
-        for (var i = 0; i < keys.length; i++) {
-          var b = activeBillboards[keys[i]];
-          var mpp = billboardMetersPerPixel(zoom, b.lat);
-          var px = Math.round(b.sizem / mpp);
-          if (px < 4) px = 4;
-          b.imgEl.style.width = px + 'px';
-          // Force MapLibre to recompute the anchor offset with the new element size.
-          b.marker.setLngLat(b.marker.getLngLat());
-        }
-      }
-
-      // Replace all active billboards with the new list.
-      // Each billboard: { id, type, position: {lat, lng}, sizem }
-      // type must match a key in BILLBOARD_IMAGES.
-      function updateBillboards(billboards) {
-        var keys = Object.keys(activeBillboards);
-        for (var i = 0; i < keys.length; i++) {
-          activeBillboards[keys[i]].marker.remove();
-        }
-        activeBillboards = {};
-
-        if (!billboards || !Array.isArray(billboards)) return;
-
-        for (var j = 0; j < billboards.length; j++) {
-          var bb = billboards[j];
-          var imgEntry = BILLBOARD_IMAGES[bb.type];
-          if (!imgEntry) continue;
-
-          var img = document.createElement('img');
-          img.src = imgEntry.url;
-          img.style.display = 'block';
-          img.style.pointerEvents = 'none';
-          img.style.height = 'auto';
-
-          // Pre-compute the pixel size and set the width before adding to the map so
-          // MapLibre calculates the correct anchor offset from the very first frame.
-          var mpp0 = billboardMetersPerPixel(map.getZoom(), bb.position.lat);
-          var initPx = Math.round((bb.sizem || 72) / mpp0);
-          if (initPx < 4) initPx = 4;
-          img.style.width = initPx + 'px';
-
-          // anchor:'bottom' → the bottom edge of the image aligns with the lat/lng point.
-          var marker = new maplibregl.Marker({ element: img, anchor: 'bottom' })
-            .setLngLat([bb.position.lng, bb.position.lat])
-            .addTo(map);
-
-          // Once the image finishes loading its natural dimensions are known.
-          // Re-trigger anchor recomputation so the billboard is precisely placed.
-          (function (m) {
-            img.addEventListener('load', function () {
-              m.setLngLat(m.getLngLat());
-            });
-          })(marker);
-
-          activeBillboards[bb.id] = {
-            marker: marker,
-            imgEl: img,
-            lat: bb.position.lat,
-            sizem: bb.sizem || 72,
-          };
-        }
-
-        refreshBillboardSizes();
-      }
-
       // ── Static dot markers (fixed colored circles at lat/lng positions) ──────────
       // Each marker: { id, lat, lng, color, sizePx }
       var activeStaticMarkers = {};
@@ -5070,18 +4980,6 @@
           updateGlbModels(data.glbModels);
         }
 
-        if (data.billboardImages !== undefined && data.billboardImages !== null) {
-          var imgs = data.billboardImages;
-          var imgKeys = Object.keys(imgs);
-          for (var bi = 0; bi < imgKeys.length; bi++) {
-            BILLBOARD_IMAGES[imgKeys[bi]] = imgs[imgKeys[bi]];
-          }
-        }
-
-        if (data.billboards !== undefined) {
-          updateBillboards(data.billboards);
-        }
-
         if (data.staticMarkers !== undefined) {
           updateStaticMarkers(data.staticMarkers);
         }
@@ -5236,18 +5134,6 @@
             document.getElementById('error').style.display = 'flex';
             sendToRN({ tag: 'MapError', message: e.error ? e.error.message : 'unknown' });
           }
-        });
-
-        map.on('zoom', function () {
-          refreshBillboardSizes();
-        });
-
-        map.on('rotate', function () {
-          refreshBillboardSizes();
-        });
-
-        map.on('pitch', function () {
-          refreshBillboardSizes();
         });
 
         map.on('zoomend', function () {
