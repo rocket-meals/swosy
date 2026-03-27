@@ -5,16 +5,13 @@ import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomT
 import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
+import { TabsStyleProps } from '@/components/shared/tabsStyleProps';
 
 type TabType = 'information' | 'description';
 
-interface DetailsTabsProps {
+interface DetailsTabsProps extends TabsStyleProps {
     activeTab: TabType;
     setActiveTab: (tab: TabType) => void;
-    screenWidth: number;
-    theme: any;
-    themeStyles: any;
-    contrastColor: string;
     translate: (key: string) => string;
     children: React.ReactNode;
 }

@@ -14,15 +14,12 @@ import { TranslationKeys } from '@/locales/keys';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
-import { SettingsListProps } from '@/components/SettingsList/types';
 import SettingsListLikeDislike from '@/components/SettingsListLikeDislike';
+import { MarkingLabelProps } from '@/components/MarkingLabels/types';
 
-export interface SettingsListMarkingLabelProps {
-	markingId: string;
-	handleMenuSheet?: () => void;
-	size?: number;
-	groupPosition?: SettingsListProps['groupPosition'];
-}
+export interface SettingsListMarkingLabelProps extends MarkingLabelProps {}
+// All props are defined in MarkingLabelProps; this named export is kept for
+// backwards compatibility and as the canonical type for this component.
 
 const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	markingId,
@@ -55,11 +52,6 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 			handleMenuSheet();
 		}
 	};
-
-	// Early return AFTER all hooks have been called
-	if (!marking) return null;
-
-	const markingText = getTextFromTranslation(marking?.translations, language);
 
 	const handleAnonymousMarking = (like: boolean) => {
 		const markingsCopy = [...(profile?.markings ?? [])];
@@ -161,6 +153,11 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 		},
 		[user?.id, profile, ownMarking, markingId, dispatch, profileHelper, fetchProfile]
 	);
+
+	// Early return AFTER all hooks have been called
+	if (!marking) return null;
+
+	const markingText = getTextFromTranslation(marking?.translations, language);
 
 	const leftIconComponent = (
 		<View style={styles.leftIconWrapper}>

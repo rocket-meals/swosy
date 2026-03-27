@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "frontend": "yarn app-frontend-start",
+    "geonexia": "yarn workspace geonexia start",
     "app-frontend-start": "yarn && yarn workspace rocket-meals-dev start",
     "app-frontend-gh-pages-deploy": "yarn && yarn workspace rocket-meals-dev deploy:gh:pages",
     "sync:pull-from-test-system": "yarn && yarn workspace backend-sync sync:pull-from-test-system",
@@ -20,6 +21,7 @@
   },
   "workspaces": [
     "apps/frontend/app",
+    "apps/geonexia/frontend",
     "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle",
     "apps/scripts",
     "apps/*",

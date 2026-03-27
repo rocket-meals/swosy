@@ -1,19 +1,19 @@
 // small jest test
 import { describe, expect, it } from '@jest/globals';
 import { FoodTL1Parser } from '../../FoodTL1Parser';
-import { FoodTL1Parser_GetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
+import { FoodTL1ParserGetRawReportInterface } from '../../FoodTL1Parser_GetRawReportInterface';
 import { FoodTL1Parser_RawReportTestReaderOsnabrueck } from '../FoodTL1Parser_RawReportTestReaderOsnabrueck';
 import { FoodTL1ParserOsnabrueck } from '../FoodTL1ParserOsnabrueck';
 
 async function getFoodoffersJson(reportToReturn?: string | undefined) {
-  let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck(reportToReturn);
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck(reportToReturn);
   let foodParser: FoodTL1Parser = new FoodTL1ParserOsnabrueck(testFileGetter);
   await foodParser.createNeededData();
   return await foodParser.getFoodoffersForParser();
 }
 
 describe('FoodTL1ParserOsnabrueck Test', () => {
-  let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck();
+  let testFileGetter: FoodTL1ParserGetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck();
   let foodParser: FoodTL1Parser = new FoodTL1ParserOsnabrueck(testFileGetter);
 
   // should find atleast one food

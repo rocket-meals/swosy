@@ -1,11 +1,11 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { DockerDirectusPingHelper } from './DockerDirectusPingHelper';
 
 const execAsync = promisify(exec);
 
 export class DockerContainerManager {
-  static DIRECTUS_SERVICE_NAME = 'rocket-meals-directus';
+  static readonly DIRECTUS_SERVICE_NAME = 'rocket-meals-directus';
 
   /**
    * Startet den Directus-Container neu, wenn bsp die Datenbank schema geändert wurde.
@@ -50,19 +50,8 @@ export class DockerContainerManager {
       console.log(`📦 Gefundene Container: ${containers.join(', ')}`);
 
       // 3. Container einzeln neu starten (um Replikas zu berücksichtigen)
-      for (const containerName of containers) {
-        console.log(`🔄 Starte Container ${containerName} neu...`);
-        try {
-          await execAsync(`docker restart ${containerName}`);
-          console.log(`✅ Container ${containerName} neu gestartet`);
-
-          // Kurz warten zwischen Container-Neustarts für sanftes Rolling Update
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        } catch (error: any) {
-          console.log(`❌ Fehler beim Neustart von ${containerName}: ${error.message}`);
-          return false;
-        }
-      }
+      const restarted = await DockerContainerManager.restartContainersSequentially(containers);
+      if (!restarted) return false;
 
       // 4. Warten bis alle Container wieder healthy sind
       console.log(`⏳ Warte bis alle Container wieder verfügbar sind...`);
@@ -127,7 +116,7 @@ export class DockerContainerManager {
       try {
         await execAsync('docker-compose --version');
       } catch (error) {
-        console.log(`❌ docker-compose nicht verfügbar, verwende Container-basierte Lösung`);
+        console.log(`❌ docker-compose nicht verfügbar, verwende Container-basierte Lösung: ${error}`);
         return await this.restartDirectusContainers(directusInstanceUrl);
       }
 
@@ -158,5 +147,24 @@ export class DockerContainerManager {
       console.error(`❌ Fehler beim docker-compose restart: ${error.message}`);
       return false;
     }
+  }
+
+  /**
+   * Startet eine Liste von Containern einzeln neu mit kurzem Warten zwischen den Neustarts.
+   */
+  private static async restartContainersSequentially(containers: string[]): Promise<boolean> {
+    for (const containerName of containers) {
+      console.log(`🔄 Starte Container ${containerName} neu...`);
+      try {
+        await execAsync(`docker restart ${containerName}`);
+        console.log(`✅ Container ${containerName} neu gestartet`);
+        // Kurz warten zwischen Container-Neustarts für sanftes Rolling Update
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } catch (error: any) {
+        console.log(`❌ Fehler beim Neustart von ${containerName}: ${error.message}`);
+        return false;
+      }
+    }
+    return true;
   }
 }

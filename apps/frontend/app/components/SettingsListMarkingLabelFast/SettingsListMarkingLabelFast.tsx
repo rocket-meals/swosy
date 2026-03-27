@@ -10,19 +10,16 @@ import MarkingIcon from '../MarkingIcon';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsList from '@/components/SettingsList';
-import { SettingsListProps } from '@/components/SettingsList/types';
 import SettingsListLikeDislikeFast from '@/components/SettingsListLikeDislikeFast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { createSelector } from 'reselect';
 import { RootState } from '@/redux/reducer';
+import { MarkingLabelProps } from '@/components/MarkingLabels/types';
 
-export interface SettingsListMarkingLabelFastProps {
-	markingId: string;
-	handleMenuSheet?: () => void;
-	size?: number;
-	groupPosition?: SettingsListProps['groupPosition'];
-}
+export interface SettingsListMarkingLabelFastProps extends MarkingLabelProps {}
+// All props are defined in MarkingLabelProps; this named export is kept for
+// backwards compatibility and as the canonical type for this component.
 
 const makeSelectMarking = (markingId: string) =>
 	createSelector(

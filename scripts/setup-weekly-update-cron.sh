@@ -19,7 +19,7 @@ if ! command -v crontab >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ ! -x "$REPO_DIR/scripts/weekly-update.sh" ]; then
+if [[ ! -x "$REPO_DIR/scripts/weekly-update.sh" ]]; then
   echo "Fehler: $REPO_DIR/scripts/weekly-update.sh ist nicht ausführbar oder fehlt." >&2
   exit 1
 fi

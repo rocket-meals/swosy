@@ -46,14 +46,14 @@ export class HashHelper {
 			let lWordCount: number;
 			const lMessageLength = str.length;
 			const lNumberOfWords_temp1 = lMessageLength + 8;
-			const lNumberOfWords_temp2 = ((lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64) | 0;
+			const lNumberOfWords_temp2 = (Math.trunc(lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64);
 			const lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
 			const lWordArray = new Array<number>(lNumberOfWords - 1);
 			let lBytePosition = 0;
 			let lByteCount = 0;
 			while (lByteCount < lMessageLength) {
 				lWordCount = (lByteCount - (lByteCount % 4)) / 4;
-				lWordArray[lWordCount] = lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << ((lByteCount % 4) * 8));
+				lWordArray[lWordCount] = lWordArray[lWordCount] | ((str.codePointAt(lByteCount) ?? 0) << ((lByteCount % 4) * 8));
 				lByteCount++;
 			}
 			lWordCount = (lByteCount - (lByteCount % 4)) / 4;

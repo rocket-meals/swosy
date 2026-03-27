@@ -1,10 +1,11 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import {
   AppleClientSecretCredentials,
   decodeAppleClientSecretExpiry,
   generateAppleClientSecret,
   MAX_TOKEN_LIFETIME_SECONDS
 } from './apple/generateAppleClientSecret';
+import { StringHelper } from 'repo-depkit-common';
 
 const refreshIfExpiringWithinDays = 7; // Refresh if expiring within 7 days
 const REFRESH_THRESHOLD_SECONDS = 60 * 60 * 24 * refreshIfExpiringWithinDays;
@@ -31,7 +32,7 @@ export function buildConfigFromEnv(hostEnvFilePath: string): AppleClientSecretCr
   }
 
   const privateKeyRaw = privateKeyEscaped || '';
-  const privateKeyPem = privateKeyRaw.replace(/\\n/g, '\n');
+  const privateKeyPem = StringHelper.replaceAllLiteralWithOptions({ str: privateKeyRaw, find: String.raw`\n`, replace: '\n' });
 
   return {
     teamId: teamId!,
@@ -89,7 +90,7 @@ async function refreshSecret(config: AppleClientSecretCredentials, hostEnvFilePa
     console.log(token);
     console.log("###############")
 
-    await setEnvValue(hostEnvFilePath, 'AUTH_APPLE_CLIENT_SECRET', token);
+    setEnvValue(hostEnvFilePath, 'AUTH_APPLE_CLIENT_SECRET', token);
   } catch (error) {
     console.error('['+HOOK_NAME+'] Failed to generate Apple client secret:', error);
   }

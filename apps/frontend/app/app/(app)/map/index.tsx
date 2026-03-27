@@ -7,10 +7,13 @@ import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useAppSelector } from '@/redux/hooks';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch } from 'react-redux';
-import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import { SET_OSM_VECTOR_MAP_AUTO_ROTATE_MODE, SET_OSM_VECTOR_MAP_CAR_MODE, SET_OSM_VECTOR_MAP_CLUSTER_DISTANCE, SET_OSM_VECTOR_MAP_CONSENT, SET_OSM_VECTOR_MAP_GAME_MODE, SET_OSM_VECTOR_MAP_INTELLIGENT_MOVEMENT, SET_OSM_VECTOR_MAP_ORGANISATION_FILTER, SET_OSM_VECTOR_MAP_PEOPLE_COUNT, SET_OSM_VECTOR_MAP_PEOPLE_MODE, SET_OSM_VECTOR_MAP_SHOW_CONTROLS_HINT, SET_OSM_VECTOR_MAP_STYLE_KEY, SET_OSM_VECTOR_MAP_USE_FLY_ANIMATION } from '@/redux/Types/types';
+import SettingsGroupMyMapGeneralMarkers from '@/components/SettingsGroupMyMapGeneralMarkers';
 import { clusterMarkers } from '@/components/MyMap/clusterUtils';
 import { MARKER_DEFAULT_SIZE, createUserLocationMarkerSvg, getMarkerLabelFromBuildingAlias } from '@/components/MyMap/markerUtils';
 import { MapMarker } from '@/components/MyMap/model';
+import { BARRIER_ICON_KEYS, PARKING_ICON_KEYS, POI_SUBTYPES } from '@/components/MyMap/poiSubtypes';
+import { ICON_EMOJI_MAP } from '@/components/MyMap/iconEmojiMap';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
@@ -25,6 +28,7 @@ import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icon
 import * as Location from 'expo-location';
 import MyMap from '@/components/MyMap';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
+import JoggingOverlay from '@/app/(app)/map/components/JoggingOverlay';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
 
@@ -197,6 +201,7 @@ type OsmSettingsContentProps = {
 	onCarModeChange: (value: boolean) => void;
 	onToggleFullscreen: () => void;
 	onShowControlsHint: () => void;
+	onRevokeConsent: () => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
@@ -222,6 +227,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	onCarModeChange,
 	onToggleFullscreen,
 	onShowControlsHint,
+	onRevokeConsent,
 	theme,
 }) => {
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
@@ -269,8 +275,8 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 						value={localClusterDistance}
 						onChangeText={(text) => {
 							setLocalClusterDistance(text);
-							const num = parseInt(text, 10);
-							if (!isNaN(num) && num >= 10) {
+							const num = Number.parseInt(text, 10);
+							if (!Number.isNaN(num) && num >= 10) {
 								onClusterDistanceChange(num);
 							}
 						}}
@@ -314,6 +320,16 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				onPress={onShowControlsHint}
 				groupPosition="bottom"
 				showSeparator={false}
+			/>
+			<SettingsGroupMyMapGeneralMarkers />
+			<SettingsGroupTitle>Datenschutz</SettingsGroupTitle>
+			<SettingsList
+				title="OpenStreetMap-Zustimmung widerrufen"
+				value="Karte wird danach nicht mehr geladen"
+				leftIcon={<MaterialCommunityIcons name="map-marker-off-outline" size={20} color={theme.screen.icon} />}
+				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				onPress={onRevokeConsent}
+				groupPosition="single"
 			/>
 			<SettingsGroupTitle>Spaß Einstellungen</SettingsGroupTitle>
 			<SettingsList
@@ -387,8 +403,8 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 							value={localPeopleCount}
 							onChangeText={(text) => {
 								setLocalPeopleCount(text);
-								const num = parseInt(text, 10);
-								if (!isNaN(num) && num >= 1) {
+								const num = Number.parseInt(text, 10);
+								if (!Number.isNaN(num) && num >= 1) {
 									onPeopleCountChange(num);
 								}
 							}}
@@ -470,6 +486,33 @@ const OsmControlsHintContent: React.FC<OsmControlsHintContentProps> = ({ onDontS
 		</View>
 	);
 };
+
+type OsmConsentContentProps = {
+	onConsent: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+const OsmConsentContent: React.FC<OsmConsentContentProps> = ({ onConsent, theme }) => (
+	<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
+		<MaterialCommunityIcons name="map-marker-radius" size={56} color={theme.screen.icon} style={{ marginBottom: 16 }} />
+		<Text style={{ color: theme.screen.text, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 }}>
+			Kartenanzeige mit OpenStreetMap
+		</Text>
+		<Text style={{ color: theme.screen.text, fontSize: 14, textAlign: 'center', marginBottom: 8, lineHeight: 20 }}>
+			Diese Karte lädt Kartendaten von <Text style={{ fontWeight: 'bold' }}>OpenStreetMap</Text> (openstreetmap.org) und <Text style={{ fontWeight: 'bold' }}>OpenFreeMap</Text> (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.
+		</Text>
+		<Text style={{ color: theme.screen.text + 'aa', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
+			Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.
+		</Text>
+		<SettingsList
+			title="Kartendaten laden (Zustimmen)"
+			leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
+			rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+			onPress={onConsent}
+			groupPosition="single"
+		/>
+	</View>
+);
 
 type OsmFilterContentProps = {
 	organisations: DatabaseTypes.Organizations[];
@@ -562,6 +605,7 @@ const OsmFilterContent: React.FC<OsmFilterContentProps> = ({
 					/>
 				);
 			})}
+			<SettingsGroupMyMapGeneralMarkers />
 		</>
 	);
 };
@@ -584,9 +628,9 @@ const noop = () => {};
 function getContrastColor(hexColor: string): string {
 	const hex = hexColor.replace('#', '');
 	if (hex.length !== 6) return '#ffffff';
-	const r = parseInt(hex.slice(0, 2), 16) / 255;
-	const g = parseInt(hex.slice(2, 4), 16) / 255;
-	const b = parseInt(hex.slice(4, 6), 16) / 255;
+	const r = Number.parseInt(hex.slice(0, 2), 16) / 255;
+	const g = Number.parseInt(hex.slice(2, 4), 16) / 255;
+	const b = Number.parseInt(hex.slice(4, 6), 16) / 255;
 	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 	const WCAG_LIGHT_THRESHOLD = 0.179;
 	return luminance > WCAG_LIGHT_THRESHOLD ? '#000000' : '#ffffff';
@@ -617,7 +661,7 @@ function createBuildingMarkerSvg(
 	const cy = size / 2;
 	const r = cx - 2;
 	const fillColor = markerColor || orgMarkerColor || fallbackColor || BUILDING_MARKER_COLOR;
-	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || 'white';
+	const textColor = markerLabelColor || orgMarkerLabelColor || fallbackLabelColor || getContrastColor(fillColor);
 	let rawLabel: string | null = markerLabel || externalIdentifier || null;
 	if (!rawLabel && alias) {
 		rawLabel = getMarkerLabelFromBuildingAlias(alias);
@@ -626,13 +670,22 @@ function createBuildingMarkerSvg(
 	const circleEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fillColor}" stroke="white" stroke-width="2" opacity="0.9"/>`;
 	let textEl = '';
 	if (label) {
-		if (label.length >= 4) {
+		const spaceIdx = label.indexOf(' ');
+		const splitAtSpace = spaceIdx > 0 && spaceIdx < label.length - 1;
+		let line1: string | null = null;
+		let line2: string | null = null;
+		if (splitAtSpace) {
+			line1 = label.slice(0, spaceIdx);
+			line2 = label.slice(spaceIdx + 1);
+		} else if (label.length >= 4) {
 			const mid = Math.ceil(label.length / 2);
-			const line1 = label.slice(0, mid);
-			const line2 = label.slice(mid);
-			textEl = `<text text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
-				`<tspan x="${cx}" dy="${cy - 6}">${line1}</tspan>` +
-				`<tspan x="${cx}" dy="13">${line2}</tspan>` +
+			line1 = label.slice(0, mid);
+			line2 = label.slice(mid);
+		}
+		if (line1 !== null && line2 !== null) {
+			textEl = `<text x="${cx}" text-anchor="middle" fill="${textColor}" font-family="Arial,sans-serif" font-size="10" font-weight="bold">` +
+				`<tspan x="${cx}" text-anchor="middle" dy="${cy - 6}">${line1}</tspan>` +
+				`<tspan x="${cx}" text-anchor="middle" dy="13">${line2}</tspan>` +
 				`</text>`;
 		} else {
 			textEl = `<text x="${cx}" y="${cy}" text-anchor="middle" dy="0.35em" fill="${textColor}" font-family="Arial,sans-serif" font-size="12" font-weight="bold">${label}</text>`;
@@ -662,6 +715,13 @@ const OsmVectorMapScreen: React.FC = () => {
 	const intelligentMovement = useAppSelector((state) => (state.settings as any).osmVectorMapIntelligentMovement ?? false);
 	const peopleCount = useAppSelector((state) => (state.settings as any).osmVectorMapPeopleCount ?? 80);
 	const carMode = useAppSelector((state) => (state.settings as any).osmVectorMapCarMode ?? false);
+	const osmConsent = useAppSelector((state) => (state.settings as any).osmVectorMapConsent ?? false);
+	const showSettings = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapShowSettings ?? { poi: true, transit: true, roadNames: true, leisure: true, barriers: false, parking: true }) as Record<string, boolean>,
+	);
+	const poiSubSettings = useAppSelector(
+		(state) => ((state.settings as any).osmVectorMapPoiSubSettings ?? {}) as Record<string, boolean>,
+	);
 	const showBuildingMarkers = true;
 	const showClusters = true;
 	const showMarkerLabels = true;
@@ -732,6 +792,10 @@ const OsmVectorMapScreen: React.FC = () => {
 	peopleCountRef.current = peopleCount;
 	const carModeRef = useRef(carMode);
 	carModeRef.current = carMode;
+	const showSettingsRef = useRef(showSettings);
+	showSettingsRef.current = showSettings;
+	const poiSubSettingsRef = useRef(poiSubSettings);
+	poiSubSettingsRef.current = poiSubSettings;
 
 	const handleOrganisationLikeChangeRef = useRef<(orgId: string, like: boolean) => void>(() => {});
 	const handleResetAllFiltersRef = useRef<() => void>(() => {});
@@ -1168,6 +1232,42 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 	}, [carMode]);
 
+	// Send layer visibility to the map when settings change and the map is ready
+	useEffect(() => {
+		if (!mapMountedRef.current) return;
+		const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
+		Object.entries(GROUP_MAP).forEach(([key, group]) => {
+			sendToMapRef.current({ setLayerGroupVisibility: { group, visible: showSettings[key] ?? true } });
+		});
+	}, [showSettings]);
+
+	// Send POI icon overrides when POI sub-settings, the main POI toggle, barriers toggle, or parking toggle changes
+	useEffect(() => {
+		if (!mapMountedRef.current) return;
+		const poiEnabled = showSettings.poi ?? true;
+		const barriersEnabled = showSettings.barriers ?? false;
+		const parkingEnabled = showSettings.parking ?? true;
+		const overrides: Record<string, string | null> = {};
+		if (poiEnabled) {
+			POI_SUBTYPES.forEach(({ key }) => {
+				if (!(poiSubSettings[key] ?? true)) {
+					overrides[key] = null;
+				}
+			});
+		}
+		if (!barriersEnabled) {
+			BARRIER_ICON_KEYS.forEach((key) => {
+				overrides[key] = null;
+			});
+		}
+		if (!parkingEnabled) {
+			PARKING_ICON_KEYS.forEach((key) => {
+				overrides[key] = null;
+			});
+		}
+		sendToMapRef.current({ poiIconOverrides: overrides });
+	}, [showSettings, poiSubSettings]);
+
 	const speedLabel = useMemo(() => `${Math.round(airplaneSpeedKmh)} km/h`, [airplaneSpeedKmh]);
 
 	// ✈️ emoji faces northeast (~45°); subtract 45° so 0° heading = pointing north.
@@ -1241,6 +1341,37 @@ const OsmVectorMapScreen: React.FC = () => {
 				if (carModeRef.current) {
 					sendToMapRef.current({ carMode: true });
 				}
+				// Send the emoji map so the HTML has no hardcoded emoji data
+				sendToMapRef.current({ iconEmojiMap: ICON_EMOJI_MAP });
+				const GROUP_MAP: Record<string, string> = { poi: 'poi', transit: 'transit', roadNames: 'roadLabels', leisure: 'leisure', barriers: 'barriers', parking: 'parking' };
+				Object.entries(GROUP_MAP).forEach(([key, group]) => {
+					if (!(showSettingsRef.current[key] ?? (key === 'barriers' ? false : true))) {
+						sendToMapRef.current({ setLayerGroupVisibility: { group, visible: false } });
+					}
+				});
+				// Send initial POI icon overrides for disabled sub-types, barrier group, and parking group
+				const poiEnabled = showSettingsRef.current.poi ?? true;
+				const barriersEnabled = showSettingsRef.current.barriers ?? false;
+				const parkingEnabled = showSettingsRef.current.parking ?? true;
+				const initialPoiOverrides: Record<string, string | null> = {};
+				if (poiEnabled) {
+					POI_SUBTYPES.forEach(({ key }) => {
+						if (!(poiSubSettingsRef.current[key] ?? true)) {
+							initialPoiOverrides[key] = null;
+						}
+					});
+				}
+				if (!barriersEnabled) {
+					BARRIER_ICON_KEYS.forEach((key) => {
+						initialPoiOverrides[key] = null;
+					});
+				}
+				if (!parkingEnabled) {
+					PARKING_ICON_KEYS.forEach((key) => {
+						initialPoiOverrides[key] = null;
+					});
+				}
+				sendToMapRef.current({ poiIconOverrides: initialPoiOverrides });
 				addLog('MapComponentMounted');
 				return;
 			}
@@ -1320,6 +1451,13 @@ const OsmVectorMapScreen: React.FC = () => {
 		[dispatch],
 	);
 
+	const setConsentDispatch = useCallback(
+		(value: boolean) => {
+			dispatch({ type: SET_OSM_VECTOR_MAP_CONSENT, payload: value });
+		},
+		[dispatch],
+	);
+
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
@@ -1346,11 +1484,15 @@ const OsmVectorMapScreen: React.FC = () => {
 					onCarModeChange={setCarModeDispatch}
 					onToggleFullscreen={handleToggleFullscreen}
 					onShowControlsHint={openControlsHintModal}
+					onRevokeConsent={() => {
+						setConsentDispatch(false);
+						close();
+					}}
 					theme={theme}
 				/>
 			),
 		});
-	}, [show, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, carMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, setCarModeDispatch, handleToggleFullscreen, openControlsHintModal]);
+	}, [show, close, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, carMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, setCarModeDispatch, setConsentDispatch, handleToggleFullscreen, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
@@ -1407,15 +1549,27 @@ const OsmVectorMapScreen: React.FC = () => {
 			)}
 			<View style={styles.contentArea}>
 				<View style={styles.container}>
-					<MyMap
-						ref={myMapRef}
-						initialCenter={centerPosition}
-						initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
-						loadingText={translate(TranslationKeys.loading_vector_map)}
-						onMessage={handleMessage}
-					/>
+					{osmConsent ? (
+						<MyMap
+							ref={myMapRef}
+							initialCenter={centerPosition}
+							initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
+							loadingText={translate(TranslationKeys.loading_vector_map)}
+							onMessage={handleMessage}
+						/>
+					) : (
+						<ScrollView
+							contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+							style={{ flex: 1, backgroundColor: theme.screen.background }}
+						>
+							<OsmConsentContent
+								onConsent={() => setConsentDispatch(true)}
+								theme={theme}
+							/>
+						</ScrollView>
+					)}
 
-					{!isFullscreen && (gameMode ? (
+					{osmConsent && !isFullscreen && (gameMode ? (
 						<>
 							{/* Vehicle overlay – airplane centered on screen */}
 							<View style={styles.vehicleOverlay} pointerEvents="none">
@@ -1522,6 +1676,8 @@ const OsmVectorMapScreen: React.FC = () => {
 									</TouchableOpacity>
 								)}
 							</View>
+							{/* Jogging route recorder */}
+							<JoggingOverlay mapRef={myMapRef} />
 							<DebugView title="Map Log">
 								<ScrollView
 									ref={logScrollRef}

@@ -1,0 +1,55 @@
+name: "🩺 Data Clumps Force Analysis"
+
+on:
+  workflow_dispatch:
+    inputs:
+      start-directory:
+        description: "Start directory for the analysis"
+        required: false
+        default: "."
+      amount:
+        description: "Number of top data clumps to list in the issue body"
+        required: false
+        default: "5"
+
+jobs:
+  data-clumps-force:
+    name: "🩺 Analyse Data Clumps (Force)"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: "🔄 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: "🗑️ Remove existing data clumps report"
+        run: rm -f reports/data-clumps-doctor/data-clumps.json
+      - name: "🩺 Analyse data clumps"
+        id: data-clumps
+        uses: NilsBaumgartner1994/data-clumps-doctor/.github/actions/analyse-data-clumps@master
+        with:
+          path-to-source: ${{ github.event.inputs.start-directory || '.' }}
+          output-path: reports/data-clumps-doctor/data-clumps.json
+          badge-output-path: reports/data-clumps-doctor/badges/data-clumps.svg
+          source-language-type: typescript
+          generate-issue: 'true'
+          only-update-if-changes: 'false'
+          refactor-amount: ${{ github.event.inputs.amount || '5' }}
+          detector-options-paths-ignored-in-detection-comparison: '**/databaseTypes/types.ts'
+      - name: "💾 Commit reports"
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add -f reports/data-clumps-doctor/data-clumps.json reports/data-clumps-doctor/badges/data-clumps.svg
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update data-clumps reports [skip ci]"
+            git push --force
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

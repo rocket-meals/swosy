@@ -35,7 +35,7 @@ describe('FoodTL1Parser Test', () => {
     expect(parsedFoodAttributes).not.toBeUndefined();
     // check parsedFoodAttributes.length > 0
     expect(parsedFoodAttributes.length).toBeGreaterThan(0);
-    let expectedExternalIdentifiersAndValues = {
+    let expectedExternalIdentifiersAndValues: { [key: string]: { number_value: number } } = {
       [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER]: {
         number_value: 146,
       },

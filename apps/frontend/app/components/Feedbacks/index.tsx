@@ -142,7 +142,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
                 key: 'ratings-average',
                 icon: <AntDesign name="star" size={20} />,
                 leftText: translate(TranslationKeys.average_rating),
-                rightText: typeof rating === 'number' && !isNaN(rating) ? `${numToOneDecimal(rating)}` : '-',
+                rightText: typeof rating === 'number' && !Number.isNaN(rating) ? `${numToOneDecimal(rating)}` : '-',
             });
         }
         return items;

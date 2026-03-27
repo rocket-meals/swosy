@@ -1,6 +1,7 @@
 import {generateAppleJWTShell} from "./generateAppleClientSecretShell";
 import type {AppleClientSecretCredentials} from "./types";
 export {AppleClientSecretCredentials} from "./types";
+import { StringHelper } from 'repo-depkit-common';
 
 export const APPLE_AUDIENCE = 'https://appleid.apple.com';
 const days = 90; // could be to the max of 180 days which Apple allows
@@ -21,6 +22,19 @@ export type AppleJwtPayload = {
   [k: string]: any;
 };
 
+// Decode a base64url-encoded string to a UTF-8 string
+function base64UrlDecodeToString(input: string): string {
+  // Replace url-safe characters
+  let str = StringHelper.replaceAllLiteralWithOptions({ str: input, find: '-', replace: '+' });
+  str = StringHelper.replaceAllLiteralWithOptions({ str, find: '_', replace: '/' });
+  // Pad with '=' to make length a multiple of 4
+  const pad = str.length % 4;
+  if (pad === 2) str += '==';
+  else if (pad === 3) str += '=';
+  else if (pad === 1) str += '==='; // unlikely
+  return Buffer.from(str, 'base64').toString('utf8');
+}
+
 // Decode the payload part of a JWT without verifying signature
 export function decodeAppleClientSecret(token: string): AppleJwtPayload | null {
   if (!token) return null;
@@ -31,21 +45,11 @@ export function decodeAppleClientSecret(token: string): AppleJwtPayload | null {
   const payloadPart = parts[1];
   if (!payloadPart) return null;
 
-  function base64UrlDecodeToString(input: string): string {
-    // Replace url-safe characters
-    let str = input.replace(/-/g, '+').replace(/_/g, '/');
-    // Pad with '=' to make length a multiple of 4
-    const pad = str.length % 4;
-    if (pad === 2) str += '==';
-    else if (pad === 3) str += '=';
-    else if (pad === 1) str += '==='; // unlikely
-    return Buffer.from(str, 'base64').toString('utf8');
-  }
-
   try {
     const json = base64UrlDecodeToString(payloadPart);
     return JSON.parse(json) as AppleJwtPayload;
   } catch (e) {
+    console.error('Failed to decode Apple JWT payload:', e);
     return null;
   }
 }
@@ -54,7 +58,7 @@ export function decodeAppleClientSecretExpiry(token: string): number | null {
     const decoded = decodeAppleClientSecret(token);
     let exp = decoded?.exp;
     if(!exp) return null;
-    return parseInt(exp.toString());
+    return Number.parseInt(exp.toString(), 10);
 }
 
 export function generateAppleClientSecret(config: AppleClientSecretCredentials): AppleClientSecretResult {

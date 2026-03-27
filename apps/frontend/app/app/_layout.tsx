@@ -42,6 +42,9 @@ import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker'
 import {ModalProvider} from '@/components/GlobalModal/ModalProvider';
 import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfigsDict } from '@/config';
 import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
+import { SettingsProvider } from 'repo-depkit-common-ui';
+import { useAppSelector } from '@/redux/hooks';
+import useAccountRequiredModal from '@/hooks/useAccountRequiredModal';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -56,6 +59,16 @@ ServerAPI.createAuthentificationStorage(
 		}
 	}
 );
+
+function AppSettingsProvider({ children }: { children: React.ReactNode }) {
+	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
+	const { openAccountRequiredModal } = useAccountRequiredModal();
+	return (
+		<SettingsProvider primaryColor={primaryColor} onAccountRequired={openAccountRequiredModal}>
+			{children}
+		</SettingsProvider>
+	);
+}
 
 export default function Layout() {
 	const { theme } = useTheme();
@@ -129,17 +142,19 @@ export default function Layout() {
 						<PersistGate loading={null} persistor={persistor}>
 							<RootSiblingParent>
 								<ThemeProvider>
-									<ServerStatusLoader>
-										<ExpoUpdateChecker>
-											<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
-												<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
-													<ModalProvider>
-														<Slot />
-													</ModalProvider>
-												</SafeAreaView>
-											</KeyboardAvoidingView>
-										</ExpoUpdateChecker>
-									</ServerStatusLoader>
+									<ModalProvider>
+										<AppSettingsProvider>
+											<ServerStatusLoader>
+												<ExpoUpdateChecker>
+													<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+														<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }} edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}>
+															<Slot />
+														</SafeAreaView>
+													</KeyboardAvoidingView>
+												</ExpoUpdateChecker>
+											</ServerStatusLoader>
+										</AppSettingsProvider>
+									</ModalProvider>
 								</ThemeProvider>
 							</RootSiblingParent>
 						</PersistGate>

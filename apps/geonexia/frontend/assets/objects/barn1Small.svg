@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="500.1 307.4 68.55 74.95">
+  <defs>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.006866455078125 -0.006866455078125 0.0206298828125 -0.0206298828125 476.1 157.9)" id="gradient0">
+      <stop offset="0" stop-color="#FFCC00" />
+      <stop offset="1" stop-color="#ECBC00" />
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0 0.00567626953125 -0.01031494140625 0 267 595.55)" id="gradient1">
+      <stop offset="0" stop-color="#FFCC00" />
+      <stop offset="1" stop-color="#FF9900" />
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.0078277587890625 -0.0078277587890625 0.0093231201171875 -0.0093231201171875 179 64.8)" id="gradient2">
+      <stop offset="0" stop-color="#B9C6C6" />
+      <stop offset="1" stop-color="#D4E2E2" />
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0.0075531005859375 -0.0075531005859375 0.0093231201171875 0.0093231201171875 155.2 64)" id="gradient3">
+      <stop offset="0" stop-color="#B9C6C6" />
+      <stop offset="1" stop-color="#D4E2E2" />
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(0 0.00567626953125 -0.01031494140625 0 227.35 648.8)" id="gradient4">
+      <stop offset="0" stop-color="#FFCC00" />
+      <stop offset="1" stop-color="#FF9900" />
+    </linearGradient>
+  </defs>
+  <g>
+    
+    <path stroke="none" fill="#917F57" d="M538.3 319.35 L532.05 319.35 514.8 339.85 514.75 340 512.45 340.2 513 339 513.3 338.55 530.55 318.05 531.2 317.55 532.05 317.35 538.3 317.35 539.15 317.55 548.6 321.85 549.15 322.25 555.3 328.2 555.8 329 558.15 336.15 556.65 337.95 553.9 329.6 547.75 323.6 538.3 319.35" />
+    <path stroke="none" fill="#CDB57C" d="M538.3 319.35 L521 339.55 514.8 339.85 532.05 319.35 538.3 319.35" />
+    <path stroke="none" fill="#F0D391" d="M547.75 323.6 L553.9 329.6 536.7 349.8 530.45 344.15 547.75 323.6" />
+    <path stroke="none" fill="#E0C587" d="M547.75 323.6 L530.45 344.15 521 339.55 538.3 319.35 547.75 323.6 M553.9 329.6 L556.65 337.95 539.35 358.2 536.7 349.8 553.9 329.6" />
+    <path stroke="none" fill="#703B27" d="M556.65 337.95 L558.15 336.15 558.55 337.35 558.65 337.95 558.65 350.1 558.2 351.4 540.9 371.65 539.8 372.3 538.5 372.2 511.25 359.5 510.45 358.75 Q510.1 358.25 510.1 357.65 L510.1 345.55 510.3 344.7 512.45 340.2 514.75 340 512.1 345.55 512.1 357.65 519.95 361.15 531.55 366.55 539.35 370.35 556.65 350.1 556.65 337.95" />
+    <path stroke="none" fill="#9C5338" d="M556.65 337.95 L556.65 350.1 539.35 370.35 539.35 358.2 556.65 337.95 M531.55 366.55 L519.95 361.15 519.95 352.5 531.55 357.95 531.55 366.55" />
+    <path stroke="none" fill="#BB6444" d="M531.55 366.55 L531.55 357.95 519.95 352.5 519.95 361.15 512.1 357.65 512.1 345.55 514.75 340 514.8 339.85 521 339.55 530.45 344.15 536.7 349.8 539.35 358.2 539.35 370.35 531.55 366.55" />
+  </g>
+  <circle id="anchor-point" cx="534.38" cy="361.36" r="0" fill="none" stroke="none"/>
+</svg>

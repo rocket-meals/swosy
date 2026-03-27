@@ -120,6 +120,7 @@
     "redux-promise": "^0.6.0",
     "redux-thunk": "^3.1.0",
     "repo-depkit-common": "workspace:*",
+    "repo-depkit-common-ui": "workspace:*",
     "reselect": "^5.1.1",
     "setimmediate": "^1.0.5",
     "tinycolor2": "^1.6.0"
@@ -145,7 +146,7 @@
     "react-test-renderer": "18.3.1",
     "redux-logger": "3.0.6",
     "ts-node": "^10.9.2",
-    "typescript": "~5.8.3"
+    "typescript": "^5.9.3"
   },
   "private": true
 }

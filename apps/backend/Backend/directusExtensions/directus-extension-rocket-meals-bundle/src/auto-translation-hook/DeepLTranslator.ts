@@ -1,6 +1,6 @@
 import deepl, { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node';
-import { MyTranslatorInterface } from './MyTranslatorInterface';
-import { ReplaceOptions } from "repo-depkit-common";
+import { MyTranslatorInterface, TranslationRequest } from './MyTranslatorInterface';
+import { ReplaceOptions, StringHelper } from "repo-depkit-common";
 
 export class DeepLTranslator implements MyTranslatorInterface {
   private readonly translator: Translator;
@@ -9,27 +9,12 @@ export class DeepLTranslator implements MyTranslatorInterface {
     this.translator = new deepl.Translator(auth_key);
   }
 
-  async init() {
-    /**
-        console.log("Initializing DeepL Translator");
-        const sourceLanguages = await this.translator.getSourceLanguages();
-        console.log("Source Languages: ");
-        for (let i = 0; i < sourceLanguages.length; i++) {
-            const lang = sourceLanguages[i];
-            console.log(`${lang.name} (${lang.code})`); // Example: 'English (en)'
-        }
-
-        console.log("");
-        const targetLanguages = await this.translator.getTargetLanguages();
-        console.log("Target Languages: ");
-        for (let i = 0; i < targetLanguages.length; i++) {
-            const lang = targetLanguages[i];
-            console.log(`${lang.name} (${lang.code}) supports formality`);
-        }
-         */
+  init(): Promise<void> {
+    return Promise.resolve();
   }
 
-  async translate(text: string, source_language: string, destination_language: string) {
+  async translate(request: TranslationRequest) {
+    const { text, source_language, destination_language } = request;
     let translationResponse = null;
     let sourceLanguageCode = this.getDeepLLanguageCodeSource(source_language);
     let destinationLanguageCode = this.getDeepLLanguageCodeTarget(destination_language);
@@ -39,7 +24,6 @@ export class DeepLTranslator implements MyTranslatorInterface {
     } catch (error: any) {
       let errorMessage = error.toString();
       if (errorMessage.includes('targetLang') && errorMessage.includes('deprecated')) {
-        //console.log("Target language is deprecated");
         try {
           let backupDestinationLanguageCode = destination_language as TargetLanguageCode;
           translationResponse = await this.translateRaw(text, sourceLanguageCode, backupDestinationLanguageCode);
@@ -58,7 +42,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
     // use regex where find is replaced with replace globally and multiple times
     // find could be a special character like * which needs to be escaped
     const { str, find, replace } = replaceOptions;
-    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+    return str.replace(new RegExp(StringHelper.replaceAllWithOptions({ str: find, find: String.raw`[-\/\\^$*+?.()|[\]{}]`, replace: String.raw`\$&` }), 'g'), replace);
   }
 
   async translateRaw(text: string, source_language_code: SourceLanguageCode, destination_language_code: TargetLanguageCode) {
@@ -75,11 +59,6 @@ export class DeepLTranslator implements MyTranslatorInterface {
     for (const [key, value] of Object.entries(dictWithReplacement)) {
       textToTranslate = this.replaceAll({str: textToTranslate, find: key, replace: value});
     }
-
-    //console.log("translate:")
-    //console.log("text: "+text);
-    //console.log("source_language_code: "+source_language_code)
-    //console.log("destination_language_code: "+destination_language_code)
 
     let translationResponse = await this.translator.translateText(textToTranslate, source_language_code, destination_language_code);
     let translation = translationResponse?.text;
@@ -110,11 +89,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
   }
 
   async getUsage() {
-    //console.log("DeepL Translator get Usage");
     const usage = await this.translator.getUsage();
-    if (usage.anyLimitReached()) {
-      //console.log('Translation limit exceeded.');
-    }
     const characterUsage = usage?.character; // {"character":{"count":0,"limit":500000}}
 
     return {
@@ -200,7 +175,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
          Chinese (simplified) (zh) supports formality
          */
 
-    if (!!directus_language_code) {
+    if (directus_language_code) {
       let splits = directus_language_code.split('-');
       return splits[0];
     }

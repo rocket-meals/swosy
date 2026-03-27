@@ -476,19 +476,30 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
 
 const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
     const { item } = props;
-    // Use props if available, otherwise fallback to selectors (for backward compatibility if used elsewhere)
-    const language = props.language ?? useAppSelector((state) => state.settings.language);
-    const pirateLanguage = props.pirateLanguage ?? useAppSelector((state) => state.settings.pirateLanguage);
-    const funLanguageMode = props.funLanguageMode ?? useAppSelector((state) => state.settings.funLanguageMode);
-    const serverInfo = props.serverInfo ?? useAppSelector((state) => state.settings.serverInfo);
-    const appSettings = props.appSettings ?? useAppSelector((state) => state.settings.appSettings);
-    const primaryColor = props.primaryColor ?? useAppSelector((state) => state.settings.primaryColor);
+    // Always call hooks unconditionally; prefer props over store values for backward compatibility
+    const languageFromStore = useAppSelector((state) => state.settings.language);
+    const pirateLanguageFromStore = useAppSelector((state) => state.settings.pirateLanguage);
+    const funLanguageModeFromStore = useAppSelector((state) => state.settings.funLanguageMode);
+    const serverInfoFromStore = useAppSelector((state) => state.settings.serverInfo);
+    const appSettingsFromStore = useAppSelector((state) => state.settings.appSettings);
+    const primaryColorFromStore = useAppSelector((state) => state.settings.primaryColor);
+    const amountColumnsForCardFromStore = useAppSelector((state) => state.settings.amountColumnsForcard);
+    const userFromStore = useAppSelector((state) => state.authReducer.user);
+    const isManagementFromStore = useAppSelector((state) => state.authReducer.isManagement);
+    const markingsFromStore = useAppSelector(selectMarkings);
+
+    const language = props.language ?? languageFromStore;
+    const pirateLanguage = props.pirateLanguage ?? pirateLanguageFromStore;
+    const funLanguageMode = props.funLanguageMode ?? funLanguageModeFromStore;
+    const serverInfo = props.serverInfo ?? serverInfoFromStore;
+    const appSettings = props.appSettings ?? appSettingsFromStore;
+    const primaryColor = props.primaryColor ?? primaryColorFromStore;
     
     const { theme } = useTheme();
-    const amountColumnsForcard = props.amountColumnsForcard ?? useAppSelector((state) => state.settings.amountColumnsForcard);
+    const amountColumnsForcard = props.amountColumnsForcard ?? amountColumnsForCardFromStore;
 
-    const user = props.user ?? useAppSelector((state) => state.authReducer.user);
-    const isManagement = props.isManagement ?? useAppSelector((state) => state.authReducer.isManagement);
+    const user = props.user ?? userFromStore;
+    const isManagement = props.isManagement ?? isManagementFromStore;
     
     // Optimization: Select only necessary profile fields to avoid re-renders on unrelated profile updates (e.g. device info)
     const profileId = useAppSelector((state) => state.authReducer.profile?.id);
@@ -514,7 +525,7 @@ const FoodItemConnected: React.FC<FoodItemProps> = (props) => {
         };
     }, [props.profile, profileId, profileMarkings, priceGroup]);
 
-    const markings = props.markings ?? useAppSelector(selectMarkings);
+    const markings = props.markings ?? markingsFromStore;
 
     return (
         <FoodItemBase

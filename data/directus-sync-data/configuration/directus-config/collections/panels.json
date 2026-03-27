@@ -2,9 +2,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 3,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -30,9 +30,9 @@
   {
     "show_header": true,
     "position_x": 70,
-    "position_y": 79,
-    "width": 23,
     "height": 10,
+    "width": 23,
+    "position_y": 79,
     "options": {
       "collection": "profiles",
       "sortField": "credit_balance",
@@ -59,9 +59,9 @@
   {
     "show_header": true,
     "position_x": 24,
-    "position_y": 79,
-    "width": 23,
     "height": 5,
+    "width": 23,
+    "position_y": 79,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -92,9 +92,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 74,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 74,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -148,9 +148,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 9,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 9,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -176,9 +176,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 118,
-    "width": 30,
     "height": 15,
+    "width": 30,
+    "position_y": 118,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "groupByField": "food",
@@ -206,9 +206,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 69,
-    "width": 65,
     "height": 14,
+    "width": 65,
+    "position_y": 69,
     "options": {
       "collection": "devices",
       "xAxis": "system_version",
@@ -237,9 +237,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 55,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 55,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -259,9 +259,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 128,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 128,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -281,9 +281,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 140,
-    "width": 25,
     "height": 9,
+    "width": 25,
+    "position_y": 140,
     "options": {
       "collection": "directus_files",
       "dateField": "created_on",
@@ -302,9 +302,9 @@
   {
     "show_header": true,
     "position_x": 15,
-    "position_y": 11,
-    "width": 14,
     "height": 6,
+    "width": 14,
+    "position_y": 11,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_END",
       "type": "dateTime",
@@ -323,9 +323,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 99,
-    "width": 65,
     "height": 5,
+    "width": 65,
+    "position_y": 99,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -346,9 +346,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 104,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 104,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -368,9 +368,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 33,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -404,9 +404,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 76,
-    "width": 60,
     "height": 13,
+    "width": 60,
+    "position_y": 76,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -453,9 +453,9 @@
   {
     "show_header": true,
     "position_x": 2,
-    "position_y": 13,
-    "width": 15,
     "height": 5,
+    "width": 15,
+    "position_y": 13,
     "options": {
       "collection": "foods",
       "field": "id",
@@ -473,9 +473,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 32,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 32,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -499,9 +499,9 @@
   {
     "show_header": true,
     "position_x": 47,
-    "position_y": 59,
-    "width": 16,
     "height": 15,
+    "width": 16,
+    "position_y": 59,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -550,9 +550,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 190,
-    "width": 61,
     "height": 13,
+    "width": 61,
+    "position_y": 190,
     "options": {
       "collection": "foodoffers",
       "precision": "month",
@@ -572,9 +572,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 119,
-    "width": 65,
     "height": 5,
+    "width": 65,
+    "position_y": 119,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -595,9 +595,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 6,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 6,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -627,9 +627,9 @@
   {
     "show_header": true,
     "position_x": 43,
-    "position_y": 171,
-    "width": 39,
     "height": 19,
+    "width": 39,
+    "position_y": 171,
     "options": {
       "collection": "profiles",
       "column": "canteen",
@@ -657,9 +657,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 99,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 99,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -718,9 +718,9 @@
   {
     "show_header": true,
     "position_x": 38,
-    "position_y": 23,
-    "width": 29,
     "height": 5,
+    "width": 29,
+    "position_y": 23,
     "options": {
       "collection": "directus_users",
       "field": "id",
@@ -758,9 +758,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 107,
-    "width": 66,
     "height": 16,
+    "width": 66,
+    "position_y": 107,
     "options": {
       "linkToItem": true,
       "collection": "foods_feedbacks",
@@ -792,9 +792,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 99,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 99,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -853,9 +853,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 13,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 13,
     "options": {
       "collection": "foodoffers",
       "field": "id",
@@ -873,9 +873,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 103,
-    "width": 30,
     "height": 15,
+    "width": 30,
+    "position_y": 103,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "groupByField": "food",
@@ -903,9 +903,9 @@
   {
     "show_header": true,
     "position_x": 62,
-    "position_y": 63,
-    "width": 44,
     "height": 8,
+    "width": 44,
+    "position_y": 63,
     "options": {
       "field": "CUSTOM_SELECTED_CANTEEN_ID",
       "collection": "canteens",
@@ -923,9 +923,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 126,
-    "width": 60,
     "height": 7,
+    "width": 60,
+    "position_y": 126,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_PRECISION",
       "type": "string",
@@ -964,9 +964,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 51,
-    "width": 28,
     "height": 5,
+    "width": 28,
+    "position_y": 51,
     "options": {
       "collection": "utilizations_groups",
       "field": "threshold_until_max",
@@ -992,9 +992,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 22,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 22,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -1024,9 +1024,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 83,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 83,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1085,9 +1085,9 @@
   {
     "show_header": true,
     "position_x": 27,
-    "position_y": 84,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 84,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -1132,9 +1132,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 103,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 103,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1193,9 +1193,9 @@
   {
     "show_header": true,
     "position_x": 81,
-    "position_y": 71,
-    "width": 25,
     "height": 6,
+    "width": 25,
+    "position_y": 71,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1244,9 +1244,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 54,
-    "width": 20,
     "height": 5,
+    "width": 20,
+    "position_y": 54,
     "options": {
       "collection": "foods",
       "field": "rating_average",
@@ -1273,9 +1273,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 67,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 67,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1296,9 +1296,9 @@
   {
     "show_header": true,
     "position_x": 18,
-    "position_y": 4,
-    "width": 49,
     "height": 9,
+    "width": 49,
+    "position_y": 4,
     "options": {
       "collection": "app_feedbacks",
       "xAxis": "date_created",
@@ -1319,9 +1319,9 @@
   {
     "show_header": true,
     "position_x": 38,
-    "position_y": 1,
-    "width": 29,
     "height": 16,
+    "width": 29,
+    "position_y": 1,
     "options": {
       "collection": "directus_users",
       "column": "provider",
@@ -1344,9 +1344,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 12,
-    "width": 60,
     "height": 7,
+    "width": 60,
+    "position_y": 12,
     "options": {
       "field": "CUSTOM_SELECTED_UTILIZATION_GROUP_ID",
       "collection": "utilizations_groups",
@@ -1364,9 +1364,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 104,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 104,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -1390,9 +1390,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 28,
-    "width": 30,
     "height": 16,
+    "width": 30,
+    "position_y": 28,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1432,9 +1432,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 127,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 127,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1456,9 +1456,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 3,
-    "width": 30,
     "height": 16,
+    "width": 30,
+    "position_y": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -1498,9 +1498,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 56,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 56,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -1523,9 +1523,9 @@
   {
     "show_header": true,
     "position_x": 41,
-    "position_y": 84,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 84,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -1570,9 +1570,9 @@
   {
     "show_header": true,
     "position_x": 14,
-    "position_y": 23,
-    "width": 13,
     "height": 6,
+    "width": 13,
+    "position_y": 23,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END",
       "type": "dateTime",
@@ -1590,9 +1590,9 @@
   {
     "show_header": true,
     "position_x": 41,
-    "position_y": 11,
-    "width": 25,
     "height": 5,
+    "width": 25,
+    "position_y": 11,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -1619,9 +1619,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 18,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 18,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1652,9 +1652,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 133,
-    "width": 30,
     "height": 18,
+    "width": 30,
+    "position_y": 133,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -1708,9 +1708,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 17,
-    "width": 65,
     "height": 13,
+    "width": 65,
+    "position_y": 17,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -1749,9 +1749,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 29,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 29,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1789,9 +1789,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 91,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 91,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1813,9 +1813,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 79,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 79,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1874,9 +1874,9 @@
   {
     "show_header": true,
     "position_x": 47,
-    "position_y": 9,
-    "width": 24,
     "height": 6,
+    "width": 24,
+    "position_y": 9,
     "options": {
       "collection": "directus_activity",
       "field": "ip",
@@ -1911,9 +1911,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 8,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 8,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1963,9 +1963,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 164,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 164,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -1985,9 +1985,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 84,
-    "width": 66,
     "height": 16,
+    "width": 66,
+    "position_y": 84,
     "options": {
       "linkToItem": true,
       "collection": "foods_feedbacks",
@@ -2025,9 +2025,9 @@
   {
     "show_header": true,
     "position_x": 16,
-    "position_y": 24,
-    "width": 13,
     "height": 6,
+    "width": 13,
+    "position_y": 24,
     "options": {
       "field": "CUSTOM_MAILS_DATE_END",
       "type": "dateTime",
@@ -2045,9 +2045,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 23,
-    "width": 40,
     "height": 13,
+    "width": 40,
+    "position_y": 23,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -2083,9 +2083,9 @@
   {
     "show_header": true,
     "position_x": 2,
-    "position_y": 24,
-    "width": 16,
     "height": 9,
+    "width": 16,
+    "position_y": 24,
     "options": {
       "collection": "push_notifications",
       "field": "id",
@@ -2102,9 +2102,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 57,
-    "width": 28,
     "height": 6,
+    "width": 28,
+    "position_y": 57,
     "options": {
       "collection": "utilizations_groups",
       "field": "all_time_high",
@@ -2130,9 +2130,9 @@
   {
     "show_header": true,
     "position_x": 45,
-    "position_y": 49,
-    "width": 22,
     "height": 5,
+    "width": 22,
+    "position_y": 49,
     "options": {
       "collection": "foods",
       "field": "id",
@@ -2150,9 +2150,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 95,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 95,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -2211,9 +2211,9 @@
   {
     "show_header": true,
     "position_x": 18,
-    "position_y": 13,
-    "width": 49,
     "height": 9,
+    "width": 49,
+    "position_y": 13,
     "options": {
       "collection": "app_feedbacks",
       "xAxis": "date_created",
@@ -2243,9 +2243,9 @@
   {
     "show_header": true,
     "position_x": 37,
-    "position_y": 79,
-    "width": 26,
     "height": 6,
+    "width": 26,
+    "position_y": 79,
     "options": {
       "field": "CUSTOM_SELECTED_CANTEEN_ID",
       "collection": "canteens",
@@ -2263,9 +2263,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 15,
-    "width": 16,
     "height": 5,
+    "width": 16,
+    "position_y": 15,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -2282,9 +2282,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 1,
-    "width": 25,
     "height": 6,
+    "width": 25,
+    "position_y": 1,
     "options": {
       "collection": "workflows_runs",
       "field": "runtime_in_seconds",
@@ -2301,9 +2301,9 @@
   {
     "show_header": true,
     "position_x": 34,
-    "position_y": 171,
-    "width": 13,
     "height": 22,
+    "width": 13,
+    "position_y": 171,
     "options": {
       "collection": "canteens",
       "limit": 10,
@@ -2323,9 +2323,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 13,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 13,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -2380,9 +2380,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 24,
-    "width": 65,
     "height": 43,
+    "width": 65,
+    "position_y": 24,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -2413,9 +2413,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 15,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 15,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
@@ -2433,9 +2433,9 @@
   {
     "show_header": true,
     "position_x": 81,
-    "position_y": 77,
-    "width": 25,
     "height": 5,
+    "width": 25,
+    "position_y": 77,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -2496,9 +2496,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 24,
-    "width": 13,
     "height": 6,
+    "width": 13,
+    "position_y": 24,
     "options": {
       "field": "CUSTOM_MAILS_DATE_START",
       "type": "dateTime",
@@ -2516,9 +2516,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 2,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 2,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -2548,9 +2548,9 @@
   {
     "show_header": true,
     "position_x": 41,
-    "position_y": 23,
-    "width": 26,
     "height": 13,
+    "width": 26,
+    "position_y": 23,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -2577,9 +2577,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 203,
-    "width": 61,
     "height": 13,
+    "width": 61,
+    "position_y": 203,
     "options": {
       "collection": "foodoffers",
       "precision": "month",
@@ -2599,9 +2599,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 63,
-    "width": 66,
     "height": 14,
+    "width": 66,
+    "position_y": 63,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -2629,9 +2629,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 177,
-    "width": 61,
     "height": 13,
+    "width": 61,
+    "position_y": 177,
     "options": {
       "collection": "foodoffers",
       "precision": "week",
@@ -2651,9 +2651,9 @@
   {
     "show_header": true,
     "position_x": 25,
-    "position_y": 8,
-    "width": 21,
     "height": 11,
+    "width": 21,
+    "position_y": 8,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -2676,9 +2676,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 74,
-    "width": 16,
     "height": 4,
+    "width": 16,
+    "position_y": 74,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
@@ -2712,9 +2712,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 3,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 3,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -2764,9 +2764,9 @@
   {
     "show_header": true,
     "position_x": 47,
-    "position_y": 74,
-    "width": 16,
     "height": 4,
+    "width": 16,
+    "position_y": 74,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
@@ -2800,9 +2800,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 49,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 49,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END",
       "collection": "canteens_feedbacks_labels",
@@ -2822,9 +2822,9 @@
   {
     "show_header": true,
     "position_x": 14,
-    "position_y": 84,
-    "width": 13,
     "height": 5,
+    "width": 13,
+    "position_y": 84,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -2869,9 +2869,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 116,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 116,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -2891,9 +2891,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 74,
-    "width": 14,
     "height": 4,
+    "width": 14,
+    "position_y": 74,
     "options": {
       "collection": "foods",
       "field": "rating_average",
@@ -2938,9 +2938,9 @@
   {
     "show_header": true,
     "position_x": 35,
-    "position_y": 65,
-    "width": 32,
     "height": 19,
+    "width": 32,
+    "position_y": 65,
     "options": {
       "collection": "foods_feedbacks",
       "xAxis": "date_updated",
@@ -2978,9 +2978,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 151,
-    "width": 60,
     "height": 17,
+    "width": 60,
+    "position_y": 151,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "date",
@@ -3040,9 +3040,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 14,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 14,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -3072,9 +3072,9 @@
   {
     "show_header": true,
     "position_x": 29,
-    "position_y": 11,
-    "width": 13,
     "height": 6,
+    "width": 13,
+    "position_y": 11,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
       "type": "string",
@@ -3121,9 +3121,9 @@
   {
     "show_header": true,
     "position_x": 2,
-    "position_y": 4,
-    "width": 16,
     "height": 9,
+    "width": 16,
+    "position_y": 4,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
@@ -3141,9 +3141,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 27,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 27,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -3174,9 +3174,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 1,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 1,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -3195,9 +3195,9 @@
   {
     "show_header": false,
     "position_x": 3,
-    "position_y": 21,
-    "width": 60,
     "height": 4,
+    "width": 60,
+    "position_y": 21,
     "options": {
       "text": "Speise Feedback Labels"
     },
@@ -3212,9 +3212,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 23,
-    "width": 13,
     "height": 6,
+    "width": 13,
+    "position_y": 23,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START",
       "type": "dateTime",
@@ -3232,9 +3232,9 @@
   {
     "show_header": false,
     "position_x": 3,
-    "position_y": 85,
-    "width": 60,
     "height": 17,
+    "width": 60,
+    "position_y": 85,
     "options": {
       "collection": "foodoffers",
       "limit": 10,
@@ -3272,9 +3272,9 @@
   {
     "show_header": true,
     "position_x": 45,
-    "position_y": 54,
-    "width": 22,
     "height": 5,
+    "width": 22,
+    "position_y": 54,
     "options": {
       "collection": "foods",
       "field": "id",
@@ -3304,9 +3304,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 19,
-    "width": 60,
     "height": 6,
+    "width": 60,
+    "position_y": 19,
     "options": {
       "field": "CUSTOM_PRECISION",
       "type": "string",
@@ -3353,9 +3353,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 57,
-    "width": 32,
     "height": 6,
+    "width": 32,
+    "position_y": 57,
     "options": {
       "field": "CUSTOM_Y_MAX",
       "type": "integer",
@@ -3376,9 +3376,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 55,
-    "width": 60,
     "height": 8,
+    "width": 60,
+    "position_y": 55,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID",
       "collection": "canteens_feedbacks_labels",
@@ -3396,9 +3396,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 106,
-    "width": 31,
     "height": 16,
+    "width": 31,
+    "position_y": 106,
     "options": {
       "collection": "profiles_markings",
       "limit": 10,
@@ -3426,9 +3426,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 53,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 53,
     "options": {
       "field": "CUSTOM_SELECTED_LEFT_FOOD_ID",
       "collection": "foods",
@@ -3446,9 +3446,9 @@
   {
     "show_header": true,
     "position_x": 19,
-    "position_y": 69,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 69,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -3500,9 +3500,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 123,
-    "width": 29,
     "height": 6,
+    "width": 29,
+    "position_y": 123,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -3538,9 +3538,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 39,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 39,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -3577,9 +3577,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 115,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 115,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -3618,9 +3618,9 @@
   {
     "show_header": true,
     "position_x": 81,
-    "position_y": 82,
-    "width": 25,
     "height": 5,
+    "width": 25,
+    "position_y": 82,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -3681,9 +3681,9 @@
   {
     "show_header": true,
     "position_x": 47,
-    "position_y": 3,
-    "width": 24,
     "height": 6,
+    "width": 24,
+    "position_y": 3,
     "options": {
       "collection": "directus_activity",
       "field": "ip",
@@ -3718,9 +3718,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 44,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 44,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -3744,9 +3744,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 11,
-    "width": 14,
     "height": 6,
+    "width": 14,
+    "position_y": 11,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_START",
       "type": "dateTime",
@@ -3765,9 +3765,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 65,
-    "width": 34,
     "height": 19,
+    "width": 34,
+    "position_y": 65,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "xAxis": "date_updated",
@@ -3792,9 +3792,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 1,
-    "width": 60,
     "height": 10,
+    "width": 60,
+    "position_y": 1,
     "options": {
       "collection": "directus_activity",
       "groupByField": "id",
@@ -3814,9 +3814,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 104,
-    "width": 65,
     "height": 14,
+    "width": 65,
+    "position_y": 104,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -3835,9 +3835,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 63,
-    "width": 60,
     "height": 13,
+    "width": 60,
+    "position_y": 63,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -3884,9 +3884,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 18,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 18,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -3916,9 +3916,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 30,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 30,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
@@ -3936,9 +3936,9 @@
   {
     "show_header": true,
     "position_x": 25,
-    "position_y": 3,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 3,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -3956,9 +3956,9 @@
   {
     "show_header": true,
     "position_x": 38,
-    "position_y": 18,
-    "width": 29,
     "height": 5,
+    "width": 29,
+    "position_y": 18,
     "options": {
       "collection": "directus_users",
       "field": "id",
@@ -3996,9 +3996,9 @@
   {
     "show_header": true,
     "position_x": 21,
-    "position_y": 54,
-    "width": 24,
     "height": 5,
+    "width": 24,
+    "position_y": 54,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
@@ -4028,9 +4028,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 107,
-    "width": 30,
     "height": 18,
+    "width": 30,
+    "position_y": 107,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -4087,9 +4087,9 @@
   {
     "show_header": true,
     "position_x": 27,
-    "position_y": 23,
-    "width": 14,
     "height": 6,
+    "width": 14,
+    "position_y": 23,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION",
       "type": "string",
@@ -4136,9 +4136,9 @@
   {
     "show_header": false,
     "position_x": 1,
-    "position_y": 2,
-    "width": 60,
     "height": 4,
+    "width": 60,
+    "position_y": 2,
     "options": {
       "text": "Mensa Auslatungen"
     },
@@ -4153,9 +4153,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 80,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 80,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -4173,9 +4173,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 103,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 103,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4234,9 +4234,9 @@
   {
     "show_header": true,
     "position_x": 47,
-    "position_y": 79,
-    "width": 20,
     "height": 5,
+    "width": 20,
+    "position_y": 79,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -4265,9 +4265,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 50,
-    "width": 37,
     "height": 14,
+    "width": 37,
+    "position_y": 50,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "washingmachine",
@@ -4286,9 +4286,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 1,
-    "width": 35,
     "height": 21,
+    "width": 35,
+    "position_y": 1,
     "options": {
       "collection": "mails",
       "xAxis": "recipient",
@@ -4311,9 +4311,9 @@
   {
     "show_header": false,
     "position_x": 3,
-    "position_y": 79,
-    "width": 14,
     "height": 6,
+    "width": 14,
+    "position_y": 79,
     "options": {
       "text": "Speiseplan"
     },
@@ -4328,9 +4328,9 @@
   {
     "show_header": true,
     "position_x": 18,
-    "position_y": 24,
-    "width": 49,
     "height": 9,
+    "width": 49,
+    "position_y": 24,
     "options": {
       "collection": "push_notifications",
       "function": "count",
@@ -4348,9 +4348,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 93,
-    "width": 66,
     "height": 11,
+    "width": 66,
+    "position_y": 93,
     "options": {
       "collection": "profiles",
       "dateField": "credit_balance_date_updated",
@@ -4383,9 +4383,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 69,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 69,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4439,9 +4439,9 @@
   {
     "show_header": true,
     "position_x": 35,
-    "position_y": 59,
-    "width": 32,
     "height": 6,
+    "width": 32,
+    "position_y": 59,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -4468,9 +4468,9 @@
   {
     "show_header": true,
     "position_x": 41,
-    "position_y": 6,
-    "width": 25,
     "height": 5,
+    "width": 25,
+    "position_y": 6,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -4488,9 +4488,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 4,
-    "width": 20,
     "height": 5,
+    "width": 20,
+    "position_y": 4,
     "options": {
       "collection": "cashregisters",
       "field": "id",
@@ -4508,9 +4508,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 26,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 26,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -4540,9 +4540,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 89,
-    "width": 32,
     "height": 4,
+    "width": 32,
+    "position_y": 89,
     "options": {
       "collection": "profiles",
       "dateField": "credit_balance_date_updated",
@@ -4576,9 +4576,9 @@
   {
     "show_header": false,
     "position_x": 1,
-    "position_y": 45,
-    "width": 60,
     "height": 4,
+    "width": 60,
+    "position_y": 45,
     "options": {
       "text": "Rückmeldungen Mensa"
     },
@@ -4593,9 +4593,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 103,
-    "width": 30,
     "height": 15,
+    "width": 30,
+    "position_y": 103,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "groupByField": "food",
@@ -4614,9 +4614,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 63,
-    "width": 30,
     "height": 16,
+    "width": 30,
+    "position_y": 63,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4668,9 +4668,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 37,
-    "width": 37,
     "height": 13,
+    "width": 37,
+    "position_y": 37,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_calculated",
@@ -4689,9 +4689,9 @@
   {
     "show_header": true,
     "position_x": 2,
-    "position_y": 13,
-    "width": 16,
     "height": 9,
+    "width": 16,
+    "position_y": 13,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
@@ -4718,9 +4718,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 107,
-    "width": 30,
     "height": 18,
+    "width": 30,
+    "position_y": 107,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -4777,9 +4777,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 68,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 68,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -4801,9 +4801,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 30,
-    "width": 63,
     "height": 12,
+    "width": 63,
+    "position_y": 30,
     "options": {
       "collection": "mails",
       "function": "countDistinct",
@@ -4841,9 +4841,9 @@
   {
     "show_header": true,
     "position_x": 41,
-    "position_y": 23,
-    "width": 25,
     "height": 6,
+    "width": 25,
+    "position_y": 23,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -4879,9 +4879,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 91,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 91,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4940,9 +4940,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 176,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 176,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -4962,9 +4962,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 79,
-    "width": 23,
     "height": 5,
+    "width": 23,
+    "position_y": 79,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -4995,9 +4995,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 79,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 79,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -5019,9 +5019,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 59,
-    "width": 34,
     "height": 6,
+    "width": 34,
+    "position_y": 59,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5039,9 +5039,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 69,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 69,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5093,9 +5093,9 @@
   {
     "show_header": true,
     "position_x": 37,
-    "position_y": 1,
-    "width": 17,
     "height": 5,
+    "width": 17,
+    "position_y": 1,
     "options": {
       "collection": "mails",
       "field": "id",
@@ -5113,9 +5113,9 @@
   {
     "show_header": true,
     "position_x": 19,
-    "position_y": 59,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 59,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5156,9 +5156,9 @@
   {
     "show_header": true,
     "position_x": 19,
-    "position_y": 64,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 64,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5211,9 +5211,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 38,
-    "width": 60,
     "height": 13,
+    "width": 60,
+    "position_y": 38,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -5259,9 +5259,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 92,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 92,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -5280,9 +5280,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 20,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 20,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
@@ -5301,9 +5301,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 36,
-    "width": 40,
     "height": 13,
+    "width": 40,
+    "position_y": 36,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -5339,9 +5339,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 101,
-    "width": 34,
     "height": 6,
+    "width": 34,
+    "position_y": 101,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -5372,9 +5372,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 103,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 103,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -5412,9 +5412,9 @@
   {
     "show_header": true,
     "position_x": 2,
-    "position_y": 35,
-    "width": 58,
     "height": 17,
+    "width": 58,
+    "position_y": 35,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
@@ -5435,9 +5435,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 34,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 34,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -5474,9 +5474,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 25,
-    "width": 60,
     "height": 8,
+    "width": 60,
+    "position_y": 25,
     "options": {
       "field": "CUSTOM_FOODS_FEEDBACKS_SELECTED_FOOD_FEEDBACK_LABEL_ID",
       "collection": "foods_feedbacks_labels",
@@ -5494,9 +5494,9 @@
   {
     "show_header": true,
     "position_x": 34,
-    "position_y": 1,
-    "width": 32,
     "height": 10,
+    "width": 32,
+    "position_y": 1,
     "options": {
       "collection": "foods_feedbacks",
       "column": "rating",
@@ -5534,9 +5534,9 @@
   {
     "show_header": true,
     "position_x": 19,
-    "position_y": 74,
-    "width": 14,
     "height": 4,
+    "width": 14,
+    "position_y": 74,
     "options": {
       "collection": "foods",
       "field": "rating_average",
@@ -5581,9 +5581,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 43,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 43,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -5604,9 +5604,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 49,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 49,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -5626,9 +5626,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 91,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 91,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -5687,9 +5687,9 @@
   {
     "show_header": false,
     "position_x": 37,
-    "position_y": 15,
-    "width": 16,
     "height": 13,
+    "width": 16,
+    "position_y": 15,
     "options": {
       "collection": "workflows_runs",
       "column": "state",
@@ -5708,9 +5708,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 25,
-    "width": 21,
     "height": 5,
+    "width": 21,
+    "position_y": 25,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
@@ -5728,9 +5728,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 133,
-    "width": 30,
     "height": 18,
+    "width": 30,
+    "position_y": 133,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -5784,9 +5784,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 6,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 6,
     "options": {
       "field": "CUSTOM_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -5806,9 +5806,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 80,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 80,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -5832,9 +5832,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 33,
-    "width": 30,
     "height": 16,
+    "width": 30,
+    "position_y": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5876,9 +5876,9 @@
   {
     "show_header": true,
     "position_x": 41,
-    "position_y": 13,
-    "width": 26,
     "height": 5,
+    "width": 26,
+    "position_y": 13,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -5909,9 +5909,9 @@
   {
     "show_header": true,
     "position_x": 32,
-    "position_y": 106,
-    "width": 31,
     "height": 16,
+    "width": 31,
+    "position_y": 106,
     "options": {
       "collection": "profiles_markings",
       "limit": 10,
@@ -5939,9 +5939,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 92,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 92,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -5965,9 +5965,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 39,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 39,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6013,9 +6013,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 51,
-    "width": 32,
     "height": 5,
+    "width": 32,
+    "position_y": 51,
     "options": {
       "collection": "utilizations_groups",
       "field": "all_time_high",
@@ -6041,9 +6041,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 9,
-    "width": 16,
     "height": 5,
+    "width": 16,
+    "position_y": 9,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -6062,9 +6062,9 @@
   {
     "show_header": false,
     "position_x": 62,
-    "position_y": 59,
-    "width": 44,
     "height": 4,
+    "width": 44,
+    "position_y": 59,
     "options": {
       "text": "Mensa Spezifisch"
     },
@@ -6079,9 +6079,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 50,
-    "width": 66,
     "height": 13,
+    "width": 66,
+    "position_y": 50,
     "options": {
       "collection": "profiles",
       "dateField": "date_created",
@@ -6100,9 +6100,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 95,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 95,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6161,9 +6161,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 124,
-    "width": 65,
     "height": 14,
+    "width": 65,
+    "position_y": 124,
     "options": {
       "collection": "devices",
       "xAxis": "display_height",
@@ -6182,9 +6182,9 @@
   {
     "show_header": true,
     "position_x": 39,
-    "position_y": 10,
-    "width": 21,
     "height": 4,
+    "width": 21,
+    "position_y": 10,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -6214,9 +6214,9 @@
   {
     "show_header": true,
     "position_x": 55,
-    "position_y": 84,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 84,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -6256,9 +6256,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 83,
-    "width": 65,
     "height": 14,
+    "width": 65,
+    "position_y": 83,
     "options": {
       "collection": "devices",
       "xAxis": "system_version",
@@ -6287,9 +6287,9 @@
   {
     "show_header": true,
     "position_x": 42,
-    "position_y": 11,
-    "width": 24,
     "height": 6,
+    "width": 24,
+    "position_y": 11,
     "options": {
       "collection": "directus_activity",
       "field": "id",
@@ -6325,9 +6325,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 63,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 63,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6369,9 +6369,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 7,
-    "width": 21,
     "height": 19,
+    "width": 21,
+    "position_y": 7,
     "options": {
       "collection": "profiles",
       "column": "language",
@@ -6397,9 +6397,9 @@
   {
     "show_header": true,
     "position_x": 3,
-    "position_y": 59,
-    "width": 16,
     "height": 15,
+    "width": 16,
+    "position_y": 59,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6448,9 +6448,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 164,
-    "width": 61,
     "height": 13,
+    "width": 61,
+    "position_y": 164,
     "options": {
       "collection": "foodoffers",
       "precision": "day",
@@ -6470,9 +6470,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 28,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 28,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6496,9 +6496,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 116,
-    "width": 65,
     "height": 12,
+    "width": 65,
+    "position_y": 116,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -6522,9 +6522,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 87,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 87,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6583,9 +6583,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 53,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 53,
     "options": {
       "field": "CUSTOM_SELECTED_RIGHT_FOOD_ID",
       "collection": "foods",
@@ -6603,9 +6603,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 83,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 83,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6664,9 +6664,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 9,
-    "width": 34,
     "height": 14,
+    "width": 34,
+    "position_y": 9,
     "options": {
       "collection": "workflows_runs",
       "aggregateField": "runtime_in_seconds",
@@ -6693,9 +6693,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 14,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 14,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6734,9 +6734,9 @@
   {
     "show_header": true,
     "position_x": 43,
-    "position_y": 24,
-    "width": 23,
     "height": 6,
+    "width": 23,
+    "position_y": 24,
     "options": {
       "collection": "mails",
       "field": "id",
@@ -6772,9 +6772,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 152,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 152,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -6794,9 +6794,9 @@
   {
     "show_header": true,
     "position_x": 62,
-    "position_y": 71,
-    "width": 19,
     "height": 16,
+    "width": 19,
+    "position_y": 71,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6855,9 +6855,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 87,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 87,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6916,9 +6916,9 @@
   {
     "show_header": true,
     "position_x": 27,
-    "position_y": 1,
-    "width": 32,
     "height": 13,
+    "width": 32,
+    "position_y": 1,
     "options": {
       "collection": "workflows_runs",
       "aggregateField": "runtime_in_seconds",
@@ -6936,9 +6936,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 44,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 44,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6984,9 +6984,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 59,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 59,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -7027,9 +7027,9 @@
   {
     "show_header": true,
     "position_x": 29,
-    "position_y": 24,
-    "width": 14,
     "height": 6,
+    "width": 14,
+    "position_y": 24,
     "options": {
       "field": "CUSTOM_MAILS_PRECISION",
       "type": "string",
@@ -7076,9 +7076,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 140,
-    "width": 61,
     "height": 12,
+    "width": 61,
+    "position_y": 140,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -7098,9 +7098,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 64,
-    "width": 14,
     "height": 5,
+    "width": 14,
+    "position_y": 64,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -7153,9 +7153,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 6,
-    "width": 30,
     "height": 6,
+    "width": 30,
+    "position_y": 6,
     "options": {
       "field": "CUSTOM_SELECTED_DATE_END",
       "collection": "canteens_feedbacks_labels",
@@ -7175,9 +7175,9 @@
   {
     "show_header": true,
     "position_x": 31,
-    "position_y": 79,
-    "width": 30,
     "height": 4,
+    "width": 30,
+    "position_y": 79,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -7236,9 +7236,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 36,
-    "width": 66,
     "height": 14,
+    "width": 66,
+    "position_y": 36,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -7270,9 +7270,9 @@
   {
     "show_header": true,
     "position_x": 17,
-    "position_y": 79,
-    "width": 20,
     "height": 6,
+    "width": 20,
+    "position_y": 79,
     "options": {
       "field": "CUSTOM_FOODOFFERS_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -7292,9 +7292,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 25,
-    "width": 60,
     "height": 13,
+    "width": 60,
+    "position_y": 25,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -7340,9 +7340,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 151,
-    "width": 61,
     "height": 13,
+    "width": 61,
+    "position_y": 151,
     "options": {
       "collection": "foodoffers",
       "precision": "day",
@@ -7361,9 +7361,9 @@
   {
     "show_header": false,
     "position_x": 3,
-    "position_y": 49,
-    "width": 60,
     "height": 4,
+    "width": 60,
+    "position_y": 49,
     "options": {
       "text": "Speisen Spezifisch"
     },
@@ -7378,9 +7378,9 @@
   {
     "show_header": true,
     "position_x": 1,
-    "position_y": 84,
-    "width": 13,
     "height": 5,
+    "width": 13,
+    "position_y": 84,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -7425,9 +7425,9 @@
   {
     "show_header": true,
     "position_x": 2,
-    "position_y": 1,
-    "width": 32,
     "height": 10,
+    "width": 32,
+    "position_y": 1,
     "options": {
       "collection": "foods_feedbacks",
       "column": "rating",
@@ -7447,9 +7447,9 @@
   {
     "show_header": true,
     "position_x": 33,
-    "position_y": 9,
-    "width": 30,
     "height": 5,
+    "width": 30,
+    "position_y": 9,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",

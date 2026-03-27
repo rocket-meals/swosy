@@ -8,7 +8,7 @@ import {
 import {MarkingParserInterface, MarkingsTypeForParser} from '../MarkingParserInterface';
 import {FoodWebParserAachenReadHtmlFiles} from './FoodWebParserAachenReadHtmlFiles';
 import {FoodWebParserAachenParseHtml} from './FoodWebParserAachenParseHtml';
-import {FoodWebParser_RawReportWebReaderAachen} from './FoodWebParser_RawReportWebReaderAachen';
+import {FoodWebParserRawReportWebReaderAachen} from './FoodWebParser_RawReportWebReaderAachen';
 
 export type CanteenNamesToHtmlFileDict = { [canteenName: string]: string };
 
@@ -16,13 +16,13 @@ export class FoodAndMarkingWebParserAachen implements FoodParserInterface, Marki
   private readonly htmlFileReader: FoodWebParserAachenReadHtmlFiles;
   private canteensHtmlFilesMap: CanteenNamesToHtmlFileDict = {};
 
-  private filterDuplicatedOffersPerCanteen: boolean = true;
+  private readonly filterDuplicatedOffersPerCanteen: boolean = true;
 
   constructor(htmlFileReader?: FoodWebParserAachenReadHtmlFiles) {
-    if (!htmlFileReader) {
-      this.htmlFileReader = new FoodWebParser_RawReportWebReaderAachen();
-    } else {
+    if (htmlFileReader) {
       this.htmlFileReader = htmlFileReader;
+    } else {
+      this.htmlFileReader = new FoodWebParserRawReportWebReaderAachen();
     }
     this.resetData();
   }

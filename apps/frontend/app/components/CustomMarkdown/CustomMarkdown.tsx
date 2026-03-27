@@ -7,6 +7,7 @@ import { CustomMarkdownProps } from './types';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { useAppSelector } from '@/redux/hooks';
 import { useTheme } from '@/hooks/useTheme';
+import { StringHelper } from 'repo-depkit-common';
 
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColor, imageWidth, imageHeight }) => {
 	const { theme } = useTheme();
@@ -47,7 +48,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 
 				for (let i = 0; i < lines.length; i += 1) {
 					const line = lines[i];
-					const normalizedLine = line.replace(/\t/g, '    ');
+					const normalizedLine = StringHelper.replaceAllLiteralWithOptions({ str: line, find: '\t', replace: '    ' });
 					const indentLength = normalizedLine.match(/^\s*/)?.[0].length ?? 0;
 					const trimmedLine = line.trim();
 
@@ -81,7 +82,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 							if (lookLine.trim() === '') {
 								continue;
 							}
-							const lookNormalized = lookLine.replace(/\t/g, '    ');
+							const lookNormalized = StringHelper.replaceAllLiteralWithOptions({ str: lookLine, find: '\t', replace: '    ' });
 							const lookIndent = lookNormalized.match(/^\s*/)?.[0].length ?? 0;
 							startCollapsed = lookIndent > 0;
 							break;

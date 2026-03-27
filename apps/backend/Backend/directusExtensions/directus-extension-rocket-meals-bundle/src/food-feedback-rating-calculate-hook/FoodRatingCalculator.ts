@@ -3,8 +3,8 @@ import { ApiContext } from '../helpers/ApiContext';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 
 export class FoodRatingCalculator {
-  static MAX_RATING_VALUE = RatingHelper.MAX_RATING;
-  static MIN_RATING_VALUE = RatingHelper.MIN_RATING;
+  static readonly MAX_RATING_VALUE = RatingHelper.MAX_RATING;
+  static readonly MIN_RATING_VALUE = RatingHelper.MIN_RATING;
 
   private readonly myDatabaseHelper: MyDatabaseHelper;
 
@@ -62,15 +62,11 @@ export class FoodRatingCalculator {
     if (combined_rating_amount > 0) {
       let combined_rating_average = (sum_rating_values + rating_average_legacy * rating_amount_legacy) / combined_rating_amount;
 
-      //console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
-
       return {
         rating_average: combined_rating_average,
         rating_amount: combined_rating_amount,
       };
     } else {
-      //console.log("recalculateFoodRating: food_id: "+food_id+" | rating_amount: "+rating_amount+" | food_feedbacks.length: "+food_feedbacks.length);
-      // set for food both values to null
       return {
         rating_average: null,
         rating_amount: 0,
@@ -92,14 +88,12 @@ export class FoodRatingCalculator {
         limit: -1,
       });
     } catch (e) {
-      // When no feedbacks are found for the filter, we get an error:
+      console.error('getFoodFeedbacksForFood: error reading food feedbacks for food_id: ' + food_id, e);
     }
     return food_feedbacks;
   }
 
   private async recalculateFoodRating(food_id: string, ignore_food_feedback_ids?: string[]) {
-    //console.log("recalculateFoodRating: food_id: "+food_id);
-
     const food = await this.getFoodFromId(food_id);
     if (!food) {
       console.error('recalculateFoodRating: food_id: ' + food_id + ' | food not found');
@@ -107,7 +101,7 @@ export class FoodRatingCalculator {
     }
 
     let ignore_food_feedbacks_ids_dict: { [key: string]: boolean } = {};
-    if (!!ignore_food_feedback_ids) {
+    if (ignore_food_feedback_ids) {
       for (let ignore_food_feedback_id of ignore_food_feedback_ids) {
         ignore_food_feedbacks_ids_dict[ignore_food_feedback_id] = true;
       }

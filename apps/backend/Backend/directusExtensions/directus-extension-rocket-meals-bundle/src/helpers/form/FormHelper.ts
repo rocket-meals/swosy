@@ -6,12 +6,24 @@ import { DirectusFilesAssetHelper } from '../DirectusFilesAssetHelper';
 import { MarkdownHelper } from '../html/MarkdownHelper';
 import { MyDatabaseTestableHelperInterface } from '../MyDatabaseHelperInterface';
 import { TranslationBackendKeys, TranslationsBackend } from '../TranslationsBackend';
-import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberHelper} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, DateHelperTimezone, FormHelperCommon, NumberHelper, StringHelper} from 'repo-depkit-common';
 import { EnvVariableHelper } from '../EnvVariableHelper';
 import { HashHelper } from '../HashHelper';
 import {GeneratePdfFromHtmlProps} from "../pdf/HtmlPdfGeneratorInterface";
 import * as fs from 'fs';
 import * as path from 'path';
+
+type ImageFieldContext = {
+  fieldName: string;
+  value_image: DatabaseTypes.DirectusFiles | string | null | undefined;
+  myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
+};
+
+type FileValueContext = {
+  fieldName: string;
+  value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined;
+  myDatabaseHelperInterface: MyDatabaseTestableHelperInterface;
+};
 
 type FormFieldExampleData = {
   value_string?: string | null;
@@ -351,7 +363,7 @@ export class FormHelper {
    * (collapsed) for a connected look; groups are separated by a small gap.
    */
   private static generateBankAccountBoxesHtml(value: string): string {
-    const cleaned = value.replace(/\s/g, '').toUpperCase();
+    const cleaned = StringHelper.replaceAllWithOptions({ str: value, find: '\\s', replace: '' }).toUpperCase();
     const total = cleaned.length;
 
     let html = '<span style="display:inline-flex; flex-wrap:nowrap; align-items:flex-end; gap:0; line-height:0;">';
@@ -477,11 +489,10 @@ export class FormHelper {
   }
 
   private static generateHtmlForImageValue(
-    fieldName: string,
-    value_image: DatabaseTypes.DirectusFiles | string | null | undefined,
-    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+    context: ImageFieldContext,
     isSignature = false,
   ): string {
+    const { fieldName, value_image, myDatabaseHelperInterface } = context;
     let assetUrl: string | undefined;
     if (value_image) {
       if (typeof value_image === 'string' && (value_image.startsWith('http') || value_image.startsWith('data:'))) {
@@ -498,10 +509,9 @@ export class FormHelper {
   }
 
   private static generateHtmlForFileValue(
-    fieldName: string,
-    value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined,
-    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+    context: FileValueContext,
   ): string {
+    const { fieldName, value_file, myDatabaseHelperInterface } = context;
     let assetUrl: string | undefined;
     if (value_file) {
       if (typeof value_file === 'string' && value_file.startsWith('http')) {
@@ -603,7 +613,8 @@ export class FormHelper {
     return markdownContent;
   }
 
-  private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DatabaseTypes.DirectusFiles | string | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+  private static generateMarkdownForTypeImageValue(context: ImageFieldContext): string {
+    const { fieldName, value_image, myDatabaseHelperInterface } = context;
     let assetUrl: undefined | string = undefined;
     if (value_image) {
       if (typeof value_image === 'string' && (value_image.startsWith('http') || value_image.startsWith('data:'))) {
@@ -615,7 +626,8 @@ export class FormHelper {
     return this.generateMarkdownForTypeImageUrl(fieldName, assetUrl);
   }
 
-  private static generateMarkdownForTypeFilesValue(fieldName: string, value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+  private static generateMarkdownForTypeFilesValue(context: FileValueContext): string {
+    const { fieldName, value_file, myDatabaseHelperInterface } = context;
     let assetUrl: undefined | string = undefined;
     //console.log("generateMarkdownForTypeFilesValue");
     //console.log(JSON.stringify(value_file, null, 2));
@@ -636,7 +648,8 @@ export class FormHelper {
     return `### ${fieldName}` + MarkdownHelper.getMarkdownNewLine();
   }
 
-  public static async generateMarkdownContentFromForm(form: DatabaseTypes.Forms, formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
+  public static async generateMarkdownContentFromForm(params: FormGenerationParams): Promise<string> {
+    const { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
     let markdownNewLine = MarkdownHelper.getMarkdownNewLine();
 
     let markdownContent = '';
@@ -657,10 +670,10 @@ export class FormHelper {
       markdownContent += this.generateMarkdownForTypeNumberValue(fieldName, formExtractRelevantInformationSingle);
       markdownContent += this.generateMarkdownForTypeBooleanValue(fieldName, formExtractRelevantInformationSingle.form_answer.value_boolean);
       markdownContent += this.generateMarkdownForTypeDateValue(fieldName, formExtractRelevantInformationSingle);
-      markdownContent += this.generateMarkdownForTypeImageValue(fieldName, formExtractRelevantInformationSingle.form_answer.value_image, myDatabaseHelperInterface);
+      markdownContent += this.generateMarkdownForTypeImageValue({ fieldName, value_image: formExtractRelevantInformationSingle.form_answer.value_image, myDatabaseHelperInterface });
       if(formExtractRelevantInformationSingle.form_answer.value_files.length > 0){
         for (let formAnswerValueFile of formExtractRelevantInformationSingle.form_answer.value_files || []) {
-          markdownContent += this.generateMarkdownForTypeFilesValue(fieldName, formAnswerValueFile, myDatabaseHelperInterface);
+          markdownContent += this.generateMarkdownForTypeFilesValue({ fieldName, value_file: formAnswerValueFile, myDatabaseHelperInterface });
         }
       }
     }
@@ -686,10 +699,9 @@ export class FormHelper {
    * checkboxes, bold field names).
    */
   public static async generateHtmlContentFromForm(
-    form: DatabaseTypes.Forms,
-    formExtractRelevantInformation: FormExtractRelevantInformationSingle[],
-    myDatabaseHelperInterface: MyDatabaseTestableHelperInterface,
+    params: FormGenerationParams,
   ): Promise<string> {
+    const { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
     let html = '';
 
     html += `<h1 style="font-size:1.6em; margin-bottom:12px;">${form.alias || form.id}</h1>\n`;
@@ -703,10 +715,10 @@ export class FormHelper {
       html += this.generateHtmlForBooleanField(fieldName, formExtract.form_answer.value_boolean);
       html += this.generateHtmlForDateField(fieldName, formExtract);
       const isSignature = formExtract.form_field.field_type === FormHelperCommon.FORM_FIELD_TYPE.FILES_IMAGE_SIGNATURE;
-      html += this.generateHtmlForImageValue(fieldName, formExtract.form_answer.value_image, myDatabaseHelperInterface, isSignature);
+      html += this.generateHtmlForImageValue({ fieldName, value_image: formExtract.form_answer.value_image, myDatabaseHelperInterface }, isSignature);
       if (formExtract.form_answer.value_files && formExtract.form_answer.value_files.length > 0) {
         for (const file of formExtract.form_answer.value_files) {
-          html += this.generateHtmlForFileValue(fieldName, file, myDatabaseHelperInterface);
+          html += this.generateHtmlForFileValue({ fieldName, value_file: file, myDatabaseHelperInterface });
         }
       }
     }
@@ -744,8 +756,8 @@ export class FormHelper {
   }
 
   public static async generateHtmlFromForm(params: FormGenerationParams): Promise<string> {
-    let { form, formExtractRelevantInformation, myDatabaseHelperInterface } = params;
-    let htmlContent = await this.generateHtmlContentFromForm(form, formExtractRelevantInformation, myDatabaseHelperInterface);
+    const { myDatabaseHelperInterface } = params;
+    const htmlContent = await this.generateHtmlContentFromForm(params);
     let template = DEFAULT_HTML_TEMPLATE;
     // Pass the generated HTML directly into the template field.
     // Note: despite the field name containing "Markdown", the Liquid template simply

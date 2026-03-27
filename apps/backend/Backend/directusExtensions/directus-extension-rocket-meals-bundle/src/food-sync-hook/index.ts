@@ -1,7 +1,7 @@
 import {ParseSchedule} from './ParseSchedule';
 import {FoodParserInterface} from './FoodParserInterface';
-import {FoodTL1Parser_RawReportFtpReader} from './FoodTL1Parser_RawReportFtpReader';
-import {FoodTL1Parser_RawReportUrlReader} from './FoodTL1Parser_RawReportUrlReader';
+import {FoodTL1ParserRawReportFtpReader} from './FoodTL1Parser_RawReportFtpReader';
+import {FoodTL1ParserRawReportUrlReader} from './FoodTL1Parser_RawReportUrlReader';
 import {MarkingTL1Parser} from './MarkingTL1Parser';
 import {MarkingParserInterface} from './MarkingParserInterface';
 import {MyDatabaseHelper} from '../helpers/MyDatabaseHelper';
@@ -38,7 +38,7 @@ function getFoodParser(): FoodParserInterface | null {
       const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getFoodSyncTL1FileExportCsvFileEncoding();
 
       console.log(SCHEDULE_NAME + ': Using TL1 CSV file from host file path: ' + FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
-      const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+      const ftpFileReader = new FoodTL1ParserRawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
 
       return FoodParserWithCustomerAdaptions.getFoodParser(ftpFileReader);
     case 'TL1WEB':
@@ -50,7 +50,7 @@ function getFoodParser(): FoodParserInterface | null {
       }
 
       console.log(SCHEDULE_NAME + ': Using TL1 CSV file from URL: ' + FOOD_SYNC_TL1WEB_EXPORT_URL);
-      const urlReader = new FoodTL1Parser_RawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
+      const urlReader = new FoodTL1ParserRawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
       return FoodParserWithCustomerAdaptions.getFoodParser(urlReader);
   }
 

@@ -6,7 +6,7 @@ import {
   FoodParseFoodAttributeValueType
 } from '../FoodParserInterface';
 import {MarkingsTypeForParser} from '../MarkingParserInterface';
-import {LanguageCodes} from 'repo-depkit-common';
+import {LanguageCodes, StringHelper} from 'repo-depkit-common';
 import {MarkingTranslationFields} from '../MarkingTranslationFields';
 
 export class FoodWebParserAachenParseHtml {
@@ -139,11 +139,11 @@ export class FoodWebParserAachenParseHtml {
 
     // Extract individual codes like 'A', 'A1', 'B' from the collected sup texts.
     const extractedCodes: string[] = supTexts
-      .map(t => t.replace(/\u00A0/g, ' '))
+      .map(t => StringHelper.replaceAllLiteralWithOptions({ str: t, find: '\u00A0', replace: ' ' }))
       .map(t => t.replace(/^[+]/, ''))
-      .flatMap(t => t.split(/[,|\/]+/))
+      .flatMap(t => t.split(/[,|/]+/))
       .flatMap(t => t.split(/\s+/))
-      .map((s: string) => s.replace(/[^A-Za-z0-9]/g, '').trim())
+      .map((s: string) => StringHelper.replaceAllWithOptions({ str: s, find: '[^A-Za-z0-9]', replace: '' }).trim())
       .filter((s: string) => s.length > 0);
 
     // create readable alias by cloning and removing sup tags
@@ -163,14 +163,11 @@ export class FoodWebParserAachenParseHtml {
     let priceStudent: number | null = null;
     if (priceText) {
       // price may contain euro symbol and comma as decimal separator
-      const normalized = priceText
-        .replace(/\u0000/g, '')
-        .replace('€', '')
-        .replace(/[^0-9,\.]/g, '')
-        .trim();
-      const withDot = normalized.replace(',', '.');
-      const parsed = parseFloat(withDot);
-      if (!isNaN(parsed)) {
+      const normalized = StringHelper.replaceAllLiteralWithOptions({ str: priceText, find: '€', replace: '' });
+      const normalizedFiltered = StringHelper.replaceAllWithOptions({ str: normalized, find: String.raw`[^0-9,\.]`, replace: '' }).trim();
+      const withDot = StringHelper.replaceAllLiteralWithOptions({ str: normalizedFiltered, find: ',', replace: '.' });
+      const parsed = Number.parseFloat(withDot);
+      if (!Number.isNaN(parsed)) {
         priceStudent = parsed;
       }
     }
@@ -235,20 +232,20 @@ export class FoodWebParserAachenParseHtml {
 
   private static parseDateFromHeader(headerText: string): Date | null {
     // expecting strings like "Montag, 03.11.2025" or "03.11.2025"
-    const match = headerText.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+    const match = /(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(headerText);
     if (!match) {
       return null;
     }
-    const day = parseInt(match[1]!, 10);
-    const month = parseInt(match[2]!, 10);
-    const year = parseInt(match[3]!, 10);
+    const day = Number.parseInt(match[1]!, 10);
+    const month = Number.parseInt(match[2]!, 10);
+    const year = Number.parseInt(match[3]!, 10);
     return new Date(year, month - 1, day);
   }
 
   private static generateRecipeId(basicFoodofferData: FoodofferTypeWithBasicData, markingExternalIdentifiers: Set<string>): string {
     // hash alias + sorted markings
-    const aliasPart = basicFoodofferData.alias ? basicFoodofferData.alias.toLowerCase().replace(/\s+/g, '_') : 'no_alias';
-    const markingsPart = Array.from(markingExternalIdentifiers).sort().join('_');
+    const aliasPart = basicFoodofferData.alias ? StringHelper.replaceAllWithOptions({ str: basicFoodofferData.alias.toLowerCase(), find: String.raw`\s+`, replace: '_' }) : 'no_alias';
+    const markingsPart = Array.from(markingExternalIdentifiers).sort((a, b) => a.localeCompare(b)).join('_');
     let id = `recipe_`;
     id += `${aliasPart}`;
     let involveMarkings = false;

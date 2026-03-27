@@ -25,7 +25,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(({ initialCenter, loadingText,
 
 	const sendToMap = useCallback((data: object) => {
 		if (iframeRef.current?.contentWindow) {
-			iframeRef.current.contentWindow.postMessage(data, '*');
+			iframeRef.current.contentWindow.postMessage(data, window.location.origin);
 		}
 	}, []);
 

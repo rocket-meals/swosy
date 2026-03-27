@@ -69,7 +69,12 @@ export class NewsParseSchedule {
   }
 
   async updateNewsTranslations(item: DatabaseTypes.News, newsJSON: NewsTypeForParser) {
-    await TranslationHelper.updateItemTranslations(item, newsJSON.translations, 'news_id', CollectionNames.NEWS, this.context.myDatabaseHelper);
+    await TranslationHelper.updateItemTranslations(item, {
+      translationsFromParsing: newsJSON.translations,
+      items_primary_field_in_translation_table: 'news_id',
+      itemsTablename: CollectionNames.NEWS,
+      myDatabaseHelper: this.context.myDatabaseHelper,
+    });
   }
 
   async updateOtherFields(item: DatabaseTypes.News, newsJSON: NewsTypeForParser) {

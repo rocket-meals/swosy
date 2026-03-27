@@ -1,16 +1,13 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React from 'react';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SettingsListEditable as CommonSettingsListEditable } from 'repo-depkit-common-ui';
+import type { SettingsListEditableProps } from 'repo-depkit-common-ui';
 
-import SettingsList from '@/components/SettingsList';
-import { useTheme } from '@/hooks/useTheme';
-import { SettingsListEditableProps } from './types';
+export type { SettingsListEditableProps };
 
-const SettingsListEditable: React.FC<SettingsListEditableProps> = ({ editable = true, rightElement, rightIcon, ...props }) => {
-	const { theme } = useTheme();
-	const resolvedRightIcon = editable && !rightElement && !rightIcon ? <MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} /> : rightIcon;
-
-	return <SettingsList {...props} rightElement={rightElement} rightIcon={resolvedRightIcon} />;
+const SettingsListEditable: React.FC<SettingsListEditableProps> = (props) => {
+	return <CommonSettingsListEditable {...props} />;
 };
 
 export default SettingsListEditable;
+

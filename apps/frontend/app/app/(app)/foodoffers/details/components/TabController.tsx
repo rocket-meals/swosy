@@ -6,15 +6,14 @@ import IconButton from '@/components/UI/IconButton';
 import { TranslationKeys } from '@/locales/keys';
 import styles from '../styles';
 import { isWeb } from '@/constants/Constants';
+import { FoodAreaDisplayProps } from './types';
 
-interface TabControllerProps {
+interface TabControllerProps extends FoodAreaDisplayProps {
     activeTab: string;
     setActiveTab: (tab: string) => void;
-    theme: any;
     contrastColor: string;
     translate: (key: string) => string;
     containerWidth: string | number;
-    foodsAreaColor: string;
 }
 
 const TabController = ({

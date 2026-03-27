@@ -1,0 +1,217 @@
+import React, { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
+import {
+	SettingsList,
+	SettingsListBoolean,
+	SettingsListGroupTitle,
+	SettingsListSelectOption,
+	useMyScrollViewModal,
+	useTheme,
+} from 'repo-depkit-common-ui';
+import Constants from 'expo-constants';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { deleteAllActivities } from '../../helpers/ActivityStorage';
+import { loadPersistedState } from '../../store/hexTileSlice';
+import { setThemeMode } from '../../store/themeSlice';
+import type { ThemeMode } from '../../store/themeSlice';
+import { AppDispatch, RootState } from '../../store/store';
+
+const PRIMARY_COLOR = '#2563eb';
+const NOTIFICATION_COLOR = '#16a34a';
+const NEUTRAL_COLOR = '#6b7280';
+const DANGER_COLOR = '#dc2626';
+
+const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
+	{ id: 'light', label: 'Light', icon: <MaterialCommunityIcons name="white-balance-sunny" size={22} color="#ffffff" /> },
+	{ id: 'dark', label: 'Dark', icon: <MaterialCommunityIcons name="moon-waning-crescent" size={22} color="#ffffff" /> },
+	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
+];
+
+function themeModeLabel(mode: ThemeMode): string {
+	switch (mode) {
+		case 'light': return 'Light';
+		case 'dark': return 'Dark';
+		case 'systematic': return 'System';
+	}
+}
+
+// ─── Reset Confirm Content ────────────────────────────────────────────────────
+
+function ResetConfirmContent({
+	onConfirm,
+	onCancel,
+	theme,
+}: {
+	onConfirm: () => void;
+	onCancel: () => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	return (
+		<View style={styles.resetConfirmContainer}>
+			<Text style={[styles.resetConfirmText, { color: theme.screen.text }]}>
+				All activities and hex tile progress will be permanently deleted. This action cannot be undone.
+			</Text>
+			<TouchableOpacity
+				style={[styles.resetConfirmButton, { backgroundColor: DANGER_COLOR }]}
+				onPress={onConfirm}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="delete-forever" size={18} color="#ffffff" />
+				<Text style={styles.resetConfirmButtonText}>Reset All Data</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.resetCancelButton} onPress={onCancel} activeOpacity={0.8}>
+				<Text style={[styles.resetCancelButtonText, { color: theme.screen.text }]}>Cancel</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── Settings Screen ──────────────────────────────────────────────────────────
+
+export default function SettingsScreen() {
+	const [notifications, setNotifications] = useState(true);
+	const { theme } = useTheme();
+	const dispatch = useDispatch<AppDispatch>();
+	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
+
+	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
+
+	const handleOpenThemeSelection = useCallback(() => {
+		showModal({
+			title: '🎨 Theme',
+			children: (
+				<SettingsListSelectOption
+					options={THEME_OPTIONS}
+					selectedOption={selectedTheme}
+					onSelect={(option) => {
+						dispatch(setThemeMode(option.id));
+						closeModal();
+					}}
+					iconBgColor={PRIMARY_COLOR}
+				/>
+			),
+		});
+	}, [showModal, closeModal, dispatch, selectedTheme]);
+
+	const handleResetAllData = useCallback(() => {
+		showResetModal({
+			title: '⚠️ Reset All Data',
+			children: (
+				<ResetConfirmContent
+					onConfirm={() => {
+						deleteAllActivities();
+						dispatch(loadPersistedState({}));
+						closeResetModal();
+					}}
+					onCancel={closeResetModal}
+					theme={theme}
+				/>
+			),
+		});
+	}, [showResetModal, closeResetModal, dispatch, theme]);
+
+	return (
+		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+			<ScrollView contentContainerStyle={styles.listContent}>
+				<SettingsListGroupTitle title="Appearance" />
+			<SettingsList
+				iconBgColor={PRIMARY_COLOR}
+				leftIcon={
+					<MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" />
+				}
+				label="Theme"
+				value={themeModeLabel(selectedTheme)}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenThemeSelection}
+				groupPosition="single"
+			/>
+
+				<SettingsListGroupTitle title="Notifications" />
+				<SettingsListBoolean
+					iconBgColor={NOTIFICATION_COLOR}
+					leftIcon={<Ionicons name="notifications-outline" size={22} color="#ffffff" />}
+					label="Push Notifications"
+					isEnabled={notifications}
+					onToggle={() => setNotifications((prev) => !prev)}
+					valueActive="Enabled"
+					valueInactive="Disabled"
+					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Daten Verwaltung" />
+				<SettingsList
+					iconBgColor={DANGER_COLOR}
+					leftIcon={<MaterialIcons name="delete-forever" size={22} color="#ffffff" />}
+					label="Alle Daten zurücksetzen"
+					value="Activities & Hex Tiles"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleResetAllData}
+					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="About" />
+				<SettingsList
+					iconBgColor={NEUTRAL_COLOR}
+					leftIcon={<Feather name="info" size={22} color="#ffffff" />}
+					label="App Version"
+					value={appVersion}
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={NEUTRAL_COLOR}
+					leftIcon={<Feather name="code" size={22} color="#ffffff" />}
+					label="Open Source"
+					value="View licenses"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => {}}
+					groupPosition="bottom"
+				/>
+			</ScrollView>
+		</View>
+	);
+}
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: '#f3f4f6',
+	},
+	listContent: {
+		paddingVertical: 16,
+	},
+	resetConfirmContainer: {
+		paddingTop: 8,
+		gap: 4,
+	},
+	resetConfirmText: {
+		fontSize: 15,
+		lineHeight: 22,
+		marginBottom: 8,
+	},
+	resetConfirmButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
+	resetConfirmButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	resetCancelButton: {
+		alignItems: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+	},
+	resetCancelButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
+	},
+});

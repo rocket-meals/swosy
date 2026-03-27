@@ -47,6 +47,19 @@ const SettingsListOrganisationFast: React.FC<SettingsListOrganisationFastProps> 
 	);
 
 	const leftIconComponent = useMemo(() => {
+		if (organisation?.map_marker_color) {
+			return (
+				<View style={[styles.imageWrapper, { backgroundColor: organisation.map_marker_color }]}>
+					{organisation.image_remote_url ? (
+						<Image
+							source={{ uri: organisation.image_remote_url }}
+							style={styles.image}
+							resizeMode="cover"
+						/>
+					) : null}
+				</View>
+			);
+		}
 		if (!organisation?.image_remote_url) return undefined;
 		return (
 			<View style={styles.imageWrapper}>
@@ -57,7 +70,7 @@ const SettingsListOrganisationFast: React.FC<SettingsListOrganisationFastProps> 
 				/>
 			</View>
 		);
-	}, [organisation?.image_remote_url]);
+	}, [organisation?.map_marker_color, organisation?.image_remote_url]);
 
 	if (!organisation) return null;
 

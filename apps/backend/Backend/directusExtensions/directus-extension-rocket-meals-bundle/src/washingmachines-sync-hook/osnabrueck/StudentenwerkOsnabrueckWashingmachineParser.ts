@@ -143,10 +143,10 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
 
         // Ensure there are 4 columns (N5, AutomatenNr, Frei / Belegt, Zeit bis Frei)
         if (columns.length === 4) {
-          let terminalNr = parseInt(parsedHtml(columns[0]).text());
-          let automateNr = parseInt(parsedHtml(columns[1]).text());
+          let terminalNr = Number.parseInt(parsedHtml(columns[0]).text());
+          let automateNr = Number.parseInt(parsedHtml(columns[1]).text());
           let statusText = parsedHtml(columns[2]).text().toLowerCase(); // Frei / Belegt
-          let expectedFreeTime = parseInt(parsedHtml(columns[3]).text());
+          let expectedFreeTime = Number.parseInt(parsedHtml(columns[3]).text());
 
           let intercardStatus: boolean = statusText === 'belegt' ? true : false;
 

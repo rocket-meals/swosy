@@ -19,7 +19,7 @@ function getUrlToProviderLogin(providerName: string, redirectURL: string) {
 // https://www.rfc-editor.org/rfc/rfc7636
 
 function mylog(...message: any) {
-  //console.log(EndpointTopName+": "+message);
+  //console.log(EndpointTopName+": "+JSON.stringify(message, null, 2));
 }
 
 type AuthorizationCodeAndRedirectType = {

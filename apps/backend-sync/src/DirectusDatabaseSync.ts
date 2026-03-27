@@ -1,11 +1,11 @@
 import { DockerDirectusPingHelper } from './DockerDirectusPingHelper';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 import { CookieJar } from 'cookiejar';
 import FormData from 'form-data';
 
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 import { FetchIgnoreSelfSignedCertHelper } from './FetchIgnoreSelfSignedCertHelper';
 
 const require = createRequire(import.meta.url);
@@ -24,8 +24,8 @@ export interface DirectusDatabaseSyncOptions {
 
 const DirectusSyncVersion = version;
 
-const requiredModules = ['flow-manager', 'schema-management-module', 'generate-types'];
-const collectionsToSkip = ['2-wikis.json'];
+const requiredModules = new Set(['flow-manager', 'schema-management-module', 'generate-types']);
+const collectionsToSkip = new Set(['2-wikis.json']);
 
 export class DirectusDatabaseSync {
   private readonly config: DirectusDatabaseSyncOptions;
@@ -52,7 +52,6 @@ export class DirectusDatabaseSync {
     await this.copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
     await this.enableRequiredSettings(headers);
     await this.pushDirectusSyncSchemas();
-    //await uploadPublicPermissions(headers);
     await this.uploadSchemas(headers);
   }
 
@@ -61,7 +60,6 @@ export class DirectusDatabaseSync {
     const headers = await this.setupDirectusConnectionAndGetHeaders();
     console.log('NOW saving collections');
     await this.saveCollections(headers);
-    //await savePublicRolePermissions(headers);
     console.log('NOW pulling directus sync schema');
     await this.pullDirectusSyncSchema();
     console.log('NOW copying overwrite files');
@@ -80,7 +78,7 @@ export class DirectusDatabaseSync {
     collections = collections.filter(file => !file.endsWith('.DS_Store'));
 
     for (const collectionFilePath of collections) {
-      if (collectionsToSkip.includes(collectionFilePath)) {
+      if (collectionsToSkip.has(collectionFilePath)) {
         console.log(` -  Skipping ignored collection: ${collectionFilePath}`);
         continue;
       }
@@ -125,9 +123,6 @@ export class DirectusDatabaseSync {
     const cookieJar = new CookieJar();
     const headers = new Headers();
     const origin = new URL(this.config.directusInstanceUrl).origin;
-
-    //console.log("admin_email: "+admin_email);
-    //console.log("admin_password: "+admin_password)
 
     const response = await FetchIgnoreSelfSignedCertHelper.fetch(`${this.config.directusInstanceUrl}/auth/login`, {
       method: 'POST',
@@ -212,12 +207,12 @@ export class DirectusDatabaseSync {
     // Enable required modules
     for (const moduleIndex in modules) {
       const module = modules[moduleIndex];
-      if (requiredModules.includes(module.id)) {
-        if (!module.enabled) {
+      if (requiredModules.has(module.id)) {
+        if (module.enabled) {
+          console.log(` -  ${module.id} already enabled`);
+        } else {
           console.log(` -  Enabling ${module.id}`);
           modules[moduleIndex].enabled = true;
-        } else {
-          console.log(` -  ${module.id} already enabled`);
         }
       } else {
         console.log(` -  ${module.id} not required`);

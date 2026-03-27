@@ -17,5 +17,5 @@ export const useSmartReadableDateMethod = () => {
 		[translate]
 	);
 
-	return (date: Date) => CommonDateHelper.useSmartReadableDate(date, dateLocale, relativeDaysDiffTranslations);
+	return (date: Date) => CommonDateHelper.getSmartReadableDate(date, dateLocale, relativeDaysDiffTranslations);
 };

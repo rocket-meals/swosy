@@ -163,7 +163,7 @@ const Index = () => {
 			}
 
 			if (typeof value === 'number') {
-				return !isNaN(value);
+				return !Number.isNaN(value);
 			}
 
 			if (typeof value === 'boolean') {

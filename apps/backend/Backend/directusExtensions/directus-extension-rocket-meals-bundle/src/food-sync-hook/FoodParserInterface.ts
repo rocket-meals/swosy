@@ -1,7 +1,9 @@
 import {TranslationsFromParsingType} from '../helpers/TranslationHelper';
-import {DatabaseTypes, DateHelper, LanguageCodes} from 'repo-depkit-common';
+import {DatabaseTypes, DateHelper, FoodofferDateType, LanguageCodes} from 'repo-depkit-common';
 import {MarkingsTypeForParser} from './MarkingParserInterface';
 import {HashHelper} from '../helpers/HashHelper';
+
+export type { FoodofferDateType } from 'repo-depkit-common';
 
 export type FoodParseFoodAttributeValueType = {
   external_identifier: string;
@@ -13,11 +15,14 @@ export type FoodParseFoodAttributesType = FoodParseFoodAttributeValueType[];
 export type FoodWithBasicData = Omit<DatabaseTypes.Foods, 'user_created' | 'user_updated' | 'markings' | 'image' | 'feedbacks' | 'translations' | 'environmental_impact' | 'nutrition' | 'rating_legacy_settings' | 'rating_settings' | 'food_category' | 'category' | 'attribute_values'>;
 export type FoodWithBasicDataWithoutIdType = Omit<FoodWithBasicData, 'id'>;
 
-export type FoodsInformationTypeForParser = {
-  basicFoodData: FoodWithBasicData;
+export type FoodClassificationData = {
   attribute_values: FoodParseFoodAttributesType;
-  category_external_identifier: string | null;
   marking_external_identifiers: string[];
+  category_external_identifier: string | null;
+};
+
+export type FoodsInformationTypeForParser = FoodClassificationData & {
+  basicFoodData: FoodWithBasicData;
   translations: TranslationsFromParsingType;
 };
 
@@ -27,11 +32,6 @@ export type CanteensTypeForParser = CanteenTypeOmitedFields & {
   external_identifier: string;
 }; // make external_identifier required
 
-export type FoodofferDateType = {
-  year: number; // e.g. 2021
-  month: number; // 01-12
-  day: number; // 01-31
-};
 export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values'>;
 
 export type FoodComponentForParser = {
@@ -41,11 +41,8 @@ export type FoodComponentForParser = {
   food_id: string;
 };
 
-export type FoodoffersTypeForParser = {
+export type FoodoffersTypeForParser = FoodClassificationData & {
   basicFoodofferData: FoodofferTypeWithBasicData;
-  attribute_values: FoodParseFoodAttributesType;
-  marking_external_identifiers: string[];
-  category_external_identifier: string | null;
   date: FoodofferDateType;
   canteen_external_identifier: string;
   food_id: string;
@@ -59,6 +56,35 @@ export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
 };
 
 export class FoodParserHelper {
+  private static extractAttributeValues(foodoffer: DatabaseTypes.Foodoffers): FoodParseFoodAttributesType {
+    const attribute_values: FoodParseFoodAttributesType = [];
+    for (const attributeValue of (foodoffer.attribute_values as DatabaseTypes.FoodsAttributesValues[]) || []) {
+      const foodAttribute = attributeValue.food_attribute as DatabaseTypes.FoodsAttributes | null | undefined;
+      const externalIdentifier =
+        typeof foodAttribute === 'object' && foodAttribute ? foodAttribute.external_identifier || null : null;
+      if (!externalIdentifier) {
+        continue;
+      }
+      const {id, food_attribute, food_id, foodoffer_id, ...attributeValueWithoutRelations} = attributeValue;
+      attribute_values.push({
+        external_identifier: externalIdentifier,
+        attribute_value: attributeValueWithoutRelations,
+      });
+    }
+    return attribute_values;
+  }
+
+  private static extractMarkingExternalIdentifiers(foodoffer: DatabaseTypes.Foodoffers): string[] {
+    const marking_external_identifiers: string[] = [];
+    for (const markingRelation of (foodoffer.markings as DatabaseTypes.FoodoffersMarkings[]) || []) {
+      const marking = markingRelation.markings_id as DatabaseTypes.Markings | null | undefined;
+      if (typeof marking === 'object' && marking?.external_identifier) {
+        marking_external_identifiers.push(marking.external_identifier);
+      }
+    }
+    return marking_external_identifiers;
+  }
+
   static getFoodofferForParserInformation(foodoffer: DatabaseTypes.Foodoffers): FoodoffersTypeForParser | null {
     const dateString = foodoffer.date;
     if (!dateString) {
@@ -66,7 +92,7 @@ export class FoodParserHelper {
     }
 
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return null;
     }
 
@@ -93,36 +119,12 @@ export class FoodParserHelper {
       alias:
         foodoffer.alias ?? (typeof foodoffer.food === 'object' && foodoffer.food ? foodoffer.food.alias ?? null : null),
       foodoffer_components: foodoffer.foodoffer_components ?? [],
-    } as FoodofferTypeWithBasicData;
-
-    const attribute_values: FoodParseFoodAttributesType = [];
-    for (const attributeValue of (foodoffer.attribute_values as DatabaseTypes.FoodsAttributesValues[]) || []) {
-      const foodAttribute = attributeValue.food_attribute as DatabaseTypes.FoodsAttributes | null | undefined;
-      const externalIdentifier =
-        typeof foodAttribute === 'object' && foodAttribute ? foodAttribute.external_identifier || null : null;
-      if (!externalIdentifier) {
-        continue;
-      }
-
-      const {id, food_attribute, food_id, foodoffer_id, ...attributeValueWithoutRelations} = attributeValue;
-      attribute_values.push({
-        external_identifier: externalIdentifier,
-        attribute_value: attributeValueWithoutRelations,
-      });
-    }
-
-    const marking_external_identifiers: string[] = [];
-    for (const markingRelation of (foodoffer.markings as DatabaseTypes.FoodoffersMarkings[]) || []) {
-      const marking = markingRelation.markings_id as DatabaseTypes.Markings | null | undefined;
-      if (typeof marking === 'object' && marking?.external_identifier) {
-        marking_external_identifiers.push(marking.external_identifier);
-      }
-    }
+    };
 
     return {
       basicFoodofferData,
-      attribute_values,
-      marking_external_identifiers,
+      attribute_values: FoodParserHelper.extractAttributeValues(foodoffer),
+      marking_external_identifiers: FoodParserHelper.extractMarkingExternalIdentifiers(foodoffer),
       category_external_identifier: categoryExternalIdentifier,
       date: DateHelper.getFoodofferDateTypeFromDate(date),
       canteen_external_identifier: canteenExternalIdentifier,
@@ -175,7 +177,7 @@ export class FoodParserHelper {
   }
 
   static getFoodofferIdFromFoodofferInformationForParser(foodofferInformationForParser: FoodoffersTypeForParser): string {
-    const normalizedMarkings = [...foodofferInformationForParser.marking_external_identifiers].sort();
+    const normalizedMarkings = [...foodofferInformationForParser.marking_external_identifiers].sort((a, b) => a.localeCompare(b));
     const normalizedDate = DateHelper.foodofferDateTypeToString(foodofferInformationForParser.date);
 
     const normalizedFoodofferInformationForParser = {

@@ -9,6 +9,7 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import DropdownSheet from './DropdownSheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
+import type { FormInputBaseProps } from './types';
 
 const ensureStringArray = (options: string[]): string[] => {
 	const uniqueValues = new Set<string>();
@@ -20,16 +21,10 @@ const ensureStringArray = (options: string[]): string[] => {
 	return Array.from(uniqueValues);
 };
 
-type DropdownInputProps = {
-        id: string;
+type DropdownInputProps = Omit<FormInputBaseProps, 'isDisabled'> & {
         value: string | null | undefined;
-        onChange: (id: string, value: string, custom_type: string) => void;
-        error?: string;
         isDisabled: boolean;
-        custom_type: string;
         options?: string[];
-        prefix?: string | null;
-        suffix?: string | null;
         allowCustomValues?: boolean;
         onOpenSheet?: () => void;
         onCloseSheet?: () => void;

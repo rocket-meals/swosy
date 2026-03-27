@@ -1,12 +1,8 @@
 import { FoodWebParserAachenReadHtmlFiles } from './FoodWebParserAachenReadHtmlFiles';
 import { CanteenNamesToHtmlFileDict } from './FoodAndMarkingWebParserAachen';
 
-export class FoodWebParser_RawReportWebReaderAachen implements FoodWebParserAachenReadHtmlFiles {
-  private readonly reportToReturn: string | undefined;
-
-  constructor(reportToReturn?: string | undefined) {}
-
-  static CanteensToUrlsMap: { [canteenAlias: string]: string } = {
+export class FoodWebParserRawReportWebReaderAachen implements FoodWebParserAachenReadHtmlFiles {
+  static readonly CanteensToUrlsMap: { [canteenAlias: string]: string } = {
     'Mensa Academica': 'https://www.studierendenwerk-aachen.de/speiseplaene/academica-w.html',
     'Mensa Ahornstraße': 'https://www.studierendenwerk-aachen.de/speiseplaene/ahornstrasse-w.html',
     'Bistro Tempelgraben': 'https://www.studierendenwerk-aachen.de/speiseplaene/templergraben-w.html',
@@ -21,7 +17,7 @@ export class FoodWebParser_RawReportWebReaderAachen implements FoodWebParserAach
   public async getHtmlFilesForCanteens(): Promise<CanteenNamesToHtmlFileDict> {
     const canteensHtmlFilesMap: CanteenNamesToHtmlFileDict = {};
 
-    for (const canteenName of Object.keys(FoodWebParser_RawReportWebReaderAachen.CanteensToUrlsMap)) {
+    for (const canteenName of Object.keys(FoodWebParserRawReportWebReaderAachen.CanteensToUrlsMap)) {
       const rawReport = await this.getWebRawReport(canteenName);
       if (rawReport) {
         canteensHtmlFilesMap[canteenName] = rawReport;
@@ -32,7 +28,7 @@ export class FoodWebParser_RawReportWebReaderAachen implements FoodWebParserAach
   }
 
   private async getWebRawReport(canteenName: string): Promise<string | undefined> {
-    const url = FoodWebParser_RawReportWebReaderAachen.CanteensToUrlsMap[canteenName];
+    const url = FoodWebParserRawReportWebReaderAachen.CanteensToUrlsMap[canteenName];
     if (!url) {
       console.log(`No URL found for canteen: ${canteenName}`);
       return undefined;

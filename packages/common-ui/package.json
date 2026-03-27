@@ -1,0 +1,29 @@
+{
+  "name": "repo-depkit-common-ui",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "private": true,
+  "peerDependencies": {
+    "@expo/vector-icons": "*",
+    "@gorhom/bottom-sheet": "*",
+    "expo-asset": "*",
+    "expo-file-system": "*",
+    "expo-location": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-gesture-handler": "*",
+    "react-native-qrcode-svg": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-webview": "*"
+  },
+  "dependencies": {
+    "repo-depkit-common": "workspace:*",
+    "tinycolor2": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/tinycolor2": "^1.4.6",
+    "typescript": "*"
+  }
+}
