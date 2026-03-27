@@ -8562,7 +8562,6 @@ Key,Message,Component,Line
 "AZ0TplYCufp2jxPAhS4v","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/formReducer.ts",60
 "AZ0Tpkyeufp2jxPAhSwK","Remove this useless assignment to variable ""translate"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/forms/index.tsx",23
 "AZ0Tpk2Eufp2jxPAhSwx","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",570
-"AZ0TplHnufp2jxPAhS1Q","The object passed as the value prop to the Context provider changes every render. To fix this consider wrapping it in a useMemo hook.","rocket-meals_rocket-meals:apps/frontend/app/components/GlobalModal/ModalProvider.tsx",277
 "AZ0TplG4ufp2jxPAhS0-","Remove this unused import of 'TranslationKeys'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOfferDetailsContent/FoodOfferDetailsContent.tsx",26
 "AZ0TplG4ufp2jxPAhS0_","Remove this useless assignment to variable ""notificationGranted"".","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOfferDetailsContent/FoodOfferDetailsContent.tsx",73
 "AZ0TplG4ufp2jxPAhS1A","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOfferDetailsContent/FoodOfferDetailsContent.tsx",93
@@ -8784,8 +8783,6 @@ Key,Message,Component,Line
 "AZ0TplDiufp2jxPAhS0F","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/HoursSheet/HoursSheet.tsx",397
 "AZ0TplcUufp2jxPAhS47","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/hooks/usePopupEventModal.tsx",16
 "AZ0Tpk4yufp2jxPAhSyR","Remove this unused import of 'CollectibleAt'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/collectible-event/index.tsx",3
-"AZ0TplHnufp2jxPAhS1O","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/GlobalModal/ModalProvider.tsx",242
-"AZ0TplHnufp2jxPAhS1P","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/GlobalModal/ModalProvider.tsx",247
 "AZ0TplChufp2jxPAhSz2","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/DebugView/index.tsx",56
 "AZ0TplKEufp2jxPAhS1l","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",96
 "AZ0TplKEufp2jxPAhS1m","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/DropdownInput/DropdownSheet.tsx",101
@@ -9999,3 +9996,6 @@ Key,Message,Component,Line
 "AZlyj_6C0YdgFOBafBOJ","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",226
 "AZkUSvxcS4VhJojFFCil","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",283
 "AZkUSvxcS4VhJojFFCin","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",326
+"AZkUSvxcS4VhJojFFCiV","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",61
+"AZkUSvxcS4VhJojFFCiX","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",121
+"AZlyj_6C0YdgFOBafBOI","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",189
