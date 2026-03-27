@@ -146,8 +146,11 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 // Base billboard size unit in pixels at H3 resolution 10.
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
-// Multiplied by 6 so all billboards appear 6× larger in the viewport.
-const BILLBOARD_UNIT_PX = 48 * 6 / 7; // townhall ≈ 288 px at res 10
+const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
+// Default billboard scale multiplier (adjustable in the debug modal).
+const BILLBOARD_SCALE_DEFAULT = 1;
+// Precision factor for rounding billboard scale values (1 decimal place).
+const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
 // Default MapLibre zoom assumed when no viewport data is available yet.
 const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
@@ -774,10 +777,12 @@ type DebugInfoContentProps = {
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
 	initialSpeed: number;
+	initialBillboardScale: number;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
+	onBillboardScaleChange: (scale: number) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -789,15 +794,18 @@ function DebugInfoContent({
 	initialShowGridAlways,
 	initialH3Resolution,
 	initialSpeed,
+	initialBillboardScale,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
+	onBillboardScaleChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
+	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -820,6 +828,14 @@ function DebugInfoContent({
 			onSpeedChange(Math.min(parsed, DEBUG_MOVE_SPEED_MAX_KMH));
 		}
 	}, [onSpeedChange]);
+
+	const adjustBillboardScale = useCallback((delta: number) => {
+		setBillboardScale((prev) => {
+			const next = Math.max(0.1, Math.round((prev + delta) * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
+			onBillboardScaleChange(next);
+			return next;
+		});
+	}, [onBillboardScaleChange]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
 
@@ -967,6 +983,29 @@ function DebugInfoContent({
 					returnKeyType="done"
 					selectTextOnFocus
 				/>
+			</View>
+
+			{/* Billboard Scale row */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
+				<View style={styles.resolutionPicker}>
+					<TouchableOpacity
+						style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+						onPress={() => adjustBillboardScale(-0.5)}
+						disabled={billboardScale <= 0.1}
+					>
+						<Text style={styles.resolutionButtonText}>−</Text>
+					</TouchableOpacity>
+					<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+						{billboardScale.toFixed(1)}×
+					</Text>
+					<TouchableOpacity
+						style={styles.resolutionButton}
+						onPress={() => adjustBillboardScale(0.5)}
+					>
+						<Text style={styles.resolutionButtonText}>+</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			{/* Min zoom info row */}
@@ -1572,7 +1611,7 @@ export default function RecordScreen() {
 
 		// Scale billboard pixel size by the current H3 resolution so that billboards
 		// stay proportional to the hexagon visual size at resolution 10 (default).
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 288 px.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
 		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
@@ -1601,9 +1640,9 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
-			// Compute the pixel size for this sprite, applying its scaleFactor and the
-			// current H3 resolution scale.  Minimum 8 px to keep tiny sprites visible.
-			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio));
+			// Compute the pixel size for this sprite, applying its scaleFactor, the
+			// current H3 resolution scale, and the debug scale multiplier.  Minimum 8 px to keep tiny sprites visible.
+			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current));
 			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
 			// The X anchor is always the horizontal center of the square icon.
 			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
@@ -1674,6 +1713,8 @@ export default function RecordScreen() {
 	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
 	// Joystick speed, configurable from the debug modal
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
+	// Billboard scale multiplier, configurable from the debug modal
+	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1810,6 +1851,10 @@ export default function RecordScreen() {
 		debugMoveSpeedKmhRef.current = speed;
 	}, []);
 
+	const handleBillboardScaleChange = useCallback((scale: number) => {
+		billboardScaleRef.current = scale;
+	}, []);
+
 	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
@@ -1873,14 +1918,16 @@ export default function RecordScreen() {
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
+					initialBillboardScale={billboardScaleRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
+					onBillboardScaleChange={handleBillboardScaleChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
