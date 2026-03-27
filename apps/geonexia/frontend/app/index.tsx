@@ -1952,7 +1952,28 @@ export default function RecordScreen() {
 	}, [showModal, closeModal, dispatch, selectedSportType]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint, fromJoystick = false) => {
-		if (isPausedRef.current) return;
+		if (isPausedRef.current) {
+			// During pause: update the visual player position but do NOT record GPS points
+			// or mark hex tiles. Both real GPS and joystick movement are allowed so the
+			// player marker stays live while the run is paused.
+			//
+			// For real GPS: skip if the user already overrode the position with the
+			// joystick before pausing – this mirrors the active-recording behaviour and
+			// prevents GPS from snapping the marker back while the user navigates
+			// virtually during the pause.
+			const shouldUpdate = fromJoystick || !movedPlayerManuallyRef.current;
+			if (shouldUpdate) {
+				debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+				centerMapOnPosition({ lat: point.lat, lng: point.lng });
+				// Advance the accepted-point ref for real GPS so the speed filter works
+				// correctly on the first GPS point recorded after resume.
+				if (!fromJoystick) {
+					lastAcceptedGpsPointRef.current = point;
+				}
+			}
+			return;
+		}
 
 		// ── GPS speed filter (real GPS only) ─────────────────────────────────────
 		// If the implied speed between the last accepted GPS fix and this one is
@@ -2104,11 +2125,14 @@ export default function RecordScreen() {
 	// player position without recording anything.
 	const handleDebugMove = useCallback((lat: number, lng: number) => {
 		if (isRecordingRef.current) {
-			// Mark that the user has taken manual control of the player position so
-			// that subsequent real GPS updates no longer override it visually.
-			movedPlayerManuallyRef.current = true;
-			// Record the joystick position as a proper route point so the route
-			// is built up the same way real GPS data would build it.
+			// Only mark as manually moved when actively recording (not paused) so that
+			// GPS can take back control of the player position after a pause/resume.
+			if (!isPausedRef.current) {
+				movedPlayerManuallyRef.current = true;
+			}
+			// During recording, forward to handleLocationUpdate as a synthetic route
+			// point. During pause, handleLocationUpdate will perform a visual-only
+			// update (no recording).
 			handleLocationUpdate({
 				lat,
 				lng,
@@ -2402,6 +2426,10 @@ export default function RecordScreen() {
 		timerRef.current = setInterval(() => {
 			setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 		}, 1000);
+		// Allow GPS to resume as the authoritative position source. If the user
+		// navigated via joystick during the pause, GPS will smoothly re-anchor
+		// to the physical device location from the current player position.
+		movedPlayerManuallyRef.current = false;
 		isPausedRef.current = false;
 		setIsPaused(false);
 	}, []);
