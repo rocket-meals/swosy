@@ -143,10 +143,13 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 	0.000509,    // 15
 ];
 
-// Base billboard size unit in pixels at H3 resolution 10.
-// townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
+// Base billboard size unit in pixels at H3 resolution 10, evaluated at map zoom 15.
+// townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide at zoom 15.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
-const BILLBOARD_UNIT_PX = 48 / 7; // ≈ 6.857 → townhall = 48 px at res 10
+const BILLBOARD_UNIT_PX = 48 / 7; // ≈ 6.857 → townhall = 48 px at zoom 15, res 10
+// Atlas size used when rasterising billboard SVGs in the map WebView.
+// baseIconSize = desiredPxAtZoom15 / BILLBOARD_ATLAS_SIZE.
+const BILLBOARD_ATLAS_SIZE = 128;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -1557,19 +1560,19 @@ export default function RecordScreen() {
 			}
 		}
 
-		// ── Billboard markers ────────────────────────────────────────────────────
-		type BillboardMarker = {
+		// ── Billboard symbols (world-space, scale with zoom level) ───────────────
+		type BillboardSymbol = {
 			id: string;
 			position: { lat: number; lng: number };
-			icon: string;
-			size: [number, number];
-			iconAnchor: [number, number];
+			imageId: string;
+			imageUrl: string;
+			baseIconSize: number;
 		};
-		const billboardMarkers: BillboardMarker[] = [];
+		const billboardSymbols: BillboardSymbol[] = [];
 
-		// Scale billboard pixel size by the current H3 resolution so that billboards
-		// stay proportional to the hexagon visual size at resolution 10 (default).
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
+		// Scale billboard desired pixel size at zoom 15 by the current H3 resolution
+		// so that billboards stay proportional to the hexagon size at resolution 10.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 15.
 		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
@@ -1580,7 +1583,7 @@ export default function RecordScreen() {
 			if (!record.billboard) continue;
 			const parsed = parseBillboardKey(record.billboard);
 			if (!parsed) continue;
-			const { sprite } = parsed;
+			const { sprite, idx } = parsed;
 			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
 			if (!url) continue;
 			// Compute the centroid of the hexagon polygon by averaging its boundary
@@ -1598,22 +1601,24 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
-			// Compute the pixel size for this sprite, applying its scaleFactor and the
-			// current H3 resolution scale.  Minimum 8 px to keep tiny sprites visible.
+			// Desired pixel size at map zoom 15, scaled by the H3 resolution ratio.
+			// Minimum 8 px to keep tiny sprites visible.
 			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio));
-			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
-			// The X anchor is always the horizontal center of the square icon.
-			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
-			billboardMarkers.push({
+			// baseIconSize = desiredPxAtZoom15 / BILLBOARD_ATLAS_SIZE so that the map's
+			// zoom-based icon-size expression yields the correct world-space size.
+			const baseIconSize = billboardSizePx / BILLBOARD_ATLAS_SIZE;
+			billboardSymbols.push({
 				id: `billboard-${h3Index}`,
 				position: { lat, lng },
-				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
-				size: [billboardSizePx, billboardSizePx],
-				iconAnchor: [billboardSizePx / 2, anchorYPx],
+				// Stable image ID per sprite type so the same atlas entry is reused
+				// when multiple hexagons share the same sprite.
+				imageId: `billboard-sprite-${idx}`,
+				imageUrl: url,
+				baseIconSize,
 			});
 		}
 
-		mapRef.current.sendToMap({ imageOverlays, mapMarkers: billboardMarkers });
+		mapRef.current.sendToMap({ imageOverlays, billboardSymbols });
 	}, [loadAssetUrl]);
 
 	// Re-send customizations whenever tile image / model selections change, or when the
