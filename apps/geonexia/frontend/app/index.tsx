@@ -1613,7 +1613,11 @@ export default function RecordScreen() {
 			});
 		}
 
-		mapRef.current.sendToMap({ imageOverlays, mapMarkers: billboardMarkers });
+		mapRef.current.sendToMap({
+			imageOverlays,
+			mapMarkers: billboardMarkers,
+			mapMarkersReferenceZoom: debugViewportRef.current?.zoom ?? 14,
+		});
 	}, [loadAssetUrl]);
 
 	// Re-send customizations whenever tile image / model selections change, or when the
