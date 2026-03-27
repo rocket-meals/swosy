@@ -117,6 +117,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('settings/index'),
 		},
+		{
+			key: 'feature-wishes/index',
+			label: 'Feature Wishes',
+			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('feature-wishes/index'),
+		},
 	];
 
 	return (
@@ -224,6 +230,15 @@ export default function Layout() {
 									title: 'Settings',
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="settings-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="feature-wishes/index"
+								options={{
+									title: 'Feature Wishes',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="bulb-outline" size={size} color={color} />
 									),
 								}}
 							/>

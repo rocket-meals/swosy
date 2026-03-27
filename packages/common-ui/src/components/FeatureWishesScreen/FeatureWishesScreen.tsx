@@ -1,0 +1,369 @@
+import React, { useCallback, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
+import { useSettingsContext } from '../../context/SettingsContext';
+import { myContrastColor } from '../../helpers/ColorHelper';
+import { borderRadiusContainer, horizontalScreenPadding } from '../../constants/ui';
+import { lightTheme } from '../../themes';
+import SettingsList from '../SettingsList';
+import SettingsListLikeButton from '../SettingsListLikeButton';
+import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
+
+export interface FeatureWishItem {
+	id: string;
+	title: string;
+	description: string;
+	likeCount: number;
+	approved: boolean;
+	liked?: boolean;
+}
+
+export interface FeatureWishesScreenTexts {
+	introText?: string;
+	filterPendingLabel?: string;
+	filterAllLabel?: string;
+	approveLabel?: string;
+	approvedLabel?: string;
+	closeLabel?: string;
+}
+
+export interface FeatureWishesScreenProps {
+	isAdmin?: boolean;
+	primaryColor?: string;
+	texts?: FeatureWishesScreenTexts;
+}
+
+const DEFAULT_ITEMS: FeatureWishItem[] = [
+	{
+		id: '1',
+		title: 'Dark Mode',
+		description: 'Einen Dark Mode für die gesamte App einführen, um die Augen zu schonen und Akku zu sparen.',
+		likeCount: 42,
+		approved: true,
+	},
+	{
+		id: '2',
+		title: 'Wochenplan als Widget',
+		description: 'Den Wochenplan als Widget auf dem Homescreen anzeigen, damit man direkt sehen kann, was es gibt.',
+		likeCount: 31,
+		approved: true,
+	},
+	{
+		id: '3',
+		title: 'Kalorienzähler',
+		description: 'Eine Funktion zum Zählen der täglichen Kalorienzufuhr basierend auf den gegessenen Gerichten hinzufügen.',
+		likeCount: 28,
+		approved: false,
+	},
+	{
+		id: '4',
+		title: 'Favoriten-Liste',
+		description: 'Gerichte als Favoriten markieren und eine eigene Liste mit Lieblingsgerichten erstellen können.',
+		likeCount: 19,
+		approved: false,
+	},
+	{
+		id: '5',
+		title: 'Push-Benachrichtigungen für Lieblingsessen',
+		description: 'Benachrichtigungen erhalten, wenn ein bestimmtes Lieblingsgericht im Angebot ist.',
+		likeCount: 15,
+		approved: true,
+	},
+];
+
+const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
+	isAdmin = false,
+	primaryColor,
+	texts,
+}) => {
+	const { theme, isDark } = useTheme();
+	const settingsCtx = useSettingsContext();
+	const resolvedPrimaryColor = primaryColor ?? settingsCtx?.primaryColor ?? lightTheme.primary;
+	const contrastColor = myContrastColor(resolvedPrimaryColor, theme, isDark);
+
+	const [items, setItems] = useState<FeatureWishItem[]>(DEFAULT_ITEMS);
+	const [showPendingOnly, setShowPendingOnly] = useState(false);
+
+	const { show, close } = useMyScrollViewModal();
+
+	const introText =
+		texts?.introText ??
+		'Hier kannst du dir Features wünschen. Like Vorschläge, die du gut findest!';
+	const filterPendingLabel = texts?.filterPendingLabel ?? 'Neue Anfragen';
+	const filterAllLabel = texts?.filterAllLabel ?? 'Alle';
+	const approveLabel = texts?.approveLabel ?? 'Genehmigen';
+	const approvedLabel = texts?.approvedLabel ?? 'Genehmigt';
+	const closeLabel = texts?.closeLabel ?? 'Schließen';
+
+	const visibleItems = useMemo(
+		() => (isAdmin && showPendingOnly ? items.filter((i) => !i.approved) : items),
+		[items, isAdmin, showPendingOnly]
+	);
+
+	const handleLike = useCallback(
+		(id: string) => {
+			setItems((prev) =>
+				prev.map((item) => {
+					if (item.id !== id) return item;
+					const nowLiked = !item.liked;
+					return {
+						...item,
+						liked: nowLiked,
+						likeCount: item.likeCount + (nowLiked ? 1 : -1),
+					};
+				})
+			);
+		},
+		[]
+	);
+
+	const handleApprove = useCallback(
+		(id: string) => {
+			setItems((prev) =>
+				prev.map((item) => (item.id === id ? { ...item, approved: true } : item))
+			);
+			close();
+		},
+		[close]
+	);
+
+	const openDetail = useCallback(
+		(item: FeatureWishItem) => {
+			show({
+				title: item.title,
+				children: (
+					<DetailContent
+						item={item}
+						isAdmin={isAdmin}
+						approveLabel={approveLabel}
+						approvedLabel={approvedLabel}
+						closeLabel={closeLabel}
+						primaryColor={resolvedPrimaryColor}
+						onApprove={() => handleApprove(item.id)}
+						onClose={close}
+						theme={theme}
+					/>
+				),
+			});
+		},
+		[show, close, isAdmin, approveLabel, approvedLabel, closeLabel, resolvedPrimaryColor, handleApprove, theme]
+	);
+
+	const renderItem = useCallback(
+		({ item, index }: { item: FeatureWishItem; index: number }) => {
+			const total = visibleItems.length;
+			const groupPosition =
+				total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+
+			return (
+				<SettingsList
+					key={item.id}
+					title={item.title}
+					iconBgColor={resolvedPrimaryColor}
+					leftIcon={
+						<MaterialCommunityIcons name="lightbulb-outline" size={22} color={contrastColor} />
+					}
+					rightElement={
+						<SettingsListLikeButton
+							liked={item.liked}
+							likeCount={item.likeCount}
+							onPressLike={() => handleLike(item.id)}
+							primaryColor={resolvedPrimaryColor}
+						/>
+					}
+					groupPosition={groupPosition}
+					showSeparator={groupPosition !== 'bottom' && groupPosition !== 'single'}
+					onPress={() => openDetail(item)}
+				/>
+			);
+		},
+		[visibleItems.length, resolvedPrimaryColor, contrastColor, handleLike, openDetail]
+	);
+
+	const keyExtractor = useCallback((item: FeatureWishItem) => item.id, []);
+
+	const filterButtonStyle = (active: boolean) => [
+		styles.filterButton,
+		{
+			backgroundColor: active ? resolvedPrimaryColor : theme.screen.iconBg,
+			borderColor: resolvedPrimaryColor,
+		},
+	];
+
+	const filterTextStyle = (active: boolean) => ({
+		color: active ? myContrastColor(resolvedPrimaryColor, theme, isDark) : theme.screen.text,
+		fontSize: 13,
+		fontWeight: '600' as const,
+	});
+
+	return (
+		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+			<View style={styles.header}>
+				<Text style={[styles.introText, { color: theme.screen.text }]}>{introText}</Text>
+				{isAdmin && (
+					<View style={styles.filterRow}>
+						<Pressable
+							style={filterButtonStyle(!showPendingOnly)}
+							onPress={() => setShowPendingOnly(false)}
+						>
+							<Text style={filterTextStyle(!showPendingOnly)}>{filterAllLabel}</Text>
+						</Pressable>
+						<Pressable
+							style={filterButtonStyle(showPendingOnly)}
+							onPress={() => setShowPendingOnly(true)}
+						>
+							<Text style={filterTextStyle(showPendingOnly)}>{filterPendingLabel}</Text>
+						</Pressable>
+					</View>
+				)}
+			</View>
+			<FlatList
+				data={visibleItems}
+				renderItem={renderItem}
+				keyExtractor={keyExtractor}
+				contentContainerStyle={styles.listContent}
+				showsVerticalScrollIndicator={false}
+			/>
+		</View>
+	);
+};
+
+interface DetailContentProps {
+	item: FeatureWishItem;
+	isAdmin: boolean;
+	approveLabel: string;
+	approvedLabel: string;
+	closeLabel: string;
+	primaryColor: string;
+	onApprove: () => void;
+	onClose: () => void;
+	theme: any;
+}
+
+const DetailContent: React.FC<DetailContentProps> = ({
+	item,
+	isAdmin,
+	approveLabel,
+	approvedLabel,
+	closeLabel,
+	primaryColor,
+	onApprove,
+	onClose,
+	theme,
+}) => {
+	const { isDark } = useTheme();
+	const contrastOnPrimary = myContrastColor(primaryColor, theme, isDark);
+
+	return (
+		<View style={detailStyles.container}>
+			<Text style={[detailStyles.description, { color: theme.screen.text }]}>
+				{item.description}
+			</Text>
+			{isAdmin && !item.approved && (
+				<Pressable
+					style={[detailStyles.approveButton, { backgroundColor: primaryColor }]}
+					onPress={onApprove}
+				>
+					<MaterialCommunityIcons name="check-circle-outline" size={20} color={contrastOnPrimary} />
+					<Text style={[detailStyles.approveButtonText, { color: contrastOnPrimary }]}>
+						{approveLabel}
+					</Text>
+				</Pressable>
+			)}
+			{isAdmin && item.approved && (
+				<View style={[detailStyles.approvedBadge, { borderColor: primaryColor }]}>
+					<MaterialCommunityIcons name="check-circle" size={16} color={primaryColor} />
+					<Text style={[detailStyles.approvedText, { color: primaryColor }]}>
+						{approvedLabel}
+					</Text>
+				</View>
+			)}
+			<Pressable style={[detailStyles.closeButton, { backgroundColor: theme.screen.iconBg }]} onPress={onClose}>
+				<Text style={[detailStyles.closeButtonText, { color: theme.screen.text }]}>
+					{closeLabel}
+				</Text>
+			</Pressable>
+		</View>
+	);
+};
+
+export default FeatureWishesScreen;
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	header: {
+		paddingHorizontal: horizontalScreenPadding,
+		paddingVertical: 12,
+		gap: 10,
+	},
+	introText: {
+		fontSize: 14,
+		lineHeight: 20,
+	},
+	filterRow: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	filterButton: {
+		paddingHorizontal: 14,
+		paddingVertical: 6,
+		borderRadius: borderRadiusContainer,
+		borderWidth: 1,
+	},
+	listContent: {
+		paddingBottom: 24,
+	},
+});
+
+const detailStyles = StyleSheet.create({
+	container: {
+		paddingHorizontal: horizontalScreenPadding,
+		paddingTop: 8,
+		paddingBottom: 20,
+		gap: 16,
+	},
+	description: {
+		fontSize: 15,
+		lineHeight: 22,
+	},
+	approveButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		paddingHorizontal: 20,
+		borderRadius: borderRadiusContainer,
+		gap: 8,
+	},
+	approveButtonText: {
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	approvedBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		alignSelf: 'flex-start',
+		paddingVertical: 6,
+		paddingHorizontal: 12,
+		borderRadius: borderRadiusContainer,
+		borderWidth: 1,
+		gap: 6,
+	},
+	approvedText: {
+		fontSize: 13,
+		fontWeight: '600',
+	},
+	closeButton: {
+		paddingVertical: 12,
+		paddingHorizontal: 20,
+		borderRadius: borderRadiusContainer,
+		alignItems: 'center',
+	},
+	closeButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
+	},
+});
