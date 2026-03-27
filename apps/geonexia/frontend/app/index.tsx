@@ -147,6 +147,8 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
 const BILLBOARD_UNIT_PX = 48 / 7; // ≈ 6.857 → townhall = 48 px at res 10
+// Default MapLibre zoom assumed when no viewport data is available yet.
+const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -1616,7 +1618,7 @@ export default function RecordScreen() {
 		mapRef.current.sendToMap({
 			imageOverlays,
 			mapMarkers: billboardMarkers,
-			mapMarkersReferenceZoom: debugViewportRef.current?.zoom ?? 14,
+			mapMarkersReferenceZoom: debugViewportRef.current?.zoom ?? DEFAULT_REFERENCE_ZOOM,
 		});
 	}, [loadAssetUrl]);
 

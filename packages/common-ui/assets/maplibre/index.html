@@ -3763,6 +3763,9 @@
       var mapReady = false;
       var pendingMessage = null;
       var activeMarkers = {};
+      var DEFAULT_REFERENCE_ZOOM = 14;
+      var MIN_MARKER_SCALE = 0.05;
+      var MAX_MARKER_SCALE = 50;
       var markerReferenceZoom = null; // zoom level at which marker sizes are "correct"
       var markerMetaMap = {};         // markerId → { el, baseWidth, baseHeight, baseOffsetX, baseOffsetY }
       var vehicleMarkerEl = null;
@@ -3803,7 +3806,7 @@
 
         // Store the reference zoom – the zoom at which the supplied sizes are "correct".
         // If not provided, fall back to the current map zoom.
-        markerReferenceZoom = (referenceZoom != null) ? referenceZoom : (map ? map.getZoom() : 14);
+        markerReferenceZoom = (referenceZoom != null) ? referenceZoom : (map ? map.getZoom() : DEFAULT_REFERENCE_ZOOM);
 
         if (!markersData || !Array.isArray(markersData)) return;
 
@@ -3882,7 +3885,7 @@
         var currentZoom = map.getZoom();
         var scale = Math.pow(2, currentZoom - markerReferenceZoom);
         // Clamp scale to avoid absurdly large or tiny markers
-        scale = Math.max(0.05, Math.min(scale, 50));
+        scale = Math.max(MIN_MARKER_SCALE, Math.min(scale, MAX_MARKER_SCALE));
         var ids = Object.keys(markerMetaMap);
         for (var i = 0; i < ids.length; i++) {
           var meta = markerMetaMap[ids[i]];
