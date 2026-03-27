@@ -1572,7 +1572,7 @@ export default function RecordScreen() {
 
 		// Scale billboard pixel size by the current H3 resolution so that billboards
 		// stay proportional to the hexagon visual size at resolution 10 (default).
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 41 px.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 288 px.
 		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
