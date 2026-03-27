@@ -1553,7 +1553,7 @@ export default function RecordScreen() {
 			billboardMarkers.push({
 				id: `billboard-${h3Index}`,
 				position: { lat, lng },
-				icon: `<img src="${url}" style="display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
+				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
 				size: [BILLBOARD_SIZE, BILLBOARD_SIZE],
 				iconAnchor: [BILLBOARD_SIZE / 2, BILLBOARD_SIZE * sprite.anchorY],
 			});
