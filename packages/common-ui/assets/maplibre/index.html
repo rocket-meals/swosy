@@ -4614,6 +4614,10 @@
       }
 
       // Update all active billboard widths to match the current map zoom.
+      // Update all active billboard widths to match the current map zoom.
+      // After resizing, we call marker.setLngLat() to force MapLibre to recompute
+      // the anchor offset with the updated element dimensions so the billboard stays
+      // exactly on its geographic coordinate.
       function refreshBillboardSizes() {
         if (!map) return;
         var zoom = map.getZoom();
@@ -4624,6 +4628,8 @@
           var px = Math.round(b.sizem / mpp);
           if (px < 4) px = 4;
           b.imgEl.style.width = px + 'px';
+          // Force MapLibre to recompute the anchor offset with the new element size.
+          b.marker.setLngLat(b.marker.getLngLat());
         }
       }
 
@@ -4650,10 +4656,25 @@
           img.style.pointerEvents = 'none';
           img.style.height = 'auto';
 
+          // Pre-compute the pixel size and set the width before adding to the map so
+          // MapLibre calculates the correct anchor offset from the very first frame.
+          var mpp0 = billboardMetersPerPixel(map.getZoom(), bb.position.lat);
+          var initPx = Math.round((bb.sizem || 72) / mpp0);
+          if (initPx < 4) initPx = 4;
+          img.style.width = initPx + 'px';
+
           // anchor:'bottom' → the bottom edge of the image aligns with the lat/lng point.
           var marker = new maplibregl.Marker({ element: img, anchor: 'bottom' })
             .setLngLat([bb.position.lng, bb.position.lat])
             .addTo(map);
+
+          // Once the image finishes loading its natural dimensions are known.
+          // Re-trigger anchor recomputation so the billboard is precisely placed.
+          (function (m) {
+            img.addEventListener('load', function () {
+              m.setLngLat(m.getLngLat());
+            });
+          })(marker);
 
           activeBillboards[bb.id] = {
             marker: marker,
