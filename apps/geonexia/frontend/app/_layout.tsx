@@ -106,6 +106,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('statistics/index'),
 		},
 		{
+			key: 'achievements/index',
+			label: 'Achievements',
+			renderIcon: (_, color) => <Ionicons name="trophy-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('achievements/index'),
+		},
+		{
 			key: 'settings/index',
 			label: 'Settings',
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
@@ -200,6 +206,15 @@ export default function Layout() {
 									title: 'Statistics',
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="bar-chart-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="achievements/index"
+								options={{
+									title: 'Achievements',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="trophy-outline" size={size} color={color} />
 									),
 								}}
 							/>
