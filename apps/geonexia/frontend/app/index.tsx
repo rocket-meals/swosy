@@ -1636,19 +1636,6 @@ export default function RecordScreen() {
 			mapRef.current.sendToMap({ billboardImages });
 		}
 
-		// Static townhall billboard at the Berlin yellow marker position.
-		const BERLIN_LAT = 52.5200;
-		const BERLIN_LNG = 13.4050;
-		const TOWNHALL_IDX = 47; // townhall is at index 47 in OBJECT_SPRITES
-		const townhallSprite = OBJECT_SPRITES[TOWNHALL_IDX];
-		const berlinSizem = 72 * (townhallSprite.scaleFactor / TOWNHALL_SCALE_FACTOR);
-		billboards.push({
-			id: 'static-berlin-townhall',
-			type: `objects:${TOWNHALL_IDX}`,
-			position: { lng: BERLIN_LNG, lat: BERLIN_LAT },
-			sizem: berlinSizem,
-		});
-
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
@@ -1857,12 +1844,6 @@ export default function RecordScreen() {
 			// the default gray value defined in hexTileScript.ts is preserved.
 			mapRef.current?.sendToMap({
 				hexTileLayer: { color: 'rgba(0, 0, 0, 0)' },
-			});
-			// Yellow marker at Berlin for reference
-			mapRef.current?.sendToMap({
-				staticMarkers: [
-					{ id: 'berlin', lat: 52.5200, lng: 13.4050, color: '#facc15', sizePx: 16 },
-				],
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
