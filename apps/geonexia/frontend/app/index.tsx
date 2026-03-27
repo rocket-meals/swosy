@@ -1549,13 +1549,28 @@ export default function RecordScreen() {
 			const { sprite } = parsed;
 			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
 			if (!url) continue;
-			const [lat, lng] = cellToLatLng(h3Index);
+			// Compute the centroid of the hexagon polygon by averaging its boundary
+			// vertices, matching how buildCentersGeoJson computes purple dot positions
+			// in hexTileScript. The ring is closed (last vertex = first), so exclude
+			// the last vertex when averaging.
+			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
+			let sumLng = 0, sumLat = 0;
+			const n = boundary.length - 1;
+			if (n <= 0) continue; // skip if boundary is empty or degenerate
+			for (let j = 0; j < n; j++) {
+				const [bLng, bLat] = boundary[j] as [number, number];
+				sumLng += bLng;
+				sumLat += bLat;
+			}
+			const lng = sumLng / n;
+			const lat = sumLat / n;
 			billboardMarkers.push({
 				id: `billboard-${h3Index}`,
 				position: { lat, lng },
 				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
 				size: [BILLBOARD_SIZE, BILLBOARD_SIZE],
-				iconAnchor: [BILLBOARD_SIZE / 2, BILLBOARD_SIZE * sprite.anchorY],
+				// Center the image exactly on the geographic coordinate (= purple dot position).
+				iconAnchor: [BILLBOARD_SIZE / 2, BILLBOARD_SIZE / 2],
 			});
 		}
 
