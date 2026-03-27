@@ -28,7 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToHalfResolutionTiles, computeEdgeGapHexagon } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
@@ -124,7 +124,7 @@ type H3GeoJsonFeature = {
 	geometry:
 		| { type: 'Polygon'; coordinates: number[][][] }
 		| { type: 'Point'; coordinates: number[] };
-	properties: { h3Index: string; level: number; isCenter?: boolean; isVertex?: boolean };
+	properties: { h3Index: string; level: number; colorIndex?: number };
 };
 
 type H3FeatureCollection = {
@@ -179,119 +179,49 @@ function buildH3GeoJson(
 
 	const features: H3GeoJsonFeature[] = [];
 	if (isHalfResolution) {
-		// Render only the center tile (1/2-scaled inner hex) for each parent cell.
-		// Petals are NOT rendered – the space between adjacent inner hexes is
-		// filled by edge-gap hexagons (computed below) so there is no overlapping
-		// geometry between neighbouring cells.
+		// For fractional resolutions (e.g. 10.5) we compute child hexes at the
+		// next integer resolution and color them in 7 colors: the center child
+		// gets white (colorIndex 0) and the 6 ring children get red, yellow,
+		// green, blue, purple, orange (colorIndex 1–6) in ring order.
+		const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
 		for (const parentCell of parentCells) {
 			if (features.length >= H3_MAX_CELLS) break;
 			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
-			const tiles = cellToHalfResolutionTiles(parentCell, H3_GEOJSON_ORDER);
-			const centerTile = tiles[0]; // index 0 is the center tile (empty for invalid cells)
-			if (!centerTile) continue;
-			features.push({
-				type: 'Feature',
-				geometry: { type: 'Polygon', coordinates: [centerTile.polygon as number[][]] },
-				properties: { h3Index: parentCell, level: parentLevel, isCenter: true },
-			});
-		}
+			const centerChild = cellToCenterChild(parentCell, childRes);
+			if (!centerChild) continue;
 
-		// ── Edge-gap hexagons ─────────────────────────────────────────────
-		// Between each pair of adjacent parent cells, fill the hexagonal gap
-		// that lies between their 1/2-scaled inner hexes.  Each edge is processed
-		// exactly once (deduplication via a sorted key).
-		const parentCellSet = new Set(parentCells);
-		const processedEdges = new Set<string>();
-		for (const pc of parentCells) {
-			if (features.length >= H3_MAX_CELLS) break;
-			const neighbors = gridDisk(pc, 1).filter((n) => n !== pc);
-			for (const nb of neighbors) {
-				if (!parentCellSet.has(nb)) continue;
-				const edgeKey = pc < nb ? `${pc}:${nb}` : `${nb}:${pc}`;
-				if (processedEdges.has(edgeKey)) continue;
-				processedEdges.add(edgeKey);
-
-				const gapPoly = computeEdgeGapHexagon(pc, nb, H3_GEOJSON_ORDER);
-				if (!gapPoly || features.length >= H3_MAX_CELLS) continue;
-
-				const pcLevel = hexTileRecords[pc]?.level ?? 0;
-				const nbLevel = hexTileRecords[nb]?.level ?? 0;
-				const bestH3Index = pcLevel >= nbLevel ? pc : nb;
-				const bestLevel = Math.max(pcLevel, nbLevel);
+			// Center child → colorIndex 0 (white)
+			const centerBoundary = cellToBoundary(centerChild, H3_GEOJSON_ORDER);
+			if (centerBoundary.length > 0) {
 				features.push({
 					type: 'Feature',
-					geometry: { type: 'Polygon', coordinates: [gapPoly as number[][]] },
-					properties: { h3Index: bestH3Index, level: bestLevel, isCenter: false },
+					geometry: { type: 'Polygon', coordinates: [centerBoundary as number[][]] },
+					properties: { h3Index: parentCell, level: parentLevel, colorIndex: 0 },
 				});
 			}
-		}
 
-		// ── Vertex gap triangles ──────────────────────────────────────────
-		// At each vertex of the original hex grid, 3 parent cells meet.
-		// Their half-scaled inner hexes (center tiles) leave a small
-		// triangular gap between them.  We fill each gap with a triangle
-		// whose corners are the three inner vertices (one per meeting cell).
-		// A vertex map groups inner vertices by their shared outer vertex
-		// (rounded to 8 decimal places ≈ 1 mm), so each gap triangle is
-		// emitted exactly once regardless of the drawing order.
-		const VERTEX_KEY_PRECISION = 8;
-		type VtxEntry = { lat: number; lng: number; h3Index: string; level: number };
-		const vtxMap: Record<string, VtxEntry[]> = {};
-
-		for (const pc of parentCells) {
-			const pcLevel = hexTileRecords[pc]?.level ?? 0;
-			const [cLat, cLng] = cellToLatLng(pc);
-			const outer = cellToBoundary(pc, false); // [lat, lng] pairs
-			for (let v = 0; v < outer.length; v++) {
-				const [oLat, oLng] = outer[v];
-				const key = `${oLat.toFixed(VERTEX_KEY_PRECISION)},${oLng.toFixed(VERTEX_KEY_PRECISION)}`;
-				if (!vtxMap[key]) vtxMap[key] = [];
-				vtxMap[key].push({
-					lat: cLat + (oLat - cLat) * 0.5,
-					lng: cLng + (oLng - cLng) * 0.5,
-					h3Index: pc,
-					level: pcLevel,
-				});
+			// Ring children → colorIndex 1–6
+			let ringChildren: string[] = [];
+			try {
+				ringChildren = gridRingUnsafe(centerChild, 1).filter(
+					(c) => cellToParent(c, h3Res) === parentCell,
+				);
+			} catch (err) {
+				// gridRingUnsafe can throw for pentagon cells; skip ring for those
+				console.warn('[H3] gridRingUnsafe failed for centerChild', centerChild, err);
 			}
-		}
-
-		for (const entries of Object.values(vtxMap)) {
-			if (entries.length < 3 || features.length >= H3_MAX_CELLS) continue;
-			const [a, b, c] = entries;
-			// Use the cell with the highest level as the representative for the
-			// gap triangle so click events resolve to the most-visited tile.
-			const best = entries.reduce((m, e) => (e.level > m.level ? e : m), entries[0]);
-			features.push({
-				type: 'Feature',
-				geometry: {
-					type: 'Polygon',
-					coordinates: [[
-						[a.lng, a.lat],
-						[b.lng, b.lat],
-						[c.lng, c.lat],
-						[a.lng, a.lat], // close ring
-					]],
-				},
-				properties: { h3Index: best.h3Index, level: best.level, isCenter: false },
-			});
-		}
-
-		// ── Vertex circle markers ─────────────────────────────────────────────
-		// At each outer vertex (corner) of the hex grid, place a red circle
-		// marker so that the corners of the half-resolution tiles are clearly
-		// visible. The outer vertex coordinate is the vtxMap key; the level
-		// is taken from the highest-level adjacent cell (rounded whole level).
-		for (const [key, entries] of Object.entries(vtxMap)) {
-			if (features.length >= H3_MAX_CELLS) break;
-			const commaIdx = key.indexOf(',');
-			const oLat = parseFloat(key.slice(0, commaIdx));
-			const oLng = parseFloat(key.slice(commaIdx + 1));
-			const best = entries.reduce((m, e) => (e.level > m.level ? e : m), entries[0]);
-			features.push({
-				type: 'Feature',
-				geometry: { type: 'Point', coordinates: [oLng, oLat] },
-				properties: { h3Index: best.h3Index, level: best.level, isVertex: true },
-			});
+			for (let i = 0; i < ringChildren.length; i++) {
+				if (features.length >= H3_MAX_CELLS) break;
+				const child = ringChildren[i];
+				const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
+				if (boundary.length > 0) {
+					features.push({
+						type: 'Feature',
+						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+						properties: { h3Index: parentCell, level: parentLevel, colorIndex: i + 1 },
+					});
+				}
+			}
 		}
 	} else {
 		for (const cell of parentCells) {
