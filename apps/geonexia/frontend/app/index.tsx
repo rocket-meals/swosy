@@ -1109,10 +1109,8 @@ const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
 const SPRITE_THUMB_SIZE = 52;
 const SPRITE_THUMB_GAP = 4;
-/** Reference scale factor for the townhall sprite; SPRITE_BILLBOARD_SIZEM corresponds to this scale. */
+/** Reference scale factor for the townhall sprite; a scaleFactor of 7.0 fills the hex cell. */
 const TOWNHALL_SCALE_FACTOR = 7.0;
-/** Geographic size in metres for a townhall billboard at H3 level 10. */
-const SPRITE_BILLBOARD_SIZEM = 210;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -1607,7 +1605,8 @@ export default function RecordScreen() {
 					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
 				}
 				// Individual object sprites use a per-sprite geographic size derived from
-				// their scaleFactor (relative to townhall = 7.0 = SPRITE_BILLBOARD_SIZEM).
+				// their scaleFactor (relative to townhall = 7.0), scaled to the actual hex
+				// cell size so billboards fit correctly at any H3 level.
 				let billboardSizem = sizem;
 				let billboardAnchorY = 1.0;
 				if (record.billboard.startsWith('objects:')) {
@@ -1615,7 +1614,7 @@ export default function RecordScreen() {
 					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
 						? OBJECT_SPRITES[spriteIdx] : undefined;
 					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
-					billboardSizem = SPRITE_BILLBOARD_SIZEM * (scale / TOWNHALL_SCALE_FACTOR);
+					billboardSizem = sizem * (scale / TOWNHALL_SCALE_FACTOR);
 					billboardAnchorY = sprite ? sprite.anchorY : 1.0;
 				}
 				billboards.push({
