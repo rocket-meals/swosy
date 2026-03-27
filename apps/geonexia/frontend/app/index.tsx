@@ -1619,7 +1619,10 @@ export default function RecordScreen() {
 		mapRef.current.sendToMap({
 			imageOverlays,
 			mapMarkers: billboardMarkers,
-			mapMarkersReferenceZoom: debugViewportRef.current?.zoom ?? DEFAULT_REFERENCE_ZOOM,
+			// Always use the fixed reference zoom so that billboard sizes remain
+			// consistent regardless of what zoom the user is at when markers are
+			// sent (e.g. after changing h3 resolution and reverting).
+			mapMarkersReferenceZoom: DEFAULT_REFERENCE_ZOOM,
 		});
 	}, [loadAssetUrl]);
 
