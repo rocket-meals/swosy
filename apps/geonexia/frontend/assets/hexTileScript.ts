@@ -50,6 +50,8 @@ export const HEX_TILE_SCRIPT = `
   var HEX_WALK_PATH_LAYER = 'hex-walk-path-layer';
   var HEX_VERTICES_SOURCE = 'hex-vertices-source';
   var HEX_VERTICES_LAYER = 'hex-vertices-layer';
+  var HEX_CENTERS_SOURCE = 'hex-centers-source';
+  var HEX_CENTERS_LAYER = 'hex-centers-layer';
 
   // ── Empty FeatureCollection used as initial / cleared state ───────────────
   var EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -129,6 +131,32 @@ export const HEX_TILE_SCRIPT = `
     }
 
     return { type: 'FeatureCollection', features: borderFeatures };
+  }
+
+  // ── Build GeoJSON FeatureCollection of hex polygon centroids ─────────────
+  // Computes the centroid of each polygon by averaging its vertices (excluding
+  // the closing duplicate). The result is a Point feature at the exact centre
+  // of each hex tile, used to render a small purple dot per hexagon.
+  function buildCentersGeoJson(features) {
+    var points = [];
+    for (var i = 0; i < features.length; i++) {
+      var feature = features[i];
+      var ring = feature.geometry && feature.geometry.coordinates && feature.geometry.coordinates[0];
+      if (!ring || ring.length < 2) continue;
+      // Polygon rings are closed (last === first); exclude the last vertex.
+      var n = ring.length - 1;
+      var sumLng = 0, sumLat = 0;
+      for (var j = 0; j < n; j++) {
+        sumLng += ring[j][0];
+        sumLat += ring[j][1];
+      }
+      points.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [sumLng / n, sumLat / n] },
+        properties: {},
+      });
+    }
+    return { type: 'FeatureCollection', features: points };
   }
 
   // ── Notify React Native about the current viewport ────────────────────────
@@ -241,6 +269,20 @@ export const HEX_TILE_SCRIPT = `
         'circle-opacity': 0.9,
       },
     });
+    // Hex tile centres: small purple dot at the exact centre of each hexagon
+    map.addSource(HEX_CENTERS_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_CENTERS_LAYER,
+      type: 'circle',
+      source: HEX_CENTERS_SOURCE,
+      paint: {
+        'circle-radius': 5,
+        'circle-color': '#a855f7',
+        'circle-stroke-width': 1.5,
+        'circle-stroke-color': '#6b21a8',
+        'circle-opacity': 0.9,
+      },
+    });
     // Raise any route track / segment layers above the hex tile layers so the
     // GPS route is always rendered on top of the hex grid.  These layers are
     // created lazily (only once the first routeCoordinates message arrives), so
@@ -259,6 +301,8 @@ export const HEX_TILE_SCRIPT = `
 
   function removeHexTileLayer() {
     if (!map) return;
+    if (map.getLayer(HEX_CENTERS_LAYER)) map.removeLayer(HEX_CENTERS_LAYER);
+    if (map.getSource(HEX_CENTERS_SOURCE)) map.removeSource(HEX_CENTERS_SOURCE);
     if (map.getLayer(HEX_VERTICES_LAYER)) map.removeLayer(HEX_VERTICES_LAYER);
     if (map.getSource(HEX_VERTICES_SOURCE)) map.removeSource(HEX_VERTICES_SOURCE);
     if (map.getLayer(HEX_WALK_PATH_LAYER)) map.removeLayer(HEX_WALK_PATH_LAYER);
@@ -307,6 +351,9 @@ export const HEX_TILE_SCRIPT = `
       // Update green corner-vertex dots
       var verticesSrc = map && map.getSource(HEX_VERTICES_SOURCE);
       if (verticesSrc) verticesSrc.setData(buildVerticesGeoJson(fc.features || []));
+      // Update purple centre dots
+      var centersSrc = map && map.getSource(HEX_CENTERS_SOURCE);
+      if (centersSrc) centersSrc.setData(buildCentersGeoJson(fc.features || []));
     }
     if (data.hexWalkPathGeoJson !== undefined) {
       if (!hexTileActive) return;
