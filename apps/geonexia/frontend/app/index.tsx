@@ -1409,6 +1409,14 @@ export default function RecordScreen() {
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
 
+	// Current map zoom level (updated from MapViewportChanged messages).
+	// Used to scale billboard pixel sizes so they grow proportionally with
+	// the hexagon tiles as the user zooms in/out.
+	const currentMapZoomRef = useRef<number>(H3_MIN_ZOOM);
+	// Zoom level at which billboards were last re-sent; re-send is triggered
+	// whenever the zoom changes by ≥ 0.25 from this reference.
+	const lastBillboardZoomRef = useRef<number>(H3_MIN_ZOOM);
+
 	// Heading mode: when active during recording, the map rotates to face the
 	// direction of travel. Toggled by the compass button.
 	const isHeadingModeRef = useRef(false);
@@ -1567,14 +1575,16 @@ export default function RecordScreen() {
 		};
 		const billboardMarkers: BillboardMarker[] = [];
 
-		// Scale billboard pixel size by the current H3 resolution so that billboards
-		// stay proportional to the hexagon visual size.  At resolution 10 (default),
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
-		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
+		// Scale billboard pixel size by the current H3 resolution AND the current
+		// map zoom so that billboards stay proportional to the hexagon visual size.
+		// At resolution 10 and zoom H3_MIN_ZOOM (default), townhall (scaleFactor 7.0)
+		// renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.  Each additional zoom level
+		// doubles the pixel size, matching how MapLibre scales geographic polygons.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
 		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
 		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
+		const zoomScaleFactor = Math.pow(2, currentMapZoomRef.current - H3_MIN_ZOOM);
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			if (!record.billboard) continue;
@@ -1598,9 +1608,10 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
-			// Compute the pixel size for this sprite, applying its scaleFactor and the
-			// current H3 resolution scale.  Minimum 8 px to keep tiny sprites visible.
-			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio));
+			// Compute the pixel size for this sprite, applying its scaleFactor, the
+			// current H3 resolution scale and the current map zoom scale.
+			// Minimum 8 px to keep tiny sprites visible.
+			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * zoomScaleFactor));
 			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
 			// The X anchor is always the horizontal center of the square icon.
 			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
@@ -1832,6 +1843,7 @@ export default function RecordScreen() {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
+			currentMapZoomRef.current = vp.zoom;
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
 				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
@@ -1843,6 +1855,12 @@ export default function RecordScreen() {
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+			// Re-send billboard markers when the zoom changes enough so their pixel
+			// sizes stay proportional to the hexagon tiles.
+			if (Math.abs(vp.zoom - lastBillboardZoomRef.current) >= 0.25) {
+				lastBillboardZoomRef.current = vp.zoom;
+				loadAndSendCustomizations();
+			}
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string };
 			if (clickedMsg.h3Index) {
