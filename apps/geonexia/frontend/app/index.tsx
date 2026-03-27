@@ -1531,6 +1531,8 @@ export default function RecordScreen() {
 			sizem: number;
 			/** Vertical anchor as a fraction of image height (0=top, 1=bottom). The geographic coordinate attaches here. */
 			anchorY: number;
+			/** The 6 outer vertices of the H3 hex cell as [lng, lat] pairs, used to compute the visual centroid when the map is pitched. */
+			hexBoundary?: [number, number][];
 		};
 
 		const imageOverlays: ImageOverlay[] = [];
@@ -1623,6 +1625,7 @@ export default function RecordScreen() {
 					position: { lng: center[1], lat: center[0] },
 					sizem: billboardSizem,
 					anchorY: billboardAnchorY,
+					hexBoundary: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
 				});
 			}
 		}
