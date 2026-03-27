@@ -1017,6 +1017,21 @@ export type DirectusWebhooks = {
   was_active_before_deprecation: boolean;
 };
 
+export type FeatureWhishes = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  description?: string | null;
+  id: string;
+  likes?: number | null;
+  sort?: number | null;
+  status: string;
+  tags?: unknown | null;
+  title?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type FilesShares = {
   date_created?: string | null;
   date_exires_at?: string | null;
@@ -1975,6 +1990,7 @@ export type CustomDirectusTypes = {
   directus_users: DirectusUsers[];
   directus_versions: DirectusVersions[];
   directus_webhooks: DirectusWebhooks[];
+  feature_whishes: FeatureWhishes[];
   files_shares: FilesShares[];
   foodoffers: Foodoffers[];
   foodoffers_categories: FoodoffersCategories[];
