@@ -1,4 +1,9 @@
 Key,Message,Component,Line
+"AZ0v9Z6Xhrzf4po1n49U","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",134
+"AZ0v9Z6Xhrzf4po1n49W","'item' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",234
+"AZ0v9Z6Xhrzf4po1n49X","'index' PropType is defined but prop is never used","rocket-meals_rocket-meals:packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",234
+"AZ0v9Z6Xhrzf4po1n49Y","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",237
+"AZ0v9Z6Xhrzf4po1n49Z","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",237
 "AZ0vS9ssBGG9nGF3KGsl","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",104
 "AZ0vS9ssBGG9nGF3KGsm","Unnecessary escape character: \/.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1202
 "AZ0vS9ssBGG9nGF3KGsn","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1299
@@ -9994,8 +9999,3 @@ Key,Message,Component,Line
 "AZlyj_6C0YdgFOBafBOI","Unexpected negated condition.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/index.ts",189
 "AZkUSvkCS4VhJojFFCYH","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DictHelper.ts",19
 "AZkUSvkCS4VhJojFFCYI","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/DictHelper.ts",26
-"AZ0TpmNAufp2jxPAhTMO","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",996
-"AZ0TpmNAufp2jxPAhTMQ","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",1355
-"AZ0TpmNAufp2jxPAhTMV","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",1710
-"AZkUSvreS4VhJojFFCb7","Redundant double negation.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",562
-"AZkUSvgPS4VhJojFFCWw","Make this public static property readonly.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/TranslationHelper.ts",115
