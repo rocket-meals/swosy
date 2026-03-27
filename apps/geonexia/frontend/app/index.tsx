@@ -146,7 +146,8 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 // Base billboard size unit in pixels at H3 resolution 10.
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
-const BILLBOARD_UNIT_PX = 48 / 7; // ≈ 6.857 → townhall = 48 px at res 10
+// Multiplied by 7 so all billboards appear 7× larger in the viewport.
+const BILLBOARD_UNIT_PX = 48; // townhall = 336 px at res 10
 // Default MapLibre zoom assumed when no viewport data is available yet.
 const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
