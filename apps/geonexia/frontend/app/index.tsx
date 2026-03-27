@@ -146,8 +146,8 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 // Base billboard size unit in pixels at H3 resolution 10.
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
-// Multiplied by 7 so all billboards appear 7× larger in the viewport.
-const BILLBOARD_UNIT_PX = 48; // townhall = 336 px at res 10
+// Multiplied by 6 so all billboards appear 6× larger in the viewport.
+const BILLBOARD_UNIT_PX = 48 * 6 / 7; // townhall ≈ 288 px at res 10
 // Default MapLibre zoom assumed when no viewport data is available yet.
 const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
@@ -1572,7 +1572,7 @@ export default function RecordScreen() {
 
 		// Scale billboard pixel size by the current H3 resolution so that billboards
 		// stay proportional to the hexagon visual size at resolution 10 (default).
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 288 px.
 		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
@@ -2471,6 +2471,7 @@ export default function RecordScreen() {
 						iconColor="#555555"
 						activeColor={PRIMARY_COLOR}
 						isFollowing={isFollowing}
+						zoom={17}
 						onLocationFound={() => {
 							movedPlayerManuallyRef.current = false;
 							setFollowMode(true);
