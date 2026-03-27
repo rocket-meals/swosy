@@ -1,6 +1,6 @@
 Key,Message,Component,Line
-"AZ0qevdqWI1lSSkCzy3i","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1615
-"AZ0qevdqWI1lSSkCzy3j","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1616
+"AZ0qevdqWI1lSSkCzy3i","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1610
+"AZ0qevdqWI1lSSkCzy3j","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1611
 "AZ0qG3id3nNYjoSCoz3t","React Hook ""usePlatformHelper"" is called in function ""getIsLandScape"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/DeviceHelper.ts",115
 "AZ0qG3id3nNYjoSCoz3u","React Hook ""usePlatformHelper"" is called in function ""getDeviceInformationWithoutPushToken"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/DeviceHelper.ts",144
 "AZ0qG3lu3nNYjoSCoz3w","React Hook ""usePlatformHelper"" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",75
