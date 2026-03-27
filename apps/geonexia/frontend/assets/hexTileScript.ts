@@ -44,7 +44,6 @@ export const HEX_TILE_SCRIPT = `
   var HEX_TILE_SOURCE = 'hex-tile-source';
   var HEX_TILE_FILL_LAYER = 'hex-tile-fill';
   var HEX_TILE_STROKE_LAYER = 'hex-tile-stroke';
-  var HEX_VERTEX_CIRCLE_LAYER = 'hex-vertex-circle';
   var HEX_BORDER_SOURCE = 'hex-border-source';
   var HEX_BORDER_LAYER = 'hex-border-layer';
   var HEX_WALK_PATH_SOURCE = 'hex-walk-path-source';
@@ -134,17 +133,34 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'fill-color': ['case',
-          ['==', ['get', 'level'], 0], hexTileColor,
-          ['interpolate', ['linear'], ['get', 'level'],
-            1, HEX_COLOR_LEVEL_MIN,
-            10, HEX_COLOR_LEVEL_MAX
+          ['has', 'colorIndex'],
+          ['match', ['get', 'colorIndex'],
+            0, '#ffffff',
+            1, '#ef4444',
+            2, '#eab308',
+            3, '#22c55e',
+            4, '#3b82f6',
+            5, '#a855f7',
+            6, '#f97316',
+            '#ffffff'
+          ],
+          ['case',
+            ['==', ['get', 'level'], 0], hexTileColor,
+            ['interpolate', ['linear'], ['get', 'level'],
+              1, HEX_COLOR_LEVEL_MIN,
+              10, HEX_COLOR_LEVEL_MAX
+            ]
           ]
         ],
         'fill-opacity': ['case',
-          ['==', ['get', 'level'], 0], 0,
-          ['interpolate', ['linear'], ['get', 'level'],
-            1, HEX_OPACITY_LEVEL_MIN,
-            10, HEX_OPACITY_LEVEL_MAX
+          ['has', 'colorIndex'],
+          0.75,
+          ['case',
+            ['==', ['get', 'level'], 0], 0,
+            ['interpolate', ['linear'], ['get', 'level'],
+              1, HEX_OPACITY_LEVEL_MIN,
+              10, HEX_OPACITY_LEVEL_MAX
+            ]
           ]
         ],
       },
@@ -153,26 +169,10 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_TILE_STROKE_LAYER,
       type: 'line',
       source: HEX_TILE_SOURCE,
-      filter: ['any', ['!', ['has', 'isCenter']], ['==', ['get', 'isCenter'], true]],
       paint: {
         'line-color': hexTileStrokeColor,
         'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 12, 1.0, 15, 0.7],
         'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.4, 15, 0.3],
-      },
-    });
-    // Vertex circle markers: red circles at the outer corner points of hex tiles,
-    // shown only at half-resolution zoom levels (isVertex=true Point features).
-    map.addLayer({
-      id: HEX_VERTEX_CIRCLE_LAYER,
-      type: 'circle',
-      source: HEX_TILE_SOURCE,
-      filter: ['==', ['get', 'isVertex'], true],
-      paint: {
-        'circle-color': '#ef4444',
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 12, 5, 15, 8],
-        'circle-opacity': 0.9,
-        'circle-stroke-color': '#ffffff',
-        'circle-stroke-width': 1,
       },
     });
     // Territory border: separate source/layer for thick dark boundary lines
@@ -225,7 +225,6 @@ export const HEX_TILE_SCRIPT = `
     if (map.getSource(HEX_WALK_PATH_SOURCE)) map.removeSource(HEX_WALK_PATH_SOURCE);
     if (map.getLayer(HEX_BORDER_LAYER)) map.removeLayer(HEX_BORDER_LAYER);
     if (map.getSource(HEX_BORDER_SOURCE)) map.removeSource(HEX_BORDER_SOURCE);
-    if (map.getLayer(HEX_VERTEX_CIRCLE_LAYER)) map.removeLayer(HEX_VERTEX_CIRCLE_LAYER);
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
     if (map.getLayer(HEX_TILE_FILL_LAYER)) map.removeLayer(HEX_TILE_FILL_LAYER);
     if (map.getSource(HEX_TILE_SOURCE)) map.removeSource(HEX_TILE_SOURCE);
