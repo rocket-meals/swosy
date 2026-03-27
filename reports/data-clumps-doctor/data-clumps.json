@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-27T07:23:18.741Z",
+  "report_timestamp": "2026-03-27T07:42:49.421Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 92,
-          "average": 1.587273530711445,
-          "amountSavedValuesForKeys": 3592,
+          "maximum": 93,
+          "average": 1.5903296703296703,
+          "amountSavedValuesForKeys": 3618,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -21,51 +21,51 @@
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 92,
-          "average": 1.6021409455842996,
-          "amountSavedValuesForKeys": 3592,
+          "maximum": 93,
+          "average": 1.6051464063886425,
+          "amountSavedValuesForKeys": 3618,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3836,
-        "detection_time_ms": 66,
+        "ast_generation_time_ms": 3974,
+        "detection_time_ms": 71,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 234.13,
-          "os_memory_free": 14995664896,
-          "os_memory_total": 16771563520,
+          "os_uptime": 113.97,
+          "os_memory_free": 14997168128,
+          "os_memory_total": 16767234048,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 28,
-    "amount_files_with_data_clumps": 20,
+    "amount_classes_or_interfaces_with_data_clumps": 33,
+    "amount_files_with_data_clumps": 23,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 28,
+    "fields_to_fields_data_clump": 34,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 36
+    "amount_data_clumps": 42
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "fe49267e1afe7cd5b6da8e08f50eab668fdb4b1b",
-    "project_commit_hash": "fe49267e1afe7cd5b6da8e08f50eab668fdb4b1b",
+    "project_version": "675caa56fc82c4e20300fe80ea35a8df3540802b",
+    "project_commit_hash": "675caa56fc82c4e20300fe80ea35a8df3540802b",
     "project_tag": null,
-    "project_commit_date": "1774596107",
+    "project_commit_date": "1774597270",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 451,
-    "number_of_classes_or_interfaces": 929,
-    "number_of_methods": 1318,
-    "number_of_data_fields": 3592,
+    "number_of_files": 453,
+    "number_of_classes_or_interfaces": 934,
+    "number_of_methods": 1321,
+    "number_of_data_fields": 3618,
     "number_of_method_parameters": 1458
   },
   "detector": {
@@ -2581,7 +2581,7 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 12,
-        "cluster_type": 2
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/frontend/app/components/SettingsListTextInput.tsx-apps/frontend/app/components/SettingsListTextInput.tsx/interface/TextInputBaseProps-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-placeholderkeyboardTypeinputStyleautoFocus": {
@@ -2704,6 +2704,103 @@
       "data_clump_type_additional": {
         "cluster_id": 13,
         "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/achievements/index.tsx-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem-idtitledescription": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/achievements/index.tsx-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem-idtitledescription",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/app/achievements/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition",
+      "from_class_or_interface_name": "AchievementDefinition",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem",
+      "to_class_or_interface_name": "FeatureWishItem",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/id": {
+          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 55,
+            "startColumn": 2,
+            "endLine": 55,
+            "endColumn": 13
+          }
+        },
+        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/title": {
+          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 56,
+            "startColumn": 2,
+            "endLine": 56,
+            "endColumn": 16
+          }
+        },
+        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/description": {
+          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/description",
+          "name": "description",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/description",
+            "name": "description",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 2,
+            "endLine": 57,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 14,
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
@@ -3247,6 +3344,297 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-approveLabelapprovedLabelcloseLabel": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-approveLabelapprovedLabelcloseLabel",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps",
+      "from_class_or_interface_name": "DetailContentProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts",
+      "to_class_or_interface_name": "FeatureWishesScreenTexts",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approveLabel": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approveLabel",
+          "name": "approveLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approveLabel",
+            "name": "approveLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 236,
+            "startColumn": 2,
+            "endLine": 236,
+            "endColumn": 23
+          }
+        },
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approvedLabel": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approvedLabel",
+          "name": "approvedLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approvedLabel",
+            "name": "approvedLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 28,
+              "startColumn": 2,
+              "endLine": 28,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 237,
+            "startColumn": 2,
+            "endLine": 237,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/closeLabel": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/closeLabel",
+          "name": "closeLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/closeLabel",
+            "name": "closeLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 238,
+            "startColumn": 2,
+            "endLine": 238,
+            "endColumn": 21
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-idtitledescription": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-idtitledescription",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem",
+      "from_class_or_interface_name": "FeatureWishItem",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/app/achievements/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition",
+      "to_class_or_interface_name": "AchievementDefinition",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/id": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 55,
+              "startColumn": 2,
+              "endLine": 55,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 13
+          }
+        },
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/title": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/title",
+          "name": "title",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/title",
+            "name": "title",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 56,
+              "startColumn": 2,
+              "endLine": 56,
+              "endColumn": 16
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 16
+          }
+        },
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/description": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem/memberField/description",
+          "name": "description",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/description",
+            "name": "description",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 2,
+              "endLine": 57,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 14,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-approveLabelapprovedLabelcloseLabel": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-approveLabelapprovedLabelcloseLabel",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts",
+      "from_class_or_interface_name": "FeatureWishesScreenTexts",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps",
+      "to_class_or_interface_name": "DetailContentProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approveLabel": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approveLabel",
+          "name": "approveLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approveLabel",
+            "name": "approveLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 236,
+              "startColumn": 2,
+              "endLine": 236,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approvedLabel": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approvedLabel",
+          "name": "approvedLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approvedLabel",
+            "name": "approvedLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 237,
+              "startColumn": 2,
+              "endLine": 237,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 28,
+            "startColumn": 2,
+            "endLine": 28,
+            "endColumn": 25
+          }
+        },
+        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/closeLabel": {
+          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/closeLabel",
+          "name": "closeLabel",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/closeLabel",
+            "name": "closeLabel",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 238,
+              "startColumn": 2,
+              "endLine": 238,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx-packages/common-ui/src/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-apps/frontend/app/components/GlobalModal/ModalProvider.tsx/interface/ModalContextType-opencloseopenAndDiscardOtherscloseAll",
@@ -3681,7 +4069,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -3778,7 +4166,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -4517,6 +4905,103 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-likeLoadinglikeCountprimaryColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-likeLoadinglikeCountprimaryColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps",
+      "from_class_or_interface_name": "SettingsListLikeButtonProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps",
+      "to_class_or_interface_name": "SettingsListLikeDislikeFastProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/likeLoading": {
+          "key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/likeLoading",
+          "name": "likeLoading",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeLoading",
+            "name": "likeLoading",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/likeCount": {
+          "key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/likeCount",
+          "name": "likeCount",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeCount",
+            "name": "likeCount",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 21
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/primaryColor": {
+          "key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/primaryColor",
+          "name": "primaryColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/primaryColor",
+            "name": "primaryColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps-likelikeLoadingdislikeLoadinglikeCountdislikeCount": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-apps/frontend/app/components/SettingsListLikeDislike/types.ts/interface/SettingsListLikeDislikeProps-likelikeLoadingdislikeLoadinglikeCountdislikeCount",
@@ -4661,7 +5146,104 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 12,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps-likeLoadinglikeCountprimaryColor": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx-packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps-packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps-likeLoadinglikeCountprimaryColor",
+      "probability": 1,
+      "from_file_path": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx",
+      "from_class_or_interface_key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps",
+      "from_class_or_interface_name": "SettingsListLikeDislikeFastProps",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx",
+      "to_class_or_interface_key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps",
+      "to_class_or_interface_name": "SettingsListLikeButtonProps",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeLoading": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeLoading",
+          "name": "likeLoading",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/likeLoading",
+            "name": "likeLoading",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 24
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeCount": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/likeCount",
+          "name": "likeCount",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/likeCount",
+            "name": "likeCount",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 21
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 21
+          }
+        },
+        "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/primaryColor": {
+          "key": "packages/common-ui/src/components/SettingsListLikeDislikeFast/SettingsListLikeDislikeFast.tsx/interface/SettingsListLikeDislikeFastProps/memberField/primaryColor",
+          "name": "primaryColor",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "packages/common-ui/src/components/SettingsListLikeButton/SettingsListLikeButton.tsx/interface/SettingsListLikeButtonProps/memberField/primaryColor",
+            "name": "primaryColor",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx-packages/common-ui/src/components/SettingsListTextInput/SettingsListTextInput.tsx/interface/ModalSheetProps-packages/common-ui/src/components/SettingsListDate/SettingsListDate.tsx/interface/DatePickerSheetProps-initialValuesaveLabelprimaryColor": {
