@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
 	Alert,
 	Animated,
-	Image,
 	PanResponder,
 	Platform,
 	SafeAreaView,
@@ -23,18 +22,84 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
+import { WebView } from 'react-native-webview';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells } from '../helpers/H3Helper';
+import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 
+/** Module-level cache so individual SVG data URIs are only computed once per app session. */
+const cachedObjectSvgDataUrls: string[] = [];
+let cachedObjectSvgDataUrlsLoaded = false;
+
+async function loadAllObjectSvgDataUrls(): Promise<string[]> {
+	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
+	const results: string[] = [];
+	for (const sprite of OBJECT_SPRITES) {
+		try {
+			const asset = Asset.fromModule(sprite.source);
+			await asset.downloadAsync();
+			let url: string;
+			if (Platform.OS === 'web') {
+				url = asset.uri ?? '';
+			} else {
+				if (!asset.localUri) { results.push(''); continue; }
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:image/svg+xml;base64,${base64}`;
+			}
+			results.push(url);
+		} catch (e) {
+			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${sprite.name}:`, e);
+			results.push('');
+		}
+	}
+	cachedObjectSvgDataUrls.push(...results);
+	cachedObjectSvgDataUrlsLoaded = true;
+	return cachedObjectSvgDataUrls;
+}
+
+/** Module-level cache mapping terrain asset key → base64 data URI. */
+const cachedTerrainSvgDataUrls = new Map<string, string>();
+let cachedTerrainSvgDataUrlsLoaded = false;
+
+async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
+	if (cachedTerrainSvgDataUrlsLoaded) return cachedTerrainSvgDataUrls;
+	for (const entries of Object.values(TERRAIN_ASSETS)) {
+		for (const entry of entries) {
+			try {
+				const asset = Asset.fromModule(entry.source as number);
+				await asset.downloadAsync();
+				let url: string;
+				if (Platform.OS === 'web') {
+					url = asset.uri ?? '';
+				} else {
+					if (!asset.localUri) continue;
+					const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+						encoding: FileSystem.EncodingType.Base64,
+					});
+					url = `data:image/svg+xml;base64,${base64}`;
+				}
+				cachedTerrainSvgDataUrls.set(entry.key, url);
+			} catch (e) {
+				console.warn(`[loadAllTerrainSvgDataUrls] Failed for ${entry.key}:`, e);
+			}
+		}
+	}
+	cachedTerrainSvgDataUrlsLoaded = true;
+	return cachedTerrainSvgDataUrls;
+}
+
 const PRIMARY_COLOR = '#2563eb';
+const DEBUG_BILLBOARD_ANCHOR_COLOR = '#ff69b4';
 
 // Debug status indicator colours
 const STATUS_SUCCESS_COLOR = '#22c55e';
@@ -56,8 +121,10 @@ type ViewportBounds = { north: number; south: number; east: number; west: number
 
 type H3GeoJsonFeature = {
 	type: 'Feature';
-	geometry: { type: 'Polygon'; coordinates: number[][][] };
-	properties: { h3Index: string; level: number };
+	geometry:
+		| { type: 'Polygon'; coordinates: number[][][] }
+		| { type: 'Point'; coordinates: number[] };
+	properties: { h3Index: string; level: number; colorIndex?: number };
 };
 
 type H3FeatureCollection = {
@@ -74,8 +141,15 @@ function buildH3GeoJson(
 ): H3FeatureCollection {
 	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
 
-	// H3 requires an integer resolution (0–15); clamp and round fractional values.
-	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(resolution)));
+	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
+	// resolution and visually subdivide each parent cell into its children at
+	// the next resolution level.  Whole-number resolutions use the existing
+	// behaviour (round to nearest integer so e.g. 10.9 still maps to res 11).
+	const isHalfResolution = resolution % 1 !== 0;
+	const h3Res = Math.max(
+		H3_RESOLUTION_MIN,
+		Math.min(H3_RESOLUTION_MAX, isHalfResolution ? Math.floor(resolution) : Math.round(resolution)),
+	);
 
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
@@ -101,18 +175,65 @@ function buildH3GeoJson(
 	}
 
 	const k = Math.min(maxK + 1, 30);
-	const cells = gridDisk(centerCell, k);
+	const parentCells = gridDisk(centerCell, k);
 
 	const features: H3GeoJsonFeature[] = [];
-	for (const cell of cells) {
-		if (features.length >= H3_MAX_CELLS) break;
-		const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-		// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
-		features.push({
-			type: 'Feature',
-			geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
-			properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
-		});
+	if (isHalfResolution) {
+		// For fractional resolutions (e.g. 10.5) we compute child hexes at the
+		// next integer resolution and color them in 7 colors: the center child
+		// gets white (colorIndex 0) and the 6 ring children get red, yellow,
+		// green, blue, purple, orange (colorIndex 1–6) in ring order.
+		const childRes = Math.min(H3_RESOLUTION_MAX, h3Res + 1);
+		for (const parentCell of parentCells) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const parentLevel = hexTileRecords[parentCell]?.level ?? 0;
+			const centerChild = cellToCenterChild(parentCell, childRes);
+			if (!centerChild) continue;
+
+			// Center child → colorIndex 0 (white)
+			const centerBoundary = cellToBoundary(centerChild, H3_GEOJSON_ORDER);
+			if (centerBoundary.length > 0) {
+				features.push({
+					type: 'Feature',
+					geometry: { type: 'Polygon', coordinates: [centerBoundary as number[][]] },
+					properties: { h3Index: parentCell, level: parentLevel, colorIndex: 0 },
+				});
+			}
+
+			// Ring children → colorIndex 1–6
+			let ringChildren: string[] = [];
+			try {
+				ringChildren = gridRingUnsafe(centerChild, 1).filter(
+					(c) => cellToParent(c, h3Res) === parentCell,
+				);
+			} catch (err) {
+				// gridRingUnsafe can throw for pentagon cells; skip ring for those
+				console.warn('[H3] gridRingUnsafe failed for centerChild', centerChild, err);
+			}
+			for (let i = 0; i < ringChildren.length; i++) {
+				if (features.length >= H3_MAX_CELLS) break;
+				const child = ringChildren[i];
+				const boundary = cellToBoundary(child, H3_GEOJSON_ORDER);
+				if (boundary.length > 0) {
+					features.push({
+						type: 'Feature',
+						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+						properties: { h3Index: parentCell, level: parentLevel, colorIndex: i + 1 },
+					});
+				}
+			}
+		}
+	} else {
+		for (const cell of parentCells) {
+			if (features.length >= H3_MAX_CELLS) break;
+			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+			// H3_GEOJSON_ORDER=true already closes the ring; no need to append boundary[0] again.
+			features.push({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+				properties: { h3Index: cell, level: hexTileRecords[cell]?.level ?? 0 },
+			});
+		}
 	}
 
 	return { type: 'FeatureCollection', features };
@@ -346,8 +467,8 @@ function JoystickController({ positionRef, speedKmhRef, onMove, isHeadingModeRef
 const DEFAULT_RUNNER_WEIGHT_KG = 75;
 const KCAL_PER_KG_PER_KM = 0.9;
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
-const FLUID_BASELINE_DURATION_SECONDS = 1800;
-const FLUID_BASELINE_ML = 500;
+const FLUID_BASELINE_DURATION_SECONDS = 3600;
+const FLUID_BASELINE_ML = 600;
 const GPS_TIME_INTERVAL_MS = 5000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
 /**
@@ -453,7 +574,9 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 
 	// Enumerate all H3 cells in the bounding box using the same gridDisk logic
 	// as buildH3GeoJson, but with showAlways=true and a high zoom.
-	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(resolution)));
+	// Use Math.floor to match buildH3GeoJson's base-resolution logic for
+	// fractional resolutions (e.g. 10.5 → base res 10).
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
 	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
@@ -614,10 +737,12 @@ type DebugInfoContentProps = {
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
 	initialSpeed: number;
+	initialShowBillboardAnchors: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
+	onShowBillboardAnchorsChange: (val: boolean) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -629,20 +754,28 @@ function DebugInfoContent({
 	initialShowGridAlways,
 	initialH3Resolution,
 	initialSpeed,
+	initialShowBillboardAnchors,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
+	onShowBillboardAnchorsChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
+	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		setShowBillboardAnchors(val);
+		onShowBillboardAnchorsChange(val);
+	}, [onShowBillboardAnchorsChange]);
 
 	const adjustResolution = useCallback((delta: number) => {
 		setH3Resolution((prev) => {
@@ -714,6 +847,17 @@ function DebugInfoContent({
 					value={showGridAlways}
 					onValueChange={handleShowGridAlwaysChange}
 					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Billboard Anchors debug toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Billboard Anchors 🩷</Text>
+				<Switch
+					value={showBillboardAnchors}
+					onValueChange={handleShowBillboardAnchorsChange}
+					trackColor={{ true: DEBUG_BILLBOARD_ANCHOR_COLOR }}
 					thumbColor="#ffffff"
 				/>
 			</View>
@@ -963,6 +1107,12 @@ function formatTimestamp(ts: number | null): string {
 
 const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
+const SPRITE_THUMB_SIZE = 52;
+const SPRITE_THUMB_GAP = 4;
+/** Reference scale factor for the townhall sprite; SPRITE_BILLBOARD_SIZEM corresponds to this scale. */
+const TOWNHALL_SCALE_FACTOR = 7.0;
+/** Geographic size in metres for a townhall billboard at H3 level 10. */
+const SPRITE_BILLBOARD_SIZEM = 210;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -970,9 +1120,25 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
+	const [objectSvgUrls, setObjectSvgUrls] = useState<string[]>([]);
+	const [terrainSvgUrls, setTerrainSvgUrls] = useState<Map<string, string>>(new Map());
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentBillboard = record?.billboard ?? null;
+
+	// Load all individual object SVGs as base64 data URIs for use in the sprite picker WebView.
+	useEffect(() => {
+		loadAllObjectSvgDataUrls().then(urls => {
+			setObjectSvgUrls(urls);
+		});
+	}, []);
+
+	// Load all terrain SVGs as base64 data URIs for use in the tile picker WebView.
+	useEffect(() => {
+		loadAllTerrainSvgDataUrls().then(urls => {
+			setTerrainSvgUrls(new Map(urls));
+		});
+	}, []);
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -983,6 +1149,78 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
+
+	// Build the HTML for the WebView-based tile picker using individual terrain SVG data URIs.
+	const tilePickerHtml = useMemo(() => {
+		if (terrainSvgUrls.size === 0) return null;
+		const thumbSize = TILE_THUMB_SIZE;
+		const gap = TILE_THUMB_GAP;
+
+		const tileItems = TERRAIN_ASSETS[selectedCategory].map((asset) => {
+			const url = terrainSvgUrls.get(asset.key) ?? '';
+			const isSelected = currentTileImage === asset.key;
+			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
+			return `<div class="tile" data-key="${asset.key}" style="border:${border};"><img src="${url}" /></div>`;
+		}).join('');
+
+		return [
+			'<!DOCTYPE html><html>',
+			'<head>',
+			'<meta name="viewport" content="width=device-width,initial-scale=1">',
+			'<style>',
+			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
+			`html,body{background:transparent;overflow:hidden;}`,
+			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
+			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
+			`.tile img{width:100%;height:100%;object-fit:cover;}`,
+			'</style>',
+			'</head>',
+			'<body>',
+			`<div class="row">${tileItems}</div>`,
+			'<script>',
+			`document.querySelectorAll('.tile').forEach(function(el){`,
+			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
+			`});`,
+			'<\/script>',
+			'</body></html>',
+		].join('');
+	}, [terrainSvgUrls, selectedCategory, currentTileImage]);
+
+	// Build the HTML for the WebView-based sprite picker using individual SVG data URIs.
+	const spritePickerHtml = useMemo(() => {
+		if (objectSvgUrls.length === 0) return null;
+		const thumbSize = SPRITE_THUMB_SIZE;
+		const gap = SPRITE_THUMB_GAP;
+
+		const spriteItems = OBJECT_SPRITES.map((sprite, idx) => {
+			const url = objectSvgUrls[idx] ?? '';
+			const isSelected = currentBillboard === `objects:${idx}`;
+			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
+			return `<div class="sprite" data-idx="${idx}" style="border:${border};"><img src="${url}" /></div>`;
+		}).join('');
+
+		return [
+			'<!DOCTYPE html><html>',
+			'<head>',
+			'<meta name="viewport" content="width=device-width,initial-scale=1">',
+			'<style>',
+			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
+			`html,body{background:transparent;overflow:hidden;}`,
+			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
+			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
+			`.sprite img{width:100%;height:100%;object-fit:contain;}`,
+			'</style>',
+			'</head>',
+			'<body>',
+			`<div class="row">${spriteItems}</div>`,
+			'<script>',
+			`document.querySelectorAll('.sprite').forEach(function(el){`,
+			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.idx);});`,
+			`});`,
+			'<\/script>',
+			'</body></html>',
+		].join('');
+	}, [objectSvgUrls, currentBillboard]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1037,38 +1275,28 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			</ScrollView>
 
 			{/* Thumbnail row */}
-			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={styles.tilePickerThumbRow}
-			>
-				{TERRAIN_ASSETS[selectedCategory].map((asset) => {
-					const isSelected = currentTileImage === asset.key;
-					return (
-						<TouchableOpacity
-							key={asset.key}
-							onPress={() =>
-								dispatch(
-									setHexTileCustomization({
-										h3Index,
-										tileImage: isSelected ? null : asset.key,
-									}),
-								)
-							}
-							style={[
-								styles.tilePickerThumb,
-								isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2 },
-							]}
-						>
-							<Image
-								source={asset.source}
-								style={styles.tilePickerThumbImage}
-								resizeMode="cover"
-							/>
-						</TouchableOpacity>
-					);
-				})}
-			</ScrollView>
+			{tilePickerHtml != null ? (
+				<WebView
+					source={{ html: tilePickerHtml }}
+					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
+					originWhitelist={['*']}
+					scrollEnabled={true}
+					onMessage={event => {
+						const key = event.nativeEvent.data;
+						if (!key) return;
+						dispatch(
+							setHexTileCustomization({
+								h3Index,
+								tileImage: currentTileImage === key ? null : key,
+							}),
+						);
+					}}
+				/>
+			) : (
+				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
+					Loading…
+				</Text>
+			)}
 
 			{currentTileImage && (
 				<View style={styles.tilePickerCurrentRow}>
@@ -1113,6 +1341,41 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					)
 				}
 			/>
+
+			{/* Object sprite picker */}
+			<View
+				style={[
+					styles.spriteSectionContainer,
+					{ borderColor: theme.screen.text + '20', backgroundColor: theme.screen.text + '08' },
+				]}
+			>
+				<Text style={[styles.spriteSectionLabel, { color: theme.screen.text }]}>
+					🏗️ Objects
+				</Text>
+				{spritePickerHtml != null ? (
+					<WebView
+						source={{ html: spritePickerHtml }}
+						style={{ height: SPRITE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
+						originWhitelist={['*']}
+						scrollEnabled={true}
+						onMessage={event => {
+							const idx = parseInt(event.nativeEvent.data, 10);
+							if (isNaN(idx)) return;
+							const spriteKey = `objects:${idx}`;
+							dispatch(
+								setHexTileCustomization({
+									h3Index,
+									billboard: currentBillboard === spriteKey ? null : spriteKey,
+								}),
+							);
+						}}
+					/>
+				) : (
+					<Text style={[styles.spriteSectionLabel, { color: theme.screen.text + '80' }]}>
+						Loading…
+					</Text>
+				)}
+			</View>
 		</View>
 	);
 }
@@ -1164,10 +1427,20 @@ export default function RecordScreen() {
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
 
+	// Debug: show pink anchor dots on billboard markers.
+	const showBillboardAnchorsRef = useRef(false);
+
 	// Heading mode: when active during recording, the map rotates to face the
 	// direction of travel. Toggled by the compass button.
 	const isHeadingModeRef = useRef(false);
 	const [isHeadingMode, setIsHeadingMode] = useState(false);
+
+	// Initial center for MyMap, populated from the last known GPS position before
+	// the WebView mounts so that the map never starts at the Germany default.
+	const [mapInitialCenter, setMapInitialCenter] = useState<{ lat: number; lng: number } | undefined>(undefined);
+	// Becomes true once the last-known-position fetch has completed (or failed),
+	// preventing MyMap from mounting before we have an initial center to offer.
+	const [mapCanRender, setMapCanRender] = useState(false);
 
 	// Current view heading (degrees clockwise from north). Updated by device
 	// compass or joystick movement direction when heading mode is active.
@@ -1258,6 +1531,8 @@ export default function RecordScreen() {
 			position: { lng: number; lat: number };
 			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
 			sizem: number;
+			/** Vertical anchor as a fraction of image height (0=top, 1=bottom). The geographic coordinate attaches here. */
+			anchorY: number;
 		};
 
 		const imageOverlays: ImageOverlay[] = [];
@@ -1268,7 +1543,7 @@ export default function RecordScreen() {
 			if (record.tileImage) {
 				const moduleId = terrainLookup.get(record.tileImage);
 				if (moduleId !== undefined) {
-					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/png');
+					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/svg+xml');
 					if (url) {
 						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
 						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
@@ -1331,16 +1606,41 @@ export default function RecordScreen() {
 						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
 					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
 				}
+				// Individual object sprites use a per-sprite geographic size derived from
+				// their scaleFactor (relative to townhall = 7.0 = SPRITE_BILLBOARD_SIZEM).
+				let billboardSizem = sizem;
+				let billboardAnchorY = 1.0;
+				if (record.billboard.startsWith('objects:')) {
+					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
+					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
+						? OBJECT_SPRITES[spriteIdx] : undefined;
+					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
+					billboardSizem = SPRITE_BILLBOARD_SIZEM * (scale / TOWNHALL_SCALE_FACTOR);
+					billboardAnchorY = sprite ? sprite.anchorY : 1.0;
+				}
 				billboards.push({
 					id: `tile-billboard-${h3Index}`,
 					type: record.billboard,
 					position: { lng: center[1], lat: center[0] },
-					sizem,
+					sizem: billboardSizem,
+					anchorY: billboardAnchorY,
 				});
 			}
 		}
 
 		mapRef.current.sendToMap({ imageOverlays });
+		// Register each individual object SVG as a billboard image so the map can render them.
+		const billboardImages: Record<string, { url: string; ratio: number }> = {};
+		for (let idx = 0; idx < OBJECT_SPRITES.length; idx++) {
+			const sprite = OBJECT_SPRITES[idx];
+			const url = await loadAssetUrl(`objects:${idx}`, sprite.source as number, 'image/svg+xml');
+			if (url) {
+				billboardImages[`objects:${idx}`] = { url, ratio: 1 };
+			}
+		}
+		if (Object.keys(billboardImages).length > 0) {
+			mapRef.current.sendToMap({ billboardImages });
+		}
 		mapRef.current.sendToMap({ billboards });
 	}, [loadAssetUrl]);
 
@@ -1466,10 +1766,15 @@ export default function RecordScreen() {
 				if (loc && !debugPlayerPositionRef.current) {
 					const pos = { lat: loc.coords.latitude, lng: loc.coords.longitude };
 					debugPlayerPositionRef.current = pos;
+					setMapInitialCenter(pos);
 					centerMapOnPosition(pos);
 				}
+				setMapCanRender(true);
 			})
-			.catch((err) => { console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err); });
+			.catch((err) => {
+				console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err);
+				setMapCanRender(true);
+			});
 
 		return () => {
 			active = false;
@@ -1506,6 +1811,11 @@ export default function RecordScreen() {
 		setShowGridAlways(val);
 		recomputeH3();
 	}, [recomputeH3]);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		showBillboardAnchorsRef.current = val;
+		mapRef.current?.sendToMap({ billboardDebugAnchors: val });
+	}, []);
 
 	const handleH3ResolutionChange = useCallback((val: number) => {
 		h3ResolutionRef.current = val;
@@ -1561,7 +1871,7 @@ export default function RecordScreen() {
 				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 			}
 			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
-			const viewportCells = geoJson.features.map((f) => f.properties.h3Index);
+			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
@@ -1585,14 +1895,16 @@ export default function RecordScreen() {
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
+					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
+					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleShowBillboardAnchorsChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -1652,7 +1964,7 @@ export default function RecordScreen() {
 			// position; adding a real GPS fix would create a visible jump in the
 			// recorded route from the virtual joystick position back to the
 			// physical GPS location.
-			if (isRecordingRef.current && joystickActiveRef.current) {
+			if (isRecordingRef.current && (joystickActiveRef.current || movedPlayerManuallyRef.current)) {
 				return;
 			}
 
@@ -1688,12 +2000,12 @@ export default function RecordScreen() {
 		// Track the visited H3 cell and dispatch to Redux for persistent storage
 		if (isH3Available()) {
 			try {
-				// Use the same rounded integer resolution as buildH3GeoJson so that the visited
-				// cell ID matches the keys in the GeoJSON and the Redux records.  Without rounding,
-				// a fractional resolution such as 10.5 is truncated to 10 by H3's C layer, while
-				// buildH3GeoJson uses Math.round(10.5) = 11 – causing a cell-ID mismatch and
-				// keeping every visited tile at level 0 (transparent) throughout the run.
-				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.round(h3ResolutionRef.current)));
+				// Use the same base integer resolution as buildH3GeoJson so that the
+				// visited cell ID matches the keys in the GeoJSON and the Redux records.
+				// For fractional resolutions (e.g. 10.5) buildH3GeoJson uses Math.floor
+				// as the base and subdivides into children; visits are tracked at the base
+				// (parent) resolution so the colour update propagates to all sub-tiles.
+				const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 				const cell = latLngToCell(point.lat, point.lng, h3Res);
 				if (cell) {
 					// ── GPS gap interpolation ─────────────────────────────────────────
@@ -1778,7 +2090,7 @@ export default function RecordScreen() {
 				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
 			}
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
-			const viewportCells = geoJson.features.map((f) => f.properties.h3Index);
+			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
@@ -2033,7 +2345,7 @@ export default function RecordScreen() {
 			} catch {
 				// ignore
 			}
-			const viewportCells = geoJson.features.map((f) => f.properties.h3Index);
+			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
@@ -2130,7 +2442,9 @@ export default function RecordScreen() {
 		<SafeAreaView style={styles.container}>
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
-				<MyMap ref={mapRef} initialZoom={17} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				{mapCanRender && (
+					<MyMap ref={mapRef} initialZoom={17} initialCenter={mapInitialCenter} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				)}
 
 				{/* Map overlay buttons – top-right */}
 				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
@@ -2156,7 +2470,10 @@ export default function RecordScreen() {
 						iconColor="#555555"
 						activeColor={PRIMARY_COLOR}
 						isFollowing={isFollowing}
-						onLocationFound={() => setFollowMode(true)}
+						onLocationFound={() => {
+							movedPlayerManuallyRef.current = false;
+							setFollowMode(true);
+						}}
 					/>
 					<View style={styles.buttonSpacer} />
 					<TouchableOpacity
@@ -2741,24 +3058,6 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 	},
-	tilePickerThumbRow: {
-		flexDirection: 'row',
-		gap: TILE_THUMB_GAP,
-		paddingHorizontal: 16,
-		paddingBottom: 10,
-	},
-	tilePickerThumb: {
-		width: TILE_THUMB_SIZE,
-		height: TILE_THUMB_SIZE,
-		borderRadius: 6,
-		overflow: 'hidden',
-		borderWidth: 2,
-		borderColor: 'transparent',
-	},
-	tilePickerThumbImage: {
-		width: TILE_THUMB_SIZE,
-		height: TILE_THUMB_SIZE,
-	},
 	tilePickerCurrentRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -2774,5 +3073,19 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 		paddingLeft: 8,
+	},
+	// Object sprite picker
+	spriteSectionContainer: {
+		marginHorizontal: 16,
+		marginBottom: 10,
+		borderRadius: 8,
+		borderWidth: StyleSheet.hairlineWidth,
+		paddingTop: 8,
+	},
+	spriteSectionLabel: {
+		fontSize: 13,
+		fontWeight: '600',
+		paddingHorizontal: 12,
+		paddingBottom: 6,
 	},
 });

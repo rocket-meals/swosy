@@ -133,17 +133,34 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'fill-color': ['case',
-          ['==', ['get', 'level'], 0], hexTileColor,
-          ['interpolate', ['linear'], ['get', 'level'],
-            1, HEX_COLOR_LEVEL_MIN,
-            10, HEX_COLOR_LEVEL_MAX
+          ['has', 'colorIndex'],
+          ['match', ['get', 'colorIndex'],
+            0, '#ffffff',
+            1, '#ef4444',
+            2, '#eab308',
+            3, '#22c55e',
+            4, '#3b82f6',
+            5, '#a855f7',
+            6, '#f97316',
+            '#ffffff'
+          ],
+          ['case',
+            ['==', ['get', 'level'], 0], hexTileColor,
+            ['interpolate', ['linear'], ['get', 'level'],
+              1, HEX_COLOR_LEVEL_MIN,
+              10, HEX_COLOR_LEVEL_MAX
+            ]
           ]
         ],
         'fill-opacity': ['case',
-          ['==', ['get', 'level'], 0], 0,
-          ['interpolate', ['linear'], ['get', 'level'],
-            1, HEX_OPACITY_LEVEL_MIN,
-            10, HEX_OPACITY_LEVEL_MAX
+          ['has', 'colorIndex'],
+          0.75,
+          ['case',
+            ['==', ['get', 'level'], 0], 0,
+            ['interpolate', ['linear'], ['get', 'level'],
+              1, HEX_OPACITY_LEVEL_MIN,
+              10, HEX_OPACITY_LEVEL_MAX
+            ]
           ]
         ],
       },
@@ -186,6 +203,19 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': 1,
       },
     });
+    // Raise any route track / segment layers above the hex tile layers so the
+    // GPS route is always rendered on top of the hex grid.  These layers are
+    // created lazily (only once the first routeCoordinates message arrives), so
+    // they may not exist yet – the guard keeps this a no-op in that case.
+    var ROUTE_LAYER_IDS = [
+      'route-track-layer-border',
+      'route-track-layer',
+      'route-seg-border-layer',
+      'route-seg-color-layer',
+    ];
+    for (var ri = 0; ri < ROUTE_LAYER_IDS.length; ri++) {
+      if (map.getLayer(ROUTE_LAYER_IDS[ri])) map.moveLayer(ROUTE_LAYER_IDS[ri]);
+    }
     notifyViewport();
   }
 

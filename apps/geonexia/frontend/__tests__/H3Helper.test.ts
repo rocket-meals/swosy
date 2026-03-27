@@ -305,3 +305,4 @@ describe('H3Helper – viewport GeoJSON integration', () => {
         }
     });
 });
+

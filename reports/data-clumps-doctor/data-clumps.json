@@ -1,16 +1,16 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-26T00:04:03.713Z",
+  "report_timestamp": "2026-03-27T00:15:10.373Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 91,
-          "average": 1.5885231316725978,
-          "amountSavedValuesForKeys": 3571,
-          "amountKeys": 24
+          "average": 1.5876608965823347,
+          "amountSavedValuesForKeys": 3577,
+          "amountKeys": 25
         },
         "invertedParameterToMethods": {
           "median": 1.5,
@@ -20,27 +20,27 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 91,
-          "average": 1.603502469690166,
-          "amountSavedValuesForKeys": 3571,
+          "average": 1.6025985663082438,
+          "amountSavedValuesForKeys": 3577,
           "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3812,
-        "detection_time_ms": 72,
+        "ast_generation_time_ms": 3793,
+        "detection_time_ms": 73,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.14.0-1017-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 110.76,
-          "os_memory_free": 15046324224,
-          "os_memory_total": 16771563520,
+          "os_uptime": 236.44,
+          "os_memory_free": 14978981888,
+          "os_memory_total": 16766201856,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "os_cpu_speed": 3476
         }
       }
     },
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "579b5192fd37da7a6f7db971090bb3b2eba90ec6",
-    "project_commit_hash": "579b5192fd37da7a6f7db971090bb3b2eba90ec6",
+    "project_version": "9ab6b547d45b6a33abb6dcd80f1940455f78576f",
+    "project_commit_hash": "9ab6b547d45b6a33abb6dcd80f1940455f78576f",
     "project_tag": null,
-    "project_commit_date": "1774483335",
+    "project_commit_date": "1774570415",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 449,
-    "number_of_classes_or_interfaces": 923,
+    "number_of_files": 450,
+    "number_of_classes_or_interfaces": 924,
     "number_of_methods": 1318,
-    "number_of_data_fields": 3571,
+    "number_of_data_fields": 3577,
     "number_of_method_parameters": 1458
   },
   "detector": {

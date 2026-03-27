@@ -13,13 +13,112 @@ import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
-import { deleteActivity, loadActivity, RoutePoint, SavedActivity } from '../../helpers/ActivityStorage';
+import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
+import { SPORT_TYPES } from '../../store/sportTypeSlice';
 
 const AUTO_ROTATE_TICK_MS = 100;
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
+
+// ─── Stats / filter helpers ───────────────────────────────────────────────────
+
+const DEFAULT_RUNNER_WEIGHT_KG = 75;
+const KCAL_PER_KG_PER_KM = 0.9;
+const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
+const FLUID_BASELINE_DURATION_SECONDS = 3600;
+const FLUID_BASELINE_ML = 600;
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+	const R = 6371;
+	const dLat = ((lat2 - lat1) * Math.PI) / 180;
+	const dLng = ((lng2 - lng1) * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) ** 2 +
+		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Remove GPS points that imply an unrealistic speed relative to the last
+ * accepted point.  Only the offending candidate is dropped; the previous
+ * accepted point keeps serving as the reference for subsequent candidates.
+ * Example: A→B ok, B→C 400 km/h → C removed, B→D 300 km/h → D removed,
+ * B→E 10 km/h → E kept; now E is the new reference.
+ */
+function filterUnrealisticPoints(points: RoutePoint[], maxSpeedKmh: number): RoutePoint[] {
+	if (points.length < 2) return [...points];
+	const result: RoutePoint[] = [points[0]];
+	let lastAccepted = points[0];
+	for (let i = 1; i < points.length; i++) {
+		const candidate = points[i];
+		// Also reject if the GPS sensor itself reported an unrealistic speed.
+		// computeActivityStats() uses point.speed preferentially, so without this check
+		// a point with e.g. 500 km/h GPS-reported speed would survive the coordinate
+		// filter and still inflate the Max Speed stat.
+		const gpsSpeedKmh =
+			candidate.speed != null && candidate.speed >= 0 ? candidate.speed * 3.6 : 0;
+		if (gpsSpeedKmh > maxSpeedKmh) {
+			continue; // GPS-reported speed is unrealistic – skip, keep lastAccepted as reference
+		}
+		const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, candidate.lat, candidate.lng);
+		const dtHours = (candidate.timestamp - lastAccepted.timestamp) / 3_600_000;
+		const speedKmh = dtHours > 0 ? distKm / dtHours : 0;
+		if (speedKmh <= maxSpeedKmh) {
+			result.push(candidate);
+			lastAccepted = candidate;
+		}
+		// else: candidate is unrealistic – skip it, keep lastAccepted as reference
+	}
+	return result;
+}
+
+function computeActivityStats(points: RoutePoint[]): RunStats {
+	if (points.length < 2) {
+		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
+		return {
+			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
+			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0,
+			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
+		};
+	}
+	let distanceKm = 0;
+	let elevationGainM = 0;
+	let elevationLossM = 0;
+	const speedsKmh: number[] = [];
+	for (let i = 1; i < points.length; i++) {
+		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+		distanceKm += segKm;
+		if (points[i].altitude != null && points[i - 1].altitude != null) {
+			const diff = (points[i].altitude as number) - (points[i - 1].altitude as number);
+			if (diff > 0) elevationGainM += diff;
+			else elevationLossM += Math.abs(diff);
+		}
+		const dtSec = (points[i].timestamp - points[i - 1].timestamp) / 1000;
+		const gpsSpeed = points[i].speed;
+		const segSpeedKmh =
+			gpsSpeed != null && gpsSpeed >= 0
+				? gpsSpeed * 3.6
+				: dtSec > 0
+				? (segKm / dtSec) * 3600
+				: 0;
+		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+	}
+	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
+	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
+	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
+	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
+	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
+	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
+	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
+	return {
+		distanceKm, durationSeconds, paceMinPerKm,
+		maxSpeedKmh, minSpeedKmh, avgSpeedKmh,
+		kcal, steps, elevationGainM, elevationLossM, fluidNeedsMl,
+	};
+}
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -200,6 +299,23 @@ export default function ActivityDetailScreen() {
 		return segments;
 	}, []);
 
+	// Compute the bounding box of a route using a loop (avoids spread-operator stack
+	// overflow for routes with thousands of GPS points).
+	const computeRouteBounds = useCallback((points: RoutePoint[]) => {
+		if (points.length === 0) return null;
+		let minLat = points[0].lat;
+		let maxLat = points[0].lat;
+		let minLng = points[0].lng;
+		let maxLng = points[0].lng;
+		for (const p of points) {
+			if (p.lat < minLat) minLat = p.lat;
+			if (p.lat > maxLat) maxLat = p.lat;
+			if (p.lng < minLng) minLng = p.lng;
+			if (p.lng > maxLng) maxLng = p.lng;
+		}
+		return { minLat, maxLat, minLng, maxLng };
+	}, []);
+
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
 		if (!mapMounted || !activity || !mapRef.current) return;
@@ -212,24 +328,16 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
-		// Calculate bounds from all route points and fit the camera
+		// Fit the camera to the full route extent
 		const points = activity.routePoints;
 		if (points.length >= 2) {
-			const lats = points.map((p) => p.lat);
-			const lngs = points.map((p) => p.lng);
-			const minLat = Math.min(...lats);
-			const maxLat = Math.max(...lats);
-			const minLng = Math.min(...lngs);
-			const maxLng = Math.max(...lngs);
-			const centerLat = (minLat + maxLat) / 2;
-			const centerLng = (minLng + maxLng) / 2;
-			routeCenterRef.current = { lat: centerLat, lng: centerLng };
+			const bounds = computeRouteBounds(points)!;
+			const { minLat, maxLat, minLng, maxLng } = bounds;
+			routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
 			// Expand the bounding box to 1.5× the route span so the route is
 			// not clipped at the edges (adds 25 % padding on every side).
-			const latSpan = maxLat - minLat;
-			const lngSpan = maxLng - minLng;
-			const latPad = latSpan * 0.25;
-			const lngPad = lngSpan * 0.25;
+			const latPad = (maxLat - minLat) * 0.25;
+			const lngPad = (maxLng - minLng) * 0.25;
 			mapRef.current.sendToMap({
 				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
 				fitBoundsPadding: 20,
@@ -278,7 +386,7 @@ export default function ActivityDetailScreen() {
 			}
 			autoRotateActiveRef.current = false;
 		};
-	}, [mapMounted, activity, buildRouteSegments]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
@@ -292,6 +400,37 @@ export default function ActivityDetailScreen() {
 			}
 		}
 	}, []);
+
+	const handleFilterUnrealisticPoints = useCallback(() => {
+		if (!activity) return;
+		const sportDef = SPORT_TYPES.find((s) => s.type === activity.sportType);
+		const maxSpeed = sportDef?.maxSpeedKmh ?? 90;
+		const sportLabel = sportDef?.label ?? 'Default';
+		Alert.alert(
+			'Filter unrealistic Points',
+			`Remove GPS points that imply a speed above ${maxSpeed} km/h (${sportLabel} limit)?\n\nThis will permanently update the saved activity.`,
+			[
+				{ text: 'Cancel', style: 'cancel' },
+				{
+					text: 'Filter',
+					onPress: () => {
+						const filtered = filterUnrealisticPoints(activity.routePoints, maxSpeed);
+						const removedCount = activity.routePoints.length - filtered.length;
+						const newStats = computeActivityStats(filtered);
+						const updated: SavedActivity = { ...activity, routePoints: filtered, stats: newStats };
+						saveActivity(updated);
+						setActivity(updated);
+						Alert.alert(
+							'Done',
+							removedCount > 0
+								? `Removed ${removedCount} unrealistic point${removedCount !== 1 ? 's' : ''}.`
+								: 'No unrealistic points found.',
+						);
+					},
+				},
+			],
+		);
+	}, [activity]);
 
 	const handleShare = useCallback(() => {
 		if (!activity) return;
@@ -341,6 +480,13 @@ export default function ActivityDetailScreen() {
 
 	const { stats } = activity;
 
+	// Compute the route centre so the map starts at the correct position immediately.
+	const routeInitialCenter = (() => {
+		const bounds = computeRouteBounds(activity.routePoints);
+		if (!bounds) return undefined;
+		return { lat: (bounds.minLat + bounds.maxLat) / 2, lng: (bounds.minLng + bounds.maxLng) / 2 };
+	})();
+
 	const statsRows: { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
 		{ icon: 'event', label: 'Date', value: formatDate(activity.startedAt) },
 		{ icon: 'access-time', label: 'Start Time', value: formatTime(activity.startedAt) },
@@ -367,7 +513,7 @@ export default function ActivityDetailScreen() {
 		>
 			{/* Map – 1:1 square at the top */}
 			<View style={styles.mapContainer}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} />
+				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} initialCenter={routeInitialCenter} initialPitch={45} />
 			</View>
 
 			{/* Stats list */}
@@ -389,6 +535,15 @@ export default function ActivityDetailScreen() {
 						}
 					/>
 				))}
+				<View style={styles.filterRow}>
+					<SettingsList
+						leftIcon={<MaterialIcons name="filter-list" size={20} color="#ffffff" />}
+						iconBackgroundColor="#f59e0b"
+						title="Filter unrealistic Points"
+						groupPosition="single"
+						onPress={handleFilterUnrealisticPoints}
+					/>
+				</View>
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
 					<Text style={styles.shareButtonText}>Share Activity</Text>
@@ -522,5 +677,8 @@ const styles = StyleSheet.create({
 		marginHorizontal: 16,
 		marginTop: 8,
 		marginBottom: 8,
+	},
+	filterRow: {
+		marginTop: 16,
 	},
 });
