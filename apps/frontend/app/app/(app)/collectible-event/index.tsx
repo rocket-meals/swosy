@@ -27,6 +27,7 @@ import {
 import CustomMenuHeader from '@/components/CustomMenuHeader/CustomMenuHeader';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import DebugView from "@/components/DebugView";
+import AppButton from '@/components/AppButton';
 
 type DebugSectionProps = {
         activeCollectibleEvent: DatabaseTypes.CollectibleEvents;
@@ -61,43 +62,33 @@ const formatCollectibleLabel = (key: string) =>
                 .join(' ');
 
 const DebugSection: React.FC<DebugSectionProps> = ({
-                                                           activeCollectibleEvent,
-                                                           theme,
-                                                           buttonColor,
-                                                           resetCurrentCollectibles,
-                                                           resetAllParticipations,
-                                                           nextCollectibleKey,
-                                                           debugSpotLabel,
-                                                   }) => {
+        activeCollectibleEvent,
+        theme,
+        buttonColor,
+        resetCurrentCollectibles,
+        resetAllParticipations,
+        nextCollectibleKey,
+        debugSpotLabel,
+}) => {
         return (
             <View style={{ marginTop: 16 }}>
                     <Text style={{ ...styles.label, color: theme.screen.text, marginBottom: 8 }}>Debug</Text>
                     <View style={{ marginTop: 12, gap: 8 }}>
-                            <TouchableOpacity
-                                style={{
-                                        ...styles.button,
-                                        backgroundColor: buttonColor,
-                                        opacity: 0.9,
-                                }}
+                            <AppButton
+                                text="Reset current event found collectible"
                                 onPress={resetCurrentCollectibles}
-                            >
-                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                            Reset current event found collectible
-                                    </Text>
-                            </TouchableOpacity>
+                                style={{ ...styles.button, backgroundColor: buttonColor, opacity: 0.9, marginVertical: 0 }}
+                                textStyle={{ ...styles.buttonText, color: theme.dark }}
+                                usePlainText
+                            />
 
-                            <TouchableOpacity
-                                style={{
-                                        ...styles.button,
-                                        backgroundColor: theme.accent,
-                                        opacity: 0.9,
-                                }}
+                            <AppButton
+                                text="Reset all event participations"
                                 onPress={resetAllParticipations}
-                            >
-                                    <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                            Reset all event participations
-                                    </Text>
-                            </TouchableOpacity>
+                                style={{ ...styles.button, backgroundColor: theme.accent, opacity: 0.9, marginVertical: 0 }}
+                                textStyle={{ ...styles.buttonText, color: theme.dark }}
+                                usePlainText
+                            />
                     </View>
 
                     {nextCollectibleKey ? (
@@ -358,12 +349,12 @@ const CollectibleEventScreen = () => {
                         return;
                 }
 
-                const pointsToSave = displayedCollectedCount;
+                const pointsToSave = displayedCollectedCount ?? 0;
 
                 setIsSaving(true);
                 try {
                 const updatePayload: Partial<DatabaseTypes.CollectibleEventParticipants> = {
-                        points: pointsToSave,
+                        points: String(pointsToSave),
                         email: email?.trim() || null,
                         phone_number: phoneNumber?.trim() || null,
                         data: collectibleDict,
@@ -418,8 +409,8 @@ const CollectibleEventScreen = () => {
                                 );
 
                                 if (existing?.id) {
-                                        await participantsHelper.updateItem(existing.id, { points: 0, data: {} });
-                                        setParticipation(prev => (prev ? { ...prev, points: 0, data: {} } : prev));
+                                        await participantsHelper.updateItem(existing.id, { points: '0', data: {} });
+                                        setParticipation(prev => (prev ? { ...prev, points: '0', data: {} } : prev));
                                         toast(translate(TranslationKeys.reset), 'success');
                                 }
                         } catch (error) {
@@ -541,21 +532,14 @@ const CollectibleEventScreen = () => {
                                                 {translate(TranslationKeys.collectible_event_data_notice)}
                                         </Text>
 
-                                        <TouchableOpacity
-                                            style={{
-                                                    ...styles.button,
-                                                    backgroundColor: buttonColor,
-                                                    opacity: isSaving ? 0.6 : 1,
-                                            }}
-                                            disabled={isSaving}
+                                        <AppButton
+                                            text={isSaving ? translate(TranslationKeys.loading) : translate(TranslationKeys.save)}
                                             onPress={handleSave}
-                                        >
-                                                <Text style={{ ...styles.buttonText, color: theme.dark }}>
-                                                        {isSaving
-                                                            ? translate(TranslationKeys.loading)
-                                                            : translate(TranslationKeys.save)}
-                                                </Text>
-                                        </TouchableOpacity>
+                                            disabled={isSaving}
+                                            style={{ ...styles.button, backgroundColor: buttonColor, opacity: isSaving ? 0.6 : 1, marginVertical: 0 }}
+                                            textStyle={{ ...styles.buttonText, color: theme.dark }}
+                                            usePlainText
+                                        />
                                 </View>
                             ) : null}
 

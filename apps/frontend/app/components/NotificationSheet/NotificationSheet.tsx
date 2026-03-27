@@ -16,6 +16,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
+import AppButton from '@/components/AppButton';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previousFeedback, foodDetails }) => {
 	const { theme } = useTheme();
@@ -137,12 +138,19 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 				>
 					{translate(TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified)}
 				</Text>
-				<TouchableOpacity style={{ ...styles.button, backgroundColor: foods_area_color }} onPress={updateFoodFeedbackNotification}>
-					<Text style={{ ...styles.buttonLabel, color: contrastColor }}>{translate(TranslationKeys.confirm)}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity style={{ ...styles.cancelButton, borderColor: foods_area_color }} onPress={closeSheet}>
-					<Text style={{ ...styles.buttonLabel, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
-				</TouchableOpacity>
+				<AppButton
+					text={translate(TranslationKeys.confirm)}
+					onPress={updateFoodFeedbackNotification}
+					style={{ ...styles.button, backgroundColor: foods_area_color }}
+					textStyle={{ ...styles.buttonLabel, color: contrastColor }}
+				/>
+				<AppButton
+					text={translate(TranslationKeys.cancel)}
+					onPress={closeSheet}
+					variant="ghost"
+					style={{ ...styles.cancelButton, borderColor: foods_area_color }}
+					textStyle={{ ...styles.buttonLabel, color: theme.screen.text }}
+				/>
 			</View>
 		</View>
 	);

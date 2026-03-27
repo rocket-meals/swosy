@@ -9,6 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { useAppSelector } from '@/redux/hooks';
 import { OverlayBaseProps } from '@/components/DebugView';
+import AppButton from '@/components/AppButton';
 
 interface ModalComponentProps extends OverlayBaseProps {
 	/** Required for ModalComponent: controls whether the modal is displayed. */
@@ -88,12 +89,22 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isVisible, title = 'Mod
 				{/* Action Buttons */}
 				{showButtons && (
 					<View style={[styles.buttonContainer, { width: '60%' }]}>
-						<TouchableOpacity onPress={onClose} style={{ ...styles.cancelButton, borderColor: primaryColor }}>
-							<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
-						</TouchableOpacity>
-						<TouchableOpacity onPress={onSave} disabled={disableSave} style={{ ...styles.saveButton, backgroundColor: primaryColor }}>
-							<Text style={[styles.buttonText, { color: theme.activeText }]}>{translate(TranslationKeys.save)}</Text>
-						</TouchableOpacity>
+						<AppButton
+							text={translate(TranslationKeys.cancel)}
+							onPress={onClose}
+							variant="outline"
+							style={{ ...styles.cancelButton, borderColor: primaryColor }}
+							textStyle={[styles.buttonText, { color: theme.screen.text }]}
+							usePlainText
+						/>
+						<AppButton
+							text={translate(TranslationKeys.save)}
+							onPress={onSave}
+							disabled={disableSave}
+							style={{ ...styles.saveButton, backgroundColor: primaryColor }}
+							textStyle={[styles.buttonText, { color: theme.activeText }]}
+							usePlainText
+						/>
 					</View>
 				)}
 			</View>

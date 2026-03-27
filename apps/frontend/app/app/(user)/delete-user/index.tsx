@@ -14,6 +14,7 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
+import AppButton from '@/components/AppButton';
 import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 import { performLogout } from '@/helper/logoutHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -244,12 +245,21 @@ const Index = () => {
 						{translate(TranslationKeys.are_you_sure_to_delete_your_account)}
 					</Text>
 					<View style={styles.attentionActions}>
-						<TouchableOpacity style={[styles.confirmButton, { backgroundColor: primaryColor }]} onPress={handleDeleteAccount}>
-							{loading ? <ActivityIndicator size={24} color={theme.screen.text} /> : <Text style={[styles.confirmLabel, { color: theme.light }]}>{translate(TranslationKeys.confirm)}</Text>}
-						</TouchableOpacity>
-						<TouchableOpacity style={styles.cancleButton} onPress={closeDeleteAccountModal}>
-							<Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
-						</TouchableOpacity>
+						<AppButton
+							text={translate(TranslationKeys.confirm)}
+							onPress={handleDeleteAccount}
+							loading={loading}
+							loadingIndicatorColor={theme.screen.text}
+							loadingIndicatorSize={24}
+							style={[styles.confirmButton, { backgroundColor: primaryColor }]}
+							textStyle={[styles.confirmLabel, { color: theme.light }]}
+						/>
+						<AppButton
+							text={translate(TranslationKeys.cancel)}
+							onPress={closeDeleteAccountModal}
+							style={styles.cancleButton}
+							textStyle={styles.confirmLabel}
+						/>
 					</View>
 				</View>
 			</ModalComponent>

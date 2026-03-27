@@ -101,6 +101,18 @@ export default StyleSheet.create({
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',
 	},
+	nfcButtonPrice: {
+		paddingVertical: 8,
+		paddingHorizontal: 14,
+		borderRadius: 8,
+		borderWidth: 1,
+		marginHorizontal: 6,
+		marginTop: 8,
+		marginVertical: 0,
+		minHeight: 0,
+		height: undefined,
+		gap: 0,
+	},
 	nfcInstructionRead: {
 		fontSize: 16,
 		fontFamily: 'Poppins_400Regular',

@@ -15,6 +15,7 @@ import { MARK_ALL_CHATS_AS_READ, MARK_ALL_CHATS_AS_UNREAD } from '@/redux/Types/
 import { persistChatReadStatus } from '@/helper/chatReadStatus';
 import styles from './styles';
 import useChatUnreadStatus, { getChatTimestamp } from '@/hooks/useChatUnreadStatus';
+import AppButton from '@/components/AppButton';
 
 const ChatsScreen = () => {
         useSetPageTitle(TranslationKeys.chats);
@@ -91,31 +92,31 @@ const ChatsScreen = () => {
 
                 return (
                         <View style={styles.headerActions}>
-                                <TouchableOpacity
+                                <AppButton
+                                        text={translate(TranslationKeys.mark_all_chats_as_read)}
                                         onPress={() => {
                                                 void markAllAsRead();
                                         }}
+                                        disabled={!hasUnreadChats}
                                         style={[
                                                 styles.actionButton,
                                                 { backgroundColor: primaryColor },
                                                 !hasUnreadChats && styles.actionButtonDisabled,
+                                                { marginVertical: 0 },
                                         ]}
-                                        disabled={!hasUnreadChats}
-                                >
-                                        <Text style={[styles.actionButtonText, { color: buttonTextColor }]}>
-                                                {translate(TranslationKeys.mark_all_chats_as_read)}
-                                        </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
+                                        textStyle={[styles.actionButtonText, { color: buttonTextColor }]}
+                                        usePlainText
+                                />
+                                <AppButton
+                                        text={translate(TranslationKeys.mark_all_chats_as_unread)}
                                         onPress={() => {
                                                 void markAllAsUnread();
                                         }}
-                                        style={[styles.actionButton, styles.secondaryActionButton, { borderColor: theme.screen.icon }]}
-                                >
-                                        <Text style={[styles.actionButtonText, { color: theme.screen.text }]}>
-                                                {translate(TranslationKeys.mark_all_chats_as_unread)}
-                                        </Text>
-                                </TouchableOpacity>
+                                        variant="outline"
+                                        style={[styles.actionButton, styles.secondaryActionButton, { borderColor: theme.screen.icon }, { marginVertical: 0 }]}
+                                        textStyle={[styles.actionButtonText, { color: theme.screen.text }]}
+                                        usePlainText
+                                />
                         </View>
                 );
         };

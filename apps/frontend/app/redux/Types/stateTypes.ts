@@ -53,6 +53,7 @@ export type SettingsState = {
         language: string;
         pirateLanguage: boolean;
         funLanguageMode: string | null;
+        offlineMode: boolean;
         firstDayOfTheWeek: { id: string; name: string };
         drawerPosition: 'left' | 'right' | 'system';
         selectedCustomer: ConfigCustomerEnum | null;

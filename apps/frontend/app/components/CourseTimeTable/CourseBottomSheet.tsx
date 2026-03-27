@@ -20,6 +20,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
+import AppButton from '@/components/AppButton';
 
 const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, closeSheet, isUpdate, selectedEventId }) => {
 	const { theme } = useTheme();
@@ -329,24 +330,21 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 							<TextInput style={styles.input} value={inputValue} onChangeText={setInputValue} placeholder={'Enter a value'} autoFocus />
 
 							<View style={[styles.buttonContainer]}>
-								<TouchableOpacity
+								<AppButton
+									text={translate(TranslationKeys.cancel)}
 									onPress={cancleSheet}
-									style={{
-										...styles.cancelButton,
-										borderColor: course_timetable_area_color,
-									}}
-								>
-									<Text style={[styles.buttonText, { color: theme.screen.text }]}>{translate(TranslationKeys.cancel)}</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
+									variant="outline"
+									style={{ ...styles.cancelButton, borderColor: course_timetable_area_color, marginVertical: 0, height: undefined, minHeight: 0, gap: 0 }}
+									textStyle={[styles.buttonText, { color: theme.screen.text }]}
+									usePlainText
+								/>
+								<AppButton
+									text={translate(TranslationKeys.save)}
 									onPress={handleSavePress}
-									style={{
-										...styles.saveButton,
-										backgroundColor: course_timetable_area_color,
-									}}
-								>
-									<Text style={[styles.buttonText, { color: contrastColor }]}>{translate(TranslationKeys.save)}</Text>
-								</TouchableOpacity>
+									style={{ ...styles.saveButton, backgroundColor: course_timetable_area_color, marginVertical: 0, height: undefined, minHeight: 0, gap: 0 }}
+									textStyle={[styles.buttonText, { color: contrastColor }]}
+									usePlainText
+								/>
 							</View>
 						</View>
 					)

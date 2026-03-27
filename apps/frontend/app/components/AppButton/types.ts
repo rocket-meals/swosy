@@ -9,6 +9,9 @@ export interface AppButtonProps {
 	iconRight?: ReactNode;
 	style?: StyleProp<ViewStyle>;
 	textStyle?: StyleProp<TextStyle>;
+	usePlainText?: boolean;
+	loadingIndicatorColor?: string;
+	loadingIndicatorSize?: number;
 	disabled?: boolean;
 	loading?: boolean;
 }

@@ -308,9 +308,7 @@ const AccountBalanceScreen = () => {
 	return (
 		<ScrollView style={{ ...styles.container, backgroundColor: theme.screen.background }} contentContainerStyle={{ alignItems: 'center' }}>
 			<View style={styles.imageContainer}>{renderLottie}</View>
-
-			{/* Account Balance Info */}
-
+			
 			<Text style={{ ...styles.balanceTitle, color: theme.header.text }}>{translate(TranslationKeys.accountbalance)}</Text>
 			<Text style={{ ...styles.balance, color: theme.header.text }}>{profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '? €'}</Text>
 			{(isWeb || !isNfcSupported) && <Text style={{ ...styles.subText, color: theme.header.text }}>{translate(TranslationKeys.nfcNotSupported)}</Text>}
@@ -331,13 +329,15 @@ const AccountBalanceScreen = () => {
 				/>
 			)}
 			{isNfcSupported && !isNfcEnabled && (
-				<TouchableOpacity
-					style={{ ...styles.nfcButton, borderColor: theme.screen.iconBg }}
-					onPress={() => Linking.openSettings()} // Open NFC settings
-				>
-					<MaterialCommunityIcons name="nfc" size={24} color={theme.screen.icon} />
-					<Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>{translate(TranslationKeys.pleaseEnableNFC)}</Text>
-				</TouchableOpacity>
+				<AppButton
+					onPress={() => Linking.openSettings()}
+					style={{ ...styles.nfcButton, borderColor: theme.screen.iconBg, marginVertical: 0 }}
+					textStyle={{ ...styles.nfcLabel, color: theme.screen.text }}
+					text={translate(TranslationKeys.pleaseEnableNFC)}
+					iconLeft={<MaterialCommunityIcons name="nfc" size={24} color={theme.screen.icon} />}
+					usePlainText
+					variant="outline"
+				/>
 			)}
 
 			{/* Additional Information */}
@@ -380,17 +380,12 @@ const AccountBalanceScreen = () => {
 				>
 					<View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
 						{[1, 5, 20].map(amount => (
-							<TouchableOpacity
+							<AppButton
 								key={`simulate-${amount}`}
-								style={{
-									paddingVertical: 8,
-									paddingHorizontal: 14,
-									borderRadius: 8,
-									borderWidth: 1,
-									borderColor: theme.screen.iconBg,
-									marginHorizontal: 6,
-									marginTop: 8,
-								}}
+								text={`Simulate ${amount}€`}
+								variant="outline"
+								usePlainText
+								style={[styles.nfcButtonPrice, { borderColor: theme.screen.iconBg }]}
 								onPress={async () => {
 									const mock: CardResponse = {
 										currentBalance: amount.toFixed(2),
@@ -409,9 +404,8 @@ const AccountBalanceScreen = () => {
 										addDebugError(e, 'Simulated NFC Read');
 									}
 								}}
-							>
-								<Text style={{ color: theme.screen.text }}>{`Simulate ${amount}€`}</Text>
-							</TouchableOpacity>
+								textStyle={{ color: theme.screen.text }}
+							/>
 						))}
 					</View>
 				</DebugView>

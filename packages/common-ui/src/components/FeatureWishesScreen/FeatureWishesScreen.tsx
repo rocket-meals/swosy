@@ -26,6 +26,7 @@ export interface FeatureWishesScreenTexts {
 	filterAllLabel?: string;
 	approveLabel?: string;
 	approvedLabel?: string;
+	closeLabel?: string;
 }
 
 export interface FeatureWishesScreenProps {

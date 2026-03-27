@@ -9,7 +9,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { PopupEventSheetProps } from './types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { getTextFromTranslation, getTitleFromTranslation } from '@/helper/resourceHelper';
-import ProjectButton from '../ProjectButton';
+import AppButton from '../AppButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import MyMarkdown from '../MyMarkdown';
 
@@ -36,7 +36,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({ closeSheet, dismissSh
 					alignItems: 'center',
 				}}
 			>
-				<ProjectButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
+				<AppButton text="Schließen und nicht erneut anzeigen" onPress={handleClose} />
 			</View>
 			<View
 				style={{

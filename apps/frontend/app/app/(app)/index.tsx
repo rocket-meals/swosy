@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
@@ -17,6 +17,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
+import AppButton from '@/components/AppButton';
 
 const Home = () => {
 	const dispatch = useDispatch();
@@ -128,16 +129,14 @@ const Home = () => {
 				}}
 			>
 				<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_canteens_found)}</Text>
-				<TouchableOpacity
-					style={{
-						...styles.continueButton,
-						backgroundColor: theme.screen.iconBg,
-					}}
+				<AppButton
+					style={{ ...styles.continueButton, backgroundColor: theme.screen.iconBg, marginVertical: 0, justifyContent: 'flex-start' }}
 					onPress={() => drawerNavigation.toggleDrawer()}
-				>
-					<Ionicons name="menu" size={24} color={theme.screen.icon} />
-					<Text style={{ ...styles.continueLabel, color: theme.screen.text }}>{translate(TranslationKeys.open_drawer)}</Text>
-				</TouchableOpacity>
+					text={translate(TranslationKeys.open_drawer)}
+					iconLeft={<Ionicons name="menu" size={24} color={theme.screen.icon} />}
+					textStyle={{ ...styles.continueLabel, color: theme.screen.text }}
+					usePlainText
+				/>
 			</View>
 		);
 	}

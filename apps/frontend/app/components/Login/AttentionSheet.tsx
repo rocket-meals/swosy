@@ -6,6 +6,7 @@ import { styles } from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
+import AppButton from '@/components/AppButton';
 import LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import animationJson from '@/assets/animations/astronaut-computer.json';
@@ -49,18 +50,21 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 				<View style={{ ...styles.attentionContent, width: isWeb ? '80%' : '100%' }}>
 					<Text style={{ ...styles.attentionBody, color: theme.sheet.text }}>{translate(TranslationKeys.without_account_limitations)}</Text>
 					<View style={{ ...styles.attentionActions, width: isWeb ? '60%' : '100%' }}>
-						<TouchableOpacity
-							style={[styles.confirmButton, { backgroundColor: primaryColor }]}
+						<AppButton
+							text={translate(TranslationKeys.confirm)}
 							onPress={() => {
 								closeSheet();
 								handleLogin();
 							}}
-						>
-							<Text style={[styles.confirmLabel, { color: contrastColor }]}>{translate(TranslationKeys.confirm)}</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles.cancleButton} onPress={closeSheet}>
-							<Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
-						</TouchableOpacity>
+							style={[styles.confirmButton, { backgroundColor: primaryColor }]}
+							textStyle={[styles.confirmLabel, { color: contrastColor }]}
+						/>
+						<AppButton
+							text={translate(TranslationKeys.cancel)}
+							onPress={closeSheet}
+							style={styles.cancleButton}
+							textStyle={styles.confirmLabel}
+						/>
 					</View>
 				</View>
 			</View>

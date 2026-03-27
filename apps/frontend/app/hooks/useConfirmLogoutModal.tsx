@@ -5,12 +5,12 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'expo-router';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import ProjectButton from '@/components/ProjectButton';
 import { performLogout } from '@/helper/logoutHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import useLogoutButtonTranslation from './useLogoutButtonTranslation';
+import AppButton from '@/components/AppButton';
 
 const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
@@ -43,16 +43,19 @@ const useConfirmLogoutModal = () => {
                                                         <Text style={{ color: theme.screen.text }}>
                                                                 {modalDescription}
                                                         </Text>
-                                                        <ProjectButton
+                                                        <AppButton
                                                                 text={translate(TranslationKeys.confirm)}
                                                                 onPress={handleLogout}
                                                                 style={{ marginVertical: 0 }}
                                                         />
-                                                        <TouchableOpacity onPress={close} style={{ alignSelf: 'center', paddingVertical: 6 }}>
-                                                                <Text style={{ color: theme.screen.text }}>
-                                                                        {translate(TranslationKeys.cancel)}
-                                                                </Text>
-                                                        </TouchableOpacity>
+                                                        <AppButton
+                                                                text={translate(TranslationKeys.cancel)}
+                                                                onPress={close}
+                                                                variant="ghost"
+                                                                style={{alignSelf: 'center', paddingVertical: 6}}
+                                                                textStyle={{ color: theme.screen.text }}
+                                                                usePlainText
+                                                        />
                                                 </View>
                                         ),
                                 },

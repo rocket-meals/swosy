@@ -13,6 +13,9 @@ const AppButton: React.FC<AppButtonProps> = ({
 	iconRight,
 	style,
 	textStyle,
+	usePlainText = false,
+	loadingIndicatorColor,
+	loadingIndicatorSize,
 	disabled = false,
 	loading = false,
 }) => {
@@ -42,7 +45,7 @@ const AppButton: React.FC<AppButtonProps> = ({
 	return (
 		<TouchableOpacity
 			style={[
-				styles.container,
+				variant !== 'ghost' ? styles.container : null,
 				{
 					backgroundColor: getBackgroundColor(),
 					borderColor: getBorderColor(),
@@ -55,11 +58,11 @@ const AppButton: React.FC<AppButtonProps> = ({
 			disabled={disabled || loading}
 		>
 			{loading ? (
-				<ActivityIndicator color={getTextColor()} />
+				<ActivityIndicator color={loadingIndicatorColor ?? getTextColor()} size={loadingIndicatorSize} />
 			) : (
 				<>
 					{iconLeft && <View>{iconLeft}</View>}
-					<Text style={[styles.label, { color: getTextColor() }, textStyle]}>{text}</Text>
+					<Text style={[usePlainText ? null : styles.label, { color: getTextColor() }, textStyle]}>{text}</Text>
 					{iconRight && <View>{iconRight}</View>}
 				</>
 			)}

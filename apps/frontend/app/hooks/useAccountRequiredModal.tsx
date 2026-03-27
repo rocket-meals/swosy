@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from 'expo-router';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import ProjectButton from '@/components/ProjectButton';
+import AppButton from '@/components/AppButton';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
@@ -30,7 +30,7 @@ const useAccountRequiredModal = () => {
 					<Text style={{ color: theme.sheet.text }}>
 						{translate(TranslationKeys.limited_access_description)}
 					</Text>
-					<ProjectButton
+					<AppButton
 						text={`${translate(TranslationKeys.sign_in)} / ${translate(TranslationKeys.create_account)}`}
 						onPress={() => {
 							closeAll();
