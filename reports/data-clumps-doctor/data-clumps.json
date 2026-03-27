@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-27T07:55:56.105Z",
+  "report_timestamp": "2026-03-27T08:19:24.252Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 93,
-          "average": 1.5918277680140598,
-          "amountSavedValuesForKeys": 3623,
+          "average": 1.5916483516483517,
+          "amountSavedValuesForKeys": 3621,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 93,
-          "average": 1.6066518847006652,
-          "amountSavedValuesForKeys": 3623,
+          "average": 1.6064773735581188,
+          "amountSavedValuesForKeys": 3621,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3611,
-        "detection_time_ms": 69,
+        "ast_generation_time_ms": 3779,
+        "detection_time_ms": 67,
         "machine_information": {
           "os": "Linux",
-          "os_release": "6.14.0-1017-azure",
+          "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 171.6,
-          "os_memory_free": 14930931712,
-          "os_memory_total": 16766197760,
+          "os_uptime": 226.01,
+          "os_memory_free": 14959517696,
+          "os_memory_total": 16766443520,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3490
+          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 33,
+    "amount_classes_or_interfaces_with_data_clumps": 31,
     "amount_files_with_data_clumps": 23,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 34,
+    "fields_to_fields_data_clump": 32,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 42
+    "amount_data_clumps": 40
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "4880cc5df0eb30811d2b194fe658d5233bbcbcb4",
-    "project_commit_hash": "4880cc5df0eb30811d2b194fe658d5233bbcbcb4",
+    "project_version": "11364ffe64df5bd3a28cb20fe9949b97c698ec24",
+    "project_commit_hash": "11364ffe64df5bd3a28cb20fe9949b97c698ec24",
     "project_tag": null,
-    "project_commit_date": "1774598061",
+    "project_commit_date": "1774599475",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 454,
     "number_of_classes_or_interfaces": 935,
-    "number_of_methods": 1321,
-    "number_of_data_fields": 3623,
+    "number_of_methods": 1320,
+    "number_of_data_fields": 3621,
     "number_of_method_parameters": 1458
   },
   "detector": {
@@ -3344,103 +3344,6 @@
         "cluster_type": 2
       }
     },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-approveLabelapprovedLabelcloseLabel": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-approveLabelapprovedLabelcloseLabel",
-      "probability": 1,
-      "from_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
-      "from_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps",
-      "from_class_or_interface_name": "DetailContentProps",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
-      "to_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts",
-      "to_class_or_interface_name": "FeatureWishesScreenTexts",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approveLabel": {
-          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approveLabel",
-          "name": "approveLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approveLabel",
-            "name": "approveLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 2,
-              "endLine": 27,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 236,
-            "startColumn": 2,
-            "endLine": 236,
-            "endColumn": 23
-          }
-        },
-        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approvedLabel": {
-          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approvedLabel",
-          "name": "approvedLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approvedLabel",
-            "name": "approvedLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 28,
-              "startColumn": 2,
-              "endLine": 28,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 237,
-            "startColumn": 2,
-            "endLine": 237,
-            "endColumn": 24
-          }
-        },
-        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/closeLabel": {
-          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/closeLabel",
-          "name": "closeLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/closeLabel",
-            "name": "closeLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 29,
-              "startColumn": 2,
-              "endLine": 29,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 238,
-            "startColumn": 2,
-            "endLine": 238,
-            "endColumn": 21
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 15,
-        "cluster_type": 2
-      }
-    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-idtitledescription": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishItem-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-idtitledescription",
@@ -3535,103 +3438,6 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 14,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-approveLabelapprovedLabelcloseLabel": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts-packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps-approveLabelapprovedLabelcloseLabel",
-      "probability": 1,
-      "from_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
-      "from_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts",
-      "from_class_or_interface_name": "FeatureWishesScreenTexts",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx",
-      "to_class_or_interface_key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps",
-      "to_class_or_interface_name": "DetailContentProps",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approveLabel": {
-          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approveLabel",
-          "name": "approveLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approveLabel",
-            "name": "approveLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 236,
-              "startColumn": 2,
-              "endLine": 236,
-              "endColumn": 23
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 2,
-            "endLine": 27,
-            "endColumn": 24
-          }
-        },
-        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approvedLabel": {
-          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/approvedLabel",
-          "name": "approvedLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/approvedLabel",
-            "name": "approvedLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 237,
-              "startColumn": 2,
-              "endLine": 237,
-              "endColumn": 24
-            }
-          },
-          "position": {
-            "startLine": 28,
-            "startColumn": 2,
-            "endLine": 28,
-            "endColumn": 25
-          }
-        },
-        "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/closeLabel": {
-          "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/FeatureWishesScreenTexts/memberField/closeLabel",
-          "name": "closeLabel",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "packages/common-ui/src/components/FeatureWishesScreen/FeatureWishesScreen.tsx/interface/DetailContentProps/memberField/closeLabel",
-            "name": "closeLabel",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 238,
-              "startColumn": 2,
-              "endLine": 238,
-              "endColumn": 21
-            }
-          },
-          "position": {
-            "startLine": 29,
-            "startColumn": 2,
-            "endLine": 29,
-            "endColumn": 22
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -4069,7 +3875,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -4166,7 +3972,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
