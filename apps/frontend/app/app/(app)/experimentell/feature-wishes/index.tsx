@@ -21,11 +21,16 @@ const FeatureWishesRoute = () => {
 				primaryColor={primaryColor}
 				texts={{
 					introText: translate(TranslationKeys.feature_wishes_intro),
-					filterPendingLabel: translate(TranslationKeys.feature_wishes_filter_pending),
-					filterAllLabel: translate(TranslationKeys.feature_wishes_filter_all),
+					filterPublishedLabel: translate(TranslationKeys.feature_wishes_filter_published),
+					filterDraftLabel: translate(TranslationKeys.feature_wishes_filter_draft),
 					approveLabel: translate(TranslationKeys.feature_wishes_approve),
 					approvedLabel: translate(TranslationKeys.feature_wishes_approved),
-					closeLabel: translate(TranslationKeys.cancel),
+					searchPlaceholder: translate(TranslationKeys.feature_wishes_search_placeholder),
+					createButtonLabel: translate(TranslationKeys.feature_wishes_create_button),
+					createModalDescriptionPlaceholder: translate(TranslationKeys.feature_wishes_create_description_placeholder),
+					createModalConfirmLabel: translate(TranslationKeys.feature_wishes_create_confirm),
+					pendingReviewTitle: translate(TranslationKeys.feature_wishes_pending_review_title),
+					pendingReviewMessage: translate(TranslationKeys.feature_wishes_pending_review_message),
 				}}
 			/>
 		</View>

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { myContrastColor } from '../../helpers/ColorHelper';
@@ -11,21 +12,20 @@ import SettingsList from '../SettingsList';
 import SettingsListLikeButton from '../SettingsListLikeButton';
 import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 
-export interface FeatureWishItem {
-	id: string;
-	title: string;
-	description: string;
-	likeCount: number;
-	approved: boolean;
-	liked?: boolean;
-}
+export type FeatureWishItem = Partial<DatabaseTypes.FeatureWhishes>;
 
 export interface FeatureWishesScreenTexts {
 	introText?: string;
-	filterPendingLabel?: string;
-	filterAllLabel?: string;
+	filterPublishedLabel?: string;
+	filterDraftLabel?: string;
 	approveLabel?: string;
 	approvedLabel?: string;
+	searchPlaceholder?: string;
+	createButtonLabel?: string;
+	createModalDescriptionPlaceholder?: string;
+	createModalConfirmLabel?: string;
+	pendingReviewTitle?: string;
+	pendingReviewMessage?: string;
 }
 
 export interface FeatureWishesScreenProps {
@@ -39,38 +39,41 @@ const DEFAULT_ITEMS: FeatureWishItem[] = [
 		id: '1',
 		title: 'Dark Mode',
 		description: 'Add a dark mode for the entire app to reduce eye strain and save battery life.',
-		likeCount: 42,
-		approved: true,
+		likes: 42,
+		status: 'published',
 	},
 	{
 		id: '2',
 		title: 'Weekly Plan Widget',
 		description: 'Show the weekly meal plan as a home screen widget so users can see what is available at a glance.',
-		likeCount: 31,
-		approved: true,
+		likes: 31,
+		status: 'published',
 	},
 	{
 		id: '3',
 		title: 'Calorie Counter',
 		description: 'Add a feature to track daily calorie intake based on the meals consumed in the canteen.',
-		likeCount: 28,
-		approved: false,
+		likes: 28,
+		status: 'draft',
 	},
 	{
 		id: '4',
 		title: 'Favorites List',
 		description: 'Allow users to mark dishes as favorites and create a personal list of favorite meals.',
-		likeCount: 19,
-		approved: false,
+		likes: 19,
+		status: 'draft',
 	},
 	{
 		id: '5',
 		title: 'Push Notifications for Favorite Meals',
 		description: 'Receive notifications when a specific favorite dish is available on the menu.',
-		likeCount: 15,
-		approved: true,
+		likes: 15,
+		status: 'published',
 	},
 ];
+
+const STATUS_PUBLISHED = 'published';
+const STATUS_DRAFT = 'draft';
 
 const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	isAdmin = false,
@@ -83,54 +86,108 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	const contrastColor = myContrastColor(resolvedPrimaryColor, theme, isDark);
 
 	const [items, setItems] = useState<FeatureWishItem[]>(DEFAULT_ITEMS);
-	const [showPendingOnly, setShowPendingOnly] = useState(false);
+	const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+	const [activeFilter, setActiveFilter] = useState<string>(STATUS_PUBLISHED);
+	const [searchText, setSearchText] = useState('');
 
-	const { show, close } = useMyScrollViewModal();
+	const { show, showAndDiscardOthers } = useMyScrollViewModal();
 
 	const introText =
-		texts?.introText ??
-		'Here you can wish for features. Like suggestions you find good!';
-	const filterPendingLabel = texts?.filterPendingLabel ?? 'Neue Anfragen';
-	const filterAllLabel = texts?.filterAllLabel ?? 'Alle';
+		texts?.introText ?? 'Here you can wish for features. Like suggestions you find good!';
+	const filterPublishedLabel = texts?.filterPublishedLabel ?? 'Veröffentlichte Wünsche';
+	const filterDraftLabel = texts?.filterDraftLabel ?? 'Neue Wünsche';
 	const approveLabel = texts?.approveLabel ?? 'Genehmigen';
 	const approvedLabel = texts?.approvedLabel ?? 'Genehmigt';
+	const searchPlaceholder = texts?.searchPlaceholder ?? 'Feature Wunsch suchen oder erstellen …';
+	const createButtonLabel = texts?.createButtonLabel ?? 'Feature Wunsch erstellen';
+	const createModalDescriptionPlaceholder =
+		texts?.createModalDescriptionPlaceholder ?? 'Beschreibe deinen Feature Wunsch …';
+	const createModalConfirmLabel = texts?.createModalConfirmLabel ?? 'Erstellen';
+	const pendingReviewTitle = texts?.pendingReviewTitle ?? 'Wunsch eingereicht';
+	const pendingReviewMessage =
+		texts?.pendingReviewMessage ??
+		'Dein Feature Wunsch wird nun geprüft (z. B. auf Verstöße oder unangemessene Sprache) und danach veröffentlicht.';
 
 	const visibleItems = useMemo(() => {
-		const filtered = isAdmin && showPendingOnly ? items.filter((i) => !i.approved) : items;
-		return [...filtered].sort((a, b) => b.likeCount - a.likeCount);
-	}, [items, isAdmin, showPendingOnly]);
+		let filtered = items.filter((i) => i.status === activeFilter);
+		const query = searchText.trim().toLowerCase();
+		if (query) {
+			filtered = filtered.filter(
+				(i) =>
+					i.title?.toLowerCase().includes(query) ||
+					i.description?.toLowerCase().includes(query)
+			);
+		}
+		return [...filtered].sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0));
+	}, [items, activeFilter, searchText]);
 
-	const handleLike = useCallback(
-		(id: string) => {
-			setItems((prev) =>
-				prev.map((item) => {
+	const handleLike = useCallback((id: string) => {
+	const handleLike = useCallback((id: string) => {
+		setLikedIds((prev) => {
+			const wasLiked = prev.has(id);
+			const next = new Set(prev);
+			if (wasLiked) {
+				next.delete(id);
+			} else {
+				next.add(id);
+			}
+			setItems((prevItems) =>
+				prevItems.map((item) => {
 					if (item.id !== id) return item;
-					const nowLiked = !item.liked;
-					return {
-						...item,
-						liked: nowLiked,
-						likeCount: item.likeCount + (nowLiked ? 1 : -1),
-					};
+					return { ...item, likes: (item.likes ?? 0) + (wasLiked ? -1 : 1) };
 				})
 			);
-		},
-		[]
-	);
+			return next;
+		});
+	}, []);
 
 	const handleApprove = useCallback(
 		(id: string) => {
 			setItems((prev) =>
-				prev.map((item) => (item.id === id ? { ...item, approved: true } : item))
+				prev.map((item) => (item.id === id ? { ...item, status: STATUS_PUBLISHED } : item))
 			);
-			close();
+			showAndDiscardOthers({
+				title: approvedLabel,
+				children: (
+					<PendingReviewContent
+						message={approveLabel + ' ✓'}
+						theme={theme}
+					/>
+				),
+			});
 		},
-		[close]
+		[showAndDiscardOthers, approveLabel, approvedLabel, theme]
+	);
+
+	const handleCreate = useCallback(
+		(title: string, description: string) => {
+			const newItem: FeatureWishItem = {
+				id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+				title,
+				description,
+				likes: 0,
+				status: STATUS_DRAFT,
+				date_created: new Date().toISOString(),
+			};
+			setItems((prev) => [newItem, ...prev]);
+			setSearchText('');
+			showAndDiscardOthers({
+				title: pendingReviewTitle,
+				children: (
+					<PendingReviewContent
+						message={pendingReviewMessage}
+						theme={theme}
+					/>
+				),
+			});
+		},
+		[showAndDiscardOthers, pendingReviewTitle, pendingReviewMessage, theme]
 	);
 
 	const openDetail = useCallback(
 		(item: FeatureWishItem) => {
 			show({
-				title: item.title,
+				title: item.title ?? '',
 				children: (
 					<DetailContent
 						item={item}
@@ -138,34 +195,62 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 						approveLabel={approveLabel}
 						approvedLabel={approvedLabel}
 						primaryColor={resolvedPrimaryColor}
-						onApprove={() => handleApprove(item.id)}
+						onApprove={() => handleApprove(item.id ?? '')}
 						theme={theme}
 					/>
 				),
 			});
 		},
-		[show, close, isAdmin, approveLabel, approvedLabel, resolvedPrimaryColor, handleApprove, theme]
+		[show, isAdmin, approveLabel, approvedLabel, resolvedPrimaryColor, handleApprove, theme]
 	);
+
+	const showCreateModal = useCallback(() => {
+		const title = searchText.trim();
+		if (!title) return;
+		show({
+			title,
+			children: (
+				<CreateWishContent
+					descriptionPlaceholder={createModalDescriptionPlaceholder}
+					createConfirmLabel={createModalConfirmLabel}
+					primaryColor={resolvedPrimaryColor}
+					contrastColor={contrastColor}
+					theme={theme}
+					onConfirm={(description) => handleCreate(title, description)}
+				/>
+			),
+		});
+	}, [
+		show,
+		searchText,
+		createModalDescriptionPlaceholder,
+		createModalConfirmLabel,
+		resolvedPrimaryColor,
+		contrastColor,
+		theme,
+		handleCreate,
+	]);
 
 	const renderItem = useCallback(
 		({ item, index }: { item: FeatureWishItem; index: number }) => {
 			const total = visibleItems.length;
 			const groupPosition =
 				total === 1 ? 'single' : index === 0 ? 'top' : index === total - 1 ? 'bottom' : 'middle';
+			const isLiked = likedIds.has(item.id ?? '');
 
 			return (
 				<SettingsList
 					key={item.id}
-					title={item.title}
+					title={item.title ?? ''}
 					iconBgColor={resolvedPrimaryColor}
 					leftIcon={
 						<MaterialCommunityIcons name="lightbulb-outline" size={22} color={contrastColor} />
 					}
 					rightElement={
 						<SettingsListLikeButton
-							liked={item.liked}
-							likeCount={item.likeCount}
-							onPressLike={() => handleLike(item.id)}
+							liked={isLiked}
+							likeCount={item.likes ?? 0}
+							onPressLike={() => handleLike(item.id ?? '')}
 							primaryColor={resolvedPrimaryColor}
 						/>
 					}
@@ -175,10 +260,10 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 				/>
 			);
 		},
-		[visibleItems.length, resolvedPrimaryColor, contrastColor, handleLike, openDetail]
+		[visibleItems.length, resolvedPrimaryColor, contrastColor, likedIds, handleLike, openDetail]
 	);
 
-	const keyExtractor = useCallback((item: FeatureWishItem) => item.id, []);
+	const keyExtractor = useCallback((item: FeatureWishItem) => item.id ?? '', []);
 
 	const filterButtonStyle = (active: boolean) => [
 		styles.filterButton,
@@ -194,26 +279,67 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 		fontWeight: '600' as const,
 	});
 
+	const showCreateButton = searchText.trim().length > 0;
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={styles.header}>
 				<Text style={[styles.introText, { color: theme.screen.text }]}>{introText}</Text>
-				{isAdmin && (
-					<View style={styles.filterRow}>
-						<Pressable
-							style={filterButtonStyle(!showPendingOnly)}
-							onPress={() => setShowPendingOnly(false)}
-						>
-							<Text style={filterTextStyle(!showPendingOnly)}>{filterAllLabel}</Text>
+				<View
+					style={[
+						styles.searchInputContainer,
+						{ backgroundColor: theme.screen.iconBg },
+					]}
+				>
+					<MaterialCommunityIcons
+						name="magnify"
+						size={20}
+						color={theme.screen.icon}
+						style={styles.searchIcon}
+					/>
+					<TextInput
+						style={[styles.searchInput, { color: theme.screen.text }]}
+						value={searchText}
+						onChangeText={setSearchText}
+						placeholder={searchPlaceholder}
+						placeholderTextColor={theme.screen.placeholder}
+						returnKeyType="search"
+					/>
+					{showCreateButton && (
+						<Pressable onPress={() => setSearchText('')} style={styles.clearButton}>
+							<MaterialCommunityIcons name="close-circle" size={18} color={theme.screen.icon} />
 						</Pressable>
-						<Pressable
-							style={filterButtonStyle(showPendingOnly)}
-							onPress={() => setShowPendingOnly(true)}
-						>
-							<Text style={filterTextStyle(showPendingOnly)}>{filterPendingLabel}</Text>
-						</Pressable>
-					</View>
+					)}
+				</View>
+				{showCreateButton && (
+					<Pressable
+						style={[styles.createButton, { backgroundColor: resolvedPrimaryColor }]}
+						onPress={showCreateModal}
+					>
+						<MaterialCommunityIcons name="plus-circle-outline" size={18} color={contrastColor} />
+						<Text style={[styles.createButtonText, { color: contrastColor }]}>
+							{createButtonLabel}
+						</Text>
+					</Pressable>
 				)}
+				<View style={styles.filterRow}>
+					<Pressable
+						style={filterButtonStyle(activeFilter === STATUS_PUBLISHED)}
+						onPress={() => setActiveFilter(STATUS_PUBLISHED)}
+					>
+						<Text style={filterTextStyle(activeFilter === STATUS_PUBLISHED)}>
+							{filterPublishedLabel}
+						</Text>
+					</Pressable>
+					<Pressable
+						style={filterButtonStyle(activeFilter === STATUS_DRAFT)}
+						onPress={() => setActiveFilter(STATUS_DRAFT)}
+					>
+						<Text style={filterTextStyle(activeFilter === STATUS_DRAFT)}>
+							{filterDraftLabel}
+						</Text>
+					</Pressable>
+				</View>
 			</View>
 			<FlatList
 				data={visibleItems}
@@ -221,10 +347,83 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 				keyExtractor={keyExtractor}
 				contentContainerStyle={styles.listContent}
 				showsVerticalScrollIndicator={false}
+				keyboardShouldPersistTaps="handled"
 			/>
 		</View>
 	);
 };
+
+interface CreateWishContentProps {
+	descriptionPlaceholder: string;
+	createConfirmLabel: string;
+	primaryColor: string;
+	contrastColor: string;
+	theme: Theme;
+	onConfirm: (description: string) => void;
+}
+
+const CreateWishContent: React.FC<CreateWishContentProps> = ({
+	descriptionPlaceholder,
+	createConfirmLabel,
+	primaryColor,
+	contrastColor,
+	theme,
+	onConfirm,
+}) => {
+	const [description, setDescription] = useState('');
+	const isDisabled = description.trim().length === 0;
+
+	return (
+		<View style={createStyles.container}>
+			<TextInput
+				style={[
+					createStyles.descriptionInput,
+					{
+						color: theme.screen.text,
+						backgroundColor: theme.screen.iconBg,
+						borderColor: theme.screen.iconBg,
+					},
+				]}
+				value={description}
+				onChangeText={setDescription}
+				placeholder={descriptionPlaceholder}
+				placeholderTextColor={theme.screen.placeholder}
+				multiline
+				numberOfLines={4}
+				textAlignVertical="top"
+			/>
+			<Pressable
+				style={[
+					createStyles.confirmButton,
+					{ backgroundColor: isDisabled ? theme.screen.iconBg : primaryColor },
+				]}
+				onPress={() => !isDisabled && onConfirm(description)}
+				disabled={isDisabled}
+			>
+				<Text
+					style={[
+						createStyles.confirmButtonText,
+						{ color: isDisabled ? theme.screen.placeholder : contrastColor },
+					]}
+				>
+					{createConfirmLabel}
+				</Text>
+			</Pressable>
+		</View>
+	);
+};
+
+interface PendingReviewContentProps {
+	message: string;
+	theme: Theme;
+}
+
+const PendingReviewContent: React.FC<PendingReviewContentProps> = ({ message, theme }) => (
+	<View style={reviewStyles.container}>
+		<MaterialCommunityIcons name="clock-check-outline" size={48} color={theme.screen.text} />
+		<Text style={[reviewStyles.message, { color: theme.screen.text }]}>{message}</Text>
+	</View>
+);
 
 interface DetailContentProps {
 	item: FeatureWishItem;
@@ -247,13 +446,14 @@ const DetailContent: React.FC<DetailContentProps> = ({
 }) => {
 	const { isDark } = useTheme();
 	const contrastOnPrimary = myContrastColor(primaryColor, theme, isDark);
+	const isDraft = item.status === STATUS_DRAFT;
 
 	return (
 		<View style={detailStyles.container}>
 			<Text style={[detailStyles.description, { color: theme.screen.text }]}>
 				{item.description}
 			</Text>
-			{isAdmin && !item.approved && (
+			{isAdmin && isDraft && (
 				<Pressable
 					style={[detailStyles.approveButton, { backgroundColor: primaryColor }]}
 					onPress={onApprove}
@@ -264,7 +464,7 @@ const DetailContent: React.FC<DetailContentProps> = ({
 					</Text>
 				</Pressable>
 			)}
-			{isAdmin && item.approved && (
+			{isAdmin && !isDraft && (
 				<View style={[detailStyles.approvedBadge, { borderColor: primaryColor }]}>
 					<MaterialCommunityIcons name="check-circle" size={16} color={primaryColor} />
 					<Text style={[detailStyles.approvedText, { color: primaryColor }]}>
@@ -291,6 +491,37 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		lineHeight: 20,
 	},
+	searchInputContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		borderRadius: borderRadiusContainer,
+		paddingHorizontal: 10,
+		minHeight: 44,
+	},
+	searchIcon: {
+		marginRight: 6,
+	},
+	searchInput: {
+		flex: 1,
+		fontSize: 15,
+		paddingVertical: 8,
+	},
+	clearButton: {
+		paddingLeft: 6,
+	},
+	createButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 11,
+		paddingHorizontal: 16,
+		borderRadius: borderRadiusContainer,
+		gap: 8,
+	},
+	createButtonText: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
 	filterRow: {
 		flexDirection: 'row',
 		gap: 8,
@@ -303,6 +534,48 @@ const styles = StyleSheet.create({
 	},
 	listContent: {
 		paddingBottom: 24,
+	},
+});
+
+const createStyles = StyleSheet.create({
+	container: {
+		paddingHorizontal: horizontalScreenPadding,
+		paddingTop: 8,
+		paddingBottom: 20,
+		gap: 16,
+	},
+	descriptionInput: {
+		borderRadius: borderRadiusContainer,
+		borderWidth: 1,
+		padding: 12,
+		fontSize: 15,
+		minHeight: 100,
+	},
+	confirmButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 13,
+		paddingHorizontal: 20,
+		borderRadius: borderRadiusContainer,
+	},
+	confirmButtonText: {
+		fontSize: 15,
+		fontWeight: '600',
+	},
+});
+
+const reviewStyles = StyleSheet.create({
+	container: {
+		paddingHorizontal: horizontalScreenPadding,
+		paddingTop: 16,
+		paddingBottom: 28,
+		alignItems: 'center',
+		gap: 16,
+	},
+	message: {
+		fontSize: 15,
+		lineHeight: 22,
+		textAlign: 'center',
 	},
 });
 
