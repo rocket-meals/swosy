@@ -33,6 +33,7 @@ import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
+import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 
 /** Module-level cache mapping terrain asset key → base64 data URI. */
 const cachedTerrainSvgDataUrls = new Map<string, string>();
@@ -63,6 +64,47 @@ async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
 	}
 	cachedTerrainSvgDataUrlsLoaded = true;
 	return cachedTerrainSvgDataUrls;
+}
+
+/** Module-level cache mapping object sprite key ("objects:N") → base64 data URI. */
+const cachedObjectSvgDataUrls = new Map<string, string>();
+let cachedObjectSvgDataUrlsLoaded = false;
+
+async function loadAllObjectSvgDataUrls(): Promise<Map<string, string>> {
+	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
+	for (let i = 0; i < OBJECT_SPRITES.length; i++) {
+		const sprite = OBJECT_SPRITES[i];
+		const key = `objects:${i}`;
+		try {
+			const asset = Asset.fromModule(sprite.source as number);
+			await asset.downloadAsync();
+			let url: string;
+			if (Platform.OS === 'web') {
+				url = asset.uri ?? '';
+			} else {
+				if (!asset.localUri) continue;
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:image/svg+xml;base64,${base64}`;
+			}
+			cachedObjectSvgDataUrls.set(key, url);
+		} catch (e) {
+			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${key}:`, e);
+		}
+	}
+	cachedObjectSvgDataUrlsLoaded = true;
+	return cachedObjectSvgDataUrls;
+}
+
+/** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
+function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
+	const colonIdx = billboard.indexOf(':');
+	if (colonIdx < 0 || billboard.slice(0, colonIdx) !== 'objects') return null;
+	const idx = parseInt(billboard.slice(colonIdx + 1), 10);
+	const sprite = OBJECT_SPRITES[idx];
+	if (!sprite) return null;
+	return { sprite, idx };
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -1060,13 +1102,22 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
 	const [terrainSvgUrls, setTerrainSvgUrls] = useState<Map<string, string>>(new Map());
+	const [objectSvgUrls, setObjectSvgUrls] = useState<Map<string, string>>(new Map());
 
 	const currentTileImage = record?.tileImage ?? null;
+	const currentBillboard = record?.billboard ?? null;
 
 	// Load all terrain SVGs as base64 data URIs for use in the tile picker WebView.
 	useEffect(() => {
 		loadAllTerrainSvgDataUrls().then(urls => {
 			setTerrainSvgUrls(new Map(urls));
+		});
+	}, []);
+
+	// Load all object sprite SVGs as base64 data URIs for use in the billboard picker WebView.
+	useEffect(() => {
+		loadAllObjectSvgDataUrls().then(urls => {
+			setObjectSvgUrls(new Map(urls));
 		});
 	}, []);
 
@@ -1115,6 +1166,43 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			'</body></html>',
 		].join('');
 	}, [terrainSvgUrls, selectedCategory, currentTileImage]);
+
+	// Build the HTML for the WebView-based billboard (object sprite) picker.
+	const billboardPickerHtml = useMemo(() => {
+		if (objectSvgUrls.size === 0) return null;
+		const thumbSize = TILE_THUMB_SIZE;
+		const gap = TILE_THUMB_GAP;
+
+		const objectItems = OBJECT_SPRITES.map((sprite, idx) => {
+			const key = `objects:${idx}`;
+			const url = objectSvgUrls.get(key) ?? '';
+			const isSelected = currentBillboard === key;
+			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
+			return `<div class="tile" data-key="${key}" style="border:${border};" title="${sprite.name}"><img src="${url}" /></div>`;
+		}).join('');
+
+		return [
+			'<!DOCTYPE html><html>',
+			'<head>',
+			'<meta name="viewport" content="width=device-width,initial-scale=1">',
+			'<style>',
+			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
+			`html,body{background:transparent;overflow:hidden;}`,
+			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
+			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
+			`.tile img{width:100%;height:100%;object-fit:contain;}`,
+			'</style>',
+			'</head>',
+			'<body>',
+			`<div class="row">${objectItems}</div>`,
+			'<script>',
+			`document.querySelectorAll('.tile').forEach(function(el){`,
+			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
+			`});`,
+			'<\/script>',
+			'</body></html>',
+		].join('');
+	}, [objectSvgUrls, currentBillboard]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1199,6 +1287,45 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 					</Text>
 					<TouchableOpacity
 						onPress={() => dispatch(setHexTileCustomization({ h3Index, tileImage: null }))}
+					>
+						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
+					</TouchableOpacity>
+				</View>
+			)}
+
+			{/* ── Billboard / Object section ── */}
+			<SettingsListGroupTitle title="Object" />
+
+			{billboardPickerHtml != null ? (
+				<WebView
+					source={{ html: billboardPickerHtml }}
+					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
+					originWhitelist={['*']}
+					scrollEnabled={true}
+					onMessage={event => {
+						const key = event.nativeEvent.data;
+						if (!key) return;
+						dispatch(
+							setHexTileCustomization({
+								h3Index,
+								billboard: currentBillboard === key ? null : key,
+							}),
+						);
+					}}
+				/>
+			) : (
+				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
+					Loading…
+				</Text>
+			)}
+
+			{currentBillboard && (
+				<View style={styles.tilePickerCurrentRow}>
+					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
+						{parseBillboardKey(currentBillboard)?.sprite.name ?? currentBillboard}
+					</Text>
+					<TouchableOpacity
+						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
 					>
 						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
 					</TouchableOpacity>
@@ -1290,10 +1417,10 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}`)
+			.filter(([, r]) => r.tileImage || r.billboard)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}`)
 			.sort()
-			.join(';'),
+			.join('\n'),
 	);
 
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
@@ -1404,7 +1531,35 @@ export default function RecordScreen() {
 			}
 		}
 
-		mapRef.current.sendToMap({ imageOverlays });
+		// ── Billboard markers ────────────────────────────────────────────────────
+		type BillboardMarker = {
+			id: string;
+			position: { lat: number; lng: number };
+			icon: string;
+			size: [number, number];
+			iconAnchor: [number, number];
+		};
+		const billboardMarkers: BillboardMarker[] = [];
+		const BILLBOARD_SIZE = 48;
+
+		for (const [h3Index, record] of Object.entries(records)) {
+			if (!record.billboard) continue;
+			const parsed = parseBillboardKey(record.billboard);
+			if (!parsed) continue;
+			const { sprite } = parsed;
+			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
+			if (!url) continue;
+			const [lat, lng] = cellToLatLng(h3Index);
+			billboardMarkers.push({
+				id: `billboard-${h3Index}`,
+				position: { lat, lng },
+				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
+				size: [BILLBOARD_SIZE, BILLBOARD_SIZE],
+				iconAnchor: [BILLBOARD_SIZE / 2, BILLBOARD_SIZE * sprite.anchorY],
+			});
+		}
+
+		mapRef.current.sendToMap({ imageOverlays, mapMarkers: billboardMarkers });
 	}, [loadAssetUrl]);
 
 	// Re-send customizations whenever tile image / model selections change.
