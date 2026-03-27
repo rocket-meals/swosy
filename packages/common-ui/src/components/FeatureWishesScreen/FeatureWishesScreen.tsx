@@ -122,7 +122,6 @@ const FeatureWishesScreen: React.FC<FeatureWishesScreenProps> = ({
 	}, [items, activeFilter, searchText]);
 
 	const handleLike = useCallback((id: string) => {
-	const handleLike = useCallback((id: string) => {
 		setLikedIds((prev) => {
 			const wasLiked = prev.has(id);
 			const next = new Set(prev);
