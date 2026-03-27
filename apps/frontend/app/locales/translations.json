@@ -5692,5 +5692,85 @@
     "ru": "Одобрено",
     "tr": "Onaylandı",
     "zh": "已批准"
+  },
+  "feature_wishes_filter_published": {
+    "de": "Veröffentlichte Wünsche",
+    "en": "Published Wishes",
+    "ar": "الأمنيات المنشورة",
+    "es": "Deseos publicados",
+    "fr": "Souhaits publiés",
+    "ru": "Опубликованные пожелания",
+    "tr": "Yayınlanan İstekler",
+    "zh": "已发布的愿望"
+  },
+  "feature_wishes_filter_draft": {
+    "de": "Neue Wünsche",
+    "en": "New Wishes",
+    "ar": "الأمنيات الجديدة",
+    "es": "Nuevos deseos",
+    "fr": "Nouveaux souhaits",
+    "ru": "Новые пожелания",
+    "tr": "Yeni İstekler",
+    "zh": "新愿望"
+  },
+  "feature_wishes_search_placeholder": {
+    "de": "Feature Wunsch suchen oder erstellen …",
+    "en": "Search or create a feature wish …",
+    "ar": "ابحث أو أنشئ أمنية ميزة …",
+    "es": "Busca o crea un deseo de función …",
+    "fr": "Rechercher ou créer un souhait …",
+    "ru": "Найти или создать пожелание …",
+    "tr": "Özellik isteği ara veya oluştur …",
+    "zh": "搜索或创建功能愿望 …"
+  },
+  "feature_wishes_create_button": {
+    "de": "Feature Wunsch erstellen",
+    "en": "Create Feature Wish",
+    "ar": "إنشاء أمنية ميزة",
+    "es": "Crear deseo de función",
+    "fr": "Créer un souhait de fonctionnalité",
+    "ru": "Создать пожелание",
+    "tr": "Özellik İsteği Oluştur",
+    "zh": "创建功能愿望"
+  },
+  "feature_wishes_create_description_placeholder": {
+    "de": "Beschreibe deinen Feature Wunsch …",
+    "en": "Describe your feature wish …",
+    "ar": "صف أمنيتك …",
+    "es": "Describe tu deseo de función …",
+    "fr": "Décris ton souhait …",
+    "ru": "Опишите своё пожелание …",
+    "tr": "Özellik isteğini açıkla …",
+    "zh": "描述你的功能愿望 …"
+  },
+  "feature_wishes_create_confirm": {
+    "de": "Erstellen",
+    "en": "Create",
+    "ar": "إنشاء",
+    "es": "Crear",
+    "fr": "Créer",
+    "ru": "Создать",
+    "tr": "Oluştur",
+    "zh": "创建"
+  },
+  "feature_wishes_pending_review_title": {
+    "de": "Wunsch eingereicht",
+    "en": "Wish Submitted",
+    "ar": "تم تقديم الأمنية",
+    "es": "Deseo enviado",
+    "fr": "Souhait soumis",
+    "ru": "Пожелание отправлено",
+    "tr": "İstek Gönderildi",
+    "zh": "愿望已提交"
+  },
+  "feature_wishes_pending_review_message": {
+    "de": "Dein Feature Wunsch wird nun geprüft (z. B. auf Verstöße oder unangemessene Sprache) und danach veröffentlicht.",
+    "en": "Your feature wish is now being reviewed (e.g. for violations or inappropriate language) and will be published afterwards.",
+    "ar": "يتم الآن مراجعة أمنيتك (مثلاً للتحقق من الانتهاكات أو اللغة غير اللائقة) وستُنشر بعد ذلك.",
+    "es": "Tu deseo de función se está revisando ahora (p. ej., por infracciones o lenguaje inapropiado) y se publicará después.",
+    "fr": "Ton souhait est en cours de vérification (p. ex. pour des violations ou un langage inapproprié) et sera publié ensuite.",
+    "ru": "Ваше пожелание сейчас проверяется (например, на нарушения или неприемлемый язык) и будет опубликовано после.",
+    "tr": "Özellik isteğiniz şu anda inceleniyor (örn. ihlaller veya uygunsuz dil için) ve daha sonra yayınlanacak.",
+    "zh": "您的功能愿望正在审核中（例如检查违规或不当语言），之后将会发布。"
   }
 }
