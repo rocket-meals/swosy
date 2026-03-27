@@ -27,8 +27,8 @@ const PRIMARY_COLOR = '#2563eb';
 const DEFAULT_RUNNER_WEIGHT_KG = 75;
 const KCAL_PER_KG_PER_KM = 0.9;
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
-const FLUID_BASELINE_DURATION_SECONDS = 1800;
-const FLUID_BASELINE_ML = 500;
+const FLUID_BASELINE_DURATION_SECONDS = 3600;
+const FLUID_BASELINE_ML = 600;
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
 	const R = 6371;
