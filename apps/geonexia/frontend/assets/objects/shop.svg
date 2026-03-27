@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="1316 501.3 94.05 89.15" width="94.05" height="89.15">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="1316 501.3 94.05 89.15">
   <defs>
     <linearGradient gradientUnits="userSpaceOnUse" x1="-819.2" x2="819.2" spreadMethod="pad" gradientTransform="matrix(-0.006866455078125 -0.006866455078125 0.0206298828125 -0.0206298828125 476.1 157.9)" id="gradient0">
       <stop offset="0" stop-color="#FFCC00" />
@@ -38,5 +38,5 @@
     <path stroke="none" fill="#B8ACA1" d="M1376.35 562 L1382.65 565 1381.3 566.65 1376.35 572.45 1376.35 562 M1390.9 528.6 L1390.9 538.25 1376.35 555.55 1376.35 545.7 1390.9 528.6" />
     <path stroke="none" fill="#54BBFF" d="M1376.35 555.55 L1390.9 538.25 1398.4 546.45 1383.85 563.8 1376.35 555.55" />
   </g>
-  <circle id="anchor-point" cx="1363.03" cy="565.49" r="0" fill="none" stroke="none" />
+  <circle id="anchor-point" cx="1363.03" cy="565.49" r="0" fill="none" stroke="none"/>
 </svg>
