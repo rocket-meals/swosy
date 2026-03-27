@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-27T15:32:09.373Z",
+  "report_timestamp": "2026-03-27T15:39:46.624Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,39 +8,39 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 93,
-          "average": 1.5871761089152394,
-          "amountSavedValuesForKeys": 3614,
+          "average": 1.5900920648838228,
+          "amountSavedValuesForKeys": 3627,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 70,
-          "average": 2.366883116883117,
-          "amountSavedValuesForKeys": 1458,
+          "average": 2.364667747163695,
+          "amountSavedValuesForKeys": 1459,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 93,
-          "average": 1.6019503546099292,
-          "amountSavedValuesForKeys": 3614,
+          "average": 1.6048672566371682,
+          "amountSavedValuesForKeys": 3627,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3615,
+        "ast_generation_time_ms": 3619,
         "detection_time_ms": 73,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 114.89,
-          "os_memory_free": 14893858816,
-          "os_memory_total": 16765407232,
+          "os_uptime": 110.87,
+          "os_memory_free": 14917226496,
+          "os_memory_total": 16769740800,
           "os_cpu_cores": 4,
           "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3483
+          "os_cpu_speed": 3515
         }
       }
     },
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "58125b7c0493f657cc8355aad6b44e73260be1f2",
-    "project_commit_hash": "58125b7c0493f657cc8355aad6b44e73260be1f2",
+    "project_version": "6910847200156289b87fdd5cfcdbb09ba4fbe625",
+    "project_commit_hash": "6910847200156289b87fdd5cfcdbb09ba4fbe625",
     "project_tag": null,
-    "project_commit_date": "1774625430",
+    "project_commit_date": "1774625890",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 453,
-    "number_of_classes_or_interfaces": 932,
-    "number_of_methods": 1319,
-    "number_of_data_fields": 3614,
-    "number_of_method_parameters": 1458
+    "number_of_classes_or_interfaces": 935,
+    "number_of_methods": 1321,
+    "number_of_data_fields": 3627,
+    "number_of_method_parameters": 1459
   },
   "detector": {
     "name": "data-clumps-doctor",
