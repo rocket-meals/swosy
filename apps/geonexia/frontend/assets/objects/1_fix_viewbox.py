@@ -191,6 +191,10 @@ ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
 def fix_viewbox(svg_path: str) -> bool:
     """
     Rewrite the viewBox of the SVG file at *svg_path* based on its path geometry.
+    Also ensures explicit width and height attributes are present so that mobile
+    WebViews can determine the SVG's intrinsic dimensions correctly (some WebView
+    implementations ignore the viewBox for intrinsic-size calculations when
+    width/height are absent, causing incorrect scaling and positional offsets).
 
     Returns True if the file was changed, False if it was already correct or had
     no path elements.
@@ -220,13 +224,20 @@ def fix_viewbox(svg_path: str) -> bool:
     height = max(ys) - min(ys) + 2 * PADDING
 
     new_vb = f'{min_x:.4g} {min_y:.4g} {width:.4g} {height:.4g}'
-    old_vb = root.get('viewBox', '')
+    new_w  = f'{width:.4g}'
+    new_h  = f'{height:.4g}'
 
-    if old_vb == new_vb:
-        print(f'  OK    {os.path.basename(svg_path)}  (viewBox already correct)')
+    old_vb = root.get('viewBox', '')
+    old_w  = root.get('width', '')
+    old_h  = root.get('height', '')
+
+    if old_vb == new_vb and old_w == new_w and old_h == new_h:
+        print(f'  OK    {os.path.basename(svg_path)}  (viewBox and dimensions already correct)')
         return False
 
     root.set('viewBox', new_vb)
+    root.set('width', new_w)
+    root.set('height', new_h)
 
     # Preserve the original XML declaration and write back.
     # ElementTree does not keep the <?xml …?> header by default – add it manually.
@@ -238,8 +249,12 @@ def fix_viewbox(svg_path: str) -> bool:
         fh.write('\n')
 
     print(f'  FIXED {os.path.basename(svg_path)}')
-    print(f'        old: {old_vb}')
-    print(f'        new: {new_vb}')
+    if old_vb != new_vb:
+        print(f'        viewBox old: {old_vb}')
+        print(f'        viewBox new: {new_vb}')
+    if old_w != new_w or old_h != new_h:
+        print(f'        size old: {old_w}x{old_h}')
+        print(f'        size new: {new_w}x{new_h}')
     return True
 
 

@@ -3841,7 +3841,7 @@
             ];
           }
 
-          var marker = new maplibregl.Marker({ element: el, offset: offset })
+          var marker = new maplibregl.Marker({ element: el, anchor: 'center', offset: offset })
             .setLngLat([markerData.position.lng, markerData.position.lat])
             .addTo(map);
 
