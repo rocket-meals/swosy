@@ -1505,6 +1505,13 @@ export default function RecordScreen() {
 	const isHeadingModeRef = useRef(false);
 	const [isHeadingMode, setIsHeadingMode] = useState(false);
 
+	// Initial center for MyMap, populated from the last known GPS position before
+	// the WebView mounts so that the map never starts at the Germany default.
+	const [mapInitialCenter, setMapInitialCenter] = useState<{ lat: number; lng: number } | undefined>(undefined);
+	// Becomes true once the last-known-position fetch has completed (or failed),
+	// preventing MyMap from mounting before we have an initial center to offer.
+	const [mapCanRender, setMapCanRender] = useState(false);
+
 	// Current view heading (degrees clockwise from north). Updated by device
 	// compass or joystick movement direction when heading mode is active.
 	const currentHeadingRef = useRef(0);
@@ -1829,10 +1836,15 @@ export default function RecordScreen() {
 				if (loc && !debugPlayerPositionRef.current) {
 					const pos = { lat: loc.coords.latitude, lng: loc.coords.longitude };
 					debugPlayerPositionRef.current = pos;
+					setMapInitialCenter(pos);
 					centerMapOnPosition(pos);
 				}
+				setMapCanRender(true);
 			})
-			.catch((err) => { console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err); });
+			.catch((err) => {
+				console.warn('[RecordScreen] getLastKnownPositionAsync failed:', err);
+				setMapCanRender(true);
+			});
 
 		return () => {
 			active = false;
@@ -2500,7 +2512,9 @@ export default function RecordScreen() {
 		<SafeAreaView style={styles.container}>
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
-				<MyMap ref={mapRef} initialZoom={17} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				{mapCanRender && (
+					<MyMap ref={mapRef} initialZoom={17} initialCenter={mapInitialCenter} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} />
+				)}
 
 				{/* Map overlay buttons – top-right */}
 				<View style={styles.mapOverlayButtons} pointerEvents="box-none">
