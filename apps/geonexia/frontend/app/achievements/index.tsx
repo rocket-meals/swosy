@@ -13,31 +13,14 @@ import {
 	MaterialIcons,
 	FontAwesome5,
 } from '@expo/vector-icons';
-import { useTheme } from 'repo-depkit-common-ui';
+import { useTheme, SettingsListGroupTitle, SettingsListProgress } from 'repo-depkit-common-ui';
 
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import type { RootState } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
-
-// ─── Tier definitions ──────────────────────────────────────────────────────────
-
-type AchievementTier = 'bronze' | 'silver' | 'gold' | 'diamond';
-
-const TIER_COLORS: Record<AchievementTier, string> = {
-	bronze: '#cd7f32',
-	silver: '#9ca3af',
-	gold: '#f59e0b',
-	diamond: '#3b82f6',
-};
-
-const TIER_LABELS: Record<AchievementTier, string> = {
-	bronze: 'Bronze',
-	silver: 'Silber',
-	gold: 'Gold',
-	diamond: 'Diamant',
-};
+const ICON_FOREGROUND_COLOR = '#ffffff';
 
 // ─── Achievement data model ────────────────────────────────────────────────────
 
@@ -55,7 +38,7 @@ type AchievementDefinition = {
 	id: string;
 	title: string;
 	description: string;
-	tier: AchievementTier;
+	iconBgColor: string;
 	category: string;
 	renderIcon: (color: string) => React.ReactElement;
 	getProgress: (data: AchievementData) => AchievementProgress;
@@ -71,7 +54,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Erkunder',
 		title: 'Pathfinder',
 		description: 'Betrete dein erstes Hex-Feld.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <Ionicons name="footsteps-outline" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Math.min(1, Object.values(hexTileRecords).filter((r) => r.walkedOn).length),
@@ -83,7 +66,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Erkunder',
 		title: 'Nachbarschaftserkunder',
 		description: 'Betrete 50 verschiedene Hex-Felder.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <Ionicons name="map-outline" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Object.values(hexTileRecords).filter((r) => r.walkedOn).length,
@@ -95,7 +78,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Erkunder',
 		title: 'Stadtentdecker',
 		description: 'Betrete 200 verschiedene Hex-Felder.',
-		tier: 'silver',
+		iconBgColor: '#9ca3af',
 		renderIcon: (color) => <Ionicons name="navigate-outline" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Object.values(hexTileRecords).filter((r) => r.walkedOn).length,
@@ -107,7 +90,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Erkunder',
 		title: 'Territoriumsherrscher',
 		description: 'Betrete 1 000 verschiedene Hex-Felder.',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <MaterialCommunityIcons name="earth" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Object.values(hexTileRecords).filter((r) => r.walkedOn).length,
@@ -119,7 +102,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Erkunder',
 		title: 'Welteroberung',
 		description: 'Betrete 5 000 verschiedene Hex-Felder.',
-		tier: 'diamond',
+		iconBgColor: '#3b82f6',
 		renderIcon: (color) => <MaterialCommunityIcons name="earth-plus" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Object.values(hexTileRecords).filter((r) => r.walkedOn).length,
@@ -133,7 +116,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Territorium',
 		title: 'Loop-Künstler',
 		description: 'Schließe zum ersten Mal eine Gebietsschleife.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <MaterialCommunityIcons name="vector-polygon" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Math.min(1, Object.values(hexTileRecords).filter((r) => r.enclosedCount > 0).length > 0 ? 1 : 0),
@@ -145,7 +128,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Territorium',
 		title: 'Gebietsbauer',
 		description: 'Schließe 10 Hex-Felder durch Schleifen ein.',
-		tier: 'silver',
+		iconBgColor: '#9ca3af',
 		renderIcon: (color) => <MaterialCommunityIcons name="hexagon-multiple-outline" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Object.values(hexTileRecords).filter((r) => r.enclosedCount > 0).length,
@@ -157,7 +140,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Territorium',
 		title: 'Expansions-Experte',
 		description: 'Schließe 50 Hex-Felder durch Schleifen ein.',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <MaterialCommunityIcons name="hexagon-multiple" size={22} color={color} />,
 		getProgress: ({ hexTileRecords }) => ({
 			current: Object.values(hexTileRecords).filter((r) => r.enclosedCount > 0).length,
@@ -171,7 +154,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Aktivitäten',
 		title: 'Erste Schritte',
 		description: 'Beende deine erste Aktivität.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <MaterialIcons name="directions-run" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: Math.min(1, activities.length),
@@ -183,7 +166,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Aktivitäten',
 		title: 'Regelmäßiger Läufer',
 		description: 'Beende 10 Aktivitäten.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <MaterialIcons name="event-repeat" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.length,
@@ -195,7 +178,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Aktivitäten',
 		title: 'Eiserner Athlet',
 		description: 'Beende 50 Aktivitäten.',
-		tier: 'silver',
+		iconBgColor: '#9ca3af',
 		renderIcon: (color) => <MaterialCommunityIcons name="medal-outline" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.length,
@@ -207,7 +190,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Aktivitäten',
 		title: 'Veteran',
 		description: 'Beende 200 Aktivitäten.',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <MaterialCommunityIcons name="medal" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.length,
@@ -221,7 +204,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Distanz',
 		title: '5-km-Club',
 		description: 'Laufe insgesamt 5 km.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <MaterialIcons name="straighten" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.distanceKm, 0),
@@ -234,7 +217,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Distanz',
 		title: 'Halbmarathon',
 		description: 'Laufe insgesamt 21,1 km.',
-		tier: 'silver',
+		iconBgColor: '#9ca3af',
 		renderIcon: (color) => <MaterialIcons name="directions-run" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.distanceKm, 0),
@@ -247,7 +230,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Distanz',
 		title: 'Marathon',
 		description: 'Laufe insgesamt 42,195 km.',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <FontAwesome5 name="running" size={20} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.distanceKm, 0),
@@ -260,7 +243,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Distanz',
 		title: 'Century',
 		description: 'Laufe insgesamt 100 km.',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <MaterialCommunityIcons name="road-variant" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.distanceKm, 0),
@@ -273,7 +256,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Distanz',
 		title: 'Ultra-Läufer',
 		description: 'Laufe insgesamt 500 km.',
-		tier: 'diamond',
+		iconBgColor: '#3b82f6',
 		renderIcon: (color) => <MaterialCommunityIcons name="airplane-takeoff" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.distanceKm, 0),
@@ -288,7 +271,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Geschwindigkeit',
 		title: 'Speed-Demon',
 		description: 'Laufe eine Aktivität mit einer Pace von unter 5:00 min/km.',
-		tier: 'silver',
+		iconBgColor: '#9ca3af',
 		renderIcon: (color) => <MaterialCommunityIcons name="speedometer" size={22} color={color} />,
 		getProgress: ({ activities }) => {
 			const best = activities
@@ -303,7 +286,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Geschwindigkeit',
 		title: 'Sprint-König',
 		description: 'Laufe eine Aktivität mit einer Pace von unter 4:00 min/km.',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <MaterialCommunityIcons name="lightning-bolt" size={22} color={color} />,
 		getProgress: ({ activities }) => {
 			const best = activities
@@ -320,7 +303,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Höhenmeter',
 		title: 'Bergsteiger',
 		description: 'Sammle insgesamt 500 m Höhengewinn.',
-		tier: 'bronze',
+		iconBgColor: '#cd7f32',
 		renderIcon: (color) => <Ionicons name="trending-up-outline" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.elevationGainM, 0),
@@ -333,7 +316,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Höhenmeter',
 		title: 'Gipfelsucher',
 		description: 'Sammle insgesamt 5 000 m Höhengewinn.',
-		tier: 'silver',
+		iconBgColor: '#9ca3af',
 		renderIcon: (color) => <MaterialCommunityIcons name="image-filter-hdr" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.elevationGainM, 0),
@@ -346,7 +329,7 @@ const ACHIEVEMENTS: AchievementDefinition[] = [
 		category: 'Höhenmeter',
 		title: 'Gipfelmeister',
 		description: 'Sammle insgesamt 20 000 m Höhengewinn – die Höhe des Mount Everest und mehr!',
-		tier: 'gold',
+		iconBgColor: '#f59e0b',
 		renderIcon: (color) => <MaterialCommunityIcons name="summit" size={22} color={color} />,
 		getProgress: ({ activities }) => ({
 			current: activities.reduce((sum, a) => sum + a.stats.elevationGainM, 0),
@@ -371,56 +354,46 @@ function isUnlocked(def: AchievementDefinition, data: AchievementData): boolean 
 type AchievementCardProps = {
 	definition: AchievementDefinition;
 	data: AchievementData;
-	theme: ReturnType<typeof useTheme>['theme'];
+	index: number;
+	total: number;
 };
 
-function AchievementCard({ definition, data, theme }: AchievementCardProps) {
+function AchievementCard({ definition, data, index, total }: AchievementCardProps) {
 	const unlocked = isUnlocked(definition, data);
 	const { current, goal } = definition.getProgress(data);
 	const progress = Math.min(1, current / goal);
-	const tierColor = TIER_COLORS[definition.tier];
-	const iconBg = unlocked ? tierColor : '#9ca3af';
+	const iconBg = unlocked ? definition.iconBgColor : '#9ca3af';
 	const progressText = definition.formatProgress
 		? definition.formatProgress(current, goal)
 		: `${Math.min(current, goal).toLocaleString()} / ${goal.toLocaleString()}`;
 
+	let groupPosition: 'top' | 'middle' | 'bottom' | 'single' | undefined;
+	if (total === 1) {
+		groupPosition = 'single';
+	} else if (index === 0) {
+		groupPosition = 'top';
+	} else if (index === total - 1) {
+		groupPosition = 'bottom';
+	} else {
+		groupPosition = 'middle';
+	}
+
 	return (
-		<View style={[styles.card, { backgroundColor: theme.screen.background }]}>
-			<View style={[styles.cardIconWrapper, { backgroundColor: iconBg }]}>
-				{definition.renderIcon('#ffffff')}
-			</View>
-			<View style={styles.cardBody}>
-				<View style={styles.cardTitleRow}>
-					<Text style={[styles.cardTitle, { color: theme.screen.text }, !unlocked && styles.cardTitleLocked]}>
-						{definition.title}
-					</Text>
-					<View style={[styles.tierBadge, { backgroundColor: tierColor + '22' }]}>
-						<Text style={[styles.tierBadgeText, { color: tierColor }]}>
-							{TIER_LABELS[definition.tier]}
-						</Text>
-					</View>
+		<SettingsListProgress
+			title={definition.title}
+			leftIconComponent={
+				<View style={[styles.cardIconWrapper, { backgroundColor: iconBg }]}>
+					{definition.renderIcon(ICON_FOREGROUND_COLOR)}
 				</View>
-				<Text style={[styles.cardDescription, { color: theme.screen.icon }]}>
-					{definition.description}
-				</Text>
-				<View style={styles.progressRow}>
-					<View style={[styles.progressBarBg, { backgroundColor: theme.screen.icon + '30' }]}>
-						<View
-							style={[
-								styles.progressBarFill,
-								{
-									width: `${Math.round(progress * 100)}%` as `${number}%`,
-									backgroundColor: unlocked ? tierColor : PRIMARY_COLOR,
-								},
-							]}
-						/>
-					</View>
-					<Text style={[styles.progressText, { color: unlocked ? tierColor : theme.screen.icon }]}>
-						{unlocked ? '✓' : progressText}
-					</Text>
-				</View>
-			</View>
-		</View>
+			}
+			noIconIndent
+			description={definition.description}
+			progress={progress}
+			progressText={unlocked ? '✓' : progressText}
+			progressColor={unlocked ? definition.iconBgColor : PRIMARY_COLOR}
+			groupPosition={groupPosition}
+			showSeparator={index < total - 1}
+		/>
 	);
 }
 
@@ -456,7 +429,7 @@ export default function AchievementsScreen() {
 				{/* Summary header */}
 				<View style={[styles.summaryCard, { backgroundColor: PRIMARY_COLOR }]}>
 					<View style={styles.summaryIconWrapper}>
-						<MaterialCommunityIcons name="trophy" size={32} color="#ffffff" />
+						<MaterialCommunityIcons name="trophy" size={32} color={ICON_FOREGROUND_COLOR} />
 					</View>
 					<View>
 						<Text style={styles.summaryLabel}>Erfolge freigeschaltet</Text>
@@ -470,16 +443,15 @@ export default function AchievementsScreen() {
 				{CATEGORY_ORDER.map((category) => {
 					const items = ACHIEVEMENTS.filter((a) => a.category === category);
 					return (
-						<View key={category} style={styles.categorySection}>
-							<Text style={[styles.categoryTitle, { color: theme.screen.text }]}>
-								{category}
-							</Text>
-							{items.map((def) => (
+						<View key={category}>
+							<SettingsListGroupTitle title={category} />
+							{items.map((def, index) => (
 								<AchievementCard
 									key={def.id}
 									definition={def}
 									data={data}
-									theme={theme}
+									index={index}
+									total={items.length}
 								/>
 							))}
 						</View>
@@ -541,94 +513,14 @@ const styles = StyleSheet.create({
 		color: '#ffffff',
 	},
 
-	// Category section
-	categorySection: {
-		gap: 6,
-		marginBottom: 8,
-	},
-	categoryTitle: {
-		fontSize: 13,
-		fontWeight: '700',
-		textTransform: 'uppercase',
-		letterSpacing: 0.8,
-		marginLeft: 4,
-		marginBottom: 2,
-	},
-
-	// Achievement card
-	card: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		borderRadius: 12,
-		padding: 12,
-		gap: 12,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.06,
-		shadowRadius: 4,
-		elevation: 1,
-	},
+	// Achievement card icon
 	cardIconWrapper: {
-		width: 44,
-		height: 44,
-		borderRadius: 10,
+		width: 34,
+		height: 34,
+		borderRadius: 8,
 		alignItems: 'center',
 		justifyContent: 'center',
-		flexShrink: 0,
-	},
-	cardBody: {
-		flex: 1,
-		gap: 3,
-	},
-	cardTitleRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-	},
-	cardTitle: {
-		fontSize: 14,
-		fontWeight: '600',
-		flex: 1,
-	},
-	cardTitleLocked: {
-		opacity: 0.55,
-	},
-	cardDescription: {
-		fontSize: 12,
-		lineHeight: 16,
-	},
-	progressRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-		marginTop: 2,
-	},
-	progressBarBg: {
-		flex: 1,
-		height: 4,
-		borderRadius: 2,
-		overflow: 'hidden',
-	},
-	progressBarFill: {
-		height: 4,
-		borderRadius: 2,
-	},
-	progressText: {
-		fontSize: 11,
-		fontWeight: '500',
-		minWidth: 70,
-		textAlign: 'right',
-	},
-
-	// Tier badge
-	tierBadge: {
-		borderRadius: 6,
-		paddingHorizontal: 6,
-		paddingVertical: 2,
-	},
-	tierBadgeText: {
-		fontSize: 10,
-		fontWeight: '700',
+		marginRight: 10,
 	},
 
 	// Empty state
