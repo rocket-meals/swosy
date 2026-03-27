@@ -4614,8 +4614,7 @@
       }
 
       // Update all active billboard widths to match the current map zoom.
-      // Update all active billboard widths to match the current map zoom.
-      // After resizing, we call marker.setLngLat() to force MapLibre to recompute
+      // After resizing, marker.setLngLat() is called to force MapLibre to recompute
       // the anchor offset with the updated element dimensions so the billboard stays
       // exactly on its geographic coordinate.
       function refreshBillboardSizes() {
