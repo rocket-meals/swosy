@@ -122,10 +122,31 @@ const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
 
+// Average H3 hexagon edge lengths in km for each integer resolution 0–15.
+// Source: https://h3geo.org/docs/core-library/restable
+const H3_EDGE_LENGTH_KM: readonly number[] = [
+	1107.712591, // 0
+	418.676005,  // 1
+	158.244655,  // 2
+	59.810857,   // 3
+	22.606379,   // 4
+	8.544408,    // 5
+	3.229482,    // 6
+	1.220629,    // 7
+	0.461354,    // 8
+	0.174375,    // 9
+	0.065907,    // 10  ← default resolution
+	0.024910,    // 11
+	0.009415,    // 12
+	0.003559,    // 13
+	0.001348,    // 14
+	0.000509,    // 15
+];
+
 // Base billboard size unit in pixels at H3 resolution 10.
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
-// Multiplied by 6 so all billboards appear 6× larger in the viewport at resolution 10.
+// Multiplied by 6 so all billboards appear 6× larger in the viewport.
 const BILLBOARD_UNIT_PX = 48 * 6 / 7; // townhall ≈ 288 px at res 10
 // Default MapLibre zoom assumed when no viewport data is available yet.
 const DEFAULT_REFERENCE_ZOOM = 14;
@@ -1551,11 +1572,12 @@ export default function RecordScreen() {
 
 		// Scale billboard pixel size by the current H3 resolution so that billboards
 		// stay proportional to the hexagon visual size at resolution 10 (default).
-		// Each H3 level up fits 7 child hexagons, so the linear scale shrinks by √(1/7)
-		// per level.  Formula: (1/7)^((h3Res − 10) / 2) equals 1 at res 10, ≈0.378 at
-		// res 11, and ≈2.646 at res 9.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 288 px.
+		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
-		const hexScaleRatio = Math.pow(1 / 7, (h3Res - 10) / 2);
+		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
+		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
+		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			if (!record.billboard) continue;
