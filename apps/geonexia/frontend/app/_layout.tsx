@@ -13,9 +13,11 @@ import { store } from '../store/store';
 import { loadPersistedState } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
+import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadHexTileState } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
+import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
@@ -168,6 +170,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted theme mode:', err);
+			});
+		loadBillboardConfig()
+			.then((config) => {
+				store.dispatch(loadPersistedBillboardConfig(config));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted billboard config:', err);
 			});
 	}, []);
 
