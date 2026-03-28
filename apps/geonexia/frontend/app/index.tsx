@@ -1777,9 +1777,9 @@ export default function RecordScreen() {
 	// Billboard scale multiplier, configurable from the debug modal
 	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
 	// Whether billboards face the camera (true) or lie flat on the map (false)
-	const billboardFaceCameraRef = useRef(false);
+	const billboardFaceCameraRef = useRef(true);
 	// Whether debug point layers (vertices, centers, midpoints) are visible
-	const showDebugPointsRef = useRef(true);
+	const showDebugPointsRef = useRef(false);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1918,7 +1918,9 @@ export default function RecordScreen() {
 
 	const handleBillboardScaleChange = useCallback((scale: number) => {
 		billboardScaleRef.current = scale;
-	}, []);
+		// Resend billboards so the new scale takes effect immediately.
+		loadAndSendCustomizations();
+	}, [loadAndSendCustomizations]);
 
 	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
 		billboardFaceCameraRef.current = val;
