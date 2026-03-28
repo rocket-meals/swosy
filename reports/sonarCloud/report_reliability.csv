@@ -1,5 +1,5 @@
 Key,Message,Component,Line
-"AZ02AxoRU7rlc86SJhG5","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",47
+"AZ02AxoRU7rlc86SJhG5","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",62
 "AZ0vS9ssBGG9nGF3KGsl","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",104
 "AZ0qG3id3nNYjoSCoz3t","React Hook ""usePlatformHelper"" is called in function ""getIsLandScape"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/DeviceHelper.ts",115
 "AZ0qG3id3nNYjoSCoz3u","React Hook ""usePlatformHelper"" is called in function ""getDeviceInformationWithoutPushToken"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/DeviceHelper.ts",144
