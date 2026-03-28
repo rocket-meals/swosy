@@ -54,6 +54,18 @@ export const HEX_TILE_SCRIPT = `
   var HEX_CENTERS_LAYER = 'hex-centers-layer';
   var HEX_MIDPOINTS_SOURCE = 'hex-midpoints-source';
   var HEX_MIDPOINTS_LAYER = 'hex-midpoints-layer';
+  // Object (billboard) symbol layer – rendered flat above all hex tile layers.
+  var HEX_OBJECT_SOURCE = 'hex-object-source';
+  var HEX_OBJECT_LAYER = 'hex-object-layer';
+  // Natural size (px) at which SVG images are rasterised before adding to the map.
+  // icon-size is expressed as a fraction of this value so that the final rendered
+  // pixel width at DEFAULT_REFERENCE_ZOOM (14) matches BILLBOARD_UNIT_PX × scaleFactor.
+  var ICON_NATURAL_SIZE = 128;
+  // Zoom used as the reference point for icon-size calculations.  Must match
+  // DEFAULT_REFERENCE_ZOOM on the React Native side.
+  var ICON_REFERENCE_ZOOM = 14;
+  // Map from image ID → true; used to skip re-adding images on every GeoJSON update.
+  var loadedImageIds = {};
   // Colours assigned to midpoints between the hex centre and each corner vertex,
   // cycling through: red, orange, yellow, blue, white, black.
   var MIDPOINT_COLORS = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#ffffff', '#000000'];
@@ -198,6 +210,62 @@ export const HEX_TILE_SCRIPT = `
     return { type: 'FeatureCollection', features: points };
   }
 
+  // ── Billboard object layer helpers ───────────────────────────────────────
+
+  // Load a single image into the MapLibre sprite atlas, resolving once done.
+  // Images are always rasterised at ICON_NATURAL_SIZE × ICON_NATURAL_SIZE so
+  // that icon-size can be expressed as a simple fraction of that fixed size.
+  function loadMapImage(id, dataUri) {
+    return new Promise(function (resolve) {
+      if (id in loadedImageIds) { resolve(); return; }
+      var img = new Image(ICON_NATURAL_SIZE, ICON_NATURAL_SIZE);
+      img.onload = function () {
+        if (map && !map.hasImage(id)) map.addImage(id, img);
+        loadedImageIds[id] = true;
+        resolve();
+      };
+      img.onerror = function () {
+        console.error('[hexTileScript] Failed to load billboard image:', id);
+        resolve();
+      };
+      img.src = dataUri;
+    });
+  }
+
+  function addObjectLayer() {
+    if (!map || map.getSource(HEX_OBJECT_SOURCE)) return;
+    map.addSource(HEX_OBJECT_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    // icon-size scales exponentially with zoom so that icons behave like
+    // geographic features (doubling in screen size per zoom step), matching
+    // the visual growth of the underlying hex tile polygons.
+    // At ICON_REFERENCE_ZOOM the icon renders at
+    //   iconSizeAtRefZoom × ICON_NATURAL_SIZE  pixels wide.
+    // Between stop zoom 10 and 18 the exponential base-2 interpolation
+    // produces exactly 2^(zoom − ICON_REFERENCE_ZOOM) × iconSizeAtRefZoom.
+    map.addLayer({
+      id: HEX_OBJECT_LAYER,
+      type: 'symbol',
+      source: HEX_OBJECT_SOURCE,
+      layout: {
+        'icon-image': ['get', 'iconId'],
+        'icon-size': [
+          'interpolate', ['exponential', 2], ['zoom'],
+          10, ['*', ['get', 'iconSizeAtRefZoom'], 0.0625],
+          18, ['*', ['get', 'iconSizeAtRefZoom'], 16],
+        ],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-anchor': 'center',
+      },
+    });
+  }
+
+  function removeObjectLayer() {
+    if (!map) return;
+    if (map.getLayer(HEX_OBJECT_LAYER)) map.removeLayer(HEX_OBJECT_LAYER);
+    if (map.getSource(HEX_OBJECT_SOURCE)) map.removeSource(HEX_OBJECT_SOURCE);
+  }
+
   // ── Notify React Native about the current viewport ────────────────────────
   function notifyViewport() {
     if (!hexTileActive || !map) return;
@@ -337,6 +405,8 @@ export const HEX_TILE_SCRIPT = `
         'circle-opacity': 0.9,
       },
     });
+    // Object (billboard) symbol icons – always above the hex tile polygons.
+    addObjectLayer();
     // Raise any route track / segment layers above the hex tile layers so the
     // GPS route is always rendered on top of the hex grid.  These layers are
     // created lazily (only once the first routeCoordinates message arrives), so
@@ -355,6 +425,7 @@ export const HEX_TILE_SCRIPT = `
 
   function removeHexTileLayer() {
     if (!map) return;
+    removeObjectLayer();
     if (map.getLayer(HEX_CENTERS_LAYER)) map.removeLayer(HEX_CENTERS_LAYER);
     if (map.getSource(HEX_CENTERS_SOURCE)) map.removeSource(HEX_CENTERS_SOURCE);
     if (map.getLayer(HEX_MIDPOINTS_LAYER)) map.removeLayer(HEX_MIDPOINTS_LAYER);
@@ -418,6 +489,26 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var walkSrc = map && map.getSource(HEX_WALK_PATH_SOURCE);
       if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
+    }
+    if (data.hexObjectGeoJson !== undefined) {
+      if (!hexTileActive) return;
+      var objSrc = map && map.getSource(HEX_OBJECT_SOURCE);
+      if (!data.hexObjectGeoJson) {
+        if (objSrc) objSrc.setData(EMPTY_FC);
+        return;
+      }
+      var objImages = data.hexObjectGeoJson.images || [];
+      var objGeoJson = data.hexObjectGeoJson.geojson || EMPTY_FC;
+      // Load any new SVG images into the MapLibre sprite atlas, then update
+      // the GeoJSON source so the symbol layer can reference them by ID.
+      var promises = [];
+      for (var oi = 0; oi < objImages.length; oi++) {
+        promises.push(loadMapImage(objImages[oi].id, objImages[oi].dataUri));
+      }
+      Promise.all(promises).then(function () {
+        var s = map && map.getSource(HEX_OBJECT_SOURCE);
+        if (s) s.setData(objGeoJson);
+      });
     }
   };
 
