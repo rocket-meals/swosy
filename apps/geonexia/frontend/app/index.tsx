@@ -27,7 +27,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
@@ -147,12 +147,17 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
 const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
+// Reference H3 resolution for billboard sizing. Billboard sizes scale proportionally
+// with the H3 edge length so they are larger on bigger hexagons and smaller on
+// smaller ones.
+const BILLBOARD_REFERENCE_RESOLUTION = 10;
 // Default billboard scale multiplier (adjustable in the debug modal).
 const BILLBOARD_SCALE_DEFAULT = 1;
 // Precision factor for rounding billboard scale values (1 decimal place).
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
-// Default MapLibre zoom assumed when no viewport data is available yet.
-const DEFAULT_REFERENCE_ZOOM = 14;
+// Minimum rendered pixel size for billboard icons so that sprites at very small
+// H3 resolutions or low user-scale settings remain visible and tappable.
+const BILLBOARD_MIN_SIZE_PX = 8;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -778,11 +783,15 @@ type DebugInfoContentProps = {
 	initialH3Resolution: number;
 	initialSpeed: number;
 	initialBillboardScale: number;
+	initialBillboardFaceCamera: boolean;
+	initialShowDebugPoints: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
 	onBillboardScaleChange: (scale: number) => void;
+	onBillboardFaceCameraChange: (val: boolean) => void;
+	onShowDebugPointsChange: (val: boolean) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -795,17 +804,23 @@ function DebugInfoContent({
 	initialH3Resolution,
 	initialSpeed,
 	initialBillboardScale,
+	initialBillboardFaceCamera,
+	initialShowDebugPoints,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
 	onBillboardScaleChange,
+	onBillboardFaceCameraChange,
+	onShowDebugPointsChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
 	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
+	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
+	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -836,6 +851,16 @@ function DebugInfoContent({
 			return next;
 		});
 	}, [onBillboardScaleChange]);
+
+	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
+		setBillboardFaceCamera(val);
+		onBillboardFaceCameraChange(val);
+	}, [onBillboardFaceCameraChange]);
+
+	const handleShowDebugPointsChange = useCallback((val: boolean) => {
+		setShowDebugPoints(val);
+		onShowDebugPointsChange(val);
+	}, [onShowDebugPointsChange]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
 
@@ -1006,6 +1031,30 @@ function DebugInfoContent({
 						<Text style={styles.resolutionButtonText}>+</Text>
 					</TouchableOpacity>
 				</View>
+			</View>
+
+			{/* Min zoom info row */}
+
+			{/* Billboard Face Camera toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Face Camera</Text>
+				<Switch
+					value={billboardFaceCamera}
+					onValueChange={handleBillboardFaceCameraChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Debug Points toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Debug Points</Text>
+				<Switch
+					value={showDebugPoints}
+					onValueChange={handleShowDebugPointsChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
 			</View>
 
 			{/* Min zoom info row */}
@@ -1599,24 +1648,36 @@ export default function RecordScreen() {
 			}
 		}
 
-		// ── Billboard markers ────────────────────────────────────────────────────
-		type BillboardMarker = {
-			id: string;
-			position: { lat: number; lng: number };
-			icon: string;
-			size: [number, number];
-			iconAnchor: [number, number];
-		};
-		const billboardMarkers: BillboardMarker[] = [];
+		// ── Billboard GeoJSON symbol layer ───────────────────────────────────────────
+		// Billboards are rendered as a MapLibre symbol layer whose icon-size is set to
+		// a fixed value per feature. The zoom-based exponential expression in the
+		// MapLibre HTML ensures the icon scales proportionally with the map so that
+		// each billboard occupies a constant geographic area. Billboard size also
+		// scales with the H3 edge length: larger on bigger hexagons, smaller on
+		// smaller ones.
+		//
+		// Each unique billboard SVG is rasterized at 4× resolution (512×512 actual pixels
+		// for a 128×128 logical icon) via canvas + pixelRatio, keeping SVGs crisp when
+		// zoomed in or on high-DPI screens. Features carry an iconSizeAtRefZoom property
+		// (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14) so the layer's
+		// icon-size zoom expression scales it correctly at all zoom levels.
+		// NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
+		const BILLBOARD_STANDARD_ICON_SIZE = 128;
 
-		// Scale billboard pixel size by the current H3 resolution so that billboards
-		// stay proportional to the hexagon visual size at resolution 10 (default).
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
-		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
-		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
-		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
-		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
-		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
+		// Billboard pixel size is determined by the sprite's scaleFactor, the
+		// user-adjustable billboard scale multiplier, AND the H3 edge length ratio
+		// relative to the reference resolution (10). This makes billboards larger on
+		// bigger hexagons and smaller on smaller ones.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14
+		// at the reference resolution.
+
+		const billboardImages: Record<string, { url: string }> = {};
+		type BillboardFeature = {
+			type: 'Feature';
+			geometry: { type: 'Point'; coordinates: [number, number] };
+			properties: { iconKey: string; iconSizeAtRefZoom: number };
+		};
+		const billboardFeatures: BillboardFeature[] = [];
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			if (!record.billboard) continue;
@@ -1625,14 +1686,15 @@ export default function RecordScreen() {
 			const { sprite } = parsed;
 			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
 			if (!url) continue;
+
+			const iconKey = `billboard-${record.billboard}`;
+
 			// Compute the centroid of the hexagon polygon by averaging its boundary
-			// vertices, matching how buildCentersGeoJson computes purple dot positions
-			// in hexTileScript. The ring is closed (last vertex = first), so exclude
-			// the last vertex when averaging.
+			// vertices. The ring is closed (last vertex = first), so exclude it.
 			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
 			let sumLng = 0, sumLat = 0;
 			const n = boundary.length - 1;
-			if (n <= 0) continue; // skip if boundary is empty or degenerate
+			if (n <= 0) continue;
 			for (let j = 0; j < n; j++) {
 				const [bLng, bLat] = boundary[j] as [number, number];
 				sumLng += bLng;
@@ -1640,36 +1702,47 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
-			// Compute the pixel size for this sprite, applying its scaleFactor, the
-			// current H3 resolution scale, and the debug scale multiplier.  Minimum 8 px to keep tiny sprites visible.
-			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current));
-			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
-			// The X anchor is always the horizontal center of the square icon.
-			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
-			billboardMarkers.push({
-				id: `billboard-${h3Index}`,
-				position: { lat, lng },
-				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
-				size: [billboardSizePx, billboardSizePx],
-				iconAnchor: [billboardSizePx / 2, anchorYPx],
+
+			// Desired pixel size at reference zoom 14, scaled by user multiplier and
+			// proportional to the H3 edge length so billboards are larger on bigger
+			// hexagons and smaller on smaller ones.
+			const cellRes = getResolution(h3Index);
+			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
+			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
+			// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
+			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * edgeLengthRatio,
+			));
+			// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
+			// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
+			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+			if (!billboardImages[iconKey]) {
+				billboardImages[iconKey] = { url };
+			}
+			billboardFeatures.push({
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [lng, lat] },
+				properties: { iconKey, iconSizeAtRefZoom },
 			});
 		}
 
 		mapRef.current.sendToMap({
 			imageOverlays,
-			mapMarkers: billboardMarkers,
-			// Always use the fixed reference zoom so that billboard sizes remain
-			// consistent regardless of what zoom the user is at when markers are
-			// sent (e.g. after changing h3 resolution and reverting).
-			mapMarkersReferenceZoom: DEFAULT_REFERENCE_ZOOM,
+			// Clear any legacy DOM markers from previous versions.
+			mapMarkers: [],
+			billboards: {
+				images: billboardImages,
+				features: billboardFeatures,
+			},
 		});
 	}, [loadAssetUrl]);
 
-	// Re-send customizations whenever tile image / model selections change, or when the
-	// H3 resolution changes (billboard pixel sizes depend on the current resolution).
+	// Re-send customizations whenever tile image / model selections change.
+	// Billboard sizes scale proportionally with the H3 edge length.
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [hexTileCustomizationsKey, loadAndSendCustomizations, h3Resolution]);
+	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
 
 
 	useLayoutEffect(() => {
@@ -1715,6 +1788,10 @@ export default function RecordScreen() {
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
 	// Billboard scale multiplier, configurable from the debug modal
 	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
+	// Whether billboards face the camera (true) or lie flat on the map (false)
+	const billboardFaceCameraRef = useRef(true);
+	// Whether debug point layers (vertices, centers, midpoints) are visible
+	const showDebugPointsRef = useRef(false);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1853,6 +1930,18 @@ export default function RecordScreen() {
 
 	const handleBillboardScaleChange = useCallback((scale: number) => {
 		billboardScaleRef.current = scale;
+		// Resend billboards so the new scale takes effect immediately.
+		loadAndSendCustomizations();
+	}, [loadAndSendCustomizations]);
+
+	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
+		billboardFaceCameraRef.current = val;
+		mapRef.current?.sendToMap({ billboardPitchAlignment: val ? 'viewport' : 'map' });
+	}, []);
+
+	const handleShowDebugPointsChange = useCallback((val: boolean) => {
+		showDebugPointsRef.current = val;
+		mapRef.current?.sendToMap({ hexDebugPoints: val });
 	}, []);
 
 	const showHexTileModal = useCallback((h3Index: string) => {
@@ -1919,15 +2008,19 @@ export default function RecordScreen() {
 					initialH3Resolution={h3ResolutionRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
 					initialBillboardScale={billboardScaleRef.current}
+					initialBillboardFaceCamera={billboardFaceCameraRef.current}
+					initialShowDebugPoints={showDebugPointsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
 					onBillboardScaleChange={handleBillboardScaleChange}
+					onBillboardFaceCameraChange={handleBillboardFaceCameraChange}
+					onShowDebugPointsChange={handleShowDebugPointsChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowDebugPointsChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({

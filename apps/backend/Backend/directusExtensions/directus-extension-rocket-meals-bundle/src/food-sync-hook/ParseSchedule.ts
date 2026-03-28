@@ -881,6 +881,7 @@ export class ParseSchedule {
     const myFoodOffersService = await this.context.myDatabaseHelper.getFoodoffersHelper();
 
     const myTimer = new MyTimer(SCHEDULE_NAME + ' - Create Food Offers');
+    await this.context.logger.appendLog('Amount of food offers to create: ' + foodoffersToCreate.length)
     const myTimersEmitEvents = new MyTimers('disableEventEmit_TRUE', 'disableEventEmit_FALSE');
 
     let batchIndex = 1;
@@ -890,9 +891,21 @@ export class ParseSchedule {
       await this.context.logger.appendLog('Create Food Offers Batch ' + batchIndex + ' / ' + amountOfBatches);
 
       let disableEventEmit = true;
-      await myFoodOffersService.createManyItems(batch, {
+      /**
+      let result = await myFoodOffersService.createManyItems(batch, {
         disableEventEmit: disableEventEmit,
       });
+      */
+      for(let foodofferToCreate of batch){
+        try{
+          let result = await myFoodOffersService.createOne(foodofferToCreate, {
+            disableEventEmit: disableEventEmit,
+          });
+        } catch (error: any){
+          await this.context.logger.appendLog('Error creating food offer: ' + JSON.stringify(error, null, 2));
+        }
+      }
+
       myTimer.printElapsedTimeAndEstimatedTimeRemaining({
         progress: batchIndex,
         total: amountOfBatches,

@@ -23,6 +23,7 @@ export const HEX_TILE_SCRIPT = `
   // H3 resolution and cell computation are controlled on the React Native side
   // via the H3Helper; this script only renders the GeoJSON it receives.
   var hexTileActive = true;
+  var hexDebugPointsVisible = false;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   // Hex border: subtle gray, low opacity
   var hexTileStrokeColor = '#9ca3af';
@@ -300,6 +301,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_VERTICES_LAYER,
       type: 'circle',
       source: HEX_VERTICES_SOURCE,
+      layout: { visibility: hexDebugPointsVisible ? 'visible' : 'none' },
       paint: {
         'circle-radius': 4,
         'circle-color': '#22c55e',
@@ -314,6 +316,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_CENTERS_LAYER,
       type: 'circle',
       source: HEX_CENTERS_SOURCE,
+      layout: { visibility: hexDebugPointsVisible ? 'visible' : 'none' },
       paint: {
         'circle-radius': 5,
         'circle-color': '#a855f7',
@@ -329,6 +332,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_MIDPOINTS_LAYER,
       type: 'circle',
       source: HEX_MIDPOINTS_SOURCE,
+      layout: { visibility: hexDebugPointsVisible ? 'visible' : 'none' },
       paint: {
         'circle-radius': 4,
         'circle-color': ['get', 'midpointColor'],
@@ -349,6 +353,13 @@ export const HEX_TILE_SCRIPT = `
     ];
     for (var ri = 0; ri < ROUTE_LAYER_IDS.length; ri++) {
       if (map.getLayer(ROUTE_LAYER_IDS[ri])) map.moveLayer(ROUTE_LAYER_IDS[ri]);
+    }
+    // Raise the billboard 3D layer above hex tile layers so billboards are
+    // always rendered on top of the grid, even after hex tile layer recreation.
+    // NOTE: Must match BILLBOARD_LAYER_ID in the MapLibre HTML (index.html).
+    var BILLBOARD_LAYER_REF = 'billboard-3d-layer';
+    if (map.getLayer(BILLBOARD_LAYER_REF)) {
+      map.moveLayer(BILLBOARD_LAYER_REF);
     }
     notifyViewport();
   }
@@ -418,6 +429,16 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var walkSrc = map && map.getSource(HEX_WALK_PATH_SOURCE);
       if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
+    }
+    if (data.hexDebugPoints !== undefined) {
+      hexDebugPointsVisible = data.hexDebugPoints;
+      var visibility = hexDebugPointsVisible ? 'visible' : 'none';
+      var debugLayers = [HEX_VERTICES_LAYER, HEX_CENTERS_LAYER, HEX_MIDPOINTS_LAYER];
+      for (var di = 0; di < debugLayers.length; di++) {
+        if (map && map.getLayer(debugLayers[di])) {
+          map.setLayoutProperty(debugLayers[di], 'visibility', visibility);
+        }
+      }
     }
   };
 
