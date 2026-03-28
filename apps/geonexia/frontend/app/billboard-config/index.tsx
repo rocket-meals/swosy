@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
@@ -15,12 +15,27 @@ const PRIMARY_COLOR = '#2563eb';
 const ANCHOR_STEP = 0.05;
 const ANCHOR_PRECISION = 100; // 2 decimal places
 
-const PREVIEW_SIZE = 140;
+const PREVIEW_HEIGHT = 160;
 const ANCHOR_DOT_SIZE = 12;
 
 /** Clamp a value between 0 and 1, rounded to 2 decimal places. */
 function clampAnchor(value: number): number {
 	return Math.max(0, Math.min(1, Math.round(value * ANCHOR_PRECISION) / ANCHOR_PRECISION));
+}
+
+/** Compute the actual rendered image bounds inside a contain-mode container. */
+function getContainBounds(
+	naturalWidth: number,
+	naturalHeight: number,
+	containerWidth: number,
+	containerHeight: number,
+): { displayW: number; displayH: number; offsetX: number; offsetY: number } {
+	const scale = Math.min(containerWidth / naturalWidth, containerHeight / naturalHeight);
+	const displayW = naturalWidth * scale;
+	const displayH = naturalHeight * scale;
+	const offsetX = (containerWidth - displayW) / 2;
+	const offsetY = (containerHeight - displayH) / 2;
+	return { displayW, displayH, offsetX, offsetY };
 }
 
 /** Unique sprite types that are currently placed on the map. */
@@ -56,8 +71,33 @@ export default function BillboardConfigScreen() {
 		return result;
 	}, [records]);
 
-	// SVG data URI cache for preview images.
+	// Currently selected sprite index (null = nothing selected).
+	const [selectedSpriteIndex, setSelectedSpriteIndex] = useState<number | null>(null);
+
+	// Auto-select the first placed type whenever the list changes.
+	const prevPlacedRef = useRef<number[]>([]);
+	useEffect(() => {
+		const indices = placedTypes.map((p) => p.spriteIndex);
+		const prev = prevPlacedRef.current;
+		prevPlacedRef.current = indices;
+		if (indices.length === 0) {
+			setSelectedSpriteIndex(null);
+			return;
+		}
+		// Keep selection if still available, otherwise pick first.
+		setSelectedSpriteIndex((cur) => {
+			if (cur !== null && indices.includes(cur)) return cur;
+			// Prefer the previously selected if it re-appears; otherwise first.
+			const prevSelected = prev.find((p) => indices.includes(p));
+			return prevSelected ?? indices[0];
+		});
+	}, [placedTypes]);
+
+	// SVG data URI cache per sprite index.
 	const [svgUris, setSvgUris] = useState<Record<number, string>>({});
+
+	// Natural image dimensions per sprite index (for correct anchor overlay positioning).
+	const [imageDims, setImageDims] = useState<Record<number, { width: number; height: number }>>({});
 
 	useEffect(() => {
 		let cancelled = false;
@@ -109,6 +149,10 @@ export default function BillboardConfigScreen() {
 		dispatch(resetSpriteAnchor({ spriteIndex }));
 	}, [dispatch]);
 
+	const selectedType = selectedSpriteIndex !== null
+		? placedTypes.find((p) => p.spriteIndex === selectedSpriteIndex) ?? null
+		: null;
+
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
 			<SettingsListGroupTitle title="Billboard Anchor Points" />
@@ -117,134 +161,191 @@ export default function BillboardConfigScreen() {
 				Adjust the anchor point for each billboard type. The red dot shows where the billboard attaches to the map. Changes apply to all billboards of that type.
 			</Text>
 
-			{placedTypes.length === 0 && (
+			{placedTypes.length === 0 ? (
 				<Text style={[styles.emptyText, { color: theme.screen.text + '80' }]}>
 					No billboards placed yet. Place billboards on hex tiles in the Record screen first.
 				</Text>
-			)}
-
-			{placedTypes.map(({ spriteIndex, sprite, count }) => {
-				const anchorX = getAnchorX(spriteIndex);
-				const anchorY = getAnchorY(spriteIndex);
-				const svgUri = svgUris[spriteIndex];
-				const isDefault = !spriteAnchors[spriteIndex];
-
-				return (
-					<View
-						key={spriteIndex}
-						style={[styles.typeCard, { borderColor: theme.screen.text + '18' }]}
+			) : (
+				<>
+					{/* Billboard type selector */}
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						contentContainerStyle={styles.typeSelectorContent}
+						style={styles.typeSelector}
 					>
-						{/* Header */}
-						<View style={styles.cardHeader}>
-							<Text style={[styles.spriteName, { color: theme.screen.text }]}>{sprite.name}</Text>
-							<Text style={[styles.spriteCount, { color: theme.screen.text + '80' }]}>
-								{count} placed
-							</Text>
-						</View>
-
-						{/* Preview + Controls row */}
-						<View style={styles.previewRow}>
-							{/* SVG Preview with anchor dot */}
-							<View style={[styles.previewContainer, { backgroundColor: theme.screen.text + '08' }]}>
-								{svgUri ? (
-									<Image
-										source={{ uri: svgUri }}
-										style={styles.previewImage}
-										resizeMode="contain"
-									/>
-								) : (
-									<View style={styles.previewPlaceholder}>
-										<Ionicons name="image-outline" size={40} color={theme.screen.text + '40'} />
-									</View>
-								)}
-								{/* Anchor point indicator (red dot) */}
-								<View
+						{placedTypes.map(({ spriteIndex, sprite, count }) => {
+							const isSelected = spriteIndex === selectedSpriteIndex;
+							const hasOverride = !!spriteAnchors[spriteIndex];
+							return (
+								<TouchableOpacity
+									key={spriteIndex}
+									onPress={() => setSelectedSpriteIndex(spriteIndex)}
 									style={[
-										styles.anchorDot,
+										styles.typeChip,
 										{
-											left: anchorX * PREVIEW_SIZE - ANCHOR_DOT_SIZE / 2,
-											top: anchorY * PREVIEW_SIZE - ANCHOR_DOT_SIZE / 2,
+											backgroundColor: isSelected ? PRIMARY_COLOR : theme.screen.text + '10',
+											borderColor: isSelected ? PRIMARY_COLOR : theme.screen.text + '20',
 										},
 									]}
-								/>
-								{/* Crosshair lines */}
-								<View
-									style={[
-										styles.crosshairH,
-										{ top: anchorY * PREVIEW_SIZE - 0.5 },
-									]}
-								/>
-								<View
-									style={[
-										styles.crosshairV,
-										{ left: anchorX * PREVIEW_SIZE - 0.5 },
-									]}
-								/>
-							</View>
-
-							{/* Directional buttons */}
-							<View style={styles.controlsColumn}>
-								{/* Up */}
-								<View style={styles.dpadRow}>
-									<TouchableOpacity
-										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-										onPress={() => adjustAnchor(spriteIndex, 0, -ANCHOR_STEP)}
-										disabled={anchorY <= 0}
-									>
-										<Ionicons name="arrow-up" size={20} color={anchorY <= 0 ? theme.screen.text + '30' : theme.screen.text} />
-									</TouchableOpacity>
-								</View>
-								{/* Left / Reset / Right */}
-								<View style={styles.dpadRow}>
-									<TouchableOpacity
-										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-										onPress={() => adjustAnchor(spriteIndex, -ANCHOR_STEP, 0)}
-										disabled={anchorX <= 0}
-									>
-										<Ionicons name="arrow-back" size={20} color={anchorX <= 0 ? theme.screen.text + '30' : theme.screen.text} />
-									</TouchableOpacity>
-									<TouchableOpacity
+								>
+									<Text
 										style={[
-											styles.dpadCenter,
-											{ backgroundColor: isDefault ? theme.screen.text + '12' : PRIMARY_COLOR + '20' },
+											styles.typeChipText,
+											{ color: isSelected ? '#ffffff' : theme.screen.text },
 										]}
-										onPress={() => handleReset(spriteIndex)}
+										numberOfLines={1}
 									>
-										<Ionicons name="refresh" size={16} color={isDefault ? theme.screen.text + '40' : PRIMARY_COLOR} />
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-										onPress={() => adjustAnchor(spriteIndex, ANCHOR_STEP, 0)}
-										disabled={anchorX >= 1}
+										{sprite.name}
+									</Text>
+									<Text
+										style={[
+											styles.typeChipCount,
+											{ color: isSelected ? '#ffffffaa' : theme.screen.text + '60' },
+										]}
 									>
-										<Ionicons name="arrow-forward" size={20} color={anchorX >= 1 ? theme.screen.text + '30' : theme.screen.text} />
-									</TouchableOpacity>
-								</View>
-								{/* Down */}
-								<View style={styles.dpadRow}>
-									<TouchableOpacity
-										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-										onPress={() => adjustAnchor(spriteIndex, 0, ANCHOR_STEP)}
-										disabled={anchorY >= 1}
-									>
-										<Ionicons name="arrow-down" size={20} color={anchorY >= 1 ? theme.screen.text + '30' : theme.screen.text} />
-									</TouchableOpacity>
+										{count}
+										{hasOverride ? ' ✎' : ''}
+									</Text>
+								</TouchableOpacity>
+							);
+						})}
+					</ScrollView>
+
+					{/* Settings for selected billboard type */}
+					{selectedType !== null && (() => {
+						const { spriteIndex, sprite, count } = selectedType;
+						const anchorX = getAnchorX(spriteIndex);
+						const anchorY = getAnchorY(spriteIndex);
+						const svgUri = svgUris[spriteIndex];
+						const isDefault = !spriteAnchors[spriteIndex];
+						const dims = imageDims[spriteIndex];
+						// Compute actual image bounds within the square preview container for overlay positioning.
+						// The container is PREVIEW_HEIGHT × PREVIEW_HEIGHT (square).
+						const bounds = dims
+							? getContainBounds(dims.width, dims.height, PREVIEW_HEIGHT, PREVIEW_HEIGHT)
+							: null;
+						const dotLeft = bounds
+							? bounds.offsetX + anchorX * bounds.displayW - ANCHOR_DOT_SIZE / 2
+							: anchorX * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
+						const dotTop = bounds
+							? bounds.offsetY + anchorY * bounds.displayH - ANCHOR_DOT_SIZE / 2
+							: anchorY * PREVIEW_HEIGHT - ANCHOR_DOT_SIZE / 2;
+						const crosshairLeft = bounds
+							? bounds.offsetX + anchorX * bounds.displayW
+							: anchorX * PREVIEW_HEIGHT;
+						const crosshairTop = bounds
+							? bounds.offsetY + anchorY * bounds.displayH
+							: anchorY * PREVIEW_HEIGHT;
+
+						return (
+							<View style={[styles.typeCard, { borderColor: theme.screen.text + '18' }]}>
+								{/* Header */}
+								<View style={styles.cardHeader}>
+									<Text style={[styles.spriteName, { color: theme.screen.text }]}>{sprite.name}</Text>
+									<Text style={[styles.spriteCount, { color: theme.screen.text + '80' }]}>
+										{count} placed
+									</Text>
 								</View>
 
-								{/* Values */}
-								<View style={styles.valuesRow}>
-									<Text style={[styles.valueLabel, { color: theme.screen.text + '80' }]}>
-										X: {anchorX.toFixed(2)}
-									</Text>
-									<Text style={[styles.valueLabel, { color: theme.screen.text + '80' }]}>
-										Y: {anchorY.toFixed(2)}
-									</Text>
+								{/* Preview + Controls row */}
+								<View style={styles.previewRow}>
+									{/* SVG Preview with anchor dot overlay */}
+									<View style={[styles.previewContainer, { backgroundColor: theme.screen.text + '08' }]}>
+										{svgUri ? (
+											<Image
+												source={{ uri: svgUri }}
+												style={styles.previewImage}
+												resizeMode="contain"
+												onLoad={(e) => {
+													const { width, height } = e.nativeEvent.source;
+													if (width > 0 && height > 0) {
+														setImageDims((prev) => ({ ...prev, [spriteIndex]: { width, height } }));
+													}
+												}}
+											/>
+										) : (
+											<View style={styles.previewPlaceholder}>
+												<Ionicons name="image-outline" size={40} color={theme.screen.text + '40'} />
+											</View>
+										)}
+										{/* Crosshair lines */}
+										<View style={[styles.crosshairH, { top: crosshairTop - 0.5 }]} />
+										<View style={[styles.crosshairV, { left: crosshairLeft - 0.5 }]} />
+										{/* Anchor point indicator (red dot) */}
+										<View
+											style={[
+												styles.anchorDot,
+												{ left: dotLeft, top: dotTop },
+											]}
+										/>
+									</View>
+
+									{/* Directional buttons */}
+									<View style={styles.controlsColumn}>
+										{/* Up */}
+										<View style={styles.dpadRow}>
+											<TouchableOpacity
+												style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+												onPress={() => adjustAnchor(spriteIndex, 0, -ANCHOR_STEP)}
+												disabled={anchorY <= 0}
+											>
+												<Ionicons name="arrow-up" size={20} color={anchorY <= 0 ? theme.screen.text + '30' : theme.screen.text} />
+											</TouchableOpacity>
+										</View>
+										{/* Left / Reset / Right */}
+										<View style={styles.dpadRow}>
+											<TouchableOpacity
+												style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+												onPress={() => adjustAnchor(spriteIndex, -ANCHOR_STEP, 0)}
+												disabled={anchorX <= 0}
+											>
+												<Ionicons name="arrow-back" size={20} color={anchorX <= 0 ? theme.screen.text + '30' : theme.screen.text} />
+											</TouchableOpacity>
+											<TouchableOpacity
+												style={[
+													styles.dpadCenter,
+													{ backgroundColor: isDefault ? theme.screen.text + '12' : PRIMARY_COLOR + '20' },
+												]}
+												onPress={() => handleReset(spriteIndex)}
+											>
+												<Ionicons name="refresh" size={16} color={isDefault ? theme.screen.text + '40' : PRIMARY_COLOR} />
+											</TouchableOpacity>
+											<TouchableOpacity
+												style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+												onPress={() => adjustAnchor(spriteIndex, ANCHOR_STEP, 0)}
+												disabled={anchorX >= 1}
+											>
+												<Ionicons name="arrow-forward" size={20} color={anchorX >= 1 ? theme.screen.text + '30' : theme.screen.text} />
+											</TouchableOpacity>
+										</View>
+										{/* Down */}
+										<View style={styles.dpadRow}>
+											<TouchableOpacity
+												style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+												onPress={() => adjustAnchor(spriteIndex, 0, ANCHOR_STEP)}
+												disabled={anchorY >= 1}
+											>
+												<Ionicons name="arrow-down" size={20} color={anchorY >= 1 ? theme.screen.text + '30' : theme.screen.text} />
+											</TouchableOpacity>
+										</View>
+
+										{/* Values */}
+										<View style={styles.valuesRow}>
+											<Text style={[styles.valueLabel, { color: theme.screen.text + '80' }]}>
+												X: {anchorX.toFixed(2)}
+											</Text>
+											<Text style={[styles.valueLabel, { color: theme.screen.text + '80' }]}>
+												Y: {anchorY.toFixed(2)}
+											</Text>
+										</View>
+									</View>
 								</View>
 							</View>
-						</View>
-					</View>
-				);
-			})}
+						);
+					})()}
+				</>
+			)}
 
 			<View style={styles.bottomSpacer} />
 		</ScrollView>
@@ -268,6 +369,29 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		paddingHorizontal: 16,
 		paddingVertical: 20,
+	},
+	typeSelector: {
+		marginBottom: 12,
+	},
+	typeSelectorContent: {
+		paddingHorizontal: 12,
+		gap: 8,
+	},
+	typeChip: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		borderRadius: 20,
+		borderWidth: 1,
+	},
+	typeChipText: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	typeChipCount: {
+		fontSize: 12,
 	},
 	typeCard: {
 		marginHorizontal: 12,
@@ -295,19 +419,19 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	previewContainer: {
-		width: PREVIEW_SIZE,
-		height: PREVIEW_SIZE,
+		width: PREVIEW_HEIGHT,
+		height: PREVIEW_HEIGHT,
 		borderRadius: 8,
 		overflow: 'hidden',
 		position: 'relative',
 	},
 	previewImage: {
-		width: PREVIEW_SIZE,
-		height: PREVIEW_SIZE,
+		width: PREVIEW_HEIGHT,
+		height: PREVIEW_HEIGHT,
 	},
 	previewPlaceholder: {
-		width: PREVIEW_SIZE,
-		height: PREVIEW_SIZE,
+		width: PREVIEW_HEIGHT,
+		height: PREVIEW_HEIGHT,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
