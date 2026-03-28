@@ -1,6 +1,9 @@
 #!/bin/bash
 echo "Setting read/write permission for uploads"
 mkdir -p ./data/database_file_uploads/
+# Directus runs as the 'node' user (UID 1000) inside the container.
+# Set ownership to UID 1000 so the container can write uploads to the mounted host directory.
+chown -R 1000:1000 ./data/database_file_uploads/
 chmod -R 770 ./data/database_file_uploads/
 
 echo "Setting read/write permission for database"
