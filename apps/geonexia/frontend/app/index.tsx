@@ -22,11 +22,10 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { WebView } from 'react-native-webview';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
-import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
+import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
@@ -35,68 +34,7 @@ import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
-
-/** Module-level cache mapping terrain asset key → base64 data URI. */
-const cachedTerrainSvgDataUrls = new Map<string, string>();
-let cachedTerrainSvgDataUrlsLoaded = false;
-
-async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
-	if (cachedTerrainSvgDataUrlsLoaded) return cachedTerrainSvgDataUrls;
-	for (const entries of Object.values(TERRAIN_ASSETS)) {
-		for (const entry of entries) {
-			try {
-				const asset = Asset.fromModule(entry.source as number);
-				await asset.downloadAsync();
-				let url: string;
-				if (Platform.OS === 'web') {
-					url = asset.uri ?? '';
-				} else {
-					if (!asset.localUri) continue;
-					const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-						encoding: FileSystem.EncodingType.Base64,
-					});
-					url = `data:image/svg+xml;base64,${base64}`;
-				}
-				cachedTerrainSvgDataUrls.set(entry.key, url);
-			} catch (e) {
-				console.warn(`[loadAllTerrainSvgDataUrls] Failed for ${entry.key}:`, e);
-			}
-		}
-	}
-	cachedTerrainSvgDataUrlsLoaded = true;
-	return cachedTerrainSvgDataUrls;
-}
-
-/** Module-level cache mapping object sprite key ("objects:N") → base64 data URI. */
-const cachedObjectSvgDataUrls = new Map<string, string>();
-let cachedObjectSvgDataUrlsLoaded = false;
-
-async function loadAllObjectSvgDataUrls(): Promise<Map<string, string>> {
-	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
-	for (let i = 0; i < OBJECT_SPRITES.length; i++) {
-		const sprite = OBJECT_SPRITES[i];
-		const key = `objects:${i}`;
-		try {
-			const asset = Asset.fromModule(sprite.source as number);
-			await asset.downloadAsync();
-			let url: string;
-			if (Platform.OS === 'web') {
-				url = asset.uri ?? '';
-			} else {
-				if (!asset.localUri) continue;
-				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-					encoding: FileSystem.EncodingType.Base64,
-				});
-				url = `data:image/svg+xml;base64,${base64}`;
-			}
-			cachedObjectSvgDataUrls.set(key, url);
-		} catch (e) {
-			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${key}:`, e);
-		}
-	}
-	cachedObjectSvgDataUrlsLoaded = true;
-	return cachedObjectSvgDataUrls;
-}
+import SettingsListHexTile from '../components/SettingsListHexTile';
 
 /** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
 function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
@@ -1259,9 +1197,6 @@ function formatTimestamp(ts: number | null): string {
 	});
 }
 
-const TILE_THUMB_SIZE = 64;
-const TILE_THUMB_GAP = 6;
-
 // ── Hex Anchor Picker ──────────────────────────────────────────────────────────
 // Pointy-top hexagon with 9 interactive anchor points:
 //   center (purple), vertex[0] (green), and 6 midpoints (red/orange/yellow/blue/white/black)
@@ -1395,28 +1330,11 @@ const hexPickerStyles = StyleSheet.create({
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
-
-	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
-	const [terrainSvgUrls, setTerrainSvgUrls] = useState<Map<string, string>>(new Map());
-	const [objectSvgUrls, setObjectSvgUrls] = useState<Map<string, string>>(new Map());
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentBillboard = record?.billboard ?? null;
-
-	// Load all terrain SVGs as base64 data URIs for use in the tile picker WebView.
-	useEffect(() => {
-		loadAllTerrainSvgDataUrls().then(urls => {
-			setTerrainSvgUrls(new Map(urls));
-		});
-	}, []);
-
-	// Load all object sprite SVGs as base64 data URIs for use in the billboard picker WebView.
-	useEffect(() => {
-		loadAllObjectSvgDataUrls().then(urls => {
-			setObjectSvgUrls(new Map(urls));
-		});
-	}, []);
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -1428,78 +1346,77 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
 
-	// Build the HTML for the WebView-based tile picker using individual terrain SVG data URIs.
-	const tilePickerHtml = useMemo(() => {
-		if (terrainSvgUrls.size === 0) return null;
-		const thumbSize = TILE_THUMB_SIZE;
-		const gap = TILE_THUMB_GAP;
+	const openTileSelection = useCallback(() => {
+		showModal({
+			title: '🌿 Select Tile Image',
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					{TERRAIN_CATEGORIES.map((cat) => {
+						const entries = TERRAIN_ASSETS[cat];
+						return (
+							<View key={cat}>
+								<SettingsListGroupTitle title={cat} />
+								{entries.map((entry, i) => {
+									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
+									return (
+										<SettingsListSelectOptionSingle
+											key={entry.key}
+											label={entry.key.split('/').pop() ?? entry.key}
+											isSelected={currentTileImage === entry.key}
+											selectionColor={PRIMARY_COLOR}
+											onPress={() => {
+												dispatch(setHexTileCustomization({
+													h3Index,
+													tileImage: currentTileImage === entry.key ? null : entry.key,
+												}));
+												closeModal();
+											}}
+											groupPosition={position}
+										/>
+									);
+								})}
+							</View>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
-		const tileItems = TERRAIN_ASSETS[selectedCategory].map((asset) => {
-			const url = terrainSvgUrls.get(asset.key) ?? '';
-			const isSelected = currentTileImage === asset.key;
-			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
-			return `<div class="tile" data-key="${asset.key}" style="border:${border};"><img src="${url}" /></div>`;
-		}).join('');
+	const openBillboardSelection = useCallback(() => {
+		showModal({
+			title: '🏗️ Select Billboard',
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					{OBJECT_SPRITES.map((sprite, idx) => {
+						const key = `objects:${idx}`;
+						const isSelected = currentBillboard === key;
+						const position = idx === 0 ? 'top' : idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={key}
+								label={sprite.name}
+								isSelected={isSelected}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									dispatch(setHexTileCustomization({
+										h3Index,
+										billboard: currentBillboard === key ? null : key,
+									}));
+									closeModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentBillboard, h3Index, dispatch]);
 
-		return [
-			'<!DOCTYPE html><html>',
-			'<head>',
-			'<meta name="viewport" content="width=device-width,initial-scale=1">',
-			'<style>',
-			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
-			`html,body{background:transparent;overflow:hidden;}`,
-			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
-			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
-			`.tile img{width:100%;height:100%;object-fit:cover;}`,
-			'</style>',
-			'</head>',
-			'<body>',
-			`<div class="row">${tileItems}</div>`,
-			'<script>',
-			`document.querySelectorAll('.tile').forEach(function(el){`,
-			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
-			`});`,
-			'<\/script>',
-			'</body></html>',
-		].join('');
-	}, [terrainSvgUrls, selectedCategory, currentTileImage]);
-
-	// Build the HTML for the WebView-based billboard (object sprite) picker.
-	const billboardPickerHtml = useMemo(() => {
-		if (objectSvgUrls.size === 0) return null;
-		const thumbSize = TILE_THUMB_SIZE;
-		const gap = TILE_THUMB_GAP;
-
-		const objectItems = OBJECT_SPRITES.map((sprite, idx) => {
-			const key = `objects:${idx}`;
-			const url = objectSvgUrls.get(key) ?? '';
-			const isSelected = currentBillboard === key;
-			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
-			return `<div class="tile" data-key="${key}" style="border:${border};" title="${sprite.name}"><img src="${url}" /></div>`;
-		}).join('');
-
-		return [
-			'<!DOCTYPE html><html>',
-			'<head>',
-			'<meta name="viewport" content="width=device-width,initial-scale=1">',
-			'<style>',
-			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
-			`html,body{background:transparent;overflow:hidden;}`,
-			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
-			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
-			`.tile img{width:100%;height:100%;object-fit:contain;}`,
-			'</style>',
-			'</head>',
-			'<body>',
-			`<div class="row">${objectItems}</div>`,
-			'<script>',
-			`document.querySelectorAll('.tile').forEach(function(el){`,
-			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
-			`});`,
-			'<\/script>',
-			'</body></html>',
-		].join('');
-	}, [objectSvgUrls, currentBillboard]);
+	const parsedBillboard = currentBillboard ? parseBillboardKey(currentBillboard) : null;
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1520,112 +1437,21 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 			{/* ── Tile Image section ── */}
 			<SettingsListGroupTitle title="Tile Image" />
-
-			{/* Category tabs */}
-			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={styles.tilePickerCategoryRow}
-			>
-				{TERRAIN_CATEGORIES.map((cat) => {
-					const isActive = selectedCategory === cat;
-					return (
-						<TouchableOpacity
-							key={cat}
-							onPress={() => setSelectedCategory(cat)}
-							style={[
-								styles.tilePickerCategoryTab,
-								{
-									backgroundColor: isActive ? PRIMARY_COLOR : theme.screen.text + '18',
-								},
-							]}
-						>
-							<Text
-								style={[
-									styles.tilePickerCategoryLabel,
-									{ color: isActive ? '#ffffff' : theme.screen.text },
-								]}
-							>
-								{cat}
-							</Text>
-						</TouchableOpacity>
-					);
-				})}
-			</ScrollView>
-
-			{/* Thumbnail row */}
-			{tilePickerHtml != null ? (
-				<WebView
-					source={{ html: tilePickerHtml }}
-					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
-					originWhitelist={['*']}
-					scrollEnabled={true}
-					onMessage={event => {
-						const key = event.nativeEvent.data;
-						if (!key) return;
-						dispatch(
-							setHexTileCustomization({
-								h3Index,
-								tileImage: currentTileImage === key ? null : key,
-							}),
-						);
-					}}
-				/>
-			) : (
-				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
-					Loading…
-				</Text>
-			)}
-
-			{currentTileImage && (
-				<View style={styles.tilePickerCurrentRow}>
-					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						Selected: {currentTileImage}
-					</Text>
-					<TouchableOpacity
-						onPress={() => dispatch(setHexTileCustomization({ h3Index, tileImage: null }))}
-					>
-						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
-					</TouchableOpacity>
-				</View>
-			)}
+			<SettingsListHexTile
+				tileImageKey={currentTileImage}
+				title="Tile Image"
+				onPress={openTileSelection}
+				groupPosition="single"
+			/>
 
 			{/* ── Billboard / Object section ── */}
 			<SettingsListGroupTitle title="Object" />
-
-			{billboardPickerHtml != null ? (
-				<WebView
-					source={{ html: billboardPickerHtml }}
-					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
-					originWhitelist={['*']}
-					scrollEnabled={true}
-					onMessage={event => {
-						const key = event.nativeEvent.data;
-						if (!key) return;
-						dispatch(
-							setHexTileCustomization({
-								h3Index,
-								billboard: currentBillboard === key ? null : key,
-							}),
-						);
-					}}
-				/>
-			) : (
-				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
-					Loading…
-				</Text>
-			)}
-
-			{currentBillboard && (() => {
-				const parsed = parseBillboardKey(currentBillboard);
-				return (
-					<SettingsListBillboard
-						spriteIndex={parsed?.idx ?? null}
-						title={parsed?.sprite.name ?? currentBillboard}
-						groupPosition="single"
-					/>
-				);
-			})()}
+			<SettingsListBillboard
+				spriteIndex={parsedBillboard?.idx ?? null}
+				title="Billboard"
+				onPress={openBillboardSelection}
+				groupPosition="single"
+			/>
 
 			{/* ── Billboard Anchor Color section ── */}
 			{currentBillboard && (
@@ -3420,37 +3246,5 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		flexShrink: 1,
 		textAlign: 'right',
-	},
-	// Tile image picker
-	tilePickerCategoryRow: {
-		flexDirection: 'row',
-		gap: TILE_THUMB_GAP,
-		paddingHorizontal: 16,
-		paddingBottom: 10,
-	},
-	tilePickerCategoryTab: {
-		paddingHorizontal: 12,
-		paddingVertical: 6,
-		borderRadius: 16,
-	},
-	tilePickerCategoryLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-	},
-	tilePickerCurrentRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		paddingHorizontal: 16,
-		paddingBottom: 8,
-	},
-	tilePickerCurrentLabel: {
-		fontSize: 12,
-		flex: 1,
-	},
-	tilePickerClearBtn: {
-		fontSize: 13,
-		fontWeight: '600',
-		paddingLeft: 8,
 	},
 });
