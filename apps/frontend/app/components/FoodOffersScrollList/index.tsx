@@ -58,8 +58,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	
 	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
 	const [days, setDays] = useState<DayData[]>([]);
-	const daysRef = useRef<DayData[]>([]);
-	const loadingNextRef = useRef(false);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 	const [selectedSheet, setSelectedSheet] = useState<keyof typeof SHEET_COMPONENTS | null>(null);
@@ -72,12 +70,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
-
-	// Keep daysRef in sync with days state so loadNext always reads the latest value
-	// even when called from a stale closure (e.g. rapid onEndReached events).
-	useEffect(() => {
-		daysRef.current = days;
-	}, [days]);
 
 	useEffect(() => {
 		const fetchLabels = async () => {
@@ -356,30 +348,21 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		return () => subscription?.remove();
 	}, []);
 
-	const loadNext = useCallback(async () => {
-		// Guard against concurrent calls: only one loadNext may run at a time.
-		// Without this guard, rapid onEndReached events all read the same stale
-		// `days` closure and repeatedly load the same next date (e.g. always
-		// "tomorrow"), causing every further day to show "Morgen".
-		if (!daysRef.current.length || loadingNextRef.current) return;
-		loadingNextRef.current = true;
-		try {
-			const lastDate = daysRef.current[daysRef.current.length - 1].date;
-			const nextDate = addDays(new Date(lastDate), 1).toISOString().split('T')[0];
-			const nextDay = await loadDay(nextDate);
-			setDays(prev => {
-				const updated = [...prev, nextDay];
-				updateCache(updated);
-				return updated;
-			});
-		} finally {
-			loadingNextRef.current = false;
-		}
-	}, [loadDay, updateCache]);
+	const loadNext = async () => {
+		if (!days.length) return;
+		const lastDate = days[days.length - 1].date;
+		const nextDate = addDays(new Date(lastDate), 1).toISOString().split('T')[0];
+		const nextDay = await loadDay(nextDate);
+		setDays(prev => {
+			const updated = [...prev, nextDay];
+			updateCache(updated);
+			return updated;
+		});
+	};
 
-	const onEndReached = useCallback(() => {
+	const onEndReached = () => {
 		loadNext();
-	}, [loadNext]);
+	};
 
 	const onRefresh = async () => {
 		setRefreshing(true);
