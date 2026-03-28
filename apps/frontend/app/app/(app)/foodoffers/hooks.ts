@@ -6,6 +6,14 @@ import { addDays, format, parse } from 'date-fns';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { sortFoodOffers } from '@/helper/foodOfferSortHelper';
 import { runAfterInteractions } from '@/helper/interactionHelper';
+
+const parseDateOnly = (date: string): Date => {
+    const [year, month, day] = date.split('-').map(Number);
+    if (!year || !month || !day) {
+        return new Date(date);
+    }
+    return new Date(year, month - 1, day);
+};
 import {
     SET_SELECTED_CANTEEN_FOOD_OFFERS,
     SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
@@ -166,7 +174,7 @@ export const useFoodOffersData = (
         // Prefetch next 2 days in background
         runAfterInteractions(() => {
             for (let i = 1; i <= 2; i++) {
-                const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                const date = format(addDays(parseDateOnly(selectedDate), i), 'yyyy-MM-dd');
                 const nextCacheKey = getCacheKey(canteenId, date);
                 
                 // Check if already fetched or in progress to prevent duplicate calls
@@ -231,7 +239,7 @@ export const useFoodOffersData = (
     const nextAvailableDate = useMemo(() => {
         const canteenId = selectedCanteen?.id as string;
         for (let i = 1; i <= 2; i++) {
-            const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+            const date = format(addDays(parseDateOnly(selectedDate), i), 'yyyy-MM-dd');
             const offers = getCachedOffers(canteenId, date);
             if (offers && offers.length > 0) return date;
         }
@@ -336,15 +344,15 @@ export const useAnimationLogic = (
 export const useDateNavigation = (selectedDate: string) => {
     const dispatch = useDispatch();
     const handleDateChange = useCallback((direction: 'prev' | 'next') => {
-        const currentDate = new Date(selectedDate);
+        const currentDate = parseDateOnly(selectedDate);
         if (direction === 'prev') currentDate.setDate(currentDate.getDate() - 1);
         else currentDate.setDate(currentDate.getDate() + 1);
-        dispatch({ type: SET_SELECTED_DATE, payload: currentDate.toISOString().split('T')[0] });
+        dispatch({ type: SET_SELECTED_DATE, payload: format(currentDate, 'yyyy-MM-dd') });
     }, [selectedDate, dispatch]);
 
     const getDayLabel = useCallback((date: string) => {
         const currentDate = new Date();
-        const day = new Date(date);
+        const day = parseDateOnly(date);
         currentDate.setHours(0, 0, 0, 0);
         day.setHours(0, 0, 0, 0);
         if (currentDate.toDateString() === day.toDateString()) return 'today';
@@ -357,7 +365,7 @@ export const useDateNavigation = (selectedDate: string) => {
 
     const getWeekdayKey = useCallback((date: string) => {
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        return days[new Date(date).getDay()];
+        return days[parseDateOnly(date).getDay()];
     }, []);
 
     return { handleDateChange, getDayLabel, getWeekdayKey };

@@ -8542,16 +8542,16 @@ Key,Message,Component,Line
 "AZ0TplBeufp2jxPAhSzt","Remove this unused import of 'TooltipText'.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentItem/ApartmentItem.tsx",10
 "AZ0TplNeufp2jxPAhS18","Use `export…from` to re-export `TooltipContent`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomTooltip/index.tsx",39
 "AZ0TplNeufp2jxPAhS19","Use `export…from` to re-export `TooltipText`.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomTooltip/index.tsx",39
-"AZ0Tpk85ufp2jxPAhSy9","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",377
+"AZ0Tpk85ufp2jxPAhSy9","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",384
 "AZ0TplGSufp2jxPAhS0g","Remove this unused import of 'Image'.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",2
 "AZ0TpkvTufp2jxPAhSvI","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/components/FoodHeader.tsx",36
-"AZ0Tpk85ufp2jxPAhSy5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",77
+"AZ0Tpk85ufp2jxPAhSy5","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",78
 "AZ0TplIZufp2jxPAhS1V","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",32
 "AZ0TplIZufp2jxPAhS1W","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListLikeDislike/SettingsListLikeDislike.tsx",67
 "AZ0TplGqufp2jxPAhS08","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",200
 "AZ0TplGqufp2jxPAhS09","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/Feedbacks/index.tsx",200
-"AZ0Tpk85ufp2jxPAhSy7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",376
-"AZ0Tpk85ufp2jxPAhSy8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",376
+"AZ0Tpk85ufp2jxPAhSy7","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",383
+"AZ0Tpk85ufp2jxPAhSy8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",383
 "AZ0TpmNIufp2jxPAhTMi","Make this public static property readonly.","rocket-meals_rocket-meals:packages/common/src/CronHelper.ts",96
 "AZ0TplgKufp2jxPAhS51","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",108
 "AZ0TplgKufp2jxPAhS56","Do not call `Array#push()` multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",152
@@ -8601,7 +8601,7 @@ Key,Message,Component,Line
 "AZ0TplHYufp2jxPAhS1K","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",53
 "AZ0TplHYufp2jxPAhS1N","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",115
 "AZ0TplBPufp2jxPAhSzo","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/CardWithText/CardWithText.tsx",79
-"AZ0Tpk85ufp2jxPAhSy6","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",111
+"AZ0Tpk85ufp2jxPAhSy6","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodOffersScrollList/index.tsx",112
 "AZ0TpkuJufp2jxPAhSvB","Remove this unused import of 'useMyScrollviewDirectusImageEditModal'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/index.tsx",39
 "AZ0Tpkv4ufp2jxPAhSvV","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOfferListItem.tsx",83
 "AZ0Tpkvvufp2jxPAhSvR","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersList.tsx",78
@@ -8616,8 +8616,8 @@ Key,Message,Component,Line
 "AZ0Tplcmufp2jxPAhS4-","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useFoodCard.ts",9
 "AZ0Tpkv_ufp2jxPAhSvX","Remove this unused import of 'Platform'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",2
 "AZ0Tpkv_ufp2jxPAhSvZ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",53
-"AZ0TpkwNufp2jxPAhSvl","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",178
-"AZ0TpkwNufp2jxPAhSvm","Remove this useless assignment to variable ""setIsActive"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",259
+"AZ0TpkwNufp2jxPAhSvl","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",186
+"AZ0TpkwNufp2jxPAhSvm","Remove this useless assignment to variable ""setIsActive"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",267
 "AZ0Tpkkyufp2jxPAhSuF","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/components/CampusHeader.tsx",35
 "AZ0Tpkkyufp2jxPAhSuG","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/components/CampusHeader.tsx",54
 "AZ0TpkmXufp2jxPAhSuH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/details/components/DetailsHeader.tsx",38
@@ -8647,10 +8647,10 @@ Key,Message,Component,Line
 "AZ0Tpkvcufp2jxPAhSvO","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",48
 "AZ0TpkwNufp2jxPAhSvi","Remove this unused import of 'Image'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",2
 "AZ0TpkwNufp2jxPAhSvj","Remove this unused import of 'sortBySortField'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",4
-"AZ0TpkwNufp2jxPAhSvk","Remove this unused import of 'useFocusEffect'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",20
-"AZ0TpkwNufp2jxPAhSvn","""menu"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",261
-"AZ0TpkwNufp2jxPAhSvo","""sort"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",261
-"AZ0TpkwNufp2jxPAhSvp","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",312
+"AZ0TpkwNufp2jxPAhSvk","Remove this unused import of 'useFocusEffect'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",28
+"AZ0TpkwNufp2jxPAhSvn","""menu"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",269
+"AZ0TpkwNufp2jxPAhSvo","""sort"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",269
+"AZ0TpkwNufp2jxPAhSvp","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",320
 "AZ0Tpkxhufp2jxPAhSv-","""system"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",17
 "AZ0Tpkxhufp2jxPAhSv8","""left"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",17
 "AZ0Tpkxhufp2jxPAhSv9","""right"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",17
