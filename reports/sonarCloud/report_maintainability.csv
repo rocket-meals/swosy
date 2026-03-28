@@ -8616,8 +8616,8 @@ Key,Message,Component,Line
 "AZ0Tplcmufp2jxPAhS4-","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useFoodCard.ts",9
 "AZ0Tpkv_ufp2jxPAhSvX","Remove this unused import of 'Platform'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",2
 "AZ0Tpkv_ufp2jxPAhSvZ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/components/FoodOffersHeader.tsx",53
-"AZ0TpkwNufp2jxPAhSvl","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",178
-"AZ0TpkwNufp2jxPAhSvm","Remove this useless assignment to variable ""setIsActive"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",259
+"AZ0TpkwNufp2jxPAhSvl","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",186
+"AZ0TpkwNufp2jxPAhSvm","Remove this useless assignment to variable ""setIsActive"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",267
 "AZ0Tpkkyufp2jxPAhSuF","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/components/CampusHeader.tsx",35
 "AZ0Tpkkyufp2jxPAhSuG","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/components/CampusHeader.tsx",54
 "AZ0TpkmXufp2jxPAhSuH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/details/components/DetailsHeader.tsx",38
@@ -8647,10 +8647,10 @@ Key,Message,Component,Line
 "AZ0Tpkvcufp2jxPAhSvO","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/details/hooks/useFoodDetails.ts",48
 "AZ0TpkwNufp2jxPAhSvi","Remove this unused import of 'Image'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",2
 "AZ0TpkwNufp2jxPAhSvj","Remove this unused import of 'sortBySortField'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",4
-"AZ0TpkwNufp2jxPAhSvk","Remove this unused import of 'useFocusEffect'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",20
-"AZ0TpkwNufp2jxPAhSvn","""menu"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",261
-"AZ0TpkwNufp2jxPAhSvo","""sort"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",261
-"AZ0TpkwNufp2jxPAhSvp","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",312
+"AZ0TpkwNufp2jxPAhSvk","Remove this unused import of 'useFocusEffect'.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",28
+"AZ0TpkwNufp2jxPAhSvn","""menu"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",269
+"AZ0TpkwNufp2jxPAhSvo","""sort"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",269
+"AZ0TpkwNufp2jxPAhSvp","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/foodoffers/hooks.ts",320
 "AZ0Tpkxhufp2jxPAhSv-","""system"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",17
 "AZ0Tpkxhufp2jxPAhSv8","""left"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",17
 "AZ0Tpkxhufp2jxPAhSv9","""right"" is overridden by string in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/components/HousingHeader.tsx",17
