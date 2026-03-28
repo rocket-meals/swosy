@@ -898,9 +898,11 @@ export class ParseSchedule {
       */
       for(let foodofferToCreate of batch){
         try{
+          await this.context.logger.appendLog('Create Food Offer ' + JSON.stringify(foodofferToCreate, null, 2));
           let result = await myFoodOffersService.createOne(foodofferToCreate, {
             disableEventEmit: disableEventEmit,
           });
+          await this.context.logger.appendLog('Created Food Offer ' + JSON.stringify(result, null, 2));
         } catch (error: any){
           await this.context.logger.appendLog('Error creating food offer: ' + JSON.stringify(error, null, 2));
         }
