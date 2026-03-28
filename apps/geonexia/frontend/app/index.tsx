@@ -24,7 +24,6 @@ import { useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { WebView } from 'react-native-webview';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
-import { StringHelper } from 'repo-depkit-common';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
@@ -154,12 +153,6 @@ const BILLBOARD_SCALE_DEFAULT = 1;
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
 // Default MapLibre zoom assumed when no viewport data is available yet.
 const DEFAULT_REFERENCE_ZOOM = 14;
-// Natural raster size (px) at which SVG images are loaded into the MapLibre
-// sprite atlas.  Must match ICON_NATURAL_SIZE in hexTileScript.ts.
-const ICON_NATURAL_SIZE = 128;
-// Minimum effective billboard size in pixels at the reference zoom.
-// Prevents extremely small sprites from becoming invisible at low resolutions.
-const MIN_BILLBOARD_SIZE_PX = 8;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -1606,23 +1599,24 @@ export default function RecordScreen() {
 			}
 		}
 
-		// ── Billboard object GeoJSON ─────────────────────────────────────────────
-		// Instead of DOM markers, billboards are rendered as a MapLibre symbol
-		// layer that sits flat on the map and scales naturally with zoom.
-		// Each billboard cell becomes a GeoJSON Point feature at the hex centroid.
-		// Unique SVG images are passed alongside so the map can preload them into
-		// its sprite atlas before showing the icons.
+		// ── Billboard markers ────────────────────────────────────────────────────
+		type BillboardMarker = {
+			id: string;
+			position: { lat: number; lng: number };
+			icon: string;
+			size: [number, number];
+			iconAnchor: [number, number];
+		};
+		const billboardMarkers: BillboardMarker[] = [];
 
-		// Scale icon size by the current H3 resolution so that billboards stay
-		// proportional to the hexagon visual size at resolution 10 (default).
+		// Scale billboard pixel size by the current H3 resolution so that billboards
+		// stay proportional to the hexagon visual size at resolution 10 (default).
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
+		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
 		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
 		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
 		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
-
-		const billboardImages: { id: string; dataUri: string }[] = [];
-		const billboardFeatures: { type: 'Feature'; geometry: { type: 'Point'; coordinates: [number, number] }; properties: { iconId: string; iconSizeAtRefZoom: number } }[] = [];
-		const seenImageIds = new Set<string>();
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			if (!record.billboard) continue;
@@ -1646,36 +1640,28 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
-			// icon-size is a fraction of the image's natural raster size (ICON_NATURAL_SIZE).
-			// At DEFAULT_REFERENCE_ZOOM the icon renders at
-			//   iconSizeAtRefZoom × ICON_NATURAL_SIZE  pixels wide,
-			// which matches BILLBOARD_UNIT_PX × scaleFactor × hexScaleRatio × billboardScale.
-			const billboardSizePx = Math.max(MIN_BILLBOARD_SIZE_PX, BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current);
-			const iconSizeAtRefZoom = billboardSizePx / ICON_NATURAL_SIZE;
-			// Use a safe image ID: replace the ':' separator with '_' (e.g. "objects_0").
-			const iconId = StringHelper.replaceAllLiteralWithOptions({ str: record.billboard, find: ':', replace: '_' });
-			if (!seenImageIds.has(iconId)) {
-				seenImageIds.add(iconId);
-				billboardImages.push({ id: iconId, dataUri: url });
-			}
-			billboardFeatures.push({
-				type: 'Feature',
-				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconId, iconSizeAtRefZoom },
+			// Compute the pixel size for this sprite, applying its scaleFactor, the
+			// current H3 resolution scale, and the debug scale multiplier.  Minimum 8 px to keep tiny sprites visible.
+			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current));
+			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
+			// The X anchor is always the horizontal center of the square icon.
+			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
+			billboardMarkers.push({
+				id: `billboard-${h3Index}`,
+				position: { lat, lng },
+				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
+				size: [billboardSizePx, billboardSizePx],
+				iconAnchor: [billboardSizePx / 2, anchorYPx],
 			});
 		}
 
 		mapRef.current.sendToMap({
 			imageOverlays,
-			// Clear any legacy DOM markers that may have been rendered before this
-			// switch to the native symbol-layer approach.
-			mapMarkers: [],
-			// Pass the billboard GeoJSON (with pre-computed icon sizes) to the map
-			// script, which will load SVG images and render them as a symbol layer.
-			hexObjectGeoJson: {
-				images: billboardImages,
-				geojson: { type: 'FeatureCollection', features: billboardFeatures },
-			},
+			mapMarkers: billboardMarkers,
+			// Always use the fixed reference zoom so that billboard sizes remain
+			// consistent regardless of what zoom the user is at when markers are
+			// sent (e.g. after changing h3 resolution and reverting).
+			mapMarkersReferenceZoom: DEFAULT_REFERENCE_ZOOM,
 		});
 	}, [loadAssetUrl]);
 
@@ -1704,7 +1690,6 @@ export default function RecordScreen() {
 		prevResetTokenRef.current = resetToken;
 		mapRef.current?.sendToMap({
 			hexTileGeoJson: { type: 'FeatureCollection', features: [] },
-			hexObjectGeoJson: null,
 		});
 	}, [resetToken]);
 
