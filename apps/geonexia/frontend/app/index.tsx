@@ -1605,10 +1605,11 @@ export default function RecordScreen() {
 		// so they lie flat on the map plane and shrink naturally with perspective when
 		// the map is pitched, matching how hex tile polygons are rendered.
 		//
-		// Each unique billboard SVG is rasterized to a BILLBOARD_STANDARD_ICON_SIZE×BILLBOARD_STANDARD_ICON_SIZE
-		// canvas image and added to the map sprite once. Features carry an
-		// iconSizeAtRefZoom property (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14)
-		// so the layer's icon-size zoom expression scales it correctly at all zoom levels.
+		// Each unique billboard SVG is rasterized at 4× resolution (512×512 actual pixels
+		// for a 128×128 logical icon) via canvas + pixelRatio, keeping SVGs crisp when
+		// zoomed in or on high-DPI screens. Features carry an iconSizeAtRefZoom property
+		// (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14) so the layer's
+		// icon-size zoom expression scales it correctly at all zoom levels.
 		// NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
 		const BILLBOARD_STANDARD_ICON_SIZE = 128;
 

@@ -4680,7 +4680,13 @@
       // the map is pitched, just like hex tile polygons.
       var BILLBOARD_SOURCE_ID = 'billboard-symbol-source';
       var BILLBOARD_LAYER_ID = 'billboard-symbol-layer';
-      var BILLBOARD_ICON_SIZE = 128; // pixel size at which each SVG is rasterized (must match BILLBOARD_STANDARD_ICON_SIZE in index.tsx)
+      // Logical icon size used for icon-size calculations (must match BILLBOARD_STANDARD_ICON_SIZE in index.tsx).
+      var BILLBOARD_ICON_SIZE = 128;
+      // SVGs are rasterized at BILLBOARD_ICON_SIZE × BILLBOARD_PIXEL_RATIO actual pixels
+      // so they stay crisp when zoomed in or on high-DPI screens.  MapLibre's pixelRatio
+      // option tells the renderer the image is N× oversampled, keeping icon-size math correct.
+      var BILLBOARD_PIXEL_RATIO = 4;
+      var BILLBOARD_RENDER_SIZE = BILLBOARD_ICON_SIZE * BILLBOARD_PIXEL_RATIO; // 512
       var billboardImageCache = {}; // iconKey → true once image added to map sprite
       var billboardUpdateGeneration = 0; // increments on each updateBillboards call to cancel stale callbacks
 
@@ -4740,16 +4746,20 @@
           }
           var imgData = images[key];
           var canvas = document.createElement('canvas');
-          canvas.width = BILLBOARD_ICON_SIZE;
-          canvas.height = BILLBOARD_ICON_SIZE;
+          canvas.width = BILLBOARD_RENDER_SIZE;
+          canvas.height = BILLBOARD_RENDER_SIZE;
           var ctx = canvas.getContext('2d');
           var img = new Image();
           img.onload = function () {
             // Discard if a newer updateBillboards() has already superseded this call.
             if (generation !== billboardUpdateGeneration) return;
-            ctx.drawImage(img, 0, 0, BILLBOARD_ICON_SIZE, BILLBOARD_ICON_SIZE);
+            ctx.drawImage(img, 0, 0, BILLBOARD_RENDER_SIZE, BILLBOARD_RENDER_SIZE);
             if (!map.hasImage(key)) {
-              map.addImage(key, ctx.getImageData(0, 0, BILLBOARD_ICON_SIZE, BILLBOARD_ICON_SIZE));
+              map.addImage(
+                key,
+                ctx.getImageData(0, 0, BILLBOARD_RENDER_SIZE, BILLBOARD_RENDER_SIZE),
+                { pixelRatio: BILLBOARD_PIXEL_RATIO }
+              );
             }
             billboardImageCache[key] = true;
             pending--;
