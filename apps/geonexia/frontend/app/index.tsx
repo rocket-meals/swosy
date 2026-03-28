@@ -151,6 +151,8 @@ const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
 const BILLBOARD_SCALE_DEFAULT = 1;
 // Precision factor for rounding billboard scale values (1 decimal place).
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
+// Default billboard pitch alignment mode ('viewport' = always face camera, 'map' = lie flat on map).
+const BILLBOARD_PITCH_ALIGNMENT_DEFAULT: 'viewport' | 'map' = 'viewport';
 // Default MapLibre zoom assumed when no viewport data is available yet.
 const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
@@ -778,11 +780,13 @@ type DebugInfoContentProps = {
 	initialH3Resolution: number;
 	initialSpeed: number;
 	initialBillboardScale: number;
+	initialBillboardPitchAlignment: 'viewport' | 'map';
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
 	onBillboardScaleChange: (scale: number) => void;
+	onBillboardPitchAlignmentChange: (alignment: 'viewport' | 'map') => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -795,17 +799,20 @@ function DebugInfoContent({
 	initialH3Resolution,
 	initialSpeed,
 	initialBillboardScale,
+	initialBillboardPitchAlignment,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
 	onBillboardScaleChange,
+	onBillboardPitchAlignmentChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
 	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
+	const [billboardPitchAlignment, setBillboardPitchAlignment] = useState<'viewport' | 'map'>(initialBillboardPitchAlignment);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -836,6 +843,14 @@ function DebugInfoContent({
 			return next;
 		});
 	}, [onBillboardScaleChange]);
+
+	const toggleBillboardPitchAlignment = useCallback(() => {
+		setBillboardPitchAlignment((prev) => {
+			const next: 'viewport' | 'map' = prev === 'viewport' ? 'map' : 'viewport';
+			onBillboardPitchAlignmentChange(next);
+			return next;
+		});
+	}, [onBillboardPitchAlignmentChange]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
 
@@ -1006,6 +1021,19 @@ function DebugInfoContent({
 						<Text style={styles.resolutionButtonText}>+</Text>
 					</TouchableOpacity>
 				</View>
+			</View>
+
+			{/* Billboard Pitch Alignment row */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Pitch</Text>
+				<TouchableOpacity
+					style={[styles.resolutionButton, { paddingHorizontal: 12 }]}
+					onPress={toggleBillboardPitchAlignment}
+				>
+					<Text style={styles.resolutionButtonText}>
+						{billboardPitchAlignment === 'viewport' ? '📺 viewport' : '🗺 map'}
+					</Text>
+				</TouchableOpacity>
 			</View>
 
 			{/* Min zoom info row */}
@@ -1662,6 +1690,7 @@ export default function RecordScreen() {
 			// consistent regardless of what zoom the user is at when markers are
 			// sent (e.g. after changing h3 resolution and reverting).
 			mapMarkersReferenceZoom: DEFAULT_REFERENCE_ZOOM,
+			mapMarkersPitchAlignment: billboardPitchAlignmentRef.current,
 		});
 	}, [loadAssetUrl]);
 
@@ -1715,6 +1744,8 @@ export default function RecordScreen() {
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
 	// Billboard scale multiplier, configurable from the debug modal
 	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
+	// Billboard pitch alignment mode, configurable from the debug modal
+	const billboardPitchAlignmentRef = useRef<'viewport' | 'map'>(BILLBOARD_PITCH_ALIGNMENT_DEFAULT);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1855,6 +1886,11 @@ export default function RecordScreen() {
 		billboardScaleRef.current = scale;
 	}, []);
 
+	const handleBillboardPitchAlignmentChange = useCallback((alignment: 'viewport' | 'map') => {
+		billboardPitchAlignmentRef.current = alignment;
+		mapRef.current?.sendToMap({ mapMarkersPitchAlignment: alignment });
+	}, []);
+
 	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
@@ -1919,15 +1955,17 @@ export default function RecordScreen() {
 					initialH3Resolution={h3ResolutionRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
 					initialBillboardScale={billboardScaleRef.current}
+					initialBillboardPitchAlignment={billboardPitchAlignmentRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
 					onBillboardScaleChange={handleBillboardScaleChange}
+					onBillboardPitchAlignmentChange={handleBillboardPitchAlignmentChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardPitchAlignmentChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
