@@ -229,10 +229,11 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     return foundItem;
   }
 
-  async createOne(create: Partial<T>): Promise<PrimaryKey> {
+  async createOne(create: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey> {
     let itemsService = await this.getItemsService();
     create = ItemsServiceHelper.setStatusPublished(create);
-    return await itemsService.createOne(create);
+    let opts = this.getOptsCustom(optsCustom)
+    return await itemsService.createOne(create, opts);
   }
 
   async createManyItems(create: Partial<T>[], optsCustom?: OptsCustomType): Promise<PrimaryKey[]> {

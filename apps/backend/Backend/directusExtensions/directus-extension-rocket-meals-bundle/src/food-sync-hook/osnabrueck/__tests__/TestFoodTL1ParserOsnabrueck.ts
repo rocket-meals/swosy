@@ -36,6 +36,7 @@ describe('FoodTL1ParserOsnabrueck Test', () => {
     let mealOffersJson = await foodParser.getFoodoffersForParser();
     if (!!mealOffersJson) {
       expect(mealOffersJson.length).toBeGreaterThan(0);
+      expect(mealOffersJson.length).toBe(324);
     } else {
       expect(false).toBe(true);
     }
