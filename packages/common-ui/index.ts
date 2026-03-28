@@ -38,6 +38,9 @@ export type { SettingsListSelectOptionProps, SettingsListSelectOptionItem } from
 export { default as SettingsListLikeDislikeFast } from './src/components/SettingsListLikeDislikeFast';
 export type { SettingsListLikeDislikeFastProps } from './src/components/SettingsListLikeDislikeFast';
 
+export { default as SettingsListLikeButton } from './src/components/SettingsListLikeButton';
+export type { SettingsListLikeButtonProps } from './src/components/SettingsListLikeButton';
+
 export { default as SettingsListTextInput } from './src/components/SettingsListTextInput';
 export type { SettingsListTextInputProps, CheckTextInput, CheckTextInputResult } from './src/components/SettingsListTextInput';
 
@@ -46,6 +49,9 @@ export type { SettingsListDateProps } from './src/components/SettingsListDate';
 
 export { default as SettingsListCoordinate } from './src/components/SettingsListCoordinate';
 export type { SettingsListCoordinateProps, LinkCoordinate } from './src/components/SettingsListCoordinate';
+
+export { default as SettingsListProgress } from './src/components/SettingsListProgress';
+export type { SettingsListProgressProps } from './src/components/SettingsListProgress';
 
 export { default as AppDrawer } from './src/components/AppDrawer';
 export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
@@ -70,3 +76,6 @@ export { ModalProvider, useModalContext } from './src/components/GlobalModal/Mod
 export { useModal } from './src/components/GlobalModal/useModal';
 export { useMyScrollViewModal } from './src/components/GlobalModal/useMyScrollViewModal';
 export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMyScrollViewModal';
+
+export { default as FeatureWishesScreen } from './src/components/FeatureWishesScreen';
+export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishItem } from './src/components/FeatureWishesScreen';

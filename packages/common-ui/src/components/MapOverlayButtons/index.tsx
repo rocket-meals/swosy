@@ -34,6 +34,11 @@ export interface MapLocationButtonProps {
 	 * If omitted, the button manages its own active state internally.
 	 */
 	isFollowing?: boolean;
+	/**
+	 * When provided, the map zooms to this level when centering on the user's location.
+	 * If omitted, the current map zoom is preserved.
+	 */
+	zoom?: number;
 }
 
 export function MapLocationButton({
@@ -43,6 +48,7 @@ export function MapLocationButton({
 	activeColor = '#1a73e8',
 	onLocationFound,
 	isFollowing,
+	zoom,
 }: MapLocationButtonProps) {
 	const [internalActive, setInternalActive] = useState(false);
 	const showActive = isFollowing !== undefined ? isFollowing : internalActive;
@@ -60,13 +66,17 @@ export function MapLocationButton({
 			if (isFollowing === undefined) {
 				setInternalActive(true);
 			}
-			mapRef.current?.sendToMap({ mapCenterPosition: center, userLocation: center });
+			mapRef.current?.sendToMap({
+				mapCenterPosition: center,
+				userLocation: center,
+				...(zoom !== undefined ? { zoom } : {}),
+			});
 			onLocationFound?.(center);
 		} catch (error) {
 			console.error('Location error:', error);
 			Alert.alert('Location', 'Could not determine location.');
 		}
-	}, [mapRef, onLocationFound, isFollowing]);
+	}, [mapRef, onLocationFound, isFollowing, zoom]);
 
 	return (
 		<TouchableOpacity style={[styles.button, { backgroundColor }]} onPress={handlePress}>

@@ -129,6 +129,12 @@ const Index = () => {
 			onPress: () => router.push('/experimentell/food-wishlist'),
 		},
 		{
+			key: 'feature-wishes',
+			label: translate(TranslationKeys.feature_wishes),
+			leftIcon: <MaterialCommunityIcons name="lightbulb-outline" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/feature-wishes'),
+		},
+		{
 			key: 'account-required-example',
 			label: translate(TranslationKeys.account_required_example),
 			leftIcon: <MaterialCommunityIcons name="account-lock" size={24} color={theme.screen.icon} />,

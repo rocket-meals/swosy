@@ -1,7 +1,6 @@
 [
   {
     "refresh_interval": null,
-    "layout_options": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -13,6 +12,7 @@
         ]
       }
     },
+    "layout_options": null,
     "filter": null,
     "color": null,
     "icon": "bookmark",
@@ -25,7 +25,6 @@
   },
   {
     "refresh_interval": null,
-    "layout_options": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -37,6 +36,7 @@
         ]
       }
     },
+    "layout_options": null,
     "filter": null,
     "color": null,
     "icon": "bookmark",

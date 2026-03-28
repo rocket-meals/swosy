@@ -27,45 +27,13 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
-
-/** Module-level cache so individual SVG data URIs are only computed once per app session. */
-const cachedObjectSvgDataUrls: string[] = [];
-let cachedObjectSvgDataUrlsLoaded = false;
-
-async function loadAllObjectSvgDataUrls(): Promise<string[]> {
-	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
-	const results: string[] = [];
-	for (const sprite of OBJECT_SPRITES) {
-		try {
-			const asset = Asset.fromModule(sprite.source);
-			await asset.downloadAsync();
-			let url: string;
-			if (Platform.OS === 'web') {
-				url = asset.uri ?? '';
-			} else {
-				if (!asset.localUri) { results.push(''); continue; }
-				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-					encoding: FileSystem.EncodingType.Base64,
-				});
-				url = `data:image/svg+xml;base64,${base64}`;
-			}
-			results.push(url);
-		} catch (e) {
-			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${sprite.name}:`, e);
-			results.push('');
-		}
-	}
-	cachedObjectSvgDataUrls.push(...results);
-	cachedObjectSvgDataUrlsLoaded = true;
-	return cachedObjectSvgDataUrls;
-}
+import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 
 /** Module-level cache mapping terrain asset key → base64 data URI. */
 const cachedTerrainSvgDataUrls = new Map<string, string>();
@@ -98,8 +66,48 @@ async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
 	return cachedTerrainSvgDataUrls;
 }
 
+/** Module-level cache mapping object sprite key ("objects:N") → base64 data URI. */
+const cachedObjectSvgDataUrls = new Map<string, string>();
+let cachedObjectSvgDataUrlsLoaded = false;
+
+async function loadAllObjectSvgDataUrls(): Promise<Map<string, string>> {
+	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
+	for (let i = 0; i < OBJECT_SPRITES.length; i++) {
+		const sprite = OBJECT_SPRITES[i];
+		const key = `objects:${i}`;
+		try {
+			const asset = Asset.fromModule(sprite.source as number);
+			await asset.downloadAsync();
+			let url: string;
+			if (Platform.OS === 'web') {
+				url = asset.uri ?? '';
+			} else {
+				if (!asset.localUri) continue;
+				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+					encoding: FileSystem.EncodingType.Base64,
+				});
+				url = `data:image/svg+xml;base64,${base64}`;
+			}
+			cachedObjectSvgDataUrls.set(key, url);
+		} catch (e) {
+			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${key}:`, e);
+		}
+	}
+	cachedObjectSvgDataUrlsLoaded = true;
+	return cachedObjectSvgDataUrls;
+}
+
+/** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
+function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
+	const colonIdx = billboard.indexOf(':');
+	if (colonIdx < 0 || billboard.slice(0, colonIdx) !== 'objects') return null;
+	const idx = parseInt(billboard.slice(colonIdx + 1), 10);
+	const sprite = OBJECT_SPRITES[idx];
+	if (!sprite) return null;
+	return { sprite, idx };
+}
+
 const PRIMARY_COLOR = '#2563eb';
-const DEBUG_BILLBOARD_ANCHOR_COLOR = '#ff69b4';
 
 // Debug status indicator colours
 const STATUS_SUCCESS_COLOR = '#22c55e';
@@ -113,6 +121,38 @@ const H3_MAX_CELLS = 5000;
 const H3_MIN_ZOOM = 14;
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
+
+// Average H3 hexagon edge lengths in km for each integer resolution 0–15.
+// Source: https://h3geo.org/docs/core-library/restable
+const H3_EDGE_LENGTH_KM: readonly number[] = [
+	1107.712591, // 0
+	418.676005,  // 1
+	158.244655,  // 2
+	59.810857,   // 3
+	22.606379,   // 4
+	8.544408,    // 5
+	3.229482,    // 6
+	1.220629,    // 7
+	0.461354,    // 8
+	0.174375,    // 9
+	0.065907,    // 10  ← default resolution
+	0.024910,    // 11
+	0.009415,    // 12
+	0.003559,    // 13
+	0.001348,    // 14
+	0.000509,    // 15
+];
+
+// Base billboard size unit in pixels at H3 resolution 10.
+// townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
+// All other sprites are scaled by their own scaleFactor relative to this unit.
+const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
+// Default billboard scale multiplier (adjustable in the debug modal).
+const BILLBOARD_SCALE_DEFAULT = 1;
+// Precision factor for rounding billboard scale values (1 decimal place).
+const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
+// Default MapLibre zoom assumed when no viewport data is available yet.
+const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -737,12 +777,12 @@ type DebugInfoContentProps = {
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
 	initialSpeed: number;
-	initialShowBillboardAnchors: boolean;
+	initialBillboardScale: number;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
-	onShowBillboardAnchorsChange: (val: boolean) => void;
+	onBillboardScaleChange: (scale: number) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -754,28 +794,23 @@ function DebugInfoContent({
 	initialShowGridAlways,
 	initialH3Resolution,
 	initialSpeed,
-	initialShowBillboardAnchors,
+	initialBillboardScale,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
-	onShowBillboardAnchorsChange,
+	onBillboardScaleChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
-	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
+	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
-
-	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
-		setShowBillboardAnchors(val);
-		onShowBillboardAnchorsChange(val);
-	}, [onShowBillboardAnchorsChange]);
 
 	const adjustResolution = useCallback((delta: number) => {
 		setH3Resolution((prev) => {
@@ -793,6 +828,14 @@ function DebugInfoContent({
 			onSpeedChange(Math.min(parsed, DEBUG_MOVE_SPEED_MAX_KMH));
 		}
 	}, [onSpeedChange]);
+
+	const adjustBillboardScale = useCallback((delta: number) => {
+		setBillboardScale((prev) => {
+			const next = Math.max(0.1, Math.round((prev + delta) * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
+			onBillboardScaleChange(next);
+			return next;
+		});
+	}, [onBillboardScaleChange]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
 
@@ -847,17 +890,6 @@ function DebugInfoContent({
 					value={showGridAlways}
 					onValueChange={handleShowGridAlwaysChange}
 					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
-
-			{/* Show Billboard Anchors debug toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Billboard Anchors 🩷</Text>
-				<Switch
-					value={showBillboardAnchors}
-					onValueChange={handleShowBillboardAnchorsChange}
-					trackColor={{ true: DEBUG_BILLBOARD_ANCHOR_COLOR }}
 					thumbColor="#ffffff"
 				/>
 			</View>
@@ -951,6 +983,29 @@ function DebugInfoContent({
 					returnKeyType="done"
 					selectTextOnFocus
 				/>
+			</View>
+
+			{/* Billboard Scale row */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
+				<View style={styles.resolutionPicker}>
+					<TouchableOpacity
+						style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+						onPress={() => adjustBillboardScale(-0.5)}
+						disabled={billboardScale <= 0.1}
+					>
+						<Text style={styles.resolutionButtonText}>−</Text>
+					</TouchableOpacity>
+					<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+						{billboardScale.toFixed(1)}×
+					</Text>
+					<TouchableOpacity
+						style={styles.resolutionButton}
+						onPress={() => adjustBillboardScale(0.5)}
+					>
+						<Text style={styles.resolutionButtonText}>+</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			{/* Min zoom info row */}
@@ -1107,12 +1162,6 @@ function formatTimestamp(ts: number | null): string {
 
 const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
-const SPRITE_THUMB_SIZE = 52;
-const SPRITE_THUMB_GAP = 4;
-/** Reference scale factor for the townhall sprite; SPRITE_BILLBOARD_SIZEM corresponds to this scale. */
-const TOWNHALL_SCALE_FACTOR = 7.0;
-/** Geographic size in metres for a townhall billboard at H3 level 10. */
-const SPRITE_BILLBOARD_SIZEM = 210;
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -1120,23 +1169,23 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 
 	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
-	const [objectSvgUrls, setObjectSvgUrls] = useState<string[]>([]);
 	const [terrainSvgUrls, setTerrainSvgUrls] = useState<Map<string, string>>(new Map());
+	const [objectSvgUrls, setObjectSvgUrls] = useState<Map<string, string>>(new Map());
 
 	const currentTileImage = record?.tileImage ?? null;
 	const currentBillboard = record?.billboard ?? null;
-
-	// Load all individual object SVGs as base64 data URIs for use in the sprite picker WebView.
-	useEffect(() => {
-		loadAllObjectSvgDataUrls().then(urls => {
-			setObjectSvgUrls(urls);
-		});
-	}, []);
 
 	// Load all terrain SVGs as base64 data URIs for use in the tile picker WebView.
 	useEffect(() => {
 		loadAllTerrainSvgDataUrls().then(urls => {
 			setTerrainSvgUrls(new Map(urls));
+		});
+	}, []);
+
+	// Load all object sprite SVGs as base64 data URIs for use in the billboard picker WebView.
+	useEffect(() => {
+		loadAllObjectSvgDataUrls().then(urls => {
+			setObjectSvgUrls(new Map(urls));
 		});
 	}, []);
 
@@ -1186,17 +1235,18 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		].join('');
 	}, [terrainSvgUrls, selectedCategory, currentTileImage]);
 
-	// Build the HTML for the WebView-based sprite picker using individual SVG data URIs.
-	const spritePickerHtml = useMemo(() => {
-		if (objectSvgUrls.length === 0) return null;
-		const thumbSize = SPRITE_THUMB_SIZE;
-		const gap = SPRITE_THUMB_GAP;
+	// Build the HTML for the WebView-based billboard (object sprite) picker.
+	const billboardPickerHtml = useMemo(() => {
+		if (objectSvgUrls.size === 0) return null;
+		const thumbSize = TILE_THUMB_SIZE;
+		const gap = TILE_THUMB_GAP;
 
-		const spriteItems = OBJECT_SPRITES.map((sprite, idx) => {
-			const url = objectSvgUrls[idx] ?? '';
-			const isSelected = currentBillboard === `objects:${idx}`;
+		const objectItems = OBJECT_SPRITES.map((sprite, idx) => {
+			const key = `objects:${idx}`;
+			const url = objectSvgUrls.get(key) ?? '';
+			const isSelected = currentBillboard === key;
 			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
-			return `<div class="sprite" data-idx="${idx}" style="border:${border};"><img src="${url}" /></div>`;
+			return `<div class="tile" data-key="${key}" style="border:${border};" title="${sprite.name}"><img src="${url}" /></div>`;
 		}).join('');
 
 		return [
@@ -1207,15 +1257,15 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
 			`html,body{background:transparent;overflow:hidden;}`,
 			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
-			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
-			`.sprite img{width:100%;height:100%;object-fit:contain;}`,
+			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
+			`.tile img{width:100%;height:100%;object-fit:contain;}`,
 			'</style>',
 			'</head>',
 			'<body>',
-			`<div class="row">${spriteItems}</div>`,
+			`<div class="row">${objectItems}</div>`,
 			'<script>',
-			`document.querySelectorAll('.sprite').forEach(function(el){`,
-			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.idx);});`,
+			`document.querySelectorAll('.tile').forEach(function(el){`,
+			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
 			`});`,
 			'<\/script>',
 			'</body></html>',
@@ -1311,13 +1361,36 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			)}
 
-			{/* ── Billboard section ── */}
-			<SettingsListGroupTitle title="Billboard" />
+			{/* ── Billboard / Object section ── */}
+			<SettingsListGroupTitle title="Object" />
+
+			{billboardPickerHtml != null ? (
+				<WebView
+					source={{ html: billboardPickerHtml }}
+					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
+					originWhitelist={['*']}
+					scrollEnabled={true}
+					onMessage={event => {
+						const key = event.nativeEvent.data;
+						if (!key) return;
+						dispatch(
+							setHexTileCustomization({
+								h3Index,
+								billboard: currentBillboard === key ? null : key,
+							}),
+						);
+					}}
+				/>
+			) : (
+				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
+					Loading…
+				</Text>
+			)}
 
 			{currentBillboard && (
 				<View style={styles.tilePickerCurrentRow}>
 					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						Selected: {currentBillboard}
+						{parseBillboardKey(currentBillboard)?.sprite.name ?? currentBillboard}
 					</Text>
 					<TouchableOpacity
 						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
@@ -1327,55 +1400,6 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			)}
 
-			<SettingsListSelectOptionSingle
-				label="🌲 Tree"
-				isSelected={currentBillboard === 'tree'}
-				selectionColor={PRIMARY_COLOR}
-				groupPosition="top"
-				onPress={() =>
-					dispatch(
-						setHexTileCustomization({
-							h3Index,
-							billboard: currentBillboard === 'tree' ? null : 'tree',
-						}),
-					)
-				}
-			/>
-
-			{/* Object sprite picker */}
-			<View
-				style={[
-					styles.spriteSectionContainer,
-					{ borderColor: theme.screen.text + '20', backgroundColor: theme.screen.text + '08' },
-				]}
-			>
-				<Text style={[styles.spriteSectionLabel, { color: theme.screen.text }]}>
-					🏗️ Objects
-				</Text>
-				{spritePickerHtml != null ? (
-					<WebView
-						source={{ html: spritePickerHtml }}
-						style={{ height: SPRITE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
-						originWhitelist={['*']}
-						scrollEnabled={true}
-						onMessage={event => {
-							const idx = parseInt(event.nativeEvent.data, 10);
-							if (isNaN(idx)) return;
-							const spriteKey = `objects:${idx}`;
-							dispatch(
-								setHexTileCustomization({
-									h3Index,
-									billboard: currentBillboard === spriteKey ? null : spriteKey,
-								}),
-							);
-						}}
-					/>
-				) : (
-					<Text style={[styles.spriteSectionLabel, { color: theme.screen.text + '80' }]}>
-						Loading…
-					</Text>
-				)}
-			</View>
 		</View>
 	);
 }
@@ -1427,9 +1451,6 @@ export default function RecordScreen() {
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
 
-	// Debug: show pink anchor dots on billboard markers.
-	const showBillboardAnchorsRef = useRef(false);
-
 	// Heading mode: when active during recording, the map rotates to face the
 	// direction of travel. Toggled by the compass button.
 	const isHeadingModeRef = useRef(false);
@@ -1467,7 +1488,7 @@ export default function RecordScreen() {
 			.filter(([, r]) => r.tileImage || r.billboard)
 			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}`)
 			.sort()
-			.join(';'),
+			.join('\n'),
 	);
 
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
@@ -1500,7 +1521,7 @@ export default function RecordScreen() {
 		}
 	}, []);
 
-	// Build and send imageOverlays + billboards to the map based on current Redux state.
+	// Build and send imageOverlays to the map based on current Redux state.
 	const loadAndSendCustomizations = useCallback(async () => {
 		if (!mapWebViewReadyRef.current || !mapRef.current) return;
 
@@ -1525,18 +1546,8 @@ export default function RecordScreen() {
 			// Used to rotate the texture so it aligns with the H3 hex orientation.
 			rotation: number;
 		};
-		type BillboardMarker = {
-			id: string;
-			type: string;
-			position: { lng: number; lat: number };
-			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
-			sizem: number;
-			/** Vertical anchor as a fraction of image height (0=top, 1=bottom). The geographic coordinate attaches here. */
-			anchorY: number;
-		};
 
 		const imageOverlays: ImageOverlay[] = [];
-		const billboards: BillboardMarker[] = [];
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			// ── Tile image overlay ──────────────────────────────────────────────
@@ -1586,68 +1597,79 @@ export default function RecordScreen() {
 					}
 				}
 			}
-
-			// ── Billboard marker ────────────────────────────────────────────────
-			if (record.billboard) {
-				const center = cellToLatLng(h3Index); // [lat, lng]
-				const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
-				// Compute hex diameter (centre-to-first-vertex × 2) in metres so the
-				// billboard scales proportionally to the PNG tile overlay on zoom.
-				let sizem = 72; // safe fallback for H3 resolution 10
-				if (boundary.length >= 1) {
-					const EARTH_RADIUS_METERS = 6371000;
-					const lat1 = center[0] * Math.PI / 180;
-					const lat2 = boundary[0][0] * Math.PI / 180;
-					const dlat = lat2 - lat1;
-					const dlng = (boundary[0][1] - center[1]) * Math.PI / 180;
-					const sinHalfDlat = Math.sin(dlat / 2);
-					const sinHalfDlng = Math.sin(dlng / 2);
-					const a = sinHalfDlat * sinHalfDlat
-						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
-					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
-				}
-				// Individual object sprites use a per-sprite geographic size derived from
-				// their scaleFactor (relative to townhall = 7.0 = SPRITE_BILLBOARD_SIZEM).
-				let billboardSizem = sizem;
-				let billboardAnchorY = 1.0;
-				if (record.billboard.startsWith('objects:')) {
-					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
-					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
-						? OBJECT_SPRITES[spriteIdx] : undefined;
-					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
-					billboardSizem = SPRITE_BILLBOARD_SIZEM * (scale / TOWNHALL_SCALE_FACTOR);
-					billboardAnchorY = sprite ? sprite.anchorY : 1.0;
-				}
-				billboards.push({
-					id: `tile-billboard-${h3Index}`,
-					type: record.billboard,
-					position: { lng: center[1], lat: center[0] },
-					sizem: billboardSizem,
-					anchorY: billboardAnchorY,
-				});
-			}
 		}
 
-		mapRef.current.sendToMap({ imageOverlays });
-		// Register each individual object SVG as a billboard image so the map can render them.
-		const billboardImages: Record<string, { url: string; ratio: number }> = {};
-		for (let idx = 0; idx < OBJECT_SPRITES.length; idx++) {
-			const sprite = OBJECT_SPRITES[idx];
-			const url = await loadAssetUrl(`objects:${idx}`, sprite.source as number, 'image/svg+xml');
-			if (url) {
-				billboardImages[`objects:${idx}`] = { url, ratio: 1 };
+		// ── Billboard markers ────────────────────────────────────────────────────
+		type BillboardMarker = {
+			id: string;
+			position: { lat: number; lng: number };
+			icon: string;
+			size: [number, number];
+			iconAnchor: [number, number];
+		};
+		const billboardMarkers: BillboardMarker[] = [];
+
+		// Scale billboard pixel size by the current H3 resolution so that billboards
+		// stay proportional to the hexagon visual size at resolution 10 (default).
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px.
+		// Higher resolutions (smaller hexagons) shrink billboards proportionally.
+		const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+		const hexEdgeRef = H3_EDGE_LENGTH_KM[10]!;
+		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
+		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
+
+		for (const [h3Index, record] of Object.entries(records)) {
+			if (!record.billboard) continue;
+			const parsed = parseBillboardKey(record.billboard);
+			if (!parsed) continue;
+			const { sprite } = parsed;
+			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
+			if (!url) continue;
+			// Compute the centroid of the hexagon polygon by averaging its boundary
+			// vertices, matching how buildCentersGeoJson computes purple dot positions
+			// in hexTileScript. The ring is closed (last vertex = first), so exclude
+			// the last vertex when averaging.
+			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
+			let sumLng = 0, sumLat = 0;
+			const n = boundary.length - 1;
+			if (n <= 0) continue; // skip if boundary is empty or degenerate
+			for (let j = 0; j < n; j++) {
+				const [bLng, bLat] = boundary[j] as [number, number];
+				sumLng += bLng;
+				sumLat += bLat;
 			}
+			const lng = sumLng / n;
+			const lat = sumLat / n;
+			// Compute the pixel size for this sprite, applying its scaleFactor, the
+			// current H3 resolution scale, and the debug scale multiplier.  Minimum 8 px to keep tiny sprites visible.
+			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current));
+			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
+			// The X anchor is always the horizontal center of the square icon.
+			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
+			billboardMarkers.push({
+				id: `billboard-${h3Index}`,
+				position: { lat, lng },
+				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
+				size: [billboardSizePx, billboardSizePx],
+				iconAnchor: [billboardSizePx / 2, anchorYPx],
+			});
 		}
-		if (Object.keys(billboardImages).length > 0) {
-			mapRef.current.sendToMap({ billboardImages });
-		}
-		mapRef.current.sendToMap({ billboards });
+
+		mapRef.current.sendToMap({
+			imageOverlays,
+			mapMarkers: billboardMarkers,
+			// Always use the fixed reference zoom so that billboard sizes remain
+			// consistent regardless of what zoom the user is at when markers are
+			// sent (e.g. after changing h3 resolution and reverting).
+			mapMarkersReferenceZoom: DEFAULT_REFERENCE_ZOOM,
+		});
 	}, [loadAssetUrl]);
 
-	// Re-send customizations whenever tile image / model selections change.
+	// Re-send customizations whenever tile image / model selections change, or when the
+	// H3 resolution changes (billboard pixel sizes depend on the current resolution).
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+	}, [hexTileCustomizationsKey, loadAndSendCustomizations, h3Resolution]);
 
 
 	useLayoutEffect(() => {
@@ -1691,6 +1713,8 @@ export default function RecordScreen() {
 	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
 	// Joystick speed, configurable from the debug modal
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
+	// Billboard scale multiplier, configurable from the debug modal
+	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1812,11 +1836,6 @@ export default function RecordScreen() {
 		recomputeH3();
 	}, [recomputeH3]);
 
-	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
-		showBillboardAnchorsRef.current = val;
-		mapRef.current?.sendToMap({ billboardDebugAnchors: val });
-	}, []);
-
 	const handleH3ResolutionChange = useCallback((val: number) => {
 		h3ResolutionRef.current = val;
 		setH3Resolution(val);
@@ -1830,6 +1849,10 @@ export default function RecordScreen() {
 
 	const handleSpeedChange = useCallback((speed: number) => {
 		debugMoveSpeedKmhRef.current = speed;
+	}, []);
+
+	const handleBillboardScaleChange = useCallback((scale: number) => {
+		billboardScaleRef.current = scale;
 	}, []);
 
 	const showHexTileModal = useCallback((h3Index: string) => {
@@ -1858,7 +1881,7 @@ export default function RecordScreen() {
 			if (pos) {
 				centerMapOnPosition(pos);
 			}
-			// Send any already-selected tile images / billboards to the map.
+			// Send any already-selected tile images to the map.
 			loadAndSendCustomizations();
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
@@ -1895,16 +1918,16 @@ export default function RecordScreen() {
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
-					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
+					initialBillboardScale={billboardScaleRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
-					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
+					onBillboardScaleChange={handleBillboardScaleChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleShowBillboardAnchorsChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -1952,7 +1975,28 @@ export default function RecordScreen() {
 	}, [showModal, closeModal, dispatch, selectedSportType]);
 
 	const handleLocationUpdate = useCallback((point: RoutePoint, fromJoystick = false) => {
-		if (isPausedRef.current) return;
+		if (isPausedRef.current) {
+			// During pause: update the visual player position but do NOT record GPS points
+			// or mark hex tiles. Both real GPS and joystick movement are allowed so the
+			// player marker stays live while the run is paused.
+			//
+			// For real GPS: skip if the user already overrode the position with the
+			// joystick before pausing – this mirrors the active-recording behaviour and
+			// prevents GPS from snapping the marker back while the user navigates
+			// virtually during the pause.
+			const shouldUpdate = fromJoystick || !movedPlayerManuallyRef.current;
+			if (shouldUpdate) {
+				debugPlayerPositionRef.current = { lat: point.lat, lng: point.lng };
+				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+				centerMapOnPosition({ lat: point.lat, lng: point.lng });
+				// Advance the accepted-point ref for real GPS so the speed filter works
+				// correctly on the first GPS point recorded after resume.
+				if (!fromJoystick) {
+					lastAcceptedGpsPointRef.current = point;
+				}
+			}
+			return;
+		}
 
 		// ── GPS speed filter (real GPS only) ─────────────────────────────────────
 		// If the implied speed between the last accepted GPS fix and this one is
@@ -2104,11 +2148,14 @@ export default function RecordScreen() {
 	// player position without recording anything.
 	const handleDebugMove = useCallback((lat: number, lng: number) => {
 		if (isRecordingRef.current) {
-			// Mark that the user has taken manual control of the player position so
-			// that subsequent real GPS updates no longer override it visually.
-			movedPlayerManuallyRef.current = true;
-			// Record the joystick position as a proper route point so the route
-			// is built up the same way real GPS data would build it.
+			// Only mark as manually moved when actively recording (not paused) so that
+			// GPS can take back control of the player position after a pause/resume.
+			if (!isPausedRef.current) {
+				movedPlayerManuallyRef.current = true;
+			}
+			// During recording, forward to handleLocationUpdate as a synthetic route
+			// point. During pause, handleLocationUpdate will perform a visual-only
+			// update (no recording).
 			handleLocationUpdate({
 				lat,
 				lng,
@@ -2402,6 +2449,10 @@ export default function RecordScreen() {
 		timerRef.current = setInterval(() => {
 			setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 		}, 1000);
+		// Allow GPS to resume as the authoritative position source. If the user
+		// navigated via joystick during the pause, GPS will smoothly re-anchor
+		// to the physical device location from the current player position.
+		movedPlayerManuallyRef.current = false;
 		isPausedRef.current = false;
 		setIsPaused(false);
 	}, []);
@@ -2470,6 +2521,7 @@ export default function RecordScreen() {
 						iconColor="#555555"
 						activeColor={PRIMARY_COLOR}
 						isFollowing={isFollowing}
+						zoom={17}
 						onLocationFound={() => {
 							movedPlayerManuallyRef.current = false;
 							setFollowMode(true);
@@ -3073,19 +3125,5 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 		paddingLeft: 8,
-	},
-	// Object sprite picker
-	spriteSectionContainer: {
-		marginHorizontal: 16,
-		marginBottom: 10,
-		borderRadius: 8,
-		borderWidth: StyleSheet.hairlineWidth,
-		paddingTop: 8,
-	},
-	spriteSectionLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-		paddingHorizontal: 12,
-		paddingBottom: 6,
 	},
 });

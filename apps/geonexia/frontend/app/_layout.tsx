@@ -106,10 +106,22 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('statistics/index'),
 		},
 		{
+			key: 'achievements/index',
+			label: 'Achievements',
+			renderIcon: (_, color) => <Ionicons name="trophy-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('achievements/index'),
+		},
+		{
 			key: 'settings/index',
 			label: 'Settings',
 			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('settings/index'),
+		},
+		{
+			key: 'feature-wishes/index',
+			label: 'Feature Wishes',
+			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('feature-wishes/index'),
 		},
 	];
 
@@ -204,11 +216,29 @@ export default function Layout() {
 								}}
 							/>
 							<Drawer.Screen
+								name="achievements/index"
+								options={{
+									title: 'Achievements',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="trophy-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
 								name="settings/index"
 								options={{
 									title: 'Settings',
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="settings-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="feature-wishes/index"
+								options={{
+									title: 'Feature Wishes',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="bulb-outline" size={size} color={color} />
 									),
 								}}
 							/>
