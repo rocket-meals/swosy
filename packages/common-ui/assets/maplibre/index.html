@@ -4685,6 +4685,9 @@
       var BILLBOARD_ICON_SIZE = 128;
       // SVGs are rasterized at high resolution for crisp textures when viewed up close.
       var BILLBOARD_RENDER_SIZE = 512;
+      // Earth circumference at equator / 256 tile-pixels.
+      // Used to convert pixel sizes at a given zoom to meters.
+      var BILLBOARD_METERS_PER_PIXEL_Z0 = 156543.03392;
       var billboardTextureCache = {}; // iconKey → THREE.CanvasTexture
       var billboardUpdateGeneration = 0;
       // Current pitch alignment: 'map' = flat on ground, 'viewport' = face camera
@@ -4758,6 +4761,10 @@
 
           // Create plane meshes for each billboard
           var meshes = [];
+          // Compute meters-per-pixel at zoom 14 once from the first feature's latitude.
+          // For a local cluster of billboards the variation is negligible.
+          var refLat = features[0].geometry.coordinates[1];
+          var metersPerPixelZ14 = BILLBOARD_METERS_PER_PIXEL_Z0 * Math.cos(refLat * Math.PI / 180) / Math.pow(2, 14);
           for (var fi = 0; fi < features.length; fi++) {
             var feature = features[fi];
             var merc = mercPositions[fi];
@@ -4768,9 +4775,6 @@
             if (!texture) continue;
 
             // Convert pixel size at zoom 14 to meters.
-            // At zoom z, 1 pixel = 156543.03392 * cos(lat) / 2^z meters.
-            var lat = feature.geometry.coordinates[1];
-            var metersPerPixelZ14 = 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, 14);
             var sizeMeters = iconSizeAtRefZoom * BILLBOARD_ICON_SIZE * metersPerPixelZ14;
 
             var geometry = new THREE.PlaneGeometry(1, 1);
@@ -4783,10 +4787,9 @@
             });
             var mesh = new THREE.Mesh(geometry, material);
 
-            // Position relative to center, in meters
-            var mpu = merc.meterInMercatorCoordinateUnits();
-            var dx = (merc.x - billboardCenter.x) / mpu;
-            var dy = (merc.y - billboardCenter.y) / mpu;
+            // Position relative to center, in meters (reuse cached billboardMPU)
+            var dx = (merc.x - billboardCenter.x) / billboardMPU;
+            var dy = (merc.y - billboardCenter.y) / billboardMPU;
             mesh.position.set(dx, dy, 0);
             mesh.scale.set(sizeMeters, sizeMeters, sizeMeters);
 
@@ -4899,7 +4902,11 @@
             billboardCamera.projectionMatrix = m.multiply(l);
             billboardRenderer.resetState();
             billboardRenderer.render(billboardScene, billboardCamera);
-            map.triggerRepaint();
+            // In viewport mode, billboard rotations change with camera bearing,
+            // so request continuous repaints. In map mode the scene is static.
+            if (billboardPitchAlignment === 'viewport') {
+              map.triggerRepaint();
+            }
           },
         };
 
