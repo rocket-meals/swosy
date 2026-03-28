@@ -1514,8 +1514,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 									style={[
 										styles.anchorColorSwatch,
 										{ backgroundColor: ac.hex },
+										ac.id === 'white' && !isSelected && { borderColor: '#d1d5db', borderWidth: 1 },
 										isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2.5 },
-										ac.id === 'white' && { borderColor: '#d1d5db', borderWidth: 1 },
 									]}
 									onPress={() => dispatch(setHexTileCustomization({ h3Index, billboardAnchorColor: ac.id }))}
 								>
@@ -1801,7 +1801,7 @@ export default function RecordScreen() {
 				lat = vLat;
 			} else if (anchorColor !== 'purple') {
 				// Midpoint between center and a corner vertex.
-				// Midpoint colours cycle: red=0, orange=1, yellow=2, blue=3, white=4, black=5
+				// Midpoint colors cycle: red=0, orange=1, yellow=2, blue=3, white=4, black=5
 				const midpointColors = ['red', 'orange', 'yellow', 'blue', 'white', 'black'];
 				const midIdx = midpointColors.indexOf(anchorColor);
 				if (midIdx >= 0 && midIdx < n) {

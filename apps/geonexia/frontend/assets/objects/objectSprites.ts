@@ -11,7 +11,7 @@ export interface ObjectSprite {
 	/**
 	 * Vertical anchor as a fraction of the image height (0 = top, 1 = bottom).
 	 * The geographic map coordinate attaches at this Y position of the rendered sprite.
-	 * 1.0 = bottom of image (geographic centre of the H3 cell aligns with the bottom edge).
+	 * 1.0 = bottom of image (geographic center of the H3 cell aligns with the bottom edge).
 	 */
 	anchorY: number;
 }

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
 import { setHexTileCustomization } from '../../store/hexTileSlice';
 import type { RootState, AppDispatch } from '../../store/store';
+import type { HexTileRecord } from '../../helpers/HexTileStorage';
 
 const PRIMARY_COLOR = '#2563eb';
 const ANCHOR_STEP = 0.05;
@@ -38,7 +39,7 @@ export default function BillboardConfigScreen() {
 	// Collect all hex tiles that have a billboard assigned
 	const entries: BillboardEntry[] = useMemo(() => {
 		const result: BillboardEntry[] = [];
-		for (const [h3Index, record] of Object.entries(records)) {
+		for (const [h3Index, record] of Object.entries(records) as [string, HexTileRecord][]) {
 			if (!record.billboard) continue;
 			const parsed = parseBillboardKey(record.billboard);
 			if (!parsed) continue;
@@ -87,7 +88,9 @@ export default function BillboardConfigScreen() {
 
 	// Build OBJECT_SPRITES override snippet with per-sprite anchorY values
 	const buildSpritesOverrideJson = useCallback(() => {
-		// Collect the latest anchorY per sprite index (last wins if multiple tiles have same sprite)
+		// Collect the latest anchorY per sprite index.
+		// If multiple tiles use the same sprite with different overrides, the last
+		// processed entry determines the exported value for that sprite.
 		const spriteAnchors: Record<number, number> = {};
 		for (const entry of entries) {
 			const parsed = parseBillboardKey(entry.billboardKey);
