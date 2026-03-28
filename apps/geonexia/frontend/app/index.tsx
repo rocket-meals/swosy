@@ -27,7 +27,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
@@ -147,6 +147,10 @@ const H3_EDGE_LENGTH_KM: readonly number[] = [
 // townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
 // All other sprites are scaled by their own scaleFactor relative to this unit.
 const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
+// Reference H3 resolution for billboard sizing. Billboard sizes scale proportionally
+// with the H3 edge length so they are larger on bigger hexagons and smaller on
+// smaller ones.
+const BILLBOARD_REFERENCE_RESOLUTION = 10;
 // Default billboard scale multiplier (adjustable in the debug modal).
 const BILLBOARD_SCALE_DEFAULT = 1;
 // Precision factor for rounding billboard scale values (1 decimal place).
@@ -1648,8 +1652,9 @@ export default function RecordScreen() {
 		// Billboards are rendered as a MapLibre symbol layer whose icon-size is set to
 		// a fixed value per feature. The zoom-based exponential expression in the
 		// MapLibre HTML ensures the icon scales proportionally with the map so that
-		// each billboard occupies a constant geographic area (fixed world-space size),
-		// independent of the current H3 resolution.
+		// each billboard occupies a constant geographic area. Billboard size also
+		// scales with the H3 edge length: larger on bigger hexagons, smaller on
+		// smaller ones.
 		//
 		// Each unique billboard SVG is rasterized at 4× resolution (512×512 actual pixels
 		// for a 128×128 logical icon) via canvas + pixelRatio, keeping SVGs crisp when
@@ -1659,10 +1664,12 @@ export default function RecordScreen() {
 		// NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
 		const BILLBOARD_STANDARD_ICON_SIZE = 128;
 
-		// Billboard pixel size is determined solely by the sprite's scaleFactor and
-		// the user-adjustable billboard scale multiplier. The H3 resolution does NOT
-		// affect billboard sizing so that billboards maintain a fixed world-space size.
-		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14.
+		// Billboard pixel size is determined by the sprite's scaleFactor, the
+		// user-adjustable billboard scale multiplier, AND the H3 edge length ratio
+		// relative to the reference resolution (10). This makes billboards larger on
+		// bigger hexagons and smaller on smaller ones.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14
+		// at the reference resolution.
 
 		const billboardImages: Record<string, { url: string }> = {};
 		type BillboardFeature = {
@@ -1696,10 +1703,15 @@ export default function RecordScreen() {
 			const lng = sumLng / n;
 			const lat = sumLat / n;
 
-			// Desired pixel size at reference zoom 14, scaled by user multiplier only.
+			// Desired pixel size at reference zoom 14, scaled by user multiplier and
+			// proportional to the H3 edge length so billboards are larger on bigger
+			// hexagons and smaller on smaller ones.
+			const cellRes = getResolution(h3Index);
+			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
+			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
 			// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
 			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current,
+				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * edgeLengthRatio,
 			));
 			// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
 			// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
@@ -1727,7 +1739,7 @@ export default function RecordScreen() {
 	}, [loadAssetUrl]);
 
 	// Re-send customizations whenever tile image / model selections change.
-	// Billboard sizes no longer depend on H3 resolution (fixed world-space size).
+	// Billboard sizes scale proportionally with the H3 edge length.
 	useEffect(() => {
 		loadAndSendCustomizations();
 	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
