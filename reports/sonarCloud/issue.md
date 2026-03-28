@@ -69,20 +69,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L104
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:1535
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1535
+  apps/geonexia/frontend/app/index.tsx:1539
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1539
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:837
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L837
+  apps/geonexia/frontend/app/index.tsx:841
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L841
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:838
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L838
+  apps/geonexia/frontend/app/index.tsx:842
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L842
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:736
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L736
+  apps/geonexia/frontend/app/index.tsx:740
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L740
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/statistics/index.tsx:44
