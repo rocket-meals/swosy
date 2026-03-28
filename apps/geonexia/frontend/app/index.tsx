@@ -34,6 +34,7 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '..
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
+import SettingsListBillboard from '../components/SettingsListBillboard';
 
 /** Module-level cache mapping terrain asset key → base64 data URI. */
 const cachedTerrainSvgDataUrls = new Map<string, string>();
@@ -1261,6 +1262,136 @@ function formatTimestamp(ts: number | null): string {
 const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
 
+// ── Hex Anchor Picker ──────────────────────────────────────────────────────────
+// Pointy-top hexagon with 9 interactive anchor points:
+//   center (purple), vertex[0] (green), and 6 midpoints (red/orange/yellow/blue/white/black)
+//   between the center and each of the 6 vertices.
+
+const HEX_PICKER_SIZE = 180;
+const HEX_PICKER_R = HEX_PICKER_SIZE * 0.38;
+const HEX_PICKER_CX = HEX_PICKER_SIZE / 2;
+const HEX_PICKER_CY = HEX_PICKER_SIZE / 2;
+const HEX_DOT_SIZE = 20;
+const HEX_DOT_SELECTED_SIZE = 26;
+
+// √3/4
+const SQRT3_4 = Math.sqrt(3) / 4;
+
+// Positions for each BILLBOARD_ANCHOR_COLOR entry (pointy-top hex, vertex[0] at top).
+const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
+	purple: { x: HEX_PICKER_CX, y: HEX_PICKER_CY }, // center
+	green:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R }, // vertex[0] top
+	red:    { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint 0 (→ vertex[0])
+	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint 1
+	yellow: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint 2
+	blue:   { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint 3 (→ vertex[3])
+	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint 4
+	black:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint 5
+};
+
+// Hexagon outline polygon points (pointy-top, 6 vertices).
+const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
+	const angle = (Math.PI / 2) - (i * Math.PI) / 3;
+	return {
+		x: HEX_PICKER_CX + HEX_PICKER_R * Math.cos(angle),
+		y: HEX_PICKER_CY - HEX_PICKER_R * Math.sin(angle),
+	};
+});
+
+function HexAnchorPicker({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
+	const { theme } = useTheme();
+	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
+
+	return (
+		<View style={hexPickerStyles.wrapper}>
+			<View style={hexPickerStyles.container}>
+				{/* Hexagon outline using thin border lines between vertices */}
+				{HEX_POLYGON_POINTS.map((pt, i) => {
+					const next = HEX_POLYGON_POINTS[(i + 1) % 6];
+					const dx = next.x - pt.x;
+					const dy = next.y - pt.y;
+					const len = Math.sqrt(dx * dx + dy * dy);
+					const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+					return (
+						<View
+							key={i}
+							pointerEvents="none"
+							style={[
+								hexPickerStyles.hexEdge,
+								{
+									width: len,
+									left: pt.x,
+									top: pt.y - 0.75,
+									transform: [{ rotate: `${angle}deg` }],
+									backgroundColor: theme.screen.text + '30',
+								},
+							]}
+						/>
+					);
+				})}
+				{/* Anchor dots */}
+				{BILLBOARD_ANCHOR_COLORS.map((ac) => {
+					const pos = HEX_ANCHOR_POSITIONS[ac.id];
+					if (!pos) return null;
+					const isSelected = selected === ac.id;
+					const dotSize = isSelected ? HEX_DOT_SELECTED_SIZE : HEX_DOT_SIZE;
+					return (
+						<TouchableOpacity
+							key={ac.id}
+							onPress={() => onSelect(ac.id)}
+							style={[
+								hexPickerStyles.dot,
+								{
+									width: dotSize,
+									height: dotSize,
+									borderRadius: dotSize / 2,
+									left: pos.x - dotSize / 2,
+									top: pos.y - dotSize / 2,
+									backgroundColor: ac.hex,
+									borderColor: isSelected ? PRIMARY_COLOR : (ac.id === 'white' ? '#d1d5db' : 'transparent'),
+									borderWidth: isSelected ? 3 : (ac.id === 'white' ? 1 : 0),
+									shadowColor: isSelected ? PRIMARY_COLOR : 'transparent',
+									shadowOpacity: isSelected ? 0.6 : 0,
+									shadowRadius: 4,
+									elevation: isSelected ? 4 : 0,
+								},
+							]}
+						/>
+					);
+				})}
+			</View>
+			<Text style={[hexPickerStyles.label, { color: theme.screen.icon }]}>{selectedLabel}</Text>
+		</View>
+	);
+}
+
+const hexPickerStyles = StyleSheet.create({
+	wrapper: {
+		alignItems: 'center',
+		paddingVertical: 8,
+	},
+	container: {
+		width: HEX_PICKER_SIZE,
+		height: HEX_PICKER_SIZE,
+		position: 'relative',
+	},
+	hexEdge: {
+		position: 'absolute',
+		height: 1.5,
+		transformOrigin: '0 50%',
+	},
+	dot: {
+		position: 'absolute',
+	},
+	label: {
+		fontSize: 12,
+		fontWeight: '500',
+		marginTop: 6,
+	},
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
@@ -1485,52 +1616,25 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</Text>
 			)}
 
-			{currentBillboard && (
-				<View style={styles.tilePickerCurrentRow}>
-					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						{parseBillboardKey(currentBillboard)?.sprite.name ?? currentBillboard}
-					</Text>
-					<TouchableOpacity
-						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
-					>
-						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
-					</TouchableOpacity>
-				</View>
-			)}
+			{currentBillboard && (() => {
+				const parsed = parseBillboardKey(currentBillboard);
+				return (
+					<SettingsListBillboard
+						spriteIndex={parsed?.idx ?? null}
+						title={parsed?.sprite.name ?? currentBillboard}
+						groupPosition="single"
+					/>
+				);
+			})()}
 
 			{/* ── Billboard Anchor Color section ── */}
 			{currentBillboard && (
 				<>
 					<SettingsListGroupTitle title="Billboard Anchor Position" />
-					<Text style={[styles.anchorColorHint, { color: theme.screen.text + '80' }]}>
-						Choose where the billboard is placed within the hex cell. Colors match the debug point colors on the map.
-					</Text>
-					<View style={styles.anchorColorRow}>
-						{BILLBOARD_ANCHOR_COLORS.map((ac) => {
-							const isSelected = (record?.billboardAnchorColor ?? 'purple') === ac.id;
-							return (
-								<TouchableOpacity
-									key={ac.id}
-									style={[
-										styles.anchorColorSwatch,
-										{ backgroundColor: ac.hex },
-										ac.id === 'white' && !isSelected && { borderColor: '#d1d5db', borderWidth: 1 },
-										isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2.5 },
-									]}
-									onPress={() => dispatch(setHexTileCustomization({ h3Index, billboardAnchorColor: ac.id }))}
-								>
-									{isSelected && (
-										<View style={[styles.anchorColorCheck, ac.id === 'white' || ac.id === 'yellow' ? { backgroundColor: '#000' } : { backgroundColor: '#fff' }]}>
-											<Text style={{ color: ac.id === 'white' || ac.id === 'yellow' ? '#fff' : '#000', fontSize: 8, fontWeight: '700' }}>✓</Text>
-										</View>
-									)}
-								</TouchableOpacity>
-							);
-						})}
-					</View>
-					<Text style={[styles.anchorColorLabel, { color: theme.screen.icon }]}>
-						{BILLBOARD_ANCHOR_COLORS.find(c => c.id === (record?.billboardAnchorColor ?? 'purple'))?.label ?? 'Center'}
-					</Text>
+					<HexAnchorPicker
+						selected={record?.billboardAnchorColor ?? 'purple'}
+						onSelect={(colorId) => dispatch(setHexTileCustomization({ h3Index, billboardAnchorColor: colorId }))}
+					/>
 				</>
 			)}
 
@@ -3348,38 +3452,5 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 		paddingLeft: 8,
-	},
-	anchorColorHint: {
-		fontSize: 12,
-		paddingHorizontal: 16,
-		paddingBottom: 8,
-	},
-	anchorColorRow: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 8,
-		paddingHorizontal: 16,
-		paddingVertical: 6,
-	},
-	anchorColorSwatch: {
-		width: 34,
-		height: 34,
-		borderRadius: 17,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	anchorColorCheck: {
-		width: 14,
-		height: 14,
-		borderRadius: 7,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	anchorColorLabel: {
-		fontSize: 12,
-		fontWeight: '500',
-		paddingHorizontal: 16,
-		paddingTop: 4,
-		paddingBottom: 8,
 	},
 });
