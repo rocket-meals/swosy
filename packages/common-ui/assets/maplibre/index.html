@@ -4894,8 +4894,9 @@
                 var child = billboardScene.children[vi];
                 // pitchRad tilts the billboard up from the ground by the camera
                 // pitch angle; -bearingRad rotates it around Z to face the
-                // camera direction. The Y-flip in the local→mercator scale is
-                // compensated by the sign of each component.
+                // camera direction. The negative sign on bearingRad compensates
+                // for the Y-flip (-billboardMPU) in the local→mercator scale
+                // matrix, which mirrors the Z-rotation direction.
                 child.rotation.set(pitchRad, 0, -bearingRad, 'XYZ');
               }
             } else {

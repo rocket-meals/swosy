@@ -428,7 +428,7 @@ export const HEX_TILE_SCRIPT = `
       if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
     }
     if (data.hexDebugPoints !== undefined) {
-      hexDebugPointsVisible = !!data.hexDebugPoints;
+      hexDebugPointsVisible = data.hexDebugPoints;
       var visibility = hexDebugPointsVisible ? 'visible' : 'none';
       var debugLayers = [HEX_VERTICES_LAYER, HEX_CENTERS_LAYER, HEX_MIDPOINTS_LAYER];
       for (var di = 0; di < debugLayers.length; di++) {
