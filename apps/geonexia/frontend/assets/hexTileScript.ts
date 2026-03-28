@@ -23,7 +23,7 @@ export const HEX_TILE_SCRIPT = `
   // H3 resolution and cell computation are controlled on the React Native side
   // via the H3Helper; this script only renders the GeoJSON it receives.
   var hexTileActive = true;
-  var hexDebugPointsVisible = true;
+  var hexDebugPointsVisible = false;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   // Hex border: subtle gray, low opacity
   var hexTileStrokeColor = '#9ca3af';
@@ -301,6 +301,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_VERTICES_LAYER,
       type: 'circle',
       source: HEX_VERTICES_SOURCE,
+      layout: { visibility: hexDebugPointsVisible ? 'visible' : 'none' },
       paint: {
         'circle-radius': 4,
         'circle-color': '#22c55e',
@@ -315,6 +316,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_CENTERS_LAYER,
       type: 'circle',
       source: HEX_CENTERS_SOURCE,
+      layout: { visibility: hexDebugPointsVisible ? 'visible' : 'none' },
       paint: {
         'circle-radius': 5,
         'circle-color': '#a855f7',
@@ -330,6 +332,7 @@ export const HEX_TILE_SCRIPT = `
       id: HEX_MIDPOINTS_LAYER,
       type: 'circle',
       source: HEX_MIDPOINTS_SOURCE,
+      layout: { visibility: hexDebugPointsVisible ? 'visible' : 'none' },
       paint: {
         'circle-radius': 4,
         'circle-color': ['get', 'midpointColor'],
