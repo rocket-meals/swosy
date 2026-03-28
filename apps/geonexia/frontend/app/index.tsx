@@ -152,7 +152,7 @@ const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
 // smaller ones.
 const BILLBOARD_REFERENCE_RESOLUTION = 10;
 // Default billboard scale multiplier (adjustable in the debug modal).
-const BILLBOARD_SCALE_DEFAULT = 1;
+const BILLBOARD_SCALE_DEFAULT = 0.4;
 // Precision factor for rounding billboard scale values (1 decimal place).
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
 // Minimum rendered pixel size for billboard icons so that sprites at very small
@@ -161,6 +161,19 @@ const BILLBOARD_MIN_SIZE_PX = 8;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
+
+// Billboard anchor color options. Each maps to a position within the hex cell.
+// Colors match the debug point layer colors in hexTileScript.ts.
+const BILLBOARD_ANCHOR_COLORS = [
+	{ id: 'purple', hex: '#a855f7', label: 'Center (Purple)' },
+	{ id: 'green', hex: '#22c55e', label: 'Vertex (Green)' },
+	{ id: 'red', hex: '#ef4444', label: 'Midpoint 1 (Red)' },
+	{ id: 'orange', hex: '#f97316', label: 'Midpoint 2 (Orange)' },
+	{ id: 'yellow', hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
+	{ id: 'blue', hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
+	{ id: 'white', hex: '#ffffff', label: 'Midpoint 5 (White)' },
+	{ id: 'black', hex: '#000000', label: 'Midpoint 6 (Black)' },
+] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
 
@@ -784,6 +797,7 @@ type DebugInfoContentProps = {
 	initialSpeed: number;
 	initialBillboardScale: number;
 	initialBillboardFaceCamera: boolean;
+	initialShowBillboardAnchors: boolean;
 	initialShowDebugPoints: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
@@ -791,6 +805,7 @@ type DebugInfoContentProps = {
 	onSpeedChange: (speed: number) => void;
 	onBillboardScaleChange: (scale: number) => void;
 	onBillboardFaceCameraChange: (val: boolean) => void;
+	onShowBillboardAnchorsChange: (val: boolean) => void;
 	onShowDebugPointsChange: (val: boolean) => void;
 };
 
@@ -805,6 +820,7 @@ function DebugInfoContent({
 	initialSpeed,
 	initialBillboardScale,
 	initialBillboardFaceCamera,
+	initialShowBillboardAnchors,
 	initialShowDebugPoints,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
@@ -812,6 +828,7 @@ function DebugInfoContent({
 	onSpeedChange,
 	onBillboardScaleChange,
 	onBillboardFaceCameraChange,
+	onShowBillboardAnchorsChange,
 	onShowDebugPointsChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
@@ -820,6 +837,7 @@ function DebugInfoContent({
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
 	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
+	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
@@ -856,6 +874,11 @@ function DebugInfoContent({
 		setBillboardFaceCamera(val);
 		onBillboardFaceCameraChange(val);
 	}, [onBillboardFaceCameraChange]);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		setShowBillboardAnchors(val);
+		onShowBillboardAnchorsChange(val);
+	}, [onShowBillboardAnchorsChange]);
 
 	const handleShowDebugPointsChange = useCallback((val: boolean) => {
 		setShowDebugPoints(val);
@@ -1013,27 +1036,42 @@ function DebugInfoContent({
 			{/* Billboard Scale row */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
-				<View style={styles.resolutionPicker}>
-					<TouchableOpacity
-						style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
-						onPress={() => adjustBillboardScale(-0.5)}
-						disabled={billboardScale <= 0.1}
-					>
-						<Text style={styles.resolutionButtonText}>−</Text>
-					</TouchableOpacity>
-					<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
-						{billboardScale.toFixed(1)}×
-					</Text>
-					<TouchableOpacity
-						style={styles.resolutionButton}
-						onPress={() => adjustBillboardScale(0.5)}
-					>
-						<Text style={styles.resolutionButtonText}>+</Text>
-					</TouchableOpacity>
+				<View style={styles.resolutionPickerMultiRow}>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+							onPress={() => adjustBillboardScale(-0.5)}
+							disabled={billboardScale <= 0.1}
+						>
+							<Text style={styles.resolutionButtonText}>−</Text>
+						</TouchableOpacity>
+						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+							{billboardScale.toFixed(1)}×
+						</Text>
+						<TouchableOpacity
+							style={styles.resolutionButton}
+							onPress={() => adjustBillboardScale(0.5)}
+						>
+							<Text style={styles.resolutionButtonText}>+</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+							onPress={() => adjustBillboardScale(-0.1)}
+							disabled={billboardScale <= 0.1}
+						>
+							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.resolutionFineButton}
+							onPress={() => adjustBillboardScale(0.1)}
+						>
+							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</View>
-
-			{/* Min zoom info row */}
 
 			{/* Billboard Face Camera toggle */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
@@ -1041,6 +1079,17 @@ function DebugInfoContent({
 				<Switch
 					value={billboardFaceCamera}
 					onValueChange={handleBillboardFaceCameraChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Billboard Anchor Points toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Anchor Points</Text>
+				<Switch
+					value={showBillboardAnchors}
+					onValueChange={handleShowBillboardAnchorsChange}
 					trackColor={{ true: PRIMARY_COLOR }}
 					thumbColor="#ffffff"
 				/>
@@ -1449,6 +1498,42 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			)}
 
+			{/* ── Billboard Anchor Color section ── */}
+			{currentBillboard && (
+				<>
+					<SettingsListGroupTitle title="Billboard Anchor Position" />
+					<Text style={[styles.anchorColorHint, { color: theme.screen.text + '80' }]}>
+						Choose where the billboard is placed within the hex cell. Colors match the debug point colors on the map.
+					</Text>
+					<View style={styles.anchorColorRow}>
+						{BILLBOARD_ANCHOR_COLORS.map((ac) => {
+							const isSelected = (record?.billboardAnchorColor ?? 'purple') === ac.id;
+							return (
+								<TouchableOpacity
+									key={ac.id}
+									style={[
+										styles.anchorColorSwatch,
+										{ backgroundColor: ac.hex },
+										ac.id === 'white' && !isSelected && { borderColor: '#d1d5db', borderWidth: 1 },
+										isSelected && { borderColor: PRIMARY_COLOR, borderWidth: 2.5 },
+									]}
+									onPress={() => dispatch(setHexTileCustomization({ h3Index, billboardAnchorColor: ac.id }))}
+								>
+									{isSelected && (
+										<View style={[styles.anchorColorCheck, ac.id === 'white' || ac.id === 'yellow' ? { backgroundColor: '#000' } : { backgroundColor: '#fff' }]}>
+											<Text style={{ color: ac.id === 'white' || ac.id === 'yellow' ? '#fff' : '#000', fontSize: 8, fontWeight: '700' }}>✓</Text>
+										</View>
+									)}
+								</TouchableOpacity>
+							);
+						})}
+					</View>
+					<Text style={[styles.anchorColorLabel, { color: theme.screen.icon }]}>
+						{BILLBOARD_ANCHOR_COLORS.find(c => c.id === (record?.billboardAnchorColor ?? 'purple'))?.label ?? 'Center'}
+					</Text>
+				</>
+			)}
+
 		</View>
 	);
 }
@@ -1675,7 +1760,7 @@ export default function RecordScreen() {
 		type BillboardFeature = {
 			type: 'Feature';
 			geometry: { type: 'Point'; coordinates: [number, number] };
-			properties: { iconKey: string; iconSizeAtRefZoom: number };
+			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorY: number };
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
@@ -1700,8 +1785,31 @@ export default function RecordScreen() {
 				sumLng += bLng;
 				sumLat += bLat;
 			}
-			const lng = sumLng / n;
-			const lat = sumLat / n;
+			const centerLng = sumLng / n;
+			const centerLat = sumLat / n;
+
+			// Determine billboard placement position based on anchor color.
+			// Matches debug point positions: purple=center, green=vertex[0],
+			// red/orange/yellow/blue/white/black = midpoints 0–5.
+			let lng = centerLng;
+			let lat = centerLat;
+			const anchorColor = record.billboardAnchorColor ?? 'purple';
+			if (anchorColor === 'green' && n > 0) {
+				// Use the first vertex (corner) of the hex polygon
+				const [vLng, vLat] = boundary[0] as [number, number];
+				lng = vLng;
+				lat = vLat;
+			} else if (anchorColor !== 'purple') {
+				// Midpoint between center and a corner vertex.
+				// Midpoint colors cycle: red=0, orange=1, yellow=2, blue=3, white=4, black=5
+				const midpointColors = ['red', 'orange', 'yellow', 'blue', 'white', 'black'];
+				const midIdx = midpointColors.indexOf(anchorColor);
+				if (midIdx >= 0 && midIdx < n) {
+					const [vLng, vLat] = boundary[midIdx] as [number, number];
+					lng = (centerLng + vLng) / 2;
+					lat = (centerLat + vLat) / 2;
+				}
+			}
 
 			// Desired pixel size at reference zoom 14, scaled by user multiplier and
 			// proportional to the H3 edge length so billboards are larger on bigger
@@ -1723,7 +1831,7 @@ export default function RecordScreen() {
 			billboardFeatures.push({
 				type: 'Feature',
 				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconKey, iconSizeAtRefZoom },
+				properties: { iconKey, iconSizeAtRefZoom, anchorY: sprite.anchorY },
 			});
 		}
 
@@ -1790,6 +1898,8 @@ export default function RecordScreen() {
 	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
 	// Whether billboards face the camera (true) or lie flat on the map (false)
 	const billboardFaceCameraRef = useRef(true);
+	// Whether to show anchor point indicators at the base of each billboard
+	const showBillboardAnchorsRef = useRef(false);
 	// Whether debug point layers (vertices, centers, midpoints) are visible
 	const showDebugPointsRef = useRef(false);
 	// Mirrors isRecording state for use inside callbacks without stale closures
@@ -1939,6 +2049,11 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ billboardPitchAlignment: val ? 'viewport' : 'map' });
 	}, []);
 
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		showBillboardAnchorsRef.current = val;
+		mapRef.current?.sendToMap({ billboardShowAnchors: val });
+	}, []);
+
 	const handleShowDebugPointsChange = useCallback((val: boolean) => {
 		showDebugPointsRef.current = val;
 		mapRef.current?.sendToMap({ hexDebugPoints: val });
@@ -2009,6 +2124,7 @@ export default function RecordScreen() {
 					initialSpeed={debugMoveSpeedKmhRef.current}
 					initialBillboardScale={billboardScaleRef.current}
 					initialBillboardFaceCamera={billboardFaceCameraRef.current}
+					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
 					initialShowDebugPoints={showDebugPointsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
@@ -2016,11 +2132,12 @@ export default function RecordScreen() {
 					onSpeedChange={handleSpeedChange}
 					onBillboardScaleChange={handleBillboardScaleChange}
 					onBillboardFaceCameraChange={handleBillboardFaceCameraChange}
+					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
 					onShowDebugPointsChange={handleShowDebugPointsChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowDebugPointsChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -3218,5 +3335,38 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		fontWeight: '600',
 		paddingLeft: 8,
+	},
+	anchorColorHint: {
+		fontSize: 12,
+		paddingHorizontal: 16,
+		paddingBottom: 8,
+	},
+	anchorColorRow: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+		paddingHorizontal: 16,
+		paddingVertical: 6,
+	},
+	anchorColorSwatch: {
+		width: 34,
+		height: 34,
+		borderRadius: 17,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	anchorColorCheck: {
+		width: 14,
+		height: 14,
+		borderRadius: 7,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	anchorColorLabel: {
+		fontSize: 12,
+		fontWeight: '500',
+		paddingHorizontal: 16,
+		paddingTop: 4,
+		paddingBottom: 8,
 	},
 });
