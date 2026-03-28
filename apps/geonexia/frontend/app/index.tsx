@@ -1625,6 +1625,12 @@ export default function RecordScreen() {
 			.join('\n'),
 	);
 
+	// Stable key for billboard anchor config changes so the map is updated when
+	// anchor overrides are adjusted in the Billboard Config screen.
+	const billboardConfigKey = useSelector((state: RootState) =>
+		JSON.stringify(state.billboardConfig.spriteAnchors),
+	);
+
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
 	// asset URL (web).  Using data URIs avoids canvas-taint security errors when drawing PNG files
 	// onto an HTML Canvas.
@@ -1660,6 +1666,7 @@ export default function RecordScreen() {
 		if (!mapWebViewReadyRef.current || !mapRef.current) return;
 
 		const records = store.getState().hexTiles.records;
+		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
 
 		// Flat lookup: terrain asset key → module ID
 		const terrainLookup = new Map<string, number>();
@@ -1760,7 +1767,7 @@ export default function RecordScreen() {
 		type BillboardFeature = {
 			type: 'Feature';
 			geometry: { type: 'Point'; coordinates: [number, number] };
-			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorY: number };
+			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number };
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
@@ -1768,11 +1775,16 @@ export default function RecordScreen() {
 			if (!record.billboard) continue;
 			const parsed = parseBillboardKey(record.billboard);
 			if (!parsed) continue;
-			const { sprite } = parsed;
+			const { sprite, idx } = parsed;
 			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
 			if (!url) continue;
 
 			const iconKey = `billboard-${record.billboard}`;
+
+			// Look up global anchor overrides for this sprite type.
+			const anchorOverride = spriteAnchors[idx];
+			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
 
 			// Compute the centroid of the hexagon polygon by averaging its boundary
 			// vertices. The ring is closed (last vertex = first), so exclude it.
@@ -1831,7 +1843,7 @@ export default function RecordScreen() {
 			billboardFeatures.push({
 				type: 'Feature',
 				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconKey, iconSizeAtRefZoom, anchorY: sprite.anchorY },
+				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
 			});
 		}
 
@@ -1846,11 +1858,12 @@ export default function RecordScreen() {
 		});
 	}, [loadAssetUrl]);
 
-	// Re-send customizations whenever tile image / model selections change.
+	// Re-send customizations whenever tile image / model selections or
+	// billboard anchor config change.
 	// Billboard sizes scale proportionally with the H3 edge length.
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+	}, [hexTileCustomizationsKey, billboardConfigKey, loadAndSendCustomizations]);
 
 
 	useLayoutEffect(() => {

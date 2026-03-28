@@ -1,12 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
-import * as Clipboard from 'expo-clipboard';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
-import { setHexTileCustomization } from '../../store/hexTileSlice';
+import { OBJECT_SPRITES, ObjectSprite } from '../../assets/objects/objectSprites';
+import { setSpriteAnchor, resetSpriteAnchor } from '../../store/billboardConfigSlice';
 import type { RootState, AppDispatch } from '../../store/store';
 import type { HexTileRecord } from '../../helpers/HexTileStorage';
 
@@ -14,192 +15,236 @@ const PRIMARY_COLOR = '#2563eb';
 const ANCHOR_STEP = 0.05;
 const ANCHOR_PRECISION = 100; // 2 decimal places
 
-/** Parse a billboard key of the form "objects:N" into the corresponding sprite. */
-function parseBillboardKey(billboard: string) {
-	const colonIdx = billboard.indexOf(':');
-	if (colonIdx < 0 || billboard.slice(0, colonIdx) !== 'objects') return null;
-	const idx = parseInt(billboard.slice(colonIdx + 1), 10);
-	const sprite = OBJECT_SPRITES[idx];
-	if (!sprite) return null;
-	return { sprite, idx };
+const PREVIEW_SIZE = 140;
+const ANCHOR_DOT_SIZE = 12;
+
+/** Clamp a value between 0 and 1, rounded to 2 decimal places. */
+function clampAnchor(value: number): number {
+	return Math.max(0, Math.min(1, Math.round(value * ANCHOR_PRECISION) / ANCHOR_PRECISION));
 }
 
-type BillboardEntry = {
-	h3Index: string;
-	billboardKey: string;
-	spriteName: string;
-	anchorY: number;
+/** Unique sprite types that are currently placed on the map. */
+type PlacedSpriteType = {
+	spriteIndex: number;
+	sprite: ObjectSprite;
+	/** Number of hex tiles using this billboard type. */
+	count: number;
 };
 
 export default function BillboardConfigScreen() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const records = useSelector((state: RootState) => state.hexTiles.records);
+	const spriteAnchors = useSelector((state: RootState) => state.billboardConfig.spriteAnchors);
 
-	// Collect all hex tiles that have a billboard assigned
-	const entries: BillboardEntry[] = useMemo(() => {
-		const result: BillboardEntry[] = [];
-		for (const [h3Index, record] of Object.entries(records) as [string, HexTileRecord][]) {
+	// Collect unique sprite types that are placed on the map.
+	const placedTypes: PlacedSpriteType[] = useMemo(() => {
+		const countMap = new Map<number, number>();
+		for (const record of Object.values(records) as HexTileRecord[]) {
 			if (!record.billboard) continue;
-			const parsed = parseBillboardKey(record.billboard);
-			if (!parsed) continue;
-			result.push({
-				h3Index,
-				billboardKey: record.billboard,
-				spriteName: parsed.sprite.name,
-				anchorY: parsed.sprite.anchorY,
-			});
+			const colonIdx = record.billboard.indexOf(':');
+			if (colonIdx < 0 || record.billboard.slice(0, colonIdx) !== 'objects') continue;
+			const idx = parseInt(record.billboard.slice(colonIdx + 1), 10);
+			if (!OBJECT_SPRITES[idx]) continue;
+			countMap.set(idx, (countMap.get(idx) ?? 0) + 1);
 		}
-		// Sort by sprite name, then h3Index for consistency
-		result.sort((a, b) => a.spriteName.localeCompare(b.spriteName) || a.h3Index.localeCompare(b.h3Index));
+		const result: PlacedSpriteType[] = [];
+		for (const [spriteIndex, count] of countMap.entries()) {
+			result.push({ spriteIndex, sprite: OBJECT_SPRITES[spriteIndex], count });
+		}
+		result.sort((a, b) => a.sprite.name.localeCompare(b.sprite.name));
 		return result;
 	}, [records]);
 
-	// Local override state for anchorY values (h3Index → anchorY)
-	const [anchorOverrides, setAnchorOverrides] = useState<Record<string, number>>({});
+	// SVG data URI cache for preview images.
+	const [svgUris, setSvgUris] = useState<Record<number, string>>({});
 
-	const getAnchorY = useCallback((entry: BillboardEntry) => {
-		return anchorOverrides[entry.h3Index] ?? entry.anchorY;
-	}, [anchorOverrides]);
+	useEffect(() => {
+		let cancelled = false;
+		(async () => {
+			const uris: Record<number, string> = {};
+			for (const { spriteIndex, sprite } of placedTypes) {
+				try {
+					const asset = Asset.fromModule(sprite.source as number);
+					await asset.downloadAsync();
+					if (cancelled) return;
+					if (Platform.OS === 'web') {
+						uris[spriteIndex] = asset.uri;
+					} else {
+						if (!asset.localUri) continue;
+						const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+							encoding: FileSystem.EncodingType.Base64,
+						});
+						if (cancelled) return;
+						uris[spriteIndex] = `data:image/svg+xml;base64,${base64}`;
+					}
+				} catch {
+					// Ignore load failures for individual sprites.
+				}
+			}
+			if (!cancelled) setSvgUris(uris);
+		})();
+		return () => { cancelled = true; };
+	}, [placedTypes]);
 
-	const adjustAnchor = useCallback((h3Index: string, currentAnchor: number, delta: number) => {
-		const next = Math.max(0, Math.min(1, Math.round((currentAnchor + delta) * ANCHOR_PRECISION) / ANCHOR_PRECISION));
-		setAnchorOverrides(prev => ({ ...prev, [h3Index]: next }));
-	}, []);
+	const getAnchorX = useCallback((spriteIndex: number) => {
+		return spriteAnchors[spriteIndex]?.anchorX ?? OBJECT_SPRITES[spriteIndex].anchorX;
+	}, [spriteAnchors]);
 
-	// Build config JSON for all billboard anchor points
-	const buildConfigJson = useCallback(() => {
-		const config: Record<string, { billboard: string; anchorY: number }> = {};
-		for (const entry of entries) {
-			const anchor = getAnchorY(entry);
-			config[entry.h3Index] = {
-				billboard: entry.billboardKey,
-				anchorY: anchor,
-			};
-		}
-		return JSON.stringify(config, null, 2);
-	}, [entries, getAnchorY]);
+	const getAnchorY = useCallback((spriteIndex: number) => {
+		return spriteAnchors[spriteIndex]?.anchorY ?? OBJECT_SPRITES[spriteIndex].anchorY;
+	}, [spriteAnchors]);
 
-	const handleCopyConfig = useCallback(async () => {
-		const json = buildConfigJson();
-		await Clipboard.setStringAsync(json);
-		Alert.alert('Copied', 'Billboard config copied to clipboard.');
-	}, [buildConfigJson]);
-
-	// Build OBJECT_SPRITES override snippet with per-sprite anchorY values
-	const buildSpritesOverrideJson = useCallback(() => {
-		// Collect the latest anchorY per sprite index.
-		// If multiple tiles use the same sprite with different overrides, the last
-		// processed entry determines the exported value for that sprite.
-		const spriteAnchors: Record<number, number> = {};
-		for (const entry of entries) {
-			const parsed = parseBillboardKey(entry.billboardKey);
-			if (!parsed) continue;
-			spriteAnchors[parsed.idx] = getAnchorY(entry);
-		}
-		const overrides = OBJECT_SPRITES.map((sprite, idx) => ({
-			name: sprite.name,
-			anchorY: spriteAnchors[idx] !== undefined ? spriteAnchors[idx] : sprite.anchorY,
+	const adjustAnchor = useCallback((spriteIndex: number, deltaX: number, deltaY: number) => {
+		const currentX = getAnchorX(spriteIndex);
+		const currentY = getAnchorY(spriteIndex);
+		dispatch(setSpriteAnchor({
+			spriteIndex,
+			anchorX: clampAnchor(currentX + deltaX),
+			anchorY: clampAnchor(currentY + deltaY),
 		}));
-		return JSON.stringify(overrides, null, 2);
-	}, [entries, getAnchorY]);
+	}, [dispatch, getAnchorX, getAnchorY]);
 
-	const handleCopySpritesConfig = useCallback(async () => {
-		const json = buildSpritesOverrideJson();
-		await Clipboard.setStringAsync(json);
-		Alert.alert('Copied', 'Sprites anchorY config copied to clipboard.');
-	}, [buildSpritesOverrideJson]);
+	const handleReset = useCallback((spriteIndex: number) => {
+		dispatch(resetSpriteAnchor({ spriteIndex }));
+	}, [dispatch]);
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
-			<SettingsListGroupTitle title="Placed Billboards" />
+			<SettingsListGroupTitle title="Billboard Anchor Points" />
 
-			{entries.length === 0 && (
+			<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
+				Adjust the anchor point for each billboard type. The red dot shows where the billboard attaches to the map. Changes apply to all billboards of that type.
+			</Text>
+
+			{placedTypes.length === 0 && (
 				<Text style={[styles.emptyText, { color: theme.screen.text + '80' }]}>
 					No billboards placed yet. Place billboards on hex tiles in the Record screen first.
 				</Text>
 			)}
 
-			{entries.map((entry) => {
-				const anchor = getAnchorY(entry);
+			{placedTypes.map(({ spriteIndex, sprite, count }) => {
+				const anchorX = getAnchorX(spriteIndex);
+				const anchorY = getAnchorY(spriteIndex);
+				const svgUri = svgUris[spriteIndex];
+				const isDefault = !spriteAnchors[spriteIndex];
+
 				return (
 					<View
-						key={entry.h3Index}
-						style={[styles.entryRow, { borderBottomColor: theme.screen.text + '18' }]}
+						key={spriteIndex}
+						style={[styles.typeCard, { borderColor: theme.screen.text + '18' }]}
 					>
-						<View style={styles.entryInfo}>
-							<Text style={[styles.entryName, { color: theme.screen.text }]}>{entry.spriteName}</Text>
-							<Text style={[styles.entryH3, { color: theme.screen.text + '80' }]} numberOfLines={1}>
-								{entry.h3Index}
+						{/* Header */}
+						<View style={styles.cardHeader}>
+							<Text style={[styles.spriteName, { color: theme.screen.text }]}>{sprite.name}</Text>
+							<Text style={[styles.spriteCount, { color: theme.screen.text + '80' }]}>
+								{count} placed
 							</Text>
 						</View>
-						<View style={styles.anchorControl}>
-							<Text style={[styles.anchorLabel, { color: theme.screen.icon }]}>anchorY</Text>
-							<View style={styles.anchorStepper}>
-								<TouchableOpacity
-									style={[styles.stepButton, { opacity: anchor <= 0 ? 0.4 : 1 }]}
-									onPress={() => adjustAnchor(entry.h3Index, anchor, -ANCHOR_STEP)}
-									disabled={anchor <= 0}
-								>
-									<Text style={styles.stepButtonText}>−</Text>
-								</TouchableOpacity>
-								<Text style={[styles.anchorValue, { color: theme.screen.text }]}>
-									{anchor.toFixed(2)}
-								</Text>
-								<TouchableOpacity
-									style={[styles.stepButton, { opacity: anchor >= 1 ? 0.4 : 1 }]}
-									onPress={() => adjustAnchor(entry.h3Index, anchor, ANCHOR_STEP)}
-									disabled={anchor >= 1}
-								>
-									<Text style={styles.stepButtonText}>+</Text>
-								</TouchableOpacity>
+
+						{/* Preview + Controls row */}
+						<View style={styles.previewRow}>
+							{/* SVG Preview with anchor dot */}
+							<View style={[styles.previewContainer, { backgroundColor: theme.screen.text + '08' }]}>
+								{svgUri ? (
+									<Image
+										source={{ uri: svgUri }}
+										style={styles.previewImage}
+										resizeMode="contain"
+									/>
+								) : (
+									<View style={styles.previewPlaceholder}>
+										<Ionicons name="image-outline" size={40} color={theme.screen.text + '40'} />
+									</View>
+								)}
+								{/* Anchor point indicator (red dot) */}
+								<View
+									style={[
+										styles.anchorDot,
+										{
+											left: anchorX * PREVIEW_SIZE - ANCHOR_DOT_SIZE / 2,
+											top: anchorY * PREVIEW_SIZE - ANCHOR_DOT_SIZE / 2,
+										},
+									]}
+								/>
+								{/* Crosshair lines */}
+								<View
+									style={[
+										styles.crosshairH,
+										{ top: anchorY * PREVIEW_SIZE - 0.5 },
+									]}
+								/>
+								<View
+									style={[
+										styles.crosshairV,
+										{ left: anchorX * PREVIEW_SIZE - 0.5 },
+									]}
+								/>
 							</View>
-							<View style={styles.anchorPresets}>
-								<TouchableOpacity
-									style={[styles.presetButton, anchor === 0 && { backgroundColor: PRIMARY_COLOR }]}
-									onPress={() => setAnchorOverrides(prev => ({ ...prev, [entry.h3Index]: 0 }))}
-								>
-									<Text style={[styles.presetText, anchor === 0 && { color: '#fff' }]}>Top</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={[styles.presetButton, anchor === 0.5 && { backgroundColor: PRIMARY_COLOR }]}
-									onPress={() => setAnchorOverrides(prev => ({ ...prev, [entry.h3Index]: 0.5 }))}
-								>
-									<Text style={[styles.presetText, anchor === 0.5 && { color: '#fff' }]}>Center</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={[styles.presetButton, anchor === 1 && { backgroundColor: PRIMARY_COLOR }]}
-									onPress={() => setAnchorOverrides(prev => ({ ...prev, [entry.h3Index]: 1 }))}
-								>
-									<Text style={[styles.presetText, anchor === 1 && { color: '#fff' }]}>Bottom</Text>
-								</TouchableOpacity>
+
+							{/* Directional buttons */}
+							<View style={styles.controlsColumn}>
+								{/* Up */}
+								<View style={styles.dpadRow}>
+									<TouchableOpacity
+										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+										onPress={() => adjustAnchor(spriteIndex, 0, -ANCHOR_STEP)}
+										disabled={anchorY <= 0}
+									>
+										<Ionicons name="arrow-up" size={20} color={anchorY <= 0 ? theme.screen.text + '30' : theme.screen.text} />
+									</TouchableOpacity>
+								</View>
+								{/* Left / Reset / Right */}
+								<View style={styles.dpadRow}>
+									<TouchableOpacity
+										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+										onPress={() => adjustAnchor(spriteIndex, -ANCHOR_STEP, 0)}
+										disabled={anchorX <= 0}
+									>
+										<Ionicons name="arrow-back" size={20} color={anchorX <= 0 ? theme.screen.text + '30' : theme.screen.text} />
+									</TouchableOpacity>
+									<TouchableOpacity
+										style={[
+											styles.dpadCenter,
+											{ backgroundColor: isDefault ? theme.screen.text + '12' : PRIMARY_COLOR + '20' },
+										]}
+										onPress={() => handleReset(spriteIndex)}
+									>
+										<Ionicons name="refresh" size={16} color={isDefault ? theme.screen.text + '40' : PRIMARY_COLOR} />
+									</TouchableOpacity>
+									<TouchableOpacity
+										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+										onPress={() => adjustAnchor(spriteIndex, ANCHOR_STEP, 0)}
+										disabled={anchorX >= 1}
+									>
+										<Ionicons name="arrow-forward" size={20} color={anchorX >= 1 ? theme.screen.text + '30' : theme.screen.text} />
+									</TouchableOpacity>
+								</View>
+								{/* Down */}
+								<View style={styles.dpadRow}>
+									<TouchableOpacity
+										style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
+										onPress={() => adjustAnchor(spriteIndex, 0, ANCHOR_STEP)}
+										disabled={anchorY >= 1}
+									>
+										<Ionicons name="arrow-down" size={20} color={anchorY >= 1 ? theme.screen.text + '30' : theme.screen.text} />
+									</TouchableOpacity>
+								</View>
+
+								{/* Values */}
+								<View style={styles.valuesRow}>
+									<Text style={[styles.valueLabel, { color: theme.screen.text + '80' }]}>
+										X: {anchorX.toFixed(2)}
+									</Text>
+									<Text style={[styles.valueLabel, { color: theme.screen.text + '80' }]}>
+										Y: {anchorY.toFixed(2)}
+									</Text>
+								</View>
 							</View>
 						</View>
 					</View>
 				);
 			})}
-
-			{entries.length > 0 && (
-				<>
-					<SettingsListGroupTitle title="Actions" />
-
-					<TouchableOpacity
-						style={[styles.actionButton, { backgroundColor: PRIMARY_COLOR }]}
-						onPress={handleCopyConfig}
-					>
-						<Ionicons name="copy-outline" size={18} color="#ffffff" />
-						<Text style={styles.actionButtonText}>Copy Billboard Config (JSON)</Text>
-					</TouchableOpacity>
-
-					<TouchableOpacity
-						style={[styles.actionButton, { backgroundColor: '#16a34a', marginTop: 8 }]}
-						onPress={handleCopySpritesConfig}
-					>
-						<Ionicons name="code-slash-outline" size={18} color="#ffffff" />
-						<Text style={styles.actionButtonText}>Copy Sprites AnchorY Config</Text>
-					</TouchableOpacity>
-				</>
-			)}
 
 			<View style={styles.bottomSpacer} />
 		</ScrollView>
@@ -213,90 +258,115 @@ const styles = StyleSheet.create({
 	content: {
 		paddingBottom: 40,
 	},
+	description: {
+		fontSize: 13,
+		paddingHorizontal: 16,
+		paddingBottom: 12,
+		lineHeight: 18,
+	},
 	emptyText: {
 		fontSize: 14,
 		paddingHorizontal: 16,
 		paddingVertical: 20,
 	},
-	entryRow: {
-		paddingHorizontal: 16,
-		paddingVertical: 12,
-		borderBottomWidth: StyleSheet.hairlineWidth,
+	typeCard: {
+		marginHorizontal: 12,
+		marginBottom: 12,
+		borderWidth: 1,
+		borderRadius: 12,
+		padding: 12,
 	},
-	entryInfo: {
-		marginBottom: 8,
-	},
-	entryName: {
-		fontSize: 15,
-		fontWeight: '600',
-	},
-	entryH3: {
-		fontSize: 11,
-		fontFamily: 'monospace',
-		marginTop: 2,
-	},
-	anchorControl: {
-		gap: 6,
-	},
-	anchorLabel: {
-		fontSize: 12,
-		fontWeight: '500',
-	},
-	anchorStepper: {
+	cardHeader: {
 		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
+		alignItems: 'baseline',
+		justifyContent: 'space-between',
+		marginBottom: 10,
 	},
-	stepButton: {
-		width: 32,
-		height: 32,
-		borderRadius: 6,
-		backgroundColor: '#e5e7eb',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	stepButtonText: {
-		fontSize: 18,
+	spriteName: {
+		fontSize: 16,
 		fontWeight: '700',
-		color: '#374151',
 	},
-	anchorValue: {
-		fontSize: 15,
-		fontWeight: '600',
-		fontFamily: 'monospace',
-		minWidth: 44,
-		textAlign: 'center',
-	},
-	anchorPresets: {
-		flexDirection: 'row',
-		gap: 6,
-		marginTop: 4,
-	},
-	presetButton: {
-		paddingHorizontal: 10,
-		paddingVertical: 4,
-		borderRadius: 4,
-		backgroundColor: '#e5e7eb',
-	},
-	presetText: {
+	spriteCount: {
 		fontSize: 12,
-		fontWeight: '500',
-		color: '#374151',
 	},
-	actionButton: {
+	previewRow: {
 		flexDirection: 'row',
+		gap: 16,
+		alignItems: 'center',
+	},
+	previewContainer: {
+		width: PREVIEW_SIZE,
+		height: PREVIEW_SIZE,
+		borderRadius: 8,
+		overflow: 'hidden',
+		position: 'relative',
+	},
+	previewImage: {
+		width: PREVIEW_SIZE,
+		height: PREVIEW_SIZE,
+	},
+	previewPlaceholder: {
+		width: PREVIEW_SIZE,
+		height: PREVIEW_SIZE,
 		alignItems: 'center',
 		justifyContent: 'center',
-		gap: 8,
-		marginHorizontal: 16,
-		marginTop: 12,
-		paddingVertical: 12,
-		borderRadius: 8,
 	},
-	actionButtonText: {
-		color: '#ffffff',
-		fontSize: 14,
-		fontWeight: '600',
+	anchorDot: {
+		position: 'absolute',
+		width: ANCHOR_DOT_SIZE,
+		height: ANCHOR_DOT_SIZE,
+		borderRadius: ANCHOR_DOT_SIZE / 2,
+		backgroundColor: '#ef4444',
+		borderWidth: 2,
+		borderColor: '#ffffff',
+	},
+	crosshairH: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		height: 1,
+		backgroundColor: '#ef444480',
+	},
+	crosshairV: {
+		position: 'absolute',
+		top: 0,
+		bottom: 0,
+		width: 1,
+		backgroundColor: '#ef444480',
+	},
+	controlsColumn: {
+		flex: 1,
+		alignItems: 'center',
+		gap: 4,
+	},
+	dpadRow: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+		gap: 4,
+	},
+	dpadButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	dpadCenter: {
+		width: 36,
+		height: 40,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	valuesRow: {
+		flexDirection: 'row',
+		gap: 12,
+		marginTop: 8,
+	},
+	valueLabel: {
+		fontSize: 12,
+		fontFamily: 'monospace',
+		fontWeight: '500',
 	},
 	bottomSpacer: {
 		height: 40,
