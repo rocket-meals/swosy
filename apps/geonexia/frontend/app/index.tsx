@@ -780,12 +780,14 @@ type DebugInfoContentProps = {
 	initialSpeed: number;
 	initialBillboardScale: number;
 	initialBillboardFaceCamera: boolean;
+	initialShowDebugPoints: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
 	onBillboardScaleChange: (scale: number) => void;
 	onBillboardFaceCameraChange: (val: boolean) => void;
+	onShowDebugPointsChange: (val: boolean) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -799,12 +801,14 @@ function DebugInfoContent({
 	initialSpeed,
 	initialBillboardScale,
 	initialBillboardFaceCamera,
+	initialShowDebugPoints,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
 	onSpeedChange,
 	onBillboardScaleChange,
 	onBillboardFaceCameraChange,
+	onShowDebugPointsChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
@@ -812,6 +816,7 @@ function DebugInfoContent({
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
 	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
+	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -847,6 +852,11 @@ function DebugInfoContent({
 		setBillboardFaceCamera(val);
 		onBillboardFaceCameraChange(val);
 	}, [onBillboardFaceCameraChange]);
+
+	const handleShowDebugPointsChange = useCallback((val: boolean) => {
+		setShowDebugPoints(val);
+		onShowDebugPointsChange(val);
+	}, [onShowDebugPointsChange]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
 
@@ -1027,6 +1037,17 @@ function DebugInfoContent({
 				<Switch
 					value={billboardFaceCamera}
 					onValueChange={handleBillboardFaceCameraChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Debug Points toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Debug Points</Text>
+				<Switch
+					value={showDebugPoints}
+					onValueChange={handleShowDebugPointsChange}
 					trackColor={{ true: PRIMARY_COLOR }}
 					thumbColor="#ffffff"
 				/>
@@ -1757,6 +1778,8 @@ export default function RecordScreen() {
 	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
 	// Whether billboards face the camera (true) or lie flat on the map (false)
 	const billboardFaceCameraRef = useRef(false);
+	// Whether debug point layers (vertices, centers, midpoints) are visible
+	const showDebugPointsRef = useRef(true);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1902,6 +1925,11 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ billboardPitchAlignment: val ? 'viewport' : 'map' });
 	}, []);
 
+	const handleShowDebugPointsChange = useCallback((val: boolean) => {
+		showDebugPointsRef.current = val;
+		mapRef.current?.sendToMap({ hexDebugPoints: val });
+	}, []);
+
 	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
@@ -1967,16 +1995,18 @@ export default function RecordScreen() {
 					initialSpeed={debugMoveSpeedKmhRef.current}
 					initialBillboardScale={billboardScaleRef.current}
 					initialBillboardFaceCamera={billboardFaceCameraRef.current}
+					initialShowDebugPoints={showDebugPointsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
 					onBillboardScaleChange={handleBillboardScaleChange}
 					onBillboardFaceCameraChange={handleBillboardFaceCameraChange}
+					onShowDebugPointsChange={handleShowDebugPointsChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowDebugPointsChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({

@@ -23,6 +23,7 @@ export const HEX_TILE_SCRIPT = `
   // H3 resolution and cell computation are controlled on the React Native side
   // via the H3Helper; this script only renders the GeoJSON it receives.
   var hexTileActive = true;
+  var hexDebugPointsVisible = true;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   // Hex border: subtle gray, low opacity
   var hexTileStrokeColor = '#9ca3af';
@@ -425,6 +426,16 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var walkSrc = map && map.getSource(HEX_WALK_PATH_SOURCE);
       if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
+    }
+    if (data.hexDebugPoints !== undefined) {
+      hexDebugPointsVisible = data.hexDebugPoints;
+      var visibility = hexDebugPointsVisible ? 'visible' : 'none';
+      var debugLayers = [HEX_VERTICES_LAYER, HEX_CENTERS_LAYER, HEX_MIDPOINTS_LAYER];
+      for (var di = 0; di < debugLayers.length; di++) {
+        if (map && map.getLayer(debugLayers[di])) {
+          map.setLayoutProperty(debugLayers[di], 'visibility', visibility);
+        }
+      }
     }
   };
 
