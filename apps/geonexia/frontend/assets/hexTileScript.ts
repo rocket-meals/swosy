@@ -352,8 +352,10 @@ export const HEX_TILE_SCRIPT = `
     }
     // Raise the billboard symbol layer above hex tile layers so billboards are
     // always rendered on top of the grid, even after hex tile layer recreation.
-    if (map.getLayer('billboard-symbol-layer')) {
-      map.moveLayer('billboard-symbol-layer');
+    // NOTE: Must match BILLBOARD_LAYER_ID in the MapLibre HTML (index.html).
+    var BILLBOARD_LAYER_REF = 'billboard-symbol-layer';
+    if (map.getLayer(BILLBOARD_LAYER_REF)) {
+      map.moveLayer(BILLBOARD_LAYER_REF);
     }
     notifyViewport();
   }
