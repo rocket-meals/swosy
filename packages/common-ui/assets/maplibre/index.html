@@ -4680,8 +4680,9 @@
       // the map is pitched, just like hex tile polygons.
       var BILLBOARD_SOURCE_ID = 'billboard-symbol-source';
       var BILLBOARD_LAYER_ID = 'billboard-symbol-layer';
-      var BILLBOARD_ICON_SIZE = 128; // pixel size at which each SVG is rasterised
-      var billboardImageCache = {}; // iconKey → true once added to map
+      var BILLBOARD_ICON_SIZE = 128; // pixel size at which each SVG is rasterized (must match BILLBOARD_STANDARD_ICON_SIZE in index.tsx)
+      var billboardImageCache = {}; // iconKey → true once image added to map sprite
+      var billboardUpdateGeneration = 0; // increments on each updateBillboards call to cancel stale callbacks
 
       function updateBillboards(data) {
         if (!map) return;
@@ -4689,8 +4690,12 @@
         var features = data.features || [];
         var imageKeys = Object.keys(images);
         var pending = imageKeys.length;
+        // Capture a generation token so that callbacks from a superseded call do
+        // not invoke applyGeoJson once a newer updateBillboards has started.
+        var generation = ++billboardUpdateGeneration;
 
         function applyGeoJson() {
+          if (generation !== billboardUpdateGeneration) return;
           var fc = { type: 'FeatureCollection', features: features };
           if (map.getSource(BILLBOARD_SOURCE_ID)) {
             map.getSource(BILLBOARD_SOURCE_ID).setData(fc);
@@ -4726,7 +4731,9 @@
         }
 
         imageKeys.forEach(function (key) {
-          if (billboardImageCache[key]) {
+          // Use the cache only if the image is also confirmed present in the map sprite.
+          // Without the map.hasImage() check the cache would be stale after a map recreation.
+          if (billboardImageCache[key] && map.hasImage(key)) {
             pending--;
             if (pending === 0) applyGeoJson();
             return;
@@ -4738,6 +4745,8 @@
           var ctx = canvas.getContext('2d');
           var img = new Image();
           img.onload = function () {
+            // Discard if a newer updateBillboards() has already superseded this call.
+            if (generation !== billboardUpdateGeneration) return;
             ctx.drawImage(img, 0, 0, BILLBOARD_ICON_SIZE, BILLBOARD_ICON_SIZE);
             if (!map.hasImage(key)) {
               map.addImage(key, ctx.getImageData(0, 0, BILLBOARD_ICON_SIZE, BILLBOARD_ICON_SIZE));
@@ -4747,6 +4756,7 @@
             if (pending === 0) applyGeoJson();
           };
           img.onerror = function () {
+            if (generation !== billboardUpdateGeneration) return;
             pending--;
             if (pending === 0) applyGeoJson();
           };

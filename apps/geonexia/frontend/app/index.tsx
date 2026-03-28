@@ -151,6 +151,9 @@ const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
 const BILLBOARD_SCALE_DEFAULT = 1;
 // Precision factor for rounding billboard scale values (1 decimal place).
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
+// Minimum rendered pixel size for billboard icons so that sprites at very small
+// H3 resolutions or low user-scale settings remain visible and tappable.
+const BILLBOARD_MIN_SIZE_PX = 8;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -1602,10 +1605,11 @@ export default function RecordScreen() {
 		// so they lie flat on the map plane and shrink naturally with perspective when
 		// the map is pitched, matching how hex tile polygons are rendered.
 		//
-		// Each unique billboard SVG is rasterised to a BILLBOARD_STANDARD_ICON_SIZE×BILLBOARD_STANDARD_ICON_SIZE
+		// Each unique billboard SVG is rasterized to a BILLBOARD_STANDARD_ICON_SIZE×BILLBOARD_STANDARD_ICON_SIZE
 		// canvas image and added to the map sprite once. Features carry an
 		// iconSizeAtRefZoom property (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14)
 		// so the layer's icon-size zoom expression scales it correctly at all zoom levels.
+		// NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
 		const BILLBOARD_STANDARD_ICON_SIZE = 128;
 
 		// Scale billboard pixel size by the current H3 resolution so that billboards
@@ -1650,7 +1654,8 @@ export default function RecordScreen() {
 			const lat = sumLat / n;
 
 			// Desired pixel size at reference zoom 14, scaled by resolution and user multiplier.
-			const billboardSizePx = Math.max(8, Math.round(
+			// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
+			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
 				BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current,
 			));
 			// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
