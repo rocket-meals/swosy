@@ -118,12 +118,13 @@ const hexTileSlice = createSlice({
 		 */
 		setHexTileCustomization(
 			state,
-			action: PayloadAction<{ h3Index: string; tileImage?: string | null; billboard?: string | null }>,
+			action: PayloadAction<{ h3Index: string; tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null }>,
 		) {
-			const { h3Index, tileImage, billboard } = action.payload;
+			const { h3Index, tileImage, billboard, billboardAnchorColor } = action.payload;
 			const rec = getOrCreate(state.records, h3Index);
 			if (tileImage !== undefined) rec.tileImage = tileImage;
 			if (billboard !== undefined) rec.billboard = billboard;
+			if (billboardAnchorColor !== undefined) rec.billboardAnchorColor = billboardAnchorColor;
 		},
 	},
 });

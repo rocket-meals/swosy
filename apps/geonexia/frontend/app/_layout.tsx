@@ -123,6 +123,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
 		},
+		{
+			key: 'billboard-config/index',
+			label: 'Billboard Config',
+			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('billboard-config/index'),
+		},
 	];
 
 	return (
@@ -239,6 +245,15 @@ export default function Layout() {
 									title: 'Feature Wishes',
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="bulb-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="billboard-config/index"
+								options={{
+									title: 'Billboard Config',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="build-outline" size={size} color={color} />
 									),
 								}}
 							/>

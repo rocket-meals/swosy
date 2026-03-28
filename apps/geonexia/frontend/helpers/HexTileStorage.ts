@@ -41,6 +41,14 @@ export type HexTileRecord = {
 	 * Null or undefined means no billboard.
 	 */
 	billboard?: string | null;
+	/**
+	 * Anchor color for billboard placement within the hex cell.
+	 * Determines where the billboard is positioned:
+	 * - 'purple' (default): hex centroid (center)
+	 * - 'green': nearest vertex (corner)
+	 * - 'red' | 'orange' | 'yellow' | 'blue' | 'white' | 'black': midpoint positions
+	 */
+	billboardAnchorColor?: string | null;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
