@@ -151,8 +151,6 @@ const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
 const BILLBOARD_SCALE_DEFAULT = 1;
 // Precision factor for rounding billboard scale values (1 decimal place).
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
-// Default MapLibre zoom assumed when no viewport data is available yet.
-const DEFAULT_REFERENCE_ZOOM = 14;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
@@ -1599,15 +1597,16 @@ export default function RecordScreen() {
 			}
 		}
 
-		// ── Billboard markers ────────────────────────────────────────────────────
-		type BillboardMarker = {
-			id: string;
-			position: { lat: number; lng: number };
-			icon: string;
-			size: [number, number];
-			iconAnchor: [number, number];
-		};
-		const billboardMarkers: BillboardMarker[] = [];
+		// ── Billboard GeoJSON symbol layer ───────────────────────────────────────────
+		// Billboards are rendered as a MapLibre symbol layer with icon-pitch-alignment:'map'
+		// so they lie flat on the map plane and shrink naturally with perspective when
+		// the map is pitched, matching how hex tile polygons are rendered.
+		//
+		// Each unique billboard SVG is rasterised to a BILLBOARD_STANDARD_ICON_SIZE×BILLBOARD_STANDARD_ICON_SIZE
+		// canvas image and added to the map sprite once. Features carry an
+		// iconSizeAtRefZoom property (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14)
+		// so the layer's icon-size zoom expression scales it correctly at all zoom levels.
+		const BILLBOARD_STANDARD_ICON_SIZE = 128;
 
 		// Scale billboard pixel size by the current H3 resolution so that billboards
 		// stay proportional to the hexagon visual size at resolution 10 (default).
@@ -1618,6 +1617,14 @@ export default function RecordScreen() {
 		const hexEdgeCur = H3_EDGE_LENGTH_KM[h3Res]!;
 		const hexScaleRatio = hexEdgeCur / hexEdgeRef;
 
+		const billboardImages: Record<string, { url: string }> = {};
+		type BillboardFeature = {
+			type: 'Feature';
+			geometry: { type: 'Point'; coordinates: [number, number] };
+			properties: { iconKey: string; iconSizeAtRefZoom: number };
+		};
+		const billboardFeatures: BillboardFeature[] = [];
+
 		for (const [h3Index, record] of Object.entries(records)) {
 			if (!record.billboard) continue;
 			const parsed = parseBillboardKey(record.billboard);
@@ -1625,14 +1632,15 @@ export default function RecordScreen() {
 			const { sprite } = parsed;
 			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
 			if (!url) continue;
+
+			const iconKey = `billboard-${record.billboard}`;
+
 			// Compute the centroid of the hexagon polygon by averaging its boundary
-			// vertices, matching how buildCentersGeoJson computes purple dot positions
-			// in hexTileScript. The ring is closed (last vertex = first), so exclude
-			// the last vertex when averaging.
+			// vertices. The ring is closed (last vertex = first), so exclude it.
 			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
 			let sumLng = 0, sumLat = 0;
 			const n = boundary.length - 1;
-			if (n <= 0) continue; // skip if boundary is empty or degenerate
+			if (n <= 0) continue;
 			for (let j = 0; j < n; j++) {
 				const [bLng, bLat] = boundary[j] as [number, number];
 				sumLng += bLng;
@@ -1640,28 +1648,33 @@ export default function RecordScreen() {
 			}
 			const lng = sumLng / n;
 			const lat = sumLat / n;
-			// Compute the pixel size for this sprite, applying its scaleFactor, the
-			// current H3 resolution scale, and the debug scale multiplier.  Minimum 8 px to keep tiny sprites visible.
-			const billboardSizePx = Math.max(8, Math.round(BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current));
-			// anchorY is a fraction of height (0=top, 1=bottom, 0.5=center).
-			// The X anchor is always the horizontal center of the square icon.
-			const anchorYPx = Math.round(sprite.anchorY * billboardSizePx);
-			billboardMarkers.push({
-				id: `billboard-${h3Index}`,
-				position: { lat, lng },
-				icon: `<img src="${url}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">`,
-				size: [billboardSizePx, billboardSizePx],
-				iconAnchor: [billboardSizePx / 2, anchorYPx],
+
+			// Desired pixel size at reference zoom 14, scaled by resolution and user multiplier.
+			const billboardSizePx = Math.max(8, Math.round(
+				BILLBOARD_UNIT_PX * sprite.scaleFactor * hexScaleRatio * billboardScaleRef.current,
+			));
+			// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
+			// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
+			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+			if (!billboardImages[iconKey]) {
+				billboardImages[iconKey] = { url };
+			}
+			billboardFeatures.push({
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [lng, lat] },
+				properties: { iconKey, iconSizeAtRefZoom },
 			});
 		}
 
 		mapRef.current.sendToMap({
 			imageOverlays,
-			mapMarkers: billboardMarkers,
-			// Always use the fixed reference zoom so that billboard sizes remain
-			// consistent regardless of what zoom the user is at when markers are
-			// sent (e.g. after changing h3 resolution and reverting).
-			mapMarkersReferenceZoom: DEFAULT_REFERENCE_ZOOM,
+			// Clear any legacy DOM markers from previous versions.
+			mapMarkers: [],
+			billboards: {
+				images: billboardImages,
+				features: billboardFeatures,
+			},
 		});
 	}, [loadAssetUrl]);
 
