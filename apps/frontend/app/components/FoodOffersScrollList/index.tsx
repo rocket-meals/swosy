@@ -85,7 +85,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	}, [dispatch]);
 
 	const cacheKey = useMemo(
-		() => `${canteenId}_${format(new Date(startDate), 'yyyy-MM-dd')}`,
+		() => `${canteenId}_${startDate}`,
 		[canteenId, startDate]
 	);
 
@@ -308,11 +308,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			}
 
 			setLoading(true);
-			const baseDate = new Date(startDate);
+			const baseDate = parseDateOnly(startDate);
 			const toLoad = [0, 1, 2];
 			const loaded: DayData[] = [];
 			for (const offset of toLoad) {
-				const d = addDays(baseDate, offset).toISOString().split('T')[0];
+				const d = format(addDays(baseDate, offset), 'yyyy-MM-dd');
 				loaded.push(await loadDay(d));
 			}
 			setDays(loaded);
@@ -358,7 +358,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const loadNext = async () => {
 		if (!days.length) return;
 		const lastDate = days[days.length - 1].date;
-		const nextDate = addDays(new Date(lastDate), 1).toISOString().split('T')[0];
+		const nextDate = format(addDays(parseDateOnly(lastDate), 1), 'yyyy-MM-dd');
 		const nextDay = await loadDay(nextDate);
 		setDays(prev => {
 			const updated = [...prev, nextDay];

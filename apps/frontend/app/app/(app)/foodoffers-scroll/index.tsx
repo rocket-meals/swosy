@@ -218,7 +218,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	}, []);
 
 	const handleDateChange = (direction: 'prev' | 'next') => {
-		const currentDate = new Date(selectedDate);
+		const currentDate = parseDateOnly(selectedDate);
 		if (direction === 'prev') {
 			currentDate.setDate(currentDate.getDate() - 1);
 		} else {
@@ -226,7 +226,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 		dispatch({
 			type: SET_SELECTED_DATE,
-			payload: currentDate.toISOString().split('T')[0],
+			payload: format(currentDate, 'yyyy-MM-dd'),
 		});
 	};
 
@@ -300,7 +300,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 			// Prefetch next two days
 			for (let i = 1; i <= 2; i++) {
-                                const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                                const date = format(addDays(parseDateOnly(selectedDate), i), 'yyyy-MM-dd');
                                 const cacheKey = getCacheKey(canteenId, date);
                                 if (!prefetchedFoodOffers[cacheKey]) {
                                         fetchFoodOffersByCanteen(canteenId, date)
@@ -341,7 +341,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const nextAvailableDate = useMemo(() => {
                 const canteenId = selectedCanteen?.id as string;
                 for (let i = 1; i <= 2; i++) {
-                        const date = addDays(new Date(selectedDate), i).toISOString().split('T')[0];
+                        const date = format(addDays(parseDateOnly(selectedDate), i), 'yyyy-MM-dd');
                         const offers = getCachedOffers(canteenId, date);
                         if (offers && offers.length > 0) {
                                 return date;
