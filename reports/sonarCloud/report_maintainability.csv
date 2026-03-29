@@ -1,9 +1,18 @@
 Key,Message,Component,Line
+"AZ06q-Z_oHL-2mk7uVGQ","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",34
+"AZ06q-Z_oHL-2mk7uVGR","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",36
+"AZ06q-Z_oHL-2mk7uVGS","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",38
+"AZ06q-Z_oHL-2mk7uVGT","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",40
+"AZ06q-Z_oHL-2mk7uVGU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",383
+"AZ06q-Z_oHL-2mk7uVGV","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",385
+"AZ06q-Z_oHL-2mk7uVGW","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",385
+"AZ06q-Z_oHL-2mk7uVGX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",398
+"AZ06q-Z_oHL-2mk7uVGY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",398
 "AZ06kBMDoHL-2mk7tiV7","Remove this useless assignment to variable ""handleToggleTTS"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",177
 "AZ06kBrPoHL-2mk7tiWD","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",200
 "AZ06kBrPoHL-2mk7tiWE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",202
-"AZ06kBLFoHL-2mk7tiV5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",70
-"AZ06kBLFoHL-2mk7tiV6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",70
+"AZ06kBLFoHL-2mk7tiV5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",312
+"AZ06kBLFoHL-2mk7tiV6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",312
 "AZ06kBI2oHL-2mk7tiV2","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",26
 "AZ06kBI2oHL-2mk7tiV3","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",27
 "AZ06kBI2oHL-2mk7tiV4","Remove this useless assignment to variable ""theme"".","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",32
@@ -9990,12 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvcAS4VhJojFFCTJ","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/authReducer.ts",19
 "AZkUSvcAS4VhJojFFCTK","This case's code block is the same as the block for the case on line 21.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/authReducer.ts",28
 "AZkUSvbcS4VhJojFFCTF","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/campusReducer.ts",10
-"AZkUSvdHS4VhJojFFCTS","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/canteenReducer.ts",17
-"AZkUSvbSS4VhJojFFCTE","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/foodReducer.ts",21
-"AZkUSvciS4VhJojFFCTO","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/formReducer.ts",14
-"AZkUSvbvS4VhJojFFCTH","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/managementReducer.ts",28
-"AZkUSvb3S4VhJojFFCTI","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/newsReducer.ts",7
-"AZkUSvcrS4VhJojFFCTP","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/settingsReducer.ts",60
-"AZ0TplYMufp2jxPAhS4x","Reduce the number of non-empty switch cases from 46 to at most 30.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/settingsReducer.ts",61
-"AZkUSvdQS4VhJojFFCTU","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/redux/store/store.ts",45
-"AZkUSvmlS4VhJojFFCYU","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",85
