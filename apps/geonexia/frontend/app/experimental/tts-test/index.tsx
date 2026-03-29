@@ -157,12 +157,11 @@ export default function TTSTestScreen() {
 	}, [showModal, closeModal, voiceQuality]);
 
 	// ─── Voice selection ──────────────────────────────────────────────────────
-	const filteredVoices = voiceQuality
-		? availableVoices.filter((v) => v.quality === voiceQuality)
-		: availableVoices;
-	const voiceOptions = filteredVoices.map((v) => ({
+	// Show ALL available voices (unfiltered) so users can see every voice with
+	// its name and identifier. The voiceQuality setting only affects playback.
+	const voiceOptions = availableVoices.map((v) => ({
 		id: v.identifier,
-		label: v.name,
+		label: `${v.name} (${v.identifier})`,
 		icon: <MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />,
 	}));
 	const noneVoiceOption = {
@@ -173,7 +172,7 @@ export default function TTSTestScreen() {
 	const allVoiceOptions = useMemo(
 		() => [noneVoiceOption, ...voiceOptions],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[filteredVoices],
+		[availableVoices],
 	);
 
 	const handleOpenVoiceSelection = useCallback(() => {
@@ -187,7 +186,7 @@ export default function TTSTestScreen() {
 						if (option.id === '__none__') {
 							setSelectedVoice(null);
 						} else {
-							const found = filteredVoices.find((v) => v.identifier === option.id) ?? null;
+							const found = availableVoices.find((v) => v.identifier === option.id) ?? null;
 							setSelectedVoice(found);
 						}
 						closeModal();
@@ -196,12 +195,14 @@ export default function TTSTestScreen() {
 				/>
 			),
 		});
-	}, [showModal, closeModal, allVoiceOptions, filteredVoices, selectedVoice]);
+	}, [showModal, closeModal, allVoiceOptions, availableVoices, selectedVoice]);
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
 	const qualityLabel = voiceQuality === Speech.VoiceQuality.Enhanced ? 'Enhanced' : 'Default';
-	const voiceLabel = selectedVoice ? selectedVoice.name : 'System Default';
+	const voiceLabel = selectedVoice
+		? `${selectedVoice.name} (${selectedVoice.identifier})`
+		: 'System Default';
 	const rateLabel = rate.toFixed(1) + '×';
 	const pitchLabel = pitch.toFixed(1);
 
@@ -385,6 +386,29 @@ export default function TTSTestScreen() {
 				}
 				groupPosition="bottom"
 			/>
+
+			{/* ── All Voices List ─────────────────────────────────────────────────────────── */}
+			{voicesAvailable === true && availableVoices.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="All Voices (Name · Identifier)" />
+					{availableVoices.map((v, index) => {
+						const isFirst = index === 0;
+						const isLast = index === availableVoices.length - 1;
+						const groupPosition =
+							isFirst && isLast ? 'single' : isFirst ? 'top' : isLast ? 'bottom' : 'middle';
+						return (
+							<SettingsList
+								key={v.identifier}
+								iconBgColor={VOICE_COLOR}
+								leftIcon={<MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />}
+								label={v.name}
+								value={v.identifier}
+								groupPosition={groupPosition}
+							/>
+						);
+					})}
+				</>
+			)}
 		</ScrollView>
 	);
 }
