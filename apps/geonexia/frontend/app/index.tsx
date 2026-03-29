@@ -1759,9 +1759,11 @@ export default function RecordScreen() {
 			const cellRes = getResolution(h3Index);
 			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
 			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
+			// Per-sprite scale multiplier from the billboard config screen (default 1.0).
+			const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
 			// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
 			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * edgeLengthRatio,
+				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
 			));
 			// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
 			// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
