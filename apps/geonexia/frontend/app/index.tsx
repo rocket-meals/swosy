@@ -33,6 +33,9 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillbo
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
+import * as Speech from 'expo-speech';
+import { getLocales } from 'expo-localization';
+import { buildKmAnnouncement, speakAnnouncement } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -1603,6 +1606,7 @@ export default function RecordScreen() {
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const isDebugMode = useDebugMode();
+	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1617,6 +1621,12 @@ export default function RecordScreen() {
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
+
+	// TTS: track the last whole-km milestone announced to avoid repeating.
+	// Reset to 0 when recording starts.
+	const lastAnnouncedKmRef = useRef(0);
+	const isTTSEnabledRef = useRef(isTTSEnabled);
+	isTTSEnabledRef.current = isTTSEnabled;
 
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
@@ -2484,6 +2494,22 @@ export default function RecordScreen() {
 		}
 		setLiveDistanceKm(d);
 
+		// Announce each whole-km milestone via TTS when enabled.
+		if (isTTSEnabledRef.current) {
+			const crossedKm = Math.floor(d);
+			if (crossedKm > 0 && crossedKm > lastAnnouncedKmRef.current) {
+				lastAnnouncedKmRef.current = crossedKm;
+				const elapsedSec = startTimeRef.current > 0
+						? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+						: accumulatedSecondsRef.current;
+				const paceMinPerKm = elapsedSec > 0 && d > 0 ? elapsedSec / 60 / d : null;
+				const locale = getLocales()[0]?.languageTag ?? 'en-US';
+				const langCode = locale.split('-')[0].toLowerCase();
+				const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale);
+				speakAnnouncement(text, langCode);
+			}
+		}
+
 		if (point.speed != null && point.speed >= 0) {
 			setLiveSpeedKmh(point.speed * 3.6);
 		}
@@ -2584,6 +2610,7 @@ export default function RecordScreen() {
 			setElapsedSeconds(0);
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
+			lastAnnouncedKmRef.current = 0;
 			isRecordingRef.current = true;
 			setIsRecording(true);
 			setFollowMode(true);
@@ -2727,6 +2754,7 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
+		Speech.stop();
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;

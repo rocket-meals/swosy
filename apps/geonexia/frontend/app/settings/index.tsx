@@ -18,6 +18,7 @@ import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
 import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
+import { setTTSEnabled } from '../../store/ttsSlice';
 import { AppDispatch, RootState, store } from '../../store/store';
 import {
 	saveDebugModeFlag,
@@ -33,6 +34,7 @@ const NOTIFICATION_COLOR = '#16a34a';
 const NEUTRAL_COLOR = '#6b7280';
 const DANGER_COLOR = '#dc2626';
 const GPS_COLOR = '#7c3aed';
+const TTS_COLOR = '#0369a1';
 const DEBUG_COLOR = '#0f766e';
 const DEV_COLOR = '#f59e0b';
 
@@ -103,6 +105,7 @@ export default function SettingsScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
 	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.selectedMode);
+	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -168,6 +171,10 @@ export default function SettingsScreen() {
 		saveDebugModeFlag(next);
 	}, [dispatch, isDebugMode]);
 
+	const handleToggleTTS = useCallback(() => {
+		dispatch(setTTSEnabled(!isTTSEnabled));
+	}, [dispatch, isTTSEnabled]);
+
 	const handleToggleDevMode = useCallback(async () => {
 		const { records: currentRecords, isDevMode: currentIsDevMode } = store.getState().hexTiles;
 		if (currentIsDevMode) {
@@ -207,6 +214,18 @@ export default function SettingsScreen() {
 				value={gpsIntervalModeLabel(selectedGpsInterval)}
 				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 				handleFunction={handleOpenGpsIntervalSelection}
+				groupPosition="single"
+			/>
+
+			<SettingsListGroupTitle title="Audio" />
+			<SettingsListBoolean
+				iconBgColor={TTS_COLOR}
+				leftIcon={<MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />}
+				label="Voice Announcements"
+				isEnabled={isTTSEnabled}
+				onToggle={handleToggleTTS}
+				valueActive="Enabled"
+				valueInactive="Disabled"
 				groupPosition="single"
 			/>
 

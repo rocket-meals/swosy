@@ -4,11 +4,13 @@ import sportTypeReducer from './sportTypeSlice';
 import themeReducer from './themeSlice';
 import billboardConfigReducer from './billboardConfigSlice';
 import gpsIntervalReducer from './gpsIntervalSlice';
+import ttsReducer from './ttsSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { saveTTSEnabled } from '../helpers/TTSStorage';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
 import type { GpsIntervalMode } from './gpsIntervalSlice';
@@ -22,6 +24,7 @@ export const store = configureStore({
 		theme: themeReducer,
 		billboardConfig: billboardConfigReducer,
 		gpsInterval: gpsIntervalReducer,
+		tts: ttsReducer,
 	},
 });
 
@@ -42,6 +45,9 @@ let _lastSavedBbConfig: BillboardConfigState | null = null;
 
 // Auto-persist GPS interval mode to disk whenever it changes.
 let _lastSavedGpsIntervalMode: GpsIntervalMode | null = null;
+
+// Auto-persist TTS enabled flag to disk whenever it changes.
+let _lastSavedTTSEnabled: boolean | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -87,6 +93,12 @@ store.subscribe(() => {
 	if (gpsMode !== _lastSavedGpsIntervalMode) {
 		_lastSavedGpsIntervalMode = gpsMode;
 		saveGpsIntervalMode(gpsMode);
+	}
+
+	const { ttsEnabled } = state.tts;
+	if (ttsEnabled !== _lastSavedTTSEnabled) {
+		_lastSavedTTSEnabled = ttsEnabled;
+		saveTTSEnabled(ttsEnabled);
 	}
 });
 

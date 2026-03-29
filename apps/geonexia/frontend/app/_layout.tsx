@@ -15,11 +15,13 @@ import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
+import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { loadTTSEnabled } from '../helpers/TTSStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
@@ -133,6 +135,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('billboard-config/index'),
 		},
+		{
+			key: 'experimental/index',
+			label: 'Experimental',
+			renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('experimental/index'),
+		},
 	];
 
 	return (
@@ -193,6 +201,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted GPS interval mode:', err);
+			});
+		loadTTSEnabled()
+			.then((enabled) => {
+				store.dispatch(loadTTSEnabledAction(enabled));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted TTS enabled flag:', err);
 			});
 	}, []);
 
@@ -280,6 +295,22 @@ export default function Layout() {
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="build-outline" size={size} color={color} />
 									),
+								}}
+							/>
+							<Drawer.Screen
+								name="experimental/index"
+								options={{
+									title: 'Experimental',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="flask-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="experimental/tts-test/index"
+								options={{
+									title: 'Text to Speech Test',
+									drawerItemStyle: { display: 'none' },
 								}}
 							/>
 						</Drawer>
