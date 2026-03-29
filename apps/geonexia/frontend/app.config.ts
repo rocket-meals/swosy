@@ -31,8 +31,11 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		},
 		ios: {
 			supportsTablet: true,
-			bundleIdentifier: 'com.geonexia.app',
+			bundleIdentifier: 'de.baumgartner-software.geonexia',
 			buildNumber: buildNumber.toString(),
+			"infoPlist": {
+      			"ITSAppUsesNonExemptEncryption": false
+    		}
 		},
 		android: {
 			adaptiveIcon: {
