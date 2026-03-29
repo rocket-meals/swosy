@@ -390,7 +390,7 @@ export default function TTSTestScreen() {
 			{/* ── All Voices List ─────────────────────────────────────────────────────────── */}
 			{voicesAvailable === true && availableVoices.length > 0 && (
 				<>
-					<SettingsListGroupTitle title="All Voices (Name · Identifier)" />
+					<SettingsListGroupTitle title="All Voices: Name (Identifier)" />
 					{availableVoices.map((v, index) => {
 						const isFirst = index === 0;
 						const isLast = index === availableVoices.length - 1;
