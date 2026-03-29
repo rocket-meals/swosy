@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6818 | 46 |
+| 🐛 Reliability | 6822 | 46 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16822 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16826 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,7 +30,7 @@
   .github/actions/geonexia-expo-update/action.yml:164
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-## 🐛 Reliability (46/6818)
+## 🐛 Reliability (46/6822)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
