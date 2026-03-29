@@ -1,0 +1,102 @@
+import React, { useEffect, useState } from 'react';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
+import { SettingsList, useTheme } from 'repo-depkit-common-ui';
+
+import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
+
+type Props = {
+	/** Index into OBJECT_SPRITES, or null if nothing selected. */
+	spriteIndex: number | null;
+	/** Label shown as the row title. */
+	title?: string;
+	/** Called when the row is pressed (e.g. to open a selection modal). */
+	onPress?: () => void;
+	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+};
+
+const THUMB_SIZE = 32;
+
+const SettingsListBillboard: React.FC<Props> = ({
+	spriteIndex,
+	title = 'Billboard',
+	onPress,
+	groupPosition,
+}) => {
+	const { theme } = useTheme();
+	const [svgUri, setSvgUri] = useState<string | null>(null);
+
+	useEffect(() => {
+		let cancelled = false;
+		if (spriteIndex === null || !OBJECT_SPRITES[spriteIndex]) {
+			setSvgUri(null);
+			return;
+		}
+		const sprite = OBJECT_SPRITES[spriteIndex];
+		(async () => {
+			try {
+				const asset = Asset.fromModule(sprite.source as number);
+				await asset.downloadAsync();
+				if (cancelled) return;
+				if (Platform.OS === 'web') {
+					setSvgUri(asset.uri);
+				} else {
+					if (!asset.localUri) return;
+					const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+						encoding: FileSystem.EncodingType.Base64,
+					});
+					if (cancelled) return;
+					setSvgUri(`data:image/svg+xml;base64,${base64}`);
+				}
+			} catch {
+				if (!cancelled) setSvgUri(null);
+			}
+		})();
+		return () => { cancelled = true; };
+	}, [spriteIndex]);
+
+	const sprite = spriteIndex !== null ? OBJECT_SPRITES[spriteIndex] : null;
+	const spriteName = sprite?.name ?? '—';
+
+	const thumbnail = svgUri ? (
+		<Image
+			source={{ uri: svgUri }}
+			style={styles.thumb}
+			resizeMode="contain"
+		/>
+	) : (
+		<View style={[styles.thumb, { backgroundColor: theme.screen.text + '10', borderRadius: 6 }]} />
+	);
+
+	return (
+		<SettingsList
+			title={title}
+			value={spriteName}
+			handleFunction={onPress}
+			groupPosition={groupPosition}
+			leftIconComponent={
+				<View style={[styles.thumbWrapper, { backgroundColor: theme.screen.text + '08' }]}>
+					{thumbnail}
+				</View>
+			}
+		/>
+	);
+};
+
+export default SettingsListBillboard;
+
+const styles = StyleSheet.create({
+	thumbWrapper: {
+		width: 34,
+		height: 34,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginRight: 10,
+	},
+	thumb: {
+		width: THUMB_SIZE,
+		height: THUMB_SIZE,
+	},
+});

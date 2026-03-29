@@ -34,6 +34,7 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '..
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
+import SettingsListBillboard from '../components/SettingsListBillboard';
 
 /** Module-level cache mapping terrain asset key → base64 data URI. */
 const cachedTerrainSvgDataUrls = new Map<string, string>();
@@ -152,7 +153,7 @@ const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
 // smaller ones.
 const BILLBOARD_REFERENCE_RESOLUTION = 10;
 // Default billboard scale multiplier (adjustable in the debug modal).
-const BILLBOARD_SCALE_DEFAULT = 1;
+const BILLBOARD_SCALE_DEFAULT = 0.4;
 // Precision factor for rounding billboard scale values (1 decimal place).
 const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
 // Minimum rendered pixel size for billboard icons so that sprites at very small
@@ -161,6 +162,19 @@ const BILLBOARD_MIN_SIZE_PX = 8;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
+
+// Billboard anchor color options. Each maps to a position within the hex cell.
+// Colors match the debug point layer colors in hexTileScript.ts.
+const BILLBOARD_ANCHOR_COLORS = [
+	{ id: 'purple', hex: '#a855f7', label: 'Center (Purple)' },
+	{ id: 'green', hex: '#22c55e', label: 'Vertex (Green)' },
+	{ id: 'red', hex: '#ef4444', label: 'Midpoint 1 (Red)' },
+	{ id: 'orange', hex: '#f97316', label: 'Midpoint 2 (Orange)' },
+	{ id: 'yellow', hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
+	{ id: 'blue', hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
+	{ id: 'white', hex: '#ffffff', label: 'Midpoint 5 (White)' },
+	{ id: 'black', hex: '#000000', label: 'Midpoint 6 (Black)' },
+] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
 
@@ -784,6 +798,7 @@ type DebugInfoContentProps = {
 	initialSpeed: number;
 	initialBillboardScale: number;
 	initialBillboardFaceCamera: boolean;
+	initialShowBillboardAnchors: boolean;
 	initialShowDebugPoints: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
@@ -791,6 +806,7 @@ type DebugInfoContentProps = {
 	onSpeedChange: (speed: number) => void;
 	onBillboardScaleChange: (scale: number) => void;
 	onBillboardFaceCameraChange: (val: boolean) => void;
+	onShowBillboardAnchorsChange: (val: boolean) => void;
 	onShowDebugPointsChange: (val: boolean) => void;
 };
 
@@ -805,6 +821,7 @@ function DebugInfoContent({
 	initialSpeed,
 	initialBillboardScale,
 	initialBillboardFaceCamera,
+	initialShowBillboardAnchors,
 	initialShowDebugPoints,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
@@ -812,6 +829,7 @@ function DebugInfoContent({
 	onSpeedChange,
 	onBillboardScaleChange,
 	onBillboardFaceCameraChange,
+	onShowBillboardAnchorsChange,
 	onShowDebugPointsChange,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
@@ -820,6 +838,7 @@ function DebugInfoContent({
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
 	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
+	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
@@ -856,6 +875,11 @@ function DebugInfoContent({
 		setBillboardFaceCamera(val);
 		onBillboardFaceCameraChange(val);
 	}, [onBillboardFaceCameraChange]);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		setShowBillboardAnchors(val);
+		onShowBillboardAnchorsChange(val);
+	}, [onShowBillboardAnchorsChange]);
 
 	const handleShowDebugPointsChange = useCallback((val: boolean) => {
 		setShowDebugPoints(val);
@@ -1013,27 +1037,42 @@ function DebugInfoContent({
 			{/* Billboard Scale row */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
-				<View style={styles.resolutionPicker}>
-					<TouchableOpacity
-						style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
-						onPress={() => adjustBillboardScale(-0.5)}
-						disabled={billboardScale <= 0.1}
-					>
-						<Text style={styles.resolutionButtonText}>−</Text>
-					</TouchableOpacity>
-					<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
-						{billboardScale.toFixed(1)}×
-					</Text>
-					<TouchableOpacity
-						style={styles.resolutionButton}
-						onPress={() => adjustBillboardScale(0.5)}
-					>
-						<Text style={styles.resolutionButtonText}>+</Text>
-					</TouchableOpacity>
+				<View style={styles.resolutionPickerMultiRow}>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+							onPress={() => adjustBillboardScale(-0.5)}
+							disabled={billboardScale <= 0.1}
+						>
+							<Text style={styles.resolutionButtonText}>−</Text>
+						</TouchableOpacity>
+						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+							{billboardScale.toFixed(1)}×
+						</Text>
+						<TouchableOpacity
+							style={styles.resolutionButton}
+							onPress={() => adjustBillboardScale(0.5)}
+						>
+							<Text style={styles.resolutionButtonText}>+</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+							onPress={() => adjustBillboardScale(-0.1)}
+							disabled={billboardScale <= 0.1}
+						>
+							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.resolutionFineButton}
+							onPress={() => adjustBillboardScale(0.1)}
+						>
+							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</View>
-
-			{/* Min zoom info row */}
 
 			{/* Billboard Face Camera toggle */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
@@ -1041,6 +1080,17 @@ function DebugInfoContent({
 				<Switch
 					value={billboardFaceCamera}
 					onValueChange={handleBillboardFaceCameraChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Billboard Anchor Points toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Anchor Points</Text>
+				<Switch
+					value={showBillboardAnchors}
+					onValueChange={handleShowBillboardAnchorsChange}
 					trackColor={{ true: PRIMARY_COLOR }}
 					thumbColor="#ffffff"
 				/>
@@ -1211,6 +1261,136 @@ function formatTimestamp(ts: number | null): string {
 
 const TILE_THUMB_SIZE = 64;
 const TILE_THUMB_GAP = 6;
+
+// ── Hex Anchor Picker ──────────────────────────────────────────────────────────
+// Pointy-top hexagon with 9 interactive anchor points:
+//   center (purple), vertex[0] (green), and 6 midpoints (red/orange/yellow/blue/white/black)
+//   between the center and each of the 6 vertices.
+
+const HEX_PICKER_SIZE = 180;
+const HEX_PICKER_R = HEX_PICKER_SIZE * 0.38;
+const HEX_PICKER_CX = HEX_PICKER_SIZE / 2;
+const HEX_PICKER_CY = HEX_PICKER_SIZE / 2;
+const HEX_DOT_SIZE = 20;
+const HEX_DOT_SELECTED_SIZE = 26;
+
+// √3/4
+const SQRT3_4 = Math.sqrt(3) / 4;
+
+// Positions for each BILLBOARD_ANCHOR_COLOR entry (pointy-top hex, vertex[0] at top).
+const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
+	purple: { x: HEX_PICKER_CX, y: HEX_PICKER_CY }, // center
+	green:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R }, // vertex[0] top
+	red:    { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint 0 (→ vertex[0])
+	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint 1
+	yellow: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint 2
+	blue:   { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint 3 (→ vertex[3])
+	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint 4
+	black:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint 5
+};
+
+// Hexagon outline polygon points (pointy-top, 6 vertices).
+const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
+	const angle = (Math.PI / 2) - (i * Math.PI) / 3;
+	return {
+		x: HEX_PICKER_CX + HEX_PICKER_R * Math.cos(angle),
+		y: HEX_PICKER_CY - HEX_PICKER_R * Math.sin(angle),
+	};
+});
+
+function HexAnchorPicker({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
+	const { theme } = useTheme();
+	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
+
+	return (
+		<View style={hexPickerStyles.wrapper}>
+			<View style={hexPickerStyles.container}>
+				{/* Hexagon outline using thin border lines between vertices */}
+				{HEX_POLYGON_POINTS.map((pt, i) => {
+					const next = HEX_POLYGON_POINTS[(i + 1) % 6];
+					const dx = next.x - pt.x;
+					const dy = next.y - pt.y;
+					const len = Math.sqrt(dx * dx + dy * dy);
+					const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+					return (
+						<View
+							key={i}
+							pointerEvents="none"
+							style={[
+								hexPickerStyles.hexEdge,
+								{
+									width: len,
+									left: pt.x,
+									top: pt.y - 0.75,
+									transform: [{ rotate: `${angle}deg` }],
+									backgroundColor: theme.screen.text + '30',
+								},
+							]}
+						/>
+					);
+				})}
+				{/* Anchor dots */}
+				{BILLBOARD_ANCHOR_COLORS.map((ac) => {
+					const pos = HEX_ANCHOR_POSITIONS[ac.id];
+					if (!pos) return null;
+					const isSelected = selected === ac.id;
+					const dotSize = isSelected ? HEX_DOT_SELECTED_SIZE : HEX_DOT_SIZE;
+					return (
+						<TouchableOpacity
+							key={ac.id}
+							onPress={() => onSelect(ac.id)}
+							style={[
+								hexPickerStyles.dot,
+								{
+									width: dotSize,
+									height: dotSize,
+									borderRadius: dotSize / 2,
+									left: pos.x - dotSize / 2,
+									top: pos.y - dotSize / 2,
+									backgroundColor: ac.hex,
+									borderColor: isSelected ? PRIMARY_COLOR : (ac.id === 'white' ? '#d1d5db' : 'transparent'),
+									borderWidth: isSelected ? 3 : (ac.id === 'white' ? 1 : 0),
+									shadowColor: isSelected ? PRIMARY_COLOR : 'transparent',
+									shadowOpacity: isSelected ? 0.6 : 0,
+									shadowRadius: 4,
+									elevation: isSelected ? 4 : 0,
+								},
+							]}
+						/>
+					);
+				})}
+			</View>
+			<Text style={[hexPickerStyles.label, { color: theme.screen.icon }]}>{selectedLabel}</Text>
+		</View>
+	);
+}
+
+const hexPickerStyles = StyleSheet.create({
+	wrapper: {
+		alignItems: 'center',
+		paddingVertical: 8,
+	},
+	container: {
+		width: HEX_PICKER_SIZE,
+		height: HEX_PICKER_SIZE,
+		position: 'relative',
+	},
+	hexEdge: {
+		position: 'absolute',
+		height: 1.5,
+		transformOrigin: '0 50%',
+	},
+	dot: {
+		position: 'absolute',
+	},
+	label: {
+		fontSize: 12,
+		fontWeight: '500',
+		marginTop: 6,
+	},
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
@@ -1436,17 +1616,26 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</Text>
 			)}
 
+			{currentBillboard && (() => {
+				const parsed = parseBillboardKey(currentBillboard);
+				return (
+					<SettingsListBillboard
+						spriteIndex={parsed?.idx ?? null}
+						title={parsed?.sprite.name ?? currentBillboard}
+						groupPosition="single"
+					/>
+				);
+			})()}
+
+			{/* ── Billboard Anchor Color section ── */}
 			{currentBillboard && (
-				<View style={styles.tilePickerCurrentRow}>
-					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						{parseBillboardKey(currentBillboard)?.sprite.name ?? currentBillboard}
-					</Text>
-					<TouchableOpacity
-						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
-					>
-						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
-					</TouchableOpacity>
-				</View>
+				<>
+					<SettingsListGroupTitle title="Billboard Anchor Position" />
+					<HexAnchorPicker
+						selected={record?.billboardAnchorColor ?? 'purple'}
+						onSelect={(colorId) => dispatch(setHexTileCustomization({ h3Index, billboardAnchorColor: colorId }))}
+					/>
+				</>
 			)}
 
 		</View>
@@ -1540,6 +1729,12 @@ export default function RecordScreen() {
 			.join('\n'),
 	);
 
+	// Stable key for billboard anchor config changes so the map is updated when
+	// anchor overrides are adjusted in the Billboard Config screen.
+	const billboardConfigKey = useSelector((state: RootState) =>
+		JSON.stringify(state.billboardConfig.spriteAnchors),
+	);
+
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
 	// asset URL (web).  Using data URIs avoids canvas-taint security errors when drawing PNG files
 	// onto an HTML Canvas.
@@ -1575,6 +1770,7 @@ export default function RecordScreen() {
 		if (!mapWebViewReadyRef.current || !mapRef.current) return;
 
 		const records = store.getState().hexTiles.records;
+		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
 
 		// Flat lookup: terrain asset key → module ID
 		const terrainLookup = new Map<string, number>();
@@ -1675,7 +1871,7 @@ export default function RecordScreen() {
 		type BillboardFeature = {
 			type: 'Feature';
 			geometry: { type: 'Point'; coordinates: [number, number] };
-			properties: { iconKey: string; iconSizeAtRefZoom: number };
+			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number };
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
@@ -1683,11 +1879,16 @@ export default function RecordScreen() {
 			if (!record.billboard) continue;
 			const parsed = parseBillboardKey(record.billboard);
 			if (!parsed) continue;
-			const { sprite } = parsed;
+			const { sprite, idx } = parsed;
 			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
 			if (!url) continue;
 
 			const iconKey = `billboard-${record.billboard}`;
+
+			// Look up global anchor overrides for this sprite type.
+			const anchorOverride = spriteAnchors[idx];
+			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
 
 			// Compute the centroid of the hexagon polygon by averaging its boundary
 			// vertices. The ring is closed (last vertex = first), so exclude it.
@@ -1700,8 +1901,31 @@ export default function RecordScreen() {
 				sumLng += bLng;
 				sumLat += bLat;
 			}
-			const lng = sumLng / n;
-			const lat = sumLat / n;
+			const centerLng = sumLng / n;
+			const centerLat = sumLat / n;
+
+			// Determine billboard placement position based on anchor color.
+			// Matches debug point positions: purple=center, green=vertex[0],
+			// red/orange/yellow/blue/white/black = midpoints 0–5.
+			let lng = centerLng;
+			let lat = centerLat;
+			const anchorColor = record.billboardAnchorColor ?? 'purple';
+			if (anchorColor === 'green' && n > 0) {
+				// Use the first vertex (corner) of the hex polygon
+				const [vLng, vLat] = boundary[0] as [number, number];
+				lng = vLng;
+				lat = vLat;
+			} else if (anchorColor !== 'purple') {
+				// Midpoint between center and a corner vertex.
+				// Midpoint colors cycle: red=0, orange=1, yellow=2, blue=3, white=4, black=5
+				const midpointColors = ['red', 'orange', 'yellow', 'blue', 'white', 'black'];
+				const midIdx = midpointColors.indexOf(anchorColor);
+				if (midIdx >= 0 && midIdx < n) {
+					const [vLng, vLat] = boundary[midIdx] as [number, number];
+					lng = (centerLng + vLng) / 2;
+					lat = (centerLat + vLat) / 2;
+				}
+			}
 
 			// Desired pixel size at reference zoom 14, scaled by user multiplier and
 			// proportional to the H3 edge length so billboards are larger on bigger
@@ -1723,7 +1947,7 @@ export default function RecordScreen() {
 			billboardFeatures.push({
 				type: 'Feature',
 				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconKey, iconSizeAtRefZoom },
+				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
 			});
 		}
 
@@ -1738,11 +1962,12 @@ export default function RecordScreen() {
 		});
 	}, [loadAssetUrl]);
 
-	// Re-send customizations whenever tile image / model selections change.
+	// Re-send customizations whenever tile image / model selections or
+	// billboard anchor config change.
 	// Billboard sizes scale proportionally with the H3 edge length.
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+	}, [hexTileCustomizationsKey, billboardConfigKey, loadAndSendCustomizations]);
 
 
 	useLayoutEffect(() => {
@@ -1790,6 +2015,8 @@ export default function RecordScreen() {
 	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
 	// Whether billboards face the camera (true) or lie flat on the map (false)
 	const billboardFaceCameraRef = useRef(true);
+	// Whether to show anchor point indicators at the base of each billboard
+	const showBillboardAnchorsRef = useRef(false);
 	// Whether debug point layers (vertices, centers, midpoints) are visible
 	const showDebugPointsRef = useRef(false);
 	// Mirrors isRecording state for use inside callbacks without stale closures
@@ -1939,6 +2166,11 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ billboardPitchAlignment: val ? 'viewport' : 'map' });
 	}, []);
 
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		showBillboardAnchorsRef.current = val;
+		mapRef.current?.sendToMap({ billboardShowAnchors: val });
+	}, []);
+
 	const handleShowDebugPointsChange = useCallback((val: boolean) => {
 		showDebugPointsRef.current = val;
 		mapRef.current?.sendToMap({ hexDebugPoints: val });
@@ -2009,6 +2241,7 @@ export default function RecordScreen() {
 					initialSpeed={debugMoveSpeedKmhRef.current}
 					initialBillboardScale={billboardScaleRef.current}
 					initialBillboardFaceCamera={billboardFaceCameraRef.current}
+					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
 					initialShowDebugPoints={showDebugPointsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
@@ -2016,11 +2249,12 @@ export default function RecordScreen() {
 					onSpeedChange={handleSpeedChange}
 					onBillboardScaleChange={handleBillboardScaleChange}
 					onBillboardFaceCameraChange={handleBillboardFaceCameraChange}
+					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
 					onShowDebugPointsChange={handleShowDebugPointsChange}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowDebugPointsChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({

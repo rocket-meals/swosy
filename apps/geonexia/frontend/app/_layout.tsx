@@ -13,9 +13,11 @@ import { store } from '../store/store';
 import { loadPersistedState } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
+import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadHexTileState } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
+import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
@@ -123,6 +125,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
 		},
+		{
+			key: 'billboard-config/index',
+			label: 'Billboard Config',
+			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('billboard-config/index'),
+		},
 	];
 
 	return (
@@ -162,6 +170,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted theme mode:', err);
+			});
+		loadBillboardConfig()
+			.then((config) => {
+				store.dispatch(loadPersistedBillboardConfig(config));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted billboard config:', err);
 			});
 	}, []);
 
@@ -239,6 +254,15 @@ export default function Layout() {
 									title: 'Feature Wishes',
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="bulb-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="billboard-config/index"
+								options={{
+									title: 'Billboard Config',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="build-outline" size={size} color={color} />
 									),
 								}}
 							/>
