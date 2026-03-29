@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
-import { ScreenHeaderProps } from './types';
+
+export interface ScreenHeaderProps {
+	/** The header title text */
+	label: string;
+	/** Left-side element, e.g. a back or menu button */
+	leftElement?: ReactNode;
+	/** Right-side element, e.g. action buttons */
+	rightElement?: ReactNode;
+	/** Header height in pixels (default: 60) */
+	height?: number;
+}
 
 const DEFAULT_HEIGHT = 60;
 
