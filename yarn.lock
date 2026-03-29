@@ -17163,6 +17163,7 @@ __metadata:
     repo-depkit-common: "workspace:*"
     repo-depkit-common-ui: "workspace:*"
     setimmediate: "npm:^1.0.5"
+    ts-node: "npm:^10.9.2"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft

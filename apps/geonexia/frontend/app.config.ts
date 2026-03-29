@@ -1,5 +1,16 @@
 import type { ConfigContext, ExpoConfig } from '@expo/config';
-import { getBuildNumber } from './config';
+
+// Register ts-node so Expo can load TypeScript config helpers without a
+// precompiled JavaScript file.
+require('ts-node').register({
+	transpileOnly: true,
+	compilerOptions: {
+		module: 'Node16',
+		moduleResolution: 'node16',
+	},
+});
+
+const { getBuildNumber } = require('./config.ts');
 
 module.exports = function ({ config }: ConfigContext): ExpoConfig {
 	const buildNumber = getBuildNumber();
