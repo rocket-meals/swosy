@@ -35,6 +35,7 @@ import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
+import { buildKmAnnouncement, speakAnnouncement } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -713,55 +714,6 @@ function formatPace(minPerKm: number): string {
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-// ─── TTS announcement ────────────────────────────────────────────────────────
-
-/**
- * Build a localised TTS announcement for a km milestone during recording.
- * Falls back to English when the device locale is not explicitly supported.
- */
-function buildKmAnnouncement(km: number, paceMinPerKm: number | null, locale: string): string {
-	const langCode = locale.split('-')[0].toLowerCase();
-	const paceMin = paceMinPerKm != null ? Math.floor(paceMinPerKm) : null;
-	const paceSec = paceMinPerKm != null ? Math.round((paceMinPerKm - Math.floor(paceMinPerKm)) * 60) : null;
-
-	switch (langCode) {
-		case 'de': {
-			const paceStr = paceMin != null && paceSec != null ? `, Tempo ${paceMin} Minuten ${paceSec} Sekunden pro Kilometer` : '';
-			return `${km} Kilometer${paceStr}`;
-		}
-		case 'fr': {
-			const paceStr = paceMin != null && paceSec != null ? `, allure ${paceMin} minutes ${paceSec} secondes par kilomètre` : '';
-			return `${km} kilomètre${km > 1 ? 's' : ''}${paceStr}`;
-		}
-		case 'es': {
-			const paceStr = paceMin != null && paceSec != null ? `, ritmo ${paceMin} minutos ${paceSec} segundos por kilómetro` : '';
-			return `${km} kilómetro${km > 1 ? 's' : ''}${paceStr}`;
-		}
-		case 'it': {
-			const paceStr = paceMin != null && paceSec != null ? `, passo ${paceMin} minuti ${paceSec} secondi al chilometro` : '';
-			return `${km} chilometro${km > 1 ? 'i' : ''}${paceStr}`;
-		}
-		case 'pt': {
-			const paceStr = paceMin != null && paceSec != null ? `, ritmo ${paceMin} minutos ${paceSec} segundos por quilômetro` : '';
-			return `${km} quilômetro${km > 1 ? 's' : ''}${paceStr}`;
-		}
-		case 'nl': {
-			const paceStr = paceMin != null && paceSec != null ? `, tempo ${paceMin} minuten ${paceSec} seconden per kilometer` : '';
-			return `${km} kilometer${paceStr}`;
-		}
-		default: {
-			const paceStr = paceMin != null && paceSec != null ? `, pace ${paceMin} minutes ${paceSec} seconds per kilometer` : '';
-			return `${km} kilometer${km > 1 ? 's' : ''}${paceStr}`;
-		}
-	}
-}
-
-/** Speak a TTS announcement, stopping any currently playing speech first. */
-function speakAnnouncement(text: string, languageCode: string): void {
-	Speech.stop();
-	Speech.speak(text, { language: languageCode });
 }
 
 function formatDistance(km: number): string {
@@ -2541,7 +2493,7 @@ export default function RecordScreen() {
 						? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 						: accumulatedSecondsRef.current;
 				const paceMinPerKm = elapsedSec > 0 && d > 0 ? elapsedSec / 60 / d : null;
-				const locale = getLocales()[0]?.languageTag ?? 'en';
+				const locale = getLocales()[0]?.languageTag ?? 'en-US';
 				const langCode = locale.split('-')[0].toLowerCase();
 				const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale);
 				speakAnnouncement(text, langCode);

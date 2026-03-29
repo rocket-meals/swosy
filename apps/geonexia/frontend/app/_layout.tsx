@@ -135,6 +135,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('billboard-config/index'),
 		},
+		{
+			key: 'experimental/index',
+			label: 'Experimental',
+			renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('experimental/index'),
+		},
 	];
 
 	return (
@@ -289,6 +295,22 @@ export default function Layout() {
 									drawerIcon: ({ color, size }) => (
 										<Ionicons name="build-outline" size={size} color={color} />
 									),
+								}}
+							/>
+							<Drawer.Screen
+								name="experimental/index"
+								options={{
+									title: 'Experimental',
+									drawerIcon: ({ color, size }) => (
+										<Ionicons name="flask-outline" size={size} color={color} />
+									),
+								}}
+							/>
+							<Drawer.Screen
+								name="experimental/tts-test/index"
+								options={{
+									title: 'Text to Speech Test',
+									drawerItemStyle: { display: 'none' },
 								}}
 							/>
 						</Drawer>
