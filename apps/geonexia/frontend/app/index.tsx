@@ -2005,12 +2005,11 @@ export default function RecordScreen() {
 	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
-			onClose: closeModal,
 			children: (
 				<HexTileInfoContent h3Index={h3Index} />
 			),
 		});
-	}, [showModal, closeModal]);
+	}, [showModal]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
