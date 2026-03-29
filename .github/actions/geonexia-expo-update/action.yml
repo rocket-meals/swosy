@@ -57,9 +57,8 @@ runs:
 
         ICON_SOURCE="./apps/geonexia/frontend/assets/icons/app_icon_source.png"
         COMPANY_LOGO="./customers/BaumgartnerSoftware/company.png"
-        OUTPUT_DIR="./apps/geonexia/frontend/assets/"
 
-        ./scripts/generateIcons.sh "$ICON_SOURCE" "$COMPANY_LOGO" "$OUTPUT_DIR"
+        ./scripts/generateIcons.sh "$ICON_SOURCE" "$COMPANY_LOGO" --project-dir "./apps/geonexia/frontend"
 
     - name: "🔧 Initialize EAS project if not configured"
       run: |
