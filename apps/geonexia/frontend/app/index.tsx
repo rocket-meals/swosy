@@ -1653,8 +1653,8 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage || r.billboard)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}`)
+			.filter(([, r]) => r.tileImage || r.billboard || r.billboards)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}`)
 			.sort()
 			.join('\n'),
 	);
