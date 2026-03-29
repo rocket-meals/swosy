@@ -32,6 +32,12 @@ const Index = () => {
 
 	const listItems = [
 		{
+			key: 'edge-speech',
+			label: translate(TranslationKeys.edge_speech_test),
+			leftIcon: <MaterialCommunityIcons name="text-to-speech" size={24} color={theme.screen.icon} />,
+			onPress: () => router.push('/experimentell/edge-speech'),
+		},
+		{
 			key: 'map-with-custom-images-and-buildings',
 			label: 'Map – Custom Images & Buildings',
 			leftIcon: <MaterialCommunityIcons name="layers" size={24} color={theme.screen.icon} />,
