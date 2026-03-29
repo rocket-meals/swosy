@@ -15,6 +15,8 @@ export type HexTileSliceState = {
 	resetToken: number;
 	/** Whether the app is currently using the dev-mode tile set instead of the real one. */
 	isDevMode: boolean;
+	/** Whether debug mode is active (shows debug button, coloring tool, etc.). */
+	isDebugMode: boolean;
 };
 
 const initialState: HexTileSliceState = {
@@ -22,6 +24,7 @@ const initialState: HexTileSliceState = {
 	runStartLevels: {},
 	resetToken: 0,
 	isDevMode: false,
+	isDebugMode: false,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -190,8 +193,13 @@ const hexTileSlice = createSlice({
 			state.runStartLevels = {};
 			state.resetToken += 1;
 		},
+
+		/** Set debug mode on/off. */
+		setDebugMode(state, action: PayloadAction<boolean>) {
+			state.isDebugMode = action.payload;
+		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode, setDebugMode } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

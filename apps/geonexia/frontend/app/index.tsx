@@ -28,8 +28,8 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { HexTileRecord, BillboardAnchorColor, saveHexTileState, saveDevHexTileState, loadHexTileState, loadDevHexTileState, saveDevModeFlag } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode } from '../store/hexTileSlice';
+import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
@@ -756,7 +756,6 @@ type DebugInfoContentProps = {
 	initialBillboardFaceCamera: boolean;
 	initialShowBillboardAnchors: boolean;
 	initialShowDebugPoints: boolean;
-	initialIsDevMode: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
@@ -767,7 +766,6 @@ type DebugInfoContentProps = {
 	onShowDebugPointsChange: (val: boolean) => void;
 	onExportMapSettings: () => void;
 	onImportMapSettings: (json: string) => void;
-	onToggleDevMode: () => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -783,7 +781,6 @@ function DebugInfoContent({
 	initialBillboardFaceCamera,
 	initialShowBillboardAnchors,
 	initialShowDebugPoints,
-	initialIsDevMode,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
@@ -794,7 +791,6 @@ function DebugInfoContent({
 	onShowDebugPointsChange,
 	onExportMapSettings,
 	onImportMapSettings,
-	onToggleDevMode,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
@@ -804,7 +800,6 @@ function DebugInfoContent({
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
 	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
-	const [isDevMode, setIsDevMode] = useState(initialIsDevMode);
 	const [showImportArea, setShowImportArea] = useState(false);
 	const [importJson, setImportJson] = useState('');
 
@@ -1090,29 +1085,6 @@ function DebugInfoContent({
 				</View>
 			))}
 
-			{/* Dev Mode toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22', flexDirection: 'column', alignItems: 'stretch', gap: 8, paddingVertical: 12 }]}>
-				<View>
-					<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text, marginBottom: 2 }]}>Data Mode</Text>
-					<Text selectable style={[styles.debugRowValue, { color: theme.screen.icon, fontSize: 11 }]}>
-						{isDevMode ? '🧪 Dev tiles active – real data preserved' : '✅ Production tiles active'}
-					</Text>
-				</View>
-				<TouchableOpacity
-					style={[styles.resolutionButton, { backgroundColor: isDevMode ? '#f59e0b18' : PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
-					onPress={() => {
-						setIsDevMode((v) => !v);
-						onToggleDevMode();
-					}}
-					activeOpacity={0.7}
-				>
-					<Ionicons name={isDevMode ? 'flash' : 'flask-outline'} size={16} color={isDevMode ? '#f59e0b' : PRIMARY_COLOR} />
-					<Text style={[styles.debugRowLabel, { color: isDevMode ? '#f59e0b' : PRIMARY_COLOR, marginLeft: 4 }]}>
-						{isDevMode ? 'Switch to Production' : 'Switch to Dev Mode'}
-					</Text>
-				</TouchableOpacity>
-			</View>
-
 			{/* Map Settings export / import */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22', flexDirection: 'column', alignItems: 'stretch', gap: 8, paddingVertical: 12 }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text, marginBottom: 2 }]}>Map Settings</Text>
@@ -1321,17 +1293,22 @@ const HEX_DOT_SELECTED_SIZE = 26;
 
 // √3/4
 const SQRT3_4 = Math.sqrt(3) / 4;
+// √3/2
+const SQRT3_2 = Math.sqrt(3) / 2;
 
-// Positions for each BILLBOARD_ANCHOR_COLOR entry (pointy-top hex, vertex[0] at top).
+// Positions for each BILLBOARD_ANCHOR_COLOR entry.
+// Midpoints are rotated one step clockwise vs. the original layout so that black
+// lands at the top (directly above the center).
+// Green vertex has been moved one step clockwise to vertex[1] (upper-right).
 const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
 	purple: { x: HEX_PICKER_CX, y: HEX_PICKER_CY }, // center
-	green:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R }, // vertex[0] top
-	red:    { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint 0 (→ vertex[0])
-	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint 1
-	yellow: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint 2
-	blue:   { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint 3 (→ vertex[3])
-	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint 4
-	black:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint 5
+	green:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // vertex[1] upper-right
+	black:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint[0] top
+	red:    { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[1] upper-right
+	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[2] lower-right
+	yellow: { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint[3] bottom
+	blue:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[4] lower-left
+	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[5] upper-left
 };
 
 // Hexagon outline polygon points (pointy-top, 6 vertices).
@@ -1605,6 +1582,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
@@ -1614,6 +1592,7 @@ export default function RecordScreen() {
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
+	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1639,6 +1618,16 @@ export default function RecordScreen() {
 	const accumulatedSecondsRef = useRef(0);
 
 	const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
+
+	// Coloring tool state:
+	// - coloringTileImage: the currently selected tile key; null means coloring mode is off.
+	// - coloringTileImageRef: ref copy for use in map message callbacks (avoids stale closures).
+	// - coloringSelectionMadeRef: tracks whether the user made a selection in the modal,
+	//   used to distinguish "closed by selection" vs "dismissed without selection".
+	const [coloringTileImage, setColoringTileImage] = useState<string | null>(null);
+	const coloringTileImageRef = useRef<string | null>(null);
+	const coloringSelectionMadeRef = useRef(false);
+	coloringTileImageRef.current = coloringTileImage;
 
 	// Debug: last viewport info for the debug modal (ref avoids stale closure issues).
 	const debugViewportRef = useRef<DebugViewportInfo | null>(null);
@@ -2151,6 +2140,48 @@ export default function RecordScreen() {
 		});
 	}, [showModal]);
 
+	const openColoringModal = useCallback(() => {
+		coloringSelectionMadeRef.current = false;
+		showColoringModal({
+			title: '🎨 Tile Color',
+			onClose: () => {
+				if (!coloringSelectionMadeRef.current) {
+					setColoringTileImage(null);
+				}
+				closeColoringModal();
+			},
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					{TERRAIN_CATEGORIES.map((cat) => {
+						const entries = TERRAIN_ASSETS[cat];
+						return (
+							<View key={cat}>
+								<SettingsListGroupTitle title={cat} />
+								{entries.map((entry, i) => {
+									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
+									return (
+										<SettingsListSelectOptionSingle
+											key={entry.key}
+											label={entry.key.split('/').pop() ?? entry.key}
+											isSelected={coloringTileImageRef.current === entry.key}
+											selectionColor={PRIMARY_COLOR}
+											onPress={() => {
+												coloringSelectionMadeRef.current = true;
+												setColoringTileImage(entry.key);
+												closeColoringModal();
+											}}
+											groupPosition={position}
+										/>
+									);
+								})}
+							</View>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showColoringModal, closeColoringModal]);
+
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
@@ -2187,10 +2218,15 @@ export default function RecordScreen() {
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string };
 			if (clickedMsg.h3Index) {
-				showHexTileModal(clickedMsg.h3Index);
+				if (coloringTileImageRef.current !== null) {
+					// Coloring mode active: directly apply the selected tile image.
+					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
+				} else {
+					showHexTileModal(clickedMsg.h3Index);
+				}
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations, dispatch]);
 
 	const handleExportMapSettings = useCallback(async () => {
 		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string> }> = {};
@@ -2225,23 +2261,6 @@ export default function RecordScreen() {
 		Alert.alert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
 	}, [dispatch]);
 
-	const handleToggleDevMode = useCallback(async () => {
-		const { records: currentRecords, isDevMode: currentIsDevMode } = store.getState().hexTiles;
-		if (currentIsDevMode) {
-			// Switching to production: flush dev tiles, load prod tiles
-			saveDevHexTileState(currentRecords);
-			const prodRecords = await loadHexTileState();
-			saveDevModeFlag(false);
-			dispatch(setDevMode({ isDevMode: false, records: prodRecords }));
-		} else {
-			// Switching to dev: flush prod tiles, load dev tiles
-			saveHexTileState(currentRecords);
-			const devRecords = await loadDevHexTileState();
-			saveDevModeFlag(true);
-			dispatch(setDevMode({ isDevMode: true, records: devRecords }));
-		}
-	}, [dispatch]);
-
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
 		showModal({
@@ -2258,7 +2277,6 @@ export default function RecordScreen() {
 					initialBillboardFaceCamera={billboardFaceCameraRef.current}
 					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
 					initialShowDebugPoints={showDebugPointsRef.current}
-					initialIsDevMode={isDevMode}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
@@ -2269,11 +2287,10 @@ export default function RecordScreen() {
 					onShowDebugPointsChange={handleShowDebugPointsChange}
 					onExportMapSettings={handleExportMapSettings}
 					onImportMapSettings={handleImportMapSettings}
-					onToggleDevMode={handleToggleDevMode}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings, handleToggleDevMode, isDevMode]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -2875,6 +2892,21 @@ export default function RecordScreen() {
 						}}
 					/>
 					<View style={styles.buttonSpacer} />
+					{isDebugMode && (
+						<>
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									coloringTileImage !== null && { backgroundColor: PRIMARY_COLOR },
+								]}
+								onPress={openColoringModal}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="format-paint" size={20} color={coloringTileImage !== null ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+						</>
+					)}
 					<TouchableOpacity
 						style={styles.debugButton}
 						onPress={showDebugModal}
