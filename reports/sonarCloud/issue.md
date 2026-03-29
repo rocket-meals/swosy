@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6822 | 46 |
+| 🐛 Reliability | 6826 | 46 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16826 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16830 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,7 +30,7 @@
   .github/actions/geonexia-expo-update/action.yml:164
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L164
 
-## 🐛 Reliability (46/6822)
+## 🐛 Reliability (46/6826)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -117,6 +117,22 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L76
 
 - **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:103
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L103
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:104
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L104
+
+- **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:142
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L142
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:143
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L143
+
+- **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/h3core.js#L242
 
@@ -199,20 +215,4 @@
 - **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:616
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L616
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:618
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L618
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:621
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L621
-
-- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:640
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L640
-
-- **Use `Math.trunc` instead of `| 0`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:687
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L687
 

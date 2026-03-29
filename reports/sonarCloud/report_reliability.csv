@@ -1,8 +1,12 @@
 Key,Message,Component,Line
-"AZ06kBrPoHL-2mk7tiV-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",76
-"AZ06kBrPoHL-2mk7tiV9","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",76
-"AZ06kBrPoHL-2mk7tiV_","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",77
-"AZ06kBrPoHL-2mk7tiWA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",80
+"AZ068wPbEBPEFGyzbdb9","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",103
+"AZ068wPbEBPEFGyzbdb-","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",104
+"AZ068wPbEBPEFGyzbdb_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",142
+"AZ068wPbEBPEFGyzbdcA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",143
+"AZ06kBrPoHL-2mk7tiV-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",88
+"AZ06kBrPoHL-2mk7tiV9","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",88
+"AZ06kBrPoHL-2mk7tiV_","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",89
+"AZ06kBrPoHL-2mk7tiWA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",92
 "AZ05GDsMoxp4O0LdguSD","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",67
 "AZ04cJY6RnJvyhKattnb","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",113
 "AZ04DN1nkGZROQtB6BRo","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",485

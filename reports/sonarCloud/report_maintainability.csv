@@ -1,28 +1,23 @@
 Key,Message,Component,Line
-"AZ06q-Z_oHL-2mk7uVGQ","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",34
-"AZ06q-Z_oHL-2mk7uVGR","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",36
-"AZ06q-Z_oHL-2mk7uVGS","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",38
-"AZ06q-Z_oHL-2mk7uVGT","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",40
-"AZ06q-Z_oHL-2mk7uVGU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",383
-"AZ06q-Z_oHL-2mk7uVGV","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",385
-"AZ06q-Z_oHL-2mk7uVGW","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",385
-"AZ06q-Z_oHL-2mk7uVGX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",398
-"AZ06q-Z_oHL-2mk7uVGY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",398
+"AZ068wPbEBPEFGyzbdb8","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",50
+"AZ068wPbEBPEFGyzbdb9","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",103
+"AZ068wPbEBPEFGyzbdb-","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",104
+"AZ068wPbEBPEFGyzbdb_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",142
+"AZ068wPbEBPEFGyzbdcA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",143
+"AZ068wPbEBPEFGyzbdcB","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",197
+"AZ068wPbEBPEFGyzbdcC","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",371
 "AZ06kBMDoHL-2mk7tiV7","Remove this useless assignment to variable ""handleToggleTTS"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",177
-"AZ06kBrPoHL-2mk7tiWD","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",200
-"AZ06kBrPoHL-2mk7tiWE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",202
-"AZ06kBLFoHL-2mk7tiV5","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",312
-"AZ06kBLFoHL-2mk7tiV6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/edge-speech/index.tsx",312
-"AZ06kBI2oHL-2mk7tiV2","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",26
-"AZ06kBI2oHL-2mk7tiV3","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",27
-"AZ06kBI2oHL-2mk7tiV4","Remove this useless assignment to variable ""theme"".","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",32
-"AZ06kBrPoHL-2mk7tiV8","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",67
-"AZ06kBrPoHL-2mk7tiV-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",76
-"AZ06kBrPoHL-2mk7tiV9","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",76
-"AZ06kBrPoHL-2mk7tiV_","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",77
-"AZ06kBrPoHL-2mk7tiWA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",80
-"AZ06kBrPoHL-2mk7tiWB","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",143
-"AZ06kBrPoHL-2mk7tiWC","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",143
+"AZ06kBrPoHL-2mk7tiWD","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",224
+"AZ06kBrPoHL-2mk7tiWE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",226
+"AZ06kBI2oHL-2mk7tiV2","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",37
+"AZ06kBI2oHL-2mk7tiV3","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",38
+"AZ06kBrPoHL-2mk7tiV8","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",79
+"AZ06kBrPoHL-2mk7tiV-","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",88
+"AZ06kBrPoHL-2mk7tiV9","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",88
+"AZ06kBrPoHL-2mk7tiV_","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",89
+"AZ06kBrPoHL-2mk7tiWA","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",92
+"AZ06kBrPoHL-2mk7tiWB","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",155
+"AZ06kBrPoHL-2mk7tiWC","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListNumberInput/SettingsListNumberInput.tsx",155
 "AZ06T7_DvIUCM9Fw-mnI","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",398
 "AZ06T7_DvIUCM9Fw-mnJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",398
 "AZ06ICRVoxp4O0LdolrE","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",34
@@ -83,7 +78,7 @@ Key,Message,Component,Line
 "AZ02AxpJU7rlc86SJhG7","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/objectSprites.ts",28
 "AZ02AxpJU7rlc86SJhG8","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/objectSprites.ts",73
 "AZ02AxlgU7rlc86SJhG4","Remove this unused import of 'SpriteAnchorOverride'.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/billboardConfigSlice.ts",2
-"AZ01YZ3uU7rlc86SEUhn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",277
+"AZ01YZ3uU7rlc86SEUhn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",322
 "AZ0zeiOmU7rlc86S2EmL","Remove this useless assignment to variable ""h3Resolution"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1659
 "AZ0xd87o8MGqxOY_C-X3","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MapOverlayButtons/index.tsx",72
 "AZ0wXRobxPDqg0gLkw70","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",100
@@ -96,7 +91,7 @@ Key,Message,Component,Line
 "AZ0uzBxxqOhuHPzxctlr","'unknown' overrides all other types in this union type.","rocket-meals_rocket-meals:packages/common/src/databaseTypes/types.ts",1029
 "AZ0uTPRBHa9wv8L9mdnZ","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/achievements/index.tsx",361
 "AZ0uTP2MHa9wv8L9mdna","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsListProgress/SettingsListProgress.tsx",71
-"AZ0uQMSzi-iZW_FKXQJB","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",268
+"AZ0uQMSzi-iZW_FKXQJB","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",331
 "AZ0swinOJsiWTBVgYM-N","Prefer `.some(…)` over non-zero length check from `.filter(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/achievements/index.tsx",122
 "AZ0shtepHCNUh2gxqokx","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",77
 "AZ0shtepHCNUh2gxqoky","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",103
@@ -110,7 +105,7 @@ Key,Message,Component,Line
 "AZ0qQsaFwNvxBfmg7NNr","Replace the unused local variable ""laf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
 "AZ0qQsaFwNvxBfmg7NNs","Replace the unused local variable ""xrot"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
 "AZ0qQsaFwNvxBfmg7NNt","Replace the unused local variable ""ry"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
-"AZ0mPlq3vX_PW5NlnggN","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",243
+"AZ0mPlq3vX_PW5NlnggN","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",261
 "AZ0mPmKivX_PW5NlnggO","Unexpected negated condition.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.tsx",43
 "AZ0l8P0X4f4TF5V4_eK7","Refactor this function to reduce its Cognitive Complexity from 81 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1738
 "AZ0lz9tK_bGaREZrM0Cb","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1446
@@ -8430,8 +8425,8 @@ Key,Message,Component,Line
 "AZ0Y6QUMyJsjaJPaNj_V","Use `export…from` to re-export `MyMapHandle`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",122
 "AZ0Y6QUMyJsjaJPaNj_W","Use `export…from` to re-export `MyMapProps`.","rocket-meals_rocket-meals:packages/common-ui/src/components/MyMap/index.web.tsx",122
 "AZ0Y0Tc2TeeD3ppJi8dj","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/AppDrawer/AppDrawer.tsx",72
-"AZ0YwZFETb56BCVJHZIK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",234
-"AZ0YwZFETb56BCVJHZIM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",252
+"AZ0YwZFETb56BCVJHZIK","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",252
+"AZ0YwZFETb56BCVJHZIM","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",270
 "AZ0YwZFETb56BCVJHZIL","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",295
 "AZ0YpBMgLvrw8DEQgX7e","Refactor this function to reduce its Cognitive Complexity from 28 to the 15 allowed.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",35
 "AZ0YpBMgLvrw8DEQgX7f","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:packages/common-ui/src/components/SettingsList/SettingsList.tsx",52
@@ -9999,3 +9994,8 @@ Key,Message,Component,Line
 "AZkUSvcAS4VhJojFFCTJ","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/authReducer.ts",19
 "AZkUSvcAS4VhJojFFCTK","This case's code block is the same as the block for the case on line 21.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/authReducer.ts",28
 "AZkUSvbcS4VhJojFFCTF","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/campusReducer.ts",10
+"AZkUSvdHS4VhJojFFCTS","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/canteenReducer.ts",17
+"AZkUSvbSS4VhJojFFCTE","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/foodReducer.ts",21
+"AZkUSvciS4VhJojFFCTO","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/formReducer.ts",14
+"AZkUSvbvS4VhJojFFCTH","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/managementReducer.ts",28
+"AZkUSvb3S4VhJojFFCTI","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/newsReducer.ts",7
