@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { Asset } from 'expo-asset';
+import * as Clipboard from 'expo-clipboard';
 import * as FileSystem from 'expo-file-system/legacy';
 import { WebView } from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +20,8 @@ const ANCHOR_PRECISION = 100; // 2 decimal places
 
 const PREVIEW_HEIGHT = 160;
 const ANCHOR_DOT_SIZE = 12;
+const MODAL_THUMB_SIZE = 32;
+const NONE_OPTION_ID = -1;
 
 /** Clamp a value between 0 and 1, rounded to 2 decimal places. */
 function clampAnchor(value: number): number {
@@ -54,75 +57,63 @@ function buildPlacedCountMap(records: Record<string, HexTileRecord>): Map<number
 	return countMap;
 }
 
-/** Modal content listing all available billboard types for selection. */
-function BillboardSelectionContent({
-	selectedSpriteIndex,
-	placedCountMap,
-	onSelect,
-}: {
-	selectedSpriteIndex: number;
-	placedCountMap: Map<number, number>;
-	onSelect: (spriteIndex: number) => void;
-}) {
-	const { theme } = useTheme();
+/** Small SVG thumbnail used as an icon inside the selection modal. */
+function SpriteThumbnailIcon({ spriteIndex }: { spriteIndex: number }) {
+	const [svgUri, setSvgUri] = useState<string | null>(null);
+
+	useEffect(() => {
+		let cancelled = false;
+		const sprite = OBJECT_SPRITES[spriteIndex];
+		if (!sprite) return;
+		(async () => {
+			try {
+				const asset = Asset.fromModule(sprite.source as number);
+				await asset.downloadAsync();
+				if (cancelled) return;
+				let uri: string;
+				if (Platform.OS === 'web') {
+					uri = asset.uri;
+				} else {
+					if (!asset.localUri) return;
+					const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
+						encoding: FileSystem.EncodingType.Base64,
+					});
+					if (cancelled) return;
+					uri = `data:image/svg+xml;base64,${base64}`;
+				}
+				setSvgUri(uri);
+			} catch {
+				// ignore load failures
+			}
+		})();
+		return () => { cancelled = true; };
+	}, [spriteIndex]);
+
+	if (!svgUri) {
+		return <View style={modalStyles.thumbPlaceholder} />;
+	}
+
 	return (
-		<View style={selectionStyles.container}>
-			{OBJECT_SPRITES.map((sprite, idx) => {
-				const isSelected = idx === selectedSpriteIndex;
-				const count = placedCountMap.get(idx) ?? 0;
-				return (
-					<TouchableOpacity
-						key={idx}
-						onPress={() => onSelect(idx)}
-						style={[
-							selectionStyles.row,
-							{ backgroundColor: isSelected ? PRIMARY_COLOR + '18' : 'transparent' },
-						]}
-					>
-						<View style={selectionStyles.rowInner}>
-							<Text style={[selectionStyles.name, { color: theme.screen.text }]} numberOfLines={1}>
-								{sprite.name}
-							</Text>
-							{count > 0 && (
-								<Text style={[selectionStyles.badge, { color: PRIMARY_COLOR }]}>
-									{count} placed
-								</Text>
-							)}
-						</View>
-						{isSelected && (
-							<Ionicons name="checkmark" size={18} color={PRIMARY_COLOR} />
-						)}
-					</TouchableOpacity>
-				);
-			})}
-		</View>
+		<WebView
+			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${MODAL_THUMB_SIZE}px;height:${MODAL_THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}"/></body></html>` }}
+			style={modalStyles.thumb}
+			originWhitelist={['*']}
+			scrollEnabled={false}
+			javaScriptEnabled={false}
+			pointerEvents="none"
+		/>
 	);
 }
 
-const selectionStyles = StyleSheet.create({
-	container: {
-		paddingBottom: 20,
+const modalStyles = StyleSheet.create({
+	thumb: {
+		width: MODAL_THUMB_SIZE,
+		height: MODAL_THUMB_SIZE,
+		backgroundColor: 'transparent',
 	},
-	row: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		paddingHorizontal: 16,
-		paddingVertical: 12,
-	},
-	rowInner: {
-		flex: 1,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 8,
-	},
-	name: {
-		fontSize: 15,
-		fontWeight: '500',
-	},
-	badge: {
-		fontSize: 12,
-		fontWeight: '500',
+	thumbPlaceholder: {
+		width: MODAL_THUMB_SIZE,
+		height: MODAL_THUMB_SIZE,
 	},
 });
 
@@ -136,8 +127,8 @@ export default function BillboardConfigScreen() {
 	// Count placed billboards per sprite index.
 	const placedCountMap = useMemo(() => buildPlacedCountMap(records), [records]);
 
-	// Currently selected sprite index; default to 0 (first sprite).
-	const [selectedSpriteIndex, setSelectedSpriteIndex] = useState<number>(0);
+	// Currently selected sprite index; null = "Keines" (no sprite).
+	const [selectedSpriteIndex, setSelectedSpriteIndex] = useState<number | null>(null);
 
 	// SVG data URI cache per sprite index (loaded on demand for selected sprite only).
 	const [svgUris, setSvgUris] = useState<Record<number, string>>({});
@@ -147,7 +138,7 @@ export default function BillboardConfigScreen() {
 
 	// Load SVG for the currently selected sprite.
 	useEffect(() => {
-		if (!OBJECT_SPRITES[selectedSpriteIndex]) return;
+		if (selectedSpriteIndex === null || !OBJECT_SPRITES[selectedSpriteIndex]) return;
 		const sprite = OBJECT_SPRITES[selectedSpriteIndex];
 		const idx = selectedSpriteIndex;
 		let cancelled = false;
@@ -198,22 +189,43 @@ export default function BillboardConfigScreen() {
 		dispatch(resetSpriteAnchor({ spriteIndex }));
 	}, [dispatch]);
 
+	const handleCopyConfig = useCallback(async () => {
+		const json = JSON.stringify(spriteAnchors, null, 2);
+		await Clipboard.setStringAsync(json);
+		Alert.alert('Copied', 'Billboard config copied to clipboard.');
+	}, [spriteAnchors]);
+
+	const selectionOptions = useMemo(() => {
+		const none = { id: NONE_OPTION_ID, label: 'Keines' };
+		const sprites = OBJECT_SPRITES.map((sprite, idx) => {
+			const count = placedCountMap.get(idx) ?? 0;
+			const label = count > 0 ? `${sprite.name} (${count})` : sprite.name;
+			return {
+				id: idx,
+				label,
+				icon: <SpriteThumbnailIcon spriteIndex={idx} />,
+			};
+		});
+		return [none, ...sprites];
+	}, [placedCountMap]);
+
 	const openBillboardSelection = useCallback(() => {
+		const currentId = selectedSpriteIndex ?? NONE_OPTION_ID;
 		showModal({
 			title: '🏗️ Select Billboard',
 			onClose: closeModal,
 			children: (
-				<BillboardSelectionContent
-					selectedSpriteIndex={selectedSpriteIndex}
-					placedCountMap={placedCountMap}
-					onSelect={(idx) => {
-						setSelectedSpriteIndex(idx);
+				<SettingsListSelectOption
+					options={selectionOptions}
+					selectedOption={currentId}
+					onSelect={(option) => {
+						setSelectedSpriteIndex(option.id === NONE_OPTION_ID ? null : option.id);
 						closeModal();
 					}}
 				/>
 			),
 		});
-	}, [showModal, closeModal, selectedSpriteIndex, placedCountMap]);
+	}, [showModal, closeModal, selectedSpriteIndex, selectionOptions]);
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
@@ -231,8 +243,17 @@ export default function BillboardConfigScreen() {
 				groupPosition="single"
 			/>
 
+			{/* Copy config button */}
+			<TouchableOpacity
+				style={[styles.copyButton, { backgroundColor: PRIMARY_COLOR }]}
+				onPress={handleCopyConfig}
+			>
+				<Ionicons name="copy-outline" size={18} color="#fff" />
+				<Text style={styles.copyButtonText}>Copy Config JSON</Text>
+			</TouchableOpacity>
+
 			{/* Settings for selected billboard type */}
-			{(() => {
+			{selectedSpriteIndex !== null && (() => {
 				const spriteIndex = selectedSpriteIndex;
 				const sprite = OBJECT_SPRITES[spriteIndex];
 				if (!sprite) return null;
@@ -493,5 +514,20 @@ const styles = StyleSheet.create({
 	},
 	bottomSpacer: {
 		height: 40,
+	},
+	copyButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		marginHorizontal: 12,
+		marginTop: 12,
+		paddingVertical: 12,
+		borderRadius: 10,
+	},
+	copyButtonText: {
+		color: '#fff',
+		fontSize: 15,
+		fontWeight: '600',
 	},
 });
