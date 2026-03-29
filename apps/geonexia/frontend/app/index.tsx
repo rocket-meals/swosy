@@ -2885,14 +2885,14 @@ export default function RecordScreen() {
 
 	if (!osmConsent) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 				<OsmConsentScreen onConsent={handleConsent} />
 			</SafeAreaView>
 		);
 	}
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
 				{mapCanRender && (
@@ -3106,7 +3106,6 @@ export default function RecordScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#ffffff',
 	},
 	mapWrapper: {
 		flex: 1,
