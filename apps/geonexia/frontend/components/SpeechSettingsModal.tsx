@@ -1,17 +1,28 @@
-import React, { useCallback } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListNumberInput,
+	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
-import { updateSpeechSettings, SpeechSettingsState } from '../store/speechSettingsSlice';
+import { updateSpeechSettings, SpeechSettingsState, SPEECH_SETTINGS_DEFAULTS } from '../store/speechSettingsSlice';
 import { speakAnnouncement } from '../helpers/TTSHelper';
 import type { AppDispatch, RootState } from '../store/store';
 
@@ -26,10 +37,215 @@ const VOLUME_STEP = 0.1;
 const VOLUME_MIN = 0.0;
 const VOLUME_MAX = 1.0;
 
+// ─── PaceMinSecModal ──────────────────────────────────────────────────────────
+
+interface PaceMinSecModalProps {
+	minutes: number;
+	seconds: number;
+	onSave: (minutes: number, seconds: number) => void;
+	primaryColor: string;
+	saveLabel?: string;
+}
+
+function PaceMinSecModal({
+	minutes,
+	seconds,
+	onSave,
+	primaryColor,
+	saveLabel = 'Speichern',
+}: PaceMinSecModalProps) {
+	const { theme } = useTheme();
+	const [mins, setMins] = useState(minutes);
+	const [secs, setSecs] = useState(seconds);
+
+	useEffect(() => {
+		setMins(minutes);
+		setSecs(seconds);
+	}, [minutes, seconds]);
+
+	const stepMins = useCallback((delta: number) => {
+		setMins((v) => Math.max(0, Math.min(99, v + delta)));
+	}, []);
+
+	const stepSecs = useCallback((delta: number) => {
+		setSecs((v) => Math.max(0, Math.min(59, v + delta)));
+	}, []);
+
+	const handleSave = useCallback(() => {
+		Keyboard.dismiss();
+		onSave(mins, secs);
+	}, [onSave, mins, secs]);
+
+	const content = (
+		<View style={styles.paceSheetView}>
+			<View style={styles.paceRow}>
+				{/* Minutes */}
+				<View style={styles.paceField}>
+					<Text style={[styles.paceFieldLabel, { color: theme.sheet.text }]}>Minuten</Text>
+					<View style={styles.paceInputRow}>
+						<TouchableOpacity
+							style={[styles.paceStepBtn, { backgroundColor: primaryColor + '20' }]}
+							onPress={() => stepMins(-1)}
+						>
+							<Ionicons name="remove" size={18} color={primaryColor} />
+						</TouchableOpacity>
+						<TextInput
+							style={[
+								styles.paceInput,
+								{
+									color: theme.sheet.text,
+									backgroundColor: theme.sheet.inputBg,
+									borderColor: theme.sheet.inputBorder,
+								},
+							]}
+							value={String(mins)}
+							onChangeText={(t) => {
+								const n = parseInt(t, 10);
+								if (!isNaN(n)) setMins(Math.max(0, Math.min(99, n)));
+							}}
+							keyboardType="number-pad"
+							textAlign="center"
+						/>
+						<TouchableOpacity
+							style={[styles.paceStepBtn, { backgroundColor: primaryColor + '20' }]}
+							onPress={() => stepMins(1)}
+						>
+							<Ionicons name="add" size={18} color={primaryColor} />
+						</TouchableOpacity>
+					</View>
+					<Text style={[styles.paceSuffix, { color: theme.sheet.placeholder }]}>min</Text>
+				</View>
+
+				<Text style={[styles.paceSeparator, { color: theme.sheet.text }]}>:</Text>
+
+				{/* Seconds */}
+				<View style={styles.paceField}>
+					<Text style={[styles.paceFieldLabel, { color: theme.sheet.text }]}>Sekunden</Text>
+					<View style={styles.paceInputRow}>
+						<TouchableOpacity
+							style={[styles.paceStepBtn, { backgroundColor: primaryColor + '20' }]}
+							onPress={() => stepSecs(-5)}
+						>
+							<Ionicons name="remove" size={18} color={primaryColor} />
+						</TouchableOpacity>
+						<TextInput
+							style={[
+								styles.paceInput,
+								{
+									color: theme.sheet.text,
+									backgroundColor: theme.sheet.inputBg,
+									borderColor: theme.sheet.inputBorder,
+								},
+							]}
+							value={String(secs)}
+							onChangeText={(t) => {
+								const n = parseInt(t, 10);
+								if (!isNaN(n)) setSecs(Math.max(0, Math.min(59, n)));
+							}}
+							keyboardType="number-pad"
+							textAlign="center"
+						/>
+						<TouchableOpacity
+							style={[styles.paceStepBtn, { backgroundColor: primaryColor + '20' }]}
+							onPress={() => stepSecs(5)}
+						>
+							<Ionicons name="add" size={18} color={primaryColor} />
+						</TouchableOpacity>
+					</View>
+					<Text style={[styles.paceSuffix, { color: theme.sheet.placeholder }]}>sek</Text>
+				</View>
+			</View>
+
+			<TouchableOpacity
+				style={[styles.paceSaveBtn, { backgroundColor: primaryColor }]}
+				onPress={handleSave}
+				activeOpacity={0.8}
+			>
+				<Text style={styles.paceSaveBtnText}>{saveLabel}</Text>
+			</TouchableOpacity>
+		</View>
+	);
+
+	if (Platform.OS === 'web') return content;
+
+	return (
+		<KeyboardAvoidingView
+			behavior={Platform.OS === 'ios' ? 'position' : undefined}
+			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+			style={styles.keyboardAvoidingView}
+		>
+			<View style={styles.keyboardAvoidingContent}>{content}</View>
+		</KeyboardAvoidingView>
+	);
+}
+
+// ─── PaceMinSecInput ──────────────────────────────────────────────────────────
+
+interface PaceMinSecInputProps {
+	iconBgColor?: string;
+	leftIcon?: React.ReactNode;
+	label: string;
+	modalTitle?: string;
+	minutes: number;
+	seconds: number;
+	onSave: (minutes: number, seconds: number) => void;
+	disabled?: boolean;
+	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+	primaryColor?: string;
+}
+
+function PaceMinSecInput({
+	iconBgColor,
+	leftIcon,
+	label,
+	modalTitle,
+	minutes,
+	seconds,
+	onSave,
+	disabled,
+	groupPosition,
+	primaryColor = HINT_COLOR,
+}: PaceMinSecInputProps) {
+	const { theme } = useTheme();
+	const { show, close } = useMyScrollViewModal();
+
+	const handleOpen = useCallback(() => {
+		if (disabled) return;
+		show({
+			title: modalTitle ?? label,
+			onClose: close,
+			children: (
+				<PaceMinSecModal
+					minutes={minutes}
+					seconds={seconds}
+					onSave={(m, s) => {
+						onSave(m, s);
+						close();
+					}}
+					primaryColor={primaryColor}
+				/>
+			),
+		});
+	}, [disabled, show, close, modalTitle, label, minutes, seconds, onSave, primaryColor]);
+
+	return (
+		<SettingsList
+			iconBgColor={iconBgColor}
+			leftIcon={leftIcon}
+			label={label}
+			value={`${minutes} min ${String(seconds).padStart(2, '0')} sek`}
+			rightIcon={
+				<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />
+			}
+			onPress={disabled ? undefined : handleOpen}
+			groupPosition={groupPosition}
+		/>
+	);
+}
+
 // ─── SpeechSettingsContent ────────────────────────────────────────────────────
 
 export default function SpeechSettingsContent() {
-	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const settings = useSelector((state: RootState) => state.speechSettings);
 
@@ -51,9 +267,9 @@ export default function SpeechSettingsContent() {
 				: '2 kilometers. Pace: 5 minutes and 30 seconds.';
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
-			useApplicationAudioSession: !settings.playOverMusic,
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
 		});
-	}, [langCode, settings.volume, settings.playOverMusic]);
+	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
 
 	// ─── Volume stepper ───────────────────────────────────────────────────────
 	const handleVolumeDown = useCallback(() => {
@@ -65,6 +281,13 @@ export default function SpeechSettingsContent() {
 		const next = Math.min(VOLUME_MAX, Math.round((settings.volume + VOLUME_STEP) * 10) / 10);
 		update({ volume: next });
 	}, [settings.volume, update]);
+
+	// ─── Derived state ────────────────────────────────────────────────────────
+	const paceHelperActive = settings.paceTargetEnabled;
+	const showFasterInput = paceHelperActive && settings.paceHintFasterEnabled;
+	const showSlowerInput = paceHelperActive && settings.paceHintSlowerEnabled;
+
+	const slowerBoolPos: 'middle' | 'bottom' = showSlowerInput ? 'middle' : 'bottom';
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
@@ -119,49 +342,95 @@ export default function SpeechSettingsContent() {
 				groupPosition="single"
 			/>
 
-			{/* ── Pace hint ──────────────────────────────────────────── */}
-			<SettingsListGroupTitle title="Hinweis bei schnellerem Pace" />
-			<SettingsListNumberInput
-				iconBgColor={HINT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
-				label="Minuten"
-				value={`${settings.paceHintMinutes} min`}
-				modalTitle="Pace Hinweis: Minuten"
-				initialValue={settings.paceHintMinutes}
-				min={0}
-				max={30}
-				step={1}
-				suffix="min"
-				onSave={(val: number) => update({ paceHintMinutes: val })}
-				groupPosition="top"
-			/>
-			<SettingsListNumberInput
-				iconBgColor={HINT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="clock-fast" size={22} color="#ffffff" />}
-				label="Sekunden"
-				value={`${settings.paceHintSeconds} sek`}
-				modalTitle="Pace Hinweis: Sekunden"
-				initialValue={settings.paceHintSeconds}
-				min={0}
-				max={59}
-				step={5}
-				suffix="sek"
-				onSave={(val: number) => update({ paceHintSeconds: val })}
-				groupPosition="bottom"
-			/>
-
 			{/* ── Music ──────────────────────────────────────────────── */}
 			<SettingsListGroupTitle title="Musik" />
 			<SettingsListBoolean
 				iconBgColor={TTS_COLOR}
 				leftIcon={<MaterialCommunityIcons name="music" size={22} color="#ffffff" />}
-				label="Über Musik abspielen"
-				isEnabled={settings.playOverMusic}
-				onToggle={() => update({ playOverMusic: !settings.playOverMusic })}
-				valueActive="TTS über Musik"
-				valueInactive="Musik pausiert bei TTS"
+				label="Musik bei Ansagen leiser machen"
+				isEnabled={settings.duckMusicDuringTTS}
+				onToggle={() => update({ duckMusicDuringTTS: !settings.duckMusicDuringTTS })}
+				valueActive="Aktiv"
+				valueInactive="Deaktiviert"
 				groupPosition="single"
 			/>
+
+			{/* ── Pace target helper ──────────────────────────────────── */}
+			<SettingsListGroupTitle title="Hilfe beim Halten deiner Zielgeschwindigkeit" />
+			<SettingsListBoolean
+				iconBgColor={HINT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="target" size={22} color="#ffffff" />}
+				label="Zielgeschwindigkeit-Hilfe"
+				isEnabled={paceHelperActive}
+				onToggle={() => update({ paceTargetEnabled: !paceHelperActive })}
+				valueActive="Aktiv"
+				valueInactive="Deaktiviert"
+				groupPosition="single"
+			/>
+
+			<View style={!paceHelperActive ? styles.sectionDisabled : undefined}>
+				<PaceMinSecInput
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
+					label="Ziel Pace"
+					modalTitle="Ziel Pace"
+					minutes={settings.paceTargetMinutes}
+					seconds={settings.paceTargetSeconds}
+					onSave={(m, s) => update({ paceTargetMinutes: m, paceTargetSeconds: s })}
+					disabled={!paceHelperActive}
+					groupPosition="top"
+				/>
+
+				<SettingsListBoolean
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialCommunityIcons name="run-fast" size={22} color="#ffffff" />}
+					label="Hinweis wenn zu schnell"
+					isEnabled={settings.paceHintFasterEnabled}
+					onToggle={() => update({ paceHintFasterEnabled: !settings.paceHintFasterEnabled })}
+					valueActive="Aktiv"
+					valueInactive="Deaktiviert"
+					disabled={!paceHelperActive}
+					groupPosition="middle"
+				/>
+
+				{showFasterInput && (
+					<PaceMinSecInput
+						iconBgColor={HINT_COLOR}
+						leftIcon={<MaterialCommunityIcons name="timer-alert-outline" size={22} color="#ffffff" />}
+						label="Schneller als Pace"
+						modalTitle="Hinweis: Schneller als Pace"
+						minutes={settings.paceHintFasterMinutes}
+						seconds={settings.paceHintFasterSeconds}
+						onSave={(m, s) => update({ paceHintFasterMinutes: m, paceHintFasterSeconds: s })}
+						groupPosition="middle"
+					/>
+				)}
+
+				<SettingsListBoolean
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialCommunityIcons name="turtle" size={22} color="#ffffff" />}
+					label="Hinweis wenn zu langsam"
+					isEnabled={settings.paceHintSlowerEnabled}
+					onToggle={() => update({ paceHintSlowerEnabled: !settings.paceHintSlowerEnabled })}
+					valueActive="Aktiv"
+					valueInactive="Deaktiviert"
+					disabled={!paceHelperActive}
+					groupPosition={slowerBoolPos}
+				/>
+
+				{showSlowerInput && (
+					<PaceMinSecInput
+						iconBgColor={HINT_COLOR}
+						leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
+						label="Langsamer als Pace"
+						modalTitle="Hinweis: Langsamer als Pace"
+						minutes={settings.paceHintSlowerMinutes}
+						seconds={settings.paceHintSlowerSeconds}
+						onSave={(m, s) => update({ paceHintSlowerMinutes: m, paceHintSlowerSeconds: s })}
+						groupPosition="bottom"
+					/>
+				)}
+			</View>
 
 			{/* ── Information intervals ──────────────────────────────── */}
 			<SettingsListGroupTitle title="Information im Intervall von" />
@@ -171,12 +440,14 @@ export default function SpeechSettingsContent() {
 				label="Zeit"
 				value={settings.intervalTimeMinutes > 0 ? `Alle ${settings.intervalTimeMinutes} min` : 'Deaktiviert'}
 				modalTitle="Zeitintervall"
-				initialValue={settings.intervalTimeMinutes}
-				min={0}
+				initialValue={settings.intervalTimeMinutes > 0 ? settings.intervalTimeMinutes : SPEECH_SETTINGS_DEFAULTS.intervalTimeMinutes}
+				min={1}
 				max={60}
 				step={1}
 				suffix="min"
 				onSave={(val: number) => update({ intervalTimeMinutes: val })}
+				allowDisable
+				onDisable={() => update({ intervalTimeMinutes: 0 })}
 				groupPosition="top"
 			/>
 			<SettingsListNumberInput
@@ -185,12 +456,14 @@ export default function SpeechSettingsContent() {
 				label="Distanz"
 				value={settings.intervalDistanceMeters > 0 ? `Alle ${settings.intervalDistanceMeters} m` : 'Deaktiviert'}
 				modalTitle="Distanzintervall"
-				initialValue={settings.intervalDistanceMeters}
-				min={0}
+				initialValue={settings.intervalDistanceMeters > 0 ? settings.intervalDistanceMeters : SPEECH_SETTINGS_DEFAULTS.intervalDistanceMeters}
+				min={100}
 				max={10000}
 				step={100}
 				suffix="m"
 				onSave={(val: number) => update({ intervalDistanceMeters: val })}
+				allowDisable
+				onDisable={() => update({ intervalDistanceMeters: 0 })}
 				groupPosition="bottom"
 			/>
 
@@ -231,20 +504,20 @@ export default function SpeechSettingsContent() {
 			/>
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
-				label="Dauer"
-				isEnabled={settings.announceDuration}
-				onToggle={() => update({ announceDuration: !settings.announceDuration })}
+				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
+				label="Pace"
+				isEnabled={settings.announcePace}
+				onToggle={() => update({ announcePace: !settings.announcePace })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
 			/>
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
-				label="Pace"
-				isEnabled={settings.announcePace}
-				onToggle={() => update({ announcePace: !settings.announcePace })}
+				leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
+				label="Dauer"
+				isEnabled={settings.announceDuration}
+				onToggle={() => update({ announceDuration: !settings.announceDuration })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
@@ -298,5 +571,82 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: 'rgba(37,99,235,0.12)',
+	},
+	sectionDisabled: {
+		opacity: 0.4,
+	},
+	// ── PaceMinSecModal styles ──────────────────────────────────────────────────
+	paceSheetView: {
+		width: '100%',
+		padding: 10,
+		alignItems: 'stretch',
+	},
+	paceRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 12,
+		marginTop: 12,
+	},
+	paceField: {
+		flex: 1,
+		alignItems: 'center',
+		gap: 4,
+	},
+	paceFieldLabel: {
+		fontSize: 13,
+		fontWeight: '500',
+		marginBottom: 2,
+	},
+	paceInputRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+	},
+	paceStepBtn: {
+		width: 36,
+		height: 36,
+		borderRadius: 8,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	paceInput: {
+		width: 64,
+		height: 56,
+		borderWidth: 1,
+		borderRadius: 10,
+		fontSize: 22,
+		fontWeight: '600',
+		textAlign: 'center',
+	},
+	paceSuffix: {
+		fontSize: 12,
+		marginTop: 2,
+	},
+	paceSeparator: {
+		fontSize: 28,
+		fontWeight: '700',
+		marginTop: 20,
+	},
+	paceSaveBtn: {
+		width: '100%',
+		height: 48,
+		borderRadius: 12,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 16,
+	},
+	paceSaveBtnText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#ffffff',
+	},
+	keyboardAvoidingView: {
+		flex: 1,
+		width: '100%',
+	},
+	keyboardAvoidingContent: {
+		flexGrow: 1,
+		alignItems: 'center',
 	},
 });

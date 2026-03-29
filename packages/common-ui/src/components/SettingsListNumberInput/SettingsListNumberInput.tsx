@@ -30,6 +30,12 @@ export interface SettingsListNumberInputProps extends Omit<SettingsListProps, 'o
 	prefix?: string;
 	/** Allow decimal input */
 	allowDecimal?: boolean;
+	/** Show a "Deaktivieren" button in the modal sheet */
+	allowDisable?: boolean;
+	/** Called when the user presses "Deaktivieren" in the modal sheet */
+	onDisable?: () => void | Promise<void>;
+	/** Label for the disable button (default: "Deaktivieren") */
+	disableLabel?: string;
 }
 
 type ModalSheetProps = {
@@ -44,6 +50,9 @@ type ModalSheetProps = {
 	prefix?: string;
 	allowDecimal?: boolean;
 	primaryColor: string;
+	allowDisable?: boolean;
+	onDisable?: () => void;
+	disableLabel?: string;
 };
 
 function clamp(value: number, min?: number, max?: number): number {
@@ -64,6 +73,9 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 	prefix,
 	allowDecimal = false,
 	primaryColor,
+	allowDisable = false,
+	onDisable,
+	disableLabel = 'Deaktivieren',
 }) => {
 	const { theme } = useTheme();
 	const [textValue, setTextValue] = useState(String(initialValue));
@@ -153,6 +165,15 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 			>
 				<Text style={[styles.saveButtonText, { color: '#ffffff' }]}>{saveLabel}</Text>
 			</TouchableOpacity>
+			{allowDisable && onDisable ? (
+				<TouchableOpacity
+					style={[styles.disableButton, { borderColor: theme.sheet.inputBorder }]}
+					onPress={onDisable}
+					activeOpacity={0.8}
+				>
+					<Text style={[styles.disableButtonText, { color: theme.sheet.placeholder }]}>{disableLabel}</Text>
+				</TouchableOpacity>
+			) : null}
 		</View>
 	);
 
@@ -181,6 +202,9 @@ const SettingsListNumberInput: React.FC<SettingsListNumberInputProps> = ({
 	suffix,
 	prefix,
 	allowDecimal,
+	allowDisable,
+	onDisable,
+	disableLabel,
 	rightElement,
 	rightIcon,
 	value,
@@ -227,15 +251,28 @@ const SettingsListNumberInput: React.FC<SettingsListNumberInputProps> = ({
 					prefix={prefix}
 					allowDecimal={allowDecimal}
 					primaryColor={resolvedPrimaryColor}
+					allowDisable={allowDisable}
+					onDisable={
+						allowDisable && onDisable
+							? async () => {
+									await onDisable();
+									close();
+							  }
+							: undefined
+					}
+					disableLabel={disableLabel}
 				/>
 			),
 		});
 	}, [
 		allowDecimal,
+		allowDisable,
 		close,
+		disableLabel,
 		initialValue,
 		max,
 		min,
+		onDisable,
 		onSave,
 		placeholder,
 		prefix,
@@ -324,5 +361,18 @@ const styles = StyleSheet.create({
 	saveButtonText: {
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	disableButton: {
+		width: '100%',
+		height: 44,
+		borderRadius: 12,
+		borderWidth: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 8,
+	},
+	disableButtonText: {
+		fontSize: 15,
+		fontWeight: '500',
 	},
 });

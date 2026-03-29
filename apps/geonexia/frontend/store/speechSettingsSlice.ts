@@ -7,11 +7,24 @@ export type SpeechSettingsState = {
 	enabled: boolean;
 	/** Volume level 0.0 – 1.0 */
 	volume: number;
-	/** Play TTS over background music (iOS) */
-	playOverMusic: boolean;
-	/** Pace threshold hint (min per km). If user is faster, a hint is announced. 0 = disabled. */
-	paceHintMinutes: number;
-	paceHintSeconds: number;
+	/** Duck background music during TTS announcements (iOS) */
+	duckMusicDuringTTS: boolean;
+
+	// ─── Pace target helper ────────────────────────────────────────────────────
+	/** Master toggle: help maintaining target pace */
+	paceTargetEnabled: boolean;
+	/** Target pace – minutes per km */
+	paceTargetMinutes: number;
+	paceTargetSeconds: number;
+	/** Announce a hint when running faster than target pace */
+	paceHintFasterEnabled: boolean;
+	paceHintFasterMinutes: number;
+	paceHintFasterSeconds: number;
+	/** Announce a hint when running slower than target pace */
+	paceHintSlowerEnabled: boolean;
+	paceHintSlowerMinutes: number;
+	paceHintSlowerSeconds: number;
+
 	/** Time interval for periodic announcements (minutes). 0 = disabled. */
 	intervalTimeMinutes: number;
 	/** Distance interval for periodic announcements (meters). 0 = disabled. */
@@ -23,8 +36,8 @@ export type SpeechSettingsState = {
 
 	// ─── Announcement content toggles ─────────────────────────────────────────
 	announceDistance: boolean;
-	announceDuration: boolean;
 	announcePace: boolean;
+	announceDuration: boolean;
 	announceSpeed: boolean;
 	announceCalories: boolean;
 	announceHeartRate: boolean;
@@ -33,16 +46,23 @@ export type SpeechSettingsState = {
 export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	enabled: true,
 	volume: 0.8,
-	playOverMusic: false,
-	paceHintMinutes: 5,
-	paceHintSeconds: 30,
+	duckMusicDuringTTS: true,
+	paceTargetEnabled: false,
+	paceTargetMinutes: 5,
+	paceTargetSeconds: 30,
+	paceHintFasterEnabled: false,
+	paceHintFasterMinutes: 0,
+	paceHintFasterSeconds: 30,
+	paceHintSlowerEnabled: false,
+	paceHintSlowerMinutes: 0,
+	paceHintSlowerSeconds: 30,
 	intervalTimeMinutes: 5,
 	intervalDistanceMeters: 1000,
 	toneAtDistance: false,
 	vibrationAtDistance: false,
 	announceDistance: true,
-	announceDuration: true,
 	announcePace: true,
+	announceDuration: false,
 	announceSpeed: false,
 	announceCalories: false,
 	announceHeartRate: false,
