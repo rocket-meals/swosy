@@ -19,6 +19,7 @@ import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
 import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
 import { setTTSEnabled } from '../../store/ttsSlice';
+import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
 import {
 	saveDebugModeFlag,
@@ -106,11 +107,13 @@ export default function SettingsScreen() {
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
 	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.selectedMode);
 	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
+	const speechEnabled = useSelector((state: RootState) => state.speechSettings.enabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
+	const { show: showSpeechModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
@@ -175,6 +178,13 @@ export default function SettingsScreen() {
 		dispatch(setTTSEnabled(!isTTSEnabled));
 	}, [dispatch, isTTSEnabled]);
 
+	const handleOpenSpeechSettings = useCallback(() => {
+		showSpeechModal({
+			title: '🔊 Sprachansagen',
+			children: <SpeechSettingsContent />,
+		});
+	}, [showSpeechModal]);
+
 	const handleToggleDevMode = useCallback(async () => {
 		const { records: currentRecords, isDevMode: currentIsDevMode } = store.getState().hexTiles;
 		if (currentIsDevMode) {
@@ -218,14 +228,13 @@ export default function SettingsScreen() {
 			/>
 
 			<SettingsListGroupTitle title="Audio" />
-			<SettingsListBoolean
+			<SettingsList
 				iconBgColor={TTS_COLOR}
 				leftIcon={<MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />}
-				label="Voice Announcements"
-				isEnabled={isTTSEnabled}
-				onToggle={handleToggleTTS}
-				valueActive="Enabled"
-				valueInactive="Disabled"
+				label="Sprachansagen"
+				value={speechEnabled ? 'Aktiviert' : 'Deaktiviert'}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenSpeechSettings}
 				groupPosition="single"
 			/>
 

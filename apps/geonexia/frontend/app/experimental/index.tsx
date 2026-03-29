@@ -21,7 +21,16 @@ export default function ExperimentalScreen() {
 					value="Voice announcements playground"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={() => router.push('/experimental/tts-test')}
-					groupPosition="single"
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<MaterialCommunityIcons name="waveform" size={22} color="#ffffff" />}
+					label="Edge Speech Test"
+					value="Edge-based speech synthesis"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/edge-speech')}
+					groupPosition="bottom"
 				/>
 			</ScrollView>
 		</View>

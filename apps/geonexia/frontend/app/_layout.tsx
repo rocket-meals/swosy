@@ -16,12 +16,14 @@ import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
+import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
+import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
@@ -209,6 +211,13 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted TTS enabled flag:', err);
 			});
+		loadSpeechSettings()
+			.then((settings) => {
+				store.dispatch(loadSpeechSettingsAction(settings));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted speech settings:', err);
+			});
 	}, []);
 
 	return (
@@ -310,6 +319,13 @@ export default function Layout() {
 								name="experimental/tts-test/index"
 								options={{
 									title: 'Text to Speech Test',
+									drawerItemStyle: { display: 'none' },
+								}}
+							/>
+							<Drawer.Screen
+								name="experimental/edge-speech/index"
+								options={{
+									title: 'Edge Speech Test',
 									drawerItemStyle: { display: 'none' },
 								}}
 							/>
