@@ -15,11 +15,13 @@ import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
+import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { loadTTSEnabled } from '../helpers/TTSStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
@@ -193,6 +195,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted GPS interval mode:', err);
+			});
+		loadTTSEnabled()
+			.then((enabled) => {
+				store.dispatch(loadTTSEnabledAction(enabled));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted TTS enabled flag:', err);
 			});
 	}, []);
 
