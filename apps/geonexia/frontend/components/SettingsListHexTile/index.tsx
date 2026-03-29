@@ -3,13 +3,13 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { WebView } from 'react-native-webview';
-import { SettingsList, useTheme } from 'repo-depkit-common-ui';
+import { SettingsList } from 'repo-depkit-common-ui';
 
-import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
+import { TERRAIN_ASSETS, TerrainAssetEntry } from '../../assets/terrainAssets';
 
 type Props = {
-	/** Index into OBJECT_SPRITES, or null if nothing selected. */
-	spriteIndex: number | null;
+	/** Tile image key (e.g. "Grass/grass"), or null if nothing selected. */
+	tileImageKey: string | null;
 	/** Label shown as the row title. */
 	title?: string;
 	/** Called when the row is pressed (e.g. to open a selection modal). */
@@ -19,25 +19,37 @@ type Props = {
 
 const THUMB_SIZE = 32;
 
-const SettingsListBillboard: React.FC<Props> = ({
-	spriteIndex,
-	title = 'Billboard',
+/** Find a terrain asset entry by key across all categories. */
+function findTerrainEntry(key: string): TerrainAssetEntry | null {
+	for (const entries of Object.values(TERRAIN_ASSETS)) {
+		const found = entries.find((e) => e.key === key);
+		if (found) return found;
+	}
+	return null;
+}
+
+const SettingsListHexTile: React.FC<Props> = ({
+	tileImageKey,
+	title = 'Tile Image',
 	onPress,
 	groupPosition,
 }) => {
-	const { theme } = useTheme();
 	const [svgUri, setSvgUri] = useState<string | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
-		if (spriteIndex === null || !OBJECT_SPRITES[spriteIndex]) {
+		if (!tileImageKey) {
 			setSvgUri(null);
 			return;
 		}
-		const sprite = OBJECT_SPRITES[spriteIndex];
+		const entry = findTerrainEntry(tileImageKey);
+		if (!entry) {
+			setSvgUri(null);
+			return;
+		}
 		(async () => {
 			try {
-				const asset = Asset.fromModule(sprite.source as number);
+				const asset = Asset.fromModule(entry.source as number);
 				await asset.downloadAsync();
 				if (cancelled) return;
 				if (Platform.OS === 'web') {
@@ -55,14 +67,13 @@ const SettingsListBillboard: React.FC<Props> = ({
 			}
 		})();
 		return () => { cancelled = true; };
-	}, [spriteIndex]);
+	}, [tileImageKey]);
 
-	const sprite = spriteIndex !== null ? OBJECT_SPRITES[spriteIndex] : null;
-	const spriteName = sprite?.name ?? '—';
+	const displayName = tileImageKey ?? '—';
 
 	const thumbnail = svgUri ? (
 		<WebView
-			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${THUMB_SIZE}px;height:${THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}"/></body></html>` }}
+			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${THUMB_SIZE}px;height:${THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}"/></body></html>` }}
 			style={[styles.thumb, { backgroundColor: 'transparent' }]}
 			originWhitelist={['*']}
 			scrollEnabled={false}
@@ -76,11 +87,11 @@ const SettingsListBillboard: React.FC<Props> = ({
 	return (
 		<SettingsList
 			title={title}
-			value={spriteName}
+			value={displayName}
 			handleFunction={onPress}
 			groupPosition={groupPosition}
 			leftIconComponent={
-				<View style={[styles.thumbWrapper, { backgroundColor: theme.screen.text + '08' }]}>
+				<View style={styles.thumbWrapper}>
 					{thumbnail}
 				</View>
 			}
@@ -88,7 +99,7 @@ const SettingsListBillboard: React.FC<Props> = ({
 	);
 };
 
-export default SettingsListBillboard;
+export default SettingsListHexTile;
 
 const styles = StyleSheet.create({
 	thumbWrapper: {
@@ -98,6 +109,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		marginRight: 10,
+		overflow: 'hidden',
 	},
 	thumb: {
 		width: THUMB_SIZE,

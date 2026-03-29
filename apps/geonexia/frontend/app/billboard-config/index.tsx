@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
+import { WebView } from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
@@ -275,14 +276,19 @@ export default function BillboardConfigScreen() {
 							{/* SVG Preview with anchor dot overlay */}
 							<View style={[styles.previewContainer, { backgroundColor: theme.screen.text + '08' }]}>
 								{svgUri ? (
-									<Image
-										source={{ uri: svgUri }}
-										style={styles.previewImage}
-										resizeMode="contain"
-										onLoad={(e) => {
-											const { width, height } = e.nativeEvent.source;
-											if (width > 0 && height > 0) {
-												setImageDims((prev) => ({ ...prev, [spriteIndex]: { width, height } }));
+									<WebView
+										source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${PREVIEW_HEIGHT}px;height:${PREVIEW_HEIGHT}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}" onload="window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(this.naturalWidth+','+this.naturalHeight)"/></body></html>` }}
+										style={[styles.previewImage, { backgroundColor: 'transparent' }]}
+										originWhitelist={['*']}
+										scrollEnabled={false}
+										javaScriptEnabled={true}
+										pointerEvents="none"
+										onMessage={(event) => {
+											const parts = event.nativeEvent.data.split(',');
+											const w = parseInt(parts[0], 10);
+											const h = parseInt(parts[1], 10);
+											if (w > 0 && h > 0) {
+												setImageDims((prev) => ({ ...prev, [spriteIndex]: { width: w, height: h } }));
 											}
 										}}
 									/>
