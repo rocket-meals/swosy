@@ -141,6 +141,12 @@ const HEX_PREVIEW_HEIGHT = 220;
 //             × BILLBOARD_SCALE_DEFAULT(0.4)
 // = (48/7) / (0.065907 × 2000 × (256 × 16384 / 40_075_016)) × 0.4 ≈ 0.199
 // Multiply by (scaleFactor × perSpriteScale) to get the per-billboard fraction.
+//
+// The map renderer intentionally uses the equatorial meters-per-pixel (without cos(lat))
+// so that billboard geographic size scales by the same 1/cos(lat) Mercator factor as the
+// hex tiles. This keeps the billboard-to-hex visual ratio constant at all latitudes, and
+// is why this preview (which also uses the equatorial formula) accurately represents the
+// in-game appearance regardless of where the user is located.
 const BILLBOARD_PREVIEW_K = 0.199;
 
 /**
