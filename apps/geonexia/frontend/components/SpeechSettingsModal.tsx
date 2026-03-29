@@ -1,16 +1,14 @@
 import React, { useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListNumberInput,
-	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
 
 import { updateSpeechSettings, SpeechSettingsState } from '../store/speechSettingsSlice';
@@ -34,7 +32,6 @@ export default function SpeechSettingsContent() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const settings = useSelector((state: RootState) => state.speechSettings);
-	const { show: showNumberModal, close: closeNumberModal } = useMyScrollViewModal();
 
 	const locale = getLocales()[0]?.languageTag ?? 'en-US';
 	const langCode = locale.split('-')[0].toLowerCase();
@@ -68,40 +65,6 @@ export default function SpeechSettingsContent() {
 		const next = Math.min(VOLUME_MAX, Math.round((settings.volume + VOLUME_STEP) * 10) / 10);
 		update({ volume: next });
 	}, [settings.volume, update]);
-
-	// ─── Number input openers (nested modals) ─────────────────────────────────
-	const openNumberInput = useCallback(
-		(opts: {
-			title: string;
-			field: keyof SpeechSettingsState;
-			initial: number;
-			min?: number;
-			max?: number;
-			step?: number;
-			suffix?: string;
-		}) => {
-			showNumberModal({
-				title: opts.title,
-				children: (
-					<SettingsListNumberInput
-						modalTitle={opts.title}
-						initialValue={opts.initial}
-						min={opts.min}
-						max={opts.max}
-						step={opts.step}
-						suffix={opts.suffix}
-						placeholder="0"
-						onSave={(val: number) => {
-							update({ [opts.field]: val });
-							closeNumberModal();
-						}}
-						groupPosition="single"
-					/>
-				),
-			});
-		},
-		[showNumberModal, closeNumberModal, update],
-	);
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 

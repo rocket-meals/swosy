@@ -197,8 +197,10 @@ const SettingsListNumberInput: React.FC<SettingsListNumberInputProps> = ({
 
 	const resolvedRightIcon = useMemo(
 		() =>
-			rightElement || rightIcon ? (
+			rightIcon ? (
 				rightIcon
+			) : rightElement ? (
+				undefined
 			) : (
 				<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />
 			),

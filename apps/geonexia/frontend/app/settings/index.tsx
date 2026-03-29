@@ -19,7 +19,6 @@ import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
 import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
 import { setTTSEnabled } from '../../store/ttsSlice';
-import { updateSpeechSettings } from '../../store/speechSettingsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
 import {
