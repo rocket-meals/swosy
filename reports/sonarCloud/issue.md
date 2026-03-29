@@ -65,24 +65,24 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/index.tsx#L52
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:98
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L98
+  apps/geonexia/frontend/app/billboard-config/index.tsx:103
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L103
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:301
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L301
+  apps/geonexia/frontend/app/billboard-config/index.tsx:468
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L468
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:309
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L309
+  apps/geonexia/frontend/app/billboard-config/index.tsx:476
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L476
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:310
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L310
+  apps/geonexia/frontend/app/billboard-config/index.tsx:477
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L477
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/billboard-config/index.tsx:53
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L53
+  apps/geonexia/frontend/app/billboard-config/index.tsx:58
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L58
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/index.tsx:43
