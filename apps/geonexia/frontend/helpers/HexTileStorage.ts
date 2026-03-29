@@ -1,5 +1,26 @@
 import { File, Paths } from 'expo-file-system';
 
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+/**
+ * Anchor positions within a hex cell for billboard placement.
+ * Each value corresponds to a specific geographic position inside the cell:
+ * - Purple: hex centroid (center)
+ * - Green: vertex[0] (topmost corner in pointy-top orientation)
+ * - Red, Orange, Yellow, Blue, White, Black: midpoints between the center
+ *   and each of the six vertices (cycling clockwise from vertex[0])
+ */
+export enum BillboardAnchorColor {
+	Purple = 'purple',
+	Green = 'green',
+	Red = 'red',
+	Orange = 'orange',
+	Yellow = 'yellow',
+	Blue = 'blue',
+	White = 'white',
+	Black = 'black',
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
@@ -47,8 +68,16 @@ export type HexTileRecord = {
 	 * - 'purple' (default): hex centroid (center)
 	 * - 'green': nearest vertex (corner)
 	 * - 'red' | 'orange' | 'yellow' | 'blue' | 'white' | 'black': midpoint positions
+	 * @deprecated Use `billboards` instead. Kept for backward compatibility.
 	 */
 	billboardAnchorColor?: string | null;
+	/**
+	 * Per-anchor billboard map. Keys are BillboardAnchorColor values.
+	 * Each key maps to a billboard key (e.g. "objects:47") or null.
+	 * When present, this field takes precedence over the legacy `billboard` and
+	 * `billboardAnchorColor` fields, allowing multiple billboards on one tile.
+	 */
+	billboards?: Record<string, string | null>;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────

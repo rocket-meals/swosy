@@ -28,8 +28,8 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { HexTileRecord } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
+import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
@@ -44,6 +44,23 @@ function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)
 	const sprite = OBJECT_SPRITES[idx];
 	if (!sprite) return null;
 	return { sprite, idx };
+}
+
+/**
+ * Return the effective per-anchor billboard map for a hex tile record,
+ * merging the new `billboards` field with the legacy `billboard`/`billboardAnchorColor` pair.
+ * The new `billboards` field takes precedence when present.
+ */
+function getEffectiveBillboards(record: { billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }): Record<BillboardAnchorColor, string> {
+	const result: Record<string, string> = {};
+	if (record.billboards) {
+		for (const [ac, bk] of Object.entries(record.billboards)) {
+			if (bk) result[ac] = bk;
+		}
+	} else if (record.billboard) {
+		result[record.billboardAnchorColor ?? BillboardAnchorColor.Purple] = record.billboard;
+	}
+	return result as Record<BillboardAnchorColor, string>;
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -104,14 +121,14 @@ const H3_GEOJSON_ORDER = true;
 // Billboard anchor color options. Each maps to a position within the hex cell.
 // Colors match the debug point layer colors in hexTileScript.ts.
 const BILLBOARD_ANCHOR_COLORS = [
-	{ id: 'purple', hex: '#a855f7', label: 'Center (Purple)' },
-	{ id: 'green', hex: '#22c55e', label: 'Vertex (Green)' },
-	{ id: 'red', hex: '#ef4444', label: 'Midpoint 1 (Red)' },
-	{ id: 'orange', hex: '#f97316', label: 'Midpoint 2 (Orange)' },
-	{ id: 'yellow', hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
-	{ id: 'blue', hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
-	{ id: 'white', hex: '#ffffff', label: 'Midpoint 5 (White)' },
-	{ id: 'black', hex: '#000000', label: 'Midpoint 6 (Black)' },
+	{ id: BillboardAnchorColor.Purple, hex: '#a855f7', label: 'Center (Purple)' },
+	{ id: BillboardAnchorColor.Green, hex: '#22c55e', label: 'Vertex (Green)' },
+	{ id: BillboardAnchorColor.Red, hex: '#ef4444', label: 'Midpoint 1 (Red)' },
+	{ id: BillboardAnchorColor.Orange, hex: '#f97316', label: 'Midpoint 2 (Orange)' },
+	{ id: BillboardAnchorColor.Yellow, hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
+	{ id: BillboardAnchorColor.Blue, hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
+	{ id: BillboardAnchorColor.White, hex: '#ffffff', label: 'Midpoint 5 (White)' },
+	{ id: BillboardAnchorColor.Black, hex: '#000000', label: 'Midpoint 6 (Black)' },
 ] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
@@ -746,6 +763,8 @@ type DebugInfoContentProps = {
 	onBillboardFaceCameraChange: (val: boolean) => void;
 	onShowBillboardAnchorsChange: (val: boolean) => void;
 	onShowDebugPointsChange: (val: boolean) => void;
+	onExportMapSettings: () => void;
+	onImportMapSettings: (json: string) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -769,6 +788,8 @@ function DebugInfoContent({
 	onBillboardFaceCameraChange,
 	onShowBillboardAnchorsChange,
 	onShowDebugPointsChange,
+	onExportMapSettings,
+	onImportMapSettings,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
@@ -778,6 +799,8 @@ function DebugInfoContent({
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
 	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
+	const [showImportArea, setShowImportArea] = useState(false);
+	const [importJson, setImportJson] = useState('');
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
@@ -1060,6 +1083,64 @@ function DebugInfoContent({
 					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
+
+			{/* Map Settings export / import */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22', flexDirection: 'column', alignItems: 'stretch', gap: 8, paddingVertical: 12 }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text, marginBottom: 2 }]}>Map Settings</Text>
+				<View style={{ flexDirection: 'row', gap: 8 }}>
+					<TouchableOpacity
+						style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
+						onPress={onExportMapSettings}
+						activeOpacity={0.7}
+					>
+						<MaterialIcons name="file-upload" size={16} color={PRIMARY_COLOR} />
+						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Export</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
+						onPress={() => { setShowImportArea((v) => !v); setImportJson(''); }}
+						activeOpacity={0.7}
+					>
+						<MaterialIcons name="file-download" size={16} color={PRIMARY_COLOR} />
+						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Import</Text>
+					</TouchableOpacity>
+				</View>
+				{showImportArea && (
+					<View style={{ gap: 8 }}>
+						<TextInput
+							style={[styles.debugSpeedInput, { minHeight: 80, textAlignVertical: 'top', borderRadius: 8, padding: 8, fontFamily: 'monospace', fontSize: 11 }]}
+							placeholder="Paste map settings JSON here…"
+							placeholderTextColor={theme.screen.icon}
+							value={importJson}
+							onChangeText={setImportJson}
+							multiline
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+						<View style={{ flexDirection: 'row', gap: 8 }}>
+							<TouchableOpacity
+								style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR, borderRadius: 8, paddingVertical: 8, opacity: importJson.trim().length === 0 ? 0.4 : 1 }]}
+								onPress={() => {
+									onImportMapSettings(importJson.trim());
+									setShowImportArea(false);
+									setImportJson('');
+								}}
+								disabled={importJson.trim().length === 0}
+								activeOpacity={0.8}
+							>
+								<Text style={[styles.debugRowLabel, { color: '#ffffff' }]}>Apply</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.resolutionButton, { flex: 1, backgroundColor: theme.screen.text + '18', borderRadius: 8, paddingVertical: 8 }]}
+								onPress={() => { setShowImportArea(false); setImportJson(''); }}
+								activeOpacity={0.8}
+							>
+								<Text style={[styles.debugRowLabel, { color: theme.screen.text }]}>Cancel</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				)}
+			</View>
 		</View>
 	);
 }
@@ -1233,7 +1314,7 @@ const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
 	};
 });
 
-function HexAnchorPicker({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
+function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorColor; onSelect: (id: BillboardAnchorColor) => void; occupiedAnchors?: Record<string, string | null> }) {
 	const { theme } = useTheme();
 	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
 
@@ -1269,6 +1350,7 @@ function HexAnchorPicker({ selected, onSelect }: { selected: string; onSelect: (
 					const pos = HEX_ANCHOR_POSITIONS[ac.id];
 					if (!pos) return null;
 					const isSelected = selected === ac.id;
+					const isOccupied = occupiedAnchors ? !!occupiedAnchors[ac.id] : false;
 					const dotSize = isSelected ? HEX_DOT_SELECTED_SIZE : HEX_DOT_SIZE;
 					return (
 						<TouchableOpacity
@@ -1291,7 +1373,11 @@ function HexAnchorPicker({ selected, onSelect }: { selected: string; onSelect: (
 									elevation: isSelected ? 4 : 0,
 								},
 							]}
-						/>
+						>
+							{isOccupied && (
+								<View style={hexPickerStyles.occupiedBadge} />
+							)}
+						</TouchableOpacity>
 					);
 				})}
 			</View>
@@ -1318,6 +1404,17 @@ const hexPickerStyles = StyleSheet.create({
 	dot: {
 		position: 'absolute',
 	},
+	occupiedBadge: {
+		position: 'absolute',
+		top: -4,
+		right: -4,
+		width: 10,
+		height: 10,
+		borderRadius: 5,
+		backgroundColor: '#22c55e',
+		borderWidth: 1.5,
+		borderColor: '#ffffff',
+	},
 	label: {
 		fontSize: 12,
 		fontWeight: '500',
@@ -1332,9 +1429,13 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
+	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorColor>(BillboardAnchorColor.Purple);
 
 	const currentTileImage = record?.tileImage ?? null;
-	const currentBillboard = record?.billboard ?? null;
+	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
+	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorColor, string>;
+	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
+	const parsedCurrentBillboard = currentAnchorBillboard ? parseBillboardKey(currentAnchorBillboard) : null;
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -1385,15 +1486,28 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
 	const openBillboardSelection = useCallback(() => {
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor;
 		showModal({
-			title: '🏗️ Select Billboard',
+			title: `🏗️ Select Billboard — ${anchorLabel}`,
 			onClose: closeModal,
 			children: (
 				<View style={{ paddingBottom: 20 }}>
+					{/* None option at the top */}
+					<SettingsListSelectOptionSingle
+						key="none"
+						label="None (clear)"
+						isSelected={!currentAnchorBillboard}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: null }));
+							closeModal();
+						}}
+						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
+					/>
 					{OBJECT_SPRITES.map((sprite, idx) => {
 						const key = `objects:${idx}`;
-						const isSelected = currentBillboard === key;
-						const position = idx === 0 ? 'top' : idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
+						const isSelected = currentAnchorBillboard === key;
+						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
 						return (
 							<SettingsListSelectOptionSingle
 								key={key}
@@ -1401,10 +1515,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 								isSelected={isSelected}
 								selectionColor={PRIMARY_COLOR}
 								onPress={() => {
-									dispatch(setHexTileCustomization({
-										h3Index,
-										billboard: currentBillboard === key ? null : key,
-									}));
+									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: key }));
 									closeModal();
 								}}
 								groupPosition={position}
@@ -1414,9 +1525,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			),
 		});
-	}, [showModal, closeModal, currentBillboard, h3Index, dispatch]);
-
-	const parsedBillboard = currentBillboard ? parseBillboardKey(currentBillboard) : null;
+	}, [showModal, closeModal, currentAnchorBillboard, h3Index, dispatch, selectedAnchorColor]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1444,25 +1553,19 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				groupPosition="single"
 			/>
 
-			{/* ── Billboard / Object section ── */}
-			<SettingsListGroupTitle title="Object" />
+			{/* ── Billboard / Object section (per anchor) ── */}
+			<SettingsListGroupTitle title="Objects (per Anchor)" />
+			<HexAnchorPicker
+				selected={selectedAnchorColor}
+				onSelect={setSelectedAnchorColor}
+				occupiedAnchors={effectiveBillboards}
+			/>
 			<SettingsListBillboard
-				spriteIndex={parsedBillboard?.idx ?? null}
-				title="Billboard"
+				spriteIndex={parsedCurrentBillboard?.idx ?? null}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor}
 				onPress={openBillboardSelection}
 				groupPosition="single"
 			/>
-
-			{/* ── Billboard Anchor Color section ── */}
-			{currentBillboard && (
-				<>
-					<SettingsListGroupTitle title="Billboard Anchor Position" />
-					<HexAnchorPicker
-						selected={record?.billboardAnchorColor ?? 'purple'}
-						onSelect={(colorId) => dispatch(setHexTileCustomization({ h3Index, billboardAnchorColor: colorId }))}
-					/>
-				</>
-			)}
 
 		</View>
 	);
@@ -1480,6 +1583,7 @@ export default function RecordScreen() {
 	// Redux selectors
 	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
+	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1701,23 +1805,15 @@ export default function RecordScreen() {
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
+		// Midpoint anchor colors in the order they map to hex vertices 0–5.
+		const MIDPOINT_ANCHOR_COLORS = [BillboardAnchorColor.Red, BillboardAnchorColor.Orange, BillboardAnchorColor.Yellow, BillboardAnchorColor.Blue, BillboardAnchorColor.White, BillboardAnchorColor.Black];
+
 		for (const [h3Index, record] of Object.entries(records)) {
-			if (!record.billboard) continue;
-			const parsed = parseBillboardKey(record.billboard);
-			if (!parsed) continue;
-			const { sprite, idx } = parsed;
-			const url = await loadAssetUrl(record.billboard, sprite.source as number, 'image/svg+xml');
-			if (!url) continue;
+			// Build an effective billboard map using the shared helper.
+			const effectiveBillboards = getEffectiveBillboards(record);
+			if (Object.keys(effectiveBillboards).length === 0) continue;
 
-			const iconKey = `billboard-${record.billboard}`;
-
-			// Look up global anchor overrides for this sprite type.
-			const anchorOverride = spriteAnchors[idx];
-			const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
-			const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-
-			// Compute the centroid of the hexagon polygon by averaging its boundary
-			// vertices. The ring is closed (last vertex = first), so exclude it.
+			// Compute hex boundary (centroid + vertices) once per tile.
 			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
 			let sumLng = 0, sumLat = 0;
 			const n = boundary.length - 1;
@@ -1730,53 +1826,65 @@ export default function RecordScreen() {
 			const centerLng = sumLng / n;
 			const centerLat = sumLat / n;
 
-			// Determine billboard placement position based on anchor color.
-			// Matches debug point positions: purple=center, green=vertex[0],
-			// red/orange/yellow/blue/white/black = midpoints 0–5.
-			let lng = centerLng;
-			let lat = centerLat;
-			const anchorColor = record.billboardAnchorColor ?? 'purple';
-			if (anchorColor === 'green' && n > 0) {
-				// Use the first vertex (corner) of the hex polygon
-				const [vLng, vLat] = boundary[0] as [number, number];
-				lng = vLng;
-				lat = vLat;
-			} else if (anchorColor !== 'purple') {
-				// Midpoint between center and a corner vertex.
-				// Midpoint colors cycle: red=0, orange=1, yellow=2, blue=3, white=4, black=5
-				const midpointColors = ['red', 'orange', 'yellow', 'blue', 'white', 'black'];
-				const midIdx = midpointColors.indexOf(anchorColor);
-				if (midIdx >= 0 && midIdx < n) {
-					const [vLng, vLat] = boundary[midIdx] as [number, number];
-					lng = (centerLng + vLng) / 2;
-					lat = (centerLat + vLat) / 2;
-				}
-			}
-
-			// Desired pixel size at reference zoom 14, scaled by user multiplier and
-			// proportional to the H3 edge length so billboards are larger on bigger
-			// hexagons and smaller on smaller ones.
+			// Size constants for this tile's resolution (shared across all anchors).
 			const cellRes = getResolution(h3Index);
 			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
 			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
-			// Per-sprite scale multiplier from the billboard config screen (default 1.0).
-			const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-			// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
-			const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
-				BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
-			));
-			// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
-			// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
-			const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
 
-			if (!billboardImages[iconKey]) {
-				billboardImages[iconKey] = { url };
+			// Render one billboard feature per occupied anchor position.
+			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
+				const parsed = parseBillboardKey(billboardKey);
+				if (!parsed) continue;
+				const { sprite, idx } = parsed;
+				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+				if (!url) continue;
+
+				const iconKey = `billboard-${billboardKey}`;
+
+				// Look up global anchor overrides for this sprite type.
+				const anchorOverride = spriteAnchors[idx];
+				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+
+				// Determine billboard placement position based on anchor color.
+				// Matches debug point positions: purple=center, green=vertex[0],
+				// red/orange/yellow/blue/white/black = midpoints 0–5.
+				let lng = centerLng;
+				let lat = centerLat;
+				if (anchorColor === BillboardAnchorColor.Green && n > 0) {
+					// Use the first vertex (corner) of the hex polygon.
+					const [vLng, vLat] = boundary[0] as [number, number];
+					lng = vLng;
+					lat = vLat;
+				} else if (anchorColor !== BillboardAnchorColor.Purple) {
+					// Midpoint between center and a corner vertex.
+					const midIdx = MIDPOINT_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
+					if (midIdx >= 0 && midIdx < n) {
+						const [vLng, vLat] = boundary[midIdx] as [number, number];
+						lng = (centerLng + vLng) / 2;
+						lat = (centerLat + vLat) / 2;
+					}
+				}
+
+				// Per-sprite scale multiplier from the billboard config screen (default 1.0).
+				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+				// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
+				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+				));
+				// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
+				// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
+				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+				if (!billboardImages[iconKey]) {
+					billboardImages[iconKey] = { url };
+				}
+				billboardFeatures.push({
+					type: 'Feature',
+					geometry: { type: 'Point', coordinates: [lng, lat] },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
+				});
 			}
-			billboardFeatures.push({
-				type: 'Feature',
-				geometry: { type: 'Point', coordinates: [lng, lat] },
-				properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
-			});
 		}
 
 		mapRef.current.sendToMap({
@@ -2054,6 +2162,39 @@ export default function RecordScreen() {
 		}
 	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations]);
 
+	const handleExportMapSettings = useCallback(async () => {
+		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string> }> = {};
+		for (const [h3Index, record] of Object.entries(hexTileRecords)) {
+			const billboards = getEffectiveBillboards(record);
+			const hasBillboards = Object.keys(billboards).length > 0;
+			if (record.tileImage || hasBillboards) {
+				exportData[h3Index] = {};
+				if (record.tileImage) exportData[h3Index].tileImage = record.tileImage;
+				if (hasBillboards) exportData[h3Index].billboards = billboards;
+			}
+		}
+		const json = JSON.stringify({ version: 1, hexTiles: exportData }, null, 2);
+		await Clipboard.setStringAsync(json);
+		Alert.alert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
+	}, [hexTileRecords]);
+
+	const handleImportMapSettings = useCallback((json: string) => {
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(json);
+		} catch {
+			Alert.alert('Import Failed', 'The text is not valid JSON.');
+			return;
+		}
+		const data = parsed as { version?: number; hexTiles?: Record<string, { tileImage?: string | null; billboards?: Record<string, string | null> }> };
+		if (!data.hexTiles || typeof data.hexTiles !== 'object') {
+			Alert.alert('Import Failed', 'No "hexTiles" object found in the data.');
+			return;
+		}
+		dispatch(applyMapCustomizations(data.hexTiles));
+		Alert.alert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
+	}, [dispatch]);
+
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
 		showModal({
@@ -2078,10 +2219,12 @@ export default function RecordScreen() {
 					onBillboardFaceCameraChange={handleBillboardFaceCameraChange}
 					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
 					onShowDebugPointsChange={handleShowDebugPointsChange}
+					onExportMapSettings={handleExportMapSettings}
+					onImportMapSettings={handleImportMapSettings}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
