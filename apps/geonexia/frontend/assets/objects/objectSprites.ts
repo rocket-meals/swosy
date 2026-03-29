@@ -80,4 +80,5 @@ export const OBJECT_SPRITES: ObjectSprite[] = [
 	{ name: 'windmillComplete', source: require('./windmillComplete.svg'), scaleFactor: 5.29, anchorX: 0.55, anchorY: 0.7 }, // 54
 	{ name: 'woodLogs', source: require('./woodLogs.svg'), scaleFactor: 4.09, anchorX: 0.5, anchorY: 0.55 }, // 55
 	{ name: 'farmFieldFull', source: require('./farmFieldFull.svg'), scaleFactor: 5.57, anchorX: 0.5, anchorY: 0.5 }, // 56
+	{ name: 'flowerMeadow', source: require('./flowerMeadow.svg'), scaleFactor: 7.0, anchorX: 0.5, anchorY: 0.5 }, // 57
 ];

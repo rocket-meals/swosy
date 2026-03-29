@@ -52,12 +52,22 @@ function getContainBounds(
 function buildPlacedCountMap(records: Record<string, HexTileRecord>): Map<number, number> {
 	const countMap = new Map<number, number>();
 	for (const record of Object.values(records)) {
-		if (!record.billboard) continue;
-		const colonIdx = record.billboard.indexOf(':');
-		if (colonIdx < 0 || record.billboard.slice(0, colonIdx) !== 'objects') continue;
-		const idx = parseInt(record.billboard.slice(colonIdx + 1), 10);
-		if (!OBJECT_SPRITES[idx]) continue;
-		countMap.set(idx, (countMap.get(idx) ?? 0) + 1);
+		// Collect all billboard keys from the new billboards map and the legacy field.
+		const billboardKeys: string[] = [];
+		if (record.billboards) {
+			for (const bk of Object.values(record.billboards)) {
+				if (bk) billboardKeys.push(bk);
+			}
+		} else if (record.billboard) {
+			billboardKeys.push(record.billboard);
+		}
+		for (const bk of billboardKeys) {
+			const colonIdx = bk.indexOf(':');
+			if (colonIdx < 0 || bk.slice(0, colonIdx) !== 'objects') continue;
+			const idx = parseInt(bk.slice(colonIdx + 1), 10);
+			if (!OBJECT_SPRITES[idx]) continue;
+			countMap.set(idx, (countMap.get(idx) ?? 0) + 1);
+		}
 	}
 	return countMap;
 }

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { HexTileRecord, computeHexTileLevel } from '../helpers/HexTileStorage';
+import { HexTileRecord, BillboardAnchorColor, computeHexTileLevel } from '../helpers/HexTileStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
@@ -115,6 +115,7 @@ const hexTileSlice = createSlice({
 		/**
 		 * Set the custom tile image and/or billboard for a specific hex tile.
 		 * Pass `null` to explicitly clear a value; omit the key to leave it unchanged.
+		 * @deprecated Prefer `setBillboardAtAnchor` for billboard changes.
 		 */
 		setHexTileCustomization(
 			state,
@@ -126,8 +127,50 @@ const hexTileSlice = createSlice({
 			if (billboard !== undefined) rec.billboard = billboard;
 			if (billboardAnchorColor !== undefined) rec.billboardAnchorColor = billboardAnchorColor;
 		},
+
+		/**
+		 * Set or clear the billboard at a specific anchor position on a hex tile.
+		 * Migrates the legacy `billboard`/`billboardAnchorColor` fields into the
+		 * `billboards` map the first time this action is dispatched for a tile.
+		 */
+		setBillboardAtAnchor(
+			state,
+			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorColor; billboard: string | null }>,
+		) {
+			const { h3Index, anchorColor, billboard } = action.payload;
+			const rec = getOrCreate(state.records, h3Index);
+			if (!rec.billboards) {
+				rec.billboards = {};
+				// Migrate legacy single-billboard field if present
+				if (rec.billboard) {
+					const legacyAnchor = rec.billboardAnchorColor ?? BillboardAnchorColor.Purple;
+					rec.billboards[legacyAnchor] = rec.billboard;
+				}
+			}
+			if (billboard === null) {
+				delete rec.billboards[anchorColor];
+			} else {
+				rec.billboards[anchorColor] = billboard;
+			}
+		},
+
+		/**
+		 * Apply map customizations (tileImage, billboards) to the tile records,
+		 * merging the provided data into the existing state. Useful for importing
+		 * map settings without overwriting activity tracking data.
+		 */
+		applyMapCustomizations(
+			state,
+			action: PayloadAction<Record<string, { tileImage?: string | null; billboards?: Record<string, string | null> }>>,
+		) {
+			for (const [h3Index, customization] of Object.entries(action.payload)) {
+				const rec = getOrCreate(state.records, h3Index);
+				if (customization.tileImage !== undefined) rec.tileImage = customization.tileImage;
+				if (customization.billboards !== undefined) rec.billboards = customization.billboards;
+			}
+		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

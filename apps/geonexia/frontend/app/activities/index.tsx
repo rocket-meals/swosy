@@ -11,6 +11,7 @@ import {
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch } from 'react-redux';
 
@@ -196,21 +197,43 @@ export default function ActivitiesScreen() {
 			Alert.alert('Import Failed', 'The code is not valid JSON.');
 			return;
 		}
-		const activity = parsed as SavedActivity;
-		if (
-			typeof activity.id !== 'string' ||
-			typeof activity.startedAt !== 'number' ||
-			!Array.isArray(activity.routePoints)
-		) {
-			Alert.alert('Import Failed', 'The data does not look like a valid activity.');
-			return;
+
+		// Support both a single activity object and an array of activities.
+		const rawActivities: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+		const validActivities: SavedActivity[] = [];
+		for (const item of rawActivities) {
+			const activity = item as SavedActivity;
+			if (
+				typeof activity.id !== 'string' ||
+				typeof activity.startedAt !== 'number' ||
+				!Array.isArray(activity.routePoints)
+			) {
+				Alert.alert('Import Failed', 'One or more entries do not look like valid activities.');
+				return;
+			}
+			validActivities.push(activity);
 		}
-		saveActivity(activity);
-		applyImportedHexTiles(activity);
+		for (const activity of validActivities) {
+			saveActivity(activity);
+			applyImportedHexTiles(activity);
+		}
 		closeImportModal();
 		loadData();
-		Alert.alert('Imported', 'The run has been imported successfully.');
+		const count = validActivities.length;
+		Alert.alert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
 	}, [applyImportedHexTiles, closeImportModal, loadData]);
+
+	const handleExportAll = useCallback(async () => {
+		const allActivities = await loadActivities();
+		if (allActivities.length === 0) {
+			Alert.alert('Nothing to Export', 'There are no activities to export.');
+			return;
+		}
+		const json = JSON.stringify(allActivities, null, 2);
+		await Clipboard.setStringAsync(json);
+		const count = allActivities.length;
+		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+	}, []);
 
 	const openImportModal = useCallback(() => {
 		showImportModal({
@@ -226,16 +249,21 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, closeImportModal, theme]);
 
-	// Show import button in the header
+	// Show import and export buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
-				<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
-					<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
-				</TouchableOpacity>
+				<View style={styles.headerButtons}>
+					<TouchableOpacity onPress={handleExportAll} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+					<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+				</View>
 			),
 		});
-	}, [navigation, openImportModal]);
+	}, [navigation, openImportModal, handleExportAll]);
 
 	const handleActivityPress = useCallback((id: string) => {
 		router.push(`/activities/${id}`);
@@ -340,8 +368,14 @@ const styles = StyleSheet.create({
 		lineHeight: 20,
 	},
 	headerImportButton: {
-		marginRight: 12,
+		marginRight: 4,
 		padding: 4,
+	},
+	headerButtons: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginRight: 8,
+		gap: 4,
 	},
 	importContainer: {
 		paddingTop: 4,
