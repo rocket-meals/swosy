@@ -11,14 +11,14 @@ import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'rea
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
-import { setDevMode, setDebugMode } from '../store/hexTileSlice';
+import { setDevMode, setDebugMode, loadWalkedEdgesState } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
-import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag } from '../helpers/HexTileStorage';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -288,8 +288,11 @@ export default function Layout() {
 	useEffect(() => {
 		(async () => {
 			const isDevMode = await loadDevModeFlag();
-			const records = isDevMode ? await loadDevHexTileState() : await loadHexTileState();
-			store.dispatch(setDevMode({ isDevMode, records }));
+			const [records, walkedEdges] = await Promise.all([
+				isDevMode ? loadDevHexTileState() : loadHexTileState(),
+				isDevMode ? loadDevWalkedEdges() : loadWalkedEdges(),
+			]);
+			store.dispatch(setDevMode({ isDevMode, records, walkedEdges }));
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
 		});

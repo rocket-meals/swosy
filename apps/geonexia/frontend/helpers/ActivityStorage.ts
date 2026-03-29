@@ -34,6 +34,8 @@ export type SavedActivity = {
 	stats: RunStats;
 	/** Sport type recorded for this activity. Optional for backward-compat with older saves. */
 	sportType?: SportType;
+	/** H3 resolution used during recording. Optional for backward-compat with older saves. */
+	h3Resolution?: number;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

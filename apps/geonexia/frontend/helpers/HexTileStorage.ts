@@ -115,6 +115,14 @@ function getDevModeFlagFile(): File {
 	return new File(Paths.document, 'geonexia-dev-mode.json');
 }
 
+function getWalkedEdgesFile(): File {
+	return new File(Paths.document, 'geonexia-walked-edges.json');
+}
+
+function getDevWalkedEdgesFile(): File {
+	return new File(Paths.document, 'geonexia-dev-walked-edges.json');
+}
+
 /**
  * Persist the full hex tile record map to disk (synchronous write).
  * Silently ignores write errors to avoid crashing on storage failures.
@@ -166,6 +174,62 @@ export async function loadDevHexTileState(): Promise<Record<string, HexTileRecor
 		return JSON.parse(content) as Record<string, HexTileRecord>;
 	} catch {
 		return {};
+	}
+}
+
+/**
+ * Persist the walked edges array to disk (synchronous write).
+ * Each edge is stored as "cellA:cellB" with the lexicographically smaller
+ * index first so duplicate edges are naturally deduplicated.
+ * Silently ignores write errors.
+ */
+export function saveWalkedEdges(edges: string[]): void {
+	try {
+		getWalkedEdgesFile().write(JSON.stringify(edges));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save walked edges:', err);
+	}
+}
+
+/**
+ * Load walked edges from disk. Returns an empty array when the file does
+ * not yet exist or cannot be parsed.
+ */
+export async function loadWalkedEdges(): Promise<string[]> {
+	try {
+		const file = getWalkedEdgesFile();
+		if (!file.exists) return [];
+		const content = await file.text();
+		return JSON.parse(content) as string[];
+	} catch {
+		return [];
+	}
+}
+
+/**
+ * Persist the dev-mode walked edges array to disk.
+ * Silently ignores write errors.
+ */
+export function saveDevWalkedEdges(edges: string[]): void {
+	try {
+		getDevWalkedEdgesFile().write(JSON.stringify(edges));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save dev walked edges:', err);
+	}
+}
+
+/**
+ * Load dev-mode walked edges from disk. Returns an empty array when the file
+ * does not yet exist or cannot be parsed.
+ */
+export async function loadDevWalkedEdges(): Promise<string[]> {
+	try {
+		const file = getDevWalkedEdgesFile();
+		if (!file.exists) return [];
+		const content = await file.text();
+		return JSON.parse(content) as string[];
+	} catch {
+		return [];
 	}
 }
 

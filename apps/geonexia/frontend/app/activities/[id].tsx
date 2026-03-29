@@ -12,10 +12,14 @@ import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
+import { HexTileRecord } from '../../helpers/HexTileStorage';
+import type { RootState } from '../../store/store';
 
 const AUTO_ROTATE_TICK_MS = 100;
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
@@ -347,6 +351,100 @@ const speedRangeStyles = StyleSheet.create({
 
 // ─── Activity Detail Screen ───────────────────────────────────────────────────
 
+const H3_GEOJSON_ORDER = true;
+const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
+
+/**
+ * Derive the sequence of unique H3 cells visited during an activity, including
+ * interpolated cells for GPS gaps, and build:
+ *  - a hexTileGeoJSON with one polygon per visited cell, colored by its level
+ *    from the global Redux store.
+ *  - a hexWalkPathGeoJSON with LineString features for each actual transition
+ *    between consecutive cells.
+ */
+function buildActivityHexGeoJson(
+	routePoints: RoutePoint[],
+	h3Resolution: number,
+	hexTileRecords: Record<string, HexTileRecord>,
+): {
+	hexTileGeoJson: { type: 'FeatureCollection'; features: object[] };
+	hexWalkPathGeoJson: { type: 'FeatureCollection'; features: object[] };
+} {
+	const visitedCells = new Set<string>();
+	const edges = new Set<string>();
+	let lastCell: string | null = null;
+
+	for (const point of routePoints) {
+		try {
+			const cell = latLngToCell(point.lat, point.lng, h3Resolution);
+			if (!cell) continue;
+			if (lastCell && cell !== lastCell) {
+				try {
+					const pathCells = gridPathCells(lastCell, cell);
+					if (pathCells.length - 2 <= ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS) {
+						for (let i = 0; i < pathCells.length - 1; i++) {
+							const a = pathCells[i];
+							const b = pathCells[i + 1];
+							visitedCells.add(a);
+							visitedCells.add(b);
+							edges.add(a < b ? `${a}:${b}` : `${b}:${a}`);
+						}
+					}
+				} catch {
+					// Different icosahedron faces – just add direct edge
+					edges.add(lastCell < cell ? `${lastCell}:${cell}` : `${cell}:${lastCell}`);
+				}
+			}
+			visitedCells.add(cell);
+			lastCell = cell;
+		} catch {
+			// Skip invalid GPS points
+		}
+	}
+
+	// Build hex tile polygon features
+	const tileFeatures: object[] = [];
+	for (const cell of visitedCells) {
+		try {
+			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+			if (boundary.length === 0) continue;
+			const level = hexTileRecords[cell]?.level ?? 0;
+			tileFeatures.push({
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [boundary] },
+				properties: { h3Index: cell, level },
+			});
+		} catch {
+			// Skip invalid cells
+		}
+	}
+
+	// Build walk path LineString features
+	const pathFeatures: object[] = [];
+	for (const edge of edges) {
+		const colonIdx = edge.indexOf(':');
+		if (colonIdx === -1) continue;
+		const cellA = edge.slice(0, colonIdx);
+		const cellB = edge.slice(colonIdx + 1);
+		try {
+			const [aLat, aLng] = cellToLatLng(cellA);
+			const [bLat, bLng] = cellToLatLng(cellB);
+			pathFeatures.push({
+				type: 'Feature',
+				geometry: { type: 'LineString', coordinates: [[aLng, aLat], [bLng, bLat]] },
+				properties: {},
+			});
+		} catch {
+			// Skip invalid cells
+		}
+	}
+
+	return {
+		hexTileGeoJson: { type: 'FeatureCollection', features: tileFeatures },
+		hexWalkPathGeoJson: { type: 'FeatureCollection', features: pathFeatures },
+	};
+}
+
 export default function ActivityDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
@@ -361,6 +459,7 @@ export default function ActivityDetailScreen() {
 	const autoRotateActiveRef = useRef(false);
 	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
+	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 
 	// Clean up auto-rotate interval on unmount
 	useEffect(() => {
@@ -443,6 +542,24 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
+		// Send hex tile and walk path GeoJSON so the activity screen shows the
+		// same hexagon visualization as the main map, but only for the tiles
+		// that were visited during this specific activity.
+		if (isH3Available() && activity.routePoints.length > 0) {
+			try {
+				const h3Res = activity.h3Resolution ?? 10;
+				const { hexTileGeoJson, hexWalkPathGeoJson } = buildActivityHexGeoJson(
+					activity.routePoints,
+					h3Res,
+					hexTileRecords,
+				);
+				mapRef.current.sendToMap({ hexTileGeoJson });
+				mapRef.current.sendToMap({ hexWalkPathGeoJson });
+			} catch (err) {
+				console.warn('[ActivityDetailScreen] Failed to build activity hex GeoJSON:', err);
+			}
+		}
+
 		// Fit the camera to the full route extent
 		const points = activity.routePoints;
 		if (points.length >= 2) {
@@ -501,7 +618,7 @@ export default function ActivityDetailScreen() {
 			}
 			autoRotateActiveRef.current = false;
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {

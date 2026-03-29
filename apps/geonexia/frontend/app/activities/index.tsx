@@ -16,8 +16,8 @@ import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
-import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { startRun, markVisited, loadPersistedState, applyMapCustomizations } from '../../store/hexTileSlice';
+import { isAvailable as isH3Available, latLngToCell, gridPathCells } from '../../helpers/H3Helper';
+import { startRun, markVisited, loadPersistedState, applyMapCustomizations, addWalkedEdges, loadWalkedEdgesState } from '../../store/hexTileSlice';
 import { AppDispatch, store } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -270,21 +270,50 @@ export default function ActivitiesScreen() {
 
 						// Clear all tile data, then replay each activity oldest-first
 						dispatch(loadPersistedState({}));
+						dispatch(loadWalkedEdgesState([]));
+						const rebuildEdgeSet = new Set<string>();
+						const GPS_INTERPOLATION_MAX = 10;
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						for (const activity of sorted) {
 							dispatch(startRun());
 							const h3Set = new Set<string>();
+							let lastCell: string | null = null;
 							for (const point of activity.routePoints) {
 								try {
 									const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
-									if (cell && !h3Set.has(cell)) {
+									if (!cell) continue;
+									// Interpolate path cells for GPS gaps
+									if (lastCell && cell !== lastCell) {
+										try {
+											const pathCells = gridPathCells(lastCell, cell);
+											if (pathCells.length - 2 <= GPS_INTERPOLATION_MAX) {
+												for (let i = 0; i < pathCells.length - 1; i++) {
+													const a = pathCells[i];
+													const b = pathCells[i + 1];
+													const edgeKey = a < b ? `${a}:${b}` : `${b}:${a}`;
+													rebuildEdgeSet.add(edgeKey);
+													if (!h3Set.has(a)) {
+														h3Set.add(a);
+														dispatch(markVisited({ h3Indices: [a], timestamp: point.timestamp }));
+													}
+												}
+											}
+										} catch {
+											// gridPathCells can throw for cells on different faces
+										}
+									}
+									if (!h3Set.has(cell)) {
 										h3Set.add(cell);
 										dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
 									}
+									lastCell = cell;
 								} catch {
 									// Skip invalid points
 								}
 							}
+						}
+						if (rebuildEdgeSet.size > 0) {
+							dispatch(addWalkedEdges(Array.from(rebuildEdgeSet)));
 						}
 
 						// Re-apply customizations preserved from before
