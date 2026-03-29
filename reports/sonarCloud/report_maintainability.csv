@@ -1,13 +1,15 @@
 Key,Message,Component,Line
+"AZ06T7_DvIUCM9Fw-mnI","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",398
+"AZ06T7_DvIUCM9Fw-mnJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",398
 "AZ06ICRVoxp4O0LdolrE","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",34
 "AZ06ICRVoxp4O0LdolrF","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",36
 "AZ06ICRVoxp4O0LdolrG","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",38
 "AZ06ICRVoxp4O0LdolrH","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",40
-"AZ06ICRVoxp4O0LdolrI","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",311
-"AZ06ICRVoxp4O0LdolrJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",311
-"AZ06ICRVoxp4O0LdolrK","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",382
-"AZ06ICRVoxp4O0LdolrL","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",384
-"AZ06ICRVoxp4O0LdolrM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",384
+"AZ06ICRVoxp4O0LdolrI","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",312
+"AZ06ICRVoxp4O0LdolrJ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",312
+"AZ06ICRVoxp4O0LdolrK","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",383
+"AZ06ICRVoxp4O0LdolrL","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",385
+"AZ06ICRVoxp4O0LdolrM","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/tts-test/index.tsx",385
 "AZ055ZZlPU4l3pg_Zryp","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",304
 "AZ054NM21XV5X7ZcOkNa","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",262
 "AZ054NM21XV5X7ZcOkNb","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",283
@@ -8786,8 +8788,8 @@ Key,Message,Component,Line
 "AZ0Tpld2ufp2jxPAhS5N","Remove this unused import of 'RootState'.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useFoodofferSortingModal.tsx",25
 "AZ0TpldLufp2jxPAhS5F","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useMyScrollviewDirectusImageEditModal.tsx",323
 "AZ0TpldLufp2jxPAhS5G","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useMyScrollviewDirectusImageEditModal.tsx",325
-"AZ0Tpkr8ufp2jxPAhSu0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/index.tsx",168
-"AZ0Tpkr8ufp2jxPAhSu1","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/index.tsx",168
+"AZ0Tpkr8ufp2jxPAhSu0","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/index.tsx",174
+"AZ0Tpkr8ufp2jxPAhSu1","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/index.tsx",174
 "AZ0TpldRufp2jxPAhS5I","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLinkCoordinateModal.tsx",90
 "AZ0TpldRufp2jxPAhS5J","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/hooks/useLinkCoordinateModal.tsx",92
 "AZ0TplHYufp2jxPAhS1L","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/frontend/app/components/BuildingItem/BuildingItem.tsx",63
@@ -9997,5 +9999,3 @@ Key,Message,Component,Line
 "AZlyj_6N0YdgFOBafBOL","Spread an object literal in object literal is unnecessary.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/workflows-runs-hook/WorkflowRunJobInterface.ts",50
 "AZkUSvreS4VhJojFFCbd","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",53
 "AZkUSvreS4VhJojFFCbe","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",55
-"AZkUSvreS4VhJojFFCbg","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",61
-"AZkUSvreS4VhJojFFCbh","Remove this commented out code.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/ParseSchedule.ts",65
