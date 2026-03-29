@@ -82,3 +82,6 @@ export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMy
 
 export { default as FeatureWishesScreen } from './src/components/FeatureWishesScreen';
 export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishItem } from './src/components/FeatureWishesScreen';
+
+export { default as ScreenHeader } from './src/components/ScreenHeader';
+export type { ScreenHeaderProps } from './src/components/ScreenHeader';
