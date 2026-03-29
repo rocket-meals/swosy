@@ -109,8 +109,114 @@ function ThemeSyncBridge() {
 	return null;
 }
 
+function ThemedDrawerNavigator() {
+	const { theme } = useTheme();
+
+	return (
+		<>
+		<StatusBar style="auto" />
+		<Drawer
+			drawerContent={(props) => <CustomDrawerContent {...props} />}
+			screenOptions={{
+				drawerActiveTintColor: '#2563eb',
+				headerStyle: { backgroundColor: theme.header.background },
+				headerTintColor: theme.header.text,
+			}}
+		>
+			<Drawer.Screen
+				name="index"
+				options={{
+					title: 'Record',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="radio-button-on-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="activities/index"
+				options={{
+					title: 'Activities',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="list-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="activities/[id]"
+				options={{
+					title: 'Activity',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name="statistics/index"
+				options={{
+					title: 'Statistics',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="bar-chart-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="achievements/index"
+				options={{
+					title: 'Achievements',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="trophy-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="settings/index"
+				options={{
+					title: 'Settings',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="settings-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="feature-wishes/index"
+				options={{
+					title: 'Feature Wishes',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="bulb-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="billboard-config/index"
+				options={{
+					title: 'Billboard Config',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="build-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="experimental/index"
+				options={{
+					title: 'Experimental',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="flask-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="experimental/tts-test/index"
+				options={{
+					title: 'Text to Speech Test',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+		</Drawer>
+		</>
+	);
+}
+
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
+	const { theme } = useTheme();
 
 	const items: DrawerItem[] = [
 		{
@@ -168,7 +274,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderLogo={() => (
 				<View style={styles.logoRow}>
 					<Ionicons name="location-sharp" size={32} color="#2563eb" />
-					<Text style={styles.logoTitle}>Geonexia</Text>
+					<Text style={[styles.logoTitle, { color: theme.text }]}>Geonexia</Text>
 				</View>
 			)}
 			items={items}
@@ -247,100 +353,7 @@ export default function Layout() {
 					<ThemeSyncBridge />
 					<SettingsProvider primaryColor="#2563eb">
 						<ModalProvider>
-						<StatusBar style="auto" />
-						<Drawer
-							drawerContent={(props) => <CustomDrawerContent {...props} />}
-							screenOptions={{
-								drawerActiveTintColor: '#2563eb',
-							}}
-						>
-							<Drawer.Screen
-								name="index"
-								options={{
-									title: 'Record',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="radio-button-on-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="activities/index"
-								options={{
-									title: 'Activities',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="list-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="activities/[id]"
-								options={{
-									title: 'Activity',
-									drawerItemStyle: { display: 'none' },
-								}}
-							/>
-							<Drawer.Screen
-								name="statistics/index"
-								options={{
-									title: 'Statistics',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="bar-chart-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="achievements/index"
-								options={{
-									title: 'Achievements',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="trophy-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="settings/index"
-								options={{
-									title: 'Settings',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="settings-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="feature-wishes/index"
-								options={{
-									title: 'Feature Wishes',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="bulb-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="billboard-config/index"
-								options={{
-									title: 'Billboard Config',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="build-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="experimental/index"
-								options={{
-									title: 'Experimental',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="flask-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="experimental/tts-test/index"
-								options={{
-									title: 'Text to Speech Test',
-									drawerItemStyle: { display: 'none' },
-								}}
-							/>
-							</Drawer>
+						<ThemedDrawerNavigator />
 						</ModalProvider>
 					</SettingsProvider>
 				</ThemeProvider>
@@ -360,7 +373,6 @@ const styles = StyleSheet.create({
 	logoTitle: {
 		fontSize: 20,
 		fontWeight: '700',
-		color: '#111111',
 	},
 	errorContainer: {
 		flex: 1,
