@@ -226,10 +226,11 @@ var placementX=CX;
 var placementY=CY;
 
 // Load and draw the billboard SVG
+// The map renders billboards as squares (SVG stretched to fill a 512×512 canvas,
+// then applied to a uniform PlaneGeometry(1,1)), so the preview also uses a square.
 var img=new Image();
 img.onload=function(){
-  var aspect=img.naturalWidth>0?img.naturalHeight/img.naturalWidth:1;
-  var billH=billW*aspect;
+  var billH=billW;
   var bX=placementX-anchorX*billW;
   var bY=placementY-anchorY*billH;
   ctx.drawImage(img,bX,bY,billW,billH);
