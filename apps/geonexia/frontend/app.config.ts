@@ -1,12 +1,14 @@
 import type { ConfigContext, ExpoConfig } from '@expo/config';
+import { getBuildNumber } from './config';
 
 module.exports = function ({ config }: ConfigContext): ExpoConfig {
+	const buildNumber = getBuildNumber();
 	return {
 		...config,
 		owner: 'baumgartner-software',
 		name: 'Geonexia',
 		slug: 'geonexia',
-		version: '1.0.0',
+		version: `1.0.${buildNumber}`,
 		orientation: 'portrait',
 		icon: './assets/icon.png',
 		scheme: 'geonexia',
@@ -19,6 +21,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		ios: {
 			supportsTablet: true,
 			bundleIdentifier: 'com.geonexia.app',
+			buildNumber: buildNumber.toString(),
 		},
 		android: {
 			adaptiveIcon: {
@@ -26,6 +29,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 				backgroundColor: '#ffffff',
 			},
 			package: 'com.geonexia.app',
+			versionCode: buildNumber,
 		},
 		web: {
 			bundler: 'metro',
