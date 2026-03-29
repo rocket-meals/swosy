@@ -22,6 +22,8 @@
         "track": "production"
       },
       "ios": {
+        "appleId": "nils@baumgartner-software.de",
+        "ascAppId": "6761341605",
         "appleTeamId": "6U99CRVHVR"
       }
     }
