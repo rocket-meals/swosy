@@ -1,4 +1,7 @@
 Key,Message,Component,Line
+"AZ07NsdWvIUCM9FwEyPs","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",106
+"AZ07NsdWvIUCM9FwEyPt","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",119
+"AZ07NsdWvIUCM9FwEyPw","Redirect this error message to stderr (>&2).","rocket-meals_rocket-meals:scripts/generateIcons.sh",188
 "AZ068wPbEBPEFGyzbdb8","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",50
 "AZ068wPbEBPEFGyzbdb9","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",103
 "AZ068wPbEBPEFGyzbdb-","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",104
@@ -8440,7 +8443,7 @@ Key,Message,Component,Line
 "AZ0YpBPZLvrw8DEQgX7n","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/ColorHelper.ts",5
 "AZ0YpBPZLvrw8DEQgX7o","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/ColorHelper.ts",20
 "AZ0YpBPZLvrw8DEQgX7p","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:packages/common-ui/src/helpers/ColorHelper.ts",21
-"AZ0XoCBfzF9ecMqzfrcj","The function should be named.","rocket-meals_rocket-meals:apps/geonexia/frontend/app.config.ts",4
+"AZ0XoCBfzF9ecMqzfrcj","The function should be named.","rocket-meals_rocket-meals:apps/geonexia/frontend/app.config.ts",15
 "AZ0XgX4uyJsjaJPaBpOF","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/food-sync-hook/FoodTL1Parser.ts",648
 "AZ0VmBt-mRbbgKiJd_tm","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/FilesServiceHelper.ts",40
 "AZ0VmBpmmRbbgKiJd_tl","`String.raw` should be used to avoid escaping `\`.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/helpers/form/FormHelper.ts",366
@@ -9759,9 +9762,9 @@ Key,Message,Component,Line
 "AZkUSu-IS4VhJojFFAPt","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/Login/Form.tsx",112
 "AZ0TplVTufp2jxPAhS4a","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/CollectionLastUpdate/CollectionLastUpdate.ts",3
 "AZkUSvc9S4VhJojFFCTR","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/lastUpdatedReducer.ts",7
-"AZnlPdtFjqHa6CjL-2W9","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",70
-"AZnlPdtFjqHa6CjL-2W-","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",80
-"AZnlPdtFjqHa6CjL-2W_","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:apps/frontend/generateIcons.sh",92
+"AZ07NsdWvIUCM9FwEyPp","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",73
+"AZ07NsdWvIUCM9FwEyPq","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",86
+"AZ07NsdWvIUCM9FwEyPr","Add an explicit return statement at the end of the function.","rocket-meals_rocket-meals:scripts/generateIcons.sh",98
 "AZkUSvNbS4VhJojFFAY4","useState call is not destructured into value + setter pair","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",59
 "AZkUSvPSS4VhJojFFAbn","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/_layout.tsx",26
 "AZ0TpknDufp2jxPAhSuM","Remove this useless assignment to variable ""campusesDispatched"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/campus/index.tsx",56
@@ -9996,6 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvbcS4VhJojFFCTF","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/campusReducer.ts",10
 "AZkUSvdHS4VhJojFFCTS","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/canteenReducer.ts",17
 "AZkUSvbSS4VhJojFFCTE","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/foodReducer.ts",21
-"AZkUSvciS4VhJojFFCTO","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/formReducer.ts",14
-"AZkUSvbvS4VhJojFFCTH","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/managementReducer.ts",28
-"AZkUSvb3S4VhJojFFCTI","Default parameters should be last.","rocket-meals_rocket-meals:apps/frontend/app/redux/reducer/newsReducer.ts",7
