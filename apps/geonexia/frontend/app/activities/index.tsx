@@ -17,8 +17,8 @@ import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { startRun, markVisited } from '../../store/hexTileSlice';
-import { AppDispatch } from '../../store/store';
+import { startRun, markVisited, loadPersistedState, applyMapCustomizations } from '../../store/hexTileSlice';
+import { AppDispatch, store } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -235,6 +235,71 @@ export default function ActivitiesScreen() {
 		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
 	}, []);
 
+	const handleRebuildMap = useCallback(() => {
+		Alert.alert(
+			'Rebuild Map from Activities',
+			'This will recalculate the explored map from all your saved activities. Billboard and terrain tile settings will be preserved. Continue?',
+			[
+				{ text: 'Cancel', style: 'cancel' },
+				{
+					text: 'Rebuild',
+					style: 'destructive',
+					onPress: async () => {
+						if (!isH3Available()) {
+							Alert.alert('Not Available', 'H3 library is not available on this device.');
+							return;
+						}
+						const allActivities = await loadActivities();
+						if (allActivities.length === 0) {
+							Alert.alert('No Activities', 'There are no activities to rebuild the map from.');
+							return;
+						}
+
+						// Preserve existing billboard / terrain customizations
+						const currentRecords = store.getState().hexTiles.records;
+						const customizations: Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }> = {};
+						for (const [h3Index, record] of Object.entries(currentRecords)) {
+							if (record.tileImage !== undefined || record.billboard !== undefined || record.billboardAnchorColor !== undefined || record.billboards !== undefined) {
+								customizations[h3Index] = {};
+								if (record.tileImage !== undefined) customizations[h3Index].tileImage = record.tileImage;
+								if (record.billboard !== undefined) customizations[h3Index].billboard = record.billboard;
+								if (record.billboardAnchorColor !== undefined) customizations[h3Index].billboardAnchorColor = record.billboardAnchorColor;
+								if (record.billboards !== undefined) customizations[h3Index].billboards = record.billboards;
+							}
+						}
+
+						// Clear all tile data, then replay each activity oldest-first
+						dispatch(loadPersistedState({}));
+						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+						for (const activity of sorted) {
+							dispatch(startRun());
+							const h3Set = new Set<string>();
+							for (const point of activity.routePoints) {
+								try {
+									const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
+									if (cell && !h3Set.has(cell)) {
+										h3Set.add(cell);
+										dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+									}
+								} catch {
+									// Skip invalid points
+								}
+							}
+						}
+
+						// Re-apply customizations preserved from before
+						if (Object.keys(customizations).length > 0) {
+							dispatch(applyMapCustomizations(customizations));
+						}
+
+						const count = allActivities.length;
+						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
+					},
+				},
+			],
+		);
+	}, [dispatch]);
+
 	const openImportModal = useCallback(() => {
 		showImportModal({
 			title: '📥 Import Run',
@@ -249,11 +314,14 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, closeImportModal, theme]);
 
-	// Show import and export buttons in the header
+	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
 				<View style={styles.headerButtons}>
+					<TouchableOpacity onPress={handleRebuildMap} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
 					<TouchableOpacity onPress={handleExportAll} style={styles.headerImportButton} activeOpacity={0.7}>
 						<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
 					</TouchableOpacity>
@@ -263,7 +331,7 @@ export default function ActivitiesScreen() {
 				</View>
 			),
 		});
-	}, [navigation, openImportModal, handleExportAll]);
+	}, [navigation, openImportModal, handleExportAll, handleRebuildMap]);
 
 	const handleActivityPress = useCallback((id: string) => {
 		router.push(`/activities/${id}`);

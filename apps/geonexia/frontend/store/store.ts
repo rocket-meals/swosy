@@ -3,7 +3,7 @@ import hexTileReducer from './hexTileSlice';
 import sportTypeReducer from './sportTypeSlice';
 import themeReducer from './themeSlice';
 import billboardConfigReducer from './billboardConfigSlice';
-import { HexTileRecord, saveHexTileState } from '../helpers/HexTileStorage';
+import { HexTileRecord, saveHexTileState, saveDevHexTileState } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -39,12 +39,17 @@ let _lastSavedBbConfig: BillboardConfigState | null = null;
 store.subscribe(() => {
 	const state = store.getState();
 
-	const { records } = state.hexTiles;
+	const { records, isDevMode } = state.hexTiles;
 	if (records !== _lastSavedRecords) {
 		_lastSavedRecords = records;
 		if (_saveTimer) clearTimeout(_saveTimer);
 		_saveTimer = setTimeout(() => {
-			saveHexTileState(records);
+			const currentIsDevMode = store.getState().hexTiles.isDevMode;
+			if (currentIsDevMode) {
+				saveDevHexTileState(records);
+			} else {
+				saveHexTileState(records);
+			}
 			_saveTimer = null;
 		}, 500);
 	}

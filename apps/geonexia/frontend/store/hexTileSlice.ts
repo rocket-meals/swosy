@@ -13,12 +13,15 @@ export type HexTileSliceState = {
 	 * Screens can watch this value to detect resets and refresh their map views.
 	 */
 	resetToken: number;
+	/** Whether the app is currently using the dev-mode tile set instead of the real one. */
+	isDevMode: boolean;
 };
 
 const initialState: HexTileSliceState = {
 	records: {},
 	runStartLevels: {},
 	resetToken: 0,
+	isDevMode: false,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -161,16 +164,34 @@ const hexTileSlice = createSlice({
 		 */
 		applyMapCustomizations(
 			state,
-			action: PayloadAction<Record<string, { tileImage?: string | null; billboards?: Record<string, string | null> }>>,
+			action: PayloadAction<Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }>>,
 		) {
 			for (const [h3Index, customization] of Object.entries(action.payload)) {
 				const rec = getOrCreate(state.records, h3Index);
 				if (customization.tileImage !== undefined) rec.tileImage = customization.tileImage;
+				if (customization.billboard !== undefined) rec.billboard = customization.billboard;
+				if (customization.billboardAnchorColor !== undefined) rec.billboardAnchorColor = customization.billboardAnchorColor;
 				if (customization.billboards !== undefined) rec.billboards = customization.billboards;
 			}
+		},
+
+		/**
+		 * Atomically switch between dev-mode and production tile sets.
+		 * Replaces the entire records state with the provided set and flips the
+		 * `isDevMode` flag so that the auto-save subscriber writes to the correct
+		 * file. Bumps `resetToken` so that the record screen reloads the map.
+		 */
+		setDevMode(
+			state,
+			action: PayloadAction<{ isDevMode: boolean; records: Record<string, HexTileRecord> }>,
+		) {
+			state.isDevMode = action.payload.isDevMode;
+			state.records = action.payload.records;
+			state.runStartLevels = {};
+			state.resetToken += 1;
 		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

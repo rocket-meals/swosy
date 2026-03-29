@@ -28,8 +28,8 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } from '../store/hexTileSlice';
+import { HexTileRecord, BillboardAnchorColor, saveHexTileState, saveDevHexTileState, loadHexTileState, loadDevHexTileState, saveDevModeFlag } from '../helpers/HexTileStorage';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
@@ -755,6 +755,7 @@ type DebugInfoContentProps = {
 	initialBillboardFaceCamera: boolean;
 	initialShowBillboardAnchors: boolean;
 	initialShowDebugPoints: boolean;
+	initialIsDevMode: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
@@ -765,6 +766,7 @@ type DebugInfoContentProps = {
 	onShowDebugPointsChange: (val: boolean) => void;
 	onExportMapSettings: () => void;
 	onImportMapSettings: (json: string) => void;
+	onToggleDevMode: () => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -780,6 +782,7 @@ function DebugInfoContent({
 	initialBillboardFaceCamera,
 	initialShowBillboardAnchors,
 	initialShowDebugPoints,
+	initialIsDevMode,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
 	onZoomAdjust,
@@ -790,6 +793,7 @@ function DebugInfoContent({
 	onShowDebugPointsChange,
 	onExportMapSettings,
 	onImportMapSettings,
+	onToggleDevMode,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
@@ -799,6 +803,7 @@ function DebugInfoContent({
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
 	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
 	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
+	const [isDevMode, setIsDevMode] = useState(initialIsDevMode);
 	const [showImportArea, setShowImportArea] = useState(false);
 	const [importJson, setImportJson] = useState('');
 
@@ -1083,6 +1088,29 @@ function DebugInfoContent({
 					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
+
+			{/* Dev Mode toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22', flexDirection: 'column', alignItems: 'stretch', gap: 8, paddingVertical: 12 }]}>
+				<View>
+					<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text, marginBottom: 2 }]}>Data Mode</Text>
+					<Text selectable style={[styles.debugRowValue, { color: theme.screen.icon, fontSize: 11 }]}>
+						{isDevMode ? '🧪 Dev tiles active – real data preserved' : '✅ Production tiles active'}
+					</Text>
+				</View>
+				<TouchableOpacity
+					style={[styles.resolutionButton, { backgroundColor: isDevMode ? '#f59e0b18' : PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
+					onPress={() => {
+						setIsDevMode((v) => !v);
+						onToggleDevMode();
+					}}
+					activeOpacity={0.7}
+				>
+					<Ionicons name={isDevMode ? 'flash' : 'flask-outline'} size={16} color={isDevMode ? '#f59e0b' : PRIMARY_COLOR} />
+					<Text style={[styles.debugRowLabel, { color: isDevMode ? '#f59e0b' : PRIMARY_COLOR, marginLeft: 4 }]}>
+						{isDevMode ? 'Switch to Production' : 'Switch to Dev Mode'}
+					</Text>
+				</TouchableOpacity>
+			</View>
 
 			{/* Map Settings export / import */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22', flexDirection: 'column', alignItems: 'stretch', gap: 8, paddingVertical: 12 }]}>
@@ -1584,6 +1612,7 @@ export default function RecordScreen() {
 	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -2195,6 +2224,23 @@ export default function RecordScreen() {
 		Alert.alert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
 	}, [dispatch]);
 
+	const handleToggleDevMode = useCallback(async () => {
+		const { records: currentRecords, isDevMode: currentIsDevMode } = store.getState().hexTiles;
+		if (currentIsDevMode) {
+			// Switching to production: flush dev tiles, load prod tiles
+			saveDevHexTileState(currentRecords);
+			const prodRecords = await loadHexTileState();
+			saveDevModeFlag(false);
+			dispatch(setDevMode({ isDevMode: false, records: prodRecords }));
+		} else {
+			// Switching to dev: flush prod tiles, load dev tiles
+			saveHexTileState(currentRecords);
+			const devRecords = await loadDevHexTileState();
+			saveDevModeFlag(true);
+			dispatch(setDevMode({ isDevMode: true, records: devRecords }));
+		}
+	}, [dispatch]);
+
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
 		showModal({
@@ -2211,6 +2257,7 @@ export default function RecordScreen() {
 					initialBillboardFaceCamera={billboardFaceCameraRef.current}
 					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
 					initialShowDebugPoints={showDebugPointsRef.current}
+					initialIsDevMode={isDevMode}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
 					onZoomAdjust={handleZoomAdjust}
@@ -2221,10 +2268,11 @@ export default function RecordScreen() {
 					onShowDebugPointsChange={handleShowDebugPointsChange}
 					onExportMapSettings={handleExportMapSettings}
 					onImportMapSettings={handleImportMapSettings}
+					onToggleDevMode={handleToggleDevMode}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings, handleToggleDevMode, isDevMode]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({

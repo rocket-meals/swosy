@@ -10,11 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
-import { loadPersistedState } from '../store/hexTileSlice';
+import { setDevMode } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
-import { loadHexTileState } from '../helpers/HexTileStorage';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -150,13 +150,13 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 export default function Layout() {
 	useEffect(() => {
-		loadHexTileState()
-			.then((records) => {
-				store.dispatch(loadPersistedState(records));
-			})
-			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted hex tile state:', err);
-			});
+		(async () => {
+			const isDevMode = await loadDevModeFlag();
+			const records = isDevMode ? await loadDevHexTileState() : await loadHexTileState();
+			store.dispatch(setDevMode({ isDevMode, records }));
+		})().catch((err) => {
+			console.warn('[Layout] Failed to load persisted hex tile state:', err);
+		});
 		loadSportType()
 			.then((type) => {
 				store.dispatch(loadSportTypeAction(type));
