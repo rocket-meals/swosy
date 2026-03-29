@@ -41,57 +41,57 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 				usesNonExemptEncryption: false,
 			},
 			privacyManifests: {
-					NSPrivacyCollectedDataTypes: [
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePreciseLocation',
-							NSPrivacyCollectedDataTypeLinked: false,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeProductPersonalization', 'NSPrivacyCollectedDataTypePurposeAppFunctionality', 'NSPrivacyCollectedDataTypePurposeOther'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailsOrTextMessages',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeProductPersonalization', 'NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePhotosorVideos',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeOtherUserContent',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-						{
-							NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailAddress',
-							NSPrivacyCollectedDataTypeLinked: true,
-							NSPrivacyCollectedDataTypeTracking: false,
-							NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
-						},
-					],
-					NSPrivacyAccessedAPITypes: [
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
-							NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
-						},
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
-							NSPrivacyAccessedAPITypeReasons: ['8FFB.1'],
-						},
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
-							NSPrivacyAccessedAPITypeReasons: ['85F4.1'],
-						},
-						{
-							NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
-							NSPrivacyAccessedAPITypeReasons: ['DDA9.1'],
-						},
-					],
-				},
+				NSPrivacyCollectedDataTypes: [
+					{
+						NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePreciseLocation',
+						NSPrivacyCollectedDataTypeLinked: false,
+						NSPrivacyCollectedDataTypeTracking: false,
+						NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeProductPersonalization', 'NSPrivacyCollectedDataTypePurposeAppFunctionality', 'NSPrivacyCollectedDataTypePurposeOther'],
+					},
+					{
+						NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailsOrTextMessages',
+						NSPrivacyCollectedDataTypeLinked: true,
+						NSPrivacyCollectedDataTypeTracking: false,
+						NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeProductPersonalization', 'NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+					},
+					{
+						NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypePhotosorVideos',
+						NSPrivacyCollectedDataTypeLinked: true,
+						NSPrivacyCollectedDataTypeTracking: false,
+						NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+					},
+					{
+						NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeOtherUserContent',
+						NSPrivacyCollectedDataTypeLinked: true,
+						NSPrivacyCollectedDataTypeTracking: false,
+						NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+					},
+					{
+						NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeEmailAddress',
+						NSPrivacyCollectedDataTypeLinked: true,
+						NSPrivacyCollectedDataTypeTracking: false,
+						NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+					},
+				],
+				NSPrivacyAccessedAPITypes: [
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+						NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
+					},
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
+						NSPrivacyAccessedAPITypeReasons: ['8FFB.1'],
+					},
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
+						NSPrivacyAccessedAPITypeReasons: ['85F4.1'],
+					},
+					{
+						NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
+						NSPrivacyAccessedAPITypeReasons: ['DDA9.1'],
+					},
+				],
+			},
 		},
 		android: {
 			adaptiveIcon: {
@@ -134,32 +134,31 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 				},
 			],
 			['expo-updates', { username: 'jack5496' }],
-				[
-					'expo-image-picker',
-					{
-						photosPermission: 'This app needs access to your photo library to capture and manage meal photos as part of the core digital meal plan functionality. Photos are essential for documenting meals in our canteen and restaurant management system.',
-						cameraPermission: 'This app needs camera access to take photos of meals for the digital meal plan management system. Camera functionality is core to documenting and tracking meals in canteens and restaurants.',
-						'//': 'Disables the microphone permission',
-						microphonePermission: false,
+			[
+				'expo-image-picker',
+				{
+					photosPermission: 'This app needs access to your photo library to capture and manage meal photos as part of the core digital meal plan functionality. Photos are essential for documenting meals in our canteen and restaurant management system.',
+					cameraPermission: 'This app needs camera access to take photos of meals for the digital meal plan management system. Camera functionality is core to documenting and tracking meals in canteens and restaurants.',
+					'//': 'Disables the microphone permission',
+					microphonePermission: false,
+				},
+			],
+			[
+				'expo-build-properties',
+				{
+					android: {
+						compileSdkVersion: 35,
+						targetSdkVersion: 35,
+						buildToolsVersion: '35.0.0',
 					},
-				],
-				[
-					'expo-build-properties',
-					{
-						android: {
-							compileSdkVersion: 35,
-							targetSdkVersion: 35,
-							buildToolsVersion: '35.0.0',
-						},
-						ios: {
-							deploymentTarget: '15.1',
-						},
+					ios: {
+						deploymentTarget: '15.1',
 					},
-				],
-				'expo-localization',
-				'expo-asset',
-				'expo-font',
-			]
+				},
+			],
+			'expo-localization',
+			'expo-asset',
+			'expo-font',
 		],
 		updates: {
 			enabled: true,
