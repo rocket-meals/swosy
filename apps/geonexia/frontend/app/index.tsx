@@ -36,6 +36,7 @@ import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
+import { useDebugMode } from '../hooks/useDebugMode';
 
 /** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
 function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
@@ -640,6 +641,7 @@ function computeStats(points: RoutePoint[]): RunStats {
 			maxSpeedKmh: 0,
 			minSpeedKmh: 0,
 			avgSpeedKmh: 0,
+			medianSpeedKmh: 0,
 			kcal: 0,
 			steps: 0,
 			elevationGainM: 0,
@@ -679,6 +681,12 @@ function computeStats(points: RoutePoint[]): RunStats {
 	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
 	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
 	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const medianSpeedKmh = (() => {
+		if (speedsKmh.length === 0) return 0;
+		const sorted = [...speedsKmh].sort((a, b) => a - b);
+		const mid = Math.floor(sorted.length / 2);
+		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+	})();
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
@@ -690,6 +698,7 @@ function computeStats(points: RoutePoint[]): RunStats {
 		maxSpeedKmh,
 		minSpeedKmh,
 		avgSpeedKmh,
+		medianSpeedKmh,
 		kcal,
 		steps,
 		elevationGainM,
@@ -1233,6 +1242,7 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 		{ iconName: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
 		{ iconName: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) + ' min/km' },
 		{ iconName: 'speed', label: 'Avg. Speed', value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
+		{ iconName: 'speed', label: 'Median Speed', value: `${stats.medianSpeedKmh.toFixed(1)} km/h` },
 		{ iconName: 'arrow-upward', label: 'Max. Speed', value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
 		{ iconName: 'arrow-downward', label: 'Min. Speed', value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
 		{ iconName: 'local-fire-department', label: 'Calories', value: `${stats.kcal} kcal` },
@@ -1592,7 +1602,7 @@ export default function RecordScreen() {
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
-	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
+	const isDebugMode = useDebugMode();
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -2907,17 +2917,20 @@ export default function RecordScreen() {
 							<View style={styles.buttonSpacer} />
 						</>
 					)}
-					<TouchableOpacity
-						style={styles.debugButton}
-						onPress={showDebugModal}
-						activeOpacity={0.8}
-					>
-						<MaterialIcons name="bug-report" size={20} color="#555555" />
-					</TouchableOpacity>
+					{isDebugMode && (
+						<TouchableOpacity
+							style={styles.debugButton}
+							onPress={showDebugModal}
+							activeOpacity={0.8}
+						>
+							<MaterialIcons name="bug-report" size={20} color="#555555" />
+						</TouchableOpacity>
+					)}
 				</View>
 
 				{/* Joystick controller – bottom-left overlay */}
-			<View style={styles.gamepadOverlay} pointerEvents="box-none">
+				{isDebugMode && (
+				<View style={styles.gamepadOverlay} pointerEvents="box-none">
 					<JoystickController
 						positionRef={debugPlayerPositionRef}
 						speedKmhRef={debugMoveSpeedKmhRef}
@@ -2929,6 +2942,7 @@ export default function RecordScreen() {
 						onHeadingChange={handleHeadingChange}
 					/>
 				</View>
+				)}
 
 				</View>
 
