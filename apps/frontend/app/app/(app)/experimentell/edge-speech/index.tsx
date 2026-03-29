@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import * as EdgeSpeech from 'expo-edge-speech';
+import { speak, stop } from 'expo-edge-speech';
 
 import { useTheme } from '@/hooks/useTheme';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -30,19 +30,20 @@ const EdgeSpeechScreen = () => {
 
 	const handleSpeak = useCallback(async () => {
 		if (isSpeaking) {
-			await EdgeSpeech.stop();
+			await stop();
 			setIsSpeaking(false);
 			return;
 		}
 		if (!inputText.trim()) return;
 		setIsSpeaking(true);
 		try {
-			await EdgeSpeech.speak(inputText, {
+			await speak(inputText, {
 				voice: selectedVoice,
 				onDone: () => setIsSpeaking(false),
 				onError: () => setIsSpeaking(false),
 			});
-		} catch {
+		} catch (error) {
+			console.error('TTS error:', error);
 			setIsSpeaking(false);
 		}
 	}, [inputText, selectedVoice, isSpeaking]);
