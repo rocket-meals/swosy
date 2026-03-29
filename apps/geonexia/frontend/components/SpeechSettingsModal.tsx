@@ -91,7 +91,7 @@ export default function SpeechSettingsContent() {
 						step={opts.step}
 						suffix={opts.suffix}
 						placeholder="0"
-						onSave={(val) => {
+						onSave={(val: number) => {
 							update({ [opts.field]: val });
 							closeNumberModal();
 						}}
@@ -169,7 +169,7 @@ export default function SpeechSettingsContent() {
 				max={30}
 				step={1}
 				suffix="min"
-				onSave={(val) => update({ paceHintMinutes: val })}
+				onSave={(val: number) => update({ paceHintMinutes: val })}
 				groupPosition="top"
 			/>
 			<SettingsListNumberInput
@@ -183,7 +183,7 @@ export default function SpeechSettingsContent() {
 				max={59}
 				step={5}
 				suffix="sek"
-				onSave={(val) => update({ paceHintSeconds: val })}
+				onSave={(val: number) => update({ paceHintSeconds: val })}
 				groupPosition="bottom"
 			/>
 
@@ -213,7 +213,7 @@ export default function SpeechSettingsContent() {
 				max={60}
 				step={1}
 				suffix="min"
-				onSave={(val) => update({ intervalTimeMinutes: val })}
+				onSave={(val: number) => update({ intervalTimeMinutes: val })}
 				groupPosition="top"
 			/>
 			<SettingsListNumberInput
@@ -227,7 +227,7 @@ export default function SpeechSettingsContent() {
 				max={10000}
 				step={100}
 				suffix="m"
-				onSave={(val) => update({ intervalDistanceMeters: val })}
+				onSave={(val: number) => update({ intervalDistanceMeters: val })}
 				groupPosition="bottom"
 			/>
 
