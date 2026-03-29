@@ -3,12 +3,15 @@ import hexTileReducer from './hexTileSlice';
 import sportTypeReducer from './sportTypeSlice';
 import themeReducer from './themeSlice';
 import billboardConfigReducer from './billboardConfigSlice';
+import gpsIntervalReducer from './gpsIntervalSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
+import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
+import type { GpsIntervalMode } from './gpsIntervalSlice';
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +21,7 @@ export const store = configureStore({
 		sportType: sportTypeReducer,
 		theme: themeReducer,
 		billboardConfig: billboardConfigReducer,
+		gpsInterval: gpsIntervalReducer,
 	},
 });
 
@@ -35,6 +39,9 @@ let _lastSavedThemeMode: ThemeMode | null = null;
 // Auto-persist billboard config to disk whenever anchor overrides change.
 let _bbConfigTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedBbConfig: BillboardConfigState | null = null;
+
+// Auto-persist GPS interval mode to disk whenever it changes.
+let _lastSavedGpsIntervalMode: GpsIntervalMode | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -74,6 +81,12 @@ store.subscribe(() => {
 			saveBillboardConfig(spriteAnchors);
 			_bbConfigTimer = null;
 		}, 500);
+	}
+
+	const { selectedMode: gpsMode } = state.gpsInterval;
+	if (gpsMode !== _lastSavedGpsIntervalMode) {
+		_lastSavedGpsIntervalMode = gpsMode;
+		saveGpsIntervalMode(gpsMode);
 	}
 });
 

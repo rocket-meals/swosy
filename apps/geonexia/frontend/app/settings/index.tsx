@@ -16,18 +16,35 @@ import { deleteAllActivities } from '../../helpers/ActivityStorage';
 import { loadPersistedState } from '../../store/hexTileSlice';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
+import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
+import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
 import { AppDispatch, RootState } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 const NOTIFICATION_COLOR = '#16a34a';
 const NEUTRAL_COLOR = '#6b7280';
 const DANGER_COLOR = '#dc2626';
+const GPS_COLOR = '#7c3aed';
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
 	{ id: 'light', label: 'Light', icon: <MaterialCommunityIcons name="white-balance-sunny" size={22} color="#ffffff" /> },
 	{ id: 'dark', label: 'Dark', icon: <MaterialCommunityIcons name="moon-waning-crescent" size={22} color="#ffffff" /> },
 	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
 ];
+
+const GPS_INTERVAL_OPTIONS: { id: GpsIntervalMode; label: string; icon: React.ReactNode }[] = [
+	{ id: 'default', label: 'Standard (1s)', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
+	{ id: 'energy_saving', label: 'Energie sparen (4s)', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
+	{ id: 'high_precision', label: 'Hohe Präzision (0.5s)', icon: <MaterialCommunityIcons name="radar" size={22} color="#ffffff" /> },
+];
+
+function gpsIntervalModeLabel(mode: GpsIntervalMode): string {
+	switch (mode) {
+		case 'default': return 'Standard (1s)';
+		case 'energy_saving': return 'Energie sparen (4s)';
+		case 'high_precision': return 'Hohe Präzision (0.5s)';
+	}
+}
 
 function themeModeLabel(mode: ThemeMode): string {
 	switch (mode) {
@@ -75,8 +92,10 @@ export default function SettingsScreen() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
+	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.selectedMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
+	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
@@ -96,6 +115,23 @@ export default function SettingsScreen() {
 			),
 		});
 	}, [showModal, closeModal, dispatch, selectedTheme]);
+
+	const handleOpenGpsIntervalSelection = useCallback(() => {
+		showGpsModal({
+			title: '📡 GPS Frequency',
+			children: (
+				<SettingsListSelectOption
+					options={GPS_INTERVAL_OPTIONS}
+					selectedOption={selectedGpsInterval}
+					onSelect={(option) => {
+						dispatch(setGpsIntervalMode(option.id));
+						closeGpsModal();
+					}}
+					iconBgColor={GPS_COLOR}
+				/>
+			),
+		});
+	}, [showGpsModal, closeGpsModal, dispatch, selectedGpsInterval]);
 
 	const handleResetAllData = useCallback(() => {
 		showResetModal({
@@ -127,6 +163,17 @@ export default function SettingsScreen() {
 				value={themeModeLabel(selectedTheme)}
 				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 				handleFunction={handleOpenThemeSelection}
+				groupPosition="single"
+			/>
+
+			<SettingsListGroupTitle title="GPS" />
+			<SettingsList
+				iconBgColor={GPS_COLOR}
+				leftIcon={<MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" />}
+				label="GPS Frequency"
+				value={gpsIntervalModeLabel(selectedGpsInterval)}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenGpsIntervalSelection}
 				groupPosition="single"
 			/>
 

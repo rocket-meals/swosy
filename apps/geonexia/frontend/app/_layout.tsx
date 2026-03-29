@@ -14,10 +14,12 @@ import { setDevMode } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
+import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
+import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
@@ -177,6 +179,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted billboard config:', err);
+			});
+		loadGpsIntervalMode()
+			.then((mode) => {
+				store.dispatch(loadGpsIntervalModeAction(mode));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted GPS interval mode:', err);
 			});
 	}, []);
 
