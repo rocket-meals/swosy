@@ -49,8 +49,20 @@ export function buildKmAnnouncement(km: number, paceMinPerKm: number | null, loc
 	}
 }
 
-/** Speak a TTS announcement, stopping any currently playing speech first. */
-export function speakAnnouncement(text: string, languageCode: string): void {
+/**
+ * Speak a TTS announcement, stopping any currently playing speech first.
+ * `useApplicationAudioSession` defaults to `true` so background music is not
+ * interrupted on iOS.  All other options can be overridden via the third arg.
+ */
+export function speakAnnouncement(
+	text: string,
+	languageCode: string,
+	options?: Omit<Speech.SpeechOptions, 'language'>,
+): void {
 	Speech.stop();
-	Speech.speak(text, { language: languageCode });
+	Speech.speak(text, {
+		useApplicationAudioSession: true,
+		...options,
+		language: languageCode,
+	});
 }
