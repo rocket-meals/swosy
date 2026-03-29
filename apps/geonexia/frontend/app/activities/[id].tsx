@@ -79,7 +79,7 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
 		return {
 			distanceKm: 0, durationSeconds, paceMinPerKm: 0,
-			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0,
+			maxSpeedKmh: 0, minSpeedKmh: 0, avgSpeedKmh: 0, medianSpeedKmh: 0,
 			kcal: 0, steps: 0, elevationGainM: 0, elevationLossM: 0, fluidNeedsMl: 0,
 		};
 	}
@@ -110,12 +110,18 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
 	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
 	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const medianSpeedKmh = (() => {
+		if (speedsKmh.length === 0) return 0;
+		const sorted = [...speedsKmh].sort((a, b) => a - b);
+		const mid = Math.floor(sorted.length / 2);
+		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+	})();
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
 	return {
 		distanceKm, durationSeconds, paceMinPerKm,
-		maxSpeedKmh, minSpeedKmh, avgSpeedKmh,
+		maxSpeedKmh, minSpeedKmh, avgSpeedKmh, medianSpeedKmh,
 		kcal, steps, elevationGainM, elevationLossM, fluidNeedsMl,
 	};
 }
@@ -231,6 +237,114 @@ function DeleteConfirmContent({
 	);
 }
 
+// ─── Speed Range Item ─────────────────────────────────────────────────────────
+
+const GRADIENT_SEGMENTS = 32;
+
+function interpolateSpeedColor(t: number): string {
+	// t: 0 = red, 0.5 = green, 1 = blue
+	// red: #ef4444, green: #22c55e, blue: #3b82f6
+	let r: number, g: number, b: number;
+	if (t <= 0.5) {
+		const s = t * 2;
+		r = Math.round(0xef + (0x22 - 0xef) * s);
+		g = Math.round(0x44 + (0xc5 - 0x44) * s);
+		b = Math.round(0x44 + (0x5e - 0x44) * s);
+	} else {
+		const s = (t - 0.5) * 2;
+		r = Math.round(0x22 + (0x3b - 0x22) * s);
+		g = Math.round(0xc5 + (0x82 - 0xc5) * s);
+		b = Math.round(0x5e + (0xf6 - 0x5e) * s);
+	}
+	return `rgb(${r},${g},${b})`;
+}
+
+function SpeedRangeItem({
+	minSpeedKmh,
+	avgSpeedKmh,
+	maxSpeedKmh,
+	theme,
+}: {
+	minSpeedKmh: number;
+	avgSpeedKmh: number;
+	maxSpeedKmh: number;
+	theme: ReturnType<typeof useTheme>['theme'];
+}) {
+	return (
+		<View style={[speedRangeStyles.container, { backgroundColor: theme.screen.iconBg }]}>
+			<View style={speedRangeStyles.labelsRow}>
+				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
+				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
+				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
+			</View>
+			<View style={speedRangeStyles.barWrapper}>
+				{Array.from({ length: GRADIENT_SEGMENTS }).map((_, i) => (
+					<View
+						key={i}
+						style={[
+							speedRangeStyles.barSegment,
+							{ backgroundColor: interpolateSpeedColor(i / (GRADIENT_SEGMENTS - 1)) },
+							i === 0 && speedRangeStyles.barSegmentFirst,
+							i === GRADIENT_SEGMENTS - 1 && speedRangeStyles.barSegmentLast,
+						]}
+					/>
+				))}
+			</View>
+			<View style={[speedRangeStyles.separator, { backgroundColor: theme.screen.background }]} />
+		</View>
+	);
+}
+
+const speedRangeStyles = StyleSheet.create({
+	container: {
+		paddingHorizontal: 16,
+		paddingTop: 10,
+		paddingBottom: 10,
+	},
+	labelsRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginBottom: 6,
+	},
+	labelMin: {
+		fontSize: 12,
+		fontWeight: '600',
+		textAlign: 'left',
+	},
+	labelAvg: {
+		fontSize: 12,
+		fontWeight: '600',
+		textAlign: 'center',
+	},
+	labelMax: {
+		fontSize: 12,
+		fontWeight: '600',
+		textAlign: 'right',
+	},
+	barWrapper: {
+		flexDirection: 'row',
+		height: 8,
+		overflow: 'hidden',
+	},
+	barSegment: {
+		flex: 1,
+		height: 8,
+	},
+	barSegmentFirst: {
+		borderTopLeftRadius: 4,
+		borderBottomLeftRadius: 4,
+	},
+	barSegmentLast: {
+		borderTopRightRadius: 4,
+		borderBottomRightRadius: 4,
+	},
+	separator: {
+		height: StyleSheet.hairlineWidth,
+		marginTop: 0,
+		marginLeft: 54,
+	},
+});
+
 // ─── Activity Detail Screen ───────────────────────────────────────────────────
 
 export default function ActivityDetailScreen() {
@@ -285,8 +399,9 @@ export default function ActivityDetailScreen() {
 			.catch(() => setNotFound(true));
 	}, [id]);
 
-	// Build speed-colored segments from route points
-	const buildRouteSegments = useCallback((points: RoutePoint[]) => {
+	// Build speed-colored segments from route points and send along with speed range
+	// so the map can interpolate red (min) → green (avg) → blue (max).
+	const buildRouteSegments = useCallback((points: RoutePoint[], stats: Pick<RunStats, 'minSpeedKmh' | 'avgSpeedKmh' | 'maxSpeedKmh'>) => {
 		if (points.length < 2) return null;
 		const segments = [];
 		for (let i = 0; i < points.length - 1; i++) {
@@ -296,7 +411,7 @@ export default function ActivityDetailScreen() {
 		const speedKmh = (((a.speed ?? 0) + (b.speed ?? 0)) / 2) * 3.6;
 			segments.push({ coords: [[a.lng, a.lat], [b.lng, b.lat]], speedKmh });
 		}
-		return segments;
+		return { segments, speedRange: { min: stats.minSpeedKmh, avg: stats.avgSpeedKmh, max: stats.maxSpeedKmh } };
 	}, []);
 
 	// Compute the bounding box of a route using a loop (avoids spread-operator stack
@@ -319,9 +434,9 @@ export default function ActivityDetailScreen() {
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
 		if (!mapMounted || !activity || !mapRef.current) return;
-		const segments = buildRouteSegments(activity.routePoints);
-		if (segments && segments.length > 0) {
-			mapRef.current.sendToMap({ routeSegments: segments });
+		const result = buildRouteSegments(activity.routePoints, activity.stats);
+		if (result && result.segments.length > 0) {
+			mapRef.current.sendToMap({ routeSegments: result.segments, routeSpeedRange: result.speedRange });
 		} else {
 			// Fallback: plain route without speed coloring
 			const coords = activity.routePoints.map((p) => [p.lng, p.lat]);
@@ -495,6 +610,7 @@ export default function ActivityDetailScreen() {
 		{ icon: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
 		{ icon: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) },
 		{ icon: 'speed', label: 'Avg. Speed', value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
+		{ icon: 'speed', label: 'Median Speed', value: `${(stats.medianSpeedKmh ?? 0).toFixed(1)} km/h` },
 		{ icon: 'arrow-upward', label: 'Max. Speed', value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
 		{ icon: 'arrow-downward', label: 'Min. Speed', value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
 		{ icon: 'local-fire-department', label: 'Calories', value: `${stats.kcal} kcal` },
@@ -505,6 +621,9 @@ export default function ActivityDetailScreen() {
 		{ icon: 'place', label: 'GPS Points', value: String(activity.routePoints.length) },
 	];
 
+	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at
+	// 'middle'/'bottom'. idx within the slice runs 0…statsRows.length-2; the last item (idx
+	// === statsRows.length-2) gets groupPosition='bottom' and showSeparator=false.
 	return (
 		<ScrollView
 			style={[styles.container, { backgroundColor: theme.screen.background }]}
@@ -518,21 +637,33 @@ export default function ActivityDetailScreen() {
 
 			{/* Stats list */}
 			<View style={styles.statsContent}>
-				{statsRows.map((row, index) => (
+				{/* Date row */}
+				<SettingsList
+					key={statsRows[0].label}
+					leftIcon={<MaterialIcons name={statsRows[0].icon} size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title={statsRows[0].label}
+					value={statsRows[0].value}
+					showSeparator
+					groupPosition="top"
+				/>
+				{/* Speed range item – directly under Date */}
+				<SpeedRangeItem
+					minSpeedKmh={stats.minSpeedKmh}
+					avgSpeedKmh={stats.avgSpeedKmh}
+					maxSpeedKmh={stats.maxSpeedKmh}
+					theme={theme}
+				/>
+				{/* Remaining rows */}
+				{statsRows.slice(1).map((row, idx) => (
 					<SettingsList
 						key={row.label}
 						leftIcon={<MaterialIcons name={row.icon} size={20} color="#ffffff" />}
 						iconBackgroundColor={PRIMARY_COLOR}
 						title={row.label}
 						value={row.value}
-						showSeparator={index < statsRows.length - 1}
-						groupPosition={
-							index === 0
-								? 'top'
-								: index === statsRows.length - 1
-								? 'bottom'
-								: 'middle'
-						}
+						showSeparator={idx < statsRows.length - 2}
+						groupPosition={idx === statsRows.length - 2 ? 'bottom' : 'middle'}
 					/>
 				))}
 				<View style={styles.filterRow}>

@@ -18,6 +18,7 @@ export type RunStats = {
 	maxSpeedKmh: number;
 	minSpeedKmh: number;
 	avgSpeedKmh: number;
+	medianSpeedKmh: number;
 	kcal: number;
 	steps: number;
 	elevationGainM: number;
