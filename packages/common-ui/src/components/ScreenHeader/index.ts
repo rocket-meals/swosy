@@ -1,2 +1,2 @@
 export { default } from './ScreenHeader';
-export type { ScreenHeaderProps } from './types';
+export type { ScreenHeaderProps } from './ScreenHeader';
