@@ -10,12 +10,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
-import { setDevMode } from '../store/hexTileSlice';
+import { setDevMode, setDebugMode } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
-import { loadHexTileState, loadDevHexTileState, loadDevModeFlag } from '../helpers/HexTileStorage';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -159,6 +159,13 @@ export default function Layout() {
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
 		});
+		loadDebugModeFlag()
+			.then((isDebugMode) => {
+				store.dispatch(setDebugMode(isDebugMode));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted debug mode flag:', err);
+			});
 		loadSportType()
 			.then((type) => {
 				store.dispatch(loadSportTypeAction(type));

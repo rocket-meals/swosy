@@ -13,18 +13,28 @@ import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteAllActivities } from '../../helpers/ActivityStorage';
-import { loadPersistedState } from '../../store/hexTileSlice';
+import { loadPersistedState, setDebugMode, setDevMode } from '../../store/hexTileSlice';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
 import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
-import { AppDispatch, RootState } from '../../store/store';
+import { AppDispatch, RootState, store } from '../../store/store';
+import {
+	saveDebugModeFlag,
+	saveDevModeFlag,
+	saveHexTileState,
+	saveDevHexTileState,
+	loadHexTileState,
+	loadDevHexTileState,
+} from '../../helpers/HexTileStorage';
 
 const PRIMARY_COLOR = '#2563eb';
 const NOTIFICATION_COLOR = '#16a34a';
 const NEUTRAL_COLOR = '#6b7280';
 const DANGER_COLOR = '#dc2626';
 const GPS_COLOR = '#7c3aed';
+const DEBUG_COLOR = '#0f766e';
+const DEV_COLOR = '#f59e0b';
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
 	{ id: 'light', label: 'Light', icon: <MaterialCommunityIcons name="white-balance-sunny" size={22} color="#ffffff" /> },
@@ -93,6 +103,8 @@ export default function SettingsScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
 	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.selectedMode);
+	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
+	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
@@ -150,6 +162,27 @@ export default function SettingsScreen() {
 		});
 	}, [showResetModal, closeResetModal, dispatch, theme]);
 
+	const handleToggleDebugMode = useCallback(() => {
+		const next = !isDebugMode;
+		dispatch(setDebugMode(next));
+		saveDebugModeFlag(next);
+	}, [dispatch, isDebugMode]);
+
+	const handleToggleDevMode = useCallback(async () => {
+		const { records: currentRecords, isDevMode: currentIsDevMode } = store.getState().hexTiles;
+		if (currentIsDevMode) {
+			saveDevHexTileState(currentRecords);
+			const prodRecords = await loadHexTileState();
+			saveDevModeFlag(false);
+			dispatch(setDevMode({ isDevMode: false, records: prodRecords }));
+		} else {
+			saveHexTileState(currentRecords);
+			const devRecords = await loadDevHexTileState();
+			saveDevModeFlag(true);
+			dispatch(setDevMode({ isDevMode: true, records: devRecords }));
+		}
+	}, [dispatch]);
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView contentContainerStyle={styles.listContent}>
@@ -187,6 +220,28 @@ export default function SettingsScreen() {
 					valueActive="Enabled"
 					valueInactive="Disabled"
 					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Developer" />
+				<SettingsListBoolean
+					iconBgColor={DEBUG_COLOR}
+					leftIcon={<MaterialIcons name="bug-report" size={22} color="#ffffff" />}
+					label="Debug Mode"
+					isEnabled={isDebugMode}
+					onToggle={handleToggleDebugMode}
+					valueActive="Enabled"
+					valueInactive="Disabled"
+					groupPosition="top"
+				/>
+				<SettingsListBoolean
+					iconBgColor={DEV_COLOR}
+					leftIcon={<Ionicons name="flask-outline" size={22} color="#ffffff" />}
+					label="Dev Mode"
+					isEnabled={isDevMode}
+					onToggle={handleToggleDevMode}
+					valueActive="Dev tiles active"
+					valueInactive="Production tiles"
+					groupPosition="bottom"
 				/>
 
 				<SettingsListGroupTitle title="Daten Verwaltung" />

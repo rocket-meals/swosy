@@ -196,3 +196,37 @@ export async function loadDevModeFlag(): Promise<boolean> {
 		return false;
 	}
 }
+
+// ─── Debug mode flag ──────────────────────────────────────────────────────────
+
+function getDebugModeFlagFile(): File {
+	return new File(Paths.document, 'geonexia-debug-mode.json');
+}
+
+/**
+ * Persist the debug mode active flag to disk.
+ * Silently ignores write errors.
+ */
+export function saveDebugModeFlag(isDebugMode: boolean): void {
+	try {
+		getDebugModeFlagFile().write(JSON.stringify({ active: isDebugMode }));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save debug mode flag:', err);
+	}
+}
+
+/**
+ * Load the debug mode active flag from disk. Returns false when the file does
+ * not yet exist or cannot be parsed.
+ */
+export async function loadDebugModeFlag(): Promise<boolean> {
+	try {
+		const file = getDebugModeFlagFile();
+		if (!file.exists) return false;
+		const content = await file.text();
+		const data = JSON.parse(content) as { active?: boolean };
+		return data.active === true;
+	} catch {
+		return false;
+	}
+}
