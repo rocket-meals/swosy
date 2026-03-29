@@ -128,4 +128,4 @@ runs:
         )
         echo "COMPANY_PATH=${COMPANY_PATH}"
 
-        ./generateIcons.sh "./app/${ICON_PATH}" "./app/${COMPANY_PATH}" "./app/assets/images/"
+        ../../scripts/generateIcons.sh "./app/${ICON_PATH}" "./app/${COMPANY_PATH}" "./app/assets/images/"

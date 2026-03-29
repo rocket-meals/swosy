@@ -47,6 +47,19 @@ runs:
       run: yarn install --immutable
       shell: bash
 
+    - name: "🖼️ Generate Geonexia app icons"
+      shell: bash
+      run: |
+        set -euxo pipefail
+
+        sudo apt-get update
+        sudo apt-get install -y imagemagick
+
+        ICON_SOURCE="./apps/geonexia/frontend/assets/icons/app_icon_source.png"
+        COMPANY_LOGO="./customers/BaumgartnerSoftware/company.png"
+
+        ./scripts/generateIcons.sh "$ICON_SOURCE" "$COMPANY_LOGO" --project-dir "./apps/geonexia/frontend"
+
     - name: "🔧 Initialize EAS project if not configured"
       run: |
         if grep -q 'projectId' app.config.ts 2>/dev/null || grep -q '"projectId"' app.json 2>/dev/null; then
