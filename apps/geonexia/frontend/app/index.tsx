@@ -32,6 +32,7 @@ import { HexTileRecord, BillboardAnchorColor, saveHexTileState, saveDevHexTileSt
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
+import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -483,7 +484,7 @@ const KCAL_PER_KG_PER_KM = 0.9;
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
-const GPS_TIME_INTERVAL_MS = 5000;
+const GPS_TIME_INTERVAL_MS = 1000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
 /**
  * Maximum number of intermediate H3 cells to fill in when a GPS gap is detected
@@ -2532,6 +2533,7 @@ export default function RecordScreen() {
 
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
+		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
 		console.log('[RecordScreen] startRecording called. isRunningInExpoGo:', expoGo);
 		try {
 			console.log('[RecordScreen] Requesting foreground location permission...');
@@ -2588,7 +2590,7 @@ export default function RecordScreen() {
 				const sub = await Location.watchPositionAsync(
 					{
 						accuracy: Location.Accuracy.BestForNavigation,
-						timeInterval: GPS_TIME_INTERVAL_MS,
+						timeInterval: gpsTimeIntervalMs,
 						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					},
 					(loc) => {
@@ -2623,7 +2625,7 @@ export default function RecordScreen() {
 				_onLocationUpdate = handleLocationUpdate;
 				await Location.startLocationUpdatesAsync(ACTIVITY_LOCATION_TASK, {
 					accuracy: Location.Accuracy.BestForNavigation,
-					timeInterval: GPS_TIME_INTERVAL_MS,
+					timeInterval: gpsTimeIntervalMs,
 					distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					showsBackgroundLocationIndicator: true,
 					foregroundService: {
@@ -2638,7 +2640,7 @@ export default function RecordScreen() {
 				const sub = await Location.watchPositionAsync(
 					{
 						accuracy: Location.Accuracy.BestForNavigation,
-						timeInterval: GPS_TIME_INTERVAL_MS,
+						timeInterval: gpsTimeIntervalMs,
 						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					},
 					(loc) => {
