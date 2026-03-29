@@ -107,6 +107,14 @@ function getHexTileFile(): File {
 	return new File(Paths.document, 'geonexia-hex-tiles.json');
 }
 
+function getDevHexTileFile(): File {
+	return new File(Paths.document, 'geonexia-dev-hex-tiles.json');
+}
+
+function getDevModeFlagFile(): File {
+	return new File(Paths.document, 'geonexia-dev-mode.json');
+}
+
 /**
  * Persist the full hex tile record map to disk (synchronous write).
  * Silently ignores write errors to avoid crashing on storage failures.
@@ -131,5 +139,60 @@ export async function loadHexTileState(): Promise<Record<string, HexTileRecord>>
 		return JSON.parse(content) as Record<string, HexTileRecord>;
 	} catch {
 		return {};
+	}
+}
+
+/**
+ * Persist the dev-mode hex tile record map to disk.
+ * Silently ignores write errors to avoid crashing on storage failures.
+ */
+export function saveDevHexTileState(records: Record<string, HexTileRecord>): void {
+	try {
+		getDevHexTileFile().write(JSON.stringify(records));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save dev hex tile state:', err);
+	}
+}
+
+/**
+ * Load dev-mode hex tile records from disk. Returns an empty object when the
+ * file does not yet exist or cannot be parsed.
+ */
+export async function loadDevHexTileState(): Promise<Record<string, HexTileRecord>> {
+	try {
+		const file = getDevHexTileFile();
+		if (!file.exists) return {};
+		const content = await file.text();
+		return JSON.parse(content) as Record<string, HexTileRecord>;
+	} catch {
+		return {};
+	}
+}
+
+/**
+ * Persist the dev-mode active flag to disk.
+ * Silently ignores write errors.
+ */
+export function saveDevModeFlag(isDevMode: boolean): void {
+	try {
+		getDevModeFlagFile().write(JSON.stringify({ active: isDevMode }));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save dev mode flag:', err);
+	}
+}
+
+/**
+ * Load the dev-mode active flag from disk. Returns false when the file does
+ * not yet exist or cannot be parsed.
+ */
+export async function loadDevModeFlag(): Promise<boolean> {
+	try {
+		const file = getDevModeFlagFile();
+		if (!file.exists) return false;
+		const content = await file.text();
+		const data = JSON.parse(content) as { active?: boolean };
+		return data.active === true;
+	} catch {
+		return false;
 	}
 }
