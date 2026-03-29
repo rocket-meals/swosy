@@ -8,6 +8,7 @@ import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, 
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
 import { setDevMode, setDebugMode } from '../store/hexTileSlice';
@@ -28,12 +29,12 @@ import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
-type ErrorBoundaryState = { hasError: boolean; error: Error | null };
+type ErrorBoundaryState = { hasError: boolean; error: Error | null; copied: boolean };
 
 class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
 	constructor(props: { children: React.ReactNode }) {
 		super(props);
-		this.state = { hasError: false, error: null };
+		this.state = { hasError: false, error: null, copied: false };
 	}
 
 	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -47,7 +48,7 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, Er
 
 	render() {
 		if (this.state.hasError) {
-			const { error } = this.state;
+			const { error, copied } = this.state;
 			return (
 				<View style={styles.errorContainer}>
 					<Modal visible transparent animationType="slide" accessibilityViewIsModal>
@@ -63,9 +64,26 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, Er
 								</ScrollView>
 								<TouchableOpacity
 									accessibilityRole="button"
+									accessibilityLabel="Copy problem to clipboard"
+									style={styles.errorCopyButton}
+									onPress={() => {
+										const text = [
+											`Error: ${error?.name ?? 'Unknown'}`,
+											`Message: ${error?.message ?? ''}`,
+											error?.stack ? `Stack:\n${error.stack}` : '',
+										].filter(Boolean).join('\n\n');
+										Clipboard.setStringAsync(text);
+										this.setState({ copied: true });
+										setTimeout(() => this.setState({ copied: false }), 2000);
+									}}
+								>
+									<Text style={styles.errorCopyButtonText}>{copied ? '✅ Kopiert!' : '📋 Problem kopieren'}</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									accessibilityRole="button"
 									accessibilityLabel="Dismiss error"
 									style={styles.errorButton}
-									onPress={() => this.setState({ hasError: false, error: null })}
+									onPress={() => this.setState({ hasError: false, error: null, copied: false })}
 								>
 									<Text style={styles.errorButtonText}>Dismiss</Text>
 								</TouchableOpacity>
@@ -322,14 +340,7 @@ export default function Layout() {
 									drawerItemStyle: { display: 'none' },
 								}}
 							/>
-							<Drawer.Screen
-								name="experimental/edge-speech/index"
-								options={{
-									title: 'Edge Speech Test',
-									drawerItemStyle: { display: 'none' },
-								}}
-							/>
-						</Drawer>
+							</Drawer>
 						</ModalProvider>
 					</SettingsProvider>
 				</ThemeProvider>
@@ -401,6 +412,18 @@ const styles = StyleSheet.create({
 	},
 	errorButtonText: {
 		color: '#fff',
+		fontWeight: '600',
+		fontSize: 15,
+	},
+	errorCopyButton: {
+		backgroundColor: '#f3f4f6',
+		borderRadius: 8,
+		paddingVertical: 12,
+		alignItems: 'center',
+		marginBottom: 8,
+	},
+	errorCopyButtonText: {
+		color: '#374151',
 		fontWeight: '600',
 		fontSize: 15,
 	},
