@@ -5,12 +5,15 @@ import themeReducer from './themeSlice';
 import billboardConfigReducer from './billboardConfigSlice';
 import gpsIntervalReducer from './gpsIntervalSlice';
 import ttsReducer from './ttsSlice';
+import speechSettingsReducer from './speechSettingsSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
+import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
+import type { SpeechSettingsState } from './speechSettingsSlice';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
 import type { GpsIntervalMode } from './gpsIntervalSlice';
@@ -25,6 +28,7 @@ export const store = configureStore({
 		billboardConfig: billboardConfigReducer,
 		gpsInterval: gpsIntervalReducer,
 		tts: ttsReducer,
+		speechSettings: speechSettingsReducer,
 	},
 });
 
@@ -48,6 +52,10 @@ let _lastSavedGpsIntervalMode: GpsIntervalMode | null = null;
 
 // Auto-persist TTS enabled flag to disk whenever it changes.
 let _lastSavedTTSEnabled: boolean | null = null;
+
+// Auto-persist speech settings to disk whenever they change.
+let _speechSettingsTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedSpeechSettings: SpeechSettingsState | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -99,6 +107,16 @@ store.subscribe(() => {
 	if (ttsEnabled !== _lastSavedTTSEnabled) {
 		_lastSavedTTSEnabled = ttsEnabled;
 		saveTTSEnabled(ttsEnabled);
+	}
+
+	const speechSettings = state.speechSettings;
+	if (speechSettings !== _lastSavedSpeechSettings) {
+		_lastSavedSpeechSettings = speechSettings;
+		if (_speechSettingsTimer) clearTimeout(_speechSettingsTimer);
+		_speechSettingsTimer = setTimeout(() => {
+			saveSpeechSettings(speechSettings);
+			_speechSettingsTimer = null;
+		}, 500);
 	}
 });
 

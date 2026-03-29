@@ -76,7 +76,7 @@ export default function TTSTestScreen() {
 	const langCode = locale.split('-')[0].toLowerCase();
 
 	// ─── Speech options state ─────────────────────────────────────────────────
-	const [useAppAudioSession, setUseAppAudioSession] = useState(true);
+	const [useAppAudioSession, setUseAppAudioSession] = useState(false);
 	const [rate, setRate] = useState(RATE_DEFAULT);
 	const [pitch, setPitch] = useState(PITCH_DEFAULT);
 	const [voiceQuality, setVoiceQuality] = useState<Speech.VoiceQuality>(Speech.VoiceQuality.Default);
