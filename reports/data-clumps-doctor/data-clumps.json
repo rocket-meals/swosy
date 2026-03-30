@@ -1,16 +1,16 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-30T00:36:03.374Z",
+  "report_timestamp": "2026-03-30T01:13:15.678Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 93,
-          "average": 1.592988456605387,
-          "amountSavedValuesForKeys": 3726,
-          "amountKeys": 26
+          "maximum": 94,
+          "average": 1.59317697228145,
+          "amountSavedValuesForKeys": 3736,
+          "amountKeys": 25
         },
         "invertedParameterToMethods": {
           "median": 1.5,
@@ -21,51 +21,51 @@
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 93,
-          "average": 1.6074201898188094,
-          "amountSavedValuesForKeys": 3726,
-          "amountKeys": 25
+          "maximum": 94,
+          "average": 1.6075731497418244,
+          "amountSavedValuesForKeys": 3736,
+          "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4068,
-        "detection_time_ms": 75,
+        "ast_generation_time_ms": 4082,
+        "detection_time_ms": 76,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 107.86,
-          "os_memory_free": 15016308736,
-          "os_memory_total": 16770772992,
+          "os_uptime": 111.12,
+          "os_memory_free": 14973841408,
+          "os_memory_total": 16766443520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 29,
-    "amount_files_with_data_clumps": 24,
+    "amount_classes_or_interfaces_with_data_clumps": 31,
+    "amount_files_with_data_clumps": 25,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 34,
+    "fields_to_fields_data_clump": 36,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 42
+    "amount_data_clumps": 44
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "c443bd58667d56e8a3671f3c3e63da2b6eabcde6",
-    "project_commit_hash": "c443bd58667d56e8a3671f3c3e63da2b6eabcde6",
+    "project_version": "cbf28cfb6a4fca62de681d5c8af740bcbf319558",
+    "project_commit_hash": "cbf28cfb6a4fca62de681d5c8af740bcbf319558",
     "project_tag": null,
-    "project_commit_date": "1774830871",
+    "project_commit_date": "1774833102",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 465,
-    "number_of_classes_or_interfaces": 950,
+    "number_of_files": 467,
+    "number_of_classes_or_interfaces": 952,
     "number_of_methods": 1325,
-    "number_of_data_fields": 3726,
+    "number_of_data_fields": 3736,
     "number_of_method_parameters": 1465
   },
   "detector": {
@@ -3294,6 +3294,200 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
+      "from_class_or_interface_name": "SavedActivity",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/RouteStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute",
+      "to_class_or_interface_name": "SavedRoute",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/id": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 13
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType",
+          "name": "sportType",
+          "type": "SportType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/sportType",
+            "name": "sportType",
+            "type": "SportType",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 2,
+            "endLine": 36,
+            "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution",
+          "name": "h3Resolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/h3Resolution",
+            "name": "h3Resolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 2,
+            "endLine": 38,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/RouteStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute",
+      "from_class_or_interface_name": "SavedRoute",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
+      "to_class_or_interface_name": "SavedActivity",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/id": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 13
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/h3Resolution": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/h3Resolution",
+          "name": "h3Resolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution",
+            "name": "h3Resolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 2,
+              "endLine": 38,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/sportType": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/sportType",
+          "name": "sportType",
+          "type": "SportType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType",
+            "name": "sportType",
+            "type": "SportType",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor",
@@ -3484,7 +3678,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -3581,7 +3775,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
