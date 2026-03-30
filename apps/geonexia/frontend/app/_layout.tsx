@@ -275,13 +275,13 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			{
 				key: 'billboard-config/index',
 				label: 'Billboard Config',
-				renderIcon: (_: boolean, color: string) => <Ionicons name="build-outline" size={24} color={color} />,
+				renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
 				onPress: () => props.navigation.navigate('billboard-config/index'),
 			},
 			{
 				key: 'experimental/index',
 				label: 'Experimental',
-				renderIcon: (_: boolean, color: string) => <Ionicons name="flask-outline" size={24} color={color} />,
+				renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
 				onPress: () => props.navigation.navigate('experimental/index'),
 			},
 		] : []),
