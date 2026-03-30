@@ -1093,40 +1093,6 @@ export default function ActivityDetailScreen() {
 						onPress={handleFilterUnrealisticPoints}
 					/>
 				</View>
-				{(activity.batteryLevelStart != null || activity.batteryLevelEnd != null) && (
-					<>
-						<SettingsListGroupTitle title="Batterie" />
-						{activity.batteryLevelStart != null && (
-							<SettingsList
-								leftIcon={<MaterialIcons name="battery-full" size={20} color="#ffffff" />}
-								iconBackgroundColor="#16a34a"
-								title="Vorher"
-								value={`${Math.round(activity.batteryLevelStart * 100)} %`}
-								showSeparator
-								groupPosition={activity.batteryLevelEnd != null ? 'top' : 'single'}
-							/>
-						)}
-						{activity.batteryLevelEnd != null && (
-							<SettingsList
-								leftIcon={<MaterialIcons name="battery-std" size={20} color="#ffffff" />}
-								iconBackgroundColor={PRIMARY_COLOR}
-								title="Nachher"
-								value={`${Math.round(activity.batteryLevelEnd * 100)} %`}
-								showSeparator={activity.batteryLevelStart != null}
-								groupPosition={activity.batteryLevelStart != null ? 'middle' : 'top'}
-							/>
-						)}
-						{activity.batteryLevelStart != null && activity.batteryLevelEnd != null && (
-							<SettingsList
-								leftIcon={<MaterialIcons name="battery-charging-full" size={20} color="#ffffff" />}
-								iconBackgroundColor="#f59e0b"
-								title="Verbrauch"
-								value={`${Math.max(0, Math.round((activity.batteryLevelStart - activity.batteryLevelEnd) * 100))} %`}
-								groupPosition="bottom"
-							/>
-						)}
-					</>
-				)}
 				<SettingsListGroupTitle title="Routen Information" />
 				<SettingsList
 					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
