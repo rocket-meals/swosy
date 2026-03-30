@@ -12,7 +12,7 @@ import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
@@ -56,64 +56,16 @@ function formatPace(minPerKm: number): string {
 	return `${m}:${String(s).padStart(2, '0')} /km`;
 }
 
-type ActivityListItemProps = {
-	activity: SavedActivity;
-	onPress: () => void;
-	theme: ReturnType<typeof useTheme>['theme'];
-};
-
-function ActivityListItem({ activity, onPress, theme }: ActivityListItemProps) {
-	const { stats } = activity;
-	return (
-		<TouchableOpacity
-			style={[styles.itemCard, { backgroundColor: theme.screen.background, borderColor: theme.screen.text + '18' }]}
-			onPress={onPress}
-			activeOpacity={0.75}
-		>
-			<View style={[styles.itemIconWrapper, { backgroundColor: PRIMARY_COLOR + '18' }]}>
-				<MaterialIcons name="directions-run" size={26} color={PRIMARY_COLOR} />
-			</View>
-			<View style={styles.itemContent}>
-				<Text style={[styles.itemDate, { color: theme.screen.text }]}>
-					{formatDate(activity.startedAt)}
-					{'  '}
-					<Text style={[styles.itemTime, { color: theme.screen.icon }]}>{formatTime(activity.startedAt)}</Text>
-				</Text>
-				<View style={styles.itemStats}>
-					<View style={styles.itemStatChip}>
-						<MaterialIcons name="straighten" size={13} color={PRIMARY_COLOR} />
-						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-							{formatDistance(stats.distanceKm)}
-						</Text>
-					</View>
-					<View style={styles.itemStatChip}>
-						<MaterialIcons name="speed" size={13} color={PRIMARY_COLOR} />
-						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-							{formatPace(stats.paceMinPerKm)}
-						</Text>
-					</View>
-					<View style={styles.itemStatChip}>
-						<MaterialIcons name="timer" size={13} color={theme.screen.icon} />
-						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-							{formatDuration(stats.durationSeconds)}
-						</Text>
-					</View>
-					{activity.visitedTileCount != null && (
-						<View style={styles.itemStatChip}>
-							<MaterialIcons name="grid-on" size={13} color={PRIMARY_COLOR} />
-							<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-								{activity.visitedTileCount}
-								{activity.enclosedTileCount != null && activity.enclosedTileCount > 0
-									? ` (+${activity.enclosedTileCount})`
-									: ''}
-							</Text>
-						</View>
-					)}
-				</View>
-			</View>
-			<MaterialIcons name="chevron-right" size={22} color={theme.screen.icon} />
-		</TouchableOpacity>
-	);
+function formatActivityListValue(activity: SavedActivity): string {
+	const parts: string[] = [];
+	const km = activity.stats.distanceKm;
+	parts.push(km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(2)} km`);
+	parts.push(formatDuration(activity.stats.durationSeconds));
+	if (activity.visitedTileCount != null) {
+		const tiles = activity.visitedTileCount + (activity.enclosedTileCount ?? 0);
+		parts.push(`${tiles} Felder`);
+	}
+	return parts.join(' · ');
 }
 
 // ─── Import Content (shown inside bottom sheet modal) ─────────────────────────
@@ -396,10 +348,14 @@ export default function ActivitiesScreen() {
 				keyExtractor={(item) => item.id}
 				contentContainerStyle={styles.listContent}
 				renderItem={({ item }) => (
-					<ActivityListItem
-						activity={item}
+					<SettingsList
+						leftIcon={<MaterialIcons name="directions-run" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title={formatDate(item.startedAt) + '  ' + formatTime(item.startedAt)}
+						value={formatActivityListValue(item)}
+						rightIcon={<MaterialIcons name="chevron-right" size={20} color="#9ca3af" />}
+						groupPosition="single"
 						onPress={() => handleActivityPress(item.id)}
-						theme={theme}
 					/>
 				)}
 			/>
@@ -416,48 +372,6 @@ const styles = StyleSheet.create({
 		paddingTop: 12,
 		paddingBottom: 24,
 		gap: 10,
-	},
-	itemCard: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		borderRadius: 12,
-		borderWidth: 1,
-		paddingVertical: 12,
-		paddingHorizontal: 14,
-		gap: 12,
-	},
-	itemIconWrapper: {
-		width: 46,
-		height: 46,
-		borderRadius: 23,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	itemContent: {
-		flex: 1,
-		gap: 6,
-	},
-	itemDate: {
-		fontSize: 14,
-		fontWeight: '600',
-	},
-	itemTime: {
-		fontSize: 13,
-		fontWeight: '400',
-	},
-	itemStats: {
-		flexDirection: 'row',
-		gap: 10,
-		flexWrap: 'wrap',
-	},
-	itemStatChip: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 3,
-	},
-	itemStatText: {
-		fontSize: 13,
-		fontWeight: '500',
 	},
 	emptyContainer: {
 		flex: 1,
