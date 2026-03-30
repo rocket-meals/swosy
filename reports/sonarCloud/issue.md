@@ -57,8 +57,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:163
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L163
+  apps/geonexia/frontend/app/activities/[id].tsx:162
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L162
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/activities/index.tsx:53
