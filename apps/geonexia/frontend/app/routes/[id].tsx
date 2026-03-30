@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
 	MyMap,
@@ -9,11 +9,13 @@ import {
 	SettingsList,
 	SettingsListGroupTitle,
 	SettingsListTextInput,
+	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
+import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
@@ -33,12 +35,35 @@ function formatDate(timestamp: number): string {
 	});
 }
 
+function formatActivityDate(timestamp: number): string {
+	const d = new Date(timestamp);
+	return (
+		d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) +
+		'  ' +
+		d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+	);
+}
+
+function formatActivityValue(activity: SavedActivity): string {
+	const km = activity.stats.distanceKm;
+	const distStr = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(2)} km`;
+	const s = activity.stats.durationSeconds;
+	const h = Math.floor(s / 3600);
+	const m = Math.floor((s % 3600) / 60);
+	const sec = Math.floor(s % 60);
+	const mmss = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+	const durStr = h > 0 ? `${h}:${mmss}` : mmss;
+	return `${distStr} · ${durStr}`;
+}
+
 export default function RouteDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const { theme } = useTheme();
 	const router = useRouter();
 	const navigation = useNavigation();
 	const mapRef = useRef<MyMapHandle>(null);
+	const [mapKey, setMapKey] = useState(0);
+	const isFirstFocusRef = useRef(true);
 	const [route, setRoute] = useState<SavedRoute | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
@@ -47,7 +72,9 @@ export default function RouteDetailScreen() {
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [mapEditSubMode, setMapEditSubMode] = useState<MapEditSubMode>('add');
 	const [addAnchorTileIndex, setAddAnchorTileIndex] = useState<number | null>(null);
+	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
 
 	// Stable ref so handleMapMessage can always read the latest edit state without
 	// being recreated on every state change.
@@ -67,6 +94,18 @@ export default function RouteDetailScreen() {
 			}
 		};
 	}, []);
+
+	// Remount the map whenever the screen is re-focused so auto-rotate re-runs.
+	useFocusEffect(
+		useCallback(() => {
+			if (isFirstFocusRef.current) {
+				isFirstFocusRef.current = false;
+				return;
+			}
+			setMapMounted(false);
+			setMapKey((k) => k + 1);
+		}, [])
+	);
 
 	// Show back arrow in header
 	useLayoutEffect(() => {
@@ -100,6 +139,16 @@ export default function RouteDetailScreen() {
 				setRoute(r);
 			})
 			.catch(() => setNotFound(true));
+	}, [id]);
+
+	// Load activities for this route
+	useEffect(() => {
+		if (!id) return;
+		loadActivities().then((all) => {
+			const filtered = all.filter((a) => a.routeId === id);
+			filtered.sort((a, b) => b.startedAt - a.startedAt);
+			setRouteActivities(filtered);
+		}).catch(() => setRouteActivities([]));
 	}, [id]);
 
 	// Once both route and map are ready, send hex tiles and fit bounds
@@ -408,6 +457,7 @@ export default function RouteDetailScreen() {
 			{/* Map – 1:1 square at the top with edit overlay controls */}
 			<View style={styles.mapContainer}>
 				<MyMap
+					key={mapKey}
 					ref={mapRef}
 					onMessage={handleMapMessage}
 					injectScript={HEX_TILE_SCRIPT}
@@ -519,6 +569,39 @@ export default function RouteDetailScreen() {
 							return;
 						}
 						setRoute(updated);
+					}}
+				/>
+
+				<SettingsListGroupTitle title="Aktivitäten" />
+				<SettingsList
+					leftIcon={<MaterialIcons name="directions-run" size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title="Aktivitäten"
+					value={String(routeActivities.length)}
+					groupPosition="single"
+					onPress={() => {
+						showActivitiesModal({
+							title: '🏃 Aktivitäten',
+							children: (
+								<View style={{ paddingBottom: 24 }}>
+									{routeActivities.length === 0 ? (
+										<Text style={{ color: theme.screen.icon, textAlign: 'center', marginTop: 16, fontSize: 14 }}>Keine Aktivitäten</Text>
+									) : (
+										routeActivities.map((act, idx) => (
+											<SettingsList
+												key={act.id}
+												leftIcon={<MaterialIcons name="directions-run" size={20} color="#ffffff" />}
+												iconBackgroundColor={PRIMARY_COLOR}
+												title={formatActivityDate(act.startedAt)}
+												value={formatActivityValue(act)}
+												groupPosition={routeActivities.length === 1 ? 'single' : idx === 0 ? 'top' : idx === routeActivities.length - 1 ? 'bottom' : 'middle'}
+												onPress={() => { closeActivitiesModal(); router.navigate(`/activities/${act.id}`); }}
+											/>
+										))
+									)}
+								</View>
+							),
+						});
 					}}
 				/>
 

@@ -21,6 +21,12 @@ export type SavedRoute = {
 	 * Optional for backward-compat with older saves that lack this field.
 	 */
 	walkedEdges?: string[];
+	/**
+	 * IDs of activities that have been assigned to this route.
+	 * Maintained as the reverse side of `SavedActivity.routeId`.
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	activityIds?: string[];
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

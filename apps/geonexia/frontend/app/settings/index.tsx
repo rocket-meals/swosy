@@ -261,10 +261,9 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="Daten Verwaltung" />
 				<SettingsList
-					iconBgColor={PRIMARY_COLOR}
+					iconBgColor={DANGER_COLOR}
 					leftIcon={<MaterialIcons name="delete-forever" size={22} color="#ffffff" />}
 					label="Alle Daten zurücksetzen"
-					value="Activities & Hex Tiles"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleResetAllData}
 					groupPosition="single"

@@ -172,7 +172,28 @@ function buildH3GeoJson(
 	hexTileRecords: Record<string, HexTileRecord>,
 	minZoom: number = H3_MIN_ZOOM_DEFAULT,
 ): H3FeatureCollection {
-	if (!showAlways && zoom < minZoom) return { type: 'FeatureCollection', features: [] };
+	if (!showAlways && zoom < minZoom) {
+		// At low zoom: hide the unvisited grid, but still show tiles that have been
+		// visited or enclosed (level > 0) so the user can see their overall progress.
+		const features: H3GeoJsonFeature[] = [];
+		for (const [cell, record] of Object.entries(hexTileRecords)) {
+			if (record.level <= 0) continue;
+			if (features.length >= H3_MAX_CELLS) break;
+			try {
+				const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+				if (boundary.length > 0) {
+					features.push({
+						type: 'Feature',
+						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+						properties: { h3Index: cell, level: record.level },
+					});
+				}
+			} catch {
+				// Skip invalid cells
+			}
+		}
+		return { type: 'FeatureCollection', features };
+	}
 
 	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
 	// resolution and visually subdivide each parent cell into its children at
@@ -1895,11 +1916,16 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 			{mapFeatures && mapFeatures.length > 0 && (
 				<>
 					<SettingsListGroupTitle title="Karteninformationen" />
-					<View style={[styles.mapFeaturesContainer, { borderColor: theme.screen.text + '18' }]}>
-						<Text style={[styles.mapFeaturesJson, { color: theme.screen.text }]}>
-							{JSON.stringify(mapFeatures, null, 2)}
-						</Text>
-					</View>
+					{mapFeatures.map((feature, idx) => (
+						<SettingsList
+							key={idx}
+							leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title={feature.name ?? feature.layerId ?? `Feature ${idx + 1}`}
+							value={JSON.stringify(feature, null, 2)}
+							groupPosition={mapFeatures.length === 1 ? 'single' : idx === 0 ? 'top' : idx === mapFeatures.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
 				</>
 			)}
 
@@ -4292,17 +4318,5 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		flexShrink: 1,
 		textAlign: 'right',
-	},
-	mapFeaturesContainer: {
-		marginHorizontal: 16,
-		marginVertical: 4,
-		borderRadius: 8,
-		borderWidth: StyleSheet.hairlineWidth,
-		padding: 12,
-	},
-	mapFeaturesJson: {
-		fontSize: 12,
-		fontFamily: 'monospace',
-		lineHeight: 18,
 	},
 });

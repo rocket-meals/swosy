@@ -379,7 +379,31 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 	const [routeName, setRouteName] = useState('');
 
-	const assignRoute = useCallback((routeId: string | null) => {
+	const assignRoute = useCallback(async (routeId: string | null) => {
+		// Remove activity from old route (if any)
+		if (typeof activity.routeId === 'string') {
+			try {
+				const oldRoute = await loadRoute(activity.routeId);
+				if (oldRoute) {
+					const updatedIds = (oldRoute.activityIds ?? []).filter((activityId) => activityId !== activity.id);
+					saveRoute({ ...oldRoute, activityIds: updatedIds });
+				}
+			} catch (err) {
+				console.warn('[RouteAssignment] Failed to update old route activityIds:', err);
+			}
+		}
+		// Add activity to new route (if assigning to one)
+		if (typeof routeId === 'string') {
+			try {
+				const newRoute = await loadRoute(routeId);
+				if (newRoute) {
+					const updatedIds = [...new Set([...(newRoute.activityIds ?? []), activity.id])];
+					saveRoute({ ...newRoute, activityIds: updatedIds });
+				}
+			} catch (err) {
+				console.warn('[RouteAssignment] Failed to update new route activityIds:', err);
+			}
+		}
 		const updated: SavedActivity = { ...activity, routeId };
 		try {
 			saveActivity(updated);
@@ -390,7 +414,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 		onDone(updated);
 	}, [activity, onDone]);
 
-	const createAndAssign = useCallback((name: string) => {
+	const createAndAssign = useCallback(async (name: string) => {
 		const trimmed = name.trim();
 		if (!trimmed) return;
 		const h3Res = activity.h3Resolution ?? 10;
@@ -409,7 +433,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
 			return;
 		}
-		assignRoute(newRoute.id);
+		await assignRoute(newRoute.id);
 	}, [activity, assignRoute]);
 
 	return (
