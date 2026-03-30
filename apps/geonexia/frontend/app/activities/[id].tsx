@@ -960,6 +960,12 @@ export default function ActivityDetailScreen() {
 
 	const { stats } = activity;
 
+	const routeDisplayValue = assignedRoute
+		? assignedRoute.name
+		: activity.routeId === null
+		? 'Keine'
+		: '—';
+
 	// Compute the route centre so the map starts at the correct position immediately.
 	const routeInitialCenter = (() => {
 		const bounds = computeRouteBounds(activity.routePoints);
@@ -1051,7 +1057,7 @@ export default function ActivityDetailScreen() {
 					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
 					iconBackgroundColor={PRIMARY_COLOR}
 					title="Route auswählen"
-					value={assignedRoute ? assignedRoute.name : (activity.routeId === null ? 'Keine' : '—')}
+					value={routeDisplayValue}
 					groupPosition={assignedRoute ? 'top' : 'single'}
 					showSeparator={!!assignedRoute}
 					onPress={handleOpenRouteAssignment}
