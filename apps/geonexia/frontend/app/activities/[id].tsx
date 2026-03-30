@@ -11,10 +11,12 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, SettingsListTextInput, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { SavedRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
+import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
@@ -349,6 +351,155 @@ const speedRangeStyles = StyleSheet.create({
 	},
 });
 
+// ─── Route Assignment Modal Content ──────────────────────────────────────────
+
+type RouteAssignmentProps = {
+	activity: SavedActivity;
+	savedRoutes: SavedRoute[];
+	bestMatch: RouteMatchResult | null;
+	onDone: (updatedActivity: SavedActivity) => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
+	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+
+	const assignRoute = useCallback((routeId: string | null) => {
+		const updated: SavedActivity = { ...activity, routeId };
+		try {
+			saveActivity(updated);
+		} catch {
+			Alert.alert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
+			return;
+		}
+		onDone(updated);
+	}, [activity, onDone]);
+
+	const createAndAssign = useCallback((name: string) => {
+		const trimmed = name.trim();
+		if (!trimmed) return;
+		const newRoute: SavedRoute = {
+			id: String(Date.now()),
+			name: trimmed,
+			hexTiles: activity.hexTilesOrdered ?? [],
+			h3Resolution: activity.h3Resolution ?? 10,
+			createdAt: Date.now(),
+			sportType: activity.sportType,
+		};
+		try {
+			saveRoute(newRoute);
+		} catch {
+			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+			return;
+		}
+		assignRoute(newRoute.id);
+	}, [activity, assignRoute]);
+
+	return (
+		<View style={routeAssignStyles.container}>
+			{bestMatch && (
+				<>
+					<SettingsListGroupTitle title="Vorschlag" />
+					<View style={[routeAssignStyles.suggestionCard, { backgroundColor: theme.screen.card ?? theme.screen.background, borderColor: PRIMARY_COLOR + '44' }]}>
+						<MaterialIcons name="route" size={20} color={PRIMARY_COLOR} />
+						<View style={routeAssignStyles.suggestionText}>
+							<Text style={[routeAssignStyles.suggestionName, { color: theme.screen.text }]} numberOfLines={1}>
+								{bestMatch.route.name}
+							</Text>
+							<Text style={[routeAssignStyles.suggestionMeta, { color: theme.screen.icon }]}>
+								{Math.round(bestMatch.overlap * 100)} % Übereinstimmung
+							</Text>
+						</View>
+					</View>
+					<TouchableOpacity
+						style={[routeAssignStyles.assignButton, { backgroundColor: PRIMARY_COLOR }]}
+						onPress={() => assignRoute(bestMatch.route.id)}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="check" size={18} color="#ffffff" />
+						<Text style={routeAssignStyles.assignButtonText}>Ja, Route zuordnen</Text>
+					</TouchableOpacity>
+				</>
+			)}
+
+			{savedRoutes.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Andere Route wählen" />
+					<SettingsListSelectOption
+						options={savedRoutes.map((r) => ({ id: r.id, label: r.name }))}
+						selectedOption={selectedRouteId}
+						selectionColor={PRIMARY_COLOR}
+						onSelect={(opt: SettingsListSelectOptionItem<string>) => {
+							setSelectedRouteId(opt.id);
+							assignRoute(opt.id);
+						}}
+					/>
+				</>
+			)}
+
+			<SettingsListGroupTitle title="Neue Route erstellen" />
+			<SettingsListTextInput
+				title="Route benennen"
+				placeholder="Route Name"
+				modalTitle="Neue Route"
+				groupPosition="single"
+				onSave={createAndAssign}
+			/>
+
+			<SettingsListGroupTitle title="Optionen" />
+			<SettingsListSelectOptionSingle
+				label="Diesem Run keine Route zuordnen"
+				isSelected={false}
+				selectionColor="#ef4444"
+				groupPosition="single"
+				onPress={() => assignRoute(null)}
+			/>
+		</View>
+	);
+}
+
+const routeAssignStyles = StyleSheet.create({
+	container: {
+		paddingBottom: 24,
+	},
+	suggestionCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginHorizontal: 16,
+		marginBottom: 8,
+		padding: 12,
+		borderRadius: 10,
+		borderWidth: 1,
+		gap: 10,
+	},
+	suggestionText: {
+		flex: 1,
+		gap: 2,
+	},
+	suggestionName: {
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	suggestionMeta: {
+		fontSize: 13,
+	},
+	assignButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginHorizontal: 16,
+		marginBottom: 12,
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 6,
+	},
+	assignButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+});
+
 // ─── Activity Detail Screen ───────────────────────────────────────────────────
 
 const H3_GEOJSON_ORDER = true;
@@ -451,6 +602,7 @@ export default function ActivityDetailScreen() {
 	const router = useRouter();
 	const navigation = useNavigation();
 	const { show: showShareModal, close: closeModal } = useMyScrollViewModal();
+	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const mapRef = useRef<MyMapHandle>(null);
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
@@ -460,6 +612,7 @@ export default function ActivityDetailScreen() {
 	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const routeModalShownRef = useRef(false);
 
 	// Clean up auto-rotate interval on unmount
 	useEffect(() => {
@@ -491,11 +644,47 @@ export default function ActivityDetailScreen() {
 	useEffect(() => {
 		if (!id) { setNotFound(true); return; }
 		loadActivity(id)
-			.then((a) => {
+			.then(async (a) => {
 				if (!a) { setNotFound(true); return; }
 				setActivity(a);
+
+				// If routeId has never been decided, load routes and show assignment modal
+				if (a.routeId === undefined && !routeModalShownRef.current) {
+					routeModalShownRef.current = true;
+					let routes: SavedRoute[] = [];
+					let bestMatch: RouteMatchResult | null = null;
+					try {
+						routes = await loadRoutes();
+						if (a.hexTilesOrdered && a.hexTilesOrdered.length > 0 && a.h3Resolution != null) {
+							const matches = findMatchingRoutes(a.hexTilesOrdered, routes, a.h3Resolution);
+							bestMatch = matches.length > 0 ? matches[0] : null;
+						}
+					} catch {
+						// Show modal with empty routes on error
+					}
+					showRouteModal({
+						title: '🗺️ Route zuordnen',
+						onClose: closeRouteModal,
+						children: (
+							<RouteAssignmentModalContent
+								activity={a}
+								savedRoutes={routes}
+								bestMatch={bestMatch}
+								onDone={(updated) => {
+									setActivity(updated);
+									closeRouteModal();
+								}}
+								theme={theme}
+							/>
+						),
+					});
+				}
 			})
 			.catch(() => setNotFound(true));
+	// `showRouteModal`, `closeRouteModal`, and `theme` are intentionally omitted from deps:
+	// they are stable references from their hooks, and the route-modal is guarded by
+	// `routeModalShownRef.current` so it must only run once per screen mount.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [id]);
 
 	// Build speed-colored segments from route points and send along with speed range
