@@ -815,6 +815,12 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
+		// Send start point circle (green, on top of the route lines)
+		const pts = activity.routePoints;
+		if (pts.length >= 1) {
+			mapRef.current.sendToMap({ routeStartPoint: [pts[0].lng, pts[0].lat] });
+		}
+
 		// Send hex tile and walk path GeoJSON so the activity screen shows the
 		// same hexagon visualization as the main map, but only for the tiles
 		// that were visited during this specific activity.
