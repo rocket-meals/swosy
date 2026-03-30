@@ -799,13 +799,10 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
-		// Send start / end point circles (start = green, end = red Strafpunkt)
+		// Send start point circle (green, on top of the route lines)
 		const pts = activity.routePoints;
 		if (pts.length >= 1) {
 			mapRef.current.sendToMap({ routeStartPoint: [pts[0].lng, pts[0].lat] });
-		}
-		if (pts.length >= 2) {
-			mapRef.current.sendToMap({ routeEndPoint: [pts[pts.length - 1].lng, pts[pts.length - 1].lat] });
 		}
 
 		// Send hex tile and walk path GeoJSON so the activity screen shows the

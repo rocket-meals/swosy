@@ -5142,13 +5142,10 @@
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
-      // ─── Route start / end (penalty) point circles ───────────────────────────────
+      // ─── Route start point circle ─────────────────────────────────────────────────
       var ROUTE_START_SOURCE = 'route-start-source';
       var ROUTE_START_LAYER  = 'route-start-layer';
-      var ROUTE_END_SOURCE   = 'route-end-source';
-      var ROUTE_END_LAYER    = 'route-end-layer';
       var routeStartCoord    = null; // [lng, lat] or null
-      var routeEndCoord      = null; // [lng, lat] or null
       var ROUTE_POINT_RADIUS_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 6, 13, 9, 18, 14];
 
       function updateRoutePointLayer(sourceId, layerId, color, coord) {
@@ -5179,11 +5176,6 @@
       function updateRouteStartPoint(coord) {
         routeStartCoord = coord || null;
         updateRoutePointLayer(ROUTE_START_SOURCE, ROUTE_START_LAYER, '#22c55e', routeStartCoord);
-      }
-
-      function updateRouteEndPoint(coord) {
-        routeEndCoord = coord || null;
-        updateRoutePointLayer(ROUTE_END_SOURCE, ROUTE_END_LAYER, '#ef4444', routeEndCoord);
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5564,10 +5556,6 @@
           updateRouteStartPoint(data.routeStartPoint);
         }
 
-        if (data.routeEndPoint !== undefined) {
-          updateRouteEndPoint(data.routeEndPoint);
-        }
-
         if (data.userLocation !== undefined) {
           if (data.userLocation) {
             updateUserLocationMarker(data.userLocation);
@@ -5766,9 +5754,6 @@
           }
           if (routeStartCoord && !map.getSource(ROUTE_START_SOURCE)) {
             updateRouteStartPoint(routeStartCoord);
-          }
-          if (routeEndCoord && !map.getSource(ROUTE_END_SOURCE)) {
-            updateRouteEndPoint(routeEndCoord);
           }
         });
       }
