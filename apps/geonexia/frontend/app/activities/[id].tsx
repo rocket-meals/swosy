@@ -26,7 +26,6 @@ import type { RootState } from '../../store/store';
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
-const ROUTE_NONE_SENTINEL = '__none__';
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -848,22 +847,39 @@ export default function ActivityDetailScreen() {
 		// Auto-rotate is stopped automatically on the map side when user interacts
 	}, []);
 
-	const handleRouteSelect = useCallback((routeId: string | null) => {
+	const handleOpenRouteAssignment = useCallback(() => {
 		if (!activity) return;
-		const updated: SavedActivity = { ...activity, routeId };
-		try {
-			saveActivity(updated);
-		} catch {
-			Alert.alert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
-			return;
-		}
-		setActivity(updated);
-		if (routeId === null) {
-			setAssignedRoute(null);
-		} else {
-			loadRoute(routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
-		}
-	}, [activity]);
+		loadRoutes().then((routes) => {
+			setSavedRoutes(routes);
+			let bestMatch: RouteMatchResult | null = null;
+			if (activity.hexTilesOrdered && activity.hexTilesOrdered.length > 0 && activity.h3Resolution != null) {
+				const matches = findMatchingRoutes(activity.hexTilesOrdered, routes, activity.h3Resolution);
+				bestMatch = matches.length > 0 ? matches[0] : null;
+			}
+			showRouteModal({
+				title: '🗺️ Route zuordnen',
+				onClose: closeRouteModal,
+				children: (
+					<RouteAssignmentModalContent
+						activity={activity}
+						savedRoutes={routes}
+						bestMatch={bestMatch}
+						onDone={(updated) => {
+							setActivity(updated);
+							if (typeof updated.routeId === 'string') {
+								loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+							} else {
+								setAssignedRoute(updated.routeId === null ? null : undefined);
+							}
+							loadRoutes().then(setSavedRoutes).catch(() => {});
+							closeRouteModal();
+						}}
+						theme={theme}
+					/>
+				),
+			});
+		}).catch(() => {});
+	}, [activity, showRouteModal, closeRouteModal, theme]);
 
 	const handleFilterUnrealisticPoints = useCallback(() => {
 		if (!activity) return;
@@ -1030,30 +1046,24 @@ export default function ActivityDetailScreen() {
 						onPress={handleFilterUnrealisticPoints}
 					/>
 				</View>
-				{activity.routeId !== undefined && (
-					<>
-						<SettingsListGroupTitle title="Routen Information" />
-						<SettingsListSelectOption
-							options={[
-								{ id: ROUTE_NONE_SENTINEL, label: 'Keine' },
-								...savedRoutes.map((r) => ({ id: r.id, label: r.name })),
-							]}
-							selectedOption={activity.routeId ?? ROUTE_NONE_SENTINEL}
-							selectionColor={PRIMARY_COLOR}
-							onSelect={(opt: SettingsListSelectOptionItem<string>) => {
-								handleRouteSelect(opt.id === ROUTE_NONE_SENTINEL ? null : opt.id);
-							}}
-						/>
-						<View style={!assignedRoute ? styles.disabledRow : undefined}>
-							<SettingsList
-								leftIcon={<MaterialIcons name="open-in-new" size={20} color="#ffffff" />}
-								iconBackgroundColor={assignedRoute ? PRIMARY_COLOR : '#9ca3af'}
-								title="Route öffnen"
-								groupPosition="single"
-								onPress={assignedRoute ? () => router.navigate('/routes') : undefined}
-							/>
-						</View>
-					</>
+				<SettingsListGroupTitle title="Routen Information" />
+				<SettingsList
+					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title="Route auswählen"
+					value={assignedRoute ? assignedRoute.name : (activity.routeId === null ? 'Keine' : '—')}
+					groupPosition={assignedRoute ? 'top' : 'single'}
+					showSeparator={!!assignedRoute}
+					onPress={handleOpenRouteAssignment}
+				/>
+				{assignedRoute && (
+					<SettingsList
+						leftIcon={<MaterialIcons name="open-in-new" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Route öffnen"
+						groupPosition="bottom"
+						onPress={() => router.navigate('/routes')}
+					/>
 				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
@@ -1191,8 +1201,5 @@ const styles = StyleSheet.create({
 	},
 	filterRow: {
 		marginTop: 16,
-	},
-	disabledRow: {
-		opacity: 0.5,
 	},
 });
