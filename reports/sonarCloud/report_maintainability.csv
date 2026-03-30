@@ -8,17 +8,17 @@ Key,Message,Component,Line
 "AZ09zPie1XV5X7ZcuP8Z","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",74
 "AZ09zPie1XV5X7ZcuP8a","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",74
 "AZ09r1guBqdBuPqsrvbq","Remove this useless assignment to variable ""savedRoutes"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",669
-"AZ09r1guBqdBuPqsrvbr","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",911
-"AZ09r1guBqdBuPqsrvbs","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",915
-"AZ09r1guBqdBuPqsrvbt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1006
+"AZ09r1guBqdBuPqsrvbr","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",917
+"AZ09r1guBqdBuPqsrvbs","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",921
+"AZ09r1guBqdBuPqsrvbt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1012
 "AZ09r1kMBqdBuPqsrvbu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",676
 "AZ09b9gJsbZkP7zZmkn_","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",758
 "AZ08h-ZiRnJvyhKaMRpv","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",754
 "AZ08h-XvRnJvyhKaMRpt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",76
 "AZ08h-XvRnJvyhKaMRpu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",76
 "AZ08dPhhPU4l3pg_uGRW","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",377
-"AZ08WWGAPU4l3pg_soFq","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1034
-"AZ08WWGAPU4l3pg_soFr","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1037
+"AZ08WWGAPU4l3pg_soFq","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1040
+"AZ08WWGAPU4l3pg_soFr","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1043
 "AZ08WWI9PU4l3pg_soFv","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1387
 "AZ08WWI9PU4l3pg_soFx","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2469
 "AZ08T2xTsbZkP7zZX_Gj","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",216
@@ -125,8 +125,8 @@ Key,Message,Component,Line
 "AZ0shtepHCNUh2gxqokx","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",84
 "AZ0shtepHCNUh2gxqoky","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",110
 "AZ0shtepHCNUh2gxqokz","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",115
-"AZ0shtepHCNUh2gxqok0","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",947
-"AZ0shtepHCNUh2gxqok1","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",947
+"AZ0shtepHCNUh2gxqok0","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",953
+"AZ0shtepHCNUh2gxqok1","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",953
 "AZ0q4DRAwLXvqUESGFMG","Refactor this function to reduce its Cognitive Complexity from 40 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",165
 "AZ0qQsaFwNvxBfmg7NNo","Simplify this regular expression to reduce its complexity from 29 to the 20 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",28
 "AZ0qQsaFwNvxBfmg7NNp","Replace the unused local variable ""sf"" with ""_"".","rocket-meals_rocket-meals:apps/geonexia/frontend/assets/objects/1_fix_viewbox.py",167
