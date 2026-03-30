@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import * as Clipboard from 'expo-clipboard';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
@@ -656,6 +656,8 @@ export default function ActivityDetailScreen() {
 	const { show: showShareModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const mapRef = useRef<MyMapHandle>(null);
+	const [mapKey, setMapKey] = useState(0);
+	const isFirstFocusRef = useRef(true);
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
@@ -674,6 +676,20 @@ export default function ActivityDetailScreen() {
 			}
 		};
 	}, []);
+
+	// Remount the map whenever the screen is re-focused so the auto-rotate
+	// initialization flow re-runs (the screen stays mounted in the navigator
+	// stack, so without this the map would not restart rotation on revisit).
+	useFocusEffect(
+		useCallback(() => {
+			if (isFirstFocusRef.current) {
+				isFirstFocusRef.current = false;
+				return;
+			}
+			setMapMounted(false);
+			setMapKey((k) => k + 1);
+		}, [])
+	);
 
 	useEffect(() => {
 		loadRoutes().then(setSavedRoutes).catch(() => setSavedRoutes([]));
@@ -1034,7 +1050,7 @@ export default function ActivityDetailScreen() {
 		>
 			{/* Map – 1:1 square at the top */}
 			<View style={styles.mapContainer}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} initialCenter={routeInitialCenter} initialPitch={45} />
+				<MyMap key={mapKey} ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} initialCenter={routeInitialCenter} initialPitch={45} />
 			</View>
 
 			{/* Stats list */}
