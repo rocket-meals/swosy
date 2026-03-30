@@ -150,7 +150,7 @@ export default function SettingsScreen() {
 						dispatch(setGpsIntervalMode(option.id));
 						closeGpsModal();
 					}}
-					iconBgColor={GPS_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 				/>
 			),
 		});
@@ -227,7 +227,7 @@ export default function SettingsScreen() {
 
 			<SettingsListGroupTitle title="GPS" />
 			<SettingsList
-				iconBgColor={GPS_COLOR}
+				iconBgColor={PRIMARY_COLOR}
 				leftIcon={<MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" />}
 				label="GPS Frequency"
 				value={gpsIntervalModeLabel(selectedGpsInterval)}
@@ -238,7 +238,7 @@ export default function SettingsScreen() {
 
 			<SettingsListGroupTitle title="Audio" />
 			<SettingsList
-				iconBgColor={TTS_COLOR}
+				iconBgColor={PRIMARY_COLOR}
 				leftIcon={<MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />}
 				label="Sprachansagen"
 				value={speechEnabled ? 'Aktiviert' : 'Deaktiviert'}
@@ -249,7 +249,7 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="Notifications" />
 				<SettingsListBoolean
-					iconBgColor={NOTIFICATION_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="notifications-outline" size={22} color="#ffffff" />}
 					label="Push Notifications"
 					isEnabled={notifications}
@@ -261,7 +261,7 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="Daten Verwaltung" />
 				<SettingsList
-					iconBgColor={DANGER_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialIcons name="delete-forever" size={22} color="#ffffff" />}
 					label="Alle Daten zurücksetzen"
 					value="Activities & Hex Tiles"
@@ -272,14 +272,14 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="About" />
 				<SettingsList
-					iconBgColor={NEUTRAL_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Feather name="info" size={22} color="#ffffff" />}
 					label="App Version"
 					value={appVersion}
 					groupPosition="top"
 				/>
 				<SettingsList
-					iconBgColor={NEUTRAL_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Feather name="code" size={22} color="#ffffff" />}
 					label="Open Source"
 					value="View licenses"

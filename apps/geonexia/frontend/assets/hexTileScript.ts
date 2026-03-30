@@ -618,7 +618,26 @@ export const HEX_TILE_SCRIPT = `
     var features = m.queryRenderedFeatures(e.point, { layers: [HEX_TILE_FILL_LAYER] });
     if (features && features.length > 0) {
       var props = features[0].properties || {};
-      sendToRN({ tag: 'HexTileClicked', h3Index: props.h3Index });
+      // Query all rendered features at the click point to collect underlying map info
+      var allRendered = m.queryRenderedFeatures(e.point);
+      var mapFeatures = [];
+      for (var fi = 0; fi < allRendered.length; fi++) {
+        var f = allRendered[fi];
+        var fp = f.properties || {};
+        if (fp.name || fp.highway || fp.waterway || fp.building || fp.natural || fp.landuse || fp.amenity) {
+          mapFeatures.push({
+            layerId: (f.layer && f.layer.id) || null,
+            name: fp.name || fp['name:de'] || null,
+            highway: fp.highway || null,
+            waterway: fp.waterway || null,
+            building: fp.building || null,
+            natural: fp.natural || null,
+            landuse: fp.landuse || null,
+            amenity: fp.amenity || null,
+          });
+        }
+      }
+      sendToRN({ tag: 'HexTileClicked', h3Index: props.h3Index, mapFeatures: mapFeatures });
       return true;
     }
     return false;

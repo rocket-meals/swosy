@@ -167,29 +167,11 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
-				name="settings/index"
-				options={{
-					title: 'Settings',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="settings-outline" size={size} color={color} />
-					),
-				}}
-			/>
-			<Drawer.Screen
 				name="feature-wishes/index"
 				options={{
 					title: 'Feature Wishes',
 					drawerIcon: ({ color, size }) => (
 						<Ionicons name="bulb-outline" size={size} color={color} />
-					),
-				}}
-			/>
-			<Drawer.Screen
-				name="billboard-config/index"
-				options={{
-					title: 'Billboard Config',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="build-outline" size={size} color={color} />
 					),
 				}}
 			/>
@@ -210,6 +192,15 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="billboard-config/index"
+				options={{
+					title: 'Billboard Config',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="build-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
 				name="experimental/index"
 				options={{
 					title: 'Experimental',
@@ -225,6 +216,15 @@ function ThemedDrawerNavigator() {
 					drawerItemStyle: { display: 'none' },
 				}}
 			/>
+			<Drawer.Screen
+				name="settings/index"
+				options={{
+					title: 'Settings',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="settings-outline" size={size} color={color} />
+					),
+				}}
+			/>
 		</Drawer>
 		</>
 	);
@@ -232,6 +232,7 @@ function ThemedDrawerNavigator() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
+	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 
 	const items: DrawerItem[] = [
 		{
@@ -259,22 +260,10 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('achievements/index'),
 		},
 		{
-			key: 'settings/index',
-			label: 'Settings',
-			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('settings/index'),
-		},
-		{
 			key: 'feature-wishes/index',
 			label: 'Feature Wishes',
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
-		},
-		{
-			key: 'billboard-config/index',
-			label: 'Billboard Config',
-			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('billboard-config/index'),
 		},
 		{
 			key: 'routes/index',
@@ -282,11 +271,25 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('routes/index'),
 		},
+		...(isDevMode ? [
+			{
+				key: 'billboard-config/index',
+				label: 'Billboard Config',
+				renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
+				onPress: () => props.navigation.navigate('billboard-config/index'),
+			},
+			{
+				key: 'experimental/index',
+				label: 'Experimental',
+				renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
+				onPress: () => props.navigation.navigate('experimental/index'),
+			},
+		] : []),
 		{
-			key: 'experimental/index',
-			label: 'Experimental',
-			renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('experimental/index'),
+			key: 'settings/index',
+			label: 'Settings',
+			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('settings/index'),
 		},
 	];
 

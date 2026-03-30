@@ -1737,7 +1737,18 @@ const hexPickerStyles = StyleSheet.create({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HexTileInfoContent({ h3Index }: { h3Index: string }) {
+type MapFeatureInfo = {
+	layerId: string | null;
+	name: string | null;
+	highway: string | null;
+	waterway: string | null;
+	building: string | null;
+	natural: string | null;
+	landuse: string | null;
+	amenity: string | null;
+};
+
+function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -1879,6 +1890,18 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				onPress={openBillboardSelection}
 				groupPosition="single"
 			/>
+
+			{/* ── Underlying map info ── */}
+			{mapFeatures && mapFeatures.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Karteninformationen" />
+					<View style={[styles.mapFeaturesContainer, { borderColor: theme.screen.text + '18' }]}>
+						<Text style={[styles.mapFeaturesJson, { color: theme.screen.text }]}>
+							{JSON.stringify(mapFeatures, null, 2)}
+						</Text>
+					</View>
+				</>
+			)}
 
 		</View>
 	);
@@ -2555,11 +2578,11 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexDebugPoints: val });
 	}, []);
 
-	const showHexTileModal = useCallback((h3Index: string) => {
+	const showHexTileModal = useCallback((h3Index: string, mapFeatures?: MapFeatureInfo[]) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
 			children: (
-				<HexTileInfoContent h3Index={h3Index} />
+				<HexTileInfoContent h3Index={h3Index} mapFeatures={mapFeatures} />
 			),
 		});
 	}, [showModal]);
@@ -2775,13 +2798,13 @@ export default function RecordScreen() {
 				refreshNormalTileDisplay(vp);
 			}
 		} else if (msg.tag === 'HexTileClicked') {
-			const clickedMsg = msg as { h3Index?: string };
+			const clickedMsg = msg as { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
 			if (clickedMsg.h3Index) {
 				if (coloringTileImageRef.current !== null) {
 					// Coloring mode active: directly apply the selected tile image.
 					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
 				} else {
-					showHexTileModal(clickedMsg.h3Index);
+					showHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
 				}
 			}
 		} else if (msg.tag === 'MapMeasurePoint') {
@@ -3380,7 +3403,7 @@ export default function RecordScreen() {
 					<SettingsListGroupTitle title="Run this route today" />
 					<SettingsListSelectOptionSingle
 						key="__none__"
-						label="No route (free run)"
+						label="Automatisch"
 						isSelected={selectedRoute === null}
 						selectionColor={PRIMARY_COLOR}
 						onPress={() => {
@@ -4269,5 +4292,17 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		flexShrink: 1,
 		textAlign: 'right',
+	},
+	mapFeaturesContainer: {
+		marginHorizontal: 16,
+		marginVertical: 4,
+		borderRadius: 8,
+		borderWidth: StyleSheet.hairlineWidth,
+		padding: 12,
+	},
+	mapFeaturesJson: {
+		fontSize: 12,
+		fontFamily: 'monospace',
+		lineHeight: 18,
 	},
 });
