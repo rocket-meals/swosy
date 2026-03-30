@@ -130,13 +130,14 @@ export function buildPeriodicAnnouncement(
 ): string {
 	const langCode = locale.split('-')[0].toLowerCase();
 	const parts: string[] = [];
+	const METERS_PER_KM = 1000;
 
 	if (content.announceDistance) {
 		const d = stats.distanceKm;
 		if (langCode === 'de') {
-			parts.push(d < 1 ? `${Math.round(d * 1000)} Meter` : `${d.toFixed(2)} Kilometer`);
+			parts.push(d < 1 ? `${Math.round(d * METERS_PER_KM)} Meter` : `${d.toFixed(2)} Kilometer`);
 		} else {
-			parts.push(d < 1 ? `${Math.round(d * 1000)} meters` : `${d.toFixed(2)} kilometers`);
+			parts.push(d < 1 ? `${Math.round(d * METERS_PER_KM)} meters` : `${d.toFixed(2)} kilometers`);
 		}
 	}
 

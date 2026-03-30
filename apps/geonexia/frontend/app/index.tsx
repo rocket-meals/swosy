@@ -3127,18 +3127,18 @@ export default function RecordScreen() {
 				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 				: accumulatedSecondsRef.current;
 			const points = routePointsRef.current;
-			let d = 0;
+			let totalDistanceKm = 0;
 			for (let i = 1; i < points.length; i++) {
-				d += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+				totalDistanceKm += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
 			}
-			const paceMinPerKm = d > 0 && elapsedSec > 0 ? elapsedSec / 60 / d : null;
+			const paceMinPerKm = totalDistanceKm > 0 && elapsedSec > 0 ? elapsedSec / 60 / totalDistanceKm : null;
 			const lastPt = points.length > 0 ? points[points.length - 1] : null;
 			const speedKmh = lastPt?.speed != null && lastPt.speed >= 0 ? lastPt.speed * 3.6 : null;
 
 			const locale = getLocales()[0]?.languageTag ?? 'en-US';
 			const langCode = locale.split('-')[0].toLowerCase();
 			const text = buildPeriodicAnnouncement(locale, {
-				distanceKm: d,
+				distanceKm: totalDistanceKm,
 				elapsedSeconds: elapsedSec,
 				paceMinPerKm,
 				speedKmh,
