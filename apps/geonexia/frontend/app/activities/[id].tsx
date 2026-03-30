@@ -702,7 +702,6 @@ export default function ActivityDetailScreen() {
 					}
 					showRouteModal({
 						title: '🗺️ Route zuordnen',
-						onClose: closeRouteModal,
 						children: (
 							<RouteAssignmentModalContent
 								activity={a}
