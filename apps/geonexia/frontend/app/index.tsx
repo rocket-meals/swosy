@@ -2291,6 +2291,28 @@ export default function RecordScreen() {
 		});
 	}, []);
 
+	/**
+	 * Rebuild and send the standard hex tile and walk path GeoJSON to the map
+	 * based on the current viewport. Used when restoring normal (non-route-preview)
+	 * display after a route is deselected and on viewport changes.
+	 */
+	const refreshNormalTileDisplay = useCallback((vp: { bounds: ViewportBounds; zoom: number }) => {
+		if (!mapRef.current) return;
+		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+		try {
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+		} catch {
+			// ignore
+		}
+		if (debugViewportRef.current) {
+			debugViewportRef.current.tileCount = geoJson.features.length;
+		}
+		const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
+		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
+		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+	}, []);
+
 	// Load persisted OSM consent on mount
 	useEffect(() => {
 		loadOsmConsent().then((consented) => {
@@ -2342,20 +2364,11 @@ export default function RecordScreen() {
 		} else if (!selectedRoute) {
 			// Route deselected: refresh normal tile and walk path display
 			const vp = debugViewportRef.current;
-			if (vp && mapRef.current) {
-				let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-				try {
-					geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
-				} catch {
-					// ignore
-				}
-				const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-				const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
-				mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
-				mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+			if (vp) {
+				refreshNormalTileDisplay(vp);
 			}
 		}
-	}, [selectedRoute]);
+	}, [selectedRoute, refreshNormalTileDisplay]);
 
 	// Pre-populate debug player position from last known location once consent is given
 	useEffect(() => {
@@ -2691,17 +2704,7 @@ export default function RecordScreen() {
 					console.warn('[RecordScreen] Route preview viewport update failed:', err);
 				}
 			} else {
-				let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-				try {
-					geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
-				} catch (err) {
-					console.warn('[RecordScreen] buildH3GeoJson failed:', err);
-				}
-				debugViewportRef.current.tileCount = geoJson.features.length;
-				const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-				const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
-				mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
-				mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+				refreshNormalTileDisplay(vp);
 			}
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string };
