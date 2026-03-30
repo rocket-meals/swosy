@@ -3332,7 +3332,7 @@ export default function RecordScreen() {
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
 		Speech.stop();
-		disableBackgroundAudio();
+		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;
