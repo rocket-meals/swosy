@@ -21,7 +21,6 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundar
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import type { RootState } from '../../store/store';
 
-const AUTO_ROTATE_TICK_MS = 100;
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
@@ -455,17 +454,14 @@ export default function ActivityDetailScreen() {
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
-	const autoRotateBearingRef = useRef(0);
-	const autoRotateActiveRef = useRef(false);
-	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 
-	// Clean up auto-rotate interval on unmount
+	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
 		return () => {
-			if (autoRotateIntervalRef.current !== null) {
-				clearInterval(autoRotateIntervalRef.current);
+			if (mapRef.current) {
+				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
 	}, []);
@@ -585,52 +581,34 @@ export default function ActivityDetailScreen() {
 			});
 		}
 
-		// Start slow auto-rotate after the fitBounds animation finishes.
-		// fitBounds sets pitch=45 and the correct zoom; starting the interval
-		// immediately would call easeTo within 100 ms and cancel that animation,
-		// locking in the wrong pitch/zoom. Waiting ~1200 ms lets fitBounds
-		// complete before we begin rotating.
-		// We only update bearing (no mapCenterPosition) so that zoom and pitch
-		// established by fitBounds are never overwritten by the interval ticks.
-		autoRotateBearingRef.current = 0;
-		autoRotateActiveRef.current = true;
-		if (autoRotateIntervalRef.current !== null) {
-			clearInterval(autoRotateIntervalRef.current);
-		}
+		// Start smooth auto-rotate after the fitBounds animation finishes.
+		// fitBounds sets pitch=45 and the correct zoom; starting auto-rotate
+		// immediately would interfere with that animation.
+		// We send a single message to the map HTML which runs a
+		// requestAnimationFrame loop for smooth, jitter-free rotation.
 		const FIT_BOUNDS_ANIMATION_DELAY_MS = 1200;
-		let startDelayTicks = Math.ceil(FIT_BOUNDS_ANIMATION_DELAY_MS / AUTO_ROTATE_TICK_MS);
-		autoRotateIntervalRef.current = setInterval(() => {
-			if (startDelayTicks > 0) { startDelayTicks -= 1; return; }
-			if (!autoRotateActiveRef.current || !mapRef.current) return;
-			const deltaDeg = AUTO_ROTATE_SPEED_DEG_PER_S * (AUTO_ROTATE_TICK_MS / 1000);
-			autoRotateBearingRef.current = (autoRotateBearingRef.current + deltaDeg) % 360;
-			mapRef.current.sendToMap({
-				bearing: autoRotateBearingRef.current,
-				easeAnimation: true,
-				easeDuration: AUTO_ROTATE_TICK_MS,
-			});
-		}, AUTO_ROTATE_TICK_MS);
+		const delayTimer = setTimeout(() => {
+			if (mapRef.current) {
+				mapRef.current.sendToMap({
+					autoRotate: true,
+					autoRotateSpeed: AUTO_ROTATE_SPEED_DEG_PER_S,
+				});
+			}
+		}, FIT_BOUNDS_ANIMATION_DELAY_MS);
 
 		return () => {
-			if (autoRotateIntervalRef.current !== null) {
-				clearInterval(autoRotateIntervalRef.current);
-				autoRotateIntervalRef.current = null;
+			clearTimeout(delayTimer);
+			if (mapRef.current) {
+				mapRef.current.sendToMap({ autoRotate: false });
 			}
-			autoRotateActiveRef.current = false;
 		};
 	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
-		} else if (msg.tag === 'MapInteracted') {
-			// Stop auto-rotate when user interacts with the map
-			autoRotateActiveRef.current = false;
-			if (autoRotateIntervalRef.current !== null) {
-				clearInterval(autoRotateIntervalRef.current);
-				autoRotateIntervalRef.current = null;
-			}
 		}
+		// Auto-rotate is stopped automatically on the map side when user interacts
 	}, []);
 
 	const handleFilterUnrealisticPoints = useCallback(() => {
