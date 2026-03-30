@@ -14,6 +14,13 @@ export type SavedRoute = {
 	createdAt: number;
 	/** Sport type associated with the route (optional). */
 	sportType?: SportType;
+	/**
+	 * Actual hex-to-hex transitions that occurred along the route, stored as
+	 * "cellA:cellB" strings where cellA is lexicographically smaller than cellB.
+	 * Used to draw walk path lines between hexagons on the route detail screen.
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	walkedEdges?: string[];
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

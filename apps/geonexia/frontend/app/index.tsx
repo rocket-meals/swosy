@@ -29,6 +29,7 @@ import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
+import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
@@ -2290,6 +2291,28 @@ export default function RecordScreen() {
 		});
 	}, []);
 
+	/**
+	 * Rebuild and send the standard hex tile and walk path GeoJSON to the map
+	 * based on the current viewport. Used when restoring normal (non-route-preview)
+	 * display after a route is deselected and on viewport changes.
+	 */
+	const refreshNormalTileDisplay = useCallback((vp: { bounds: ViewportBounds; zoom: number }) => {
+		if (!mapRef.current) return;
+		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+		try {
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+		} catch {
+			// ignore
+		}
+		if (debugViewportRef.current) {
+			debugViewportRef.current.tileCount = geoJson.features.length;
+		}
+		const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
+		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
+		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+	}, []);
+
 	// Load persisted OSM consent on mount
 	useEffect(() => {
 		loadOsmConsent().then((consented) => {
@@ -2306,6 +2329,46 @@ export default function RecordScreen() {
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
 	}, []);
+
+	// ── Route preview: when a route is selected before recording, show only the
+	// route's hex tiles and walk path on the map (hiding all other visited tiles).
+	// This gives the same view as the route detail screen (routes/[id]).
+	useEffect(() => {
+		if (!mapRef.current) return;
+		if (selectedRoute && !isRecordingRef.current) {
+			// Show route preview
+			try {
+				const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+					selectedRoute,
+					store.getState().hexTiles.records,
+				);
+				mapRef.current.sendToMap({ hexTileGeoJson });
+				mapRef.current.sendToMap({ hexWalkPathGeoJson });
+
+				// Fit the camera to the route extent
+				const bounds = computeHexBounds(selectedRoute.hexTiles);
+				if (bounds) {
+					const { minLat, maxLat, minLng, maxLng } = bounds;
+					const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+					const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+					mapRef.current.sendToMap({
+						fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+						fitBoundsPadding: 20,
+						pitch: 45,
+						bearing: 0,
+					});
+				}
+			} catch (err) {
+				console.warn('[RecordScreen] Route preview failed:', err);
+			}
+		} else if (!selectedRoute) {
+			// Route deselected: refresh normal tile and walk path display
+			const vp = debugViewportRef.current;
+			if (vp) {
+				refreshNormalTileDisplay(vp);
+			}
+		}
+	}, [selectedRoute, refreshNormalTileDisplay]);
 
 	// Pre-populate debug player position from last known location once consent is given
 	useEffect(() => {
@@ -2500,6 +2563,7 @@ export default function RecordScreen() {
 			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
 			createdAt: now,
 			sportType: selectedSportTypeRef.current,
+			walkedEdges: computeEdgesFromHexTiles(routeCells),
 		};
 		try {
 			saveRoute(route);
@@ -2623,17 +2687,25 @@ export default function RecordScreen() {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
-			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
-			} catch (err) {
-				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
+			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: 0 };
+
+			// When a route is selected (pre-recording), show only the route's tiles
+			// and walk path instead of the full global tile set.
+			if (selectedRouteRef.current && !isRecordingRef.current) {
+				try {
+					const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+						selectedRouteRef.current,
+						store.getState().hexTiles.records,
+					);
+					debugViewportRef.current.tileCount = hexTileGeoJson.features.length;
+					mapRef.current?.sendToMap({ hexTileGeoJson });
+					mapRef.current?.sendToMap({ hexWalkPathGeoJson });
+				} catch (err) {
+					console.warn('[RecordScreen] Route preview viewport update failed:', err);
+				}
+			} else {
+				refreshNormalTileDisplay(vp);
 			}
-			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
-			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
-			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
-			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		} else if (msg.tag === 'HexTileClicked') {
 			const clickedMsg = msg as { h3Index?: string };
 			if (clickedMsg.h3Index) {
