@@ -27,7 +27,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
-import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { RoutePoint, RunStats, SavedActivity, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
@@ -74,6 +74,16 @@ const PRIMARY_COLOR = '#2563eb';
 const STATUS_SUCCESS_COLOR = '#22c55e';
 const STATUS_WARNING_COLOR = '#f59e0b';
 const STATUS_ERROR_COLOR = '#ef4444';
+
+// ─── Measure mode constants ───────────────────────────────────────────────────
+
+// Speed range for synthetic activity points generated from a measure route.
+// Slightly randomised jogging pace: base ± variation km/h.
+const MEASURE_SPEED_BASE_KMH = 10;
+const MEASURE_SPEED_VARIATION_KMH = 2;
+// Coordinate noise (degrees) applied to each synthetic GPS point to make the
+// route look organic.  ~0.00003° ≈ 3 m at the equator.
+const MEASURE_COORD_NOISE_DEG = 0.00003;
 
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
@@ -632,6 +642,74 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 	}
 
 	return enclosed;
+}
+
+/**
+ * Build an ordered list of H3 cells that the measure route passes through.
+ * For each consecutive pair of waypoints, uses gridPathCells to find the
+ * direct hex path. Only outer border cells are included (no filled interior).
+ */
+function computeOrderedMeasureRouteCells(
+	waypoints: Array<{ lat: number; lng: number }>,
+	resolution: number,
+): string[] {
+	if (waypoints.length < 2 || !isH3Available()) return [];
+	const res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+	const result: string[] = [];
+	const seen = new Set<string>();
+	for (let i = 1; i < waypoints.length; i++) {
+		const cellA = latLngToCell(waypoints[i - 1].lat, waypoints[i - 1].lng, res);
+		const cellB = latLngToCell(waypoints[i].lat, waypoints[i].lng, res);
+		if (!cellA || !cellB) continue;
+		try {
+			const path = gridPathCells(cellA, cellB);
+			for (const c of path) {
+				if (!seen.has(c)) {
+					seen.add(c);
+					result.push(c);
+				}
+			}
+		} catch {
+			// skip segment if gridPathCells throws (e.g. cells on different icosahedron faces)
+		}
+	}
+	return result;
+}
+
+/**
+ * Generate synthetic RoutePoints along the centers of the given ordered hex cells,
+ * using slightly randomised speeds for a realistic-looking activity.
+ */
+function generateMeasureRoutePoints(
+	orderedCells: string[],
+	speedBaseKmh: number,
+	speedVariationKmh: number,
+	startTimestamp: number,
+): RoutePoint[] {
+	if (orderedCells.length === 0) return [];
+	const points: RoutePoint[] = [];
+	let currentTime = startTimestamp;
+	for (let i = 0; i < orderedCells.length; i++) {
+		const [cellLat, cellLng] = cellToLatLng(orderedCells[i]);
+		// Add slight coordinate noise to make the synthetic route look organic.
+		const noisyLat = cellLat + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const noisyLng = cellLng + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const speedKmh = Math.max(1, speedBaseKmh + (Math.random() - 0.5) * speedVariationKmh);
+		points.push({
+			lat: noisyLat,
+			lng: noisyLng,
+			altitude: null,
+			speed: speedKmh / 3.6, // m/s
+			timestamp: currentTime,
+		});
+		if (i < orderedCells.length - 1) {
+			const [nextLat, nextLng] = cellToLatLng(orderedCells[i + 1]);
+			const distKm = haversineKm(cellLat, cellLng, nextLat, nextLng);
+			const timeSeconds = (distKm / speedKmh) * 3600;
+			currentTime += Math.round(timeSeconds * 1000);
+		}
+	}
+	return points;
 }
 
 function computeStats(points: RoutePoint[]): RunStats {
@@ -1279,6 +1357,62 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 	);
 }
 
+// ─── Measure Result Content ────────────────────────────────────────────────────
+
+type MeasureResultContentProps = {
+	routeLengthInTiles: number;
+	enclosedTileCount: number;
+	routeCells: string[];
+	h3Resolution: number;
+	theme: ReturnType<typeof useTheme>['theme'];
+	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
+	onClose: () => void;
+};
+
+function MeasureResultContent({
+	routeLengthInTiles,
+	enclosedTileCount,
+	routeCells,
+	h3Resolution,
+	theme,
+	onSaveAsActivity,
+	onClose,
+}: MeasureResultContentProps) {
+	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
+		{ iconName: 'straighten', label: 'Route Length (hex tiles)', value: String(routeLengthInTiles) },
+		{ iconName: 'grid-on', label: 'Enclosed Tiles', value: String(enclosedTileCount) },
+		{ iconName: 'grain', label: 'H3 Resolution', value: String(Math.floor(h3Resolution)) },
+	];
+	return (
+		<>
+			{rows.map((row, index) => (
+				<View
+					key={row.label}
+					style={[
+						styles.statsRow,
+						{ borderBottomColor: theme.screen.text + '22' },
+						index === rows.length - 1 && styles.statsRowLast,
+					]}
+				>
+					<MaterialIcons name={row.iconName} size={20} color={theme.screen.icon} style={styles.statsRowIcon} />
+					<Text style={[styles.statsRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
+				</View>
+			))}
+			{routeCells.length >= 2 && (
+				<TouchableOpacity
+					style={[styles.shareButton, { backgroundColor: '#43a047', marginTop: 12 }]}
+					onPress={() => { onSaveAsActivity(routeCells, enclosedTileCount); onClose(); }}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="save-alt" size={18} color="#ffffff" />
+					<Text style={styles.shareButtonText}>Save as Activity</Text>
+				</TouchableOpacity>
+			)}
+		</>
+	);
+}
+
 // ─── Hex Tile Info Content ─────────────────────────────────────────────────────
 
 function formatTimestamp(ts: number | null): string {
@@ -1621,6 +1755,11 @@ export default function RecordScreen() {
 	const [elapsedSeconds, setElapsedSeconds] = useState(0);
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
+
+	// Measure mode (debug only): collect waypoints by tapping the map
+	const [isMeasureMode, setIsMeasureMode] = useState(false);
+	const isMeasureModeRef = useRef(false);
+	const measureWaypointsRef = useRef<Array<{ lat: number; lng: number }>>([]);
 
 	// TTS: track the last whole-km milestone announced to avoid repeating.
 	// Reset to 0 when recording starts.
@@ -2160,6 +2299,105 @@ export default function RecordScreen() {
 		});
 	}, [showModal]);
 
+	// ── Measure mode (debug only) ───────────────────────────────────────────────
+
+	const startMeasureMode = useCallback(() => {
+		isMeasureModeRef.current = true;
+		setIsMeasureMode(true);
+		measureWaypointsRef.current = [];
+		mapRef.current?.sendToMap({ measureMode: true });
+		mapRef.current?.sendToMap({ measureRouteCoords: [] });
+		mapRef.current?.sendToMap({ measurePoints: [] });
+	}, []);
+
+	const cancelMeasureMode = useCallback(() => {
+		isMeasureModeRef.current = false;
+		setIsMeasureMode(false);
+		measureWaypointsRef.current = [];
+		mapRef.current?.sendToMap({ measureMode: false });
+	}, []);
+
+	const undoMeasurePoint = useCallback(() => {
+		const prev = measureWaypointsRef.current.slice(0, -1);
+		measureWaypointsRef.current = prev;
+		const coords = prev.map((w) => [w.lng, w.lat]);
+		mapRef.current?.sendToMap({ measureRouteCoords: coords });
+		mapRef.current?.sendToMap({ measurePoints: coords });
+	}, []);
+
+	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCount: number) => {
+		if (routeCells.length < 2) return;
+		const startTimestamp = Date.now();
+		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (Math.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
+		const routePoints = generateMeasureRoutePoints(routeCells, speedBaseKmh, MEASURE_SPEED_VARIATION_KMH, startTimestamp);
+		if (routePoints.length < 2) return;
+		const stats = computeStats(routePoints);
+		const endedAt = routePoints[routePoints.length - 1].timestamp;
+		const activity: SavedActivity = {
+			id: String(startTimestamp),
+			startedAt: startTimestamp,
+			endedAt,
+			routePoints,
+			stats,
+			sportType: selectedSportTypeRef.current,
+			visitedTileCount: routeCells.length,
+			enclosedTileCount: enclosedCount,
+		};
+		try {
+			saveActivity(activity);
+			Alert.alert(
+				'Activity Saved',
+				`Route saved: ${routeCells.length} hex tiles, ${enclosedCount} enclosed.`,
+			);
+		} catch {
+			Alert.alert('Error', 'Failed to save activity.');
+		}
+	}, []);
+
+	const finishMeasurement = useCallback(() => {
+		const waypoints = measureWaypointsRef.current;
+		if (waypoints.length < 2) {
+			Alert.alert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
+			return;
+		}
+
+		const routeCells = computeOrderedMeasureRouteCells(waypoints, h3ResolutionRef.current);
+		const routeLengthInTiles = routeCells.length;
+
+		// Compute enclosed tiles: use waypoints as the route polygon
+		const routeAsPoints: RoutePoint[] = waypoints.map((w, i) => ({
+			lat: w.lat, lng: w.lng, altitude: null, speed: null, timestamp: Date.now() + i * 1000,
+		}));
+		let enclosedTileCount = 0;
+		try {
+			const allEnclosed = findEnclosedCells(routeAsPoints, h3ResolutionRef.current);
+			// Exclude cells that are part of the route itself
+			const routeCellSet = new Set(routeCells);
+			enclosedTileCount = allEnclosed.filter((c) => !routeCellSet.has(c)).length;
+		} catch {
+			// ignore
+		}
+
+		// Exit measure mode and clear overlay
+		cancelMeasureMode();
+
+		showModal({
+			title: '📏 Measure Results',
+			onClose: closeModal,
+			children: (
+				<MeasureResultContent
+					routeLengthInTiles={routeLengthInTiles}
+					enclosedTileCount={enclosedTileCount}
+					routeCells={routeCells}
+					h3Resolution={h3ResolutionRef.current}
+					theme={theme}
+					onSaveAsActivity={handleSaveMeasureAsActivity}
+					onClose={closeModal}
+				/>
+			),
+		});
+	}, [showModal, closeModal, theme, cancelMeasureMode, handleSaveMeasureAsActivity]);
+
 	const openColoringModal = useCallback(() => {
 		coloringSelectionMadeRef.current = false;
 		showColoringModal({
@@ -2244,6 +2482,15 @@ export default function RecordScreen() {
 				} else {
 					showHexTileModal(clickedMsg.h3Index);
 				}
+			}
+		} else if (msg.tag === 'MapMeasurePoint') {
+			const ptMsg = msg as { lat: number; lng: number };
+			if (isMeasureModeRef.current) {
+				const newWaypoints = [...measureWaypointsRef.current, { lat: ptMsg.lat, lng: ptMsg.lng }];
+				measureWaypointsRef.current = newWaypoints;
+				const coords = newWaypoints.map((w) => [w.lng, w.lat]);
+				mapRef.current?.sendToMap({ measureRouteCoords: coords });
+				mapRef.current?.sendToMap({ measurePoints: coords });
 			}
 		}
 	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations, dispatch]);
@@ -2588,6 +2835,15 @@ export default function RecordScreen() {
 		const expoGo = isRunningInExpoGo();
 		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
 		console.log('[RecordScreen] startRecording called. isRunningInExpoGo:', expoGo);
+
+		// Cancel measure mode before starting a recording
+		if (isMeasureModeRef.current) {
+			isMeasureModeRef.current = false;
+			setIsMeasureMode(false);
+			measureWaypointsRef.current = [];
+			mapRef.current?.sendToMap({ measureMode: false });
+		}
+
 		try {
 			console.log('[RecordScreen] Requesting foreground location permission...');
 			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
@@ -2801,13 +3057,15 @@ export default function RecordScreen() {
 		}
 
 		// Save activity to persistent storage
-		const activity = {
+		const activity: SavedActivity = {
 			id: String(startTimeRef.current),
 			startedAt: startTimeRef.current,
 			endedAt,
 			routePoints: points,
 			stats,
 			sportType: selectedSportType,
+			visitedTileCount: visitedHexIdsRef.current.size,
+			enclosedTileCount: enclosedCells.length,
 		};
 		try {
 			saveActivity(activity);
@@ -2930,7 +3188,7 @@ export default function RecordScreen() {
 						}}
 					/>
 					<View style={styles.buttonSpacer} />
-					{isDebugMode && (
+					{isDebugMode && !isRecording && (
 						<>
 							<TouchableOpacity
 								style={[
@@ -2943,9 +3201,20 @@ export default function RecordScreen() {
 								<MaterialIcons name="format-paint" size={20} color={coloringTileImage !== null ? '#ffffff' : '#555555'} />
 							</TouchableOpacity>
 							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									isMeasureMode && { backgroundColor: '#f97316' },
+								]}
+								onPress={isMeasureMode ? cancelMeasureMode : startMeasureMode}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="straighten" size={20} color={isMeasureMode ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
 						</>
 					)}
-					{isDebugMode && (
+					{isDebugMode && !isRecording && !isMeasureMode && (
 						<TouchableOpacity
 							style={styles.debugButton}
 							onPress={showDebugModal}
@@ -2953,6 +3222,25 @@ export default function RecordScreen() {
 						>
 							<MaterialIcons name="bug-report" size={20} color="#555555" />
 						</TouchableOpacity>
+					)}
+					{isDebugMode && isMeasureMode && (
+						<>
+							<TouchableOpacity
+								style={[styles.debugButton, { backgroundColor: '#43a047' }]}
+								onPress={finishMeasurement}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="check" size={20} color="#ffffff" />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={styles.debugButton}
+								onPress={undoMeasurePoint}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="undo" size={20} color="#555555" />
+							</TouchableOpacity>
+						</>
 					)}
 				</View>
 

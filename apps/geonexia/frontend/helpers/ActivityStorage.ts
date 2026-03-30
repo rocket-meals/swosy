@@ -34,6 +34,10 @@ export type SavedActivity = {
 	stats: RunStats;
 	/** Sport type recorded for this activity. Optional for backward-compat with older saves. */
 	sportType?: SportType;
+	/** Number of hex tiles visited (walked on) during the activity. Optional for backward-compat. */
+	visitedTileCount?: number;
+	/** Number of hex tiles enclosed by the activity route. Optional for backward-compat. */
+	enclosedTileCount?: number;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

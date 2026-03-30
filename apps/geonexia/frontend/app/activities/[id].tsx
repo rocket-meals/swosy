@@ -619,6 +619,12 @@ export default function ActivityDetailScreen() {
 		{ icon: 'trending-down', label: 'Elevation Loss', value: `${Math.round(stats.elevationLossM)} m` },
 		{ icon: 'water-drop', label: 'Fluid Needs', value: `${stats.fluidNeedsMl} ml` },
 		{ icon: 'place', label: 'GPS Points', value: String(activity.routePoints.length) },
+		...(activity.visitedTileCount != null
+			? [{ icon: 'grid-on' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Tiles Walked', value: String(activity.visitedTileCount) }]
+			: []),
+		...(activity.enclosedTileCount != null
+			? [{ icon: 'format-shapes' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Tiles Enclosed', value: String(activity.enclosedTileCount) }]
+			: []),
 	];
 
 	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at

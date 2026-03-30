@@ -55,6 +55,13 @@ export const HEX_TILE_SCRIPT = `
   var HEX_CENTERS_LAYER = 'hex-centers-layer';
   var HEX_MIDPOINTS_SOURCE = 'hex-midpoints-source';
   var HEX_MIDPOINTS_LAYER = 'hex-midpoints-layer';
+  // Measure mode: draw tapped waypoints and the connecting polyline
+  var MEASURE_ROUTE_SOURCE = 'measure-route-source';
+  var MEASURE_ROUTE_LAYER = 'measure-route-layer';
+  var MEASURE_POINTS_SOURCE = 'measure-points-source';
+  var MEASURE_POINTS_LAYER = 'measure-points-layer';
+  var MEASURE_ROUTE_COLOR = '#f97316'; // orange
+  var measureModeActive = false;
   // Colours assigned to midpoints between the hex centre and each corner vertex,
   // cycling through: red, orange, yellow, blue, white, black.
   var MIDPOINT_COLORS = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#ffffff', '#000000'];
@@ -197,6 +204,62 @@ export const HEX_TILE_SCRIPT = `
       }
     }
     return { type: 'FeatureCollection', features: points };
+  }
+
+  // ── Measure route layer ───────────────────────────────────────────────────
+  // Draws the tapped waypoints (circles) and connecting polyline for measure mode.
+  function updateMeasureRouteLayer(coords) {
+    if (!map) return;
+    var fc = {
+      type: 'FeatureCollection',
+      features: coords && coords.length >= 2 ? [{
+        type: 'Feature',
+        geometry: { type: 'LineString', coordinates: coords },
+        properties: {}
+      }] : []
+    };
+    if (map.getSource(MEASURE_ROUTE_SOURCE)) {
+      map.getSource(MEASURE_ROUTE_SOURCE).setData(fc);
+    } else {
+      map.addSource(MEASURE_ROUTE_SOURCE, { type: 'geojson', data: fc });
+      map.addLayer({
+        id: MEASURE_ROUTE_LAYER,
+        type: 'line',
+        source: MEASURE_ROUTE_SOURCE,
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': MEASURE_ROUTE_COLOR,
+          'line-width': 3,
+          'line-dasharray': [2, 1],
+          'line-opacity': 0.9,
+        }
+      });
+    }
+  }
+
+  function updateMeasurePointsLayer(points) {
+    if (!map) return;
+    var features = (points || []).map(function(p) {
+      return { type: 'Feature', geometry: { type: 'Point', coordinates: p }, properties: {} };
+    });
+    var fc = { type: 'FeatureCollection', features: features };
+    if (map.getSource(MEASURE_POINTS_SOURCE)) {
+      map.getSource(MEASURE_POINTS_SOURCE).setData(fc);
+    } else {
+      map.addSource(MEASURE_POINTS_SOURCE, { type: 'geojson', data: fc });
+      map.addLayer({
+        id: MEASURE_POINTS_LAYER,
+        type: 'circle',
+        source: MEASURE_POINTS_SOURCE,
+        paint: {
+          'circle-radius': 6,
+          'circle-color': MEASURE_ROUTE_COLOR,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff',
+          'circle-opacity': 1,
+        }
+      });
+    }
   }
 
   // ── Notify React Native about the current viewport ────────────────────────
@@ -440,9 +503,27 @@ export const HEX_TILE_SCRIPT = `
         }
       }
     }
+    if (data.measureMode !== undefined) {
+      measureModeActive = data.measureMode;
+      if (!measureModeActive) {
+        updateMeasureRouteLayer([]);
+        updateMeasurePointsLayer([]);
+      }
+    }
+    if (data.measureRouteCoords !== undefined) {
+      updateMeasureRouteLayer(data.measureRouteCoords);
+    }
+    if (data.measurePoints !== undefined) {
+      updateMeasurePointsLayer(data.measurePoints);
+    }
   };
 
   window._mapExtensions.onMapClick = function (e, m) {
+    // Measure mode: capture tap coordinates and send back to React Native
+    if (measureModeActive) {
+      sendToRN({ tag: 'MapMeasurePoint', lat: e.lngLat.lat, lng: e.lngLat.lng });
+      return true;
+    }
     if (!hexTileActive || !m.getSource(HEX_TILE_SOURCE)) return false;
     var features = m.queryRenderedFeatures(e.point, { layers: [HEX_TILE_FILL_LAYER] });
     if (features && features.length > 0) {
