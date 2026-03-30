@@ -550,6 +550,16 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ announceHeartRate: !settings.announceHeartRate })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="cellphone-arrow-down" size={22} color="#ffffff" />}
+				label="App im Hintergrund"
+				isEnabled={settings.announceAppInBackground}
+				onToggle={() => update({ announceAppInBackground: !settings.announceAppInBackground })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
 				groupPosition="bottom"
 			/>
 		</ScrollView>

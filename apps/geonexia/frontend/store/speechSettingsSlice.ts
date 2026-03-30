@@ -41,6 +41,8 @@ export type SpeechSettingsState = {
 	announceSpeed: boolean;
 	announceCalories: boolean;
 	announceHeartRate: boolean;
+	/** Announce when the app moves to the background during a recording */
+	announceAppInBackground: boolean;
 };
 
 export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
@@ -66,6 +68,7 @@ export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	announceSpeed: false,
 	announceCalories: false,
 	announceHeartRate: false,
+	announceAppInBackground: true,
 };
 
 const initialState: SpeechSettingsState = { ...SPEECH_SETTINGS_DEFAULTS };
