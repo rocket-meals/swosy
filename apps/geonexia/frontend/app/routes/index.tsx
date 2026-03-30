@@ -10,6 +10,7 @@ import {
 	useTheme,
 } from 'repo-depkit-common-ui';
 import { SavedRoute, loadRoutes, deleteRoute, deleteAllRoutes, saveRoute } from '../../helpers/RouteStorage';
+import { computeRouteLengthKm, formatDistanceKm } from '../../helpers/H3Helper';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -47,10 +48,19 @@ export default function RoutesScreen() {
 
 	const handleSelectRoute = useCallback(
 		(route: SavedRoute) => {
+			const distanceKm = computeRouteLengthKm(route.hexTiles);
 			showModal({
 				title: route.name,
 				children: (
 					<View>
+						<SettingsListGroupTitle title="Distanz" />
+						<SettingsList
+							leftIcon={<MaterialIcons name="social-distance" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title="Streckenlänge"
+							value={formatDistanceKm(distanceKm)}
+							groupPosition="single"
+						/>
 						<SettingsListGroupTitle title="Name anpassen" />
 						<SettingsListTextInput
 							title="Route umbenennen"
@@ -118,7 +128,9 @@ export default function RoutesScreen() {
 				const date = new Date(route.createdAt);
 				const dateStr = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 				const tileCount = route.hexTiles.length;
-				const metaStr = `${dateStr} · ${tileCount} tile${tileCount !== 1 ? 's' : ''} · Res ${route.h3Resolution}${route.sportType ? ` · ${route.sportType}` : ''}`;
+				const distanceKm = computeRouteLengthKm(route.hexTiles);
+				const distStr = distanceKm > 0 ? ` · ${formatDistanceKm(distanceKm)}` : '';
+				const metaStr = `${dateStr} · ${tileCount} tile${tileCount !== 1 ? 's' : ''}${distStr} · Res ${route.h3Resolution}${route.sportType ? ` · ${route.sportType}` : ''}`;
 				const groupPosition =
 					routes.length === 1 ? 'single' : idx === 0 ? 'top' : idx === routes.length - 1 ? 'bottom' : 'middle';
 				return (
