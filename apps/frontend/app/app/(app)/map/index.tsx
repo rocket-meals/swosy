@@ -1167,7 +1167,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		if (autoRotateSpeed === 0) {
 			sendToMapRef.current({ autoRotate: false });
 		} else {
-			sendToMapRef.current({ autoRotate: true, autoRotateSpeed: autoRotateSpeed });
+			sendToMapRef.current({ autoRotate: true, autoRotateSpeed });
 		}
 	}, [autoRotateSpeed, autoRotateMode, gameMode]);
 

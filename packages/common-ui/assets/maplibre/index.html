@@ -5187,6 +5187,8 @@
       // ─────────────────────────────────────────────────────────────────────────────
 
       // ─── Auto-Rotate (requestAnimationFrame-based) ─────────────────────────────
+      var AUTO_ROTATE_DEFAULT_SPEED = 5;     // degrees per second
+      var AUTO_ROTATE_MAX_DELTA_SEC = 0.1;   // clamp frame delta to avoid jumps after tab-switch
       var autoRotateState = { active: false, speed: 0, lastTime: null, rafId: null };
 
       function autoRotateFrame(time) {
@@ -5197,7 +5199,7 @@
         if (autoRotateState.lastTime !== null) {
           var deltaSec = (time - autoRotateState.lastTime) / 1000;
           // Clamp delta to avoid large jumps after tab-switch / background
-          if (deltaSec > 0.1) deltaSec = 0.1;
+          if (deltaSec > AUTO_ROTATE_MAX_DELTA_SEC) deltaSec = AUTO_ROTATE_MAX_DELTA_SEC;
           var newBearing = map.getBearing() + autoRotateState.speed * deltaSec;
           map.setBearing(newBearing);
         }
@@ -5234,7 +5236,7 @@
         // Auto-rotate control messages
         if (data.autoRotate !== undefined) {
           if (data.autoRotate) {
-            var speed = data.autoRotateSpeed != null ? data.autoRotateSpeed : 5;
+            var speed = data.autoRotateSpeed != null ? data.autoRotateSpeed : AUTO_ROTATE_DEFAULT_SPEED;
             startAutoRotate(speed);
           } else {
             stopAutoRotate(false);
