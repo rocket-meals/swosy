@@ -1,6 +1,6 @@
 Key,Message,Component,Line
-"AZ0_muQpsbZkP7zZ--hB","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",81
-"AZ09r1kMBqdBuPqsrvbu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",676
+"AZ0_-1Ghip1ffNXdD4x7","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteDisplayHelper.ts",110
+"AZ09r1kMBqdBuPqsrvbu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",677
 "AZ068wPbEBPEFGyzbdb9","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",103
 "AZ068wPbEBPEFGyzbdb-","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",104
 "AZ068wPbEBPEFGyzbdb_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",142
@@ -16,18 +16,18 @@ Key,Message,Component,Line
 "AZ04DN1nkGZROQtB6BRq","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",494
 "AZ04DNy7kGZROQtB6BRm","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SettingsListBillboard/index.tsx",65
 "AZ04DN0okGZROQtB6BRn","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SettingsListHexTile/index.tsx",76
-"AZ0vS9ssBGG9nGF3KGsl","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",49
+"AZ0vS9ssBGG9nGF3KGsl","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",50
 "AZ0qG3id3nNYjoSCoz3t","React Hook ""usePlatformHelper"" is called in function ""getIsLandScape"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/DeviceHelper.ts",115
 "AZ0qG3id3nNYjoSCoz3u","React Hook ""usePlatformHelper"" is called in function ""getDeviceInformationWithoutPushToken"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/DeviceHelper.ts",144
 "AZ0qG3lu3nNYjoSCoz3w","React Hook ""usePlatformHelper"" cannot be called in a class component. React Hooks must be called in a React function component or a custom React Hook function.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",75
 "AZ0qG3fH3nNYjoSCoz3s","React Hook ""usePlatformHelper"" cannot be called at the top level. React Hooks must be called in a React function component or a custom React Hook function.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",6
 "AZ0qG3ld3nNYjoSCoz3v","React Hook ""usePlatformHelper"" is called in function ""handleNativeLogin"" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word ""use"".","rocket-meals_rocket-meals:apps/frontend/app/helper/authHelper.ts",38
-"AZ0l8P0X4f4TF5V4_eK6","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1967
+"AZ0l8P0X4f4TF5V4_eK6","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1968
 "AZ0kFsZATj4M-vqty-rP","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/statistics/index.tsx",44
-"AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",924
-"AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",925
-"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",812
-"AZ0eWxL7RvqNgnlDLcVp","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",166
+"AZ0f20341Vggm5n3IPhD","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",925
+"AZ0f20341Vggm5n3IPhE","Prefer `Number.isNaN` over `isNaN`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",926
+"AZ0eWxOWRvqNgnlDLcVz","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",813
+"AZ0eWxL7RvqNgnlDLcVp","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",167
 "AZ0eWxNyRvqNgnlDLcVu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",53
 "AZ0cP4wTSUO5CDbnER0T","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",242
 "AZ0cP4wTSUO5CDbnER0U","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/h3/h3core.js",243
