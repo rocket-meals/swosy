@@ -54,6 +54,16 @@ export type SavedActivity = {
 	 * - `string`: the ID of the assigned `SavedRoute`.
 	 */
 	routeId?: string | null;
+	/**
+	 * Device battery level at the start of the activity (0–1, where 1 = 100%).
+	 * Optional for backward-compat with older saves.
+	 */
+	batteryLevelStart?: number | null;
+	/**
+	 * Device battery level at the end of the activity (0–1, where 1 = 100%).
+	 * Optional for backward-compat with older saves.
+	 */
+	batteryLevelEnd?: number | null;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

@@ -13,6 +13,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import * as Battery from 'expo-battery';
 import * as Clipboard from 'expo-clipboard';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
@@ -2203,6 +2204,7 @@ export default function RecordScreen() {
 
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const startTimeRef = useRef<number>(0);
+	const batteryLevelStartRef = useRef<number | null>(null);
 	const routePointsRef = useRef<RoutePoint[]>([]);
 	// Foreground-only fallback subscription (used when background permission is denied)
 	const fgSubRef = useRef<Location.LocationSubscription | null>(null);
@@ -2990,6 +2992,12 @@ export default function RecordScreen() {
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
+			batteryLevelStartRef.current = null;
+			try {
+				batteryLevelStartRef.current = await Battery.getBatteryLevelAsync();
+			} catch {
+				// Battery API not available on this platform/device; ignore.
+			}
 			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
@@ -3242,6 +3250,12 @@ export default function RecordScreen() {
 		// Save activity to persistent storage (including ordered hex tiles for route matching)
 		const activityH3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
 		const hexTilesOrdered = orderedHexTilesRef.current.slice();
+		let batteryLevelEnd: number | null = null;
+		try {
+			batteryLevelEnd = await Battery.getBatteryLevelAsync();
+		} catch {
+			// Battery API not available on this platform/device; ignore.
+		}
 		const activity: SavedActivity = {
 			id: String(startTimeRef.current),
 			startedAt: startTimeRef.current,
@@ -3254,6 +3268,8 @@ export default function RecordScreen() {
 			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered,
 			routeId: selectedRouteRef.current?.id ?? undefined,
+			batteryLevelStart: batteryLevelStartRef.current,
+			batteryLevelEnd,
 		};
 		try {
 			saveActivity(activity);
