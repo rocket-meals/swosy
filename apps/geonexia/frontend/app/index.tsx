@@ -26,7 +26,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
@@ -670,22 +670,6 @@ function computeOrderedMeasureRouteCells(
 		}
 	}
 	return result;
-}
-
-/** Sum haversine distances between consecutive cell centers to get total route length. */
-function computeRouteLengthKm(orderedCells: string[]): number {
-	if (orderedCells.length < 2 || !isH3Available()) return 0;
-	let totalKm = 0;
-	for (let i = 1; i < orderedCells.length; i++) {
-		try {
-			const [aLat, aLng] = cellToLatLng(orderedCells[i - 1]);
-			const [bLat, bLng] = cellToLatLng(orderedCells[i]);
-			totalKm += haversineKm(aLat, aLng, bLat, bLng);
-		} catch {
-			// skip invalid cells
-		}
-	}
-	return totalKm;
 }
 
 function formatEstimatedDuration(totalMinutes: number): string {
@@ -1441,6 +1425,18 @@ function MeasureResultContent({
 					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
+			{routeLengthKm > 0 && (
+				<>
+					<SettingsListGroupTitle title="Distanz" />
+					<SettingsList
+						leftIcon={<MaterialIcons name="social-distance" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Streckenlänge"
+						value={formatDistanceKm(routeLengthKm)}
+						groupPosition="single"
+					/>
+				</>
+			)}
 			{savedActivities.length > 0 && (
 				<>
 					<SettingsListGroupTitle title="Geschätzte Dauer" />
