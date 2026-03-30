@@ -57,8 +57,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:159
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L159
+  apps/geonexia/frontend/app/activities/[id].tsx:163
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L163
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/activities/index.tsx:53
@@ -89,20 +89,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L48
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:1697
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1697
+  apps/geonexia/frontend/app/index.tsx:1692
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1692
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:834
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L834
+  apps/geonexia/frontend/app/index.tsx:829
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L829
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:835
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L835
+  apps/geonexia/frontend/app/index.tsx:830
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L830
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:722
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L722
+  apps/geonexia/frontend/app/index.tsx:717
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L717
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/statistics/index.tsx:44
