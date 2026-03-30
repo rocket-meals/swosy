@@ -23,6 +23,7 @@ import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
+import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState } from '../../store/store';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
@@ -392,13 +393,15 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 	const createAndAssign = useCallback((name: string) => {
 		const trimmed = name.trim();
 		if (!trimmed) return;
+		const h3Res = activity.h3Resolution ?? 10;
 		const newRoute: SavedRoute = {
 			id: String(Date.now()),
 			name: trimmed,
 			hexTiles: activity.hexTilesOrdered ?? [],
-			h3Resolution: activity.h3Resolution ?? 10,
+			h3Resolution: h3Res,
 			createdAt: Date.now(),
 			sportType: activity.sportType,
+			walkedEdges: computeEdgesFromRoutePoints(activity.routePoints, h3Res),
 		};
 		try {
 			saveRoute(newRoute);

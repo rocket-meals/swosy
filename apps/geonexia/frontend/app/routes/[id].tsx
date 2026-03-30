@@ -15,13 +15,12 @@ import { useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { cellToBoundary, cellToLatLng, isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm } from '../../helpers/H3Helper';
-import { HexTileRecord } from '../../helpers/HexTileStorage';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm } from '../../helpers/H3Helper';
+import { buildRouteDisplayData, computeHexBounds } from '../../helpers/RouteDisplayHelper';
 import type { RootState } from '../../store/store';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
-const H3_GEOJSON_ORDER = true;
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -30,56 +29,6 @@ function formatDate(timestamp: number): string {
 		month: 'long',
 		year: 'numeric',
 	});
-}
-
-/**
- * Build a hexTileGeoJson FeatureCollection from an ordered list of H3 hex cell indices.
- * Each cell is rendered as a polygon colored by its level from the Redux store.
- */
-function buildRouteHexGeoJson(
-	hexTiles: string[],
-	hexTileRecords: Record<string, HexTileRecord>,
-): { type: 'FeatureCollection'; features: object[] } {
-	const features: object[] = [];
-	for (const cell of hexTiles) {
-		try {
-			const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
-			if (boundary.length === 0) continue;
-			const level = hexTileRecords[cell]?.level ?? 0;
-			features.push({
-				type: 'Feature',
-				geometry: { type: 'Polygon', coordinates: [boundary] },
-				properties: { h3Index: cell, level },
-			});
-		} catch {
-			// Skip invalid cells
-		}
-	}
-	return { type: 'FeatureCollection', features };
-}
-
-/**
- * Compute the geographic bounding box of a list of H3 cells using their center points.
- */
-function computeHexBounds(hexTiles: string[]): { minLat: number; maxLat: number; minLng: number; maxLng: number } | null {
-	if (hexTiles.length === 0) return null;
-	let minLat = Infinity;
-	let maxLat = -Infinity;
-	let minLng = Infinity;
-	let maxLng = -Infinity;
-	for (const cell of hexTiles) {
-		try {
-			const [lat, lng] = cellToLatLng(cell);
-			if (lat < minLat) minLat = lat;
-			if (lat > maxLat) maxLat = lat;
-			if (lng < minLng) minLng = lng;
-			if (lng > maxLng) maxLng = lng;
-		} catch {
-			// Skip invalid cells
-		}
-	}
-	if (!isFinite(minLat)) return null;
-	return { minLat, maxLat, minLng, maxLng };
 }
 
 export default function RouteDetailScreen() {
@@ -141,12 +90,13 @@ export default function RouteDetailScreen() {
 		if (!mapMounted || !route || !mapRef.current) return;
 		if (!isH3Available() || route.hexTiles.length === 0) return;
 
-		// Build and send hexagon tile GeoJSON (no speed segments, no walk path)
+		// Build and send hexagon tile GeoJSON and walk path lines
 		try {
-			const hexTileGeoJson = buildRouteHexGeoJson(route.hexTiles, hexTileRecords);
+			const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(route, hexTileRecords);
 			mapRef.current.sendToMap({ hexTileGeoJson });
+			mapRef.current.sendToMap({ hexWalkPathGeoJson });
 		} catch (err) {
-			console.warn('[RouteDetailScreen] Failed to build route hex GeoJSON:', err);
+			console.warn('[RouteDetailScreen] Failed to build route display GeoJSON:', err);
 		}
 
 		// Fit the camera to the full route extent
