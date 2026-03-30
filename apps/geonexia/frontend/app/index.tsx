@@ -20,7 +20,7 @@ import { isRunningInExpoGo } from 'expo';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
 
@@ -28,8 +28,7 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { SavedRoute, saveRoute, loadRoutes } from '../helpers/RouteStorage';
-import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
+import { SavedRoute, loadRoutes } from '../helpers/RouteStorage';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
@@ -1729,6 +1728,7 @@ export default function RecordScreen() {
 	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
 	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
+	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
 
@@ -3002,47 +3002,6 @@ export default function RecordScreen() {
 		}
 	}, [handleLocationUpdate, setFollowMode, showModal, theme]);
 
-	// ─── Route helpers ────────────────────────────────────────────────────────
-	// Show a modal to assign an activity to an existing saved route.
-	const showRouteAssignmentModal = useCallback(
-		(activity: SavedActivity, hexTilesOrdered: string[], savedRoutes: SavedRoute[]) => {
-			showRouteModal({
-				title: '🗺️ Assign to Route',
-				onClose: closeRouteModal,
-				children: (
-					<View>
-						<SettingsListGroupTitle title="Saved Routes" />
-						{savedRoutes.map((route, i) => {
-							const position =
-								savedRoutes.length === 1
-									? 'single'
-									: i === 0
-									? 'top'
-									: i === savedRoutes.length - 1
-									? 'bottom'
-									: 'middle';
-							return (
-								<SettingsListSelectOptionSingle
-									key={route.id}
-									label={route.name}
-									isSelected={false}
-									selectionColor={PRIMARY_COLOR}
-									onPress={() => {
-										activity.routeId = route.id;
-										try { saveActivity(activity); } catch { /* ignore */ }
-										closeRouteModal();
-									}}
-									groupPosition={position}
-								/>
-							);
-						})}
-					</View>
-				),
-			});
-		},
-		[showRouteModal, closeRouteModal],
-	);
-
 	// Show a modal to select a saved route before starting a recording.
 	const showRouteSelectionModal = useCallback(async () => {
 		let routes: SavedRoute[] = [];
@@ -3093,60 +3052,6 @@ export default function RecordScreen() {
 		});
 	}, [showRouteModal, closeRouteModal, selectedRoute]);
 
-	// Show a modal with a text input for naming a new route.
-	const showNewRouteNameModal = useCallback(
-		(activity: SavedActivity, hexTilesOrdered: string[], h3Res: number) => {
-			let routeNameInput = '';
-			showRouteModal({
-				title: '🗺️ New Route',
-				onClose: closeRouteModal,
-				children: (
-					<View style={{ padding: 16, gap: 12 }}>
-						<Text style={{ color: theme.screen.text, fontSize: 15 }}>Enter a name for this route:</Text>
-						<TextInput
-							style={{
-								borderWidth: 1,
-								borderColor: theme.screen.text + '33',
-								borderRadius: 8,
-								padding: 12,
-								fontSize: 16,
-								color: theme.screen.text,
-							}}
-							placeholder="Route name"
-							placeholderTextColor={theme.screen.icon}
-							autoFocus
-							onChangeText={(text) => { routeNameInput = text; }}
-						/>
-						<TouchableOpacity
-							style={{ backgroundColor: PRIMARY_COLOR, borderRadius: 8, paddingVertical: 12, alignItems: 'center' }}
-							onPress={() => {
-								const routeName = routeNameInput.trim();
-								if (!routeName) return;
-								const newRoute: SavedRoute = {
-									id: String(Date.now()),
-									name: routeName,
-									hexTiles: hexTilesOrdered,
-									h3Resolution: h3Res,
-									createdAt: Date.now(),
-									sportType: activity.sportType,
-								};
-								try {
-									saveRoute(newRoute);
-									activity.routeId = newRoute.id;
-									saveActivity(activity);
-								} catch { /* ignore */ }
-								closeRouteModal();
-							}}
-							activeOpacity={0.8}
-						>
-							<Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 15 }}>Save Route</Text>
-						</TouchableOpacity>
-					</View>
-				),
-			});
-		},
-		[showRouteModal, closeRouteModal, theme],
-	);
 
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
@@ -3258,7 +3163,7 @@ export default function RecordScreen() {
 			},
 		};
 
-		// Show run stats first, then attempt route matching
+		// Show run stats summary before navigating away
 		showModal({
 			title: '🏃 Run Statistics',
 			onClose: closeModal,
@@ -3268,60 +3173,10 @@ export default function RecordScreen() {
 		// Clear the pre-run selected route after the run ends
 		setSelectedRoute(null);
 
-		// Route matching: compare activity hex tiles against saved routes
-		if (hexTilesOrdered.length > 0) {
-			try {
-				const savedRoutes = await loadRoutes();
-				const matches = findMatchingRoutes(hexTilesOrdered, savedRoutes, activityH3Res);
-
-				if (matches.length > 0) {
-					// Found a matching route – ask the user to confirm
-					const bestMatch = matches[0];
-					const overlapPct = Math.round(bestMatch.overlap * 100);
-					Alert.alert(
-						'🗺️ Route Recognized',
-						`This run matches your saved route "${bestMatch.route.name}" (${overlapPct}% overlap). Assign this activity to the route?`,
-						[
-							{ text: 'No', style: 'cancel' },
-							{
-								text: 'Yes',
-								onPress: () => {
-									activity.routeId = bestMatch.route.id;
-									try { saveActivity(activity); } catch { /* ignore */ }
-								},
-							},
-						],
-					);
-				} else {
-					// No matching route – offer to save as new or assign to existing
-					const routeAlertButtons: { text: string; style?: 'cancel' | 'default' | 'destructive'; onPress?: () => void }[] = [
-						{ text: 'Dismiss', style: 'cancel' },
-						{
-							text: 'Save as New Route',
-							onPress: () => {
-								showNewRouteNameModal(activity, hexTilesOrdered, activityH3Res);
-							},
-						},
-					];
-					if (savedRoutes.length > 0) {
-						routeAlertButtons.push({
-							text: 'Assign to Existing',
-							onPress: () => {
-								showRouteAssignmentModal(activity, hexTilesOrdered, savedRoutes);
-							},
-						});
-					}
-					Alert.alert(
-						'🗺️ New Route?',
-						'This run doesn\'t match any saved route. Would you like to save it as a new route or assign it to an existing one?',
-						routeAlertButtons,
-					);
-				}
-			} catch (err) {
-				console.warn('[RecordScreen] Route matching failed:', err);
-			}
-		}
-	}, [showModal, closeModal, theme, dispatch, selectedSportType, showRouteAssignmentModal, showNewRouteNameModal]);
+		// Navigate directly to the activity detail screen.
+		// Route assignment (if needed) is handled there via the scroll-view modal.
+		router.push(`/activities/${activity.id}`);
+	}, [showModal, closeModal, theme, dispatch, selectedSportType, router]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);

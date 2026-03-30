@@ -5,25 +5,22 @@ import {
 	SafeAreaView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme, useMyScrollViewModal, SettingsListGroupTitle } from 'repo-depkit-common-ui';
+import { useTheme, useMyScrollViewModal, SettingsListGroupTitle, SettingsListTextInput, SettingsListSelectOptionSingle } from 'repo-depkit-common-ui';
 import { SavedRoute, loadRoutes, deleteRoute, deleteAllRoutes, saveRoute } from '../../helpers/RouteStorage';
 
 const PRIMARY_COLOR = '#2563eb';
 
 function RouteListItem({
 	route,
-	onDelete,
-	onRename,
+	onPress,
 	theme,
 }: {
 	route: SavedRoute;
-	onDelete: (id: string) => void;
-	onRename: (route: SavedRoute) => void;
+	onPress: (route: SavedRoute) => void;
 	theme: ReturnType<typeof useTheme>['theme'];
 }) {
 	const date = new Date(route.createdAt);
@@ -31,7 +28,11 @@ function RouteListItem({
 	const tileCount = route.hexTiles.length;
 
 	return (
-		<View style={[styles.routeItem, { borderBottomColor: theme.screen.text + '22' }]}>
+		<TouchableOpacity
+			style={[styles.routeItem, { borderBottomColor: theme.screen.text + '22' }]}
+			onPress={() => onPress(route)}
+			activeOpacity={0.7}
+		>
 			<View style={styles.routeIconContainer}>
 				<MaterialIcons name="route" size={24} color={PRIMARY_COLOR} />
 			</View>
@@ -44,23 +45,8 @@ function RouteListItem({
 					{route.sportType ? ` · ${route.sportType}` : ''}
 				</Text>
 			</View>
-			<TouchableOpacity
-				style={styles.routeActionButton}
-				onPress={() => onRename(route)}
-				activeOpacity={0.7}
-				hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-			>
-				<MaterialIcons name="edit" size={20} color={theme.screen.icon} />
-			</TouchableOpacity>
-			<TouchableOpacity
-				style={styles.routeActionButton}
-				onPress={() => onDelete(route.id)}
-				activeOpacity={0.7}
-				hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-			>
-				<MaterialIcons name="delete-outline" size={20} color="#e53935" />
-			</TouchableOpacity>
-		</View>
+			<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />
+		</TouchableOpacity>
 	);
 }
 
@@ -82,23 +68,6 @@ export default function RoutesScreen() {
 		refreshRoutes();
 	}, [refreshRoutes]);
 
-	const handleDelete = useCallback(
-		(id: string) => {
-			Alert.alert('Delete Route', 'Are you sure you want to delete this route?', [
-				{ text: 'Cancel', style: 'cancel' },
-				{
-					text: 'Delete',
-					style: 'destructive',
-					onPress: () => {
-						deleteRoute(id);
-						refreshRoutes();
-					},
-				},
-			]);
-		},
-		[refreshRoutes],
-	);
-
 	const handleDeleteAll = useCallback(() => {
 		Alert.alert('Delete All Routes', 'Are you sure you want to delete all saved routes? This cannot be undone.', [
 			{ text: 'Cancel', style: 'cancel' },
@@ -113,50 +82,60 @@ export default function RoutesScreen() {
 		]);
 	}, [refreshRoutes]);
 
-	const handleRename = useCallback(
+	const handleSelectRoute = useCallback(
 		(route: SavedRoute) => {
-			let newName = route.name;
 			showModal({
-				title: '✏️ Rename Route',
+				title: route.name,
 				onClose: closeModal,
 				children: (
-					<View style={{ padding: 16, gap: 12 }}>
-						<TextInput
-							style={{
-								borderWidth: 1,
-								borderColor: theme.screen.text + '33',
-								borderRadius: 8,
-								padding: 12,
-								fontSize: 16,
-								color: theme.screen.text,
-							}}
-							placeholder="Route name"
-							placeholderTextColor={theme.screen.icon}
-							defaultValue={route.name}
-							autoFocus
-							onChangeText={(text) => { newName = text; }}
-						/>
-						<TouchableOpacity
-							style={{ backgroundColor: PRIMARY_COLOR, borderRadius: 8, paddingVertical: 12, alignItems: 'center' }}
-							onPress={() => {
+					<View>
+						<SettingsListGroupTitle title="Name anpassen" />
+						<SettingsListTextInput
+							title="Route umbenennen"
+							placeholder="Route Name"
+							modalTitle="Route umbenennen"
+							initialValue={route.name}
+							groupPosition="single"
+							onSave={(newName) => {
 								const trimmed = newName.trim();
 								if (!trimmed) return;
-								const updatedRoute: SavedRoute = { ...route, name: trimmed };
+								const updated: SavedRoute = { ...route, name: trimmed };
 								try {
-									saveRoute(updatedRoute);
-								} catch { /* ignore */ }
+									saveRoute(updated);
+								} catch {
+									Alert.alert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
+									return;
+								}
 								closeModal();
 								refreshRoutes();
 							}}
-							activeOpacity={0.8}
-						>
-							<Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 15 }}>Save</Text>
-						</TouchableOpacity>
+						/>
+						<SettingsListGroupTitle title="Aktionen" />
+						<SettingsListSelectOptionSingle
+							label="Route löschen"
+							isSelected={false}
+							selectionColor="#ef4444"
+							groupPosition="single"
+							onPress={() => {
+								closeModal();
+								Alert.alert('Delete Route', 'Are you sure you want to delete this route?', [
+									{ text: 'Cancel', style: 'cancel' },
+									{
+										text: 'Delete',
+										style: 'destructive',
+										onPress: () => {
+											deleteRoute(route.id);
+											refreshRoutes();
+										},
+									},
+								]);
+							}}
+						/>
 					</View>
 				),
 			});
 		},
-		[showModal, closeModal, theme, refreshRoutes],
+		[showModal, closeModal, refreshRoutes],
 	);
 
 	return (
@@ -173,7 +152,7 @@ export default function RoutesScreen() {
 				data={routes}
 				keyExtractor={(item) => item.id}
 				renderItem={({ item }) => (
-					<RouteListItem route={item} onDelete={handleDelete} onRename={handleRename} theme={theme} />
+					<RouteListItem route={item} onPress={handleSelectRoute} theme={theme} />
 				)}
 				contentContainerStyle={routes.length === 0 ? styles.emptyContainer : undefined}
 				ListEmptyComponent={
@@ -237,9 +216,6 @@ const styles = StyleSheet.create({
 	},
 	routeMeta: {
 		fontSize: 13,
-	},
-	routeActionButton: {
-		padding: 8,
 	},
 	emptyContainer: {
 		flex: 1,

@@ -49,9 +49,11 @@ export type SavedActivity = {
 	hexTilesOrdered?: string[];
 	/**
 	 * ID of the saved route this activity was matched or assigned to.
-	 * Optional – only set when the user confirms a route association.
+	 * - `undefined` (field absent): the user has not yet been asked to assign a route.
+	 * - `null`: the user explicitly chose not to assign any route.
+	 * - `string`: the ID of the assigned `SavedRoute`.
 	 */
-	routeId?: string;
+	routeId?: string | null;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────
