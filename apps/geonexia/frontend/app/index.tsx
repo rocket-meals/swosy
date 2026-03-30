@@ -29,7 +29,7 @@ import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
@@ -283,49 +283,44 @@ type WalkPathFeatureCollection = {
 
 /**
  * Build a GeoJSON FeatureCollection of LineString features representing the
- * walk paths across all visited tiles. For each pair of adjacent cells that
- * are both walked-on, a line is drawn from one cell's centre to the other.
- * Lines are deduplicated (each pair drawn once) by comparing H3 indices.
+ * walk path, using the actual hex-to-hex transitions that were recorded during
+ * activities. Only edges that are present in `walkedEdges` (and whose endpoints
+ * are both visible in the current viewport) are drawn, preventing spurious
+ * connections between adjacent but non-consecutively-traversed hexagons.
  *
- * Only considers cells that appear in `viewportCells` so that the output stays
- * bounded to the visible map area.
+ * Each edge in `walkedEdges` is stored as "cellA:cellB" with the
+ * lexicographically smaller index first.
  */
 function buildWalkPathGeoJson(
 	viewportCells: string[],
-	hexTileRecords: Record<string, HexTileRecord>,
+	walkedEdges: string[],
 ): WalkPathFeatureCollection {
 	const viewportSet = new Set(viewportCells);
 	const features: WalkPathFeature[] = [];
 
-	for (const cell of viewportCells) {
-		const record = hexTileRecords[cell];
-		if (!record?.walkedOn) continue;
-
-		const [centerLat, centerLng] = cellToLatLng(cell);
-
-		// Find all immediate H3 neighbours (ring 1, excluding the cell itself)
-		const neighbours = gridDisk(cell, 1).filter((neighbor) => neighbor !== cell);
-
-		for (const neighborH3 of neighbours) {
-			// Deduplicate edges: each pair (cell, neighbor) is drawn exactly once by
-			// the tile whose H3 index is lexicographically smaller.
-			if (cell >= neighborH3) continue;
-			// Only draw if the neighbour is also in the viewport and was walked on.
-			if (!viewportSet.has(neighborH3)) continue;
-			if (!hexTileRecords[neighborH3]?.walkedOn) continue;
-
-			const [nLat, nLng] = cellToLatLng(neighborH3);
+	for (const edge of walkedEdges) {
+		const colonIdx = edge.indexOf(':');
+		if (colonIdx === -1) continue;
+		const cellA = edge.slice(0, colonIdx);
+		const cellB = edge.slice(colonIdx + 1);
+		// Only draw if both endpoints are visible in the current viewport.
+		if (!viewportSet.has(cellA) || !viewportSet.has(cellB)) continue;
+		try {
+			const [aLat, aLng] = cellToLatLng(cellA);
+			const [bLat, bLng] = cellToLatLng(cellB);
 			features.push({
 				type: 'Feature',
 				geometry: {
 					type: 'LineString',
 					coordinates: [
-						[centerLng, centerLat],
-						[nLng, nLat],
+						[aLng, aLat],
+						[bLng, bLat],
 					],
 				},
 				properties: {},
 			});
+		} catch {
+			// cellToLatLng can throw for invalid indices; skip silently
 		}
 	}
 
@@ -2340,6 +2335,7 @@ export default function RecordScreen() {
 			routePoints,
 			stats,
 			sportType: selectedSportTypeRef.current,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
 			visitedTileCount: routeCells.length,
 			enclosedTileCount: enclosedCount,
 		};
@@ -2470,7 +2466,7 @@ export default function RecordScreen() {
 			}
 			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		} else if (msg.tag === 'HexTileClicked') {
@@ -2698,12 +2694,21 @@ export default function RecordScreen() {
 							// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
 							// exactly that many intermediate cells at most.
 							if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-								for (let i = 1; i < pathCells.length - 1; i++) {
-									const intermediate = pathCells[i];
-									if (!visitedHexIdsRef.current.has(intermediate)) {
-										visitedHexIdsRef.current.add(intermediate);
-										dispatch(markVisited({ h3Indices: [intermediate], timestamp: point.timestamp }));
+								const newEdges: string[] = [];
+								for (let i = 0; i < pathCells.length - 1; i++) {
+									const a = pathCells[i];
+									const b = pathCells[i + 1];
+									newEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+									if (i > 0) {
+										// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
+										if (!visitedHexIdsRef.current.has(pathCells[i])) {
+											visitedHexIdsRef.current.add(pathCells[i]);
+											dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
+										}
 									}
+								}
+								if (newEdges.length > 0) {
+									dispatch(addWalkedEdges(newEdges));
 								}
 							}
 						} catch (pathErr) {
@@ -2781,7 +2786,7 @@ export default function RecordScreen() {
 			}
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
@@ -3051,7 +3056,7 @@ export default function RecordScreen() {
 				// ignore
 			}
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
@@ -3064,6 +3069,7 @@ export default function RecordScreen() {
 			routePoints: points,
 			stats,
 			sportType: selectedSportType,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
 			visitedTileCount: visitedHexIdsRef.current.size,
 			enclosedTileCount: enclosedCells.length,
 		};

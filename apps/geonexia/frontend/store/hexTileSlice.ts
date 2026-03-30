@@ -17,6 +17,13 @@ export type HexTileSliceState = {
 	isDevMode: boolean;
 	/** Whether debug mode is active (shows debug button, coloring tool, etc.). */
 	isDebugMode: boolean;
+	/**
+	 * Set of actual hex-to-hex transitions that occurred during walks, stored as
+	 * "cellA:cellB" strings where cellA is lexicographically smaller than cellB.
+	 * Used to draw spokes only between hexagons that were actually traversed
+	 * consecutively, instead of connecting all adjacent walked-on hexagons.
+	 */
+	walkedEdges: string[];
 };
 
 const initialState: HexTileSliceState = {
@@ -25,6 +32,7 @@ const initialState: HexTileSliceState = {
 	resetToken: 0,
 	isDevMode: false,
 	isDebugMode: false,
+	walkedEdges: [],
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -186,10 +194,11 @@ const hexTileSlice = createSlice({
 		 */
 		setDevMode(
 			state,
-			action: PayloadAction<{ isDevMode: boolean; records: Record<string, HexTileRecord> }>,
+			action: PayloadAction<{ isDevMode: boolean; records: Record<string, HexTileRecord>; walkedEdges?: string[] }>,
 		) {
 			state.isDevMode = action.payload.isDevMode;
 			state.records = action.payload.records;
+			state.walkedEdges = action.payload.walkedEdges ?? [];
 			state.runStartLevels = {};
 			state.resetToken += 1;
 		},
@@ -198,8 +207,29 @@ const hexTileSlice = createSlice({
 		setDebugMode(state, action: PayloadAction<boolean>) {
 			state.isDebugMode = action.payload;
 		},
+
+		/**
+		 * Record one or more actual hex-to-hex transitions that occurred during a walk.
+		 * Each edge is provided as "cellA:cellB" with the lexicographically smaller
+		 * index first. Duplicate edges are silently ignored.
+		 */
+		addWalkedEdges(state, action: PayloadAction<string[]>) {
+			const edgeSet = new Set(state.walkedEdges);
+			for (const edge of action.payload) {
+				edgeSet.add(edge);
+			}
+			state.walkedEdges = Array.from(edgeSet);
+		},
+
+		/**
+		 * Replace the walked-edges list with data loaded from persistent storage.
+		 * Called once at app startup alongside loadPersistedState / setDevMode.
+		 */
+		loadWalkedEdgesState(state, action: PayloadAction<string[]>) {
+			state.walkedEdges = action.payload;
+		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode, setDebugMode } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
 export default hexTileSlice.reducer;
