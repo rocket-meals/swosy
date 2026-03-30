@@ -110,6 +110,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 		plugins: [
 			'expo-router',
 			'expo-router',
+			'expo-battery',
 			'expo-secure-store',
 			'expo-notifications',
 			'expo-web-browser',
