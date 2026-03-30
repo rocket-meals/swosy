@@ -275,12 +275,18 @@ function SpeedRangeItem({
 	maxSpeedKmh: number;
 	theme: ReturnType<typeof useTheme>['theme'];
 }) {
+	// Convert speeds to pace: min speed → slowest pace (highest min/km), max speed → fastest pace (lowest min/km)
+	const paceFromSpeed = (kmh: number) => (kmh > 0 ? 60 / kmh : 0);
+	const minPace = paceFromSpeed(maxSpeedKmh); // fastest pace (shown on right/blue side)
+	const avgPace = paceFromSpeed(avgSpeedKmh);
+	const maxPace = paceFromSpeed(minSpeedKmh); // slowest pace (shown on left/red side)
+
 	return (
 		<View style={[speedRangeStyles.container, { backgroundColor: theme.screen.iconBg }]}>
-			<View style={speedRangeStyles.labelsRow}>
-				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
+			<View style={[speedRangeStyles.labelsRow, { marginTop: 0 }]}>
+				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{formatPace(maxPace)}</Text>
+				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{formatPace(avgPace)}</Text>
+				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{formatPace(minPace)}</Text>
 			</View>
 			<View style={speedRangeStyles.barWrapper}>
 				{Array.from({ length: GRADIENT_SEGMENTS }).map((_, i) => (
@@ -294,6 +300,11 @@ function SpeedRangeItem({
 						]}
 					/>
 				))}
+			</View>
+			<View style={[speedRangeStyles.labelsRow, { marginBottom: 0 }]}>
+				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
+				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
+				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
 			</View>
 			<View style={[speedRangeStyles.separator, { backgroundColor: theme.screen.background }]} />
 		</View>
@@ -310,6 +321,7 @@ const speedRangeStyles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		marginBottom: 6,
+		marginTop: 6,
 	},
 	labelMin: {
 		fontSize: 12,
