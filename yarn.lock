@@ -15394,6 +15394,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-battery@npm:~7.7.2":
+  version: 7.7.2
+  resolution: "expo-battery@npm:7.7.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/f80b4a2f6757093459e940c6320c21834635d13a7683585d242346e35328a89fd0441b36e3a3de8cd5c248aeca247104877e8c9c2889f5ea873842f947c1937a
+  languageName: node
+  linkType: hard
+
 "expo-blur@npm:~15.0.7":
   version: 15.0.7
   resolution: "expo-blur@npm:15.0.7"
@@ -17123,6 +17132,7 @@ __metadata:
     "@types/react-native": "npm:^0.73.0"
     expo: "npm:54.0.20"
     expo-asset: "npm:~12.0.9"
+    expo-battery: "npm:~7.7.2"
     expo-build-properties: "npm:~1.0.9"
     expo-clipboard: "npm:~8.0.7"
     expo-constants: "npm:~18.0.10"
