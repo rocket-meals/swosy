@@ -98,6 +98,17 @@ function ActivityListItem({ activity, onPress, theme }: ActivityListItemProps) {
 							{formatDuration(stats.durationSeconds)}
 						</Text>
 					</View>
+					{activity.visitedTileCount != null && (
+						<View style={styles.itemStatChip}>
+							<MaterialIcons name="grid-on" size={13} color={PRIMARY_COLOR} />
+							<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
+								{activity.visitedTileCount}
+								{activity.enclosedTileCount != null && activity.enclosedTileCount > 0
+									? ` (+${activity.enclosedTileCount})`
+									: ''}
+							</Text>
+						</View>
+					)}
 				</View>
 			</View>
 			<MaterialIcons name="chevron-right" size={22} color={theme.screen.icon} />
