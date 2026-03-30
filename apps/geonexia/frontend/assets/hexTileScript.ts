@@ -65,6 +65,12 @@ export const HEX_TILE_SCRIPT = `
   // Colours assigned to midpoints between the hex centre and each corner vertex,
   // cycling through: red, orange, yellow, blue, white, black.
   var MIDPOINT_COLORS = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#ffffff', '#000000'];
+  // ── Route edit overlay: neighbor highlight + action labels ───────────────
+  var ROUTE_EDIT_NEIGHBOR_SOURCE = 'route-edit-neighbor-source';
+  var ROUTE_EDIT_NEIGHBOR_FILL_LAYER = 'route-edit-neighbor-fill';
+  var ROUTE_EDIT_NEIGHBOR_STROKE_LAYER = 'route-edit-neighbor-stroke';
+  var ROUTE_EDIT_LABELS_SOURCE = 'route-edit-labels-source';
+  var ROUTE_EDIT_LABELS_LAYER = 'route-edit-labels';
 
   // ── Empty FeatureCollection used as initial / cleared state ───────────────
   var EMPTY_FC = { type: 'FeatureCollection', features: [] };
@@ -279,6 +285,61 @@ export const HEX_TILE_SCRIPT = `
   }
 
   // ── Layer management ──────────────────────────────────────────────────────
+  // ── Route edit overlay layers ─────────────────────────────────────────────
+  // Added lazily when the first routeEditLabels/routeEditNeighbors message
+  // arrives so they are always rendered on top of the base hex tile layers.
+  function addRouteEditLayers() {
+    if (!map || map.getSource(ROUTE_EDIT_NEIGHBOR_SOURCE)) return;
+    map.addSource(ROUTE_EDIT_NEIGHBOR_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: ROUTE_EDIT_NEIGHBOR_FILL_LAYER,
+      type: 'fill',
+      source: ROUTE_EDIT_NEIGHBOR_SOURCE,
+      paint: {
+        'fill-color': '#3b82f6',
+        'fill-opacity': 0.45,
+      },
+    });
+    map.addLayer({
+      id: ROUTE_EDIT_NEIGHBOR_STROKE_LAYER,
+      type: 'line',
+      source: ROUTE_EDIT_NEIGHBOR_SOURCE,
+      paint: {
+        'line-color': '#1d4ed8',
+        'line-width': 2,
+        'line-opacity': 0.9,
+      },
+    });
+    map.addSource(ROUTE_EDIT_LABELS_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: ROUTE_EDIT_LABELS_LAYER,
+      type: 'symbol',
+      source: ROUTE_EDIT_LABELS_SOURCE,
+      layout: {
+        'text-field': ['get', 'label'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 9, 12, 13, 18, 16, 24],
+        'text-anchor': 'center',
+        'text-allow-overlap': true,
+        'text-ignore-placement': true,
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#000000',
+        'text-halo-width': 2,
+      },
+    });
+  }
+
+  function removeRouteEditLayers() {
+    if (!map) return;
+    if (map.getLayer(ROUTE_EDIT_LABELS_LAYER)) map.removeLayer(ROUTE_EDIT_LABELS_LAYER);
+    if (map.getSource(ROUTE_EDIT_LABELS_SOURCE)) map.removeSource(ROUTE_EDIT_LABELS_SOURCE);
+    if (map.getLayer(ROUTE_EDIT_NEIGHBOR_STROKE_LAYER)) map.removeLayer(ROUTE_EDIT_NEIGHBOR_STROKE_LAYER);
+    if (map.getLayer(ROUTE_EDIT_NEIGHBOR_FILL_LAYER)) map.removeLayer(ROUTE_EDIT_NEIGHBOR_FILL_LAYER);
+    if (map.getSource(ROUTE_EDIT_NEIGHBOR_SOURCE)) map.removeSource(ROUTE_EDIT_NEIGHBOR_SOURCE);
+  }
+
   function addHexTileLayer() {
     if (!map || map.getSource(HEX_TILE_SOURCE)) return;
     map.addSource(HEX_TILE_SOURCE, { type: 'geojson', data: EMPTY_FC });
@@ -503,6 +564,25 @@ export const HEX_TILE_SCRIPT = `
         }
       }
     }
+    if (data.routeEditLabels !== undefined) {
+      if (!map) return;
+      if (!map.getSource(ROUTE_EDIT_LABELS_SOURCE)) addRouteEditLayers();
+      var editLabelsSrc = map.getSource(ROUTE_EDIT_LABELS_SOURCE);
+      if (editLabelsSrc) editLabelsSrc.setData(data.routeEditLabels || EMPTY_FC);
+      // Clearing labels also clears neighbors (edit mode exited)
+      if (!data.routeEditLabels) {
+        var clearNeighborSrc = map.getSource(ROUTE_EDIT_NEIGHBOR_SOURCE);
+        if (clearNeighborSrc) clearNeighborSrc.setData(EMPTY_FC);
+      }
+      return;
+    }
+    if (data.routeEditNeighbors !== undefined) {
+      if (!map) return;
+      if (!map.getSource(ROUTE_EDIT_NEIGHBOR_SOURCE)) addRouteEditLayers();
+      var editNeighborSrc = map.getSource(ROUTE_EDIT_NEIGHBOR_SOURCE);
+      if (editNeighborSrc) editNeighborSrc.setData(data.routeEditNeighbors || EMPTY_FC);
+      return;
+    }
     if (data.measureMode !== undefined) {
       measureModeActive = data.measureMode;
       if (!measureModeActive) {
@@ -523,6 +603,16 @@ export const HEX_TILE_SCRIPT = `
     if (measureModeActive) {
       sendToRN({ tag: 'MapMeasurePoint', lat: e.lngLat.lat, lng: e.lngLat.lng });
       return true;
+    }
+    // Route edit neighbor layer takes priority: tapping a highlighted candidate
+    // tile fires HexNeighborClicked so the React Native side can insert it.
+    if (m.getSource(ROUTE_EDIT_NEIGHBOR_SOURCE) && m.getLayer(ROUTE_EDIT_NEIGHBOR_FILL_LAYER)) {
+      var neighborFeatures = m.queryRenderedFeatures(e.point, { layers: [ROUTE_EDIT_NEIGHBOR_FILL_LAYER] });
+      if (neighborFeatures && neighborFeatures.length > 0) {
+        var nProps = neighborFeatures[0].properties || {};
+        sendToRN({ tag: 'HexNeighborClicked', h3Index: nProps.h3Index });
+        return true;
+      }
     }
     if (!hexTileActive || !m.getSource(HEX_TILE_SOURCE)) return false;
     var features = m.queryRenderedFeatures(e.point, { layers: [HEX_TILE_FILL_LAYER] });
