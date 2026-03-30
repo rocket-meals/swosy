@@ -49,7 +49,6 @@ export default function RoutesScreen() {
 		(route: SavedRoute) => {
 			showModal({
 				title: route.name,
-				onClose: closeModal,
 				children: (
 					<View>
 						<SettingsListGroupTitle title="Name anpassen" />
