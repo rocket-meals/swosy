@@ -225,7 +225,6 @@ function ThemedDrawerNavigator() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
-	const { theme } = useTheme();
 
 	const items: DrawerItem[] = [
 		{
@@ -286,12 +285,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 	return (
 		<AppDrawer
-			renderLogo={() => (
-				<View style={styles.logoRow}>
-					<Ionicons name="location-sharp" size={32} color="#2563eb" />
-					<Text style={[styles.logoTitle, { color: theme.text }]}>Geonexia</Text>
-				</View>
-			)}
+			logoSource={require('../assets/icon.png')}
+			title="Geonexia"
 			items={items}
 			activeKey={activeKey}
 			primaryColor="#2563eb"
@@ -383,15 +378,6 @@ export default function Layout() {
 }
 
 const styles = StyleSheet.create({
-	logoRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 10,
-	},
-	logoTitle: {
-		fontSize: 20,
-		fontWeight: '700',
-	},
 	errorContainer: {
 		flex: 1,
 		backgroundColor: '#fff',
