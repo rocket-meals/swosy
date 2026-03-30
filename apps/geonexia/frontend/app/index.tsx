@@ -3019,7 +3019,7 @@ export default function RecordScreen() {
 					const bestMatch = matches[0];
 					const overlapPct = Math.round(bestMatch.overlap * 100);
 					Alert.alert(
-						'🗺️ Route Recognised',
+						'🗺️ Route Recognized',
 						`This run matches your saved route "${bestMatch.route.name}" (${overlapPct}% overlap). Assign this activity to the route?`,
 						[
 							{ text: 'No', style: 'cancel' },

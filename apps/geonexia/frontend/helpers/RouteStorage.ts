@@ -28,6 +28,18 @@ function getRouteFile(id: string): File {
 
 // ─── Route persistence ───────────────────────────────────────────────────────
 
+function isValidRoute(obj: unknown): obj is SavedRoute {
+	if (typeof obj !== 'object' || obj === null) return false;
+	const r = obj as Record<string, unknown>;
+	return (
+		typeof r.id === 'string' &&
+		typeof r.name === 'string' &&
+		Array.isArray(r.hexTiles) &&
+		typeof r.h3Resolution === 'number' &&
+		typeof r.createdAt === 'number'
+	);
+}
+
 export function saveRoute(route: SavedRoute): void {
 	const dir = getRoutesDir();
 	if (!dir.exists) {
@@ -53,7 +65,10 @@ export async function loadRoutes(): Promise<SavedRoute[]> {
 		if (!entry.name.endsWith('.json')) continue;
 		try {
 			const content = await entry.text();
-			routes.push(JSON.parse(content) as SavedRoute);
+			const parsed = JSON.parse(content);
+			if (isValidRoute(parsed)) {
+				routes.push(parsed);
+			}
 		} catch {
 			// Skip corrupted files
 		}
@@ -68,7 +83,8 @@ export async function loadRoute(id: string): Promise<SavedRoute | null> {
 	if (!file.exists) return null;
 	try {
 		const content = await file.text();
-		return JSON.parse(content) as SavedRoute;
+		const parsed = JSON.parse(content);
+		return isValidRoute(parsed) ? parsed : null;
 	} catch {
 		return null;
 	}
