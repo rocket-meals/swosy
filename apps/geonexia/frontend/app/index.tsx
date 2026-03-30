@@ -22,13 +22,13 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListSelectOption, SettingsListSelectOptionItem } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
-import { RoutePoint, RunStats, SavedActivity, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { SavedRoute, loadRoutes } from '../helpers/RouteStorage';
+import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
@@ -670,6 +670,38 @@ function computeOrderedMeasureRouteCells(
 		}
 	}
 	return result;
+}
+
+/** Sum haversine distances between consecutive cell centers to get total route length. */
+function computeRouteLengthKm(orderedCells: string[]): number {
+	if (orderedCells.length < 2 || !isH3Available()) return 0;
+	let totalKm = 0;
+	for (let i = 1; i < orderedCells.length; i++) {
+		try {
+			const [aLat, aLng] = cellToLatLng(orderedCells[i - 1]);
+			const [bLat, bLng] = cellToLatLng(orderedCells[i]);
+			totalKm += haversineKm(aLat, aLng, bLat, bLng);
+		} catch {
+			// skip invalid cells
+		}
+	}
+	return totalKm;
+}
+
+function formatEstimatedDuration(totalMinutes: number): string {
+	if (totalMinutes <= 0 || !isFinite(totalMinutes)) return '--:--';
+	const h = Math.floor(totalMinutes / 60);
+	const m = Math.floor(totalMinutes % 60);
+	const s = Math.round((totalMinutes % 1) * 60);
+	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} h`;
+	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} min`;
+}
+
+function formatActivityLabel(activity: SavedActivity): string {
+	const d = new Date(activity.startedAt);
+	const date = d.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+	const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+	return `${date} ${time}`;
 }
 
 /**
@@ -1361,7 +1393,9 @@ type MeasureResultContentProps = {
 	routeCells: string[];
 	h3Resolution: number;
 	theme: ReturnType<typeof useTheme>['theme'];
+	savedActivities: SavedActivity[];
 	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
+	onSaveAsRoute: (routeCells: string[], name: string) => void;
 	onClose: () => void;
 };
 
@@ -1371,7 +1405,9 @@ function MeasureResultContent({
 	routeCells,
 	h3Resolution,
 	theme,
+	savedActivities,
 	onSaveAsActivity,
+	onSaveAsRoute,
 	onClose,
 }: MeasureResultContentProps) {
 	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
@@ -1379,6 +1415,16 @@ function MeasureResultContent({
 		{ iconName: 'grid-on', label: 'Enclosed Tiles', value: String(enclosedTileCount) },
 		{ iconName: 'grain', label: 'H3 Resolution', value: String(Math.floor(h3Resolution)) },
 	];
+	const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+	const [pendingRouteName, setPendingRouteName] = useState<string | null>(null);
+
+	const routeLengthKm = useMemo(() => computeRouteLengthKm(routeCells), [routeCells]);
+	const selectedActivity = savedActivities.find((a) => a.id === selectedActivityId) ?? null;
+	const estimatedMinutes =
+		selectedActivity && selectedActivity.stats.paceMinPerKm > 0
+			? routeLengthKm * selectedActivity.stats.paceMinPerKm
+			: null;
+
 	return (
 		<>
 			{rows.map((row, index) => (
@@ -1395,6 +1441,26 @@ function MeasureResultContent({
 					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
+			{savedActivities.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Geschätzte Dauer" />
+					<SettingsListSelectOption
+						options={savedActivities.map((a) => ({ id: a.id, label: formatActivityLabel(a) }))}
+						selectedOption={selectedActivityId}
+						selectionColor={PRIMARY_COLOR}
+						onSelect={(opt: SettingsListSelectOptionItem<string>) => setSelectedActivityId(opt.id)}
+					/>
+					{estimatedMinutes !== null && (
+						<SettingsList
+							leftIcon={<MaterialIcons name="timer" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title="Geschätzte Dauer"
+							value={formatEstimatedDuration(estimatedMinutes)}
+							groupPosition="single"
+						/>
+					)}
+				</>
+			)}
 			{routeCells.length >= 2 && (
 				<TouchableOpacity
 					style={[styles.shareButton, { backgroundColor: '#43a047', marginTop: 12 }]}
@@ -1402,8 +1468,34 @@ function MeasureResultContent({
 					activeOpacity={0.8}
 				>
 					<MaterialIcons name="save-alt" size={18} color="#ffffff" />
-					<Text style={styles.shareButtonText}>Save as Activity</Text>
+					<Text style={styles.shareButtonText}>Als Aktivität speichern</Text>
 				</TouchableOpacity>
+			)}
+			{routeCells.length >= 2 && (
+				<>
+					<SettingsListGroupTitle title="Als Route speichern" />
+					<SettingsListTextInput
+						title="Route benennen"
+						placeholder="Route Name"
+						modalTitle="Neue Route"
+						groupPosition={pendingRouteName ? 'top' : 'single'}
+						value={pendingRouteName ?? undefined}
+						initialValue={pendingRouteName ?? ''}
+						onSave={(name) => {
+							const trimmed = name.trim();
+							if (trimmed) setPendingRouteName(trimmed);
+						}}
+					/>
+					{pendingRouteName && (
+						<SettingsList
+							leftIcon={<MaterialIcons name="save" size={20} color="#ffffff" />}
+							iconBackgroundColor="#43a047"
+							title="Route speichern"
+							groupPosition="bottom"
+							onPress={() => { onSaveAsRoute(routeCells, pendingRouteName); onClose(); }}
+						/>
+					)}
+				</>
 			)}
 		</>
 	);
@@ -2362,7 +2454,26 @@ export default function RecordScreen() {
 		}
 	}, []);
 
-	const finishMeasurement = useCallback(() => {
+	const handleSaveMeasureAsRoute = useCallback((routeCells: string[], name: string) => {
+		if (routeCells.length < 2 || !name.trim()) return;
+		const now = Date.now();
+		const route: SavedRoute = {
+			id: String(now),
+			name: name.trim(),
+			hexTiles: routeCells,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			createdAt: now,
+			sportType: selectedSportTypeRef.current,
+		};
+		try {
+			saveRoute(route);
+			Alert.alert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
+		} catch {
+			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+		}
+	}, []);
+
+	const finishMeasurement = useCallback(async () => {
 		const waypoints = measureWaypointsRef.current;
 		if (waypoints.length < 2) {
 			Alert.alert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
@@ -2386,6 +2497,9 @@ export default function RecordScreen() {
 			// ignore
 		}
 
+		// Load saved activities for time estimation
+		const savedActivities = await loadActivities().catch(() => [] as SavedActivity[]);
+
 		// Exit measure mode and clear overlay
 		cancelMeasureMode();
 
@@ -2399,12 +2513,14 @@ export default function RecordScreen() {
 					routeCells={routeCells}
 					h3Resolution={h3ResolutionRef.current}
 					theme={theme}
+					savedActivities={savedActivities}
 					onSaveAsActivity={handleSaveMeasureAsActivity}
+					onSaveAsRoute={handleSaveMeasureAsRoute}
 					onClose={closeModal}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, cancelMeasureMode, handleSaveMeasureAsActivity]);
+	}, [showModal, closeModal, theme, cancelMeasureMode, handleSaveMeasureAsActivity, handleSaveMeasureAsRoute]);
 
 	const openColoringModal = useCallback(() => {
 		coloringSelectionMadeRef.current = false;
@@ -3149,34 +3265,13 @@ export default function RecordScreen() {
 			console.warn('[RecordScreen] Failed to save activity:', err);
 		}
 
-		// Build share data from the final Redux state (after all dispatches above).
-		const finalRecords = store.getState().hexTiles.records;
-		const shareData: RunShareData = {
-			startedAt: startTimeRef.current,
-			endedAt,
-			durationSeconds: stats.durationSeconds,
-			distanceKm: stats.distanceKm,
-			tiles: {
-				h3Resolution: Math.round(h3ResolutionRef.current),
-				visited: Array.from(visitedHexIdsRef.current).map((id) => [id, finalRecords[id]?.level ?? 0]),
-				enclosed: enclosedCells.map((id) => [id, finalRecords[id]?.level ?? 0]),
-			},
-		};
-
-		// Show run stats summary before navigating away
-		showModal({
-			title: '🏃 Run Statistics',
-			onClose: closeModal,
-			children: <RunStatsContent stats={stats} theme={theme} shareData={shareData} />,
-		});
-
 		// Clear the pre-run selected route after the run ends
 		setSelectedRoute(null);
 
 		// Navigate directly to the activity detail screen.
 		// Route assignment (if needed) is handled there via the scroll-view modal.
 		router.push(`/activities/${activity.id}`);
-	}, [showModal, closeModal, theme, dispatch, selectedSportType, router]);
+	}, [theme, dispatch, selectedSportType, router]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
