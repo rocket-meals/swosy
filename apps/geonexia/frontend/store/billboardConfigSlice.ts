@@ -20,6 +20,7 @@ const billboardConfigSlice = createSlice({
 	reducers: {
 		/**
 		 * Set the anchor override for a single sprite type.
+		 * Preserves any existing scaleMultiplier override.
 		 * All billboards of that type will use the new anchor values.
 		 */
 		setSpriteAnchor(
@@ -27,11 +28,32 @@ const billboardConfigSlice = createSlice({
 			action: PayloadAction<{ spriteIndex: number; anchorX: number; anchorY: number }>,
 		) {
 			const { spriteIndex, anchorX, anchorY } = action.payload;
-			state.spriteAnchors[spriteIndex] = { anchorX, anchorY };
+			const existing = state.spriteAnchors[spriteIndex];
+			state.spriteAnchors[spriteIndex] = {
+				...existing,
+				anchorX,
+				anchorY,
+			};
 		},
 
 		/**
-		 * Reset a sprite's anchor to its default values (removes the override).
+		 * Set the per-sprite scale multiplier for a single sprite type.
+		 * Preserves any existing anchor overrides.
+		 */
+		setSpriteScale(
+			state,
+			action: PayloadAction<{ spriteIndex: number; scaleMultiplier: number }>,
+		) {
+			const { spriteIndex, scaleMultiplier } = action.payload;
+			const existing = state.spriteAnchors[spriteIndex];
+			state.spriteAnchors[spriteIndex] = {
+				...existing,
+				scaleMultiplier,
+			};
+		},
+
+		/**
+		 * Reset a sprite's anchor and scale overrides (removes the entry entirely).
 		 */
 		resetSpriteAnchor(state, action: PayloadAction<{ spriteIndex: number }>) {
 			delete state.spriteAnchors[action.payload.spriteIndex];
@@ -49,5 +71,5 @@ const billboardConfigSlice = createSlice({
 	},
 });
 
-export const { setSpriteAnchor, resetSpriteAnchor, loadPersistedBillboardConfig } = billboardConfigSlice.actions;
+export const { setSpriteAnchor, setSpriteScale, resetSpriteAnchor, loadPersistedBillboardConfig } = billboardConfigSlice.actions;
 export default billboardConfigSlice.reducer;

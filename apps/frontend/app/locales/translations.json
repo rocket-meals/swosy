@@ -5772,5 +5772,95 @@
     "ru": "Ваше пожелание сейчас проверяется (например, на нарушения или неприемлемый язык) и будет опубликовано после.",
     "tr": "Özellik isteğiniz şu anda inceleniyor (örn. ihlaller veya uygunsuz dil için) ve daha sonra yayınlanacak.",
     "zh": "您的功能愿望正在审核中（例如检查违规或不当语言），之后将会发布。"
+  },
+  "edge_speech_test": {
+    "de": "Edge Speech Test",
+    "en": "Edge Speech Test",
+    "ar": "Edge Speech Test",
+    "es": "Edge Speech Test",
+    "fr": "Edge Speech Test",
+    "ru": "Edge Speech Test",
+    "tr": "Edge Speech Test",
+    "zh": "Edge Speech Test"
+  },
+  "edge_speech_test_description": {
+    "de": "Teste Microsoft Edge TTS mit über 400 natürlichen Stimmen.",
+    "en": "Test Microsoft Edge TTS with 400+ natural voices.",
+    "ar": "اختبر Microsoft Edge TTS مع أكثر من 400 صوت طبيعي.",
+    "es": "Prueba Microsoft Edge TTS con más de 400 voces naturales.",
+    "fr": "Teste Microsoft Edge TTS avec plus de 400 voix naturelles.",
+    "ru": "Проверьте Microsoft Edge TTS с более чем 400 естественными голосами.",
+    "tr": "400'den fazla doğal sesle Microsoft Edge TTS'yi test edin.",
+    "zh": "使用 400 多种自然语音测试 Microsoft Edge TTS。"
+  },
+  "edge_speech_enter_text": {
+    "de": "Text eingeben...",
+    "en": "Enter text...",
+    "ar": "أدخل النص...",
+    "es": "Ingresa el texto...",
+    "fr": "Saisir le texte...",
+    "ru": "Введите текст...",
+    "tr": "Metin girin...",
+    "zh": "输入文本..."
+  },
+  "edge_speech_speak": {
+    "de": "Vorlesen",
+    "en": "Speak",
+    "ar": "تحدث",
+    "es": "Hablar",
+    "fr": "Parler",
+    "ru": "Говорить",
+    "tr": "Konuş",
+    "zh": "朗读"
+  },
+  "edge_speech_stop": {
+    "de": "Stoppen",
+    "en": "Stop",
+    "ar": "إيقاف",
+    "es": "Detener",
+    "fr": "Arrêter",
+    "ru": "Стоп",
+    "tr": "Durdur",
+    "zh": "停止"
+  },
+  "edge_speech_status": {
+    "de": "Status",
+    "en": "Status",
+    "ar": "الحالة",
+    "es": "Estado",
+    "fr": "Statut",
+    "ru": "Статус",
+    "tr": "Durum",
+    "zh": "状态"
+  },
+  "edge_speech_status_idle": {
+    "de": "Bereit",
+    "en": "Idle",
+    "ar": "جاهز",
+    "es": "Listo",
+    "fr": "Prêt",
+    "ru": "Готов",
+    "tr": "Hazır",
+    "zh": "空闲"
+  },
+  "edge_speech_status_speaking": {
+    "de": "Spricht...",
+    "en": "Speaking...",
+    "ar": "يتحدث...",
+    "es": "Hablando...",
+    "fr": "Parle...",
+    "ru": "Говорит...",
+    "tr": "Konuşuyor...",
+    "zh": "正在朗读..."
+  },
+  "edge_speech_voice_label": {
+    "de": "Stimme",
+    "en": "Voice",
+    "ar": "الصوت",
+    "es": "Voz",
+    "fr": "Voix",
+    "ru": "Голос",
+    "tr": "Ses",
+    "zh": "语音"
   }
 }

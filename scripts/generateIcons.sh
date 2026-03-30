@@ -45,9 +45,12 @@ install_imagemagick() {
 # Function to print usage help
 print_usage() {
     echo "Usage: $0 <path_to_icon> <path_to_company_logo> [output_folder]"
+    echo "       $0 <path_to_icon> <path_to_company_logo> --project-dir <project_dir>"
+    echo ""
     echo "  <path_to_icon>         Path to the icon file"
     echo "  <path_to_company_logo> Path to the company logo file"
     echo "  [output_folder]        Optional: Path to the output folder. Default is ./app/assets/images/"
+    echo "  --project-dir <dir>    Optional: Path to the project directory. Output folder will be <dir>/assets/"
 }
 
 # Define default output folder
@@ -72,9 +75,14 @@ generate_splash_icon() {
     local splash_icon_path="$OUTPUT_FOLDER/splash-icon.png"
 
     # Resize company.png to fit within 90% of splash icon size (921px max)
+    # -shave 1x1 removes 1 pixel from each edge before resize to avoid black border
+    # artifacts caused by ImageMagick anti-aliasing edge pixels against a black virtual border.
     local icon_max_size=921
-    convert "$OUTPUT_FOLDER/company.png" -resize ${icon_max_size}x${icon_max_size} \
+    convert "$OUTPUT_FOLDER/company.png" -shave 1x1 -resize ${icon_max_size}x${icon_max_size} \
         -gravity center -background none -extent $splash_icon_size "$splash_icon_path"
+
+    # Also generate splash.png (used by expo-splash-screen)
+    cp "$splash_icon_path" "$OUTPUT_FOLDER/splash.png"
 }
 
 generate_adaptive_icon() {
@@ -96,7 +104,42 @@ generate_adaptive_icon_background() {
     convert -size $ADAPTIVE_ICON_SIZE xc:white "$output_path"
 }
 
+# Function to compute SHA-256 hash of a file
+compute_file_hash() {
+    local file_path=$1
+    if command -v sha256sum &> /dev/null; then
+        sha256sum "$file_path" | cut -d' ' -f1
+    elif command -v shasum &> /dev/null; then
+        shasum -a 256 "$file_path" | cut -d' ' -f1
+    else
+        echo "ERROR: No SHA-256 hash tool found" >&2
+        exit 1
+    fi
+}
 
+# Function to write hash JSON file for source tracking
+write_hash_file() {
+    local icon_path=$1
+    local logo_path=$2
+    local hash_file="$OUTPUT_FOLDER/icons_hash.json"
+
+    local icon_hash
+    icon_hash=$(compute_file_hash "$icon_path")
+    local logo_hash
+    logo_hash=$(compute_file_hash "$logo_path")
+    local generated_at
+    generated_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    cat > "$hash_file" << EOF
+{
+    "icon_source_hash": "${icon_hash}",
+    "company_logo_hash": "${logo_hash}",
+    "generated_at": "${generated_at}"
+}
+EOF
+
+    echo "Hash file written to $hash_file"
+}
 
 # Function to generate images
 generate_images() {
@@ -105,9 +148,6 @@ generate_images() {
 
     # Ensure the output folder exists
     mkdir -p "$OUTPUT_FOLDER"
-
-    # Generate adaptive-icon.png # Ignore adaptive icon for now
-    #convert "$icon_path" -resize $ADAPTIVE_ICON_SIZE "$OUTPUT_FOLDER/adaptive-icon.png"
 
     # Generate favicon.png
     convert "$icon_path" -resize $FAVICON_SIZE "$OUTPUT_FOLDER/favicon.png"
@@ -124,8 +164,11 @@ generate_images() {
     generate_adaptive_icon "$icon_path"
     generate_adaptive_icon_background
 
-    # Generate splash-icon.png
+    # Generate splash-icon.png and splash.png
     generate_splash_icon
+
+    # Write hash file for source tracking
+    write_hash_file "$icon_path" "$logo_path"
 }
 
 # Main script execution
@@ -138,9 +181,25 @@ fi
 ICON_PATH=$1
 LOGO_PATH=$2
 
-if [[ $# -eq 3 ]]; then
-    OUTPUT_FOLDER=$3
-fi
+# Parse optional arguments
+shift 2
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --project-dir)
+            if [[ -z "$2" ]]; then
+                echo "Error: --project-dir requires a directory argument."
+                print_usage
+                exit 1
+            fi
+            OUTPUT_FOLDER="$2/assets/"
+            shift 2
+            ;;
+        *)
+            OUTPUT_FOLDER=$1
+            shift
+            ;;
+    esac
+done
 
 check_imagemagick
 generate_images "$ICON_PATH" "$LOGO_PATH"

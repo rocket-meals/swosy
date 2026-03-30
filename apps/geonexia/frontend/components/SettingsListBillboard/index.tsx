@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
+import { WebView } from 'react-native-webview';
 import { SettingsList, useTheme } from 'repo-depkit-common-ui';
 
 import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
@@ -60,13 +61,16 @@ const SettingsListBillboard: React.FC<Props> = ({
 	const spriteName = sprite?.name ?? '—';
 
 	const thumbnail = svgUri ? (
-		<Image
-			source={{ uri: svgUri }}
-			style={styles.thumb}
-			resizeMode="contain"
+		<WebView
+			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${THUMB_SIZE}px;height:${THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}"/></body></html>` }}
+			style={[styles.thumb, { backgroundColor: 'transparent' }]}
+			originWhitelist={['*']}
+			scrollEnabled={false}
+			javaScriptEnabled={false}
+			pointerEvents="none"
 		/>
 	) : (
-		<View style={[styles.thumb, { backgroundColor: theme.screen.text + '10', borderRadius: 6 }]} />
+		<View style={[styles.thumb, { backgroundColor: 'transparent', borderRadius: 6 }]} />
 	);
 
 	return (

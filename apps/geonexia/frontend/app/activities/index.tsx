@@ -11,13 +11,14 @@ import {
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
-import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { startRun, markVisited } from '../../store/hexTileSlice';
-import { AppDispatch } from '../../store/store';
+import { isAvailable as isH3Available, latLngToCell, gridPathCells } from '../../helpers/H3Helper';
+import { startRun, markVisited, loadPersistedState, applyMapCustomizations, addWalkedEdges, loadWalkedEdgesState } from '../../store/hexTileSlice';
+import { AppDispatch, store } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -196,21 +197,137 @@ export default function ActivitiesScreen() {
 			Alert.alert('Import Failed', 'The code is not valid JSON.');
 			return;
 		}
-		const activity = parsed as SavedActivity;
-		if (
-			typeof activity.id !== 'string' ||
-			typeof activity.startedAt !== 'number' ||
-			!Array.isArray(activity.routePoints)
-		) {
-			Alert.alert('Import Failed', 'The data does not look like a valid activity.');
-			return;
+
+		// Support both a single activity object and an array of activities.
+		const rawActivities: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+		const validActivities: SavedActivity[] = [];
+		for (const item of rawActivities) {
+			const activity = item as SavedActivity;
+			if (
+				typeof activity.id !== 'string' ||
+				typeof activity.startedAt !== 'number' ||
+				!Array.isArray(activity.routePoints)
+			) {
+				Alert.alert('Import Failed', 'One or more entries do not look like valid activities.');
+				return;
+			}
+			validActivities.push(activity);
 		}
-		saveActivity(activity);
-		applyImportedHexTiles(activity);
+		for (const activity of validActivities) {
+			saveActivity(activity);
+			applyImportedHexTiles(activity);
+		}
 		closeImportModal();
 		loadData();
-		Alert.alert('Imported', 'The run has been imported successfully.');
+		const count = validActivities.length;
+		Alert.alert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
 	}, [applyImportedHexTiles, closeImportModal, loadData]);
+
+	const handleExportAll = useCallback(async () => {
+		const allActivities = await loadActivities();
+		if (allActivities.length === 0) {
+			Alert.alert('Nothing to Export', 'There are no activities to export.');
+			return;
+		}
+		const json = JSON.stringify(allActivities, null, 2);
+		await Clipboard.setStringAsync(json);
+		const count = allActivities.length;
+		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+	}, []);
+
+	const handleRebuildMap = useCallback(() => {
+		Alert.alert(
+			'Rebuild Map from Activities',
+			'This will recalculate the explored map from all your saved activities. Billboard and terrain tile settings will be preserved. Continue?',
+			[
+				{ text: 'Cancel', style: 'cancel' },
+				{
+					text: 'Rebuild',
+					style: 'destructive',
+					onPress: async () => {
+						if (!isH3Available()) {
+							Alert.alert('Not Available', 'H3 library is not available on this device.');
+							return;
+						}
+						const allActivities = await loadActivities();
+						if (allActivities.length === 0) {
+							Alert.alert('No Activities', 'There are no activities to rebuild the map from.');
+							return;
+						}
+
+						// Preserve existing billboard / terrain customizations
+						const currentRecords = store.getState().hexTiles.records;
+						const customizations: Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }> = {};
+						for (const [h3Index, record] of Object.entries(currentRecords)) {
+							if (record.tileImage !== undefined || record.billboard !== undefined || record.billboardAnchorColor !== undefined || record.billboards !== undefined) {
+								customizations[h3Index] = {};
+								if (record.tileImage !== undefined) customizations[h3Index].tileImage = record.tileImage;
+								if (record.billboard !== undefined) customizations[h3Index].billboard = record.billboard;
+								if (record.billboardAnchorColor !== undefined) customizations[h3Index].billboardAnchorColor = record.billboardAnchorColor;
+								if (record.billboards !== undefined) customizations[h3Index].billboards = record.billboards;
+							}
+						}
+
+						// Clear all tile data, then replay each activity oldest-first
+						dispatch(loadPersistedState({}));
+						dispatch(loadWalkedEdgesState([]));
+						const rebuildEdgeSet = new Set<string>();
+						const GPS_INTERPOLATION_MAX = 10;
+						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+						for (const activity of sorted) {
+							dispatch(startRun());
+							const h3Set = new Set<string>();
+							let lastCell: string | null = null;
+							for (const point of activity.routePoints) {
+								try {
+									const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
+									if (!cell) continue;
+									// Interpolate path cells for GPS gaps
+									if (lastCell && cell !== lastCell) {
+										try {
+											const pathCells = gridPathCells(lastCell, cell);
+											if (pathCells.length - 2 <= GPS_INTERPOLATION_MAX) {
+												for (let i = 0; i < pathCells.length - 1; i++) {
+													const a = pathCells[i];
+													const b = pathCells[i + 1];
+													const edgeKey = a < b ? `${a}:${b}` : `${b}:${a}`;
+													rebuildEdgeSet.add(edgeKey);
+													if (!h3Set.has(a)) {
+														h3Set.add(a);
+														dispatch(markVisited({ h3Indices: [a], timestamp: point.timestamp }));
+													}
+												}
+											}
+										} catch {
+											// gridPathCells can throw for cells on different faces
+										}
+									}
+									if (!h3Set.has(cell)) {
+										h3Set.add(cell);
+										dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+									}
+									lastCell = cell;
+								} catch {
+									// Skip invalid points
+								}
+							}
+						}
+						if (rebuildEdgeSet.size > 0) {
+							dispatch(addWalkedEdges(Array.from(rebuildEdgeSet)));
+						}
+
+						// Re-apply customizations preserved from before
+						if (Object.keys(customizations).length > 0) {
+							dispatch(applyMapCustomizations(customizations));
+						}
+
+						const count = allActivities.length;
+						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
+					},
+				},
+			],
+		);
+	}, [dispatch]);
 
 	const openImportModal = useCallback(() => {
 		showImportModal({
@@ -226,16 +343,24 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, closeImportModal, theme]);
 
-	// Show import button in the header
+	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
-				<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
-					<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
-				</TouchableOpacity>
+				<View style={styles.headerButtons}>
+					<TouchableOpacity onPress={handleRebuildMap} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+					<TouchableOpacity onPress={handleExportAll} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+					<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+				</View>
 			),
 		});
-	}, [navigation, openImportModal]);
+	}, [navigation, openImportModal, handleExportAll, handleRebuildMap]);
 
 	const handleActivityPress = useCallback((id: string) => {
 		router.push(`/activities/${id}`);
@@ -340,8 +465,14 @@ const styles = StyleSheet.create({
 		lineHeight: 20,
 	},
 	headerImportButton: {
-		marginRight: 12,
+		marginRight: 4,
 		padding: 4,
+	},
+	headerButtons: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginRight: 8,
+		gap: 4,
 	},
 	importContainer: {
 		paddingTop: 4,

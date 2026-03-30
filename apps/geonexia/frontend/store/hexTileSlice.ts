@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { HexTileRecord, computeHexTileLevel } from '../helpers/HexTileStorage';
+import { HexTileRecord, BillboardAnchorColor, computeHexTileLevel } from '../helpers/HexTileStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
@@ -13,12 +13,26 @@ export type HexTileSliceState = {
 	 * Screens can watch this value to detect resets and refresh their map views.
 	 */
 	resetToken: number;
+	/** Whether the app is currently using the dev-mode tile set instead of the real one. */
+	isDevMode: boolean;
+	/** Whether debug mode is active (shows debug button, coloring tool, etc.). */
+	isDebugMode: boolean;
+	/**
+	 * Set of actual hex-to-hex transitions that occurred during walks, stored as
+	 * "cellA:cellB" strings where cellA is lexicographically smaller than cellB.
+	 * Used to draw spokes only between hexagons that were actually traversed
+	 * consecutively, instead of connecting all adjacent walked-on hexagons.
+	 */
+	walkedEdges: string[];
 };
 
 const initialState: HexTileSliceState = {
 	records: {},
 	runStartLevels: {},
 	resetToken: 0,
+	isDevMode: false,
+	isDebugMode: false,
+	walkedEdges: [],
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -115,6 +129,7 @@ const hexTileSlice = createSlice({
 		/**
 		 * Set the custom tile image and/or billboard for a specific hex tile.
 		 * Pass `null` to explicitly clear a value; omit the key to leave it unchanged.
+		 * @deprecated Prefer `setBillboardAtAnchor` for billboard changes.
 		 */
 		setHexTileCustomization(
 			state,
@@ -126,8 +141,95 @@ const hexTileSlice = createSlice({
 			if (billboard !== undefined) rec.billboard = billboard;
 			if (billboardAnchorColor !== undefined) rec.billboardAnchorColor = billboardAnchorColor;
 		},
+
+		/**
+		 * Set or clear the billboard at a specific anchor position on a hex tile.
+		 * Migrates the legacy `billboard`/`billboardAnchorColor` fields into the
+		 * `billboards` map the first time this action is dispatched for a tile.
+		 */
+		setBillboardAtAnchor(
+			state,
+			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorColor; billboard: string | null }>,
+		) {
+			const { h3Index, anchorColor, billboard } = action.payload;
+			const rec = getOrCreate(state.records, h3Index);
+			if (!rec.billboards) {
+				rec.billboards = {};
+				// Migrate legacy single-billboard field if present
+				if (rec.billboard) {
+					const legacyAnchor = rec.billboardAnchorColor ?? BillboardAnchorColor.Purple;
+					rec.billboards[legacyAnchor] = rec.billboard;
+				}
+			}
+			if (billboard === null) {
+				delete rec.billboards[anchorColor];
+			} else {
+				rec.billboards[anchorColor] = billboard;
+			}
+		},
+
+		/**
+		 * Apply map customizations (tileImage, billboards) to the tile records,
+		 * merging the provided data into the existing state. Useful for importing
+		 * map settings without overwriting activity tracking data.
+		 */
+		applyMapCustomizations(
+			state,
+			action: PayloadAction<Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }>>,
+		) {
+			for (const [h3Index, customization] of Object.entries(action.payload)) {
+				const rec = getOrCreate(state.records, h3Index);
+				if (customization.tileImage !== undefined) rec.tileImage = customization.tileImage;
+				if (customization.billboard !== undefined) rec.billboard = customization.billboard;
+				if (customization.billboardAnchorColor !== undefined) rec.billboardAnchorColor = customization.billboardAnchorColor;
+				if (customization.billboards !== undefined) rec.billboards = customization.billboards;
+			}
+		},
+
+		/**
+		 * Atomically switch between dev-mode and production tile sets.
+		 * Replaces the entire records state with the provided set and flips the
+		 * `isDevMode` flag so that the auto-save subscriber writes to the correct
+		 * file. Bumps `resetToken` so that the record screen reloads the map.
+		 */
+		setDevMode(
+			state,
+			action: PayloadAction<{ isDevMode: boolean; records: Record<string, HexTileRecord>; walkedEdges?: string[] }>,
+		) {
+			state.isDevMode = action.payload.isDevMode;
+			state.records = action.payload.records;
+			state.walkedEdges = action.payload.walkedEdges ?? [];
+			state.runStartLevels = {};
+			state.resetToken += 1;
+		},
+
+		/** Set debug mode on/off. */
+		setDebugMode(state, action: PayloadAction<boolean>) {
+			state.isDebugMode = action.payload;
+		},
+
+		/**
+		 * Record one or more actual hex-to-hex transitions that occurred during a walk.
+		 * Each edge is provided as "cellA:cellB" with the lexicographically smaller
+		 * index first. Duplicate edges are silently ignored.
+		 */
+		addWalkedEdges(state, action: PayloadAction<string[]>) {
+			const edgeSet = new Set(state.walkedEdges);
+			for (const edge of action.payload) {
+				edgeSet.add(edge);
+			}
+			state.walkedEdges = Array.from(edgeSet);
+		},
+
+		/**
+		 * Replace the walked-edges list with data loaded from persistent storage.
+		 * Called once at app startup alongside loadPersistedState / setDevMode.
+		 */
+		loadWalkedEdgesState(state, action: PayloadAction<string[]>) {
+			state.walkedEdges = action.payload;
+		},
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

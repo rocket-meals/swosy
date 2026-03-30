@@ -18,6 +18,7 @@ export type RunStats = {
 	maxSpeedKmh: number;
 	minSpeedKmh: number;
 	avgSpeedKmh: number;
+	medianSpeedKmh: number;
 	kcal: number;
 	steps: number;
 	elevationGainM: number;
@@ -33,6 +34,8 @@ export type SavedActivity = {
 	stats: RunStats;
 	/** Sport type recorded for this activity. Optional for backward-compat with older saves. */
 	sportType?: SportType;
+	/** H3 resolution used during recording. Optional for backward-compat with older saves. */
+	h3Resolution?: number;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

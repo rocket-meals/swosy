@@ -8,26 +8,33 @@ import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, 
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
-import { loadPersistedState } from '../store/hexTileSlice';
+import { setDevMode, setDebugMode, loadWalkedEdgesState } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
-import { loadHexTileState } from '../helpers/HexTileStorage';
+import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
+import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
+import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
+import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { loadTTSEnabled } from '../helpers/TTSStorage';
+import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import type { RootState } from '../store/store';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
-type ErrorBoundaryState = { hasError: boolean; error: Error | null };
+type ErrorBoundaryState = { hasError: boolean; error: Error | null; copied: boolean };
 
 class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
 	constructor(props: { children: React.ReactNode }) {
 		super(props);
-		this.state = { hasError: false, error: null };
+		this.state = { hasError: false, error: null, copied: false };
 	}
 
 	static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -41,7 +48,7 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, Er
 
 	render() {
 		if (this.state.hasError) {
-			const { error } = this.state;
+			const { error, copied } = this.state;
 			return (
 				<View style={styles.errorContainer}>
 					<Modal visible transparent animationType="slide" accessibilityViewIsModal>
@@ -57,9 +64,26 @@ class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, Er
 								</ScrollView>
 								<TouchableOpacity
 									accessibilityRole="button"
+									accessibilityLabel="Copy problem to clipboard"
+									style={styles.errorCopyButton}
+									onPress={() => {
+										const text = [
+											`Error: ${error?.name ?? 'Unknown'}`,
+											`Message: ${error?.message ?? ''}`,
+											error?.stack ? `Stack:\n${error.stack}` : '',
+										].filter(Boolean).join('\n\n');
+										Clipboard.setStringAsync(text);
+										this.setState({ copied: true });
+										setTimeout(() => this.setState({ copied: false }), 2000);
+									}}
+								>
+									<Text style={styles.errorCopyButtonText}>{copied ? '✅ Kopiert!' : '📋 Problem kopieren'}</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									accessibilityRole="button"
 									accessibilityLabel="Dismiss error"
 									style={styles.errorButton}
-									onPress={() => this.setState({ hasError: false, error: null })}
+									onPress={() => this.setState({ hasError: false, error: null, copied: false })}
 								>
 									<Text style={styles.errorButtonText}>Dismiss</Text>
 								</TouchableOpacity>
@@ -85,8 +109,114 @@ function ThemeSyncBridge() {
 	return null;
 }
 
+function ThemedDrawerNavigator() {
+	const { theme } = useTheme();
+
+	return (
+		<>
+		<StatusBar style="auto" />
+		<Drawer
+			drawerContent={(props) => <CustomDrawerContent {...props} />}
+			screenOptions={{
+				drawerActiveTintColor: '#2563eb',
+				headerStyle: { backgroundColor: theme.header.background },
+				headerTintColor: theme.header.text,
+			}}
+		>
+			<Drawer.Screen
+				name="index"
+				options={{
+					title: 'Record',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="radio-button-on-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="activities/index"
+				options={{
+					title: 'Activities',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="list-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="activities/[id]"
+				options={{
+					title: 'Activity',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name="statistics/index"
+				options={{
+					title: 'Statistics',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="bar-chart-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="achievements/index"
+				options={{
+					title: 'Achievements',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="trophy-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="settings/index"
+				options={{
+					title: 'Settings',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="settings-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="feature-wishes/index"
+				options={{
+					title: 'Feature Wishes',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="bulb-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="billboard-config/index"
+				options={{
+					title: 'Billboard Config',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="build-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="experimental/index"
+				options={{
+					title: 'Experimental',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="flask-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="experimental/tts-test/index"
+				options={{
+					title: 'Text to Speech Test',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+		</Drawer>
+		</>
+	);
+}
+
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
+	const { theme } = useTheme();
 
 	const items: DrawerItem[] = [
 		{
@@ -131,6 +261,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('billboard-config/index'),
 		},
+		{
+			key: 'experimental/index',
+			label: 'Experimental',
+			renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('experimental/index'),
+		},
 	];
 
 	return (
@@ -138,7 +274,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderLogo={() => (
 				<View style={styles.logoRow}>
 					<Ionicons name="location-sharp" size={32} color="#2563eb" />
-					<Text style={styles.logoTitle}>Geonexia</Text>
+					<Text style={[styles.logoTitle, { color: theme.text }]}>Geonexia</Text>
 				</View>
 			)}
 			items={items}
@@ -150,12 +286,22 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 export default function Layout() {
 	useEffect(() => {
-		loadHexTileState()
-			.then((records) => {
-				store.dispatch(loadPersistedState(records));
+		(async () => {
+			const isDevMode = await loadDevModeFlag();
+			const [records, walkedEdges] = await Promise.all([
+				isDevMode ? loadDevHexTileState() : loadHexTileState(),
+				isDevMode ? loadDevWalkedEdges() : loadWalkedEdges(),
+			]);
+			store.dispatch(setDevMode({ isDevMode, records, walkedEdges }));
+		})().catch((err) => {
+			console.warn('[Layout] Failed to load persisted hex tile state:', err);
+		});
+		loadDebugModeFlag()
+			.then((isDebugMode) => {
+				store.dispatch(setDebugMode(isDebugMode));
 			})
 			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted hex tile state:', err);
+				console.warn('[Layout] Failed to load persisted debug mode flag:', err);
 			});
 		loadSportType()
 			.then((type) => {
@@ -178,6 +324,27 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted billboard config:', err);
 			});
+		loadGpsIntervalMode()
+			.then((mode) => {
+				store.dispatch(loadGpsIntervalModeAction(mode));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted GPS interval mode:', err);
+			});
+		loadTTSEnabled()
+			.then((enabled) => {
+				store.dispatch(loadTTSEnabledAction(enabled));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted TTS enabled flag:', err);
+			});
+		loadSpeechSettings()
+			.then((settings) => {
+				store.dispatch(loadSpeechSettingsAction(settings));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted speech settings:', err);
+			});
 	}, []);
 
 	return (
@@ -189,84 +356,7 @@ export default function Layout() {
 					<ThemeSyncBridge />
 					<SettingsProvider primaryColor="#2563eb">
 						<ModalProvider>
-						<StatusBar style="auto" />
-						<Drawer
-							drawerContent={(props) => <CustomDrawerContent {...props} />}
-							screenOptions={{
-								drawerActiveTintColor: '#2563eb',
-							}}
-						>
-							<Drawer.Screen
-								name="index"
-								options={{
-									title: 'Record',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="radio-button-on-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="activities/index"
-								options={{
-									title: 'Activities',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="list-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="activities/[id]"
-								options={{
-									title: 'Activity',
-									drawerItemStyle: { display: 'none' },
-								}}
-							/>
-							<Drawer.Screen
-								name="statistics/index"
-								options={{
-									title: 'Statistics',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="bar-chart-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="achievements/index"
-								options={{
-									title: 'Achievements',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="trophy-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="settings/index"
-								options={{
-									title: 'Settings',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="settings-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="feature-wishes/index"
-								options={{
-									title: 'Feature Wishes',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="bulb-outline" size={size} color={color} />
-									),
-								}}
-							/>
-							<Drawer.Screen
-								name="billboard-config/index"
-								options={{
-									title: 'Billboard Config',
-									drawerIcon: ({ color, size }) => (
-										<Ionicons name="build-outline" size={size} color={color} />
-									),
-								}}
-							/>
-						</Drawer>
+						<ThemedDrawerNavigator />
 						</ModalProvider>
 					</SettingsProvider>
 				</ThemeProvider>
@@ -286,7 +376,6 @@ const styles = StyleSheet.create({
 	logoTitle: {
 		fontSize: 20,
 		fontWeight: '700',
-		color: '#111111',
 	},
 	errorContainer: {
 		flex: 1,
@@ -338,6 +427,18 @@ const styles = StyleSheet.create({
 	},
 	errorButtonText: {
 		color: '#fff',
+		fontWeight: '600',
+		fontSize: 15,
+	},
+	errorCopyButton: {
+		backgroundColor: '#f3f4f6',
+		borderRadius: 8,
+		paddingVertical: 12,
+		alignItems: 'center',
+		marginBottom: 8,
+	},
+	errorCopyButtonText: {
+		color: '#374151',
 		fontWeight: '600',
 		fontSize: 15,
 	},
