@@ -22,7 +22,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListSelectOption, SettingsListSelectOptionItem } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
@@ -1394,6 +1394,7 @@ type MeasureResultContentProps = {
 	h3Resolution: number;
 	theme: ReturnType<typeof useTheme>['theme'];
 	savedActivities: SavedActivity[];
+	selectedSportType: SportType;
 	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
 	onSaveAsRoute: (routeCells: string[], name: string) => void;
 	onClose: () => void;
@@ -1406,6 +1407,7 @@ function MeasureResultContent({
 	h3Resolution,
 	theme,
 	savedActivities,
+	selectedSportType,
 	onSaveAsActivity,
 	onSaveAsRoute,
 	onClose,
@@ -1415,15 +1417,52 @@ function MeasureResultContent({
 		{ iconName: 'grid-on', label: 'Enclosed Tiles', value: String(enclosedTileCount) },
 		{ iconName: 'grain', label: 'H3 Resolution', value: String(Math.floor(h3Resolution)) },
 	];
-	const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 	const [pendingRouteName, setPendingRouteName] = useState<string | null>(null);
 
 	const routeLengthKm = useMemo(() => computeRouteLengthKm(routeCells), [routeCells]);
-	const selectedActivity = savedActivities.find((a) => a.id === selectedActivityId) ?? null;
-	const estimatedMinutes =
-		selectedActivity && selectedActivity.stats.paceMinPerKm > 0
-			? routeLengthKm * selectedActivity.stats.paceMinPerKm
-			: null;
+
+	const sportDef = useMemo(
+		() => SPORT_TYPES.find((s) => s.type === selectedSportType) ?? SPORT_TYPES[0],
+		[selectedSportType],
+	);
+
+	const activitiesOfType = useMemo(
+		() =>
+			savedActivities
+				.filter((a) => a.sportType === selectedSportType)
+				.sort((a, b) => b.startedAt - a.startedAt),
+		[savedActivities, selectedSportType],
+	);
+
+	const lastActivity = activitiesOfType[0] ?? null;
+
+	const generalAvgSpeedKmh = useMemo(() => {
+		const validActivities = activitiesOfType.filter((a) => a.stats.avgSpeedKmh > 0);
+		if (validActivities.length === 0) return 0;
+		return validActivities.reduce((sum, a) => sum + a.stats.avgSpeedKmh, 0) / validActivities.length;
+	}, [activitiesOfType]);
+
+	const sourceActivity =
+		lastActivity !== null && lastActivity.stats.avgSpeedKmh > 0 ? lastActivity : null;
+
+	const effectiveSpeedKmh = sourceActivity ? sourceActivity.stats.avgSpeedKmh : generalAvgSpeedKmh;
+
+	const estimatedMinutes = effectiveSpeedKmh > 0 ? (routeLengthKm / effectiveSpeedKmh) * 60 : null;
+
+	const sportIcon =
+		sportDef.iconLibrary === 'MaterialCommunityIcons' ? (
+			<MaterialCommunityIcons
+				name={sportDef.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+				size={20}
+				color="#ffffff"
+			/>
+		) : (
+			<MaterialIcons
+				name={sportDef.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
+				size={20}
+				color="#ffffff"
+			/>
+		);
 
 	return (
 		<>
@@ -1441,24 +1480,25 @@ function MeasureResultContent({
 					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
-			{savedActivities.length > 0 && (
+			{estimatedMinutes !== null && (
 				<>
 					<SettingsListGroupTitle title="Geschätzte Dauer" />
-					<SettingsListSelectOption
-						options={savedActivities.map((a) => ({ id: a.id, label: formatActivityLabel(a) }))}
-						selectedOption={selectedActivityId}
-						selectionColor={PRIMARY_COLOR}
-						onSelect={(opt: SettingsListSelectOptionItem<string>) => setSelectedActivityId(opt.id)}
-					/>
-					{estimatedMinutes !== null && (
+					{sourceActivity !== null && (
 						<SettingsList
-							leftIcon={<MaterialIcons name="timer" size={20} color="#ffffff" />}
-							iconBackgroundColor={PRIMARY_COLOR}
-							title="Geschätzte Dauer"
-							value={formatEstimatedDuration(estimatedMinutes)}
-							groupPosition="single"
+							leftIcon={sportIcon}
+							iconBackgroundColor={sportDef.color}
+							title={sportDef.label}
+							value={formatActivityLabel(sourceActivity)}
+							groupPosition="top"
 						/>
 					)}
+					<SettingsList
+						leftIcon={<MaterialIcons name="timer" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Geschätzte Dauer"
+						value={formatEstimatedDuration(estimatedMinutes)}
+						groupPosition={sourceActivity !== null ? 'bottom' : 'single'}
+					/>
 				</>
 			)}
 			{routeCells.length >= 2 && (
@@ -2514,6 +2554,7 @@ export default function RecordScreen() {
 					h3Resolution={h3ResolutionRef.current}
 					theme={theme}
 					savedActivities={savedActivities}
+					selectedSportType={selectedSportTypeRef.current}
 					onSaveAsActivity={handleSaveMeasureAsActivity}
 					onSaveAsRoute={handleSaveMeasureAsRoute}
 					onClose={closeModal}
