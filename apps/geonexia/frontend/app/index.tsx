@@ -1189,7 +1189,7 @@ function DebugInfoContent({
 
 			{/* Min Zoom for Tiles row with ±1 buttons */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom für Tiles</Text>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
 				{showGridAlways ? (
 					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
 				) : (
