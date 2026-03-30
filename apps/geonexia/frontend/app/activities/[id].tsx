@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
 	Alert,
+	Keyboard,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -11,7 +13,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, SettingsListTextInput, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
@@ -375,7 +377,7 @@ type RouteAssignmentProps = {
 
 function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
 	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
-	const [pendingName, setPendingName] = useState<string | null>(null);
+	const [routeName, setRouteName] = useState('');
 
 	const assignRoute = useCallback((routeId: string | null) => {
 		const updated: SavedActivity = { ...activity, routeId };
@@ -451,27 +453,32 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 			)}
 
 			<SettingsListGroupTitle title="Neue Route erstellen" />
-			<SettingsListTextInput
-				title="Route benennen"
-				placeholder="Route Name"
-				modalTitle="Neue Route"
-				groupPosition={pendingName ? 'top' : 'single'}
-				value={pendingName ?? undefined}
-				initialValue={pendingName ?? ''}
-				onSave={(name) => {
-					const trimmed = name.trim();
-					if (trimmed) setPendingName(trimmed);
-				}}
-			/>
-			{pendingName && (
-				<SettingsList
-					leftIcon={<MaterialIcons name="check" size={20} color="#ffffff" />}
-					iconBackgroundColor={PRIMARY_COLOR}
-					title="Speichern und zuordnen"
-					groupPosition="bottom"
-					onPress={() => createAndAssign(pendingName)}
+			<View style={routeAssignStyles.newRouteInputContainer}>
+				<TextInput
+					style={[routeAssignStyles.newRouteInput, { color: theme.sheet.text, backgroundColor: theme.sheet.inputBg, borderColor: theme.sheet.inputBorder }]}
+					placeholder="Route Name"
+					placeholderTextColor={theme.sheet.placeholder}
+					value={routeName}
+					onChangeText={setRouteName}
+					returnKeyType="done"
+					blurOnSubmit
+					onSubmitEditing={() => {
+						Keyboard.dismiss();
+						createAndAssign(routeName);
+					}}
 				/>
-			)}
+				<TouchableOpacity
+					style={[routeAssignStyles.newRouteSaveButton, { backgroundColor: PRIMARY_COLOR }]}
+					onPress={() => {
+						Keyboard.dismiss();
+						createAndAssign(routeName);
+					}}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="check" size={18} color="#ffffff" />
+					<Text style={routeAssignStyles.assignButtonText}>Speichern und zuordnen</Text>
+				</TouchableOpacity>
+			</View>
 
 			<SettingsListGroupTitle title="Optionen" />
 			<SettingsListSelectOptionSingle
@@ -524,6 +531,25 @@ const routeAssignStyles = StyleSheet.create({
 		color: '#ffffff',
 		fontSize: 15,
 		fontWeight: '600',
+	},
+	newRouteInputContainer: {
+		marginHorizontal: 16,
+		gap: 8,
+	},
+	newRouteInput: {
+		height: 48,
+		paddingHorizontal: 16,
+		borderWidth: 1,
+		borderRadius: 10,
+		fontSize: 14,
+	},
+	newRouteSaveButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 6,
 	},
 });
 
