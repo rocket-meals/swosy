@@ -5151,24 +5151,23 @@
       var routeEndCoord      = null; // [lng, lat] or null
       var ROUTE_POINT_RADIUS_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 6, 13, 9, 18, 14];
 
-      function updateRouteStartPoint(coord) {
+      function updateRoutePointLayer(sourceId, layerId, color, coord) {
         if (!map) return;
-        routeStartCoord = coord || null;
         var geojson = {
           type: 'FeatureCollection',
           features: coord ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} }] : [],
         };
-        if (map.getSource(ROUTE_START_SOURCE)) {
-          map.getSource(ROUTE_START_SOURCE).setData(geojson);
+        if (map.getSource(sourceId)) {
+          map.getSource(sourceId).setData(geojson);
         } else {
-          map.addSource(ROUTE_START_SOURCE, { type: 'geojson', data: geojson });
+          map.addSource(sourceId, { type: 'geojson', data: geojson });
           map.addLayer({
-            id: ROUTE_START_LAYER,
+            id: layerId,
             type: 'circle',
-            source: ROUTE_START_SOURCE,
+            source: sourceId,
             paint: {
               'circle-radius': ROUTE_POINT_RADIUS_EXPR,
-              'circle-color': '#22c55e',
+              'circle-color': color,
               'circle-stroke-width': 2,
               'circle-stroke-color': '#ffffff',
               'circle-opacity': 1,
@@ -5177,30 +5176,14 @@
         }
       }
 
+      function updateRouteStartPoint(coord) {
+        routeStartCoord = coord || null;
+        updateRoutePointLayer(ROUTE_START_SOURCE, ROUTE_START_LAYER, '#22c55e', routeStartCoord);
+      }
+
       function updateRouteEndPoint(coord) {
-        if (!map) return;
         routeEndCoord = coord || null;
-        var geojson = {
-          type: 'FeatureCollection',
-          features: coord ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} }] : [],
-        };
-        if (map.getSource(ROUTE_END_SOURCE)) {
-          map.getSource(ROUTE_END_SOURCE).setData(geojson);
-        } else {
-          map.addSource(ROUTE_END_SOURCE, { type: 'geojson', data: geojson });
-          map.addLayer({
-            id: ROUTE_END_LAYER,
-            type: 'circle',
-            source: ROUTE_END_SOURCE,
-            paint: {
-              'circle-radius': ROUTE_POINT_RADIUS_EXPR,
-              'circle-color': '#ef4444',
-              'circle-stroke-width': 2,
-              'circle-stroke-color': '#ffffff',
-              'circle-opacity': 1,
-            },
-          });
-        }
+        updateRoutePointLayer(ROUTE_END_SOURCE, ROUTE_END_LAYER, '#ef4444', routeEndCoord);
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
