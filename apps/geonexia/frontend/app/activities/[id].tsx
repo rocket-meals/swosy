@@ -26,6 +26,7 @@ import type { RootState } from '../../store/store';
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
+const ROUTE_NONE_SENTINEL = '__none__';
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -374,6 +375,7 @@ type RouteAssignmentProps = {
 
 function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
 	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+	const [pendingName, setPendingName] = useState<string | null>(null);
 
 	const assignRoute = useCallback((routeId: string | null) => {
 		const updated: SavedActivity = { ...activity, routeId };
@@ -453,9 +455,23 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 				title="Route benennen"
 				placeholder="Route Name"
 				modalTitle="Neue Route"
-				groupPosition="single"
-				onSave={createAndAssign}
+				groupPosition={pendingName ? 'top' : 'single'}
+				value={pendingName ?? undefined}
+				initialValue={pendingName ?? ''}
+				onSave={(name) => {
+					const trimmed = name.trim();
+					if (trimmed) setPendingName(trimmed);
+				}}
 			/>
+			{pendingName && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="check" size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title="Speichern und zuordnen"
+					groupPosition="bottom"
+					onPress={() => createAndAssign(pendingName)}
+				/>
+			)}
 
 			<SettingsListGroupTitle title="Optionen" />
 			<SettingsListSelectOptionSingle
@@ -623,6 +639,7 @@ export default function ActivityDetailScreen() {
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const routeModalShownRef = useRef(false);
+	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 
 	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
@@ -631,6 +648,10 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
+	}, []);
+
+	useEffect(() => {
+		loadRoutes().then(setSavedRoutes).catch(() => setSavedRoutes([]));
 	}, []);
 
 	// Show back arrow instead of drawer hamburger; use theme colors so it stays
@@ -694,6 +715,7 @@ export default function ActivityDetailScreen() {
 									} else {
 										setAssignedRoute(updated.routeId === null ? null : undefined);
 									}
+									loadRoutes().then(setSavedRoutes).catch(() => {});
 									closeRouteModal();
 								}}
 								theme={theme}
@@ -825,6 +847,23 @@ export default function ActivityDetailScreen() {
 		}
 		// Auto-rotate is stopped automatically on the map side when user interacts
 	}, []);
+
+	const handleRouteSelect = useCallback((routeId: string | null) => {
+		if (!activity) return;
+		const updated: SavedActivity = { ...activity, routeId };
+		try {
+			saveActivity(updated);
+		} catch {
+			Alert.alert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
+			return;
+		}
+		setActivity(updated);
+		if (routeId === null) {
+			setAssignedRoute(null);
+		} else {
+			loadRoute(routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+		}
+	}, [activity]);
 
 	const handleFilterUnrealisticPoints = useCallback(() => {
 		if (!activity) return;
@@ -993,14 +1032,27 @@ export default function ActivityDetailScreen() {
 				</View>
 				{activity.routeId !== undefined && (
 					<>
-						<SettingsListGroupTitle title="Route" />
-						<SettingsList
-							leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
-							iconBackgroundColor={PRIMARY_COLOR}
-							title={assignedRoute ? assignedRoute.name : 'Keine Route'}
-							groupPosition="single"
-							onPress={() => router.navigate('/routes')}
+						<SettingsListGroupTitle title="Routen Information" />
+						<SettingsListSelectOption
+							options={[
+								{ id: ROUTE_NONE_SENTINEL, label: 'Keine' },
+								...savedRoutes.map((r) => ({ id: r.id, label: r.name })),
+							]}
+							selectedOption={activity.routeId ?? ROUTE_NONE_SENTINEL}
+							selectionColor={PRIMARY_COLOR}
+							onSelect={(opt: SettingsListSelectOptionItem<string>) => {
+								handleRouteSelect(opt.id === ROUTE_NONE_SENTINEL ? null : opt.id);
+							}}
 						/>
+						<View style={!assignedRoute ? styles.disabledRow : undefined}>
+							<SettingsList
+								leftIcon={<MaterialIcons name="open-in-new" size={20} color="#ffffff" />}
+								iconBackgroundColor={assignedRoute ? PRIMARY_COLOR : '#9ca3af'}
+								title="Route öffnen"
+								groupPosition="single"
+								onPress={assignedRoute ? () => router.navigate('/routes') : undefined}
+							/>
+						</View>
 					</>
 				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
@@ -1139,5 +1191,8 @@ const styles = StyleSheet.create({
 	},
 	filterRow: {
 		marginTop: 16,
+	},
+	disabledRow: {
+		opacity: 0.5,
 	},
 });
