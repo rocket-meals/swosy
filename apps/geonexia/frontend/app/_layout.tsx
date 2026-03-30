@@ -248,6 +248,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('activities/index'),
 		},
 		{
+			key: 'routes/index',
+			label: 'Routes',
+			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('routes/index'),
+		},
+		{
 			key: 'statistics/index',
 			label: 'Statistics',
 			renderIcon: (_, color) => <Ionicons name="bar-chart-outline" size={24} color={color} />,
@@ -264,12 +270,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			label: 'Feature Wishes',
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
-		},
-		{
-			key: 'routes/index',
-			label: 'Routes',
-			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('routes/index'),
 		},
 		...(isDevMode ? [
 			{
@@ -300,6 +300,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			items={items}
 			activeKey={activeKey}
 			primaryColor="#2563eb"
+			onLogoPress={() => props.navigation.navigate('index')}
 		/>
 	);
 }

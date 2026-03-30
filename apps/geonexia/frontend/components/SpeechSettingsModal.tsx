@@ -8,6 +8,7 @@ import {
 	Text,
 	TextInput,
 	TouchableOpacity,
+	Vibration,
 	View,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
@@ -23,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
 import { updateSpeechSettings, SpeechSettingsState, SPEECH_SETTINGS_DEFAULTS } from '../store/speechSettingsSlice';
-import { speakAnnouncement } from '../helpers/TTSHelper';
+import { speakAnnouncement, buildPeriodicAnnouncement } from '../helpers/TTSHelper';
 import type { AppDispatch, RootState } from '../store/store';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -271,6 +272,51 @@ export default function SpeechSettingsContent() {
 		});
 	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
 
+	// ─── Play content example (based on enabled toggles) ─────────────────────
+	const handlePlayContentSample = useCallback(() => {
+		const text = buildPeriodicAnnouncement(
+			langCode,
+			{ distanceKm: 2.5, elapsedSeconds: 1500, paceMinPerKm: 5.5, speedKmh: 10.9 },
+			{
+				announceDistance: settings.announceDistance,
+				announcePace: settings.announcePace,
+				announceDuration: settings.announceDuration,
+				announceSpeed: settings.announceSpeed,
+				announceCalories: settings.announceCalories,
+				announceHeartRate: settings.announceHeartRate,
+			},
+		);
+		if (!text) return;
+		speakAnnouncement(text, langCode, {
+			volume: settings.volume,
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
+	}, [langCode, settings]);
+
+	// ─── Play faster hint example ─────────────────────────────────────────────
+	const handlePlayFasterSample = useCallback(() => {
+		const text =
+			langCode === 'de'
+				? 'Zu schnell. Aktuelle Pace 4 Minuten 30 Sekunden. Ziel Pace 5 Minuten 30 Sekunden.'
+				: 'Too fast. Current pace 4 minutes 30 seconds. Target pace 5 minutes 30 seconds.';
+		speakAnnouncement(text, langCode, {
+			volume: settings.volume,
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
+	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
+
+	// ─── Play slower hint example ─────────────────────────────────────────────
+	const handlePlaySlowerSample = useCallback(() => {
+		const text =
+			langCode === 'de'
+				? 'Zu langsam. Aktuelle Pace 6 Minuten 30 Sekunden. Ziel Pace 5 Minuten 30 Sekunden.'
+				: 'Too slow. Current pace 6 minutes 30 seconds. Target pace 5 minutes 30 seconds.';
+		speakAnnouncement(text, langCode, {
+			volume: settings.volume,
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
+	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
+
 	// ─── Volume stepper ───────────────────────────────────────────────────────
 	const handleVolumeDown = useCallback(() => {
 		const next = Math.max(VOLUME_MIN, Math.round((settings.volume - VOLUME_STEP) * 10) / 10);
@@ -286,8 +332,6 @@ export default function SpeechSettingsContent() {
 	const paceHelperActive = settings.paceTargetEnabled;
 	const showFasterInput = paceHelperActive && settings.paceHintFasterEnabled;
 	const showSlowerInput = paceHelperActive && settings.paceHintSlowerEnabled;
-
-	const slowerBoolPos: 'middle' | 'bottom' = showSlowerInput ? 'middle' : 'bottom';
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
@@ -322,8 +366,18 @@ export default function SpeechSettingsContent() {
 				groupPosition="single"
 			/>
 
-			{/* ── Volume ─────────────────────────────────────────────── */}
-			<SettingsListGroupTitle title="Lautstärke" />
+			{/* ── Musik und Lautstärke ────────────────────────────────── */}
+			<SettingsListGroupTitle title="Musik und Lautstärke" />
+			<SettingsListBoolean
+				iconBgColor={TTS_COLOR}
+				leftIcon={<MaterialCommunityIcons name="music" size={22} color="#ffffff" />}
+				label="Musik bei Ansagen leiser machen"
+				isEnabled={settings.duckMusicDuringTTS}
+				onToggle={() => update({ duckMusicDuringTTS: !settings.duckMusicDuringTTS })}
+				valueActive="Aktiv"
+				valueInactive="Deaktiviert"
+				groupPosition="top"
+			/>
 			<SettingsList
 				iconBgColor={VOLUME_COLOR}
 				leftIcon={<Ionicons name="volume-medium" size={22} color="#ffffff" />}
@@ -339,20 +393,7 @@ export default function SpeechSettingsContent() {
 						</TouchableOpacity>
 					</View>
 				}
-				groupPosition="single"
-			/>
-
-			{/* ── Music ──────────────────────────────────────────────── */}
-			<SettingsListGroupTitle title="Musik" />
-			<SettingsListBoolean
-				iconBgColor={TTS_COLOR}
-				leftIcon={<MaterialCommunityIcons name="music" size={22} color="#ffffff" />}
-				label="Musik bei Ansagen leiser machen"
-				isEnabled={settings.duckMusicDuringTTS}
-				onToggle={() => update({ duckMusicDuringTTS: !settings.duckMusicDuringTTS })}
-				valueActive="Aktiv"
-				valueInactive="Deaktiviert"
-				groupPosition="single"
+				groupPosition="bottom"
 			/>
 
 			{/* ── Pace target helper ──────────────────────────────────── */}
@@ -365,7 +406,7 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ paceTargetEnabled: !paceHelperActive })}
 				valueActive="Aktiv"
 				valueInactive="Deaktiviert"
-				groupPosition="single"
+				groupPosition="top"
 			/>
 
 			<View style={!paceHelperActive ? styles.sectionDisabled : undefined}>
@@ -378,7 +419,7 @@ export default function SpeechSettingsContent() {
 					seconds={settings.paceTargetSeconds}
 					onSave={(m, s) => update({ paceTargetMinutes: m, paceTargetSeconds: s })}
 					disabled={!paceHelperActive}
-					groupPosition="top"
+					groupPosition="bottom"
 				/>
 
 				<SettingsListBoolean
@@ -390,7 +431,7 @@ export default function SpeechSettingsContent() {
 					valueActive="Aktiv"
 					valueInactive="Deaktiviert"
 					disabled={!paceHelperActive}
-					groupPosition="middle"
+					groupPosition="top"
 				/>
 
 				{showFasterInput && (
@@ -406,6 +447,15 @@ export default function SpeechSettingsContent() {
 					/>
 				)}
 
+				<SettingsList
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialIcons name="play-arrow" size={22} color="#ffffff" />}
+					label="Beispiel Hinweis abspielen"
+					rightIcon={<MaterialIcons name="play-arrow" size={24} color={HINT_COLOR} />}
+					handleFunction={paceHelperActive ? handlePlayFasterSample : undefined}
+					groupPosition="bottom"
+				/>
+
 				<SettingsListBoolean
 					iconBgColor={HINT_COLOR}
 					leftIcon={<MaterialCommunityIcons name="turtle" size={22} color="#ffffff" />}
@@ -415,7 +465,7 @@ export default function SpeechSettingsContent() {
 					valueActive="Aktiv"
 					valueInactive="Deaktiviert"
 					disabled={!paceHelperActive}
-					groupPosition={slowerBoolPos}
+					groupPosition="top"
 				/>
 
 				{showSlowerInput && (
@@ -427,40 +477,19 @@ export default function SpeechSettingsContent() {
 						minutes={settings.paceHintSlowerMinutes}
 						seconds={settings.paceHintSlowerSeconds}
 						onSave={(m, s) => update({ paceHintSlowerMinutes: m, paceHintSlowerSeconds: s })}
-						groupPosition="bottom"
+						groupPosition="middle"
 					/>
 				)}
-			</View>
 
-			{/* ── Information intervals ──────────────────────────────── */}
-			<SettingsListGroupTitle title="Information im Intervall von" />
-			<PaceMinSecInput
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
-				label="Zeit"
-				modalTitle="Zeitintervall"
-				minutes={settings.intervalTimeMinutes}
-				seconds={settings.intervalTimeSeconds}
-				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
-				groupPosition="top"
-				primaryColor={INTERVAL_COLOR}
-			/>
-			<SettingsListNumberInput
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
-				label="Distanz"
-				value={settings.intervalDistanceMeters > 0 ? `Alle ${settings.intervalDistanceMeters} m` : 'Deaktiviert'}
-				modalTitle="Distanzintervall"
-				initialValue={settings.intervalDistanceMeters > 0 ? settings.intervalDistanceMeters : SPEECH_SETTINGS_DEFAULTS.intervalDistanceMeters}
-				min={100}
-				max={10000}
-				step={100}
-				suffix="m"
-				onSave={(val: number) => update({ intervalDistanceMeters: val })}
-				allowDisable
-				onDisable={() => update({ intervalDistanceMeters: 0 })}
-				groupPosition="bottom"
-			/>
+				<SettingsList
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialIcons name="play-arrow" size={22} color="#ffffff" />}
+					label="Beispiel abspielen"
+					rightIcon={<MaterialIcons name="play-arrow" size={24} color={HINT_COLOR} />}
+					handleFunction={paceHelperActive ? handlePlaySlowerSample : undefined}
+					groupPosition="bottom"
+				/>
+			</View>
 
 			{/* ── Tone / Vibration at distance ───────────────────────── */}
 			<SettingsListGroupTitle title="Benachrichtigung bei Distanz" />
@@ -469,7 +498,17 @@ export default function SpeechSettingsContent() {
 				leftIcon={<Ionicons name="musical-note" size={22} color="#ffffff" />}
 				label="Hinweiston bei Distanz"
 				isEnabled={settings.toneAtDistance}
-				onToggle={() => update({ toneAtDistance: !settings.toneAtDistance })}
+				onToggle={() => {
+					const next = !settings.toneAtDistance;
+					update({ toneAtDistance: next });
+					if (next) {
+						speakAnnouncement(
+							langCode === 'de' ? 'Hinweiston' : 'Hint tone',
+							langCode,
+							{ volume: settings.volume, useApplicationAudioSession: settings.duckMusicDuringTTS },
+						);
+					}
+				}}
 				valueActive="Aktiv"
 				valueInactive="Deaktiviert"
 				groupPosition="top"
@@ -479,14 +518,20 @@ export default function SpeechSettingsContent() {
 				leftIcon={<MaterialCommunityIcons name="vibrate" size={22} color="#ffffff" />}
 				label="Vibration bei Distanz"
 				isEnabled={settings.vibrationAtDistance}
-				onToggle={() => update({ vibrationAtDistance: !settings.vibrationAtDistance })}
+				onToggle={() => {
+					const next = !settings.vibrationAtDistance;
+					update({ vibrationAtDistance: next });
+					if (next) {
+						Vibration.vibrate(400);
+					}
+				}}
 				valueActive="Aktiv"
 				valueInactive="Deaktiviert"
 				groupPosition="bottom"
 			/>
 
-			{/* ── Announcement content toggles ───────────────────────── */}
-			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
+			{/* ── Information intervals ──────────────────────────────── */}
+			<SettingsListGroupTitle title="Information im Intervall von" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
@@ -507,6 +552,36 @@ export default function SpeechSettingsContent() {
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
 			/>
+			<PaceMinSecInput
+				iconBgColor={INTERVAL_COLOR}
+				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
+				label="Zeit"
+				modalTitle="Zeitintervall"
+				minutes={settings.intervalTimeMinutes}
+				seconds={settings.intervalTimeSeconds}
+				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
+				groupPosition="middle"
+				primaryColor={INTERVAL_COLOR}
+			/>
+			<SettingsListNumberInput
+				iconBgColor={INTERVAL_COLOR}
+				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
+				label="Distanz"
+				value={settings.intervalDistanceMeters > 0 ? `Alle ${settings.intervalDistanceMeters} m` : 'Deaktiviert'}
+				modalTitle="Distanzintervall"
+				initialValue={settings.intervalDistanceMeters > 0 ? settings.intervalDistanceMeters : SPEECH_SETTINGS_DEFAULTS.intervalDistanceMeters}
+				min={100}
+				max={10000}
+				step={100}
+				suffix="m"
+				onSave={(val: number) => update({ intervalDistanceMeters: val })}
+				allowDisable
+				onDisable={() => update({ intervalDistanceMeters: 0 })}
+				groupPosition="bottom"
+			/>
+
+			{/* ── Announcement content toggles ───────────────────────── */}
+			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
@@ -515,7 +590,7 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ announceDuration: !settings.announceDuration })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
-				groupPosition="middle"
+				groupPosition="top"
 			/>
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
@@ -555,6 +630,14 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ announceAppInBackground: !settings.announceAppInBackground })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
+				groupPosition="middle"
+			/>
+			<SettingsList
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialIcons name="play-circle-filled" size={22} color="#ffffff" />}
+				label="Beispiel abspielen"
+				rightIcon={<MaterialIcons name="play-arrow" size={24} color={CONTENT_COLOR} />}
+				handleFunction={handlePlayContentSample}
 				groupPosition="bottom"
 			/>
 		</ScrollView>
