@@ -38,7 +38,7 @@ import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -1870,6 +1870,7 @@ export default function RecordScreen() {
 	const isDebugMode = useDebugMode();
 	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
+	const speechSettings = useSelector((state: RootState) => state.speechSettings);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1897,6 +1898,10 @@ export default function RecordScreen() {
 	isTTSEnabledRef.current = isTTSEnabled;
 	const announceAppInBackgroundRef = useRef(announceAppInBackground);
 	announceAppInBackgroundRef.current = announceAppInBackground;
+	const speechSettingsRef = useRef(speechSettings);
+	speechSettingsRef.current = speechSettings;
+	// Timer for periodic (time-based) speech announcements during recording
+	const periodicAnnouncementTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
@@ -2330,6 +2335,7 @@ export default function RecordScreen() {
 			_onLocationUpdate = null;
 			fgSubRef.current?.remove();
 			if (timerRef.current) clearInterval(timerRef.current);
+			if (periodicAnnouncementTimerRef.current) clearInterval(periodicAnnouncementTimerRef.current);
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
 	}, []);
@@ -3097,6 +3103,62 @@ export default function RecordScreen() {
 		}
 	}, []);
 
+	// ── Periodic speech announcement helpers ──────────────────────────────────
+	const stopPeriodicAnnouncementTimer = useCallback(() => {
+		if (periodicAnnouncementTimerRef.current) {
+			clearInterval(periodicAnnouncementTimerRef.current);
+			periodicAnnouncementTimerRef.current = null;
+		}
+	}, []);
+
+	const startPeriodicAnnouncementTimer = useCallback(() => {
+		stopPeriodicAnnouncementTimer();
+		const ss = speechSettingsRef.current;
+		if (!ss.enabled) return;
+		const intervalSec = ss.intervalTimeMinutes * 60 + ss.intervalTimeSeconds;
+		if (intervalSec <= 0) return;
+
+		periodicAnnouncementTimerRef.current = setInterval(() => {
+			if (!isRecordingRef.current || isPausedRef.current || !isTTSEnabledRef.current) return;
+			const curSs = speechSettingsRef.current;
+			if (!curSs.enabled) return;
+
+			const elapsedSec = startTimeRef.current > 0
+				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+				: accumulatedSecondsRef.current;
+			const points = routePointsRef.current;
+			let d = 0;
+			for (let i = 1; i < points.length; i++) {
+				d += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+			}
+			const paceMinPerKm = d > 0 && elapsedSec > 0 ? elapsedSec / 60 / d : null;
+			const lastPt = points.length > 0 ? points[points.length - 1] : null;
+			const speedKmh = lastPt?.speed != null && lastPt.speed >= 0 ? lastPt.speed * 3.6 : null;
+
+			const locale = getLocales()[0]?.languageTag ?? 'en-US';
+			const langCode = locale.split('-')[0].toLowerCase();
+			const text = buildPeriodicAnnouncement(locale, {
+				distanceKm: d,
+				elapsedSeconds: elapsedSec,
+				paceMinPerKm,
+				speedKmh,
+			}, {
+				announceDistance: curSs.announceDistance,
+				announcePace: curSs.announcePace,
+				announceDuration: curSs.announceDuration,
+				announceSpeed: curSs.announceSpeed,
+				announceCalories: curSs.announceCalories,
+				announceHeartRate: curSs.announceHeartRate,
+			});
+			if (text.length > 0) {
+				speakAnnouncement(text, langCode, {
+					volume: curSs.volume,
+					useApplicationAudioSession: curSs.duckMusicDuringTTS,
+				});
+			}
+		}, intervalSec * 1000);
+	}, [stopPeriodicAnnouncementTimer]);
+
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
 		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
@@ -3152,6 +3214,9 @@ export default function RecordScreen() {
 			timerRef.current = setInterval(() => {
 				setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 			}, 1000);
+
+			// Start periodic (time-based) speech announcements if enabled
+			startPeriodicAnnouncementTimer();
 
 			if (expoGo) {
 				console.log('[RecordScreen] Running in Expo Go – skipping background permission, using foreground-only tracking.');
@@ -3249,8 +3314,9 @@ export default function RecordScreen() {
 				clearInterval(timerRef.current);
 				timerRef.current = null;
 			}
+			stopPeriodicAnnouncementTimer();
 		}
-	}, [handleLocationUpdate, setFollowMode, showModal, theme]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer]);
 
 	// Show a modal to select a saved route before starting a recording.
 	const showRouteSelectionModal = useCallback(async () => {
@@ -3313,6 +3379,7 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
+		stopPeriodicAnnouncementTimer();
 
 		try {
 			const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
@@ -3406,7 +3473,7 @@ export default function RecordScreen() {
 		// Navigate directly to the activity detail screen.
 		// Route assignment (if needed) is handled there via the scroll-view modal.
 		router.push(`/activities/${activity.id}`);
-	}, [theme, dispatch, selectedSportType, router]);
+	}, [theme, dispatch, selectedSportType, router, stopPeriodicAnnouncementTimer]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
@@ -3414,22 +3481,24 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
+		stopPeriodicAnnouncementTimer();
 		isPausedRef.current = true;
 		setIsPaused(true);
-	}, []);
+	}, [stopPeriodicAnnouncementTimer]);
 
 	const resumeRecording = useCallback(() => {
 		startTimeRef.current = Date.now();
 		timerRef.current = setInterval(() => {
 			setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 		}, 1000);
+		startPeriodicAnnouncementTimer();
 		// Allow GPS to resume as the authoritative position source. If the user
 		// navigated via joystick during the pause, GPS will smoothly re-anchor
 		// to the physical device location from the current player position.
 		movedPlayerManuallyRef.current = false;
 		isPausedRef.current = false;
 		setIsPaused(false);
-	}, []);
+	}, [startPeriodicAnnouncementTimer]);
 
 	/**
 	 * Compass / North button handler:

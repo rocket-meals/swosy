@@ -434,21 +434,16 @@ export default function SpeechSettingsContent() {
 
 			{/* ── Information intervals ──────────────────────────────── */}
 			<SettingsListGroupTitle title="Information im Intervall von" />
-			<SettingsListNumberInput
+			<PaceMinSecInput
 				iconBgColor={INTERVAL_COLOR}
 				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
 				label="Zeit"
-				value={settings.intervalTimeMinutes > 0 ? `Alle ${settings.intervalTimeMinutes} min` : 'Deaktiviert'}
 				modalTitle="Zeitintervall"
-				initialValue={settings.intervalTimeMinutes > 0 ? settings.intervalTimeMinutes : SPEECH_SETTINGS_DEFAULTS.intervalTimeMinutes}
-				min={1}
-				max={60}
-				step={1}
-				suffix="min"
-				onSave={(val: number) => update({ intervalTimeMinutes: val })}
-				allowDisable
-				onDisable={() => update({ intervalTimeMinutes: 0 })}
+				minutes={settings.intervalTimeMinutes}
+				seconds={settings.intervalTimeSeconds}
+				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
 				groupPosition="top"
+				primaryColor={INTERVAL_COLOR}
 			/>
 			<SettingsListNumberInput
 				iconBgColor={INTERVAL_COLOR}
