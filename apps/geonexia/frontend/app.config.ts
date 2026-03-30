@@ -5,8 +5,8 @@ import type { ConfigContext, ExpoConfig } from '@expo/config';
 require('ts-node').register({
 	transpileOnly: true,
 	compilerOptions: {
-		module: 'CommonJS',
-		moduleResolution: 'node',
+		module: 'Node16',
+		moduleResolution: 'node16',
 	},
 });
 
