@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ1Ac4jLgLsdgtcoiK4H","Provide a compare function that depends on ""String.localeCompare"", to reliably sort elements alphabetically.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",282
 "AZ0_-1Ghip1ffNXdD4x7","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteDisplayHelper.ts",110
 "AZ09r1kMBqdBuPqsrvbu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",678
 "AZ068wPbEBPEFGyzbdb9","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",103

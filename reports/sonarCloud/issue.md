@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6828 | 46 |
+| 🐛 Reliability | 6829 | 46 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16832 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16833 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,7 +30,7 @@
   .github/actions/geonexia-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L184
 
-## 🐛 Reliability (46/6828)
+## 🐛 Reliability (46/6829)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -107,6 +107,10 @@
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/index.tsx:814
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L814
+
+- **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
+  apps/geonexia/frontend/app/routes/[id].tsx:282
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/routes/[id].tsx#L282
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/statistics/index.tsx:44
@@ -211,8 +215,4 @@
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:346
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L346
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:597
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L597
 
