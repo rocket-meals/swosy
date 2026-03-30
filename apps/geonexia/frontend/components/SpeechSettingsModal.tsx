@@ -37,6 +37,15 @@ const VOLUME_COLOR = '#2563eb';
 const VOLUME_STEP = 0.1;
 const VOLUME_MIN = 0.0;
 const VOLUME_MAX = 1.0;
+const PREVIEW_VIBRATION_DURATION_MS = 400;
+
+// Sample stats used for preview announcements in settings
+const SAMPLE_STATS = {
+	distanceKm: 2.5,
+	elapsedSeconds: 1500,
+	paceMinPerKm: 5.5,
+	speedKmh: 10.9,
+} as const;
 
 // ─── PaceMinSecModal ──────────────────────────────────────────────────────────
 
@@ -276,7 +285,7 @@ export default function SpeechSettingsContent() {
 	const handlePlayContentSample = useCallback(() => {
 		const text = buildPeriodicAnnouncement(
 			langCode,
-			{ distanceKm: 2.5, elapsedSeconds: 1500, paceMinPerKm: 5.5, speedKmh: 10.9 },
+			SAMPLE_STATS,
 			{
 				announceDistance: settings.announceDistance,
 				announcePace: settings.announcePace,
@@ -522,7 +531,7 @@ export default function SpeechSettingsContent() {
 					const next = !settings.vibrationAtDistance;
 					update({ vibrationAtDistance: next });
 					if (next) {
-						Vibration.vibrate(400);
+						Vibration.vibrate(PREVIEW_VIBRATION_DURATION_MS);
 					}
 				}}
 				valueActive="Aktiv"
