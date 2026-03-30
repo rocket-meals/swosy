@@ -1,6 +1,41 @@
 import * as Speech from 'expo-speech';
+import { setAudioModeAsync } from 'expo-audio';
 
 // ─── TTS announcement helpers ─────────────────────────────────────────────────
+
+/**
+ * Configure the audio session so that TTS announcements continue playing when
+ * the app is in the background on iOS.  Call once when recording starts and
+ * reset when recording stops.
+ */
+export async function enableBackgroundAudio(): Promise<void> {
+	try {
+		await setAudioModeAsync({
+			shouldPlayInBackground: true,
+			playsInSilentMode: true,
+			interruptionMode: 'duckOthers',
+			interruptionModeAndroid: 'duckOthers',
+		});
+	} catch (err) {
+		console.warn('[TTSHelper] Failed to enable background audio:', err);
+	}
+}
+
+/**
+ * Reset the audio session to default settings when recording stops.
+ */
+export async function disableBackgroundAudio(): Promise<void> {
+	try {
+		await setAudioModeAsync({
+			shouldPlayInBackground: false,
+			playsInSilentMode: false,
+			interruptionMode: 'mixWithOthers',
+			interruptionModeAndroid: 'duckOthers',
+		});
+	} catch (err) {
+		console.warn('[TTSHelper] Failed to disable background audio:', err);
+	}
+}
 
 /**
  * Build a localised TTS announcement for a km milestone during recording.
@@ -65,4 +100,28 @@ export function speakAnnouncement(
 		...options,
 		language: languageCode,
 	});
+}
+
+/**
+ * Build a localised TTS announcement for when the app moves to the background
+ * while recording is active.
+ */
+export function buildBackgroundAnnouncement(locale: string): string {
+	const langCode = locale.split('-')[0].toLowerCase();
+	switch (langCode) {
+		case 'de':
+			return 'Die App läuft im Hintergrund';
+		case 'fr':
+			return "L'application continue en arrière-plan";
+		case 'es':
+			return 'La aplicación sigue en segundo plano';
+		case 'it':
+			return "L'app continua in background";
+		case 'pt':
+			return 'O aplicativo continua em segundo plano';
+		case 'nl':
+			return 'De app draait op de achtergrond';
+		default:
+			return 'The app is running in the background';
+	}
 }

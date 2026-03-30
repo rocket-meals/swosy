@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
 	Alert,
 	Animated,
+	AppState,
 	PanResponder,
 	Platform,
 	SafeAreaView,
@@ -37,7 +38,7 @@ import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement } from '../helpers/TTSHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -1868,6 +1869,7 @@ export default function RecordScreen() {
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const isDebugMode = useDebugMode();
 	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
+	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1893,6 +1895,8 @@ export default function RecordScreen() {
 	const lastAnnouncedKmRef = useRef(0);
 	const isTTSEnabledRef = useRef(isTTSEnabled);
 	isTTSEnabledRef.current = isTTSEnabled;
+	const announceAppInBackgroundRef = useRef(announceAppInBackground);
+	announceAppInBackgroundRef.current = announceAppInBackground;
 
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
@@ -2328,6 +2332,24 @@ export default function RecordScreen() {
 			if (timerRef.current) clearInterval(timerRef.current);
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
+	}, []);
+
+	// ── Announce when the app moves to the background during an active recording
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', (nextAppState) => {
+			if (
+				nextAppState === 'background' &&
+				isRecordingRef.current &&
+				isTTSEnabledRef.current &&
+				announceAppInBackgroundRef.current
+			) {
+				const locale = getLocales()[0]?.languageTag ?? 'en-US';
+				const langCode = locale.split('-')[0].toLowerCase();
+				const text = buildBackgroundAnnouncement(locale);
+				speakAnnouncement(text, langCode);
+			}
+		});
+		return () => subscription.remove();
 	}, []);
 
 	// ── Route preview: when a route is selected before recording, show only the
@@ -3097,6 +3119,9 @@ export default function RecordScreen() {
 				return;
 			}
 
+			// Enable background audio so TTS announcements work when the app is backgrounded
+			await enableBackgroundAudio();
+
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
 			orderedHexTilesRef.current = [];
@@ -3307,6 +3332,7 @@ export default function RecordScreen() {
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
 		Speech.stop();
+		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;

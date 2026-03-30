@@ -34,6 +34,7 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 			bundleIdentifier: 'de.baumgartner-software.geonexia',
 			buildNumber: buildNumber.toString(),
 			infoPlist: {
+				UIBackgroundModes: ['audio', 'location'],
 				NSPhotoLibraryUsageDescription: 'We need access to your photo library to select files',
 				NSDocumentDirectoryUsageDescription: 'We need access to your document directory to select files',
 			},
@@ -114,6 +115,12 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 			'expo-web-browser',
 			['expo-document-picker', { iCloudContainerEnvironment: 'Production' }],
 			'expo-task-manager',
+			[
+				'expo-audio',
+				{
+					enableBackgroundPlayback: true,
+				},
+			],
 			[
 				'expo-location',
 				{
