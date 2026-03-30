@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -106,6 +106,7 @@ function ResetConfirmContent({
 
 export default function SettingsScreen() {
 	const [notifications, setNotifications] = useState(true);
+	const [showDeveloper, setShowDeveloper] = useState(false);
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
@@ -258,28 +259,6 @@ export default function SettingsScreen() {
 					groupPosition="single"
 				/>
 
-				<SettingsListGroupTitle title="Developer" />
-				<SettingsListBoolean
-					iconBgColor={DEBUG_COLOR}
-					leftIcon={<MaterialIcons name="bug-report" size={22} color="#ffffff" />}
-					label="Debug Mode"
-					isEnabled={isDebugMode}
-					onToggle={handleToggleDebugMode}
-					valueActive="Enabled"
-					valueInactive="Disabled"
-					groupPosition="top"
-				/>
-				<SettingsListBoolean
-					iconBgColor={DEV_COLOR}
-					leftIcon={<Ionicons name="flask-outline" size={22} color="#ffffff" />}
-					label="Dev Mode"
-					isEnabled={isDevMode}
-					onToggle={handleToggleDevMode}
-					valueActive="Dev tiles active"
-					valueInactive="Production tiles"
-					groupPosition="bottom"
-				/>
-
 				<SettingsListGroupTitle title="Daten Verwaltung" />
 				<SettingsList
 					iconBgColor={DANGER_COLOR}
@@ -308,6 +287,46 @@ export default function SettingsScreen() {
 					handleFunction={() => {}}
 					groupPosition="bottom"
 				/>
+
+				{/* ── Company Logo ─────────────────────────────────────── */}
+				<TouchableOpacity
+					style={styles.companyLogoContainer}
+					onPress={() => setShowDeveloper((prev) => !prev)}
+					activeOpacity={0.7}
+				>
+					<Image
+						source={require('../../assets/company.png')}
+						style={styles.companyLogo}
+						resizeMode="contain"
+					/>
+				</TouchableOpacity>
+
+				{/* ── Developer (hidden by default, revealed by logo tap) ── */}
+				{showDeveloper && (
+					<>
+						<SettingsListGroupTitle title="Developer" />
+						<SettingsListBoolean
+							iconBgColor={DEBUG_COLOR}
+							leftIcon={<MaterialIcons name="bug-report" size={22} color="#ffffff" />}
+							label="Debug Mode"
+							isEnabled={isDebugMode}
+							onToggle={handleToggleDebugMode}
+							valueActive="Enabled"
+							valueInactive="Disabled"
+							groupPosition="top"
+						/>
+						<SettingsListBoolean
+							iconBgColor={DEV_COLOR}
+							leftIcon={<Ionicons name="flask-outline" size={22} color="#ffffff" />}
+							label="Dev Mode"
+							isEnabled={isDevMode}
+							onToggle={handleToggleDevMode}
+							valueActive="Dev tiles active"
+							valueInactive="Production tiles"
+							groupPosition="bottom"
+						/>
+					</>
+				)}
 			</ScrollView>
 		</View>
 	);
@@ -351,5 +370,16 @@ const styles = StyleSheet.create({
 	resetCancelButtonText: {
 		fontSize: 15,
 		fontWeight: '500',
+	},
+	companyLogoContainer: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 24,
+		marginTop: 8,
+	},
+	companyLogo: {
+		width: 120,
+		height: 120,
+		opacity: 0.6,
 	},
 });

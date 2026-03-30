@@ -103,6 +103,87 @@ export function speakAnnouncement(
 }
 
 /**
+ * Content toggles used by {@link buildPeriodicAnnouncement}.
+ */
+export interface PeriodicAnnouncementContent {
+	announceDistance: boolean;
+	announcePace: boolean;
+	announceDuration: boolean;
+	announceSpeed: boolean;
+	announceCalories: boolean;
+	announceHeartRate: boolean;
+}
+
+/**
+ * Build a localised TTS announcement for periodic (time-based) updates during
+ * recording.  Only the content toggles that are enabled are included.
+ */
+export function buildPeriodicAnnouncement(
+	locale: string,
+	stats: {
+		distanceKm: number;
+		elapsedSeconds: number;
+		paceMinPerKm: number | null;
+		speedKmh: number | null;
+	},
+	content: PeriodicAnnouncementContent,
+): string {
+	const langCode = locale.split('-')[0].toLowerCase();
+	const parts: string[] = [];
+	const METERS_PER_KM = 1000;
+
+	if (content.announceDistance) {
+		const d = stats.distanceKm;
+		if (langCode === 'de') {
+			parts.push(d < 1 ? `${Math.round(d * METERS_PER_KM)} Meter` : `${d.toFixed(2)} Kilometer`);
+		} else {
+			parts.push(d < 1 ? `${Math.round(d * METERS_PER_KM)} meters` : `${d.toFixed(2)} kilometers`);
+		}
+	}
+
+	if (content.announcePace && stats.paceMinPerKm != null) {
+		const pm = Math.floor(stats.paceMinPerKm);
+		const ps = Math.round((stats.paceMinPerKm - pm) * 60);
+		if (langCode === 'de') {
+			parts.push(`Pace ${pm} Minuten ${ps} Sekunden`);
+		} else {
+			parts.push(`Pace ${pm} minutes ${ps} seconds`);
+		}
+	}
+
+	if (content.announceDuration) {
+		const totalSec = Math.round(stats.elapsedSeconds);
+		const h = Math.floor(totalSec / 3600);
+		const m = Math.floor((totalSec % 3600) / 60);
+		const s = totalSec % 60;
+		if (langCode === 'de') {
+			if (h > 0) {
+				parts.push(`${h} Stunde${h > 1 ? 'n' : ''} ${m} Minuten ${s} Sekunden`);
+			} else {
+				parts.push(`${m} Minuten ${s} Sekunden`);
+			}
+		} else {
+			if (h > 0) {
+				parts.push(`${h} hour${h > 1 ? 's' : ''} ${m} minutes ${s} seconds`);
+			} else {
+				parts.push(`${m} minutes ${s} seconds`);
+			}
+		}
+	}
+
+	if (content.announceSpeed && stats.speedKmh != null) {
+		const sp = stats.speedKmh.toFixed(1);
+		if (langCode === 'de') {
+			parts.push(`${sp} Kilometer pro Stunde`);
+		} else {
+			parts.push(`${sp} kilometers per hour`);
+		}
+	}
+
+	return parts.join('. ');
+}
+
+/**
  * Build a localised TTS announcement for when the app moves to the background
  * while recording is active.
  */
