@@ -5142,6 +5142,68 @@
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
+      // ─── Route start / end (penalty) point circles ───────────────────────────────
+      var ROUTE_START_SOURCE = 'route-start-source';
+      var ROUTE_START_LAYER  = 'route-start-layer';
+      var ROUTE_END_SOURCE   = 'route-end-source';
+      var ROUTE_END_LAYER    = 'route-end-layer';
+      var routeStartCoord    = null; // [lng, lat] or null
+      var routeEndCoord      = null; // [lng, lat] or null
+      var ROUTE_POINT_RADIUS_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 6, 13, 9, 18, 14];
+
+      function updateRouteStartPoint(coord) {
+        if (!map) return;
+        routeStartCoord = coord || null;
+        var geojson = {
+          type: 'FeatureCollection',
+          features: coord ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} }] : [],
+        };
+        if (map.getSource(ROUTE_START_SOURCE)) {
+          map.getSource(ROUTE_START_SOURCE).setData(geojson);
+        } else {
+          map.addSource(ROUTE_START_SOURCE, { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: ROUTE_START_LAYER,
+            type: 'circle',
+            source: ROUTE_START_SOURCE,
+            paint: {
+              'circle-radius': ROUTE_POINT_RADIUS_EXPR,
+              'circle-color': '#22c55e',
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#ffffff',
+              'circle-opacity': 1,
+            },
+          });
+        }
+      }
+
+      function updateRouteEndPoint(coord) {
+        if (!map) return;
+        routeEndCoord = coord || null;
+        var geojson = {
+          type: 'FeatureCollection',
+          features: coord ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} }] : [],
+        };
+        if (map.getSource(ROUTE_END_SOURCE)) {
+          map.getSource(ROUTE_END_SOURCE).setData(geojson);
+        } else {
+          map.addSource(ROUTE_END_SOURCE, { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: ROUTE_END_LAYER,
+            type: 'circle',
+            source: ROUTE_END_SOURCE,
+            paint: {
+              'circle-radius': ROUTE_POINT_RADIUS_EXPR,
+              'circle-color': '#ef4444',
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#ffffff',
+              'circle-opacity': 1,
+            },
+          });
+        }
+      }
+      // ─────────────────────────────────────────────────────────────────────────────
+
       // ─── User location marker ─────────────────────────────────────────────────────
       var userLocationMarker = null;
       var userHeadingDeg = 0;
@@ -5515,6 +5577,14 @@
           updateRouteSegmentsLayer(data.routeSegments);
         }
 
+        if (data.routeStartPoint !== undefined) {
+          updateRouteStartPoint(data.routeStartPoint);
+        }
+
+        if (data.routeEndPoint !== undefined) {
+          updateRouteEndPoint(data.routeEndPoint);
+        }
+
         if (data.userLocation !== undefined) {
           if (data.userLocation) {
             updateUserLocationMarker(data.userLocation);
@@ -5710,6 +5780,12 @@
           }
           if (routeSegmentsData && !map.getSource(ROUTE_SEG_SOURCE)) {
             updateRouteSegmentsLayer(routeSegmentsData);
+          }
+          if (routeStartCoord && !map.getSource(ROUTE_START_SOURCE)) {
+            updateRouteStartPoint(routeStartCoord);
+          }
+          if (routeEndCoord && !map.getSource(ROUTE_END_SOURCE)) {
+            updateRouteEndPoint(routeEndCoord);
           }
         });
       }
