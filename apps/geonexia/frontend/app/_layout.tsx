@@ -203,6 +203,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="routes/[id]"
+				options={{
+					title: 'Route',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="experimental/index"
 				options={{
 					title: 'Experimental',

@@ -1093,7 +1093,7 @@ export default function ActivityDetailScreen() {
 						iconBackgroundColor={PRIMARY_COLOR}
 						title="Route öffnen"
 						groupPosition="bottom"
-						onPress={() => router.navigate('/routes')}
+					onPress={() => router.navigate(`/routes/${assignedRoute.id}`)}
 					/>
 				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
