@@ -15,7 +15,7 @@ import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, Setti
 import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
-import { SavedRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
+import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
@@ -606,6 +606,8 @@ export default function ActivityDetailScreen() {
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
+	// undefined = not yet loaded, null = no route assigned, SavedRoute = assigned route
+	const [assignedRoute, setAssignedRoute] = useState<SavedRoute | null | undefined>(undefined);
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const routeModalShownRef = useRef(false);
@@ -644,6 +646,13 @@ export default function ActivityDetailScreen() {
 				if (!a) { setNotFound(true); return; }
 				setActivity(a);
 
+				// Load the assigned route for display
+				if (typeof a.routeId === 'string') {
+					loadRoute(a.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+				} else {
+					setAssignedRoute(a.routeId === null ? null : undefined);
+				}
+
 				// If routeId has never been decided, load routes and show assignment modal
 				if (a.routeId === undefined && !routeModalShownRef.current) {
 					routeModalShownRef.current = true;
@@ -668,6 +677,11 @@ export default function ActivityDetailScreen() {
 								bestMatch={bestMatch}
 								onDone={(updated) => {
 									setActivity(updated);
+									if (typeof updated.routeId === 'string') {
+										loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+									} else {
+										setAssignedRoute(updated.routeId === null ? null : undefined);
+									}
 									closeRouteModal();
 								}}
 								theme={theme}
@@ -965,6 +979,18 @@ export default function ActivityDetailScreen() {
 						onPress={handleFilterUnrealisticPoints}
 					/>
 				</View>
+				{activity.routeId !== undefined && (
+					<>
+						<SettingsListGroupTitle title="Route" />
+						<SettingsList
+							leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title={assignedRoute ? assignedRoute.name : 'Keine Route'}
+							groupPosition="single"
+							onPress={() => router.navigate('/routes')}
+						/>
+					</>
+				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
 					<Text style={styles.shareButtonText}>Share Activity</Text>
