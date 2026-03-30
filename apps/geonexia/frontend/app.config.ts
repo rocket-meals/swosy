@@ -5,8 +5,8 @@ import type { ConfigContext, ExpoConfig } from '@expo/config';
 require('ts-node').register({
 	transpileOnly: true,
 	compilerOptions: {
-		module: 'Node16',
-		moduleResolution: 'node16',
+		module: 'CommonJS',
+		moduleResolution: 'node',
 	},
 });
 
@@ -108,7 +108,6 @@ module.exports = function ({ config }: ConfigContext): ExpoConfig {
 			favicon: './assets/favicon.png',
 		},
 		plugins: [
-			'expo-router',
 			'expo-router',
 			'expo-battery',
 			'expo-secure-store',
