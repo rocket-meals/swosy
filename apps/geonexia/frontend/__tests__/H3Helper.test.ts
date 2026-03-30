@@ -220,7 +220,7 @@ describe('H3Helper – viewport GeoJSON integration', () => {
      * so we can verify it produces the correct number of cells for the
      * viewport bounds from the bug report.
      */
-    const H3_MIN_ZOOM = 14;
+    const H3_MIN_ZOOM = 12;
     const H3_MAX_CELLS = 5000;
     const H3_GEOJSON_ORDER = true;
 
@@ -277,7 +277,7 @@ describe('H3Helper – viewport GeoJSON integration', () => {
 
     it('produces 0 features when zoom is below H3_MIN_ZOOM', () => {
         const bounds = { north: 52.66421, south: 52.65891, east: 8.13581, west: 8.13105 };
-        const result = buildH3GeoJson(bounds, 13, 9);
+        const result = buildH3GeoJson(bounds, 11, 9);
         expect(result.features).toHaveLength(0);
     });
 
