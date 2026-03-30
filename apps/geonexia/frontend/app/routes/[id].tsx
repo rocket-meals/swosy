@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -15,17 +15,14 @@ import { useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
 import type { RootState } from '../../store/store';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
 
-function formatH3Short(h3Index: string): string {
-	if (h3Index.length <= 10) return h3Index;
-	return h3Index.slice(0, 5) + '…' + h3Index.slice(-4);
-}
+type MapEditSubMode = 'add' | 'remove';
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -47,9 +44,20 @@ export default function RouteDetailScreen() {
 	const [mapMounted, setMapMounted] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedHexTiles, setEditedHexTiles] = useState<string[]>([]);
-	const [expandedInsertIndex, setExpandedInsertIndex] = useState<number | null>(null);
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const [mapEditSubMode, setMapEditSubMode] = useState<MapEditSubMode>('add');
+	const [addAnchorTileIndex, setAddAnchorTileIndex] = useState<number | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+
+	// Stable ref so handleMapMessage can always read the latest edit state without
+	// being recreated on every state change.
+	const editStateRef = useRef({
+		isEditing: false,
+		mapEditSubMode: 'add' as MapEditSubMode,
+		addAnchorTileIndex: null as number | null,
+		editedHexTiles: [] as string[],
+	});
+	editStateRef.current = { isEditing, mapEditSubMode, addAnchorTileIndex, editedHexTiles };
 
 	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
@@ -167,42 +175,7 @@ export default function RouteDetailScreen() {
 		}
 	}, [isEditing, editedHexTiles, mapMounted, hexTileRecords, route]);
 
-	const handleMapMessage = useCallback((data: object) => {
-		const msg = data as { tag?: string };
-		if (msg.tag === 'MapComponentMounted') {
-			setMapMounted(true);
-		}
-	}, []);
-
 	// ─── Route editing ─────────────────────────────────────────────────────
-
-	const handleStartEditing = useCallback(() => {
-		if (!route) return;
-		setEditedHexTiles([...route.hexTiles]);
-		setExpandedInsertIndex(null);
-		setHasUnsavedChanges(false);
-		setIsEditing(true);
-	}, [route]);
-
-	const handleCancelEditing = useCallback(() => {
-		if (hasUnsavedChanges) {
-			Alert.alert('Änderungen verwerfen?', 'Ungespeicherte Änderungen gehen verloren.', [
-				{ text: 'Weiter bearbeiten', style: 'cancel' },
-				{
-					text: 'Verwerfen',
-					style: 'destructive',
-					onPress: () => {
-						setIsEditing(false);
-						setExpandedInsertIndex(null);
-						setHasUnsavedChanges(false);
-					},
-				},
-			]);
-		} else {
-			setIsEditing(false);
-			setExpandedInsertIndex(null);
-		}
-	}, [hasUnsavedChanges]);
 
 	const handleRemoveTile = useCallback((index: number) => {
 		setEditedHexTiles((prev) => {
@@ -210,7 +183,7 @@ export default function RouteDetailScreen() {
 			updated.splice(index, 1);
 			return updated;
 		});
-		setExpandedInsertIndex(null);
+		setAddAnchorTileIndex(null);
 		setHasUnsavedChanges(true);
 	}, []);
 
@@ -220,9 +193,72 @@ export default function RouteDetailScreen() {
 			updated.splice(index, 0, h3Index);
 			return updated;
 		});
-		setExpandedInsertIndex(null);
 		setHasUnsavedChanges(true);
 	}, []);
+
+	const handleMapMessage = useCallback((data: object) => {
+		const msg = data as { tag?: string; h3Index?: string };
+		if (msg.tag === 'MapComponentMounted') {
+			setMapMounted(true);
+			return;
+		}
+		const state = editStateRef.current;
+		if (!state.isEditing || !msg.h3Index) return;
+
+		if (msg.tag === 'HexTileClicked') {
+			const tileIdx = state.editedHexTiles.indexOf(msg.h3Index);
+			if (tileIdx === -1) return;
+			if (state.mapEditSubMode === 'remove') {
+				handleRemoveTile(tileIdx);
+			} else if (state.mapEditSubMode === 'add') {
+				// Select (or re-select) anchor tile; tapping a different tile while
+				// anchor is active simply switches the anchor.
+				setAddAnchorTileIndex(tileIdx);
+			}
+		}
+
+		if (msg.tag === 'HexNeighborClicked' && state.addAnchorTileIndex !== null) {
+			handleInsertTile(state.addAnchorTileIndex + 1, msg.h3Index);
+			setAddAnchorTileIndex(null);
+		}
+	}, [handleRemoveTile, handleInsertTile]);
+
+	const handleStartEditing = useCallback(() => {
+		if (!route) return;
+		setEditedHexTiles([...route.hexTiles]);
+		setHasUnsavedChanges(false);
+		setMapEditSubMode('add');
+		setAddAnchorTileIndex(null);
+		setIsEditing(true);
+		// Stop auto-rotate while editing so the map stays stable
+		if (mapRef.current) {
+			mapRef.current.sendToMap({ autoRotate: false });
+		}
+	}, [route]);
+
+	const handleCancelEditing = useCallback(() => {
+		const doCancel = () => {
+			setIsEditing(false);
+			setHasUnsavedChanges(false);
+			setAddAnchorTileIndex(null);
+			if (mapRef.current) {
+				mapRef.current.sendToMap({ routeEditLabels: null });
+				mapRef.current.sendToMap({ routeEditNeighbors: null });
+			}
+		};
+		if (hasUnsavedChanges) {
+			Alert.alert('Änderungen verwerfen?', 'Ungespeicherte Änderungen gehen verloren.', [
+				{ text: 'Weiter bearbeiten', style: 'cancel' },
+				{
+					text: 'Verwerfen',
+					style: 'destructive',
+					onPress: doCancel,
+				},
+			]);
+		} else {
+			doCancel();
+		}
+	}, [hasUnsavedChanges]);
 
 	const handleSaveEdits = useCallback(() => {
 		if (!route || editedHexTiles.length === 0) return;
@@ -236,53 +272,72 @@ export default function RouteDetailScreen() {
 			setRoute(updatedRoute);
 			setIsEditing(false);
 			setHasUnsavedChanges(false);
-			setExpandedInsertIndex(null);
+			setAddAnchorTileIndex(null);
+			if (mapRef.current) {
+				mapRef.current.sendToMap({ routeEditLabels: null });
+				mapRef.current.sendToMap({ routeEditNeighbors: null });
+			}
 		} catch {
 			Alert.alert('Fehler', 'Die Änderungen konnten nicht gespeichert werden.');
 		}
 	}, [route, editedHexTiles]);
 
-	const getInsertCandidates = useCallback(
-		(index: number): string[] => {
-			if (!isH3Available()) return [];
-			const tiles = editedHexTiles;
-			const candidates = new Set<string>();
+	// Send route-edit overlay (labels + neighbor highlight) to the map
+	useEffect(() => {
+		if (!isEditing || !mapMounted || !mapRef.current || !isH3Available()) return;
 
-			// Get neighbors from the tile before the insertion point
-			if (index > 0) {
-				try {
-					const disk = gridDisk(tiles[index - 1], 1);
-					if (disk) disk.forEach((c) => candidates.add(c));
-				} catch {
-					// Skip if H3 fails
-				}
+		// Build label GeoJSON: one Point feature per route tile
+		const labelFeatures = editedHexTiles.map((cell, idx) => {
+			let label: string;
+			if (mapEditSubMode === 'remove') {
+				label = '−';
+			} else if (addAnchorTileIndex === null) {
+				label = '+';
+			} else {
+				label = idx === addAnchorTileIndex ? '★' : '';
 			}
-
-			// Get neighbors from the tile after the insertion point
-			if (index < tiles.length) {
-				try {
-					const disk = gridDisk(tiles[index], 1);
-					if (disk) disk.forEach((c) => candidates.add(c));
-				} catch {
-					// Skip if H3 fails
-				}
+			try {
+				const [lat, lng] = cellToLatLng(cell);
+				return {
+					type: 'Feature' as const,
+					geometry: { type: 'Point' as const, coordinates: [lng, lat] },
+					properties: { h3Index: cell, label },
+				};
+			} catch (err) {
+				console.warn('[RouteDetailScreen] Failed to get center for label cell', cell, err);
+				return null;
 			}
+		}).filter(Boolean);
 
-			// Fallback: use nearest tile if nothing found yet
-			if (candidates.size === 0 && tiles.length > 0) {
-				const refIdx = Math.min(index, tiles.length - 1);
+		mapRef.current.sendToMap({
+			routeEditLabels: { type: 'FeatureCollection', features: labelFeatures },
+		});
+
+		// Build neighbor GeoJSON when an anchor tile is selected
+		if (addAnchorTileIndex !== null && addAnchorTileIndex < editedHexTiles.length) {
+			const anchorTile = editedHexTiles[addAnchorTileIndex];
+			const tileSet = new Set(editedHexTiles);
+			const neighbors = gridDisk(anchorTile, 1).filter((n) => n !== anchorTile && !tileSet.has(n));
+			const neighborFeatures = neighbors.map((cell) => {
 				try {
-					const disk = gridDisk(tiles[refIdx], 1);
-					if (disk) disk.forEach((c) => candidates.add(c));
-				} catch {
-					// Skip if H3 fails
+					const boundary = cellToBoundary(cell, true);
+					return {
+						type: 'Feature' as const,
+						geometry: { type: 'Polygon' as const, coordinates: [boundary] },
+						properties: { h3Index: cell },
+					};
+				} catch (err) {
+					console.warn('[RouteDetailScreen] Failed to get boundary for neighbor cell', cell, err);
+					return null;
 				}
-			}
-
-			return Array.from(candidates).sort();
-		},
-		[editedHexTiles],
-	);
+			}).filter(Boolean);
+			mapRef.current.sendToMap({
+				routeEditNeighbors: { type: 'FeatureCollection', features: neighborFeatures },
+			});
+		} else {
+			mapRef.current.sendToMap({ routeEditNeighbors: null });
+		}
+	}, [isEditing, editedHexTiles, mapEditSubMode, addAnchorTileIndex, mapMounted]);
 
 	const handleDelete = useCallback(() => {
 		if (!route) return;
@@ -342,43 +397,7 @@ export default function RouteDetailScreen() {
 
 	const lastInfoIdx = infoRows.length - 1;
 
-	const renderInsertButton = (index: number) => {
-		const isExpanded = expandedInsertIndex === index;
-		return (
-			<View style={styles.insertSection}>
-				<TouchableOpacity
-					style={styles.insertButton}
-					onPress={() => setExpandedInsertIndex(isExpanded ? null : index)}
-					activeOpacity={0.7}
-				>
-					<View style={[styles.insertLine, { backgroundColor: theme.screen.icon + '30' }]} />
-					<View style={[styles.insertIconCircle, isExpanded && styles.insertIconCircleExpanded]}>
-						<MaterialIcons name={isExpanded ? 'close' : 'add'} size={14} color={isExpanded ? '#ffffff' : PRIMARY_COLOR} />
-					</View>
-					<View style={[styles.insertLine, { backgroundColor: theme.screen.icon + '30' }]} />
-				</TouchableOpacity>
-				{isExpanded && (
-					<View style={styles.candidateContainer}>
-						<Text style={[styles.candidateTitle, { color: theme.screen.icon }]}>Nachbar-Kachel auswählen:</Text>
-						<View style={styles.candidateGrid}>
-							{getInsertCandidates(index).map((candidate) => (
-								<TouchableOpacity
-									key={candidate}
-									style={[styles.candidateChip, { backgroundColor: theme.screen.iconBg }]}
-									onPress={() => handleInsertTile(index, candidate)}
-									activeOpacity={0.7}
-								>
-									<Text style={[styles.candidateChipText, { color: theme.screen.text }]}>
-										{formatH3Short(candidate)}
-									</Text>
-								</TouchableOpacity>
-							))}
-						</View>
-					</View>
-				)}
-			</View>
-		);
-	};
+	const addModeHasAnchor = isEditing && mapEditSubMode === 'add' && addAnchorTileIndex !== null;
 
 	return (
 		<ScrollView
@@ -386,7 +405,7 @@ export default function RouteDetailScreen() {
 			contentContainerStyle={styles.scrollContent}
 			showsVerticalScrollIndicator={false}
 		>
-			{/* Map – 1:1 square at the top */}
+			{/* Map – 1:1 square at the top with edit overlay controls */}
 			<View style={styles.mapContainer}>
 				<MyMap
 					ref={mapRef}
@@ -396,6 +415,75 @@ export default function RouteDetailScreen() {
 					initialCenter={routeInitialCenter}
 					initialPitch={45}
 				/>
+
+				{/* Edit-mode toggle – top-right corner, always visible */}
+				<TouchableOpacity
+					style={[styles.mapOverlayButton, styles.mapEditToggle, isEditing && styles.mapOverlayButtonActive]}
+					onPress={isEditing ? handleCancelEditing : handleStartEditing}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="edit" size={20} color={isEditing ? '#ffffff' : PRIMARY_COLOR} />
+				</TouchableOpacity>
+
+				{/* Sub-mode buttons (+/-) and anchor hint – only in edit mode */}
+				{isEditing && (
+					<>
+						{/* Sub-mode switcher – top-left */}
+						<View style={styles.mapSubModeRow}>
+							<TouchableOpacity
+								style={[styles.mapSubModeButton, mapEditSubMode === 'add' && styles.mapSubModeButtonActive]}
+								onPress={() => { setMapEditSubMode('add'); setAddAnchorTileIndex(null); }}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="add" size={22} color={mapEditSubMode === 'add' ? '#ffffff' : PRIMARY_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.mapSubModeButton, mapEditSubMode === 'remove' && styles.mapSubModeButtonRemove]}
+								onPress={() => { setMapEditSubMode('remove'); setAddAnchorTileIndex(null); }}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="remove" size={22} color={mapEditSubMode === 'remove' ? '#ffffff' : '#ef4444'} />
+							</TouchableOpacity>
+						</View>
+
+						{/* Anchor-selection hint banner */}
+						{mapEditSubMode === 'add' && (
+							<View style={styles.mapHintBanner}>
+								<Text style={styles.mapHintText} numberOfLines={1}>
+									{addModeHasAnchor
+										? 'Nachbar-Kachel antippen zum Einfügen'
+										: 'Kachel antippen als Einfügepunkt wählen'}
+								</Text>
+								{addModeHasAnchor && (
+									<TouchableOpacity onPress={() => setAddAnchorTileIndex(null)} activeOpacity={0.8} style={styles.mapHintClose}>
+										<MaterialIcons name="close" size={14} color="#ffffff" />
+									</TouchableOpacity>
+								)}
+							</View>
+						)}
+
+						{/* Save / Cancel – bottom of map */}
+						<View style={styles.mapEditActions}>
+							<TouchableOpacity
+								style={styles.mapCancelButton}
+								onPress={handleCancelEditing}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="close" size={16} color="#ffffff" />
+								<Text style={styles.mapActionButtonText}>Abbrechen</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.mapSaveButton, editedHexTiles.length === 0 && styles.mapSaveButtonDisabled]}
+								onPress={handleSaveEdits}
+								disabled={editedHexTiles.length === 0}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="save" size={16} color="#ffffff" />
+								<Text style={styles.mapActionButtonText}>Speichern</Text>
+							</TouchableOpacity>
+						</View>
+					</>
+				)}
 			</View>
 
 			{/* Info list */}
@@ -433,73 +521,6 @@ export default function RouteDetailScreen() {
 						setRoute(updated);
 					}}
 				/>
-
-				{/* ─── Route tile editing section ─────────────────────── */}
-				<SettingsListGroupTitle title="Kacheln bearbeiten" />
-				{isEditing ? (
-					<>
-						<View style={styles.editTileList}>
-							{renderInsertButton(0)}
-							{editedHexTiles.map((tile, idx) => (
-								<React.Fragment key={`edit-tile-${idx}`}>
-									<View style={[styles.tileRow, { backgroundColor: theme.screen.iconBg }]}>
-										<View style={styles.tileIndexBadge}>
-											<Text style={styles.tileIndexText}>{idx + 1}</Text>
-										</View>
-										<Text
-											style={[styles.tileIdText, { color: theme.screen.text }]}
-											numberOfLines={1}
-											ellipsizeMode="middle"
-										>
-											{formatH3Short(tile)}
-										</Text>
-										<TouchableOpacity
-											onPress={() => handleRemoveTile(idx)}
-											style={styles.removeTileButton}
-											activeOpacity={0.7}
-										>
-											<MaterialIcons name="remove-circle" size={22} color="#ef4444" />
-										</TouchableOpacity>
-									</View>
-									{renderInsertButton(idx + 1)}
-								</React.Fragment>
-							))}
-							{editedHexTiles.length === 0 && (
-								<Text style={[styles.emptyEditText, { color: theme.screen.icon }]}>
-									Keine Kacheln vorhanden.
-								</Text>
-							)}
-						</View>
-
-						<View style={styles.editActions}>
-							<TouchableOpacity
-								style={[styles.saveEditButton, editedHexTiles.length === 0 && styles.saveEditButtonDisabled]}
-								onPress={handleSaveEdits}
-								activeOpacity={0.8}
-								disabled={editedHexTiles.length === 0}
-							>
-								<MaterialIcons name="save" size={18} color="#ffffff" />
-								<Text style={styles.saveEditButtonText}>Speichern</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={styles.cancelEditButton}
-								onPress={handleCancelEditing}
-								activeOpacity={0.8}
-							>
-								<Text style={styles.cancelEditButtonText}>Abbrechen</Text>
-							</TouchableOpacity>
-						</View>
-					</>
-				) : (
-					<TouchableOpacity
-						style={[styles.editRouteButton, { borderColor: PRIMARY_COLOR }]}
-						onPress={handleStartEditing}
-						activeOpacity={0.8}
-					>
-						<MaterialIcons name="edit" size={18} color={PRIMARY_COLOR} />
-						<Text style={[styles.editRouteButtonText, { color: PRIMARY_COLOR }]}>Kacheln bearbeiten</Text>
-					</TouchableOpacity>
-				)}
 
 				<TouchableOpacity
 					style={styles.deleteButton}
@@ -578,141 +599,114 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		fontWeight: '600',
 	},
-	// ─── Route editing styles ────────────────────────────────────────────
-	editTileList: {
-		gap: 0,
-	},
-	tileRow: {
-		flexDirection: 'row',
+	// ─── Map overlay controls ─────────────────────────────────────────────
+	mapOverlayButton: {
+		position: 'absolute',
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		backgroundColor: 'rgba(255,255,255,0.92)',
 		alignItems: 'center',
-		paddingVertical: 10,
-		paddingHorizontal: 12,
-		borderRadius: 10,
-		gap: 10,
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.25,
+		shadowRadius: 3,
+		elevation: 4,
 	},
-	tileIndexBadge: {
-		width: 28,
-		height: 28,
-		borderRadius: 14,
+	mapOverlayButtonActive: {
 		backgroundColor: PRIMARY_COLOR,
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
-	tileIndexText: {
-		color: '#ffffff',
-		fontSize: 12,
-		fontWeight: '700',
+	mapEditToggle: {
+		top: 10,
+		right: 10,
 	},
-	tileIdText: {
-		flex: 1,
-		fontSize: 13,
-		fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-	},
-	removeTileButton: {
-		padding: 4,
-	},
-	emptyEditText: {
-		fontSize: 14,
-		textAlign: 'center',
-		paddingVertical: 16,
-	},
-	insertSection: {
-		paddingVertical: 2,
-	},
-	insertButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: 4,
-	},
-	insertLine: {
-		flex: 1,
-		height: 1,
-	},
-	insertIconCircle: {
-		width: 22,
-		height: 22,
-		borderRadius: 11,
-		borderWidth: 1.5,
-		borderColor: PRIMARY_COLOR,
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginHorizontal: 8,
-	},
-	insertIconCircleExpanded: {
-		backgroundColor: PRIMARY_COLOR,
-		borderColor: PRIMARY_COLOR,
-	},
-	candidateContainer: {
-		paddingVertical: 8,
-		paddingHorizontal: 4,
-	},
-	candidateTitle: {
-		fontSize: 12,
-		marginBottom: 6,
-	},
-	candidateGrid: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
+	mapSubModeRow: {
+		position: 'absolute',
+		top: 10,
+		left: 10,
+		flexDirection: 'column',
 		gap: 6,
 	},
-	candidateChip: {
+	mapSubModeButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		backgroundColor: 'rgba(255,255,255,0.92)',
+		alignItems: 'center',
+		justifyContent: 'center',
+		borderWidth: 2,
+		borderColor: PRIMARY_COLOR,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.2,
+		shadowRadius: 2,
+		elevation: 3,
+	},
+	mapSubModeButtonActive: {
+		backgroundColor: PRIMARY_COLOR,
+		borderColor: PRIMARY_COLOR,
+	},
+	mapSubModeButtonRemove: {
+		backgroundColor: '#ef4444',
+		borderColor: '#ef4444',
+	},
+	mapHintBanner: {
+		position: 'absolute',
+		bottom: 52,
+		left: 10,
+		right: 10,
+		backgroundColor: 'rgba(0,0,0,0.65)',
+		borderRadius: 8,
 		paddingVertical: 6,
 		paddingHorizontal: 10,
-		borderRadius: 8,
-	},
-	candidateChipText: {
-		fontSize: 12,
-		fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-	},
-	editActions: {
-		flexDirection: 'row',
-		gap: 10,
-		marginTop: 12,
-	},
-	saveEditButton: {
-		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'center',
-		backgroundColor: PRIMARY_COLOR,
-		paddingVertical: 12,
-		borderRadius: 10,
 		gap: 6,
 	},
-	saveEditButtonDisabled: {
-		opacity: 0.5,
-	},
-	saveEditButtonText: {
-		color: '#ffffff',
-		fontSize: 15,
-		fontWeight: '600',
-	},
-	cancelEditButton: {
+	mapHintText: {
 		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: 12,
-		borderRadius: 10,
-		borderWidth: 1,
-		borderColor: '#888888',
+		color: '#ffffff',
+		fontSize: 12,
+		fontWeight: '500',
 	},
-	cancelEditButtonText: {
-		color: '#888888',
-		fontSize: 15,
-		fontWeight: '600',
+	mapHintClose: {
+		padding: 2,
 	},
-	editRouteButton: {
+	mapEditActions: {
+		position: 'absolute',
+		bottom: 10,
+		left: 10,
+		right: 10,
+		flexDirection: 'row',
+		gap: 8,
+	},
+	mapCancelButton: {
+		flex: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingVertical: 12,
+		gap: 5,
+		paddingVertical: 10,
 		borderRadius: 10,
-		borderWidth: 1,
-		gap: 8,
+		backgroundColor: 'rgba(100,100,100,0.85)',
 	},
-	editRouteButtonText: {
-		fontSize: 15,
+	mapSaveButton: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 5,
+		paddingVertical: 10,
+		borderRadius: 10,
+		backgroundColor: PRIMARY_COLOR,
+	},
+	mapSaveButtonDisabled: {
+		opacity: 0.5,
+	},
+	mapActionButtonText: {
+		color: '#ffffff',
+		fontSize: 14,
 		fontWeight: '600',
 	},
 });
