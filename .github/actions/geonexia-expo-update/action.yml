@@ -167,7 +167,14 @@ runs:
         git config --global user.name 'Rocket Meals'
         git config --global user.email 'nils@baumgartner-software.de'
         git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-        git diff --quiet || (git add -A && git commit -m "chore: update geonexia EAS config [skip ci]" && git push)
+        if ! git diff --quiet; then
+          git add -A && git commit -m "chore: update geonexia EAS config [skip ci]"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)" && git push && break
+            echo "Push attempt $i failed, retrying..."
+            sleep 5
+          done
+        fi
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
