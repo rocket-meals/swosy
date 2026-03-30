@@ -194,6 +194,15 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="routes/index"
+				options={{
+					title: 'Routes',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="map-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
 				name="experimental/index"
 				options={{
 					title: 'Experimental',
@@ -260,6 +269,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			label: 'Billboard Config',
 			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('billboard-config/index'),
+		},
+		{
+			key: 'routes/index',
+			label: 'Routes',
+			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('routes/index'),
 		},
 		{
 			key: 'experimental/index',

@@ -40,6 +40,18 @@ export type SavedActivity = {
 	visitedTileCount?: number;
 	/** Number of hex tiles enclosed by the activity route. Optional for backward-compat. */
 	enclosedTileCount?: number;
+	/**
+	 * Ordered sequence of H3 hex tile indices visited during the activity.
+	 * This is a coarser representation of the route (not the raw GPS data).
+	 * Each tile appears only once, in the order it was first entered.
+	 * Optional for backward-compat with older saves.
+	 */
+	hexTilesOrdered?: string[];
+	/**
+	 * ID of the saved route this activity was matched or assigned to.
+	 * Optional – only set when the user confirms a route association.
+	 */
+	routeId?: string;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

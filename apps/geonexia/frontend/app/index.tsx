@@ -28,6 +28,8 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { SavedRoute, saveRoute, loadRoutes } from '../helpers/RouteStorage';
+import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
@@ -1725,6 +1727,7 @@ export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
+	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
@@ -1772,6 +1775,11 @@ export default function RecordScreen() {
 	const accumulatedSecondsRef = useRef(0);
 
 	const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
+
+	// Pre-run route selection: selected route to follow during the next recording.
+	const [selectedRoute, setSelectedRoute] = useState<SavedRoute | null>(null);
+	const selectedRouteRef = useRef<SavedRoute | null>(null);
+	selectedRouteRef.current = selectedRoute;
 
 	// Coloring tool state:
 	// - coloringTileImage: the currently selected tile key; null means coloring mode is off.
@@ -2114,6 +2122,9 @@ export default function RecordScreen() {
 	// Visited H3 hex cells during the active recording (used for immediate GeoJSON updates;
 	// persistent data lives in the Redux store)
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
+	// Ordered sequence of visited H3 hex cells during the active recording.
+	// Each cell appears only once, in the order it was first entered.
+	const orderedHexTilesRef = useRef<string[]>([]);
 	// The last H3 cell visited; used to detect cell transitions in handleLocationUpdate.
 	const lastCellRef = useRef<string | null>(null);
 	// Current player position (updated from real GPS and from debug gamepad)
@@ -2338,6 +2349,7 @@ export default function RecordScreen() {
 			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
 			visitedTileCount: routeCells.length,
 			enclosedTileCount: enclosedCount,
+			hexTilesOrdered: routeCells,
 		};
 		try {
 			saveActivity(activity);
@@ -2703,6 +2715,7 @@ export default function RecordScreen() {
 										// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
 										if (!visitedHexIdsRef.current.has(pathCells[i])) {
 											visitedHexIdsRef.current.add(pathCells[i]);
+											orderedHexTilesRef.current.push(pathCells[i]);
 											dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
 										}
 									}
@@ -2722,6 +2735,7 @@ export default function RecordScreen() {
 					// one step during a single activity.
 					if (!visitedHexIdsRef.current.has(cell)) {
 						visitedHexIdsRef.current.add(cell);
+						orderedHexTilesRef.current.push(cell);
 						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
 					}
 					if (cell !== lastCellRef.current) {
@@ -2860,6 +2874,7 @@ export default function RecordScreen() {
 
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
+			orderedHexTilesRef.current = [];
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
@@ -2987,6 +3002,152 @@ export default function RecordScreen() {
 		}
 	}, [handleLocationUpdate, setFollowMode, showModal, theme]);
 
+	// ─── Route helpers ────────────────────────────────────────────────────────
+	// Show a modal to assign an activity to an existing saved route.
+	const showRouteAssignmentModal = useCallback(
+		(activity: SavedActivity, hexTilesOrdered: string[], savedRoutes: SavedRoute[]) => {
+			showRouteModal({
+				title: '🗺️ Assign to Route',
+				onClose: closeRouteModal,
+				children: (
+					<View>
+						<SettingsListGroupTitle title="Saved Routes" />
+						{savedRoutes.map((route, i) => {
+							const position =
+								savedRoutes.length === 1
+									? 'single'
+									: i === 0
+									? 'top'
+									: i === savedRoutes.length - 1
+									? 'bottom'
+									: 'middle';
+							return (
+								<SettingsListSelectOptionSingle
+									key={route.id}
+									label={route.name}
+									isSelected={false}
+									selectionColor={PRIMARY_COLOR}
+									onPress={() => {
+										activity.routeId = route.id;
+										try { saveActivity(activity); } catch { /* ignore */ }
+										closeRouteModal();
+									}}
+									groupPosition={position}
+								/>
+							);
+						})}
+					</View>
+				),
+			});
+		},
+		[showRouteModal, closeRouteModal],
+	);
+
+	// Show a modal to select a saved route before starting a recording.
+	const showRouteSelectionModal = useCallback(async () => {
+		let routes: SavedRoute[] = [];
+		try {
+			routes = await loadRoutes();
+		} catch {
+			// ignore
+		}
+		if (routes.length === 0) {
+			Alert.alert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
+			return;
+		}
+		showRouteModal({
+			title: '🗺️ Select Route',
+			onClose: closeRouteModal,
+			children: (
+				<View>
+					<SettingsListGroupTitle title="Run this route today" />
+					<SettingsListSelectOptionSingle
+						key="__none__"
+						label="No route (free run)"
+						isSelected={selectedRoute === null}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							setSelectedRoute(null);
+							closeRouteModal();
+						}}
+						groupPosition={routes.length === 0 ? 'single' : 'top'}
+					/>
+					{routes.map((route, i) => {
+						const position = i === routes.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={route.id}
+								label={route.name}
+								isSelected={selectedRoute?.id === route.id}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									setSelectedRoute(route);
+									closeRouteModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showRouteModal, closeRouteModal, selectedRoute]);
+
+	// Show a modal with a text input for naming a new route.
+	const showNewRouteNameModal = useCallback(
+		(activity: SavedActivity, hexTilesOrdered: string[], h3Res: number) => {
+			let routeNameInput = '';
+			showRouteModal({
+				title: '🗺️ New Route',
+				onClose: closeRouteModal,
+				children: (
+					<View style={{ padding: 16, gap: 12 }}>
+						<Text style={{ color: theme.screen.text, fontSize: 15 }}>Enter a name for this route:</Text>
+						<TextInput
+							style={{
+								borderWidth: 1,
+								borderColor: theme.screen.text + '33',
+								borderRadius: 8,
+								padding: 12,
+								fontSize: 16,
+								color: theme.screen.text,
+							}}
+							placeholder="Route name"
+							placeholderTextColor={theme.screen.icon}
+							autoFocus
+							onChangeText={(text) => { routeNameInput = text; }}
+						/>
+						<TouchableOpacity
+							style={{ backgroundColor: PRIMARY_COLOR, borderRadius: 8, paddingVertical: 12, alignItems: 'center' }}
+							onPress={() => {
+								const routeName = routeNameInput.trim();
+								if (!routeName) return;
+								const newRoute: SavedRoute = {
+									id: String(Date.now()),
+									name: routeName,
+									hexTiles: hexTilesOrdered,
+									h3Resolution: h3Res,
+									createdAt: Date.now(),
+									sportType: activity.sportType,
+								};
+								try {
+									saveRoute(newRoute);
+									activity.routeId = newRoute.id;
+									saveActivity(activity);
+								} catch { /* ignore */ }
+								closeRouteModal();
+							}}
+							activeOpacity={0.8}
+						>
+							<Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 15 }}>Save Route</Text>
+						</TouchableOpacity>
+					</View>
+				),
+			});
+		},
+		[showRouteModal, closeRouteModal, theme],
+	);
+
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
 		_onLocationUpdate = null;
@@ -3061,7 +3222,9 @@ export default function RecordScreen() {
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
 
-		// Save activity to persistent storage
+		// Save activity to persistent storage (including ordered hex tiles for route matching)
+		const activityH3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+		const hexTilesOrdered = orderedHexTilesRef.current.slice();
 		const activity: SavedActivity = {
 			id: String(startTimeRef.current),
 			startedAt: startTimeRef.current,
@@ -3069,9 +3232,11 @@ export default function RecordScreen() {
 			routePoints: points,
 			stats,
 			sportType: selectedSportType,
-			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			h3Resolution: activityH3Res,
 			visitedTileCount: visitedHexIdsRef.current.size,
 			enclosedTileCount: enclosedCells.length,
+			hexTilesOrdered,
+			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
 		try {
 			saveActivity(activity);
@@ -3093,12 +3258,70 @@ export default function RecordScreen() {
 			},
 		};
 
+		// Show run stats first, then attempt route matching
 		showModal({
 			title: '🏃 Run Statistics',
 			onClose: closeModal,
 			children: <RunStatsContent stats={stats} theme={theme} shareData={shareData} />,
 		});
-	}, [showModal, closeModal, theme, dispatch]);
+
+		// Clear the pre-run selected route after the run ends
+		setSelectedRoute(null);
+
+		// Route matching: compare activity hex tiles against saved routes
+		if (hexTilesOrdered.length > 0) {
+			try {
+				const savedRoutes = await loadRoutes();
+				const matches = findMatchingRoutes(hexTilesOrdered, savedRoutes, activityH3Res);
+
+				if (matches.length > 0) {
+					// Found a matching route – ask the user to confirm
+					const bestMatch = matches[0];
+					const overlapPct = Math.round(bestMatch.overlap * 100);
+					Alert.alert(
+						'🗺️ Route Recognized',
+						`This run matches your saved route "${bestMatch.route.name}" (${overlapPct}% overlap). Assign this activity to the route?`,
+						[
+							{ text: 'No', style: 'cancel' },
+							{
+								text: 'Yes',
+								onPress: () => {
+									activity.routeId = bestMatch.route.id;
+									try { saveActivity(activity); } catch { /* ignore */ }
+								},
+							},
+						],
+					);
+				} else {
+					// No matching route – offer to save as new or assign to existing
+					const routeAlertButtons: { text: string; style?: 'cancel' | 'default' | 'destructive'; onPress?: () => void }[] = [
+						{ text: 'Dismiss', style: 'cancel' },
+						{
+							text: 'Save as New Route',
+							onPress: () => {
+								showNewRouteNameModal(activity, hexTilesOrdered, activityH3Res);
+							},
+						},
+					];
+					if (savedRoutes.length > 0) {
+						routeAlertButtons.push({
+							text: 'Assign to Existing',
+							onPress: () => {
+								showRouteAssignmentModal(activity, hexTilesOrdered, savedRoutes);
+							},
+						});
+					}
+					Alert.alert(
+						'🗺️ New Route?',
+						'This run doesn\'t match any saved route. Would you like to save it as a new route or assign it to an existing one?',
+						routeAlertButtons,
+					);
+				}
+			} catch (err) {
+				console.warn('[RecordScreen] Route matching failed:', err);
+			}
+		}
+	}, [showModal, closeModal, theme, dispatch, selectedSportType, showRouteAssignmentModal, showNewRouteNameModal]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
@@ -3316,6 +3539,19 @@ export default function RecordScreen() {
 							</View>
 						</View>
 
+						{/* Selected route indicator (shown only before recording starts) */}
+						{!isRecording && selectedRoute && (
+							<View style={styles.selectedRouteRow}>
+								<MaterialIcons name="route" size={14} color={PRIMARY_COLOR} />
+								<Text style={[styles.selectedRouteText, { color: theme.screen.text }]} numberOfLines={1}>
+									{selectedRoute.name}
+								</Text>
+								<TouchableOpacity onPress={() => setSelectedRoute(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+						)}
+
 						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
 						<View style={styles.liveBarControlsRow}>
 							{/* Left side: stop button when recording, activity type picker otherwise */}
@@ -3381,13 +3617,23 @@ export default function RecordScreen() {
 
 							{/* Chevron-down collapse button – right side */}
 							<View style={styles.liveBarSideSlot}>
-								<TouchableOpacity
-									style={styles.chevronButton}
-									onPress={() => setIsPanelCollapsed(true)}
-									activeOpacity={0.7}
-								>
-									<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
-								</TouchableOpacity>
+								{!isRecording ? (
+									<TouchableOpacity
+										style={[styles.routeButton, selectedRoute ? { backgroundColor: PRIMARY_COLOR + '22' } : {}]}
+										onPress={showRouteSelectionModal}
+										activeOpacity={0.8}
+									>
+										<MaterialIcons name="route" size={24} color={selectedRoute ? PRIMARY_COLOR : theme.screen.icon} />
+									</TouchableOpacity>
+								) : (
+									<TouchableOpacity
+										style={styles.chevronButton}
+										onPress={() => setIsPanelCollapsed(true)}
+										activeOpacity={0.7}
+									>
+										<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
+									</TouchableOpacity>
+								)}
 							</View>
 						</View>
 					</>
@@ -3785,6 +4031,26 @@ const styles = StyleSheet.create({
 		borderRadius: 26,
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	routeButton: {
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	selectedRouteRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		paddingHorizontal: 16,
+		paddingVertical: 4,
+	},
+	selectedRouteText: {
+		fontSize: 13,
+		fontWeight: '600',
+		maxWidth: 200,
 	},
 	// Hex tile info modal
 	hexInfoContainer: {
