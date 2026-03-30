@@ -4,20 +4,18 @@ import { MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
 	SettingsListGroupTitle,
-	SettingsListSelectOptionSingle,
-	SettingsListTextInput,
-	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
-import { SavedRoute, loadRoutes, deleteRoute, deleteAllRoutes, saveRoute } from '../../helpers/RouteStorage';
+import { useRouter } from 'expo-router';
+import { SavedRoute, loadRoutes, deleteAllRoutes } from '../../helpers/RouteStorage';
 import { computeRouteLengthKm, formatDistanceKm } from '../../helpers/H3Helper';
 
 const PRIMARY_COLOR = '#2563eb';
 
 export default function RoutesScreen() {
 	const { theme } = useTheme();
+	const router = useRouter();
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
-	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 
 	const refreshRoutes = useCallback(async () => {
 		try {
@@ -48,66 +46,9 @@ export default function RoutesScreen() {
 
 	const handleSelectRoute = useCallback(
 		(route: SavedRoute) => {
-			const distanceKm = computeRouteLengthKm(route.hexTiles);
-			showModal({
-				title: route.name,
-				children: (
-					<View>
-						<SettingsListGroupTitle title="Distanz" />
-						<SettingsList
-							leftIcon={<MaterialIcons name="social-distance" size={20} color="#ffffff" />}
-							iconBackgroundColor={PRIMARY_COLOR}
-							title="Streckenlänge"
-							value={formatDistanceKm(distanceKm)}
-							groupPosition="single"
-						/>
-						<SettingsListGroupTitle title="Name anpassen" />
-						<SettingsListTextInput
-							title="Route umbenennen"
-							placeholder="Route Name"
-							modalTitle="Route umbenennen"
-							initialValue={route.name}
-							groupPosition="single"
-							onSave={(newName) => {
-								const trimmed = newName.trim();
-								if (!trimmed) return;
-								const updated: SavedRoute = { ...route, name: trimmed };
-								try {
-									saveRoute(updated);
-								} catch {
-									Alert.alert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
-									return;
-								}
-								closeModal();
-								refreshRoutes();
-							}}
-						/>
-						<SettingsListGroupTitle title="Aktionen" />
-						<SettingsListSelectOptionSingle
-							label="Route löschen"
-							isSelected={false}
-							selectionColor="#ef4444"
-							groupPosition="single"
-							onPress={() => {
-								closeModal();
-								Alert.alert('Delete Route', 'Are you sure you want to delete this route?', [
-									{ text: 'Cancel', style: 'cancel' },
-									{
-										text: 'Delete',
-										style: 'destructive',
-										onPress: () => {
-											deleteRoute(route.id);
-											refreshRoutes();
-										},
-									},
-								]);
-							}}
-						/>
-					</View>
-				),
-			});
+			router.navigate(`/routes/${route.id}`);
 		},
-		[showModal, closeModal, refreshRoutes],
+		[router],
 	);
 
 	if (routes.length === 0) {
