@@ -681,7 +681,7 @@ export default function ActivityDetailScreen() {
 					onConfirm={() => {
 						deleteActivity(activity.id);
 						closeModal();
-						router.back();
+						router.replace('/activities');
 					}}
 					onCancel={closeModal}
 					theme={theme}
