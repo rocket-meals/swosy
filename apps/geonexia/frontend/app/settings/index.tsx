@@ -13,7 +13,7 @@ import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteAllActivities } from '../../helpers/ActivityStorage';
-import { loadPersistedState, setDebugMode, setDevMode } from '../../store/hexTileSlice';
+import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState } from '../../store/hexTileSlice';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
@@ -28,6 +28,10 @@ import {
 	saveDevHexTileState,
 	loadHexTileState,
 	loadDevHexTileState,
+	saveWalkedEdges,
+	saveDevWalkedEdges,
+	loadWalkedEdges,
+	loadDevWalkedEdges,
 } from '../../helpers/HexTileStorage';
 
 const PRIMARY_COLOR = '#2563eb';
@@ -159,6 +163,8 @@ export default function SettingsScreen() {
 					onConfirm={() => {
 						deleteAllActivities();
 						dispatch(loadPersistedState({}));
+						dispatch(loadWalkedEdgesState([]));
+						saveWalkedEdges([]);
 						closeResetModal();
 					}}
 					onCancel={closeResetModal}
@@ -186,17 +192,19 @@ export default function SettingsScreen() {
 	}, [showSpeechModal]);
 
 	const handleToggleDevMode = useCallback(async () => {
-		const { records: currentRecords, isDevMode: currentIsDevMode } = store.getState().hexTiles;
+		const { records: currentRecords, isDevMode: currentIsDevMode, walkedEdges: currentEdges } = store.getState().hexTiles;
 		if (currentIsDevMode) {
 			saveDevHexTileState(currentRecords);
-			const prodRecords = await loadHexTileState();
+			saveDevWalkedEdges(currentEdges);
+			const [prodRecords, prodEdges] = await Promise.all([loadHexTileState(), loadWalkedEdges()]);
 			saveDevModeFlag(false);
-			dispatch(setDevMode({ isDevMode: false, records: prodRecords }));
+			dispatch(setDevMode({ isDevMode: false, records: prodRecords, walkedEdges: prodEdges }));
 		} else {
 			saveHexTileState(currentRecords);
-			const devRecords = await loadDevHexTileState();
+			saveWalkedEdges(currentEdges);
+			const [devRecords, devEdges] = await Promise.all([loadDevHexTileState(), loadDevWalkedEdges()]);
 			saveDevModeFlag(true);
-			dispatch(setDevMode({ isDevMode: true, records: devRecords }));
+			dispatch(setDevMode({ isDevMode: true, records: devRecords, walkedEdges: devEdges }));
 		}
 	}, [dispatch]);
 

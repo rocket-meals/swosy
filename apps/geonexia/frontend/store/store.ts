@@ -6,7 +6,7 @@ import billboardConfigReducer from './billboardConfigSlice';
 import gpsIntervalReducer from './gpsIntervalSlice';
 import ttsReducer from './ttsSlice';
 import speechSettingsReducer from './speechSettingsSlice';
-import { HexTileRecord, saveHexTileState, saveDevHexTileState } from '../helpers/HexTileStorage';
+import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -36,6 +36,8 @@ export const store = configureStore({
 // excessive I/O during rapid consecutive GPS updates).
 let _saveTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedRecords: Record<string, HexTileRecord> | null = null;
+let _walkedEdgesTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedWalkedEdges: string[] | null = null;
 
 // Auto-persist sport type to disk whenever the selected type changes.
 let _lastSavedSportType: SportType | null = null;
@@ -72,6 +74,22 @@ store.subscribe(() => {
 				saveHexTileState(records);
 			}
 			_saveTimer = null;
+		}, 500);
+	}
+
+	const { walkedEdges } = state.hexTiles;
+	if (walkedEdges !== _lastSavedWalkedEdges) {
+		_lastSavedWalkedEdges = walkedEdges;
+		if (_walkedEdgesTimer) clearTimeout(_walkedEdgesTimer);
+		_walkedEdgesTimer = setTimeout(() => {
+			const currentIsDevMode = store.getState().hexTiles.isDevMode;
+			const currentEdges = store.getState().hexTiles.walkedEdges;
+			if (currentIsDevMode) {
+				saveDevWalkedEdges(currentEdges);
+			} else {
+				saveWalkedEdges(currentEdges);
+			}
+			_walkedEdgesTimer = null;
 		}, 500);
 	}
 
