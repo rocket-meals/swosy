@@ -1,16 +1,16 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-30T22:01:33.021Z",
+  "report_timestamp": "2026-03-30T22:31:16.694Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.5940008449514154,
-          "amountSavedValuesForKeys": 3773,
-          "amountKeys": 25
+          "average": 1.592670598146588,
+          "amountSavedValuesForKeys": 3781,
+          "amountKeys": 26
         },
         "invertedParameterToMethods": {
           "median": 1.5,
@@ -20,27 +20,27 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.6082693947144076,
-          "amountSavedValuesForKeys": 3773,
-          "amountKeys": 26
+          "average": 1.606884827879303,
+          "amountSavedValuesForKeys": 3781,
+          "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3797,
-        "detection_time_ms": 80,
+        "ast_generation_time_ms": 4104,
+        "detection_time_ms": 79,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 176.28,
-          "os_memory_free": 14935396352,
-          "os_memory_total": 16765407232,
+          "os_uptime": 113.4,
+          "os_memory_free": 14990475264,
+          "os_memory_total": 16766443520,
           "os_cpu_cores": 4,
-          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
-          "os_cpu_speed": 3458
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
+          "os_cpu_speed": 0
         }
       }
     },
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "fda8b12fdb7f2dd0f7a84ec6937884e4cf1bc0da",
-    "project_commit_hash": "fda8b12fdb7f2dd0f7a84ec6937884e4cf1bc0da",
+    "project_version": "8d90702dde2f5518542b6acded39071f4ad3f472",
+    "project_commit_hash": "8d90702dde2f5518542b6acded39071f4ad3f472",
     "project_tag": null,
-    "project_commit_date": "1774907995",
+    "project_commit_date": "1774909776",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 471,
-    "number_of_classes_or_interfaces": 959,
+    "number_of_classes_or_interfaces": 960,
     "number_of_methods": 1325,
-    "number_of_data_fields": 3773,
+    "number_of_data_fields": 3781,
     "number_of_method_parameters": 1465
   },
   "detector": {
