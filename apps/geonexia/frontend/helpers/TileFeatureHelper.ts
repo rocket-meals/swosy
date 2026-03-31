@@ -44,6 +44,32 @@ function latToTileY(lat: number, zoom: number): number {
 	);
 }
 
+/**
+ * Convert a fractional tile X coordinate back to longitude.
+ * Accepts non-integer values (e.g. `tileX + px / extent`) for sub-tile precision.
+ */
+function tileXToLng(xFrac: number, zoom: number): number {
+	return (xFrac / Math.pow(2, zoom)) * 360 - 180;
+}
+
+/**
+ * Convert a fractional tile Y coordinate back to latitude.
+ * Accepts non-integer values (e.g. `tileY + py / extent`) for sub-tile precision.
+ */
+function tileYToLat(yFrac: number, zoom: number): number {
+	const n = Math.PI - (2 * Math.PI * yFrac) / Math.pow(2, zoom);
+	return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+}
+
+/** Simple axis-aligned bounding-box overlap check. */
+function boundsOverlap(
+	aMinLat: number, aMinLng: number, aMaxLat: number, aMaxLng: number,
+	bMinLat: number, bMinLng: number, bMaxLat: number, bMaxLng: number,
+): boolean {
+	return aMinLat <= bMaxLat && aMaxLat >= bMinLat &&
+		aMinLng <= bMaxLng && aMaxLng >= bMinLng;
+}
+
 /** Return all (z, x, y) tile coordinates that cover the given bounding box. */
 export function getTilesForBounds(
 	minLat: number,
@@ -128,8 +154,11 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 
 // ─── Single-tile fetching & parsing ─────────────────────────────────────────
 
-/** Cache: `"tileUrlTemplate|z|x|y"` → parsed MapFeatureInfo[]. */
+/** Cache: `"tileUrlTemplate|z|x|y"` → parsed MapFeatureInfo[] (unfiltered). */
 const tileFeaturesCache: Record<string, MapFeatureInfo[]> = {};
+
+/** Cache: `"tileUrlTemplate|z|x|y"` → raw tile ArrayBuffer for filtered re-parsing. */
+const tileBufferCache: Record<string, ArrayBuffer> = {};
 
 /** Build a cache key for a single tile fetch. */
 function tileCacheKey(tileUrlTemplate: string, z: number, x: number, y: number): string {
@@ -141,37 +170,55 @@ function tileCacheKey(tileUrlTemplate: string, z: number, x: number, y: number):
  * Results are cached in-memory so repeated requests for the same tile
  * (e.g. overlapping H3 bounding boxes) are served instantly.
  *
+ * When `filterBounds` is provided, only features whose geographic bounding box
+ * overlaps the given lat/lng rectangle are included in the result.
+ *
  * @param tileUrlTemplate – URL template with `{z}`, `{x}`, `{y}` placeholders.
  * @param z – Zoom level.
  * @param x – Tile X coordinate.
  * @param y – Tile Y coordinate.
+ * @param filterBounds – Optional geographic bounding box to restrict returned features.
  */
 export async function fetchAndParseTile(
 	tileUrlTemplate: string,
 	z: number,
 	x: number,
 	y: number,
+	filterBounds?: { minLat: number; minLng: number; maxLat: number; maxLng: number },
 ): Promise<MapFeatureInfo[]> {
 	const cacheKey = tileCacheKey(tileUrlTemplate, z, x, y);
-	const cached = tileFeaturesCache[cacheKey];
-	if (cached) return cached;
 
-	const url = tileUrlTemplate
-		.replace('{z}', String(z))
-		.replace('{x}', String(x))
-		.replace('{y}', String(y));
-
-	const res = await fetch(url);
-	if (!res.ok) {
-		// Tiles may legitimately return 404 for ocean / empty areas.
-		if (res.status === 404) {
-			tileFeaturesCache[cacheKey] = [];
-			return [];
-		}
-		throw new Error(`Tile fetch failed (${res.status}): ${url}`);
+	// When no filter is requested we can serve from the parsed-features cache.
+	if (!filterBounds) {
+		const cached = tileFeaturesCache[cacheKey];
+		if (cached) return cached;
 	}
 
-	const buffer = await res.arrayBuffer();
+	// Use cached raw buffer when available (avoids re-downloading for filtered queries).
+	let buffer: ArrayBuffer;
+	const cachedBuffer = tileBufferCache[cacheKey];
+	if (cachedBuffer) {
+		buffer = cachedBuffer;
+	} else {
+		const url = tileUrlTemplate
+			.replace('{z}', String(z))
+			.replace('{x}', String(x))
+			.replace('{y}', String(y));
+
+		const res = await fetch(url);
+		if (!res.ok) {
+			// Tiles may legitimately return 404 for ocean / empty areas.
+			if (res.status === 404) {
+				tileFeaturesCache[cacheKey] = [];
+				return [];
+			}
+			throw new Error(`Tile fetch failed (${res.status}): ${url}`);
+		}
+
+		buffer = await res.arrayBuffer();
+		tileBufferCache[cacheKey] = buffer;
+	}
+
 	const tile = new VectorTile(new Pbf(buffer));
 
 	const features: MapFeatureInfo[] = [];
@@ -184,6 +231,27 @@ export async function fetchAndParseTile(
 		for (let i = 0; i < layer.length; i++) {
 			const feat = layer.feature(i);
 			const props = feat.properties ?? {};
+
+			// ── Geographic filter ────────────────────────────────────
+			if (filterBounds) {
+				const [bx1, by1, bx2, by2] = feat.bbox();
+				const extent = feat.extent || 4096;
+
+				// Convert tile-relative coordinates to geographic lat/lng.
+				const featMinLng = tileXToLng(x + bx1 / extent, z);
+				const featMaxLng = tileXToLng(x + bx2 / extent, z);
+				// Tile Y increases downward: smaller py → further north.
+				const featMaxLat = tileYToLat(y + by1 / extent, z);
+				const featMinLat = tileYToLat(y + by2 / extent, z);
+
+				if (!boundsOverlap(
+					featMinLat, featMinLng, featMaxLat, featMaxLng,
+					filterBounds.minLat, filterBounds.minLng,
+					filterBounds.maxLat, filterBounds.maxLng,
+				)) {
+					continue;
+				}
+			}
 
 			const name = (props.name as string) || (props['name:de'] as string) || null;
 			const cls = (props['class'] as string) || null;
@@ -220,7 +288,11 @@ export async function fetchAndParseTile(
 		}
 	}
 
-	tileFeaturesCache[cacheKey] = features;
+	// Only cache when no filter was applied (unfiltered superset).
+	if (!filterBounds) {
+		tileFeaturesCache[cacheKey] = features;
+	}
+
 	return features;
 }
 
@@ -255,9 +327,10 @@ export async function queryTileFeaturesForBounds(
 
 	const tileUrlTemplate = await resolveTileUrl(styleUrl);
 	const tiles = getTilesForBounds(minLat, minLng, maxLat, maxLng, zoom);
+	const filterBounds = { minLat, minLng, maxLat, maxLng };
 
 	const results = await Promise.all(
-		tiles.map((t) => fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y)),
+		tiles.map((t) => fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y, filterBounds)),
 	);
 
 	return results.flat();
@@ -275,12 +348,13 @@ export async function queryTileFeaturesGrouped(
 
 	const tileUrlTemplate = await resolveTileUrl(styleUrl);
 	const tiles = getTilesForBounds(minLat, minLng, maxLat, maxLng, zoom);
+	const filterBounds = { minLat, minLng, maxLat, maxLng };
 
 	const grouped: Record<string, MapFeatureInfo[]> = {};
 
 	await Promise.all(
 		tiles.map(async (t) => {
-			const features = await fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y);
+			const features = await fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y, filterBounds);
 			grouped[`${t.z}/${t.x}/${t.y}`] = features;
 		}),
 	);
