@@ -22,6 +22,8 @@ declare module '@mapbox/vector-tile' {
 		extent: number;
 		type: 0 | 1 | 2 | 3;
 		id: number | undefined;
+		/** Return the bounding box of the feature geometry in tile coordinates [x1, y1, x2, y2]. */
+		bbox(): [number, number, number, number];
 	}
 
 	export class VectorTileLayer {
