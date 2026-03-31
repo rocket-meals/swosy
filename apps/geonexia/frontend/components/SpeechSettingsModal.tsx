@@ -551,16 +551,6 @@ export default function SpeechSettingsContent() {
 				valueInactive="Deaktiviert"
 				groupPosition="top"
 			/>
-			<SettingsListBoolean
-				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
-				label="Pace"
-				isEnabled={settings.announcePace}
-				onToggle={() => update({ announcePace: !settings.announcePace })}
-				valueActive="Wird angesagt"
-				valueInactive="Deaktiviert"
-				groupPosition="middle"
-			/>
 			<PaceMinSecInput
 				iconBgColor={INTERVAL_COLOR}
 				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
@@ -593,10 +583,10 @@ export default function SpeechSettingsContent() {
 			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
-				label="Dauer"
-				isEnabled={settings.announceDuration}
-				onToggle={() => update({ announceDuration: !settings.announceDuration })}
+				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
+				label="Pace (min/km)"
+				isEnabled={settings.announcePace}
+				onToggle={() => update({ announcePace: !settings.announcePace })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="top"
@@ -604,9 +594,19 @@ export default function SpeechSettingsContent() {
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
-				label="Geschwindigkeit"
+				label="Geschwindigkeit (km/h)"
 				isEnabled={settings.announceSpeed}
 				onToggle={() => update({ announceSpeed: !settings.announceSpeed })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" />}
+				label="Dauer"
+				isEnabled={settings.announceDuration}
+				onToggle={() => update({ announceDuration: !settings.announceDuration })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
