@@ -1,4 +1,13 @@
 Key,Message,Component,Line
+"AZ1CkG6ygetBJX8T7gNM","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",256
+"AZ1CkG6ygetBJX8T7gNN","Prefer `Math.hypot(…)` over `Math.sqrt(…)`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",285
+"AZ1CkG6ygetBJX8T7gNO","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",778
+"AZ1CkG6ygetBJX8T7gNP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",783
+"AZ1CkG6ygetBJX8T7gNQ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",783
+"AZ1CkG6ygetBJX8T7gNR","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",833
+"AZ1CkG6ygetBJX8T7gNS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",839
+"AZ1CkG6ygetBJX8T7gNT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",839
+"AZ1CkG3AgetBJX8T7gNL","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",143
 "AZ1Bx1iOziirtuCgLNbD","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1936
 "AZ1Bx1iOziirtuCgLNbE","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1958
 "AZ1Bx1iOziirtuCgLNbF","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1963
@@ -16,17 +25,17 @@ Key,Message,Component,Line
 "AZ1BDF-GgetBJX8TujHW","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1921
 "AZ1BDF-GgetBJX8TujHX","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1926
 "AZ1BDF-GgetBJX8TujHY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1926
-"AZ1BDF6ngetBJX8TujHT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",597
-"AZ1BDF6ngetBJX8TujHU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",597
+"AZ1BDF6ngetBJX8TujHT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",761
+"AZ1BDF6ngetBJX8TujHU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",761
 "AZ1A4XT1cQvc8vmiQcO1","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1772
 "AZ1AhBAquZ1pBQmsBcAH","Refactor this function to reduce its Cognitive Complexity from 40 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TTSHelper.ts",121
 "AZ1AhBAquZ1pBQmsBcAI","'If' statement should not be the only statement in 'else' block","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TTSHelper.ts",166
 "AZ0_-1Ghip1ffNXdD4x6","Refactor this function to reduce its Cognitive Complexity from 27 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteDisplayHelper.ts",50
 "AZ0_-1Ghip1ffNXdD4x7","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteDisplayHelper.ts",110
 "AZ0-H5YxUqlj7BIXFuR0","Remove this unused import of 'cellToChildren'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",30
-"AZ0_muQpsbZkP7zZ--hC","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",115
-"AZ0_muQpsbZkP7zZ--hD","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",550
-"AZ0_muQpsbZkP7zZ--hE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",550
+"AZ0_muQpsbZkP7zZ--hC","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",155
+"AZ0_muQpsbZkP7zZ--hD","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",714
+"AZ0_muQpsbZkP7zZ--hE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",714
 "AZ09-cPf1yt80T-hwzzL","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1553
 "AZ09zPie1XV5X7ZcuP8Z","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",74
 "AZ09zPie1XV5X7ZcuP8a","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",74
@@ -9990,12 +9999,3 @@ Key,Message,Component,Line
 "AZkUSve2S4VhJojFFCV3","Remove this useless assignment to variable ""systemTheme"".","rocket-meals_rocket-meals:apps/frontend/app/hooks/useTheme.ts",32
 "AZ0TplVdufp2jxPAhS4b","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Apartments/Apartments.ts",3
 "AZ0TplWJufp2jxPAhS4i","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/AppElements/AppElements.ts",3
-"AZ0TplQZufp2jxPAhS3v","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/AppFeedback/AppFeedback.ts",3
-"AZ0TplVoufp2jxPAhS4c","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/AppSettings/AppSettings.ts",3
-"AZkUSvaJS4VhJojFFCSd","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",38
-"AZkUSvaJS4VhJojFFCSe","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",39
-"AZkUSvaJS4VhJojFFCSf","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",40
-"AZkUSvaJS4VhJojFFCSg","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",41
-"AZkUSvaJS4VhJojFFCSh","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/Auth/Auth.ts",42
-"AZ0TplSbufp2jxPAhS4E","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/BusinessHours/BusinessHours.ts",3
-"AZ0TplSkufp2jxPAhS4F","Remove this unused import of 'ServerAPI'.","rocket-meals_rocket-meals:apps/frontend/app/redux/actions/BusinessHours/BusinessHoursGroups.ts",3
