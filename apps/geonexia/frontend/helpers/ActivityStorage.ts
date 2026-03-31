@@ -36,6 +36,34 @@ export type SavedActivity = {
 	sportType?: SportType;
 	/** H3 resolution used during recording. Optional for backward-compat with older saves. */
 	h3Resolution?: number;
+	/** Number of hex tiles visited (walked on) during the activity. Optional for backward-compat. */
+	visitedTileCount?: number;
+	/** Number of hex tiles enclosed by the activity route. Optional for backward-compat. */
+	enclosedTileCount?: number;
+	/**
+	 * Ordered sequence of H3 hex tile indices visited during the activity.
+	 * This is a coarser representation of the route (not the raw GPS data).
+	 * Each tile appears only once, in the order it was first entered.
+	 * Optional for backward-compat with older saves.
+	 */
+	hexTilesOrdered?: string[];
+	/**
+	 * ID of the saved route this activity was matched or assigned to.
+	 * - `undefined` (field absent): the user has not yet been asked to assign a route.
+	 * - `null`: the user explicitly chose not to assign any route.
+	 * - `string`: the ID of the assigned `SavedRoute`.
+	 */
+	routeId?: string | null;
+	/**
+	 * Device battery level at the start of the activity (0–1, where 1 = 100%).
+	 * Optional for backward-compat with older saves.
+	 */
+	batteryLevelStart?: number | null;
+	/**
+	 * Device battery level at the end of the activity (0–1, where 1 = 100%).
+	 * Optional for backward-compat with older saves.
+	 */
+	batteryLevelEnd?: number | null;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────

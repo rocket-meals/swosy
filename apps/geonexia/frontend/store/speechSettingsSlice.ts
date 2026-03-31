@@ -25,8 +25,10 @@ export type SpeechSettingsState = {
 	paceHintSlowerMinutes: number;
 	paceHintSlowerSeconds: number;
 
-	/** Time interval for periodic announcements (minutes). 0 = disabled. */
+	/** Time interval for periodic announcements – minutes component. 0 min + 0 sec = disabled. */
 	intervalTimeMinutes: number;
+	/** Time interval for periodic announcements – seconds component. */
+	intervalTimeSeconds: number;
 	/** Distance interval for periodic announcements (meters). 0 = disabled. */
 	intervalDistanceMeters: number;
 	/** Play a tone at the specified distance interval */
@@ -41,6 +43,8 @@ export type SpeechSettingsState = {
 	announceSpeed: boolean;
 	announceCalories: boolean;
 	announceHeartRate: boolean;
+	/** Announce when the app moves to the background during a recording */
+	announceAppInBackground: boolean;
 };
 
 export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
@@ -57,6 +61,7 @@ export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	paceHintSlowerMinutes: 0,
 	paceHintSlowerSeconds: 30,
 	intervalTimeMinutes: 5,
+	intervalTimeSeconds: 0,
 	intervalDistanceMeters: 1000,
 	toneAtDistance: false,
 	vibrationAtDistance: false,
@@ -66,6 +71,7 @@ export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	announceSpeed: false,
 	announceCalories: false,
 	announceHeartRate: false,
+	announceAppInBackground: true,
 };
 
 const initialState: SpeechSettingsState = { ...SPEECH_SETTINGS_DEFAULTS };

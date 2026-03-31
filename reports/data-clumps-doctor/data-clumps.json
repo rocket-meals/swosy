@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-30T00:08:41.911Z",
+  "report_timestamp": "2026-03-30T23:17:55.791Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
           "median": 1,
-          "maximum": 93,
-          "average": 1.592988456605387,
-          "amountSavedValuesForKeys": 3726,
+          "maximum": 94,
+          "average": 1.591157894736842,
+          "amountSavedValuesForKeys": 3779,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -21,51 +21,51 @@
         },
         "invertedParameterToClasses": {
           "median": 1.5,
-          "maximum": 93,
-          "average": 1.6074201898188094,
-          "amountSavedValuesForKeys": 3726,
-          "amountKeys": 25
+          "maximum": 94,
+          "average": 1.6053525913338997,
+          "amountSavedValuesForKeys": 3779,
+          "amountKeys": 27
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4306,
-        "detection_time_ms": 91,
+        "ast_generation_time_ms": 4020,
+        "detection_time_ms": 74,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 114.85,
-          "os_memory_free": 14982688768,
-          "os_memory_total": 16770822144,
+          "os_uptime": 168.87,
+          "os_memory_free": 15000633344,
+          "os_memory_total": 16766443520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 29,
-    "amount_files_with_data_clumps": 24,
+    "amount_classes_or_interfaces_with_data_clumps": 33,
+    "amount_files_with_data_clumps": 27,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 34,
+    "fields_to_fields_data_clump": 38,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 42
+    "amount_data_clumps": 46
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "8addd3c733e2519ea742ca097318bc825d1da3ef",
-    "project_commit_hash": "8addd3c733e2519ea742ca097318bc825d1da3ef",
+    "project_version": "975162d35a2f08895981b1067f4694cfe5c02b5b",
+    "project_commit_hash": "975162d35a2f08895981b1067f4694cfe5c02b5b",
     "project_tag": null,
-    "project_commit_date": "1774829223",
+    "project_commit_date": "1774912585",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 465,
-    "number_of_classes_or_interfaces": 950,
+    "number_of_files": 470,
+    "number_of_classes_or_interfaces": 959,
     "number_of_methods": 1325,
-    "number_of_data_fields": 3726,
+    "number_of_data_fields": 3779,
     "number_of_method_parameters": 1465
   },
   "detector": {
@@ -3294,6 +3294,544 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
+      "from_class_or_interface_name": "SavedActivity",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/RouteStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute",
+      "to_class_or_interface_name": "SavedRoute",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/id": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 7,
+              "startColumn": 2,
+              "endLine": 7,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 13
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType",
+          "name": "sportType",
+          "type": "SportType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/sportType",
+            "name": "sportType",
+            "type": "SportType",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 2,
+            "endLine": 36,
+            "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution",
+          "name": "h3Resolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/h3Resolution",
+            "name": "h3Resolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 38,
+            "startColumn": 2,
+            "endLine": 38,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/RouteStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute",
+      "from_class_or_interface_name": "SavedRoute",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity",
+      "to_class_or_interface_name": "SavedActivity",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/id": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/id",
+          "name": "id",
+          "type": "string",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/id",
+            "name": "id",
+            "type": "string",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 13
+            }
+          },
+          "position": {
+            "startLine": 7,
+            "startColumn": 2,
+            "endLine": 7,
+            "endColumn": 13
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/h3Resolution": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/h3Resolution",
+          "name": "h3Resolution",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/h3Resolution",
+            "name": "h3Resolution",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 38,
+              "startColumn": 2,
+              "endLine": 38,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 23
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/sportType": {
+          "key": "apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute/memberField/sportType",
+          "name": "sportType",
+          "type": "SportType",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity/memberField/sportType",
+            "name": "sportType",
+            "type": "SportType",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 24
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 12,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSHelper.ts-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TTSHelper.ts-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/TTSHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent",
+      "from_class_or_interface_name": "PeriodicAnnouncementContent",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/store/speechSettingsSlice.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState",
+      "to_class_or_interface_name": "SpeechSettingsState",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceDistance": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceDistance",
+          "name": "announceDistance",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceDistance",
+            "name": "announceDistance",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 40,
+              "startColumn": 2,
+              "endLine": 40,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 109,
+            "startColumn": 2,
+            "endLine": 109,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announcePace": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announcePace",
+          "name": "announcePace",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announcePace",
+            "name": "announcePace",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 41,
+              "startColumn": 2,
+              "endLine": 41,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 110,
+            "startColumn": 2,
+            "endLine": 110,
+            "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceDuration": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceDuration",
+          "name": "announceDuration",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceDuration",
+            "name": "announceDuration",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 42,
+              "startColumn": 2,
+              "endLine": 42,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 111,
+            "startColumn": 2,
+            "endLine": 111,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceSpeed": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceSpeed",
+          "name": "announceSpeed",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceSpeed",
+            "name": "announceSpeed",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 43,
+              "startColumn": 2,
+              "endLine": 43,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 112,
+            "startColumn": 2,
+            "endLine": 112,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceCalories": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceCalories",
+          "name": "announceCalories",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceCalories",
+            "name": "announceCalories",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 44,
+              "startColumn": 2,
+              "endLine": 44,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 113,
+            "startColumn": 2,
+            "endLine": 113,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceHeartRate": {
+          "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceHeartRate",
+          "name": "announceHeartRate",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceHeartRate",
+            "name": "announceHeartRate",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 45,
+              "startColumn": 2,
+              "endLine": 45,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 114,
+            "startColumn": 2,
+            "endLine": 114,
+            "endColumn": 29
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/store/speechSettingsSlice.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState",
+      "from_class_or_interface_name": "SpeechSettingsState",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/TTSHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent",
+      "to_class_or_interface_name": "PeriodicAnnouncementContent",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceDistance": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceDistance",
+          "name": "announceDistance",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceDistance",
+            "name": "announceDistance",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 109,
+              "startColumn": 2,
+              "endLine": 109,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 40,
+            "startColumn": 2,
+            "endLine": 40,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announcePace": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announcePace",
+          "name": "announcePace",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announcePace",
+            "name": "announcePace",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 110,
+              "startColumn": 2,
+              "endLine": 110,
+              "endColumn": 24
+            }
+          },
+          "position": {
+            "startLine": 41,
+            "startColumn": 2,
+            "endLine": 41,
+            "endColumn": 24
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceDuration": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceDuration",
+          "name": "announceDuration",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceDuration",
+            "name": "announceDuration",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 111,
+              "startColumn": 2,
+              "endLine": 111,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 42,
+            "startColumn": 2,
+            "endLine": 42,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceSpeed": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceSpeed",
+          "name": "announceSpeed",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceSpeed",
+            "name": "announceSpeed",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 112,
+              "startColumn": 2,
+              "endLine": 112,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 43,
+            "startColumn": 2,
+            "endLine": 43,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceCalories": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceCalories",
+          "name": "announceCalories",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceCalories",
+            "name": "announceCalories",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 113,
+              "startColumn": 2,
+              "endLine": 113,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 44,
+            "startColumn": 2,
+            "endLine": 44,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceHeartRate": {
+          "key": "apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState/memberField/announceHeartRate",
+          "name": "announceHeartRate",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent/memberField/announceHeartRate",
+            "name": "announceHeartRate",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 114,
+              "startColumn": 2,
+              "endLine": 114,
+              "endColumn": 29
+            }
+          },
+          "position": {
+            "startLine": 45,
+            "startColumn": 2,
+            "endLine": 45,
+            "endColumn": 29
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 13,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-packages/common-ui/src/components/AppDrawer/types.ts-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-labelhasUnreadactiveColor",
@@ -3484,7 +4022,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -3581,7 +4119,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },

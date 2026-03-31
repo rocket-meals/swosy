@@ -66,7 +66,6 @@ const AIRPLANE_MIN_SIZE = 24;
 
 // ─── Auto-Rotate Mode (Auto-Rotate Modus) constants ──────────────────────────
 
-const AUTO_ROTATE_TICK_MS = 100;
 const AUTO_ROTATE_SPEED_STEP = 5; // degrees/second per button press
 
 type GamePosition = { lat: number; lng: number };
@@ -777,11 +776,6 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// ── Auto-Rotate Mode (Auto-Rotate Modus) state ───────────────────────────────
 	const [autoRotateSpeed, setAutoRotateSpeed] = useState(0); // degrees/second
-	const autoRotateSpeedRef = useRef(autoRotateSpeed);
-	autoRotateSpeedRef.current = autoRotateSpeed;
-	const autoRotateBearingRef = useRef(0); // current auto-rotate bearing
-	const autoRotateModeRef = useRef(autoRotateMode);
-	autoRotateModeRef.current = autoRotateMode;
 	const peopleModeRef = useRef(peopleMode);
 	peopleModeRef.current = peopleMode;
 	const intelligentMovementRef = useRef(intelligentMovement);
@@ -1157,28 +1151,25 @@ const OsmVectorMapScreen: React.FC = () => {
 
 	// ── Auto-Rotate Mode (Auto-Rotate Modus) logic ───────────────────────────────
 
-	// Reset speed and bearing when auto-rotate mode is activated or deactivated
+	// Reset speed when auto-rotate mode is activated or deactivated
 	useEffect(() => {
 		setAutoRotateSpeed(0);
-		autoRotateSpeedRef.current = 0;
-		autoRotateBearingRef.current = 0;
+		// Stop map-side auto-rotate when mode is toggled off
+		sendToMapRef.current({ autoRotate: false });
 	}, [autoRotateMode]);
 
-	// Auto-rotate interval – runs always, but only acts when mode is on and not in game mode
+	// Send auto-rotate speed to the map whenever it changes
 	useEffect(() => {
-		const id = setInterval(() => {
-			if (!autoRotateModeRef.current || gameModeRef.current) return;
-			if (autoRotateSpeedRef.current === 0) return;
-			const deltaDeg = autoRotateSpeedRef.current * (AUTO_ROTATE_TICK_MS / 1000);
-			autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current + deltaDeg);
-			sendToMapRef.current({
-				bearing: autoRotateBearingRef.current,
-				easeAnimation: true,
-				easeDuration: AUTO_ROTATE_TICK_MS,
-			});
-		}, AUTO_ROTATE_TICK_MS);
-		return () => clearInterval(id);
-	}, []); // No dependencies – all values read via refs // eslint-disable-line react-hooks/exhaustive-deps
+		if (!autoRotateMode || gameMode) {
+			sendToMapRef.current({ autoRotate: false });
+			return;
+		}
+		if (autoRotateSpeed === 0) {
+			sendToMapRef.current({ autoRotate: false });
+		} else {
+			sendToMapRef.current({ autoRotate: true, autoRotateSpeed });
+		}
+	}, [autoRotateSpeed, autoRotateMode, gameMode]);
 
 	// Auto-rotate speed controls
 	const handleAutoRotateSpeedLeft = useCallback(() => {
@@ -1189,13 +1180,11 @@ const OsmVectorMapScreen: React.FC = () => {
 	}, []);
 
 	const handleManualRotateLeft1 = useCallback(() => {
-		autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current - 1);
-		sendToMapRef.current({ bearing: autoRotateBearingRef.current, easeAnimation: true, easeDuration: 200 });
+		sendToMapRef.current({ bearingDelta: -1, easeAnimation: true, easeDuration: 200 });
 	}, []);
 
 	const handleManualRotateRight1 = useCallback(() => {
-		autoRotateBearingRef.current = normalizeHeading(autoRotateBearingRef.current + 1);
-		sendToMapRef.current({ bearing: autoRotateBearingRef.current, easeAnimation: true, easeDuration: 200 });
+		sendToMapRef.current({ bearingDelta: 1, easeAnimation: true, easeDuration: 200 });
 	}, []);
 
 	const handleToggleFullscreen = useCallback(() => {
@@ -1387,6 +1376,9 @@ const OsmVectorMapScreen: React.FC = () => {
 			}
 			if (d.tag === 'MapTapped' && isFullscreenRef.current) {
 				setIsFullscreen(false);
+			}
+			if (d.tag === 'AutoRotateStopped') {
+				setAutoRotateSpeed(0);
 			}
 		},
 		[sendMapData, sendGameInitData, handleMarkerClick, addLog],

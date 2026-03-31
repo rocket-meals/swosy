@@ -167,21 +167,28 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
-				name="settings/index"
-				options={{
-					title: 'Settings',
-					drawerIcon: ({ color, size }) => (
-						<Ionicons name="settings-outline" size={size} color={color} />
-					),
-				}}
-			/>
-			<Drawer.Screen
 				name="feature-wishes/index"
 				options={{
 					title: 'Feature Wishes',
 					drawerIcon: ({ color, size }) => (
 						<Ionicons name="bulb-outline" size={size} color={color} />
 					),
+				}}
+			/>
+			<Drawer.Screen
+				name="routes/index"
+				options={{
+					title: 'Routes',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="map-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
+				name="routes/[id]"
+				options={{
+					title: 'Route',
+					drawerItemStyle: { display: 'none' },
 				}}
 			/>
 			<Drawer.Screen
@@ -209,6 +216,15 @@ function ThemedDrawerNavigator() {
 					drawerItemStyle: { display: 'none' },
 				}}
 			/>
+			<Drawer.Screen
+				name="settings/index"
+				options={{
+					title: 'Settings',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="settings-outline" size={size} color={color} />
+					),
+				}}
+			/>
 		</Drawer>
 		</>
 	);
@@ -216,7 +232,7 @@ function ThemedDrawerNavigator() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
-	const { theme } = useTheme();
+	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 
 	const items: DrawerItem[] = [
 		{
@@ -244,39 +260,43 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('achievements/index'),
 		},
 		{
-			key: 'settings/index',
-			label: 'Settings',
-			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('settings/index'),
-		},
-		{
 			key: 'feature-wishes/index',
 			label: 'Feature Wishes',
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
 		},
 		{
-			key: 'billboard-config/index',
-			label: 'Billboard Config',
-			renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('billboard-config/index'),
+			key: 'routes/index',
+			label: 'Routes',
+			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('routes/index'),
 		},
+		...(isDevMode ? [
+			{
+				key: 'billboard-config/index',
+				label: 'Billboard Config',
+				renderIcon: (_, color) => <Ionicons name="build-outline" size={24} color={color} />,
+				onPress: () => props.navigation.navigate('billboard-config/index'),
+			},
+			{
+				key: 'experimental/index',
+				label: 'Experimental',
+				renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
+				onPress: () => props.navigation.navigate('experimental/index'),
+			},
+		] : []),
 		{
-			key: 'experimental/index',
-			label: 'Experimental',
-			renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('experimental/index'),
+			key: 'settings/index',
+			label: 'Settings',
+			renderIcon: (_, color) => <Ionicons name="settings-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('settings/index'),
 		},
 	];
 
 	return (
 		<AppDrawer
-			renderLogo={() => (
-				<View style={styles.logoRow}>
-					<Ionicons name="location-sharp" size={32} color="#2563eb" />
-					<Text style={[styles.logoTitle, { color: theme.text }]}>Geonexia</Text>
-				</View>
-			)}
+			logoSource={require('../assets/icon.png')}
+			title="Geonexia"
 			items={items}
 			activeKey={activeKey}
 			primaryColor="#2563eb"
@@ -368,15 +388,6 @@ export default function Layout() {
 }
 
 const styles = StyleSheet.create({
-	logoRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 10,
-	},
-	logoTitle: {
-		fontSize: 20,
-		fontWeight: '700',
-	},
 	errorContainer: {
 		flex: 1,
 		backgroundColor: '#fff',

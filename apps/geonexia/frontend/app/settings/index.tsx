@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -106,6 +106,7 @@ function ResetConfirmContent({
 
 export default function SettingsScreen() {
 	const [notifications, setNotifications] = useState(true);
+	const [showDeveloper, setShowDeveloper] = useState(false);
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
@@ -149,7 +150,7 @@ export default function SettingsScreen() {
 						dispatch(setGpsIntervalMode(option.id));
 						closeGpsModal();
 					}}
-					iconBgColor={GPS_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 				/>
 			),
 		});
@@ -226,7 +227,7 @@ export default function SettingsScreen() {
 
 			<SettingsListGroupTitle title="GPS" />
 			<SettingsList
-				iconBgColor={GPS_COLOR}
+				iconBgColor={PRIMARY_COLOR}
 				leftIcon={<MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" />}
 				label="GPS Frequency"
 				value={gpsIntervalModeLabel(selectedGpsInterval)}
@@ -237,7 +238,7 @@ export default function SettingsScreen() {
 
 			<SettingsListGroupTitle title="Audio" />
 			<SettingsList
-				iconBgColor={TTS_COLOR}
+				iconBgColor={PRIMARY_COLOR}
 				leftIcon={<MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />}
 				label="Sprachansagen"
 				value={speechEnabled ? 'Aktiviert' : 'Deaktiviert'}
@@ -248,7 +249,7 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="Notifications" />
 				<SettingsListBoolean
-					iconBgColor={NOTIFICATION_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Ionicons name="notifications-outline" size={22} color="#ffffff" />}
 					label="Push Notifications"
 					isEnabled={notifications}
@@ -258,34 +259,11 @@ export default function SettingsScreen() {
 					groupPosition="single"
 				/>
 
-				<SettingsListGroupTitle title="Developer" />
-				<SettingsListBoolean
-					iconBgColor={DEBUG_COLOR}
-					leftIcon={<MaterialIcons name="bug-report" size={22} color="#ffffff" />}
-					label="Debug Mode"
-					isEnabled={isDebugMode}
-					onToggle={handleToggleDebugMode}
-					valueActive="Enabled"
-					valueInactive="Disabled"
-					groupPosition="top"
-				/>
-				<SettingsListBoolean
-					iconBgColor={DEV_COLOR}
-					leftIcon={<Ionicons name="flask-outline" size={22} color="#ffffff" />}
-					label="Dev Mode"
-					isEnabled={isDevMode}
-					onToggle={handleToggleDevMode}
-					valueActive="Dev tiles active"
-					valueInactive="Production tiles"
-					groupPosition="bottom"
-				/>
-
 				<SettingsListGroupTitle title="Daten Verwaltung" />
 				<SettingsList
 					iconBgColor={DANGER_COLOR}
 					leftIcon={<MaterialIcons name="delete-forever" size={22} color="#ffffff" />}
 					label="Alle Daten zurücksetzen"
-					value="Activities & Hex Tiles"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleResetAllData}
 					groupPosition="single"
@@ -293,14 +271,14 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="About" />
 				<SettingsList
-					iconBgColor={NEUTRAL_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Feather name="info" size={22} color="#ffffff" />}
 					label="App Version"
 					value={appVersion}
 					groupPosition="top"
 				/>
 				<SettingsList
-					iconBgColor={NEUTRAL_COLOR}
+					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<Feather name="code" size={22} color="#ffffff" />}
 					label="Open Source"
 					value="View licenses"
@@ -308,6 +286,46 @@ export default function SettingsScreen() {
 					handleFunction={() => {}}
 					groupPosition="bottom"
 				/>
+
+				{/* ── Company Logo ─────────────────────────────────────── */}
+				<TouchableOpacity
+					style={styles.companyLogoContainer}
+					onPress={() => setShowDeveloper((prev) => !prev)}
+					activeOpacity={0.7}
+				>
+					<Image
+						source={require('../../assets/company.png')}
+						style={styles.companyLogo}
+						resizeMode="contain"
+					/>
+				</TouchableOpacity>
+
+				{/* ── Developer (hidden by default, revealed by logo tap) ── */}
+				{showDeveloper && (
+					<>
+						<SettingsListGroupTitle title="Developer" />
+						<SettingsListBoolean
+							iconBgColor={DEBUG_COLOR}
+							leftIcon={<MaterialIcons name="bug-report" size={22} color="#ffffff" />}
+							label="Debug Mode"
+							isEnabled={isDebugMode}
+							onToggle={handleToggleDebugMode}
+							valueActive="Enabled"
+							valueInactive="Disabled"
+							groupPosition="top"
+						/>
+						<SettingsListBoolean
+							iconBgColor={DEV_COLOR}
+							leftIcon={<Ionicons name="flask-outline" size={22} color="#ffffff" />}
+							label="Dev Mode"
+							isEnabled={isDevMode}
+							onToggle={handleToggleDevMode}
+							valueActive="Dev tiles active"
+							valueInactive="Production tiles"
+							groupPosition="bottom"
+						/>
+					</>
+				)}
 			</ScrollView>
 		</View>
 	);
@@ -351,5 +369,16 @@ const styles = StyleSheet.create({
 	resetCancelButtonText: {
 		fontSize: 15,
 		fontWeight: '500',
+	},
+	companyLogoContainer: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 24,
+		marginTop: 8,
+	},
+	companyLogo: {
+		width: 120,
+		height: 120,
+		opacity: 0.6,
 	},
 });

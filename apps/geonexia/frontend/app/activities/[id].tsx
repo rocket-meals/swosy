@@ -1,27 +1,31 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
 	Alert,
+	Keyboard,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
 
 import * as Clipboard from 'expo-clipboard';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
+import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
+import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState } from '../../store/store';
 
-const AUTO_ROTATE_TICK_MS = 100;
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
@@ -274,12 +278,18 @@ function SpeedRangeItem({
 	maxSpeedKmh: number;
 	theme: ReturnType<typeof useTheme>['theme'];
 }) {
+	// Convert speeds to pace: min speed → slowest pace (highest min/km), max speed → fastest pace (lowest min/km)
+	const paceFromSpeed = (kmh: number) => (kmh > 0 ? 60 / kmh : 0);
+	const minPace = paceFromSpeed(maxSpeedKmh); // fastest pace (shown on right/blue side)
+	const avgPace = paceFromSpeed(avgSpeedKmh);
+	const maxPace = paceFromSpeed(minSpeedKmh); // slowest pace (shown on left/red side)
+
 	return (
 		<View style={[speedRangeStyles.container, { backgroundColor: theme.screen.iconBg }]}>
-			<View style={speedRangeStyles.labelsRow}>
-				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
-				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
+			<View style={[speedRangeStyles.labelsRow, { marginTop: 0 }]}>
+				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{formatPace(maxPace)}</Text>
+				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{formatPace(avgPace)}</Text>
+				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{formatPace(minPace)}</Text>
 			</View>
 			<View style={speedRangeStyles.barWrapper}>
 				{Array.from({ length: GRADIENT_SEGMENTS }).map((_, i) => (
@@ -293,6 +303,11 @@ function SpeedRangeItem({
 						]}
 					/>
 				))}
+			</View>
+			<View style={[speedRangeStyles.labelsRow, { marginBottom: 0 }]}>
+				<Text style={[speedRangeStyles.labelMin, { color: '#ef4444' }]}>{minSpeedKmh.toFixed(1)} km/h</Text>
+				<Text style={[speedRangeStyles.labelAvg, { color: '#22c55e' }]}>{avgSpeedKmh.toFixed(1)} km/h</Text>
+				<Text style={[speedRangeStyles.labelMax, { color: '#3b82f6' }]}>{maxSpeedKmh.toFixed(1)} km/h</Text>
 			</View>
 			<View style={[speedRangeStyles.separator, { backgroundColor: theme.screen.background }]} />
 		</View>
@@ -309,6 +324,7 @@ const speedRangeStyles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		marginBottom: 6,
+		marginTop: 6,
 	},
 	labelMin: {
 		fontSize: 12,
@@ -346,6 +362,220 @@ const speedRangeStyles = StyleSheet.create({
 		height: StyleSheet.hairlineWidth,
 		marginTop: 0,
 		marginLeft: 54,
+	},
+});
+
+// ─── Route Assignment Modal Content ──────────────────────────────────────────
+
+type RouteAssignmentProps = {
+	activity: SavedActivity;
+	savedRoutes: SavedRoute[];
+	bestMatch: RouteMatchResult | null;
+	onDone: (updatedActivity: SavedActivity) => void;
+	theme: ReturnType<typeof useTheme>['theme'];
+};
+
+function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
+	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+	const [routeName, setRouteName] = useState('');
+
+	const assignRoute = useCallback(async (routeId: string | null) => {
+		// Remove activity from old route (if any)
+		if (typeof activity.routeId === 'string') {
+			try {
+				const oldRoute = await loadRoute(activity.routeId);
+				if (oldRoute) {
+					const updatedIds = (oldRoute.activityIds ?? []).filter((activityId) => activityId !== activity.id);
+					saveRoute({ ...oldRoute, activityIds: updatedIds });
+				}
+			} catch (err) {
+				console.warn('[RouteAssignment] Failed to update old route activityIds:', err);
+			}
+		}
+		// Add activity to new route (if assigning to one)
+		if (typeof routeId === 'string') {
+			try {
+				const newRoute = await loadRoute(routeId);
+				if (newRoute) {
+					const updatedIds = [...new Set([...(newRoute.activityIds ?? []), activity.id])];
+					saveRoute({ ...newRoute, activityIds: updatedIds });
+				}
+			} catch (err) {
+				console.warn('[RouteAssignment] Failed to update new route activityIds:', err);
+			}
+		}
+		const updated: SavedActivity = { ...activity, routeId };
+		try {
+			saveActivity(updated);
+		} catch {
+			Alert.alert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
+			return;
+		}
+		onDone(updated);
+	}, [activity, onDone]);
+
+	const createAndAssign = useCallback(async (name: string) => {
+		const trimmed = name.trim();
+		if (!trimmed) return;
+		const h3Res = activity.h3Resolution ?? 10;
+		const newRoute: SavedRoute = {
+			id: String(Date.now()),
+			name: trimmed,
+			hexTiles: activity.hexTilesOrdered ?? [],
+			h3Resolution: h3Res,
+			createdAt: Date.now(),
+			sportType: activity.sportType,
+			walkedEdges: computeEdgesFromRoutePoints(activity.routePoints, h3Res),
+		};
+		try {
+			saveRoute(newRoute);
+		} catch {
+			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+			return;
+		}
+		await assignRoute(newRoute.id);
+	}, [activity, assignRoute]);
+
+	return (
+		<View style={routeAssignStyles.container}>
+			{bestMatch && (
+				<>
+					<SettingsListGroupTitle title="Vorschlag" />
+					<View style={[routeAssignStyles.suggestionCard, { backgroundColor: theme.screen.card ?? theme.screen.background, borderColor: PRIMARY_COLOR + '44' }]}>
+						<MaterialIcons name="route" size={20} color={PRIMARY_COLOR} />
+						<View style={routeAssignStyles.suggestionText}>
+							<Text style={[routeAssignStyles.suggestionName, { color: theme.screen.text }]} numberOfLines={1}>
+								{bestMatch.route.name}
+							</Text>
+							<Text style={[routeAssignStyles.suggestionMeta, { color: theme.screen.icon }]}>
+								{Math.round(bestMatch.overlap * 100)} % Übereinstimmung
+							</Text>
+						</View>
+					</View>
+					<TouchableOpacity
+						style={[routeAssignStyles.assignButton, { backgroundColor: PRIMARY_COLOR }]}
+						onPress={() => assignRoute(bestMatch.route.id)}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="check" size={18} color="#ffffff" />
+						<Text style={routeAssignStyles.assignButtonText}>Ja, Route zuordnen</Text>
+					</TouchableOpacity>
+				</>
+			)}
+
+			{savedRoutes.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Andere Route wählen" />
+					<SettingsListSelectOption
+						options={savedRoutes.map((r) => ({ id: r.id, label: r.name }))}
+						selectedOption={selectedRouteId}
+						selectionColor={PRIMARY_COLOR}
+						onSelect={(opt: SettingsListSelectOptionItem<string>) => {
+							setSelectedRouteId(opt.id);
+							assignRoute(opt.id);
+						}}
+					/>
+				</>
+			)}
+
+			<SettingsListGroupTitle title="Neue Route erstellen" />
+			<View style={routeAssignStyles.newRouteInputContainer}>
+				<TextInput
+					style={[routeAssignStyles.newRouteInput, { color: theme.sheet.text, backgroundColor: theme.sheet.inputBg, borderColor: theme.sheet.inputBorder }]}
+					placeholder="Route Name"
+					placeholderTextColor={theme.sheet.placeholder}
+					value={routeName}
+					onChangeText={setRouteName}
+					returnKeyType="done"
+					blurOnSubmit
+					onSubmitEditing={() => {
+						Keyboard.dismiss();
+						createAndAssign(routeName);
+					}}
+				/>
+				<TouchableOpacity
+					style={[routeAssignStyles.newRouteSaveButton, { backgroundColor: PRIMARY_COLOR }]}
+					onPress={() => {
+						Keyboard.dismiss();
+						createAndAssign(routeName);
+					}}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="check" size={18} color="#ffffff" />
+					<Text style={routeAssignStyles.assignButtonText}>Speichern und zuordnen</Text>
+				</TouchableOpacity>
+			</View>
+
+			<SettingsListGroupTitle title="Optionen" />
+			<SettingsListSelectOptionSingle
+				label="Diesem Run keine Route zuordnen"
+				isSelected={false}
+				selectionColor="#ef4444"
+				groupPosition="single"
+				onPress={() => assignRoute(null)}
+			/>
+		</View>
+	);
+}
+
+const routeAssignStyles = StyleSheet.create({
+	container: {
+		paddingBottom: 24,
+	},
+	suggestionCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginHorizontal: 16,
+		marginBottom: 8,
+		padding: 12,
+		borderRadius: 10,
+		borderWidth: 1,
+		gap: 10,
+	},
+	suggestionText: {
+		flex: 1,
+		gap: 2,
+	},
+	suggestionName: {
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	suggestionMeta: {
+		fontSize: 13,
+	},
+	assignButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginHorizontal: 16,
+		marginBottom: 12,
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 6,
+	},
+	assignButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	newRouteInputContainer: {
+		marginHorizontal: 16,
+		gap: 8,
+	},
+	newRouteInput: {
+		height: 48,
+		paddingHorizontal: 16,
+		borderWidth: 1,
+		borderRadius: 10,
+		fontSize: 14,
+	},
+	newRouteSaveButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 6,
 	},
 });
 
@@ -451,23 +681,45 @@ export default function ActivityDetailScreen() {
 	const router = useRouter();
 	const navigation = useNavigation();
 	const { show: showShareModal, close: closeModal } = useMyScrollViewModal();
+	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const mapRef = useRef<MyMapHandle>(null);
+	const [mapKey, setMapKey] = useState(0);
+	const isFirstFocusRef = useRef(true);
 	const [activity, setActivity] = useState<SavedActivity | null>(null);
 	const [notFound, setNotFound] = useState(false);
 	const [mapMounted, setMapMounted] = useState(false);
-	const autoRotateBearingRef = useRef(0);
-	const autoRotateActiveRef = useRef(false);
-	const autoRotateIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	// undefined = not yet loaded, null = no route assigned, SavedRoute = assigned route
+	const [assignedRoute, setAssignedRoute] = useState<SavedRoute | null | undefined>(undefined);
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const routeModalShownRef = useRef(false);
+	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 
-	// Clean up auto-rotate interval on unmount
+	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
 		return () => {
-			if (autoRotateIntervalRef.current !== null) {
-				clearInterval(autoRotateIntervalRef.current);
+			if (mapRef.current) {
+				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
+	}, []);
+
+	// Remount the map whenever the screen is re-focused so the auto-rotate
+	// initialization flow re-runs (the screen stays mounted in the navigator
+	// stack, so without this the map would not restart rotation on revisit).
+	useFocusEffect(
+		useCallback(() => {
+			if (isFirstFocusRef.current) {
+				isFirstFocusRef.current = false;
+				return;
+			}
+			setMapMounted(false);
+			setMapKey((k) => k + 1);
+		}, [])
+	);
+
+	useEffect(() => {
+		loadRoutes().then(setSavedRoutes).catch(() => setSavedRoutes([]));
 	}, []);
 
 	// Show back arrow instead of drawer hamburger; use theme colors so it stays
@@ -491,11 +743,59 @@ export default function ActivityDetailScreen() {
 	useEffect(() => {
 		if (!id) { setNotFound(true); return; }
 		loadActivity(id)
-			.then((a) => {
+			.then(async (a) => {
 				if (!a) { setNotFound(true); return; }
 				setActivity(a);
+
+				// Load the assigned route for display
+				if (typeof a.routeId === 'string') {
+					loadRoute(a.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+				} else {
+					setAssignedRoute(a.routeId === null ? null : undefined);
+				}
+
+				// If routeId has never been decided, load routes and show assignment modal
+				if (a.routeId === undefined && !routeModalShownRef.current) {
+					routeModalShownRef.current = true;
+					let routes: SavedRoute[] = [];
+					let bestMatch: RouteMatchResult | null = null;
+					try {
+						routes = await loadRoutes();
+						if (a.hexTilesOrdered && a.hexTilesOrdered.length > 0 && a.h3Resolution != null) {
+							const matches = findMatchingRoutes(a.hexTilesOrdered, routes, a.h3Resolution);
+							bestMatch = matches.length > 0 ? matches[0] : null;
+						}
+					} catch {
+						// Show modal with empty routes on error
+					}
+					showRouteModal({
+						title: '🗺️ Route zuordnen',
+						children: (
+							<RouteAssignmentModalContent
+								activity={a}
+								savedRoutes={routes}
+								bestMatch={bestMatch}
+								onDone={(updated) => {
+									setActivity(updated);
+									if (typeof updated.routeId === 'string') {
+										loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+									} else {
+										setAssignedRoute(updated.routeId === null ? null : undefined);
+									}
+									loadRoutes().then(setSavedRoutes).catch(() => {});
+									closeRouteModal();
+								}}
+								theme={theme}
+							/>
+						),
+					});
+				}
 			})
 			.catch(() => setNotFound(true));
+	// `showRouteModal`, `closeRouteModal`, and `theme` are intentionally omitted from deps:
+	// they are stable references from their hooks, and the route-modal is guarded by
+	// `routeModalShownRef.current` so it must only run once per screen mount.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [id]);
 
 	// Build speed-colored segments from route points and send along with speed range
@@ -542,6 +842,12 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeCoordinates: coords });
 		}
 
+		// Send start point circle (green, on top of the route lines)
+		const pts = activity.routePoints;
+		if (pts.length >= 1) {
+			mapRef.current.sendToMap({ routeStartPoint: [pts[0].lng, pts[0].lat] });
+		}
+
 		// Send hex tile and walk path GeoJSON so the activity screen shows the
 		// same hexagon visualization as the main map, but only for the tiles
 		// that were visited during this specific activity.
@@ -585,53 +891,69 @@ export default function ActivityDetailScreen() {
 			});
 		}
 
-		// Start slow auto-rotate after the fitBounds animation finishes.
-		// fitBounds sets pitch=45 and the correct zoom; starting the interval
-		// immediately would call easeTo within 100 ms and cancel that animation,
-		// locking in the wrong pitch/zoom. Waiting ~1200 ms lets fitBounds
-		// complete before we begin rotating.
-		// We only update bearing (no mapCenterPosition) so that zoom and pitch
-		// established by fitBounds are never overwritten by the interval ticks.
-		autoRotateBearingRef.current = 0;
-		autoRotateActiveRef.current = true;
-		if (autoRotateIntervalRef.current !== null) {
-			clearInterval(autoRotateIntervalRef.current);
-		}
+		// Start smooth auto-rotate after the fitBounds animation finishes.
+		// fitBounds sets pitch=45 and the correct zoom; starting auto-rotate
+		// immediately would interfere with that animation.
+		// We send a single message to the map HTML which runs a
+		// requestAnimationFrame loop for smooth, jitter-free rotation.
 		const FIT_BOUNDS_ANIMATION_DELAY_MS = 1200;
-		let startDelayTicks = Math.ceil(FIT_BOUNDS_ANIMATION_DELAY_MS / AUTO_ROTATE_TICK_MS);
-		autoRotateIntervalRef.current = setInterval(() => {
-			if (startDelayTicks > 0) { startDelayTicks -= 1; return; }
-			if (!autoRotateActiveRef.current || !mapRef.current) return;
-			const deltaDeg = AUTO_ROTATE_SPEED_DEG_PER_S * (AUTO_ROTATE_TICK_MS / 1000);
-			autoRotateBearingRef.current = (autoRotateBearingRef.current + deltaDeg) % 360;
-			mapRef.current.sendToMap({
-				bearing: autoRotateBearingRef.current,
-				easeAnimation: true,
-				easeDuration: AUTO_ROTATE_TICK_MS,
-			});
-		}, AUTO_ROTATE_TICK_MS);
+		const delayTimer = setTimeout(() => {
+			if (mapRef.current) {
+				mapRef.current.sendToMap({
+					autoRotate: true,
+					autoRotateSpeed: AUTO_ROTATE_SPEED_DEG_PER_S,
+				});
+			}
+		}, FIT_BOUNDS_ANIMATION_DELAY_MS);
 
 		return () => {
-			if (autoRotateIntervalRef.current !== null) {
-				clearInterval(autoRotateIntervalRef.current);
-				autoRotateIntervalRef.current = null;
+			clearTimeout(delayTimer);
+			if (mapRef.current) {
+				mapRef.current.sendToMap({ autoRotate: false });
 			}
-			autoRotateActiveRef.current = false;
 		};
 	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords]);
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
-		} else if (msg.tag === 'MapInteracted') {
-			// Stop auto-rotate when user interacts with the map
-			autoRotateActiveRef.current = false;
-			if (autoRotateIntervalRef.current !== null) {
-				clearInterval(autoRotateIntervalRef.current);
-				autoRotateIntervalRef.current = null;
-			}
 		}
+		// Auto-rotate is stopped automatically on the map side when user interacts
 	}, []);
+
+	const handleOpenRouteAssignment = useCallback(() => {
+		if (!activity) return;
+		loadRoutes().then((routes) => {
+			setSavedRoutes(routes);
+			let bestMatch: RouteMatchResult | null = null;
+			if (activity.hexTilesOrdered && activity.hexTilesOrdered.length > 0 && activity.h3Resolution != null) {
+				const matches = findMatchingRoutes(activity.hexTilesOrdered, routes, activity.h3Resolution);
+				bestMatch = matches.length > 0 ? matches[0] : null;
+			}
+			showRouteModal({
+				title: '🗺️ Route zuordnen',
+				onClose: closeRouteModal,
+				children: (
+					<RouteAssignmentModalContent
+						activity={activity}
+						savedRoutes={routes}
+						bestMatch={bestMatch}
+						onDone={(updated) => {
+							setActivity(updated);
+							if (typeof updated.routeId === 'string') {
+								loadRoute(updated.routeId).then(setAssignedRoute).catch(() => setAssignedRoute(null));
+							} else {
+								setAssignedRoute(updated.routeId === null ? null : undefined);
+							}
+							loadRoutes().then(setSavedRoutes).catch(() => {});
+							closeRouteModal();
+						}}
+						theme={theme}
+					/>
+				),
+			});
+		}).catch(() => {});
+	}, [activity, showRouteModal, closeRouteModal, theme]);
 
 	const handleFilterUnrealisticPoints = useCallback(() => {
 		if (!activity) return;
@@ -681,7 +1003,7 @@ export default function ActivityDetailScreen() {
 					onConfirm={() => {
 						deleteActivity(activity.id);
 						closeModal();
-						router.back();
+						router.replace('/activities');
 					}}
 					onCancel={closeModal}
 					theme={theme}
@@ -712,6 +1034,12 @@ export default function ActivityDetailScreen() {
 
 	const { stats } = activity;
 
+	const routeDisplayValue = assignedRoute
+		? assignedRoute.name
+		: activity.routeId === null
+		? 'Keine'
+		: '—';
+
 	// Compute the route centre so the map starts at the correct position immediately.
 	const routeInitialCenter = (() => {
 		const bounds = computeRouteBounds(activity.routePoints);
@@ -736,6 +1064,12 @@ export default function ActivityDetailScreen() {
 		{ icon: 'trending-down', label: 'Elevation Loss', value: `${Math.round(stats.elevationLossM)} m` },
 		{ icon: 'water-drop', label: 'Fluid Needs', value: `${stats.fluidNeedsMl} ml` },
 		{ icon: 'place', label: 'GPS Points', value: String(activity.routePoints.length) },
+		...(activity.visitedTileCount != null
+			? [{ icon: 'grid-on' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Tiles Walked', value: String(activity.visitedTileCount) }]
+			: []),
+		...(activity.enclosedTileCount != null
+			? [{ icon: 'format-shapes' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Tiles Enclosed', value: String(activity.enclosedTileCount) }]
+			: []),
 	];
 
 	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at
@@ -749,7 +1083,7 @@ export default function ActivityDetailScreen() {
 		>
 			{/* Map – 1:1 square at the top */}
 			<View style={styles.mapContainer}>
-				<MyMap ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} initialCenter={routeInitialCenter} initialPitch={45} />
+				<MyMap key={mapKey} ref={mapRef} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} centerAtUserLocationIfNoInitialPosition={false} initialCenter={routeInitialCenter} initialPitch={45} />
 			</View>
 
 			{/* Stats list */}
@@ -792,6 +1126,25 @@ export default function ActivityDetailScreen() {
 						onPress={handleFilterUnrealisticPoints}
 					/>
 				</View>
+				<SettingsListGroupTitle title="Routen Information" />
+				<SettingsList
+					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title="Route auswählen"
+					value={routeDisplayValue}
+					groupPosition={assignedRoute ? 'top' : 'single'}
+					showSeparator={!!assignedRoute}
+					onPress={handleOpenRouteAssignment}
+				/>
+				{assignedRoute && (
+					<SettingsList
+						leftIcon={<MaterialIcons name="open-in-new" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Route öffnen"
+						groupPosition="bottom"
+					onPress={() => router.navigate(`/routes/${assignedRoute.id}`)}
+					/>
+				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
 					<Text style={styles.shareButtonText}>Share Activity</Text>

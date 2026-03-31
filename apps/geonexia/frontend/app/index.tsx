@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import {
 	Alert,
 	Animated,
+	AppState,
 	PanResponder,
 	Platform,
 	SafeAreaView,
@@ -20,14 +21,16 @@ import { isRunningInExpoGo } from 'expo';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution } from '../helpers/H3Helper';
-import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
+import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
@@ -35,7 +38,7 @@ import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement } from '../helpers/TTSHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -75,11 +78,21 @@ const STATUS_SUCCESS_COLOR = '#22c55e';
 const STATUS_WARNING_COLOR = '#f59e0b';
 const STATUS_ERROR_COLOR = '#ef4444';
 
+// ─── Measure mode constants ───────────────────────────────────────────────────
+
+// Speed range for synthetic activity points generated from a measure route.
+// Slightly randomised jogging pace: base ± variation km/h.
+const MEASURE_SPEED_BASE_KMH = 10;
+const MEASURE_SPEED_VARIATION_KMH = 2;
+// Coordinate noise (degrees) applied to each synthetic GPS point to make the
+// route look organic.  ~0.00003° ≈ 3 m at the equator.
+const MEASURE_COORD_NOISE_DEG = 0.00003;
+
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
 const H3_DEFAULT_RESOLUTION = 10;
 const H3_MAX_CELLS = 5000;
-const H3_MIN_ZOOM = 14;
+const H3_MIN_ZOOM_DEFAULT = 12;
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
 
@@ -157,8 +170,30 @@ function buildH3GeoJson(
 	resolution: number,
 	showAlways: boolean,
 	hexTileRecords: Record<string, HexTileRecord>,
+	minZoom: number = H3_MIN_ZOOM_DEFAULT,
 ): H3FeatureCollection {
-	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
+	if (!showAlways && zoom < minZoom) {
+		// At low zoom: hide the unvisited grid, but still show tiles that have been
+		// visited or enclosed (level > 0) so the user can see their overall progress.
+		const features: H3GeoJsonFeature[] = [];
+		for (const [cell, record] of Object.entries(hexTileRecords)) {
+			if (record.level <= 0) continue;
+			if (features.length >= H3_MAX_CELLS) break;
+			try {
+				const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+				if (boundary.length > 0) {
+					features.push({
+						type: 'Feature',
+						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+						properties: { h3Index: cell, level: record.level },
+					});
+				}
+			} catch {
+				// Skip invalid cells
+			}
+		}
+		return { type: 'FeatureCollection', features };
+	}
 
 	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
 	// resolution and visually subdivide each parent cell into its children at
@@ -629,6 +664,90 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 	return enclosed;
 }
 
+/**
+ * Build an ordered list of H3 cells that the measure route passes through.
+ * For each consecutive pair of waypoints, uses gridPathCells to find the
+ * direct hex path. Only outer border cells are included (no filled interior).
+ */
+function computeOrderedMeasureRouteCells(
+	waypoints: Array<{ lat: number; lng: number }>,
+	resolution: number,
+): string[] {
+	if (waypoints.length < 2 || !isH3Available()) return [];
+	const res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+	const result: string[] = [];
+	const seen = new Set<string>();
+	for (let i = 1; i < waypoints.length; i++) {
+		const cellA = latLngToCell(waypoints[i - 1].lat, waypoints[i - 1].lng, res);
+		const cellB = latLngToCell(waypoints[i].lat, waypoints[i].lng, res);
+		if (!cellA || !cellB) continue;
+		try {
+			const path = gridPathCells(cellA, cellB);
+			for (const c of path) {
+				if (!seen.has(c)) {
+					seen.add(c);
+					result.push(c);
+				}
+			}
+		} catch {
+			// skip segment if gridPathCells throws (e.g. cells on different icosahedron faces)
+		}
+	}
+	return result;
+}
+
+function formatEstimatedDuration(totalMinutes: number): string {
+	if (totalMinutes <= 0 || !isFinite(totalMinutes)) return '--:--';
+	const h = Math.floor(totalMinutes / 60);
+	const m = Math.floor(totalMinutes % 60);
+	const s = Math.round((totalMinutes % 1) * 60);
+	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} h`;
+	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} min`;
+}
+
+function formatActivityLabel(activity: SavedActivity): string {
+	const d = new Date(activity.startedAt);
+	const date = d.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+	const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+	return `${date} ${time}`;
+}
+
+/**
+ * Generate synthetic RoutePoints along the centers of the given ordered hex cells,
+ * using slightly randomised speeds for a realistic-looking activity.
+ */
+function generateMeasureRoutePoints(
+	orderedCells: string[],
+	speedBaseKmh: number,
+	speedVariationKmh: number,
+	startTimestamp: number,
+): RoutePoint[] {
+	if (orderedCells.length === 0) return [];
+	const points: RoutePoint[] = [];
+	let currentTime = startTimestamp;
+	for (let i = 0; i < orderedCells.length; i++) {
+		const [cellLat, cellLng] = cellToLatLng(orderedCells[i]);
+		// Add slight coordinate noise to make the synthetic route look organic.
+		const noisyLat = cellLat + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const noisyLng = cellLng + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const speedKmh = Math.max(1, speedBaseKmh + (Math.random() - 0.5) * speedVariationKmh);
+		points.push({
+			lat: noisyLat,
+			lng: noisyLng,
+			altitude: null,
+			speed: speedKmh / 3.6, // m/s
+			timestamp: currentTime,
+		});
+		if (i < orderedCells.length - 1) {
+			const [nextLat, nextLng] = cellToLatLng(orderedCells[i + 1]);
+			const distKm = haversineKm(cellLat, cellLng, nextLat, nextLng);
+			const timeSeconds = (distKm / speedKmh) * 3600;
+			currentTime += Math.round(timeSeconds * 1000);
+		}
+	}
+	return points;
+}
+
 function computeStats(points: RoutePoint[]): RunStats {
 	if (points.length < 2) {
 		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
@@ -758,6 +877,7 @@ type DebugInfoContentProps = {
 	theme: ReturnType<typeof useTheme>['theme'];
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
+	initialMinZoom: number;
 	initialSpeed: number;
 	initialBillboardScale: number;
 	initialBillboardFaceCamera: boolean;
@@ -765,6 +885,7 @@ type DebugInfoContentProps = {
 	initialShowDebugPoints: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
+	onMinZoomChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
 	onBillboardScaleChange: (scale: number) => void;
@@ -783,6 +904,7 @@ function DebugInfoContent({
 	theme,
 	initialShowGridAlways,
 	initialH3Resolution,
+	initialMinZoom,
 	initialSpeed,
 	initialBillboardScale,
 	initialBillboardFaceCamera,
@@ -790,6 +912,7 @@ function DebugInfoContent({
 	initialShowDebugPoints,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
+	onMinZoomChange,
 	onZoomAdjust,
 	onSpeedChange,
 	onBillboardScaleChange,
@@ -802,6 +925,7 @@ function DebugInfoContent({
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
+	const [minZoom, setMinZoom] = useState(initialMinZoom);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
 	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
 	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
@@ -823,6 +947,14 @@ function DebugInfoContent({
 			return clamped;
 		});
 	}, [onH3ResolutionChange]);
+
+	const adjustMinZoom = useCallback((delta: number) => {
+		setMinZoom((prev) => {
+			const next = Math.max(0, Math.min(22, prev + delta));
+			onMinZoomChange(next);
+			return next;
+		});
+	}, [onMinZoomChange]);
 
 	const handleSpeedTextChange = useCallback((text: string) => {
 		setSpeedText(text);
@@ -855,7 +987,7 @@ function DebugInfoContent({
 		onShowDebugPointsChange(val);
 	}, [onShowDebugPointsChange]);
 
-	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
+	const tilesExpected = info != null && (showGridAlways || info.zoom >= minZoom);
 
 	const statusColor = !h3Available
 		? STATUS_ERROR_COLOR
@@ -872,14 +1004,14 @@ function DebugInfoContent({
 		: info == null
 		? '⚠️ No viewport data yet. Move or zoom the map.'
 		: !tilesExpected
-		? `⚠️ Zoom in to ≥${H3_MIN_ZOOM} to see tiles`
+		? `⚠️ Zoom in to ≥${minZoom} to see tiles`
 		: info.tileCount > 0
 		? `✅ ${info.tileCount} H3 tiles computed`
 		: '❌ 0 tiles – H3 library may not be working';
 
 	const viewportRows: { label: string; value: string }[] = info
 		? [
-			{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${H3_MIN_ZOOM})` },
+			{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${minZoom})` },
 			{ label: 'North', value: info.bounds.north.toFixed(5) },
 			{ label: 'South', value: info.bounds.south.toFixed(5) },
 			{ label: 'East', value: info.bounds.east.toFixed(5) },
@@ -1076,12 +1208,32 @@ function DebugInfoContent({
 				/>
 			</View>
 
-			{/* Min zoom info row */}
+			{/* Min Zoom for Tiles row with ±1 buttons */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
-				<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>
-					{showGridAlways ? 'disabled (always on)' : String(H3_MIN_ZOOM)}
-				</Text>
+				{showGridAlways ? (
+					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
+				) : (
+					<View style={styles.resolutionPicker}>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: minZoom <= 0 ? 0.4 : 1 }]}
+							onPress={() => adjustMinZoom(-1)}
+							disabled={minZoom <= 0}
+						>
+							<Text style={styles.resolutionButtonText}>−</Text>
+						</TouchableOpacity>
+						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+							{minZoom}
+						</Text>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: minZoom >= 22 ? 0.4 : 1 }]}
+							onPress={() => adjustMinZoom(1)}
+							disabled={minZoom >= 22}
+						>
+							<Text style={styles.resolutionButtonText}>+</Text>
+						</TouchableOpacity>
+					</View>
+				)}
 			</View>
 
 			{/* Viewport rows */}
@@ -1274,6 +1426,174 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 	);
 }
 
+// ─── Measure Result Content ────────────────────────────────────────────────────
+
+type MeasureResultContentProps = {
+	routeLengthInTiles: number;
+	enclosedTileCount: number;
+	routeCells: string[];
+	h3Resolution: number;
+	theme: ReturnType<typeof useTheme>['theme'];
+	savedActivities: SavedActivity[];
+	selectedSportType: SportType;
+	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
+	onSaveAsRoute: (routeCells: string[], name: string) => void;
+	onClose: () => void;
+};
+
+function MeasureResultContent({
+	routeLengthInTiles,
+	enclosedTileCount,
+	routeCells,
+	h3Resolution,
+	theme,
+	savedActivities,
+	selectedSportType,
+	onSaveAsActivity,
+	onSaveAsRoute,
+	onClose,
+}: MeasureResultContentProps) {
+	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
+		{ iconName: 'straighten', label: 'Route Length (hex tiles)', value: String(routeLengthInTiles) },
+		{ iconName: 'grid-on', label: 'Enclosed Tiles', value: String(enclosedTileCount) },
+		{ iconName: 'grain', label: 'H3 Resolution', value: String(Math.floor(h3Resolution)) },
+	];
+	const [pendingRouteName, setPendingRouteName] = useState<string | null>(null);
+
+	const routeLengthKm = useMemo(() => computeRouteLengthKm(routeCells), [routeCells]);
+
+	const sportDef = useMemo(
+		() => SPORT_TYPES.find((s) => s.type === selectedSportType) ?? SPORT_TYPES[0],
+		[selectedSportType],
+	);
+
+	const activitiesOfType = useMemo(
+		() =>
+			savedActivities
+				.filter((a) => a.sportType === selectedSportType)
+				.sort((a, b) => b.startedAt - a.startedAt),
+		[savedActivities, selectedSportType],
+	);
+
+	const lastActivity = activitiesOfType[0] ?? null;
+
+	const generalAvgSpeedKmh = useMemo(() => {
+		const validActivities = activitiesOfType.filter((a) => a.stats.avgSpeedKmh > 0);
+		if (validActivities.length === 0) return 0;
+		return validActivities.reduce((sum, a) => sum + a.stats.avgSpeedKmh, 0) / validActivities.length;
+	}, [activitiesOfType]);
+
+	const sourceActivity =
+		lastActivity !== null && lastActivity.stats.avgSpeedKmh > 0 ? lastActivity : null;
+
+	const effectiveSpeedKmh = sourceActivity ? sourceActivity.stats.avgSpeedKmh : generalAvgSpeedKmh;
+
+	const estimatedMinutes = effectiveSpeedKmh > 0 ? (routeLengthKm / effectiveSpeedKmh) * 60 : null;
+
+	const sportIcon =
+		sportDef.iconLibrary === 'MaterialCommunityIcons' ? (
+			<MaterialCommunityIcons
+				name={sportDef.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+				size={20}
+				color="#ffffff"
+			/>
+		) : (
+			<MaterialIcons
+				name={sportDef.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
+				size={20}
+				color="#ffffff"
+			/>
+		);
+
+	return (
+		<>
+			{rows.map((row, index) => (
+				<View
+					key={row.label}
+					style={[
+						styles.statsRow,
+						{ borderBottomColor: theme.screen.text + '22' },
+						index === rows.length - 1 && styles.statsRowLast,
+					]}
+				>
+					<MaterialIcons name={row.iconName} size={20} color={theme.screen.icon} style={styles.statsRowIcon} />
+					<Text style={[styles.statsRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
+				</View>
+			))}
+			{routeLengthKm > 0 && (
+				<>
+					<SettingsListGroupTitle title="Distanz" />
+					<SettingsList
+						leftIcon={<MaterialIcons name="social-distance" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Streckenlänge"
+						value={formatDistanceKm(routeLengthKm)}
+						groupPosition="single"
+					/>
+				</>
+			)}
+			{estimatedMinutes !== null && (
+				<>
+					<SettingsListGroupTitle title="Geschätzte Dauer" />
+					{sourceActivity !== null && (
+						<SettingsList
+							leftIcon={sportIcon}
+							iconBackgroundColor={sportDef.color}
+							title={sportDef.label}
+							value={formatActivityLabel(sourceActivity)}
+							groupPosition="top"
+						/>
+					)}
+					<SettingsList
+						leftIcon={<MaterialIcons name="timer" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Geschätzte Dauer"
+						value={formatEstimatedDuration(estimatedMinutes)}
+						groupPosition={sourceActivity !== null ? 'bottom' : 'single'}
+					/>
+				</>
+			)}
+			{routeCells.length >= 2 && (
+				<TouchableOpacity
+					style={[styles.shareButton, { backgroundColor: '#43a047', marginTop: 12 }]}
+					onPress={() => { onSaveAsActivity(routeCells, enclosedTileCount); onClose(); }}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="save-alt" size={18} color="#ffffff" />
+					<Text style={styles.shareButtonText}>Als Aktivität speichern</Text>
+				</TouchableOpacity>
+			)}
+			{routeCells.length >= 2 && (
+				<>
+					<SettingsListGroupTitle title="Als Route speichern" />
+					<SettingsListTextInput
+						title="Route benennen"
+						placeholder="Route Name"
+						modalTitle="Neue Route"
+						groupPosition={pendingRouteName ? 'top' : 'single'}
+						value={pendingRouteName ?? undefined}
+						initialValue={pendingRouteName ?? ''}
+						onSave={(name) => {
+							const trimmed = name.trim();
+							if (trimmed) setPendingRouteName(trimmed);
+						}}
+					/>
+					{pendingRouteName && (
+						<SettingsList
+							leftIcon={<MaterialIcons name="save" size={20} color="#ffffff" />}
+							iconBackgroundColor="#43a047"
+							title="Route speichern"
+							groupPosition="bottom"
+							onPress={() => { onSaveAsRoute(routeCells, pendingRouteName); onClose(); }}
+						/>
+					)}
+				</>
+			)}
+		</>
+	);
+}
+
 // ─── Hex Tile Info Content ─────────────────────────────────────────────────────
 
 function formatTimestamp(ts: number | null): string {
@@ -1438,7 +1758,18 @@ const hexPickerStyles = StyleSheet.create({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HexTileInfoContent({ h3Index }: { h3Index: string }) {
+type MapFeatureInfo = {
+	layerId: string | null;
+	name: string | null;
+	highway: string | null;
+	waterway: string | null;
+	building: string | null;
+	natural: string | null;
+	landuse: string | null;
+	amenity: string | null;
+};
+
+function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
@@ -1581,6 +1912,23 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				groupPosition="single"
 			/>
 
+			{/* ── Underlying map info ── */}
+			{mapFeatures && mapFeatures.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Karteninformationen" />
+					{mapFeatures.map((feature, idx) => (
+						<SettingsList
+							key={idx}
+							leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title={feature.name ?? feature.layerId ?? `Feature ${idx + 1}`}
+							value={JSON.stringify(feature, null, 2)}
+							groupPosition={mapFeatures.length === 1 ? 'single' : idx === 0 ? 'top' : idx === mapFeatures.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+
 		</View>
 	);
 }
@@ -1591,7 +1939,9 @@ export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
+	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
+	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
 
@@ -1602,6 +1952,8 @@ export default function RecordScreen() {
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const isDebugMode = useDebugMode();
 	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
+	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
+	const speechSettings = useSelector((state: RootState) => state.speechSettings);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1617,11 +1969,22 @@ export default function RecordScreen() {
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
 
+	// Measure mode (debug only): collect waypoints by tapping the map
+	const [isMeasureMode, setIsMeasureMode] = useState(false);
+	const isMeasureModeRef = useRef(false);
+	const measureWaypointsRef = useRef<Array<{ lat: number; lng: number }>>([]);
+
 	// TTS: track the last whole-km milestone announced to avoid repeating.
 	// Reset to 0 when recording starts.
 	const lastAnnouncedKmRef = useRef(0);
 	const isTTSEnabledRef = useRef(isTTSEnabled);
 	isTTSEnabledRef.current = isTTSEnabled;
+	const announceAppInBackgroundRef = useRef(announceAppInBackground);
+	announceAppInBackgroundRef.current = announceAppInBackground;
+	const speechSettingsRef = useRef(speechSettings);
+	speechSettingsRef.current = speechSettings;
+	// Timer for periodic (time-based) speech announcements during recording
+	const periodicAnnouncementTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
@@ -1633,6 +1996,11 @@ export default function RecordScreen() {
 	const accumulatedSecondsRef = useRef(0);
 
 	const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
+
+	// Pre-run route selection: selected route to follow during the next recording.
+	const [selectedRoute, setSelectedRoute] = useState<SavedRoute | null>(null);
+	const selectedRouteRef = useRef<SavedRoute | null>(null);
+	selectedRouteRef.current = selectedRoute;
 
 	// Coloring tool state:
 	// - coloringTileImage: the currently selected tile key; null means coloring mode is off.
@@ -1652,6 +2020,7 @@ export default function RecordScreen() {
 	const [showGridAlways, setShowGridAlways] = useState(false);
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
+	const h3MinZoomRef = useRef(H3_MIN_ZOOM_DEFAULT);
 
 	// Heading mode: when active during recording, the map rotates to face the
 	// direction of travel. Toggled by the compass button.
@@ -1975,6 +2344,9 @@ export default function RecordScreen() {
 	// Visited H3 hex cells during the active recording (used for immediate GeoJSON updates;
 	// persistent data lives in the Redux store)
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
+	// Ordered sequence of visited H3 hex cells during the active recording.
+	// Each cell appears only once, in the order it was first entered.
+	const orderedHexTilesRef = useRef<string[]>([]);
 	// The last H3 cell visited; used to detect cell transitions in handleLocationUpdate.
 	const lastCellRef = useRef<string | null>(null);
 	// Current player position (updated from real GPS and from debug gamepad)
@@ -2012,6 +2384,28 @@ export default function RecordScreen() {
 		});
 	}, []);
 
+	/**
+	 * Rebuild and send the standard hex tile and walk path GeoJSON to the map
+	 * based on the current viewport. Used when restoring normal (non-route-preview)
+	 * display after a route is deselected and on viewport changes.
+	 */
+	const refreshNormalTileDisplay = useCallback((vp: { bounds: ViewportBounds; zoom: number }) => {
+		if (!mapRef.current) return;
+		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+		try {
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
+		} catch {
+			// ignore
+		}
+		if (debugViewportRef.current) {
+			debugViewportRef.current.tileCount = geoJson.features.length;
+		}
+		const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
+		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
+		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+	}, []);
+
 	// Load persisted OSM consent on mount
 	useEffect(() => {
 		loadOsmConsent().then((consented) => {
@@ -2025,9 +2419,68 @@ export default function RecordScreen() {
 			_onLocationUpdate = null;
 			fgSubRef.current?.remove();
 			if (timerRef.current) clearInterval(timerRef.current);
+			if (periodicAnnouncementTimerRef.current) clearInterval(periodicAnnouncementTimerRef.current);
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
 	}, []);
+
+	// ── Announce when the app moves to the background during an active recording
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', (nextAppState) => {
+			if (
+				nextAppState === 'background' &&
+				isRecordingRef.current &&
+				isTTSEnabledRef.current &&
+				announceAppInBackgroundRef.current
+			) {
+				const locale = getLocales()[0]?.languageTag ?? 'en-US';
+				const langCode = locale.split('-')[0].toLowerCase();
+				const text = buildBackgroundAnnouncement(locale);
+				speakAnnouncement(text, langCode);
+			}
+		});
+		return () => subscription.remove();
+	}, []);
+
+	// ── Route preview: when a route is selected before recording, show only the
+	// route's hex tiles and walk path on the map (hiding all other visited tiles).
+	// This gives the same view as the route detail screen (routes/[id]).
+	useEffect(() => {
+		if (!mapRef.current) return;
+		if (selectedRoute && !isRecordingRef.current) {
+			// Show route preview
+			try {
+				const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+					selectedRoute,
+					store.getState().hexTiles.records,
+				);
+				mapRef.current.sendToMap({ hexTileGeoJson });
+				mapRef.current.sendToMap({ hexWalkPathGeoJson });
+
+				// Fit the camera to the route extent
+				const bounds = computeHexBounds(selectedRoute.hexTiles);
+				if (bounds) {
+					const { minLat, maxLat, minLng, maxLng } = bounds;
+					const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+					const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+					mapRef.current.sendToMap({
+						fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+						fitBoundsPadding: 20,
+						pitch: 45,
+						bearing: 0,
+					});
+				}
+			} catch (err) {
+				console.warn('[RecordScreen] Route preview failed:', err);
+			}
+		} else if (!selectedRoute) {
+			// Route deselected: refresh normal tile and walk path display
+			const vp = debugViewportRef.current;
+			if (vp) {
+				refreshNormalTileDisplay(vp);
+			}
+		}
+	}, [selectedRoute, refreshNormalTileDisplay]);
 
 	// Pre-populate debug player position from last known location once consent is given
 	useEffect(() => {
@@ -2096,7 +2549,7 @@ export default function RecordScreen() {
 		if (!vp || !mapRef.current) return;
 		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 		try {
-			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
 		} catch (err) {
 			console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 		}
@@ -2113,6 +2566,11 @@ export default function RecordScreen() {
 	const handleH3ResolutionChange = useCallback((val: number) => {
 		h3ResolutionRef.current = val;
 		setH3Resolution(val);
+		recomputeH3();
+	}, [recomputeH3]);
+
+	const handleH3MinZoomChange = useCallback((val: number) => {
+		h3MinZoomRef.current = val;
 		recomputeH3();
 	}, [recomputeH3]);
 
@@ -2146,14 +2604,141 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexDebugPoints: val });
 	}, []);
 
-	const showHexTileModal = useCallback((h3Index: string) => {
+	const showHexTileModal = useCallback((h3Index: string, mapFeatures?: MapFeatureInfo[]) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
 			children: (
-				<HexTileInfoContent h3Index={h3Index} />
+				<HexTileInfoContent h3Index={h3Index} mapFeatures={mapFeatures} />
 			),
 		});
 	}, [showModal]);
+
+	// ── Measure mode (debug only) ───────────────────────────────────────────────
+
+	const startMeasureMode = useCallback(() => {
+		isMeasureModeRef.current = true;
+		setIsMeasureMode(true);
+		measureWaypointsRef.current = [];
+		mapRef.current?.sendToMap({ measureMode: true });
+		mapRef.current?.sendToMap({ measureRouteCoords: [] });
+		mapRef.current?.sendToMap({ measurePoints: [] });
+	}, []);
+
+	const cancelMeasureMode = useCallback(() => {
+		isMeasureModeRef.current = false;
+		setIsMeasureMode(false);
+		measureWaypointsRef.current = [];
+		mapRef.current?.sendToMap({ measureMode: false });
+	}, []);
+
+	const undoMeasurePoint = useCallback(() => {
+		const prev = measureWaypointsRef.current.slice(0, -1);
+		measureWaypointsRef.current = prev;
+		const coords = prev.map((w) => [w.lng, w.lat]);
+		mapRef.current?.sendToMap({ measureRouteCoords: coords });
+		mapRef.current?.sendToMap({ measurePoints: coords });
+	}, []);
+
+	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCount: number) => {
+		if (routeCells.length < 2) return;
+		const startTimestamp = Date.now();
+		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (Math.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
+		const routePoints = generateMeasureRoutePoints(routeCells, speedBaseKmh, MEASURE_SPEED_VARIATION_KMH, startTimestamp);
+		if (routePoints.length < 2) return;
+		const stats = computeStats(routePoints);
+		const endedAt = routePoints[routePoints.length - 1].timestamp;
+		const activity: SavedActivity = {
+			id: String(startTimestamp),
+			startedAt: startTimestamp,
+			endedAt,
+			routePoints,
+			stats,
+			sportType: selectedSportTypeRef.current,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			visitedTileCount: routeCells.length,
+			enclosedTileCount: enclosedCount,
+			hexTilesOrdered: routeCells,
+		};
+		try {
+			saveActivity(activity);
+			Alert.alert(
+				'Activity Saved',
+				`Route saved: ${routeCells.length} hex tiles, ${enclosedCount} enclosed.`,
+			);
+		} catch {
+			Alert.alert('Error', 'Failed to save activity.');
+		}
+	}, []);
+
+	const handleSaveMeasureAsRoute = useCallback((routeCells: string[], name: string) => {
+		if (routeCells.length < 2 || !name.trim()) return;
+		const now = Date.now();
+		const route: SavedRoute = {
+			id: String(now),
+			name: name.trim(),
+			hexTiles: routeCells,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			createdAt: now,
+			sportType: selectedSportTypeRef.current,
+			walkedEdges: computeEdgesFromHexTiles(routeCells),
+		};
+		try {
+			saveRoute(route);
+			Alert.alert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
+		} catch {
+			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+		}
+	}, []);
+
+	const finishMeasurement = useCallback(async () => {
+		const waypoints = measureWaypointsRef.current;
+		if (waypoints.length < 2) {
+			Alert.alert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
+			return;
+		}
+
+		const routeCells = computeOrderedMeasureRouteCells(waypoints, h3ResolutionRef.current);
+		const routeLengthInTiles = routeCells.length;
+
+		// Compute enclosed tiles: use waypoints as the route polygon
+		const routeAsPoints: RoutePoint[] = waypoints.map((w, i) => ({
+			lat: w.lat, lng: w.lng, altitude: null, speed: null, timestamp: Date.now() + i * 1000,
+		}));
+		let enclosedTileCount = 0;
+		try {
+			const allEnclosed = findEnclosedCells(routeAsPoints, h3ResolutionRef.current);
+			// Exclude cells that are part of the route itself
+			const routeCellSet = new Set(routeCells);
+			enclosedTileCount = allEnclosed.filter((c) => !routeCellSet.has(c)).length;
+		} catch {
+			// ignore
+		}
+
+		// Load saved activities for time estimation
+		const savedActivities = await loadActivities().catch(() => [] as SavedActivity[]);
+
+		// Exit measure mode and clear overlay
+		cancelMeasureMode();
+
+		showModal({
+			title: '📏 Measure Results',
+			onClose: closeModal,
+			children: (
+				<MeasureResultContent
+					routeLengthInTiles={routeLengthInTiles}
+					enclosedTileCount={enclosedTileCount}
+					routeCells={routeCells}
+					h3Resolution={h3ResolutionRef.current}
+					theme={theme}
+					savedActivities={savedActivities}
+					selectedSportType={selectedSportTypeRef.current}
+					onSaveAsActivity={handleSaveMeasureAsActivity}
+					onSaveAsRoute={handleSaveMeasureAsRoute}
+					onClose={closeModal}
+				/>
+			),
+		});
+	}, [showModal, closeModal, theme, cancelMeasureMode, handleSaveMeasureAsActivity, handleSaveMeasureAsRoute]);
 
 	const openColoringModal = useCallback(() => {
 		coloringSelectionMadeRef.current = false;
@@ -2219,26 +2804,43 @@ export default function RecordScreen() {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
-			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
-			} catch (err) {
-				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
+			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: 0 };
+
+			// When a route is selected (pre-recording), show only the route's tiles
+			// and walk path instead of the full global tile set.
+			if (selectedRouteRef.current && !isRecordingRef.current) {
+				try {
+					const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+						selectedRouteRef.current,
+						store.getState().hexTiles.records,
+					);
+					debugViewportRef.current.tileCount = hexTileGeoJson.features.length;
+					mapRef.current?.sendToMap({ hexTileGeoJson });
+					mapRef.current?.sendToMap({ hexWalkPathGeoJson });
+				} catch (err) {
+					console.warn('[RecordScreen] Route preview viewport update failed:', err);
+				}
+			} else {
+				refreshNormalTileDisplay(vp);
 			}
-			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
-			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
-			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
-			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		} else if (msg.tag === 'HexTileClicked') {
-			const clickedMsg = msg as { h3Index?: string };
+			const clickedMsg = msg as { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
 			if (clickedMsg.h3Index) {
 				if (coloringTileImageRef.current !== null) {
 					// Coloring mode active: directly apply the selected tile image.
 					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
 				} else {
-					showHexTileModal(clickedMsg.h3Index);
+					showHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
 				}
+			}
+		} else if (msg.tag === 'MapMeasurePoint') {
+			const ptMsg = msg as { lat: number; lng: number };
+			if (isMeasureModeRef.current) {
+				const newWaypoints = [...measureWaypointsRef.current, { lat: ptMsg.lat, lng: ptMsg.lng }];
+				measureWaypointsRef.current = newWaypoints;
+				const coords = newWaypoints.map((w) => [w.lng, w.lat]);
+				mapRef.current?.sendToMap({ measureRouteCoords: coords });
+				mapRef.current?.sendToMap({ measurePoints: coords });
 			}
 		}
 	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations, dispatch]);
@@ -2287,6 +2889,7 @@ export default function RecordScreen() {
 					theme={theme}
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
+					initialMinZoom={h3MinZoomRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
 					initialBillboardScale={billboardScaleRef.current}
 					initialBillboardFaceCamera={billboardFaceCameraRef.current}
@@ -2294,6 +2897,7 @@ export default function RecordScreen() {
 					initialShowDebugPoints={showDebugPointsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
+					onMinZoomChange={handleH3MinZoomChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
 					onBillboardScaleChange={handleBillboardScaleChange}
@@ -2305,7 +2909,7 @@ export default function RecordScreen() {
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleH3MinZoomChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -2455,6 +3059,7 @@ export default function RecordScreen() {
 										// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
 										if (!visitedHexIdsRef.current.has(pathCells[i])) {
 											visitedHexIdsRef.current.add(pathCells[i]);
+											orderedHexTilesRef.current.push(pathCells[i]);
 											dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
 										}
 									}
@@ -2474,6 +3079,7 @@ export default function RecordScreen() {
 					// one step during a single activity.
 					if (!visitedHexIdsRef.current.has(cell)) {
 						visitedHexIdsRef.current.add(cell);
+						orderedHexTilesRef.current.push(cell);
 						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
 					}
 					if (cell !== lastCellRef.current) {
@@ -2532,7 +3138,7 @@ export default function RecordScreen() {
 		if (vp && mapRef.current) {
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
 			} catch (err) {
 				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
 			}
@@ -2588,10 +3194,75 @@ export default function RecordScreen() {
 		}
 	}, []);
 
+	// ── Periodic speech announcement helpers ──────────────────────────────────
+	const stopPeriodicAnnouncementTimer = useCallback(() => {
+		if (periodicAnnouncementTimerRef.current) {
+			clearInterval(periodicAnnouncementTimerRef.current);
+			periodicAnnouncementTimerRef.current = null;
+		}
+	}, []);
+
+	const startPeriodicAnnouncementTimer = useCallback(() => {
+		stopPeriodicAnnouncementTimer();
+		const ss = speechSettingsRef.current;
+		if (!ss.enabled) return;
+		const intervalSec = ss.intervalTimeMinutes * 60 + ss.intervalTimeSeconds;
+		if (intervalSec <= 0) return;
+
+		periodicAnnouncementTimerRef.current = setInterval(() => {
+			if (!isRecordingRef.current || isPausedRef.current || !isTTSEnabledRef.current) return;
+			const curSs = speechSettingsRef.current;
+			if (!curSs.enabled) return;
+
+			const elapsedSec = startTimeRef.current > 0
+				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+				: accumulatedSecondsRef.current;
+			const points = routePointsRef.current;
+			let totalDistanceKm = 0;
+			for (let i = 1; i < points.length; i++) {
+				totalDistanceKm += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+			}
+			const paceMinPerKm = totalDistanceKm > 0 && elapsedSec > 0 ? elapsedSec / 60 / totalDistanceKm : null;
+			const lastPt = points.length > 0 ? points[points.length - 1] : null;
+			const speedKmh = lastPt?.speed != null && lastPt.speed >= 0 ? lastPt.speed * 3.6 : null;
+
+			const locale = getLocales()[0]?.languageTag ?? 'en-US';
+			const langCode = locale.split('-')[0].toLowerCase();
+			const text = buildPeriodicAnnouncement(locale, {
+				distanceKm: totalDistanceKm,
+				elapsedSeconds: elapsedSec,
+				paceMinPerKm,
+				speedKmh,
+			}, {
+				announceDistance: curSs.announceDistance,
+				announcePace: curSs.announcePace,
+				announceDuration: curSs.announceDuration,
+				announceSpeed: curSs.announceSpeed,
+				announceCalories: curSs.announceCalories,
+				announceHeartRate: curSs.announceHeartRate,
+			});
+			if (text.length > 0) {
+				speakAnnouncement(text, langCode, {
+					volume: curSs.volume,
+					useApplicationAudioSession: curSs.duckMusicDuringTTS,
+				});
+			}
+		}, intervalSec * 1000);
+	}, [stopPeriodicAnnouncementTimer]);
+
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
 		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
 		console.log('[RecordScreen] startRecording called. isRunningInExpoGo:', expoGo);
+
+		// Cancel measure mode before starting a recording
+		if (isMeasureModeRef.current) {
+			isMeasureModeRef.current = false;
+			setIsMeasureMode(false);
+			measureWaypointsRef.current = [];
+			mapRef.current?.sendToMap({ measureMode: false });
+		}
+
 		try {
 			console.log('[RecordScreen] Requesting foreground location permission...');
 			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
@@ -2601,8 +3272,12 @@ export default function RecordScreen() {
 				return;
 			}
 
+			// Enable background audio so TTS announcements work when the app is backgrounded
+			await enableBackgroundAudio();
+
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
+			orderedHexTilesRef.current = [];
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
@@ -2630,6 +3305,9 @@ export default function RecordScreen() {
 			timerRef.current = setInterval(() => {
 				setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 			}, 1000);
+
+			// Start periodic (time-based) speech announcements if enabled
+			startPeriodicAnnouncementTimer();
 
 			if (expoGo) {
 				console.log('[RecordScreen] Running in Expo Go – skipping background permission, using foreground-only tracking.');
@@ -2727,8 +3405,60 @@ export default function RecordScreen() {
 				clearInterval(timerRef.current);
 				timerRef.current = null;
 			}
+			stopPeriodicAnnouncementTimer();
 		}
-	}, [handleLocationUpdate, setFollowMode, showModal, theme]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer]);
+
+	// Show a modal to select a saved route before starting a recording.
+	const showRouteSelectionModal = useCallback(async () => {
+		let routes: SavedRoute[] = [];
+		try {
+			routes = await loadRoutes();
+		} catch {
+			// ignore
+		}
+		if (routes.length === 0) {
+			Alert.alert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
+			return;
+		}
+		showRouteModal({
+			title: '🗺️ Select Route',
+			onClose: closeRouteModal,
+			children: (
+				<View>
+					<SettingsListGroupTitle title="Run this route today" />
+					<SettingsListSelectOptionSingle
+						key="__none__"
+						label="Automatisch"
+						isSelected={selectedRoute === null}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							setSelectedRoute(null);
+							closeRouteModal();
+						}}
+						groupPosition={routes.length === 0 ? 'single' : 'top'}
+					/>
+					{routes.map((route, i) => {
+						const position = i === routes.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={route.id}
+								label={route.name}
+								isSelected={selectedRoute?.id === route.id}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									setSelectedRoute(route);
+									closeRouteModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showRouteModal, closeRouteModal, selectedRoute]);
+
 
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
@@ -2740,6 +3470,7 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
+		stopPeriodicAnnouncementTimer();
 
 		try {
 			const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
@@ -2759,6 +3490,7 @@ export default function RecordScreen() {
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
 		Speech.stop();
+		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;
@@ -2794,7 +3526,7 @@ export default function RecordScreen() {
 		if (vp && mapRef.current) {
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
 			} catch {
 				// ignore
 			}
@@ -2804,15 +3536,21 @@ export default function RecordScreen() {
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
 
-		// Save activity to persistent storage
-		const activity = {
+		// Save activity to persistent storage (including ordered hex tiles for route matching)
+		const activityH3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+		const hexTilesOrdered = orderedHexTilesRef.current.slice();
+		const activity: SavedActivity = {
 			id: String(startTimeRef.current),
 			startedAt: startTimeRef.current,
 			endedAt,
 			routePoints: points,
 			stats,
 			sportType: selectedSportType,
-			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			h3Resolution: activityH3Res,
+			visitedTileCount: visitedHexIdsRef.current.size,
+			enclosedTileCount: enclosedCells.length,
+			hexTilesOrdered,
+			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
 		try {
 			saveActivity(activity);
@@ -2820,26 +3558,13 @@ export default function RecordScreen() {
 			console.warn('[RecordScreen] Failed to save activity:', err);
 		}
 
-		// Build share data from the final Redux state (after all dispatches above).
-		const finalRecords = store.getState().hexTiles.records;
-		const shareData: RunShareData = {
-			startedAt: startTimeRef.current,
-			endedAt,
-			durationSeconds: stats.durationSeconds,
-			distanceKm: stats.distanceKm,
-			tiles: {
-				h3Resolution: Math.round(h3ResolutionRef.current),
-				visited: Array.from(visitedHexIdsRef.current).map((id) => [id, finalRecords[id]?.level ?? 0]),
-				enclosed: enclosedCells.map((id) => [id, finalRecords[id]?.level ?? 0]),
-			},
-		};
+		// Clear the pre-run selected route after the run ends
+		setSelectedRoute(null);
 
-		showModal({
-			title: '🏃 Run Statistics',
-			onClose: closeModal,
-			children: <RunStatsContent stats={stats} theme={theme} shareData={shareData} />,
-		});
-	}, [showModal, closeModal, theme, dispatch]);
+		// Navigate directly to the activity detail screen.
+		// Route assignment (if needed) is handled there via the scroll-view modal.
+		router.push(`/activities/${activity.id}`);
+	}, [theme, dispatch, selectedSportType, router, stopPeriodicAnnouncementTimer]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
@@ -2847,22 +3572,24 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
+		stopPeriodicAnnouncementTimer();
 		isPausedRef.current = true;
 		setIsPaused(true);
-	}, []);
+	}, [stopPeriodicAnnouncementTimer]);
 
 	const resumeRecording = useCallback(() => {
 		startTimeRef.current = Date.now();
 		timerRef.current = setInterval(() => {
 			setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 		}, 1000);
+		startPeriodicAnnouncementTimer();
 		// Allow GPS to resume as the authoritative position source. If the user
 		// navigated via joystick during the pause, GPS will smoothly re-anchor
 		// to the physical device location from the current player position.
 		movedPlayerManuallyRef.current = false;
 		isPausedRef.current = false;
 		setIsPaused(false);
-	}, []);
+	}, [startPeriodicAnnouncementTimer]);
 
 	/**
 	 * Compass / North button handler:
@@ -2935,7 +3662,7 @@ export default function RecordScreen() {
 						}}
 					/>
 					<View style={styles.buttonSpacer} />
-					{isDebugMode && (
+					{isDebugMode && !isRecording && (
 						<>
 							<TouchableOpacity
 								style={[
@@ -2948,9 +3675,20 @@ export default function RecordScreen() {
 								<MaterialIcons name="format-paint" size={20} color={coloringTileImage !== null ? '#ffffff' : '#555555'} />
 							</TouchableOpacity>
 							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									isMeasureMode && { backgroundColor: '#f97316' },
+								]}
+								onPress={isMeasureMode ? cancelMeasureMode : startMeasureMode}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="straighten" size={20} color={isMeasureMode ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
 						</>
 					)}
-					{isDebugMode && (
+					{isDebugMode && !isRecording && !isMeasureMode && (
 						<TouchableOpacity
 							style={styles.debugButton}
 							onPress={showDebugModal}
@@ -2958,6 +3696,25 @@ export default function RecordScreen() {
 						>
 							<MaterialIcons name="bug-report" size={20} color="#555555" />
 						</TouchableOpacity>
+					)}
+					{isDebugMode && isMeasureMode && (
+						<>
+							<TouchableOpacity
+								style={[styles.debugButton, { backgroundColor: '#43a047' }]}
+								onPress={finishMeasurement}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="check" size={20} color="#ffffff" />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={styles.debugButton}
+								onPress={undoMeasurePoint}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="undo" size={20} color="#555555" />
+							</TouchableOpacity>
+						</>
 					)}
 				</View>
 
@@ -3027,6 +3784,19 @@ export default function RecordScreen() {
 							</View>
 						</View>
 
+						{/* Selected route indicator (shown only before recording starts) */}
+						{!isRecording && selectedRoute && (
+							<View style={styles.selectedRouteRow}>
+								<MaterialIcons name="route" size={14} color={PRIMARY_COLOR} />
+								<Text style={[styles.selectedRouteText, { color: theme.screen.text }]} numberOfLines={1}>
+									{selectedRoute.name}
+								</Text>
+								<TouchableOpacity onPress={() => setSelectedRoute(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+						)}
+
 						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
 						<View style={styles.liveBarControlsRow}>
 							{/* Left side: stop button when recording, activity type picker otherwise */}
@@ -3092,13 +3862,23 @@ export default function RecordScreen() {
 
 							{/* Chevron-down collapse button – right side */}
 							<View style={styles.liveBarSideSlot}>
-								<TouchableOpacity
-									style={styles.chevronButton}
-									onPress={() => setIsPanelCollapsed(true)}
-									activeOpacity={0.7}
-								>
-									<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
-								</TouchableOpacity>
+								{!isRecording ? (
+									<TouchableOpacity
+										style={[styles.routeButton, selectedRoute ? { backgroundColor: PRIMARY_COLOR + '22' } : {}]}
+										onPress={showRouteSelectionModal}
+										activeOpacity={0.8}
+									>
+										<MaterialIcons name="route" size={24} color={selectedRoute ? PRIMARY_COLOR : theme.screen.icon} />
+									</TouchableOpacity>
+								) : (
+									<TouchableOpacity
+										style={styles.chevronButton}
+										onPress={() => setIsPanelCollapsed(true)}
+										activeOpacity={0.7}
+									>
+										<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
+									</TouchableOpacity>
+								)}
 							</View>
 						</View>
 					</>
@@ -3496,6 +4276,26 @@ const styles = StyleSheet.create({
 		borderRadius: 26,
 		alignItems: 'center',
 		justifyContent: 'center',
+	},
+	routeButton: {
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	selectedRouteRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		paddingHorizontal: 16,
+		paddingVertical: 4,
+	},
+	selectedRouteText: {
+		fontSize: 13,
+		fontWeight: '600',
+		maxWidth: 200,
 	},
 	// Hex tile info modal
 	hexInfoContainer: {
