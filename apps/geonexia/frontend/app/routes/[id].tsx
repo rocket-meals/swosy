@@ -113,6 +113,18 @@ export default function RouteDetailScreen() {
 	});
 	editStateRef.current = { isEditing, mapEditSubMode, addAnchorTileIndex, editedHexTiles };
 
+	// Resets the query guards and derived state so enclosed tiles and tile
+	// features are recalculated the next time the relevant useEffect hooks run.
+	const resetTileQueryState = useCallback(() => {
+		enclosedQuerySentRef.current = false;
+		featureQuerySentRef.current = false;
+		setEnclosedTiles([]);
+		setEnclosedTilesReady(false);
+		setAggregatedEnclosedFeatures({});
+		setHexTileFeatureMap({});
+		setAggregatedFeatures({});
+	}, []);
+
 	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
 		return () => {
@@ -123,6 +135,7 @@ export default function RouteDetailScreen() {
 	}, []);
 
 	// Remount the map whenever the screen is re-focused so auto-rotate re-runs.
+	// Also reset enclosed tile and feature query guards so they re-run on re-focus.
 	useFocusEffect(
 		useCallback(() => {
 			if (isFirstFocusRef.current) {
@@ -131,7 +144,8 @@ export default function RouteDetailScreen() {
 			}
 			setMapMounted(false);
 			setMapKey((k) => k + 1);
-		}, [])
+			resetTileQueryState();
+		}, [resetTileQueryState])
 	);
 
 	// Show back arrow in header
@@ -457,6 +471,9 @@ export default function RouteDetailScreen() {
 		};
 		try {
 			saveRoute(updatedRoute);
+			// Reset query guards and state so enclosed tiles and features are
+			// recalculated for the updated hex tile set.
+			resetTileQueryState();
 			setRoute(updatedRoute);
 			setIsEditing(false);
 			setHasUnsavedChanges(false);
@@ -468,7 +485,7 @@ export default function RouteDetailScreen() {
 		} catch {
 			Alert.alert('Fehler', 'Die Änderungen konnten nicht gespeichert werden.');
 		}
-	}, [route, editedHexTiles]);
+	}, [route, editedHexTiles, resetTileQueryState]);
 
 	// Send route-edit overlay (labels + neighbor highlight) to the map
 	useEffect(() => {
