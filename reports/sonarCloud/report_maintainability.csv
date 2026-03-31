@@ -1,11 +1,18 @@
 Key,Message,Component,Line
-"AZ1D3DAB6oJbwS867d4i","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",34
-"AZ1D3DAB6oJbwS867d4j","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",192
-"AZ1D3DAB6oJbwS867d4k","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",248
-"AZ1Do-iwZhiS2cIBve4_","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",198
-"AZ1Do-iwZhiS2cIBve5A","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",198
-"AZ1Do-iwZhiS2cIBve5B","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",200
-"AZ1Do-iwZhiS2cIBve5C","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",218
+"AZ1EFoIB3pt_Z9W6Yb5r","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",72
+"AZ1EFoIB3pt_Z9W6Yb5s","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",75
+"AZ1EFoIB3pt_Z9W6Yb5t","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",183
+"AZ1EFoIB3pt_Z9W6Yb5u","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",188
+"AZ1EFoIB3pt_Z9W6Yb5v","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",188
+"AZ1EFoIB3pt_Z9W6Yb5w","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",199
+"AZ1EFoIB3pt_Z9W6Yb5x","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",204
+"AZ1EFoIB3pt_Z9W6Yb5y","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",204
+"AZ1EFoIB3pt_Z9W6Yb5z","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",215
+"AZ1EFoIB3pt_Z9W6Yb50","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",220
+"AZ1EFoIB3pt_Z9W6Yb51","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",231
+"AZ1EFoIB3pt_Z9W6Yb52","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",236
+"AZ1EFoIB3pt_Z9W6Yb53","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",236
+"AZ1D3DAB6oJbwS867d4j","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",168
 "AZ1Do-iwZhiS2cIBve5D","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",220
 "AZ1DfJgEWUADpMCCZhIz","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",79
 "AZ1C4OI_BfEcQZ3_Y0dN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1943
@@ -9992,10 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvVPS4VhJojFFAiN","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",132
 "AZkUSvUHS4VhJojFFAhV","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",2
 "AZkUSvUHS4VhJojFFAha","Unexpected `await` of a non-Promise (non-""Thenable"") value.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",32
-"AZkUSvUHS4VhJojFFAhb","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",44
-"AZkUSvUHS4VhJojFFAhc","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",49
-"AZkUSvUHS4VhJojFFAhd","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",55
-"AZkUSvUHS4VhJojFFAhe","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",63
-"AZkUSvUHS4VhJojFFAhg","Rename class ""androidSystemActionHelper"" to match the regular expression ^\$?[A-Z][a-zA-Z0-9]*$.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",98
-"AZkUSvUHS4VhJojFFAhh","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",105
-"AZkUSvUHS4VhJojFFAhi","Make this public static property readonly.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",106
