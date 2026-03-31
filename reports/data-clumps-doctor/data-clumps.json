@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-31T20:41:58.283Z",
+  "report_timestamp": "2026-03-31T21:11:01.570Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 94,
-          "average": 1.5998325659271662,
-          "amountSavedValuesForKeys": 3822,
+          "average": 1.6015069066555043,
+          "amountSavedValuesForKeys": 3826,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 94,
-          "average": 1.6140202702702702,
-          "amountSavedValuesForKeys": 3822,
+          "average": 1.6157094594594594,
+          "amountSavedValuesForKeys": 3826,
           "amountKeys": 26
         }
       },
       "timer_information": {
         "ast_generation_time_ms": 4023,
-        "detection_time_ms": 79,
+        "detection_time_ms": 78,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 115.26,
-          "os_memory_free": 14969769984,
+          "os_uptime": 108.39,
+          "os_memory_free": 14967508992,
           "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,28 +44,28 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 38,
+    "amount_classes_or_interfaces_with_data_clumps": 39,
     "amount_files_with_data_clumps": 30,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 46,
+    "fields_to_fields_data_clump": 50,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 54
+    "amount_data_clumps": 58
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "52af7387741723550524d169e429ad40320ee347",
-    "project_commit_hash": "52af7387741723550524d169e429ad40320ee347",
+    "project_version": "365ac06c3c1a25dc363781736cd4aed5b94f124c",
+    "project_commit_hash": "365ac06c3c1a25dc363781736cd4aed5b94f124c",
     "project_tag": null,
-    "project_commit_date": "1774989619",
+    "project_commit_date": "1774991366",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 473,
-    "number_of_classes_or_interfaces": 969,
+    "number_of_classes_or_interfaces": 970,
     "number_of_methods": 1325,
-    "number_of_data_fields": 3822,
+    "number_of_data_fields": 3826,
     "number_of_method_parameters": 1465
   },
   "detector": {
@@ -2393,9 +2393,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 14,
+              "startLine": 22,
               "startColumn": 2,
-              "endLine": 14,
+              "endLine": 22,
               "endColumn": 25
             }
           },
@@ -2418,9 +2418,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 15,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 15,
+              "endLine": 23,
               "endColumn": 22
             }
           },
@@ -2443,9 +2443,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 24,
               "endColumn": 23
             }
           },
@@ -2468,9 +2468,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 17,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 17,
+              "endLine": 25,
               "endColumn": 26
             }
           },
@@ -2493,9 +2493,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 18,
+              "startLine": 26,
               "startColumn": 2,
-              "endLine": 18,
+              "endLine": 26,
               "endColumn": 25
             }
           },
@@ -2518,9 +2518,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 27,
               "endColumn": 26
             }
           },
@@ -2543,9 +2543,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 20,
+              "startLine": 28,
               "startColumn": 2,
-              "endLine": 20,
+              "endLine": 28,
               "endColumn": 26
             }
           },
@@ -2568,9 +2568,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 21,
+              "startLine": 29,
               "startColumn": 2,
-              "endLine": 21,
+              "endLine": 29,
               "endColumn": 25
             }
           },
@@ -2593,9 +2593,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 30,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 30,
               "endColumn": 25
             }
           },
@@ -2618,9 +2618,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 31,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 31,
               "endColumn": 25
             }
           },
@@ -2665,9 +2665,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 32,
+              "startLine": 40,
               "startColumn": 2,
-              "endLine": 32,
+              "endLine": 40,
               "endColumn": 22
             }
           },
@@ -2690,9 +2690,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 34,
+              "startLine": 42,
               "startColumn": 2,
-              "endLine": 34,
+              "endLine": 42,
               "endColumn": 23
             }
           },
@@ -2715,9 +2715,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 35,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 35,
+              "endLine": 43,
               "endColumn": 26
             }
           },
@@ -2740,9 +2740,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 36,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 36,
+              "endLine": 44,
               "endColumn": 25
             }
           },
@@ -2765,9 +2765,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 37,
+              "endLine": 45,
               "endColumn": 26
             }
           },
@@ -2790,9 +2790,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 38,
+              "endLine": 46,
               "endColumn": 26
             }
           },
@@ -2815,9 +2815,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 39,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 39,
+              "endLine": 47,
               "endColumn": 25
             }
           },
@@ -2840,9 +2840,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 40,
+              "endLine": 48,
               "endColumn": 25
             }
           },
@@ -2865,9 +2865,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 41,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 41,
+              "endLine": 49,
               "endColumn": 25
             }
           },
@@ -3945,9 +3945,9 @@
             }
           },
           "position": {
-            "startLine": 32,
+            "startLine": 40,
             "startColumn": 2,
-            "endLine": 32,
+            "endLine": 40,
             "endColumn": 22
           }
         },
@@ -3970,9 +3970,9 @@
             }
           },
           "position": {
-            "startLine": 34,
+            "startLine": 42,
             "startColumn": 2,
-            "endLine": 34,
+            "endLine": 42,
             "endColumn": 23
           }
         },
@@ -3995,9 +3995,9 @@
             }
           },
           "position": {
-            "startLine": 35,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 35,
+            "endLine": 43,
             "endColumn": 26
           }
         },
@@ -4020,9 +4020,9 @@
             }
           },
           "position": {
-            "startLine": 36,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 36,
+            "endLine": 44,
             "endColumn": 25
           }
         },
@@ -4045,9 +4045,9 @@
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 37,
+            "endLine": 45,
             "endColumn": 26
           }
         },
@@ -4070,9 +4070,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 38,
+            "endLine": 46,
             "endColumn": 26
           }
         },
@@ -4095,9 +4095,9 @@
             }
           },
           "position": {
-            "startLine": 39,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 39,
+            "endLine": 47,
             "endColumn": 25
           }
         },
@@ -4120,9 +4120,9 @@
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 40,
+            "endLine": 48,
             "endColumn": 25
           }
         },
@@ -4145,9 +4145,9 @@
             }
           },
           "position": {
-            "startLine": 41,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 41,
+            "endLine": 49,
             "endColumn": 25
           }
         }
@@ -4185,16 +4185,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 15,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 15,
+              "endLine": 23,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 32,
+            "startLine": 40,
             "startColumn": 2,
-            "endLine": 32,
+            "endLine": 40,
             "endColumn": 22
           }
         },
@@ -4210,16 +4210,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 24,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 34,
+            "startLine": 42,
             "startColumn": 2,
-            "endLine": 34,
+            "endLine": 42,
             "endColumn": 23
           }
         },
@@ -4235,16 +4235,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 17,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 17,
+              "endLine": 25,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 35,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 35,
+            "endLine": 43,
             "endColumn": 26
           }
         },
@@ -4260,16 +4260,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 18,
+              "startLine": 26,
               "startColumn": 2,
-              "endLine": 18,
+              "endLine": 26,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 36,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 36,
+            "endLine": 44,
             "endColumn": 25
           }
         },
@@ -4285,16 +4285,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 27,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 37,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 37,
+            "endLine": 45,
             "endColumn": 26
           }
         },
@@ -4310,16 +4310,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 20,
+              "startLine": 28,
               "startColumn": 2,
-              "endLine": 20,
+              "endLine": 28,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 38,
+            "endLine": 46,
             "endColumn": 26
           }
         },
@@ -4335,16 +4335,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 21,
+              "startLine": 29,
               "startColumn": 2,
-              "endLine": 21,
+              "endLine": 29,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 39,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 39,
+            "endLine": 47,
             "endColumn": 25
           }
         },
@@ -4360,16 +4360,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 30,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 30,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 40,
+            "endLine": 48,
             "endColumn": 25
           }
         },
@@ -4385,16 +4385,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 31,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 31,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 41,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 41,
+            "endLine": 49,
             "endColumn": 25
           }
         }
@@ -4439,9 +4439,9 @@
             }
           },
           "position": {
-            "startLine": 14,
+            "startLine": 22,
             "startColumn": 2,
-            "endLine": 14,
+            "endLine": 22,
             "endColumn": 25
           }
         },
@@ -4464,9 +4464,9 @@
             }
           },
           "position": {
-            "startLine": 15,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 15,
+            "endLine": 23,
             "endColumn": 22
           }
         },
@@ -4489,9 +4489,9 @@
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 24,
             "endColumn": 23
           }
         },
@@ -4514,9 +4514,9 @@
             }
           },
           "position": {
-            "startLine": 17,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 17,
+            "endLine": 25,
             "endColumn": 26
           }
         },
@@ -4539,9 +4539,9 @@
             }
           },
           "position": {
-            "startLine": 18,
+            "startLine": 26,
             "startColumn": 2,
-            "endLine": 18,
+            "endLine": 26,
             "endColumn": 25
           }
         },
@@ -4564,9 +4564,9 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 27,
             "endColumn": 26
           }
         },
@@ -4589,9 +4589,9 @@
             }
           },
           "position": {
-            "startLine": 20,
+            "startLine": 28,
             "startColumn": 2,
-            "endLine": 20,
+            "endLine": 28,
             "endColumn": 26
           }
         },
@@ -4614,9 +4614,9 @@
             }
           },
           "position": {
-            "startLine": 21,
+            "startLine": 29,
             "startColumn": 2,
-            "endLine": 21,
+            "endLine": 29,
             "endColumn": 25
           }
         },
@@ -4639,9 +4639,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 30,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 30,
             "endColumn": 25
           }
         },
@@ -4664,9 +4664,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 31,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 31,
             "endColumn": 25
           }
         }
@@ -4704,16 +4704,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 32,
+              "startLine": 40,
               "startColumn": 2,
-              "endLine": 32,
+              "endLine": 40,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 15,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 15,
+            "endLine": 23,
             "endColumn": 22
           }
         },
@@ -4729,16 +4729,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 34,
+              "startLine": 42,
               "startColumn": 2,
-              "endLine": 34,
+              "endLine": 42,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 24,
             "endColumn": 23
           }
         },
@@ -4754,16 +4754,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 35,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 35,
+              "endLine": 43,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 17,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 17,
+            "endLine": 25,
             "endColumn": 26
           }
         },
@@ -4779,16 +4779,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 36,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 36,
+              "endLine": 44,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 18,
+            "startLine": 26,
             "startColumn": 2,
-            "endLine": 18,
+            "endLine": 26,
             "endColumn": 25
           }
         },
@@ -4804,16 +4804,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 37,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 37,
+              "endLine": 45,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 27,
             "endColumn": 26
           }
         },
@@ -4829,16 +4829,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 38,
+              "endLine": 46,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 20,
+            "startLine": 28,
             "startColumn": 2,
-            "endLine": 20,
+            "endLine": 28,
             "endColumn": 26
           }
         },
@@ -4854,16 +4854,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 39,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 39,
+              "endLine": 47,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 21,
+            "startLine": 29,
             "startColumn": 2,
-            "endLine": 21,
+            "endLine": 29,
             "endColumn": 25
           }
         },
@@ -4879,16 +4879,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 40,
+              "endLine": 48,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 30,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 30,
             "endColumn": 25
           }
         },
@@ -4904,16 +4904,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 41,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 41,
+              "endLine": 49,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 31,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 31,
             "endColumn": 25
           }
         }
@@ -5192,6 +5192,128 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-minLatminLngmaxLatmaxLng": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-minLatminLngmaxLatmaxLng",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams",
+      "from_class_or_interface_name": "AreaFeatureQueryParams",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds",
+      "to_class_or_interface_name": "LatLngBounds",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/minLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/minLat",
+          "name": "minLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLat",
+            "name": "minLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 207,
+              "startColumn": 2,
+              "endLine": 207,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 521,
+            "startColumn": 2,
+            "endLine": 521,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/minLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/minLng",
+          "name": "minLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLng",
+            "name": "minLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 208,
+              "startColumn": 2,
+              "endLine": 208,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 523,
+            "startColumn": 2,
+            "endLine": 523,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/maxLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/maxLat",
+          "name": "maxLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLat",
+            "name": "maxLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 209,
+              "startColumn": 2,
+              "endLine": 209,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 525,
+            "startColumn": 2,
+            "endLine": 525,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/maxLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/maxLng",
+          "name": "maxLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLng",
+            "name": "maxLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 210,
+              "startColumn": 2,
+              "endLine": 210,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 527,
+            "startColumn": 2,
+            "endLine": 527,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-minLatminLngmaxLatmaxLngstyleUrlfilterOptions": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-minLatminLngmaxLatmaxLngstyleUrlfilterOptions",
@@ -5220,16 +5342,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 374,
+              "startLine": 426,
               "startColumn": 2,
-              "endLine": 374,
+              "endLine": 426,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 478,
+            "startLine": 521,
             "startColumn": 2,
-            "endLine": 478,
+            "endLine": 521,
             "endColumn": 17
           }
         },
@@ -5245,16 +5367,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 376,
+              "startLine": 428,
               "startColumn": 2,
-              "endLine": 376,
+              "endLine": 428,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 480,
+            "startLine": 523,
             "startColumn": 2,
-            "endLine": 480,
+            "endLine": 523,
             "endColumn": 17
           }
         },
@@ -5270,16 +5392,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 378,
+              "startLine": 430,
               "startColumn": 2,
-              "endLine": 378,
+              "endLine": 430,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 482,
+            "startLine": 525,
             "startColumn": 2,
-            "endLine": 482,
+            "endLine": 525,
             "endColumn": 17
           }
         },
@@ -5295,16 +5417,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 380,
+              "startLine": 432,
               "startColumn": 2,
-              "endLine": 380,
+              "endLine": 432,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 484,
+            "startLine": 527,
             "startColumn": 2,
-            "endLine": 484,
+            "endLine": 527,
             "endColumn": 17
           }
         },
@@ -5320,16 +5442,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 384,
+              "startLine": 436,
               "startColumn": 2,
-              "endLine": 384,
+              "endLine": 436,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 486,
+            "startLine": 529,
             "startColumn": 2,
-            "endLine": 486,
+            "endLine": 529,
             "endColumn": 20
           }
         },
@@ -5345,23 +5467,267 @@
             "type": "MapFeatureFilterOptions",
             "modifiers": [],
             "position": {
-              "startLine": 386,
+              "startLine": 438,
               "startColumn": 2,
-              "endLine": 386,
+              "endLine": 438,
               "endColumn": 42
             }
           },
           "position": {
-            "startLine": 488,
+            "startLine": 531,
             "startColumn": 2,
-            "endLine": 488,
+            "endLine": 531,
             "endColumn": 42
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 15,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-minLatminLngmaxLatmaxLng": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-minLatminLngmaxLatmaxLng",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds",
+      "from_class_or_interface_name": "LatLngBounds",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams",
+      "to_class_or_interface_name": "AreaFeatureQueryParams",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLat",
+          "name": "minLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/minLat",
+            "name": "minLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 521,
+              "startColumn": 2,
+              "endLine": 521,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 207,
+            "startColumn": 2,
+            "endLine": 207,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLng",
+          "name": "minLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/minLng",
+            "name": "minLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 523,
+              "startColumn": 2,
+              "endLine": 523,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 208,
+            "startColumn": 2,
+            "endLine": 208,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLat",
+          "name": "maxLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/maxLat",
+            "name": "maxLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 525,
+              "startColumn": 2,
+              "endLine": 525,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 209,
+            "startColumn": 2,
+            "endLine": 209,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLng",
+          "name": "maxLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams/memberField/maxLng",
+            "name": "maxLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 527,
+              "startColumn": 2,
+              "endLine": 527,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 210,
+            "startColumn": 2,
+            "endLine": 210,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-minLatminLngmaxLatmaxLng": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-minLatminLngmaxLatmaxLng",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds",
+      "from_class_or_interface_name": "LatLngBounds",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams",
+      "to_class_or_interface_name": "TileFeatureQueryParams",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLat",
+          "name": "minLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/minLat",
+            "name": "minLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 426,
+              "startColumn": 2,
+              "endLine": 426,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 207,
+            "startColumn": 2,
+            "endLine": 207,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLng",
+          "name": "minLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/minLng",
+            "name": "minLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 428,
+              "startColumn": 2,
+              "endLine": 428,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 208,
+            "startColumn": 2,
+            "endLine": 208,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLat",
+          "name": "maxLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/maxLat",
+            "name": "maxLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 430,
+              "startColumn": 2,
+              "endLine": 430,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 209,
+            "startColumn": 2,
+            "endLine": 209,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLng",
+          "name": "maxLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/maxLng",
+            "name": "maxLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 432,
+              "startColumn": 2,
+              "endLine": 432,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 210,
+            "startColumn": 2,
+            "endLine": 210,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/AreaFeatureQueryParams-minLatminLngmaxLatmaxLngstyleUrlfilterOptions": {
@@ -5392,16 +5758,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 478,
+              "startLine": 521,
               "startColumn": 2,
-              "endLine": 478,
+              "endLine": 521,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 374,
+            "startLine": 426,
             "startColumn": 2,
-            "endLine": 374,
+            "endLine": 426,
             "endColumn": 17
           }
         },
@@ -5417,16 +5783,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 480,
+              "startLine": 523,
               "startColumn": 2,
-              "endLine": 480,
+              "endLine": 523,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 376,
+            "startLine": 428,
             "startColumn": 2,
-            "endLine": 376,
+            "endLine": 428,
             "endColumn": 17
           }
         },
@@ -5442,16 +5808,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 482,
+              "startLine": 525,
               "startColumn": 2,
-              "endLine": 482,
+              "endLine": 525,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 378,
+            "startLine": 430,
             "startColumn": 2,
-            "endLine": 378,
+            "endLine": 430,
             "endColumn": 17
           }
         },
@@ -5467,16 +5833,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 484,
+              "startLine": 527,
               "startColumn": 2,
-              "endLine": 484,
+              "endLine": 527,
               "endColumn": 17
             }
           },
           "position": {
-            "startLine": 380,
+            "startLine": 432,
             "startColumn": 2,
-            "endLine": 380,
+            "endLine": 432,
             "endColumn": 17
           }
         },
@@ -5492,16 +5858,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 486,
+              "startLine": 529,
               "startColumn": 2,
-              "endLine": 486,
+              "endLine": 529,
               "endColumn": 20
             }
           },
           "position": {
-            "startLine": 384,
+            "startLine": 436,
             "startColumn": 2,
-            "endLine": 384,
+            "endLine": 436,
             "endColumn": 20
           }
         },
@@ -5517,23 +5883,145 @@
             "type": "MapFeatureFilterOptions",
             "modifiers": [],
             "position": {
-              "startLine": 488,
+              "startLine": 531,
               "startColumn": 2,
-              "endLine": 488,
+              "endLine": 531,
               "endColumn": 42
             }
           },
           "position": {
-            "startLine": 386,
+            "startLine": 438,
             "startColumn": 2,
-            "endLine": 386,
+            "endLine": 438,
             "endColumn": 42
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 15,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-minLatminLngmaxLatmaxLng": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/TileFeatureHelper.ts-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams-apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds-minLatminLngmaxLatmaxLng",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams",
+      "from_class_or_interface_name": "TileFeatureQueryParams",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds",
+      "to_class_or_interface_name": "LatLngBounds",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/minLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/minLat",
+          "name": "minLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLat",
+            "name": "minLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 207,
+              "startColumn": 2,
+              "endLine": 207,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 426,
+            "startColumn": 2,
+            "endLine": 426,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/minLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/minLng",
+          "name": "minLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/minLng",
+            "name": "minLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 208,
+              "startColumn": 2,
+              "endLine": 208,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 428,
+            "startColumn": 2,
+            "endLine": 428,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/maxLat": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/maxLat",
+          "name": "maxLat",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLat",
+            "name": "maxLat",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 209,
+              "startColumn": 2,
+              "endLine": 209,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 430,
+            "startColumn": 2,
+            "endLine": 430,
+            "endColumn": 17
+          }
+        },
+        "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/maxLng": {
+          "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/TileFeatureQueryParams/memberField/maxLng",
+          "name": "maxLng",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/TileFeatureHelper.ts/interface/LatLngBounds/memberField/maxLng",
+            "name": "maxLng",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 210,
+              "startColumn": 2,
+              "endLine": 210,
+              "endColumn": 17
+            }
+          },
+          "position": {
+            "startLine": 432,
+            "startColumn": 2,
+            "endLine": 432,
+            "endColumn": 17
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate": {
