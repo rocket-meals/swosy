@@ -40,7 +40,8 @@ import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import type { PaceHintState } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
@@ -2343,6 +2344,13 @@ export default function RecordScreen() {
 	speechSettingsRef.current = speechSettings;
 	// Timer for periodic (time-based) speech announcements during recording
 	const periodicAnnouncementTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	// Pace hint hysteresis: tracks the last announced pace warning state and
+	// a cooldown timestamp to avoid overwhelming the TTS engine with frequent
+	// "too fast" / "too slow" announcements.
+	const paceHintStateRef = useRef<PaceHintState>('on_target');
+	const lastPaceHintTimeRef = useRef(0);
+	/** Minimum cooldown between pace hint announcements (ms). */
+	const PACE_HINT_COOLDOWN_MS = 15_000;
 
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
@@ -2794,7 +2802,10 @@ export default function RecordScreen() {
 				const locale = getLocales()[0]?.languageTag ?? 'en-US';
 				const langCode = locale.split('-')[0].toLowerCase();
 				const text = buildBackgroundAnnouncement(locale);
-				speakAnnouncement(text, langCode);
+				const curSs = speechSettingsRef.current;
+				speakAnnouncement(text, langCode, {
+					rate: speechRateToNumber(curSs.speechRate),
+				});
 			}
 		});
 		return () => subscription.remove();
@@ -3524,7 +3535,60 @@ export default function RecordScreen() {
 					announcePace: curSs.announcePace,
 					announceSpeedKmh: curSs.announceSpeed,
 				});
-				speakAnnouncement(text, langCode);
+				speakAnnouncement(text, langCode, {
+					rate: speechRateToNumber(curSs.speechRate),
+				});
+			}
+		}
+
+		// ── Pace hint announcements with hysteresis threshold ────────────
+		if (isTTSEnabledRef.current && d > 0) {
+			const curSs = speechSettingsRef.current;
+			if (curSs.paceTargetEnabled) {
+				const elapsedSec = startTimeRef.current > 0
+					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+					: accumulatedSecondsRef.current;
+				const currentPace = elapsedSec > 0 ? elapsedSec / 60 / d : null;
+				if (currentPace != null) {
+					const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
+					const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
+					const slowerThreshold = curSs.paceHintSlowerMinutes + curSs.paceHintSlowerSeconds / 60;
+
+					// Lower pace value = faster running.  Thresholds are subtracted/added
+					// from the target to define the acceptable range boundaries.
+					const fasterBound = targetPace - fasterThreshold;
+					const slowerBound = targetPace + slowerThreshold;
+
+					const prev = paceHintStateRef.current;
+					let next: PaceHintState = 'on_target';
+
+					if (curSs.paceHintFasterEnabled && currentPace < fasterBound) {
+						next = 'too_fast';
+					} else if (curSs.paceHintSlowerEnabled && currentPace > slowerBound) {
+						next = 'too_slow';
+					}
+
+					// Announce only on a *transition* into a warning state from on_target
+					// and only if the cooldown has elapsed.
+					const now = Date.now();
+					if (
+						next !== 'on_target' &&
+						prev === 'on_target' &&
+						now - lastPaceHintTimeRef.current >= PACE_HINT_COOLDOWN_MS
+					) {
+						const locale = getLocales()[0]?.languageTag ?? 'en-US';
+						const langCode = locale.split('-')[0].toLowerCase();
+						const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
+						speakAnnouncement(text, langCode, {
+							volume: curSs.volume,
+							rate: speechRateToNumber(curSs.speechRate),
+							useApplicationAudioSession: curSs.duckMusicDuringTTS,
+						});
+						lastPaceHintTimeRef.current = now;
+					}
+
+					paceHintStateRef.current = next;
+				}
 			}
 		}
 
@@ -3652,6 +3716,7 @@ export default function RecordScreen() {
 			if (text.length > 0) {
 				speakAnnouncement(text, langCode, {
 					volume: curSs.volume,
+					rate: speechRateToNumber(curSs.speechRate),
 					useApplicationAudioSession: curSs.duckMusicDuringTTS,
 				});
 			}
@@ -3698,6 +3763,8 @@ export default function RecordScreen() {
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
 			lastAnnouncedKmRef.current = 0;
+			paceHintStateRef.current = 'on_target';
+			lastPaceHintTimeRef.current = 0;
 			isRecordingRef.current = true;
 			setIsRecording(true);
 			setFollowMode(true);
