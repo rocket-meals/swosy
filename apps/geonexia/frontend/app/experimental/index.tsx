@@ -34,6 +34,17 @@ export default function ExperimentalScreen() {
 					handleFunction={() => router.push('/experimental/hex-tile-info')}
 					groupPosition="single"
 				/>
+
+				<SettingsListGroupTitle title="UI" />
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<MaterialCommunityIcons name="keyboard-outline" size={22} color="#ffffff" />}
+					label="Keyboard Avoid Test"
+					value="Test keyboard avoidance in modals"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/keyboard-avoid-test')}
+					groupPosition="single"
+				/>
 			</ScrollView>
 		</View>
 	);
