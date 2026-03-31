@@ -154,8 +154,11 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 
 // ─── Single-tile fetching & parsing ─────────────────────────────────────────
 
-/** Cache: `"tileUrlTemplate|z|x|y"` → parsed MapFeatureInfo[]. */
+/** Cache: `"tileUrlTemplate|z|x|y"` → parsed MapFeatureInfo[] (unfiltered). */
 const tileFeaturesCache: Record<string, MapFeatureInfo[]> = {};
+
+/** Cache: `"tileUrlTemplate|z|x|y"` → raw tile ArrayBuffer for filtered re-parsing. */
+const tileBufferCache: Record<string, ArrayBuffer> = {};
 
 /** Build a cache key for a single tile fetch. */
 function tileCacheKey(tileUrlTemplate: string, z: number, x: number, y: number): string {
@@ -191,22 +194,31 @@ export async function fetchAndParseTile(
 		if (cached) return cached;
 	}
 
-	const url = tileUrlTemplate
-		.replace('{z}', String(z))
-		.replace('{x}', String(x))
-		.replace('{y}', String(y));
+	// Use cached raw buffer when available (avoids re-downloading for filtered queries).
+	let buffer: ArrayBuffer;
+	const cachedBuffer = tileBufferCache[cacheKey];
+	if (cachedBuffer) {
+		buffer = cachedBuffer;
+	} else {
+		const url = tileUrlTemplate
+			.replace('{z}', String(z))
+			.replace('{x}', String(x))
+			.replace('{y}', String(y));
 
-	const res = await fetch(url);
-	if (!res.ok) {
-		// Tiles may legitimately return 404 for ocean / empty areas.
-		if (res.status === 404) {
-			tileFeaturesCache[cacheKey] = [];
-			return [];
+		const res = await fetch(url);
+		if (!res.ok) {
+			// Tiles may legitimately return 404 for ocean / empty areas.
+			if (res.status === 404) {
+				tileFeaturesCache[cacheKey] = [];
+				return [];
+			}
+			throw new Error(`Tile fetch failed (${res.status}): ${url}`);
 		}
-		throw new Error(`Tile fetch failed (${res.status}): ${url}`);
+
+		buffer = await res.arrayBuffer();
+		tileBufferCache[cacheKey] = buffer;
 	}
 
-	const buffer = await res.arrayBuffer();
 	const tile = new VectorTile(new Pbf(buffer));
 
 	const features: MapFeatureInfo[] = [];
