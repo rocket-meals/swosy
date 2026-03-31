@@ -296,6 +296,46 @@ export async function fetchAndParseTile(
 	return features;
 }
 
+// ─── Auto-zoom calculation ──────────────────────────────────────────────────
+
+/**
+ * The minimum zoom at which OpenMapTiles / OpenFreeMap provides full
+ * street-level detail (road names, buildings, POIs, etc.).
+ * Below this zoom, many features are omitted from the vector tiles.
+ */
+const DETAIL_ZOOM = 14;
+
+/** Maximum number of tiles to fetch per axis (width and height). */
+const MAX_TILES_PER_AXIS = 4;
+
+/**
+ * Compute the highest zoom level (up to `DETAIL_ZOOM`) at which the given
+ * bounding box fits within at most `MAX_TILES_PER_AXIS × MAX_TILES_PER_AXIS`
+ * tiles.  This ensures full detail while keeping the number of HTTP requests
+ * manageable.
+ */
+export function calculateOptimalZoom(
+	minLat: number,
+	minLng: number,
+	maxLat: number,
+	maxLng: number,
+): number {
+	for (let z = DETAIL_ZOOM; z >= 1; z--) {
+		const xMin = lngToTileX(minLng, z);
+		const xMax = lngToTileX(maxLng, z);
+		const yMin = latToTileY(maxLat, z);
+		const yMax = latToTileY(minLat, z);
+
+		const tilesX = xMax - xMin + 1;
+		const tilesY = yMax - yMin + 1;
+
+		if (tilesX <= MAX_TILES_PER_AXIS && tilesY <= MAX_TILES_PER_AXIS) {
+			return z;
+		}
+	}
+	return 1;
+}
+
 // ─── Main public API ────────────────────────────────────────────────────────
 
 export type TileFeatureQueryParams = {
@@ -394,4 +434,48 @@ export async function queryTileFeaturesForHexCell(
 		zoom,
 		styleUrl,
 	});
+}
+
+// ─── Area-based convenience API (auto-zoom) ─────────────────────────────────
+
+export type AreaFeatureQueryParams = {
+	/** Southern boundary latitude. */
+	minLat: number;
+	/** Western boundary longitude. */
+	minLng: number;
+	/** Northern boundary latitude. */
+	maxLat: number;
+	/** Eastern boundary longitude. */
+	maxLng: number;
+	/** Optional style URL override (default: OpenFreeMap Liberty). */
+	styleUrl?: string;
+};
+
+/**
+ * Fetch all vector-tile features within the given bounding box **without**
+ * requiring the caller to specify a zoom level.
+ *
+ * The optimal zoom is calculated automatically so that the area is queried at
+ * the highest possible detail level (up to zoom 14, the OpenMapTiles street-
+ * level threshold) while keeping the number of tile downloads manageable.
+ *
+ * @returns An object containing the flat feature array and the zoom level
+ *          that was used, so the caller can display it for transparency.
+ */
+export async function queryTileFeaturesForArea(
+	params: AreaFeatureQueryParams,
+): Promise<{ features: MapFeatureInfo[]; zoom: number }> {
+	const { minLat, minLng, maxLat, maxLng, styleUrl } = params;
+	const zoom = calculateOptimalZoom(minLat, minLng, maxLat, maxLng);
+
+	const features = await queryTileFeaturesForBounds({
+		minLat,
+		minLng,
+		maxLat,
+		maxLng,
+		zoom,
+		styleUrl,
+	});
+
+	return { features, zoom };
 }
