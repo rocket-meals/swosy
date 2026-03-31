@@ -17,7 +17,6 @@ type DebugInfo = {
 	tileFetchResults: Array<{
 		coord: string;
 		status: 'ok' | 'error';
-		bytes: number;
 		featureCount: number;
 		errorMessage?: string;
 	}>;
@@ -83,7 +82,6 @@ export default function HexTileInfoScreen() {
 					debugInfo.tileFetchResults.push({
 						coord: coordStr,
 						status: 'ok',
-						bytes: -1,
 						featureCount: tileFeatures.length,
 					});
 					allFeatures.push(...tileFeatures);
@@ -91,7 +89,6 @@ export default function HexTileInfoScreen() {
 					debugInfo.tileFetchResults.push({
 						coord: coordStr,
 						status: 'error',
-						bytes: 0,
 						featureCount: 0,
 						errorMessage: tileErr instanceof Error ? tileErr.message : String(tileErr),
 					});
@@ -107,7 +104,7 @@ export default function HexTileInfoScreen() {
 			setError(err instanceof Error ? err.message : String(err));
 		} finally {
 			if (runId === runIdRef.current) {
-				setDebug((prev) => prev ? { ...prev } : debugInfo);
+				setDebug({ ...debugInfo });
 				setLoading(false);
 			}
 		}
