@@ -42,6 +42,14 @@ const FoodHeader = ({
         height: isLargeScreen ? 400 : screenWidth - 40,
     }), [isLargeScreen, screenWidth]);
 
+    const containerWidthStyle = useMemo(() => {
+        if (containerWidth === undefined || containerWidth === null) return null;
+        if (typeof containerWidth === 'number') return { width: containerWidth };
+        if (containerWidth === 'auto') return { width: 'auto' as const };
+        if (/^\\d+%$/.test(containerWidth)) return { width: containerWidth as `${number}%` };
+        return null;
+    }, [containerWidth]);
+
     const renderRatingStars = useCallback(() => (
         <View style={isWeb ? styles.stars : styles.mobileStars}>
             {Array.from({ length: 5 }).map((_, index) => (
@@ -141,7 +149,7 @@ const FoodHeader = ({
                                 </View>
                             )}
                         </View>
-                        <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidth ? { width: containerWidth } : null]}>
+                        <View style={isLargeScreen ? null : [styles.marginTopMedium, containerWidthStyle]}>
                             <SettingsList
                                 leftIcon={<MaterialIcons name="star" size={22} />}
                                 iconBgColor={foodsAreaColor}

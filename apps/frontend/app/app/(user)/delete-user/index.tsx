@@ -14,10 +14,10 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
-import AppButton from '@/components/AppButton';
 import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
 import { performLogout } from '@/helper/logoutHelper';
 import { TranslationKeys } from '@/locales/keys';
+import AppButton from '@/components/AppButton';
 
 const Index = () => {
 	const { translate } = useLanguage();
@@ -68,16 +68,7 @@ const Index = () => {
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			return (
-				<LottieView
-					ref={animationRef}
-					source={animationJson}
-					resizeMode="contain"
-					style={isWeb ? { width: 170, height: 170 } : { width: '100%', height: '100%' }}
-					autoPlay={autoPlay ?? false}
-					loop={false}
-				/>
-			);
+			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay ?? false} loop={false} />;
 		}
 	}, [autoPlay, animationJson]);
 
@@ -167,20 +158,24 @@ const Index = () => {
 						</View>
 					</View>
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
-						<TouchableOpacity
+						<AppButton
+							text=""
 							style={{
 								...styles.list,
 								backgroundColor: theme.screen.iconBg,
 								paddingHorizontal: isWeb ? 20 : 10,
+								marginVertical: 0,
 							}}
 							onPress={openDeleteAcountModal}
 							disabled={!profile?.id}
-						>
-							<View style={{ ...styles.col }}>
-								<AntDesign name="user-delete" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account_delete)}</Text>
-							</View>
-						</TouchableOpacity>
+							textStyle={{ width: 0, height: 0 }}
+							iconLeft={
+								<View style={{ ...styles.col }}>
+									<AntDesign name="user-delete" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.account_delete)}</Text>
+								</View>
+							}
+						/>
 					</View>
 
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
@@ -246,19 +241,24 @@ const Index = () => {
 					</Text>
 					<View style={styles.attentionActions}>
 						<AppButton
+							variant="ghost"
+							usePlainText
 							text={translate(TranslationKeys.confirm)}
 							onPress={handleDeleteAccount}
+							disabled={loading}
 							loading={loading}
 							loadingIndicatorColor={theme.screen.text}
 							loadingIndicatorSize={24}
-							style={[styles.confirmButton, { backgroundColor: primaryColor }]}
+							style={[styles.confirmButton, { backgroundColor: primaryColor, marginVertical: 0 }]}
 							textStyle={[styles.confirmLabel, { color: theme.light }]}
 						/>
 						<AppButton
+							variant="ghost"
+							usePlainText
 							text={translate(TranslationKeys.cancel)}
 							onPress={closeDeleteAccountModal}
-							style={styles.cancleButton}
-							textStyle={styles.confirmLabel}
+							style={[styles.cancleButton]}
+							textStyle={[styles.confirmLabel, { color: theme.dark }]}
 						/>
 					</View>
 				</View>

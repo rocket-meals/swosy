@@ -19,6 +19,7 @@ import { SET_CACHED_FORM_CATEGORIES, SET_CACHED_FORMS, SET_CACHED_FORM_DATA, SET
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
+import AppButton from '@/components/AppButton';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.select_a_form_category);
@@ -200,7 +201,10 @@ const Index = () => {
 			>
 				{/* Top action row: download button + queue button */}
 				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginBottom: 6 }}>
-					<TouchableOpacity
+					<AppButton
+						variant="ghost"
+						usePlainText
+						text={isDownloadingAll ? translate(TranslationKeys.form_cache_downloading) : translate(TranslationKeys.form_download_all)}
 						onPress={downloadAllData}
 						disabled={isDownloadingAll || loading}
 						style={{
@@ -211,17 +215,17 @@ const Index = () => {
 							paddingHorizontal: 14,
 							borderRadius: 20,
 							backgroundColor: theme.screen.iconBg,
+							marginVertical: 0,
 						}}
-					>
-						{isDownloadingAll ? (
-							<ActivityIndicator size={18} color={theme.screen.icon} />
-						) : (
-							<FontAwesome name="cloud-download" size={20} color={theme.screen.icon} />
-						)}
-						<Text style={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 14 }}>
-							{isDownloadingAll ? translate(TranslationKeys.form_cache_downloading) : translate(TranslationKeys.form_download_all)}
-						</Text>
-					</TouchableOpacity>
+						textStyle={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 14 }}
+						iconLeft={
+							isDownloadingAll ? (
+								<ActivityIndicator size={18} color={theme.screen.icon} />
+							) : (
+								<FontAwesome name="cloud-download" size={20} color={theme.screen.icon} />
+							)
+						}
+					/>
 
 					{/* Queue button */}
 					<TouchableOpacity

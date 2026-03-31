@@ -10,7 +10,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { useLanguage } from '@/hooks/useLanguage';
 import animation from '@/assets/animations/priceGroup.json';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -21,6 +21,7 @@ import { PriceGroupKey } from '@/app/(app)/settings/types';
 import { UserHelper } from '@/helper/UserHelper';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import SettingsList from '@/components/SettingsList';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 
 // Module-level cache so the expensive color-replacement deep-copy only runs once
 // per primaryColor value across all navigations, even when the screen is unmounted.
@@ -100,7 +101,7 @@ const Index = () => {
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
 			return (
-				<LottieView
+				<SafeLottieView
 					ref={animationRef}
 					source={animationJson}
 					resizeMode="contain"

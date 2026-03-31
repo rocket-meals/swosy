@@ -20,6 +20,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt, StringHelper } from 'repo-depkit-common';
+import AppButton from '@/components/AppButton';
 
 const extractTextAndLink = (description: string) => {
 	// Remove unintended spaces between `]` and `(`
@@ -139,18 +140,14 @@ const TimetableScreen = () => {
         return (
                 <View style={{ ...styles.container, backgroundColor: theme.screen.background }}>
                         <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-                                <TouchableOpacity
-                                        style={{
-                                                ...styles.createButton,
-                                                backgroundColor: course_timetable_area_color,
-                                        }}
+                                <AppButton
                                         onPress={openSheet}
-                                >
-                                        <FontAwesome name="calendar-plus-o" size={20} color={contrastColor} />
-                                        <View>
-                                                <Text style={{ ...styles.createButtonText, color: contrastColor }}>{`${translate(TranslationKeys.event)} ${translate(TranslationKeys.create)}`}</Text>
-                                        </View>
-                                </TouchableOpacity>
+                                        style={{ ...styles.createButton, backgroundColor: course_timetable_area_color, marginVertical: 0 }}
+                                        text={`${translate(TranslationKeys.event)} ${translate(TranslationKeys.create)}`}
+                                        iconLeft={<FontAwesome name="calendar-plus-o" size={20} color={contrastColor} />}
+                                        textStyle={{ ...styles.createButtonText, color: contrastColor }}
+                                        usePlainText
+                                />
                                 {events && events?.length > 0 ? (
                                         <CourseTimetable events={events} openSheet={openSheet} setIsUpdate={setIsUpdate} setTimeTableData={setTimeTableData} setSelectedEventId={setSelectedEventId} />
                                 ) : (

@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
 import styles from './styles';
+import AppButton from '@/components/AppButton';
 
 interface Dish {
 	name: string;
@@ -124,9 +125,15 @@ const GameIdeas = () => {
 			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.guess_better_rated_dish)}</Text>
 			<View style={styles.row}>
 				{ratingPair.map(dish => (
-					<TouchableOpacity key={dish.name} style={{ ...styles.button, backgroundColor: theme.screen.iconBg }} onPress={() => handleRatingGuess(dish)}>
-						<Text style={{ color: theme.screen.text }}>{dish.name}</Text>
-					</TouchableOpacity>
+					<AppButton
+						key={dish.name}
+						variant="ghost"
+						usePlainText
+						text={dish.name}
+						onPress={() => handleRatingGuess(dish)}
+						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
+						textStyle={{ color: theme.screen.text }}
+					/>
 				))}
 			</View>
 			{ratingResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text }}>{ratingResult}</Text>}
@@ -134,9 +141,15 @@ const GameIdeas = () => {
 			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.guess_most_disliked_marking)}</Text>
 			<View style={styles.row}>
 				{markings.map(m => (
-					<TouchableOpacity key={m.name} style={{ ...styles.button, backgroundColor: theme.screen.iconBg }} onPress={() => handleMarkingGuess(m)}>
-						<Text style={{ color: theme.screen.text }}>{m.name}</Text>
-					</TouchableOpacity>
+					<AppButton
+						key={m.name}
+						variant="ghost"
+						usePlainText
+						text={m.name}
+						onPress={() => handleMarkingGuess(m)}
+						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
+						textStyle={{ color: theme.screen.text }}
+					/>
 				))}
 			</View>
 			{markingResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text }}>{markingResult}</Text>}
@@ -145,9 +158,15 @@ const GameIdeas = () => {
 			<View style={styles.memoryContainer}>
 				{board.map((card, idx) =>
 					card ? (
-						<TouchableOpacity key={idx} style={{ ...styles.memoryCard, backgroundColor: theme.screen.iconBg }} onPress={() => handleCardPress(idx)}>
-							<Text style={{ color: theme.screen.text, fontSize: 24 }}>{card.revealed || card.matched ? card.value : '?'}</Text>
-						</TouchableOpacity>
+						<AppButton
+							key={idx}
+							variant="ghost"
+							usePlainText
+							text={card.revealed || card.matched ? card.value : '?'}
+							onPress={() => handleCardPress(idx)}
+							style={{ ...styles.memoryCard, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
+							textStyle={{ color: theme.screen.text, fontSize: 24 }}
+						/>
 					) : (
 						<View key={idx} style={styles.memoryCard} />
 					)
@@ -157,9 +176,15 @@ const GameIdeas = () => {
 			<Text style={{ ...styles.subheading, color: theme.screen.text }}>{translate(TranslationKeys.guess_more_expensive_dish)}</Text>
 			<View style={styles.row}>
 				{pricePair.map(dish => (
-					<TouchableOpacity key={dish.name} style={{ ...styles.button, backgroundColor: theme.screen.iconBg }} onPress={() => handlePriceGuess(dish)}>
-						<Text style={{ color: theme.screen.text }}>{dish.name}</Text>
-					</TouchableOpacity>
+					<AppButton
+						key={dish.name}
+						variant="ghost"
+						usePlainText
+						text={dish.name}
+						onPress={() => handlePriceGuess(dish)}
+						style={{ ...styles.button, backgroundColor: theme.screen.iconBg, marginVertical: 0 }}
+						textStyle={{ color: theme.screen.text }}
+					/>
 				))}
 			</View>
 			{priceResult !== '' && <Text style={{ ...styles.result, color: theme.screen.text }}>{priceResult}</Text>}

@@ -14,7 +14,6 @@ import {
 	SafeAreaView,
 	ScrollView,
 	Text,
-	TouchableOpacity,
 	View,
 } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -27,7 +26,7 @@ import SettingsListMarkingLabels from '@/components/SettingsListMarkingLabels';
 import { useLanguage } from '@/hooks/useLanguage';
 import { excerpt } from '@/constants/HelperFunctions';
 import animation from '@/assets/animations/allergist.json';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -45,6 +44,8 @@ import { UserHelper } from '@/helper/UserHelper';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import DebugView from '@/components/DebugView';
 import eatingHabitsStyles from '../../../eating-habits/styles';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
+import AppButton from '@/components/AppButton';
 
 // Isolated cache so this variant doesn't interfere with other screens
 let _cachedAnimationJson: any = null;
@@ -152,11 +153,11 @@ const EatingHabitsPerformanceNoDefer = () => {
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
 			return (
-				<LottieView
+				<SafeLottieView
 					ref={animationRef}
 					source={animationJson}
 					resizeMode="contain"
-					style={{ width: '100%', height: '100%' }}
+					style={isWeb ? { width: 220, height: 220 } : { width: '100%', height: '100%' }}
 					autoPlay={autoPlay || false}
 					loop={false}
 				/>
@@ -201,9 +202,9 @@ const EatingHabitsPerformanceNoDefer = () => {
 			<View style={{ flex: 1 }}>
 				<ScrollView
 					style={{ backgroundColor: theme.screen.background }}
-					contentContainerStyle={eatingHabitsStyles.contentContainer}
+					contentContainerStyle={eatingHabitsStyles.flatListContent}
 				>
-					<View style={eatingHabitsStyles.gifContainer}>{renderLottie}</View>
+					<View style={{ width: '100%' }}>{renderLottie}</View>
 					<View
 						style={{
 							...eatingHabitsStyles.eatingHabitsContainer,
@@ -218,14 +219,12 @@ const EatingHabitsPerformanceNoDefer = () => {
 						</Text>
 						{readMore && <FoodLabelingInfo textStyle={eatingHabitsStyles.body2} backgroundColor={primaryColor} />}
 						<View style={eatingHabitsStyles.readMoreContainer}>
-							<TouchableOpacity
-								onPress={() => setReadMore(!readMore)}
-								style={{ ...eatingHabitsStyles.readMoreButton, backgroundColor: theme.primary }}
-							>
-								<Text style={{ ...eatingHabitsStyles.readMore, color: contrastColor }}>
-									{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
-								</Text>
-							</TouchableOpacity>
+							<AppButton
+								text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
+								onPress={() => setReadMore((prev) => !prev)}
+								style={{ ...eatingHabitsStyles.readMoreButton, backgroundColor: theme.primary, marginVertical: 0 }}
+								textStyle={{ ...eatingHabitsStyles.readMore, color: contrastColor }}
+							/>
 						</View>
 						<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
 						<SettingsList

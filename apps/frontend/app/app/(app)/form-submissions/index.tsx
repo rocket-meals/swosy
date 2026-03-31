@@ -19,6 +19,7 @@ import FormSubmissionSortSheet from '@/components/FormSubmissionSortSheet/FormSu
 import { FormSubmissionSortOption } from '@/components/FormSubmissionSortSheet/types';
 import { useAppSelector } from '@/redux/hooks';
 import { FormQueueEntry } from '@/redux/Types/stateTypes';
+import AppButton from '@/components/AppButton';
 
 type FormSubmissionListRow =
 	| {
@@ -383,31 +384,43 @@ const Index = () => {
 
 			if (item.type === 'folder') {
 				return (
-					<TouchableOpacity
-						style={baseStyle}
+					<AppButton
+						variant="ghost"
+						usePlainText
+						text=""
 						onPress={() => {
 							setCurrentPath(item.path);
 						}}
-					>
-						<Text style={{ ...styles.body, color: theme.screen.text }}>{item.title}</Text>
-						<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-					</TouchableOpacity>
+						style={{ ...baseStyle, marginVertical: 0 }}
+						textStyle={{ width: 0, height: 0 }}
+						iconLeft={
+							<View style={{ flex: 1 }}>
+								<Text style={{ ...styles.body, color: theme.screen.text, maxWidth: '100%' }}>{item.title}</Text>
+							</View>
+						}
+						iconRight={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+					/>
 				);
 			}
 
 			return (
-				<TouchableOpacity
-					style={baseStyle}
+				<AppButton
+					text=""
 					onPress={() => {
 						router.push({
 							pathname: '/form-submission',
 							params: { form_submission_id: item?.submission?.id },
 						});
 					}}
-				>
-					<Text style={{ ...styles.body, color: theme.screen.text }}>{item.title || item.submission?.alias}</Text>
-					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-				</TouchableOpacity>
+					style={{ ...baseStyle, marginVertical: 0 }}
+					textStyle={{ width: 0, height: 0 }}
+					iconLeft={
+						<View style={{ flex: 1 }}>
+							<Text style={{ ...styles.body, color: theme.screen.text, maxWidth: '100%' }}>{item.title || item.submission?.alias}</Text>
+						</View>
+					}
+					iconRight={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+				/>
 			);
 		},
 		[currentPath.length, router, theme.screen.icon, theme.screen.iconBg, theme.screen.text]

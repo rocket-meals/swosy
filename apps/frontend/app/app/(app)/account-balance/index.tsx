@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 import { Dimensions, Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -194,7 +195,7 @@ const AccountBalanceScreen = () => {
                                                         {translate(TranslationKeys.nfcInstructionRead)}
                                                 </Text>
                                                 <View style={styles.nfcAnimationContainer}>
-                                                        <LottieView
+                                                        <SafeLottieView
                                                                 source={require('@/assets/gifs/nfc.json')}
                                                                 resizeMode="contain"
                                                                 style={styles.nfcAnimation}
@@ -293,7 +294,7 @@ const AccountBalanceScreen = () => {
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
 			return (
-				<LottieView
+				<SafeLottieView
 					ref={animationRef}
 					source={animationJson ? animationJson : {}}
 					resizeMode="contain"

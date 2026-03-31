@@ -13,6 +13,7 @@ const AppButton: React.FC<AppButtonProps> = ({
 	iconRight,
 	style,
 	textStyle,
+	activeOpacity,
 	usePlainText = false,
 	loadingIndicatorColor,
 	loadingIndicatorSize,
@@ -56,6 +57,7 @@ const AppButton: React.FC<AppButtonProps> = ({
 			]}
 			onPress={onPress}
 			disabled={disabled || loading}
+			activeOpacity={0.7}
 		>
 			{loading ? (
 				<ActivityIndicator color={loadingIndicatorColor ?? getTextColor()} size={loadingIndicatorSize} />

@@ -14,7 +14,7 @@ import {
 } from '@/redux/Types/types';
 import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
 import * as Notifications from 'expo-notifications';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { useFocusEffect } from 'expo-router';
@@ -111,7 +111,10 @@ export const useFoodOffersData = (
     const updateSort = useCallback((id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
         const { profile, languageCode } = stateRef.current;
         const state = store.getState() as RootState;
-        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = state.food;
+        const { ownFoodFeedbacksDict, foodCategoriesDict, foodOfferCategoriesDict } = state.food;
+        const ownFoodFeedbacks = Object.values(ownFoodFeedbacksDict || {});
+        const foodCategories = Object.values(foodCategoriesDict || {});
+        const foodOfferCategories = Object.values(foodOfferCategoriesDict || {});
 
         const sortedOffers = sortFoodOffers(id, foodOffers, {
             languageCode,
@@ -147,9 +150,15 @@ export const useFoodOffersData = (
                 
                 // Always resort with current sortBy to reflect UI changes
                 updateSort(sortBy as FoodSortOption, foodOffers);
-                // Dispatch local raw offers only if reference changed
-                if (foodOffers !== currentFoodOffers) {
-                    dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+                // Dispatch local raw offers only if content changed
+                {
+                    const stateNow = store.getState() as RootState;
+                    const currentOffersArr = Object.values(stateNow.canteenReducer?.canteenFoodOffersDict || {});
+                    const sameLength = currentOffersArr.length === (foodOffers?.length || 0);
+                    const sameOrder = sameLength && currentOffersArr.every((o, i) => String(o?.id) === String((foodOffers as any[])?.[i]?.id));
+                    if (!sameOrder) {
+                        dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL, payload: foodOffers });
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching Food Offers:', error);
@@ -179,7 +188,7 @@ export const useFoodOffersData = (
                 }
             }
         });
-    }, [selectedCanteen, selectedDate, getCachedOffers, prefetchedFoodOffers, updateSort, sortBy, dispatch, currentFoodOffers]);
+    }, [selectedCanteen, selectedDate, getCachedOffers, prefetchedFoodOffers, updateSort, sortBy, dispatch, store]);
 
     const fetchCanteenLabels = useCallback(async () => {
         try {

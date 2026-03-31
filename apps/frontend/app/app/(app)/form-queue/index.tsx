@@ -19,6 +19,7 @@ import { format, isValid, parse } from 'date-fns';
 import { uploadToDirectus, uploadToDirectusFromMobile } from '@/constants/HelperFunctions';
 import { Buffer } from 'buffer';
 import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
+import AppButton from '@/components/AppButton';
 
 const Index = () => {
     useSetPageTitle(TranslationKeys.form_queue);
@@ -185,7 +186,10 @@ const Index = () => {
                 <View style={{ width: isWeb ? '70%' : '90%' }}>
                     {/* Sync All button */}
                     {queueEntries.length > 0 && (
-                        <TouchableOpacity
+                        <AppButton
+                            variant="ghost"
+                            usePlainText
+                            text={translate(TranslationKeys.form_queue_sync_all)}
                             onPress={syncAllQueueEntries}
                             disabled={isSyncingAll || syncingId !== null}
                             style={{
@@ -198,13 +202,11 @@ const Index = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: 8,
+                                marginVertical: 0,
                             }}
-                        >
-                            <MaterialCommunityIcons name="sync" size={20} color="#fff" />
-                            <Text style={{ color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15 }}>
-                                {translate(TranslationKeys.form_queue_sync_all)}
-                            </Text>
-                        </TouchableOpacity>
+                            textStyle={{ color: '#fff', fontFamily: 'Poppins_700Bold', fontSize: 15 }}
+                            iconLeft={<MaterialCommunityIcons name="sync" size={20} color="#fff" />}
+                        />
                     )}
 
                     {/* Queue list */}

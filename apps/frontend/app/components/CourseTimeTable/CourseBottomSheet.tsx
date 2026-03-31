@@ -402,57 +402,59 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 						))}
 						<View style={styles.saveButtons}>
 							{isUpdate && (
-								<TouchableOpacity
+								<AppButton
+									variant="ghost"
+									usePlainText
+									text={isDeleting ? '' : translate(TranslationKeys.delete)}
+									onPress={handleDeleteTimeTable}
 									style={{
 										...styles.createButton,
 										backgroundColor: 'red',
+										marginVertical: 0,
 									}}
-									onPress={handleDeleteTimeTable}
-								>
-									{isDeleting ? (
-										<ActivityIndicator size="small" color={theme.screen.text} />
-									) : (
-										<>
+									textStyle={
+										isDeleting
+											? { width: 0, height: 0 }
+											: {
+													...styles.createButtonText,
+													color: theme.activeText,
+												}
+									}
+									iconLeft={
+										isDeleting ? (
+											<ActivityIndicator size="small" color={theme.screen.text} />
+										) : (
 											<MaterialCommunityIcons name="delete" size={20} color={theme.activeText} />
-											<View>
-												<Text
-													style={{
-														...styles.createButtonText,
-														color: theme.activeText,
-													}}
-												>
-													{translate(TranslationKeys.delete)}
-												</Text>
-											</View>
-										</>
-									)}
-								</TouchableOpacity>
+										)
+									}
+								/>
 							)}
-							<TouchableOpacity
+							<AppButton
+								variant="ghost"
+								usePlainText
+								text={loading ? '' : translate(TranslationKeys.save)}
+								onPress={isUpdate ? handleUpdateTimeTable : handleSaveTimeTable}
 								style={{
 									...styles.createButton,
 									backgroundColor: course_timetable_area_color,
+									marginVertical: 0,
 								}}
-								onPress={isUpdate ? handleUpdateTimeTable : handleSaveTimeTable}
-							>
-								{loading ? (
-									<ActivityIndicator size="small" color={theme.screen.text} />
-								) : (
-									<>
+								textStyle={
+									loading
+										? { width: 0, height: 0 }
+										: {
+												...styles.createButtonText,
+												color: contrastColor,
+											}
+								}
+								iconLeft={
+									loading ? (
+										<ActivityIndicator size="small" color={theme.screen.text} />
+									) : (
 										<FontAwesome5 name="save" size={20} color={contrastColor} />
-										<View>
-											<Text
-												style={{
-													...styles.createButtonText,
-													color: contrastColor,
-												}}
-											>
-												{translate(TranslationKeys.save)}
-											</Text>
-										</View>
-									</>
-								)}
-							</TouchableOpacity>
+									)
+								}
+							/>
 						</View>
 					</View>
 				)}

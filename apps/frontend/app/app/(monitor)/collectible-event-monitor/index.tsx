@@ -26,8 +26,9 @@ const CollectibleEventMonitor = () => {
 	);
 
 	const backgroundImageUrl = useMemo(() => {
-		if (activeCollectibleEvent?.monitor_background_image_remote_url) {
-			return activeCollectibleEvent.monitor_background_image_remote_url;
+		const remoteUrl = (activeCollectibleEvent as any)?.monitor_background_image_remote_url;
+		if (remoteUrl) {
+			return String(remoteUrl);
 		}
 
 		if (activeCollectibleEvent?.monitor_background_image) {

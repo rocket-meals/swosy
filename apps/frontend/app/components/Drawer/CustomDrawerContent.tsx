@@ -1,4 +1,4 @@
-import { Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text } from 'react-native';
 import React, { useEffect, useMemo } from 'react';
 import { AntDesign, Entypo, EvilIcons, Feather, FontAwesome, FontAwesome5, FontAwesome6, Foundation, Ionicons, MaterialCommunityIcons, Octicons, SimpleLineIcons, Zocial } from '@expo/vector-icons';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -24,6 +24,7 @@ import { CollectibleAt } from 'repo-depkit-common';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import { AppDrawer, DrawerItem } from 'repo-depkit-common-ui';
+import AppButton from '@/components/AppButton';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -329,16 +330,19 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 					if (wiki?.custom_id && !wiki?.url && wiki?.show_in_drawer_as_bottom_item) {
 						return (
 							<React.Fragment key={index}>
-								<TouchableOpacity
+								<AppButton
+									variant="ghost"
+									usePlainText
+									text={translateDynamic(getTitleFromTranslation(wiki?.translations, language))}
 									onPress={() =>
 										router.push({
 											pathname: '/wikis',
 											params: { custom_id: wiki?.custom_id },
 										})
 									}
-								>
-									<Text style={[styles.link, { color: theme.drawer.link }]}>{translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
-								</TouchableOpacity>
+									style={{ marginVertical: 0 }}
+									textStyle={[styles.link, { color: theme.drawer.link }]}
+								/>
 								{index + 1 < wikis?.length - 1 && <Text style={[styles.bar, { color: theme.drawer.divider }]}>|</Text>}
 							</React.Fragment>
 						);

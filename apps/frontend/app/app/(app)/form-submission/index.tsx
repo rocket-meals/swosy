@@ -44,6 +44,7 @@ import { Buffer } from 'buffer';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import AppButton from '@/components/AppButton';
 
 const parseDropdownValues = (input: unknown): string[] => {
 	if (!input) return [];
@@ -1040,25 +1041,31 @@ const Index = () => {
 				<Text style={{ ...styles.body, marginBottom: 6, color: theme.screen.text }}>
 					{`${translate(TranslationKeys.state_current)}: ${translate(currentState || formSubmission?.state || 'draft')}`}
 				</Text>
-				<TouchableOpacity
+				<AppButton
+					variant="ghost"
+					usePlainText
+					text=""
+					onPress={openFilterSheet}
 					style={{
 						...styles.stateChangeButton,
 						backgroundColor: theme.screen.iconBg,
+						marginVertical: 0,
 					}}
-					onPress={openFilterSheet}
-				>
-					<View
-						style={{
-							marginLeft: -34,
-							flexDirection: 'row',
-							alignItems: 'center',
-							gap: 10,
-						}}
-					>
-						<MaterialIcons name="edit" size={20} color={theme.screen.text} />
-						<Text style={{ ...styles.state, color: theme.screen.text }}>{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}</Text>
-					</View>
-				</TouchableOpacity>
+					textStyle={{ width: 0, height: 0 }}
+					iconLeft={
+						<View
+							style={{
+								marginLeft: -34,
+								flexDirection: 'row',
+								alignItems: 'center',
+								gap: 10,
+							}}
+						>
+							<MaterialIcons name="edit" size={20} color={theme.screen.text} />
+							<Text style={{ ...styles.state, color: theme.screen.text }}>{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}</Text>
+						</View>
+					}
+				/>
 			</View>
 				<TouchableOpacity style={{ ...styles.button, backgroundColor: primaryColor }} onPress={handleFormSubmission}>
 					{submissionLoading ? <ActivityIndicator size={22} color={theme.screen.text} /> : <Text style={{ ...styles.buttonLabel, color: theme.activeText }}>{translate(TranslationKeys.save)}</Text>}

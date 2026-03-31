@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, SafeAreaView, Text, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -24,6 +24,7 @@ import { UPDATE_PROFILE } from '@/redux/Types/types';
 import { UserHelper } from '@/helper/UserHelper';
 import SettingsListMarkingLabelFast from '@/components/SettingsListMarkingLabelFast';
 import { SettingsListProps } from '@/components/SettingsList/types';
+import AppButton from '@/components/AppButton';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
@@ -133,15 +134,16 @@ const Index = () => {
 			<Text style={{ ...styles.body1, color: theme.screen.text }}>{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}</Text>
 			{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
 			<View style={styles.readMoreContainer}>
-				<TouchableOpacity
+				<AppButton
+					text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
 					onPress={handleReadMore}
 					style={{
 						...styles.readMoreButton,
 						backgroundColor: theme.primary,
+						marginVertical: 0,
 					}}
-				>
-					<Text style={{ ...styles.readMore, color: contrastColor }}>{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}</Text>
-				</TouchableOpacity>
+					textStyle={{ ...styles.readMore, color: contrastColor }}
+				/>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
 			<SettingsList

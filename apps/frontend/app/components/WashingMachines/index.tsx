@@ -9,12 +9,13 @@ import washingmachine from '@/assets/animations/washingmachine/washingmachine.js
 import washingmachineEmpty from '@/assets/animations/washingmachine/washingmachineEmpty.json';
 import * as Notifications from 'expo-notifications';
 import { useAppSelector } from '@/redux/hooks';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
 import { RootState } from '@/redux/reducer';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 	const { translate } = useLanguage();
@@ -174,7 +175,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 											alignItems: 'center',
 										}}
 									>
-										<LottieView
+										<SafeLottieView
 											source={replaceLottieColors(animationSource, primaryColor)}
 											autoPlay={autoPlay ?? false}
 											loop={!isWashingFinished}

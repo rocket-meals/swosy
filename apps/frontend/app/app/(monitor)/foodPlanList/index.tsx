@@ -20,6 +20,7 @@ import { DatabaseTypes, StringHelper } from 'repo-depkit-common';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { useAppSelector } from '@/redux/hooks';
 import { useMyScrollviewModalSelectFoodPlanCanteen } from '@/hooks/useMyScrollviewModalSelectFoodPlanCanteen';
+import AppButton from '@/components/AppButton';
 
 type FoodAttribute = {
 	id: string;
@@ -183,7 +184,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 					}}
-					onPress={() => openCanteenModal('optional')}
+					onPress={() => openCanteenModal('additional')}
 				>
 					<View style={styles.col1}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
@@ -247,26 +248,30 @@ const Index = () => {
 													borderColor: theme.screen.iconBg,
 												}}
 											/>
-											<TouchableOpacity
+											<AppButton
+												variant="ghost"
+												usePlainText
+												text={attribute?.alias}
+												onPress={() => toggleAttributeSelection(attribute.id)}
 												style={{
 													...styles.row,
 													paddingHorizontal: isWeb ? 20 : 10,
-
 													backgroundColor: attribute?.selected ? foods_area_color : theme.screen.iconBg,
+													marginVertical: 0,
 												}}
-												onPress={() => toggleAttributeSelection(attribute.id)}
-											>
-												<Text
-													style={{
-														...styles.text,
-														color: attribute?.selected ? contrastColor : theme.header.text,
-													}}
-												>
-													{attribute?.alias}
-												</Text>
-
-												<MaterialCommunityIcons name={attribute?.selected ? 'checkbox-marked' : 'checkbox-blank'} size={24} color={attribute?.selected ? contrastColor : '#ffffff'} style={styles.radioButton} />
-											</TouchableOpacity>
+												textStyle={{
+													...styles.text,
+													color: attribute?.selected ? contrastColor : theme.header.text,
+												}}
+												iconRight={
+													<MaterialCommunityIcons
+														name={attribute?.selected ? 'checkbox-marked' : 'checkbox-blank'}
+														size={24}
+														color={attribute?.selected ? contrastColor : '#ffffff'}
+														style={styles.radioButton}
+													/>
+												}
+											/>
 										</View>
 									);
 								})}
@@ -274,14 +279,10 @@ const Index = () => {
 					</CustomCollapsible>
 				</View>
 
-				<TouchableOpacity
-					style={{
-						...styles.button,
-						backgroundColor: theme.screen.iconBg,
-						paddingHorizontal: windowWidth > 600 ? 20 : 10,
-						opacity: foodPlan?.selectedCanteen?.alias ? 1 : 0.5,
-					}}
-					disabled={foodPlan?.selectedCanteen?.alias ? false : true}
+				<AppButton
+					variant="ghost"
+					usePlainText
+					text="DayScreen"
 					onPress={() => {
 						if (foodPlan?.selectedCanteen?.alias) {
 							const selectedAttributes = foodAttributes
@@ -311,14 +312,17 @@ const Index = () => {
 							});
 						}
 					}}
-				>
-					<View style={styles.col1}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>DayScreen</Text>
-					</View>
-					<View style={styles.col2}>
-						<Entypo name="chevron-small-right" size={22} color={theme.screen.icon} />
-					</View>
-				</TouchableOpacity>
+					disabled={!foodPlan?.selectedCanteen?.alias}
+					style={{
+						...styles.button,
+						backgroundColor: theme.screen.iconBg,
+						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+						opacity: foodPlan?.selectedCanteen?.alias ? 1 : 0.5,
+						marginVertical: 0,
+					}}
+					textStyle={{ ...styles.label, color: theme.screen.text }}
+					iconRight={<Entypo name="chevron-small-right" size={22} color={theme.screen.icon} />}
+				/>
 			</ScrollView>
 
 			{isActive && (
@@ -389,7 +393,10 @@ const Index = () => {
 									},
 								]}
 							>
-								<TouchableOpacity
+								<AppButton
+									variant="ghost"
+									usePlainText
+									text={translate(TranslationKeys.cancel)}
 									onPress={() => {
 										closeIntervalSheet();
 										setValue('');
@@ -397,11 +404,14 @@ const Index = () => {
 									style={{
 										...styles.cancelButton,
 										borderColor: foods_area_color,
+										marginVertical: 0,
 									}}
-								>
-									<Text style={[styles.buttonText, { color: contrastColor }]}>cancel</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
+									textStyle={[styles.buttonText, { color: theme.screen.text }]}
+								/>
+								<AppButton
+									variant="ghost"
+									usePlainText
+									text={translate(TranslationKeys.save)}
 									onPress={() => {
 										if (selectedInterval.key === 'foodInterval') {
 											dispatch({
@@ -419,10 +429,10 @@ const Index = () => {
 									style={{
 										...styles.saveButton,
 										backgroundColor: foods_area_color,
+										marginVertical: 0,
 									}}
-								>
-									<Text style={[styles.buttonText, { color: contrastColor }]}>save</Text>
-								</TouchableOpacity>
+									textStyle={[styles.buttonText, { color: theme.screen.text }]}
+								/>
 							</View>
 						</View>
 					</BottomSheetView>

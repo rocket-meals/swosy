@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DropdownSheet from './DropdownSheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/redux/hooks';
 import type { FormInputBaseProps } from './types';
+import AppButton from '@/components/AppButton';
 
 const ensureStringArray = (options: string[]): string[] => {
 	const uniqueValues = new Set<string>();
@@ -115,36 +115,43 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 						<Text style={[styles.prefixSuffixLabel, { color: theme.screen.text }]}>{prefix}</Text>
 					</View>
 				)}
-				<TouchableOpacity
+				<AppButton
+					variant="ghost"
+					usePlainText
+					text=""
 					style={[
 						styles.selectorButton,
 						{
 							backgroundColor: theme.sheet.inputBg,
 							borderColor: theme.screen.iconBg,
 							opacity: isDisabled ? 0.6 : 1,
+							marginVertical: 0,
 						},
 						prefix && styles.selectorButtonWithPrefix,
 						suffix && styles.selectorButtonWithSuffix,
 					]}
-					activeOpacity={0.7}
+					textStyle={{ width: 0, height: 0 }}
 					onPress={openSheet}
 					disabled={isDisabled}
-				>
-					<Text
-						style={[
-							styles.selectorText,
-							{
-								color: isPlaceholderDisplay ? theme.screen.placeholder : theme.screen.text,
-							},
-							isPlaceholderDisplay && styles.placeholderText,
-						]}
-						numberOfLines={1}
-						ellipsizeMode="tail"
-					>
-						{labelToShow}
-					</Text>
-					<MaterialCommunityIcons name="chevron-down" size={22} color={theme.screen.icon} style={styles.chevronIcon} />
-				</TouchableOpacity>
+					iconLeft={
+						<View style={{ flex: 1 }}>
+							<Text
+								style={[
+									styles.selectorText,
+									{
+										color: isPlaceholderDisplay ? theme.screen.placeholder : theme.screen.text,
+									},
+									isPlaceholderDisplay && styles.placeholderText,
+								]}
+								numberOfLines={1}
+								ellipsizeMode="tail"
+							>
+								{labelToShow}
+							</Text>
+						</View>
+					}
+					iconRight={<MaterialCommunityIcons name="chevron-down" size={22} color={theme.screen.icon} style={styles.chevronIcon} />}
+				/>
 				{suffix && (
 					<View style={[styles.prefixSuffix, styles.prefixSuffixRight, { backgroundColor: theme.screen.iconBg, borderColor: theme.screen.iconBg }]}>
 						<Text style={[styles.prefixSuffixLabel, { color: theme.screen.text }]}>{suffix}</Text>

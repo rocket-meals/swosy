@@ -12,7 +12,6 @@ import {
 	SafeAreaView,
 	ScrollView,
 	Text,
-	TouchableOpacity,
 	View,
 } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -40,6 +39,8 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { useFocusEffect } from 'expo-router';
 import DebugView from '@/components/DebugView';
 import eatingHabitsStyles from '../../../eating-habits/styles';
+import AppButton from '@/components/AppButton';
+import { TouchableOpacity } from 'react-native';
 
 let _markingContentLoaded = false;
 
@@ -159,7 +160,7 @@ const EatingHabitsPerformanceNoLottie = () => {
 			<View style={{ flex: 1 }}>
 				<ScrollView
 					style={{ backgroundColor: theme.screen.background }}
-					contentContainerStyle={eatingHabitsStyles.contentContainer}
+					contentContainerStyle={eatingHabitsStyles.flatListContent}
 				>
 					{/* Lottie animation intentionally omitted */}
 					<View
@@ -176,14 +177,12 @@ const EatingHabitsPerformanceNoLottie = () => {
 						</Text>
 						{readMore && <FoodLabelingInfo textStyle={eatingHabitsStyles.body2} backgroundColor={primaryColor} />}
 						<View style={eatingHabitsStyles.readMoreContainer}>
-							<TouchableOpacity
-								onPress={() => setReadMore(!readMore)}
-								style={{ ...eatingHabitsStyles.readMoreButton, backgroundColor: theme.primary }}
-							>
-								<Text style={{ ...eatingHabitsStyles.readMore, color: contrastColor }}>
-									{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
-								</Text>
-							</TouchableOpacity>
+							<AppButton
+								text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
+								onPress={() => setReadMore((prev) => !prev)}
+								style={{ ...eatingHabitsStyles.readMoreButton, backgroundColor: theme.primary, marginVertical: 0 }}
+								textStyle={{ ...eatingHabitsStyles.readMore, color: contrastColor }}
+							/>
 						</View>
 						<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
 						<SettingsList

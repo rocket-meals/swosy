@@ -29,7 +29,8 @@ import { useSmartReadableDateMethod } from '@/helper/DateHelper';
 import { addDays, format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -45,6 +46,7 @@ import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import IconButton from '@/components/UI/IconButton';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
+import AppButton from '@/components/AppButton';
 
 export const SHEET_COMPONENTS = {
 	hours: HourSheet,
@@ -120,7 +122,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
-			return <LottieView ref={animationRef} source={animationJson} resizeMode="contain" style={{ width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
+			return <SafeLottieView ref={animationRef} source={animationJson} resizeMode="contain" style={isWeb ? { width: 220, height: 220 } : { width: '100%', height: '100%' }} autoPlay={autoPlay || false} loop={false} />;
 		}
 	}, [autoPlay, animationJson]);
 
@@ -408,11 +410,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										</TooltipText>
 									</TooltipContent>
 								</CustomTooltip>
-
-								{/* Canteen Heading */}
-								<TouchableOpacity onPress={() => openSheet('canteen')} activeOpacity={0.7}>
-									<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}</Text>
-								</TouchableOpacity>
+								<AppButton
+									variant="ghost"
+									usePlainText
+									text={excerpt(String(selectedCanteen?.alias), screenWidth > 800 ? 30 : 10) || 'Food Offers'}
+									onPress={() => openSheet('canteen')}
+									style={{ marginVertical: 0 }}
+									textStyle={[styles.heading, { color: theme.header.text }]}
+								/>
 							</View>
 							<View
 								style={{

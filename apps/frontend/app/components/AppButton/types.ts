@@ -9,6 +9,7 @@ export interface AppButtonProps {
 	iconRight?: ReactNode;
 	style?: StyleProp<ViewStyle>;
 	textStyle?: StyleProp<TextStyle>;
+	activeOpacity?: number;
 	usePlainText?: boolean;
 	loadingIndicatorColor?: string;
 	loadingIndicatorSize?: number;

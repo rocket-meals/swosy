@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -8,6 +8,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import SettingsList from '@/components/SettingsList';
+import AppButton from '@/components/AppButton';
 import styles from './styles';
 
 const TestUseModalScreen = () => {
@@ -39,24 +40,23 @@ const TestUseModalScreen = () => {
                                                 <Text style={[styles.modalBody, { color: theme.screen.text }]}>
                                                         {translate(TranslationKeys.modal_example_body)}
                                                 </Text>
-                                                <TouchableOpacity
+                                                <AppButton
+                                                        variant="ghost"
+                                                        usePlainText
+                                                        text={translate(TranslationKeys.close_modal)}
+                                                        onPress={close}
                                                         style={[
                                                                 styles.modalButton,
                                                                 {
                                                                         backgroundColor: theme.button?.background || theme.screen.iconBg,
+                                                                        marginVertical: 0,
                                                                 },
                                                         ]}
-                                                        onPress={close}
-                                                >
-                                                        <Text
-                                                                style={[
-                                                                        styles.modalButtonText,
-                                                                        { color: theme.button?.text || theme.screen.text },
-                                                                ]}
-                                                        >
-                                                                {translate(TranslationKeys.close_modal)}
-                                                        </Text>
-                                                </TouchableOpacity>
+                                                        textStyle={[
+                                                                styles.modalButtonText,
+                                                                { color: theme.button?.text || theme.screen.text },
+                                                        ]}
+                                                />
                                         </View>
                                 ),
                         },
@@ -86,17 +86,20 @@ const TestUseModalScreen = () => {
                                 <Text style={[styles.description, { color: theme.screen.text }]}>
                                         {translate(TranslationKeys.modal_example_body)}
                                 </Text>
-                                <TouchableOpacity
+                                <AppButton
+                                        variant="ghost"
+                                        usePlainText
+                                        text={translate(TranslationKeys.open_modal_example)}
+                                        onPress={openExampleModal}
                                         style={[
                                                 styles.button,
-                                                { backgroundColor: theme.button?.background || theme.screen.iconBg },
+                                                {
+                                                        backgroundColor: theme.button?.background || theme.screen.iconBg,
+                                                        marginVertical: 0,
+                                                },
                                         ]}
-                                        onPress={openExampleModal}
-                                >
-                                        <Text style={[styles.buttonText, { color: theme.button?.text || theme.screen.text }]}>
-                                                {translate(TranslationKeys.open_modal_example)}
-                                        </Text>
-                                </TouchableOpacity>
+                                        textStyle={[styles.buttonText, { color: theme.button?.text || theme.screen.text }]}
+                                />
                                 <View style={styles.section}>
                                         <Text style={[styles.sectionTitle, { color: theme.screen.text }]}>
                                                 {translate(TranslationKeys.modal_text_input_label)}

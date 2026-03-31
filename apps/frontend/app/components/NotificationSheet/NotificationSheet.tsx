@@ -9,7 +9,7 @@ import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks'
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
 import { useLanguage } from '@/hooks/useLanguage';
 import animation from '@/assets/animations/notificationBell.json';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -17,6 +17,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { useAppSelector } from '@/redux/hooks';
 import AppButton from '@/components/AppButton';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previousFeedback, foodDetails }) => {
 	const { theme } = useTheme();
@@ -61,7 +62,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({ closeSheet, previ
 	const renderLottie = useMemo(() => {
 		if (animationJson) {
 			return (
-				<LottieView
+				<SafeLottieView
 					ref={animationRef}
 					source={animationJson}
 					resizeMode="contain"

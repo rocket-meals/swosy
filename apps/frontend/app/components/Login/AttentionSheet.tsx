@@ -7,11 +7,12 @@ import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppSelector } from '@/redux/hooks';
 import AppButton from '@/components/AppButton';
-import LottieView from 'lottie-react-native';
+import type LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import animationJson from '@/assets/animations/astronaut-computer.json';
 import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
+import SafeLottieView from '@/components/SafeLottieView/SafeLottieView';
 
 const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin }) => {
 	const { translate } = useLanguage();
@@ -37,7 +38,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({ closeSheet, handleLogin
 				</View>
 
 				<View style={styles.gifContainer}>
-					<LottieView
+					<SafeLottieView
 						ref={animationRef}
 						source={updatedAnimationJson}
 						resizeMode="contain"
