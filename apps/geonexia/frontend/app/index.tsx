@@ -30,6 +30,7 @@ import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
+import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
@@ -1787,7 +1788,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	useEffect(() => {
 		const runId = ++runIdRef.current;
 		setFeaturesLoading(true);
-		queryTileFeaturesForHexCell(h3Index)
+		queryTileFeaturesForHexCell(h3Index, undefined, { nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW })
 			.then((result) => {
 				if (runId === runIdRef.current) setMapFeatures(result);
 			})
@@ -1994,7 +1995,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 				throw new Error(`Ungültige H3 Zelle: ${h3Index}`);
 			}
 
-			const result = await queryTileFeaturesForHexCell(h3Index);
+			const result = await queryTileFeaturesForHexCell(h3Index, undefined, { nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW });
 			if (runId !== runIdRef.current) return;
 			setFeatures(result);
 		} catch (err) {
