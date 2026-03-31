@@ -32,6 +32,15 @@ import type { RootState } from '../../store/store';
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
 
+/** Delay after fitBounds animation before querying tile features (ms). */
+const TILE_FEATURE_QUERY_DELAY_MS = 2000;
+/** Rough conversion factor from degrees to kilometres. */
+const KM_PER_DEGREE = 111;
+/** Maximum distance (km) between first and last hex centers to consider the route a closed loop. */
+const LOOP_CLOSURE_THRESHOLD_KM = 0.5;
+/** Safety cap for the gridDisk radius when enumerating enclosed candidates. */
+const MAX_ENCLOSED_GRID_DISK_K = 30;
+
 type MapEditSubMode = 'add' | 'remove';
 
 /** Ray-casting point-in-polygon test (polygon in [lng, lat] order). */
@@ -244,7 +253,6 @@ export default function RouteDetailScreen() {
 		if (!isH3Available() || route.hexTiles.length === 0) return;
 		if (featureQuerySentRef.current) return;
 
-		const QUERY_DELAY_MS = 2000;
 		const timer = setTimeout(() => {
 			if (!mapRef.current || featureQuerySentRef.current) return;
 			featureQuerySentRef.current = true;
@@ -274,8 +282,8 @@ export default function RouteDetailScreen() {
 					const last = centers[centers.length - 1];
 					const dLat = first.lat - last.lat;
 					const dLng = first.lng - last.lng;
-					const roughDistKm = Math.sqrt(dLat * dLat + dLng * dLng) * 111;
-					if (roughDistKm < 0.5) {
+					const roughDistKm = Math.sqrt(dLat * dLat + dLng * dLng) * KM_PER_DEGREE;
+					if (roughDistKm < LOOP_CLOSURE_THRESHOLD_KM) {
 						// Route forms a loop – find enclosed cells
 						const polygon: Array<[number, number]> = centers.map((c) => [c.lng, c.lat]);
 						const lats = centers.map((c) => c.lat);
@@ -300,7 +308,7 @@ export default function RouteDetailScreen() {
 								if (dist > maxK) maxK = dist;
 							} catch { /* ignore */ }
 						}
-						const candidates = gridDisk(centerCell, Math.min(maxK + 1, 30));
+						const candidates = gridDisk(centerCell, Math.min(maxK + 1, MAX_ENCLOSED_GRID_DISK_K));
 						const routeSet = new Set(route.hexTiles);
 						const enclosedCells: string[] = [];
 						for (const cell of candidates) {
@@ -330,7 +338,7 @@ export default function RouteDetailScreen() {
 			} catch (err) {
 				console.warn('[RouteDetailScreen] Enclosed tile computation failed:', err);
 			}
-		}, QUERY_DELAY_MS);
+		}, TILE_FEATURE_QUERY_DELAY_MS);
 
 		return () => clearTimeout(timer);
 	}, [mapMounted, route]);
