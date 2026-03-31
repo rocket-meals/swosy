@@ -55,6 +55,12 @@ export const HEX_TILE_SCRIPT = `
   var HEX_CENTERS_LAYER = 'hex-centers-layer';
   var HEX_MIDPOINTS_SOURCE = 'hex-midpoints-source';
   var HEX_MIDPOINTS_LAYER = 'hex-midpoints-layer';
+  // Enclosed area: semi-transparent blue fill for tiles enclosed by a route loop
+  var HEX_ENCLOSED_SOURCE = 'hex-enclosed-source';
+  var HEX_ENCLOSED_FILL_LAYER = 'hex-enclosed-fill';
+  var HEX_ENCLOSED_STROKE_LAYER = 'hex-enclosed-stroke';
+  var HEX_ENCLOSED_FILL_COLOR = 'rgba(59, 130, 246, 0.18)'; // semi-transparent blue
+  var HEX_ENCLOSED_STROKE_COLOR = '#3b82f6'; // blue
   // Measure mode: draw tapped waypoints and the connecting polyline
   var MEASURE_ROUTE_SOURCE = 'measure-route-source';
   var MEASURE_ROUTE_LAYER = 'measure-route-layer';
@@ -342,6 +348,24 @@ export const HEX_TILE_SCRIPT = `
 
   function addHexTileLayer() {
     if (!map || map.getSource(HEX_TILE_SOURCE)) return;
+    // Enclosed area layer rendered first (below the main hex tile fill)
+    map.addSource(HEX_ENCLOSED_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_ENCLOSED_FILL_LAYER,
+      type: 'fill',
+      source: HEX_ENCLOSED_SOURCE,
+      paint: { 'fill-color': HEX_ENCLOSED_FILL_COLOR, 'fill-opacity': 1 },
+    });
+    map.addLayer({
+      id: HEX_ENCLOSED_STROKE_LAYER,
+      type: 'line',
+      source: HEX_ENCLOSED_SOURCE,
+      paint: {
+        'line-color': HEX_ENCLOSED_STROKE_COLOR,
+        'line-width': 0.5,
+        'line-opacity': 0.4,
+      },
+    });
     map.addSource(HEX_TILE_SOURCE, { type: 'geojson', data: EMPTY_FC });
     map.addLayer({
       id: HEX_TILE_FILL_LAYER,
@@ -503,6 +527,9 @@ export const HEX_TILE_SCRIPT = `
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
     if (map.getLayer(HEX_TILE_FILL_LAYER)) map.removeLayer(HEX_TILE_FILL_LAYER);
     if (map.getSource(HEX_TILE_SOURCE)) map.removeSource(HEX_TILE_SOURCE);
+    if (map.getLayer(HEX_ENCLOSED_STROKE_LAYER)) map.removeLayer(HEX_ENCLOSED_STROKE_LAYER);
+    if (map.getLayer(HEX_ENCLOSED_FILL_LAYER)) map.removeLayer(HEX_ENCLOSED_FILL_LAYER);
+    if (map.getSource(HEX_ENCLOSED_SOURCE)) map.removeSource(HEX_ENCLOSED_SOURCE);
   }
 
   // ── Extension hooks ───────────────────────────────────────────────────────
@@ -553,6 +580,11 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var walkSrc = map && map.getSource(HEX_WALK_PATH_SOURCE);
       if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
+    }
+    if (data.hexEnclosedGeoJson !== undefined) {
+      if (!hexTileActive) return;
+      var enclosedSrc = map && map.getSource(HEX_ENCLOSED_SOURCE);
+      if (enclosedSrc) enclosedSrc.setData(data.hexEnclosedGeoJson || EMPTY_FC);
     }
     if (data.hexDebugPoints !== undefined) {
       hexDebugPointsVisible = data.hexDebugPoints;

@@ -18,7 +18,7 @@ import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/Rou
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, cellsToMultiPolygon } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, haversineKm, type CoordPair } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
@@ -290,16 +290,30 @@ export default function RouteDetailScreen() {
 		let cancelled = false;
 
 		(async () => {
-			// 1. Compute enclosed tiles via polygon fill
+			// 1. Compute enclosed tiles using the same algorithm as the activity end screen:
+			//    build a polygon from the ordered tile center points and fill it with
+			//    polygonToCells.  cellsToMultiPolygon + polygonToCells does NOT work here
+			//    because for a ring of tiles it produces a donut, and filling a donut just
+			//    returns the ring tiles themselves (leaving 0 enclosed cells after exclusion).
 			const tiles: string[] = [];
 			try {
 				const firstTile = route.hexTiles[0];
-				if (firstTile) {
+				const lastTile = route.hexTiles[route.hexTiles.length - 1];
+				if (firstTile && lastTile && route.hexTiles.length >= 3) {
 					const res = getResolution(firstTile);
-					const multiPolygon = cellsToMultiPolygon(route.hexTiles, false);
-					const routeSet = new Set(route.hexTiles);
-					for (const polygon of multiPolygon) {
-						const filledCells = polygonToCells(polygon, res, false);
+
+					// Check loop closure: first and last tile centers must be ≤ 300 m apart
+					// (same threshold used by findEnclosedCells when finishing an activity).
+					const distKm = haversineKm(cellToLatLng(firstTile), cellToLatLng(lastTile));
+
+					if (distKm <= 0.3) {
+						// Build closed ring from ordered tile center points [lat, lng]
+						const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
+						ring.push(ring[0]); // close the ring
+
+						// Fill the polygon interior with H3 cells, then exclude the route tiles
+						const filledCells = polygonToCells([ring], res, false);
+						const routeSet = new Set(route.hexTiles);
 						for (const cell of filledCells) {
 							if (!routeSet.has(cell)) {
 								tiles.push(cell);
@@ -349,6 +363,37 @@ export default function RouteDetailScreen() {
 
 		return () => { cancelled = true; };
 	}, [route]);
+
+	// Send enclosed tiles GeoJSON to the map once computed; clear during editing
+	useEffect(() => {
+		if (!mapMounted || !mapRef.current) return;
+		if (!isH3Available()) return;
+
+		const EMPTY_FC = { type: 'FeatureCollection' as const, features: [] };
+
+		// Hide enclosed tiles while editing (route shape is in flux)
+		if (isEditing || !enclosedTilesReady) {
+			mapRef.current.sendToMap({ hexEnclosedGeoJson: EMPTY_FC });
+			return;
+		}
+
+		const features = enclosedTiles.map((cell) => {
+			try {
+				const boundary = cellToBoundary(cell, true);
+				return {
+					type: 'Feature' as const,
+					geometry: { type: 'Polygon' as const, coordinates: [boundary] },
+					properties: { h3Index: cell },
+				};
+			} catch {
+				return null;
+			}
+		}).filter((f): f is NonNullable<typeof f> => f !== null);
+
+		mapRef.current.sendToMap({
+			hexEnclosedGeoJson: { type: 'FeatureCollection', features },
+		});
+	}, [mapMounted, enclosedTilesReady, enclosedTiles, isEditing]);
 
 	// Live map update during editing
 	useEffect(() => {

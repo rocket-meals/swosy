@@ -249,7 +249,10 @@ export const getHexagonEdgeLengthAvg = (res: number, unit: string): number =>
 
 // ─── Route distance ───────────────────────────────────────────────────────────
 
-function _haversineKm(a: CoordPair, b: CoordPair): number {
+/**
+ * Haversine distance in kilometres between two [lat, lng] coordinate pairs.
+ */
+export function haversineKm(a: CoordPair, b: CoordPair): number {
     const R = 6371;
     const dLat = ((b[0] - a[0]) * Math.PI) / 180;
     const dLng = ((b[1] - a[1]) * Math.PI) / 180;
@@ -282,7 +285,7 @@ export function computeRouteLengthKm(orderedCells: H3Index[]): number {
         try {
             const a = cellToLatLng(orderedCells[i - 1]);
             const b = cellToLatLng(orderedCells[i]);
-            totalKm += _haversineKm(a, b);
+            totalKm += haversineKm(a, b);
         } catch {
             // skip invalid cells
         }
