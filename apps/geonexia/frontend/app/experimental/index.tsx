@@ -23,6 +23,17 @@ export default function ExperimentalScreen() {
 					handleFunction={() => router.push('/experimental/tts-test')}
 					groupPosition="single"
 				/>
+
+				<SettingsListGroupTitle title="Karten" />
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<Ionicons name="hexagon-outline" size={22} color="#ffffff" />}
+					label="Hex Tile Info"
+					value="Tile-Features für 8a1f10d5061ffff"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/hex-tile-info')}
+					groupPosition="single"
+				/>
 			</ScrollView>
 		</View>
 	);
