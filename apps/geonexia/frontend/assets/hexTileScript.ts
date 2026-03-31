@@ -597,28 +597,14 @@ export const HEX_TILE_SCRIPT = `
       updateMeasurePointsLayer(data.measurePoints);
     }
     // ── Batch tile-feature query ─────────────────────────────────────────
-    // Receives an array of { id, polygon: [[lng,lat], ...] } objects and
-    // returns rendered map features for each tile grouped by id.
-    //
-    // When the main map's zoom is high enough (≥ QUERY_MIN_ZOOM), features
-    // are queried directly from the main map.  Otherwise the direct
-    // vector-tile fetch + parse approach (queryVectorTileFeaturesDirect,
-    // defined in index.html) is used – no hidden map, no DOM element, no
-    // canvas, just an HTTP fetch of the raw PBF tile and inline parsing.
+    // Receives an array of { id, polygon: [[lng,lat], ...] } objects,
+    // projects each polygon to screen space, queries all rendered map
+    // features within the bounding box and returns the results grouped by id.
     if (data.queryTileFeatures) {
       var req = data.queryTileFeatures;
       var requestId = req.requestId || '';
       var tiles = req.tiles || [];
       if (!map) { sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: {} }); return; }
-
-      // Minimum zoom at which street-level features (names, highway class)
-      // are rendered by OpenMapTiles vector tiles.
-      var QUERY_MIN_ZOOM = 14;
-
-      // Helper: extract deduplicated MapFeatureInfo from queryRenderedFeatures
-      // result on the main map within the bounding box of a tile polygon.
-      // Hex overlay layers added by this script are excluded so only real
-      // map-data features (streets, POIs, buildings, …) are returned.
       var hexOverlayLayersQuery = {};
       hexOverlayLayersQuery[HEX_TILE_FILL_LAYER] = true;
       hexOverlayLayersQuery[HEX_TILE_STROKE_LAYER] = true;
@@ -633,9 +619,12 @@ export const HEX_TILE_SCRIPT = `
       hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
       hexOverlayLayersQuery[ROUTE_EDIT_LABELS_LAYER] = true;
 
-      function queryOneTileOnMainMap(tile) {
+      var result = {};
+      for (var ti = 0; ti < tiles.length; ti++) {
+        var tile = tiles[ti];
+        var tileId = tile.id;
         var poly = tile.polygon;
-        if (!poly || poly.length === 0) return [];
+        if (!poly || poly.length === 0) { result[tileId] = []; continue; }
 
         var qMinX = Infinity, qMinY = Infinity, qMaxX = -Infinity, qMaxY = -Infinity;
         for (var pi = 0; pi < poly.length; pi++) {
@@ -672,23 +661,9 @@ export const HEX_TILE_SCRIPT = `
             amenity: qfp.amenity || null,
           });
         }
-        return qFeatures;
+        result[tileId] = qFeatures;
       }
-
-      if (map.getZoom() >= QUERY_MIN_ZOOM) {
-        // Current zoom is high enough – query synchronously from main map.
-        var result = {};
-        for (var ti = 0; ti < tiles.length; ti++) {
-          result[tiles[ti].id] = queryOneTileOnMainMap(tiles[ti]);
-        }
-        sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
-      } else {
-        // Zoom is too low – use direct vector-tile fetching (no hidden map
-        // or DOM element needed, just HTTP + protobuf parsing).
-        queryVectorTileFeaturesDirect(tiles, function (directResult) {
-          sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: directResult });
-        });
-      }
+      sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
     }
   };
 
