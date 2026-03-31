@@ -1,5 +1,22 @@
 import * as Speech from 'expo-speech';
 import { setAudioModeAsync } from 'expo-audio';
+import type { SpeechRate } from '../store/speechSettingsSlice';
+
+// ─── Speech rate mapping ──────────────────────────────────────────────────────
+
+const SPEECH_RATE_MAP: Record<SpeechRate, number> = {
+	slow: 0.75,
+	normal: 1.0,
+	fast: 1.25,
+};
+
+/**
+ * Convert a {@link SpeechRate} preset to the numeric rate value expected by
+ * `expo-speech`.
+ */
+export function speechRateToNumber(rate: SpeechRate): number {
+	return SPEECH_RATE_MAP[rate] ?? 1.0;
+}
 
 // ─── TTS announcement helpers ─────────────────────────────────────────────────
 
@@ -273,4 +290,42 @@ export function buildBackgroundAnnouncement(locale: string): string {
 		default:
 			return 'The app is running in the background';
 	}
+}
+
+// ─── Pace hint announcement ──────────────────────────────────────────────────
+
+/**
+ * The pace hint state used for hysteresis tracking during recording.
+ * - `on_target`: the runner is within the acceptable pace range
+ * - `too_fast`:  the runner exceeded the "faster" threshold
+ * - `too_slow`:  the runner exceeded the "slower" threshold
+ */
+export type PaceHintState = 'on_target' | 'too_fast' | 'too_slow';
+
+/**
+ * Build a localised TTS announcement for a pace deviation hint.
+ *
+ * @param kind         Whether the runner is too fast or too slow
+ * @param currentPace  Current average pace in min/km
+ * @param targetPace   Target pace in min/km
+ * @param locale       Full BCP-47 locale tag
+ */
+export function buildPaceHintAnnouncement(
+	kind: 'too_fast' | 'too_slow',
+	currentPace: number,
+	targetPace: number,
+	locale: string,
+): string {
+	const langCode = locale.split('-')[0].toLowerCase();
+	const curMin = Math.floor(currentPace);
+	const curSec = Math.round((currentPace - curMin) * 60);
+	const tgtMin = Math.floor(targetPace);
+	const tgtSec = Math.round((targetPace - tgtMin) * 60);
+
+	if (langCode === 'de') {
+		const label = kind === 'too_fast' ? 'Zu schnell' : 'Zu langsam';
+		return `${label}. Aktuelle Pace ${curMin} Minuten ${curSec} Sekunden. Ziel Pace ${tgtMin} Minuten ${tgtSec} Sekunden.`;
+	}
+	const label = kind === 'too_fast' ? 'Too fast' : 'Too slow';
+	return `${label}. Current pace ${curMin} minutes ${curSec} seconds. Target pace ${tgtMin} minutes ${tgtSec} seconds.`;
 }

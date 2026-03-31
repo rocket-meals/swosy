@@ -17,6 +17,7 @@ import {
 	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListNumberInput,
+	SettingsListSelectOption,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
@@ -24,7 +25,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
 import { updateSpeechSettings, SpeechSettingsState, SPEECH_SETTINGS_DEFAULTS } from '../store/speechSettingsSlice';
-import { speakAnnouncement, buildPeriodicAnnouncement } from '../helpers/TTSHelper';
+import type { SpeechRate } from '../store/speechSettingsSlice';
+import { speakAnnouncement, buildPeriodicAnnouncement, speechRateToNumber } from '../helpers/TTSHelper';
 import type { AppDispatch, RootState } from '../store/store';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -38,6 +40,12 @@ const VOLUME_STEP = 0.1;
 const VOLUME_MIN = 0.0;
 const VOLUME_MAX = 1.0;
 const PREVIEW_VIBRATION_DURATION_MS = 400;
+
+const SPEECH_RATE_OPTIONS: Array<{ id: SpeechRate; label: string }> = [
+	{ id: 'slow', label: 'Langsam' },
+	{ id: 'normal', label: 'Normal' },
+	{ id: 'fast', label: 'Schnell' },
+];
 
 // Sample stats used for preview announcements in settings
 const SAMPLE_STATS = {
@@ -277,9 +285,10 @@ export default function SpeechSettingsContent() {
 				: '2 kilometers. Pace: 5 minutes and 30 seconds.';
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
 			useApplicationAudioSession: settings.duckMusicDuringTTS,
 		});
-	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
+	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Play content example (based on enabled toggles) ─────────────────────
 	const handlePlayContentSample = useCallback(() => {
@@ -298,6 +307,7 @@ export default function SpeechSettingsContent() {
 		if (!text) return;
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
 			useApplicationAudioSession: settings.duckMusicDuringTTS,
 		});
 	}, [langCode, settings]);
@@ -310,9 +320,10 @@ export default function SpeechSettingsContent() {
 				: 'Too fast. Current pace 4 minutes 30 seconds. Target pace 5 minutes 30 seconds.';
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
 			useApplicationAudioSession: settings.duckMusicDuringTTS,
 		});
-	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
+	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Play slower hint example ─────────────────────────────────────────────
 	const handlePlaySlowerSample = useCallback(() => {
@@ -322,9 +333,10 @@ export default function SpeechSettingsContent() {
 				: 'Too slow. Current pace 6 minutes 30 seconds. Target pace 5 minutes 30 seconds.';
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
 			useApplicationAudioSession: settings.duckMusicDuringTTS,
 		});
-	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
+	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Volume stepper ───────────────────────────────────────────────────────
 	const handleVolumeDown = useCallback(() => {
@@ -403,6 +415,16 @@ export default function SpeechSettingsContent() {
 					</View>
 				}
 				groupPosition="bottom"
+			/>
+
+			{/* ── Speech rate ─────────────────────────────────────────── */}
+			<SettingsListGroupTitle title="Sprachgeschwindigkeit" />
+			<SettingsListSelectOption<SpeechRate>
+				options={SPEECH_RATE_OPTIONS}
+				selectedOption={settings.speechRate}
+				onSelect={(opt) => update({ speechRate: opt.id })}
+				iconBgColor={TTS_COLOR}
+				selectionColor={TTS_COLOR}
 			/>
 
 			{/* ── Pace target helper ──────────────────────────────────── */}
@@ -514,7 +536,7 @@ export default function SpeechSettingsContent() {
 						speakAnnouncement(
 							langCode === 'de' ? 'Hinweiston' : 'Hint tone',
 							langCode,
-							{ volume: settings.volume, useApplicationAudioSession: settings.duckMusicDuringTTS },
+							{ volume: settings.volume, rate: speechRateToNumber(settings.speechRate), useApplicationAudioSession: settings.duckMusicDuringTTS },
 						);
 					}
 				}}
