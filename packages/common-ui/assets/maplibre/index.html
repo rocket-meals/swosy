@@ -3758,6 +3758,7 @@
       <span style="color:#666;font-size:13px">Please check your internet connection and reload.</span>
     </div>
     <div id="map"></div>
+    <div id="offscreen-query-map" style="position:absolute;left:-9999px;top:-9999px;width:512px;height:512px;visibility:hidden;pointer-events:none;"></div>
     <script>
       var map = null;
       var mapReady = false;
@@ -5755,6 +5756,39 @@
           if (routeStartCoord && !map.getSource(ROUTE_START_SOURCE)) {
             updateRouteStartPoint(routeStartCoord);
           }
+        });
+      }
+
+      // ─── Offscreen query map ────────────────────────────────────────────────────
+      // A lightweight hidden MapLibre instance used exclusively for
+      // queryRenderedFeatures at arbitrary zoom/center without affecting the
+      // visible main map. Created lazily on first use.
+      var _offscreenQueryMap = null;
+      var _offscreenQueryMapReady = false;
+      var _offscreenQueryMapCallbacks = [];
+
+      function getOffscreenQueryMap(callback) {
+        if (_offscreenQueryMapReady && _offscreenQueryMap) {
+          callback(_offscreenQueryMap);
+          return;
+        }
+        _offscreenQueryMapCallbacks.push(callback);
+        if (_offscreenQueryMap) return; // already initialising
+        _offscreenQueryMap = new maplibregl.Map({
+          container: 'offscreen-query-map',
+          style: 'https://tiles.openfreemap.org/styles/liberty',
+          center: [10.0, 51.3],
+          zoom: 14,
+          interactive: false,
+          attributionControl: false,
+          fadeDuration: 0,
+          trackResize: false,
+        });
+        _offscreenQueryMap.on('load', function () {
+          _offscreenQueryMapReady = true;
+          var cbs = _offscreenQueryMapCallbacks.slice();
+          _offscreenQueryMapCallbacks = [];
+          for (var i = 0; i < cbs.length; i++) cbs[i](_offscreenQueryMap);
         });
       }
 

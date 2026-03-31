@@ -597,59 +597,45 @@ export const HEX_TILE_SCRIPT = `
       updateMeasurePointsLayer(data.measurePoints);
     }
     // ── Batch tile-feature query ─────────────────────────────────────────
-    // Receives an array of { id, polygon: [[lng,lat], ...] } objects,
-    // projects each polygon to screen space, queries all rendered map
-    // features within the bounding box and returns the results grouped by id.
+    // Receives an array of { id, polygon: [[lng,lat], ...] } objects and
+    // returns rendered map features for each tile grouped by id.
     //
-    // When the map is zoomed out (e.g. after fitBounds on a route overview),
-    // street-level features are not rendered and queryRenderedFeatures returns
-    // empty results.  In that case we temporarily zoom into each tile at a
-    // sufficient zoom level, wait for vector tiles to load, query, then
-    // restore the original view.
+    // When the main map's zoom is high enough (≥ QUERY_MIN_ZOOM), features
+    // are queried directly from the main map.  Otherwise an offscreen
+    // MapLibre instance (created in index.html, completely invisible and
+    // independent) is used.  The offscreen map is jumped to each tile's
+    // centre at the required zoom, waits for vector tiles to load, then
+    // queries – without touching the visible map at all.
     if (data.queryTileFeatures) {
       var req = data.queryTileFeatures;
       var requestId = req.requestId || '';
       var tiles = req.tiles || [];
       if (!map) { sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: {} }); return; }
-      var hexOverlayLayersQuery = {};
-      hexOverlayLayersQuery[HEX_TILE_FILL_LAYER] = true;
-      hexOverlayLayersQuery[HEX_TILE_STROKE_LAYER] = true;
-      hexOverlayLayersQuery[HEX_BORDER_LAYER] = true;
-      hexOverlayLayersQuery[HEX_WALK_PATH_LAYER] = true;
-      hexOverlayLayersQuery[HEX_VERTICES_LAYER] = true;
-      hexOverlayLayersQuery[HEX_CENTERS_LAYER] = true;
-      hexOverlayLayersQuery[HEX_MIDPOINTS_LAYER] = true;
-      hexOverlayLayersQuery[MEASURE_ROUTE_LAYER] = true;
-      hexOverlayLayersQuery[MEASURE_POINTS_LAYER] = true;
-      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_FILL_LAYER] = true;
-      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
-      hexOverlayLayersQuery[ROUTE_EDIT_LABELS_LAYER] = true;
 
       // Minimum zoom at which street-level features (names, highway class)
       // are rendered by OpenMapTiles vector tiles.
       var QUERY_MIN_ZOOM = 14;
 
-      // Helper: query rendered features for a single tile at the current view
-      // and return an array of deduplicated MapFeatureInfo objects.
-      function queryOneTile(tile) {
+      // Helper: extract deduplicated MapFeatureInfo from queryRenderedFeatures
+      // result on the given map instance within the bounding box of a tile polygon.
+      function queryOneTileOn(qMap, tile) {
         var poly = tile.polygon;
         if (!poly || poly.length === 0) return [];
 
         var qMinX = Infinity, qMinY = Infinity, qMaxX = -Infinity, qMaxY = -Infinity;
         for (var pi = 0; pi < poly.length; pi++) {
-          var qPt = map.project([poly[pi][0], poly[pi][1]]);
+          var qPt = qMap.project([poly[pi][0], poly[pi][1]]);
           if (qPt.x < qMinX) qMinX = qPt.x;
           if (qPt.y < qMinY) qMinY = qPt.y;
           if (qPt.x > qMaxX) qMaxX = qPt.x;
           if (qPt.y > qMaxY) qMaxY = qPt.y;
         }
 
-        var qRendered = map.queryRenderedFeatures([[qMinX, qMinY], [qMaxX, qMaxY]]);
+        var qRendered = qMap.queryRenderedFeatures([[qMinX, qMinY], [qMaxX, qMaxY]]);
         var qFeatures = [];
         var qSeen = {};
         for (var qi = 0; qi < qRendered.length; qi++) {
           var qf = qRendered[qi];
-          if (qf.layer && hexOverlayLayersQuery[qf.layer.id]) continue;
           var qfp = qf.properties || {};
           var qKey = (qfp.name || '') + '|' + (qfp['class'] || '') + '|' + (qfp.subclass || '') + '|'
             + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
@@ -674,90 +660,78 @@ export const HEX_TILE_SCRIPT = `
       }
 
       if (map.getZoom() >= QUERY_MIN_ZOOM) {
-        // Current zoom is high enough – query synchronously as before.
+        // Current zoom is high enough – query synchronously from main map.
         var result = {};
         for (var ti = 0; ti < tiles.length; ti++) {
-          result[tiles[ti].id] = queryOneTile(tiles[ti]);
+          result[tiles[ti].id] = queryOneTileOn(map, tiles[ti]);
         }
         sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
       } else {
-        // Zoom is too low for street-level features.  Process tiles by
-        // temporarily jumping to each tile's centre at QUERY_MIN_ZOOM,
-        // waiting for vector tiles to load, then querying.  Adjacent tiles
-        // that are visible in the same view are queried together to avoid
-        // unnecessary zoom changes.
-        //
-        // The map container is hidden during this process so the user never
-        // sees the camera jump around.
-        var savedCenter = map.getCenter();
-        var savedZoom = map.getZoom();
-        var savedBearing = map.getBearing();
-        var savedPitch = map.getPitch();
-        var mapContainer = map.getContainer();
-        var prevVisibility = mapContainer.style.visibility;
-        mapContainer.style.visibility = 'hidden';
-        var asyncResult = {};
-        var pending = []; // indices of tiles still to query
-        for (var pi2 = 0; pi2 < tiles.length; pi2++) {
-          if (!tiles[pi2].polygon || tiles[pi2].polygon.length === 0) {
-            asyncResult[tiles[pi2].id] = [];
-          } else {
-            pending.push(pi2);
-          }
-        }
+        // Zoom is too low for street-level features on the main map.
+        // Use the offscreen query map (completely independent, invisible)
+        // to jump to each tile and query features without affecting the
+        // main map display at all.
+        var capturedTiles = tiles;
+        var capturedRequestId = requestId;
 
-        function processNextGroup() {
-          if (pending.length === 0) {
-            // All tiles processed – restore the original view and show the map.
-            map.jumpTo({ center: savedCenter, zoom: savedZoom, bearing: savedBearing, pitch: savedPitch });
-            map.once('idle', function () {
-              mapContainer.style.visibility = prevVisibility;
-              sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: asyncResult });
-            });
-            return;
+        getOffscreenQueryMap(function (oMap) {
+          var asyncResult = {};
+          var pending = [];
+          for (var pi2 = 0; pi2 < capturedTiles.length; pi2++) {
+            if (!capturedTiles[pi2].polygon || capturedTiles[pi2].polygon.length === 0) {
+              asyncResult[capturedTiles[pi2].id] = [];
+            } else {
+              pending.push(pi2);
+            }
           }
 
-          // Pick the first pending tile as anchor and jump to its centre.
-          var anchorIdx = pending[0];
-          var anchorPoly = tiles[anchorIdx].polygon;
-          var sumLng = 0, sumLat = 0;
-          for (var ai = 0; ai < anchorPoly.length; ai++) {
-            sumLng += anchorPoly[ai][0];
-            sumLat += anchorPoly[ai][1];
-          }
-          var cLng = sumLng / anchorPoly.length;
-          var cLat = sumLat / anchorPoly.length;
+          function processNextGroup() {
+            if (pending.length === 0) {
+              sendToRN({ tag: 'TileFeaturesResult', requestId: capturedRequestId, features: asyncResult });
+              return;
+            }
 
-          map.jumpTo({ center: [cLng, cLat], zoom: QUERY_MIN_ZOOM, pitch: 0, bearing: 0 });
+            // Pick the first pending tile as anchor and jump the offscreen map.
+            var anchorIdx = pending[0];
+            var anchorPoly = capturedTiles[anchorIdx].polygon;
+            var sumLng = 0, sumLat = 0;
+            for (var ai = 0; ai < anchorPoly.length; ai++) {
+              sumLng += anchorPoly[ai][0];
+              sumLat += anchorPoly[ai][1];
+            }
+            var cLng = sumLng / anchorPoly.length;
+            var cLat = sumLat / anchorPoly.length;
 
-          map.once('idle', function () {
-            var canvasW = map.getCanvas().width;
-            var canvasH = map.getCanvas().height;
-            var nextPending = [];
+            oMap.jumpTo({ center: [cLng, cLat], zoom: QUERY_MIN_ZOOM, pitch: 0, bearing: 0 });
 
-            for (var ni = 0; ni < pending.length; ni++) {
-              var t = tiles[pending[ni]];
-              // Check whether this tile's polygon is on screen.
-              var onScreen = true;
-              for (var vi = 0; vi < t.polygon.length; vi++) {
-                var sp = map.project([t.polygon[vi][0], t.polygon[vi][1]]);
-                if (sp.x < 0 || sp.y < 0 || sp.x > canvasW || sp.y > canvasH) {
-                  onScreen = false;
-                  break;
+            oMap.once('idle', function () {
+              var canvasW = oMap.getCanvas().width;
+              var canvasH = oMap.getCanvas().height;
+              var nextPending = [];
+
+              for (var ni = 0; ni < pending.length; ni++) {
+                var t = capturedTiles[pending[ni]];
+                var onScreen = true;
+                for (var vi = 0; vi < t.polygon.length; vi++) {
+                  var sp = oMap.project([t.polygon[vi][0], t.polygon[vi][1]]);
+                  if (sp.x < 0 || sp.y < 0 || sp.x > canvasW || sp.y > canvasH) {
+                    onScreen = false;
+                    break;
+                  }
+                }
+                if (onScreen) {
+                  asyncResult[t.id] = queryOneTileOn(oMap, t);
+                } else {
+                  nextPending.push(pending[ni]);
                 }
               }
-              if (onScreen) {
-                asyncResult[t.id] = queryOneTile(t);
-              } else {
-                nextPending.push(pending[ni]);
-              }
-            }
-            pending = nextPending;
-            processNextGroup();
-          });
-        }
+              pending = nextPending;
+              processNextGroup();
+            });
+          }
 
-        processNextGroup();
+          processNextGroup();
+        });
       }
     }
   };
