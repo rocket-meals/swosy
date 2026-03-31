@@ -14,17 +14,39 @@ import {
 } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
 
-import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
+import { SavedRoute, loadRoute, loadRoutes, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, gridDistance, cellToLatLng, cellToBoundary, latLngToCell } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
+import {
+	type MapFeatureInfo,
+	type AreaInfoDict,
+	buildAreaInfoDict,
+	suggestRouteNames,
+	filterUsedNames,
+} from '../../helpers/RouteNameSuggestionHelper';
+import { useDebugMode } from '../../hooks/useDebugMode';
 import type { RootState } from '../../store/store';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
 
 type MapEditSubMode = 'add' | 'remove';
+
+/** Ray-casting point-in-polygon test (polygon in [lng, lat] order). */
+function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number]>): boolean {
+	let inside = false;
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const [xi, yi] = polygon[i];
+		const [xj, yj] = polygon[j];
+		const intersect =
+			yi > lat !== yj > lat &&
+			lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+		if (intersect) inside = !inside;
+	}
+	return inside;
+}
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -75,6 +97,15 @@ export default function RouteDetailScreen() {
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
+	const isDebugMode = useDebugMode();
+
+	// ── Area info & name-suggestion state ─────────────────────────────────
+	const [routeAreaInfo, setRouteAreaInfo] = useState<AreaInfoDict>({});
+	const [enclosedAreaInfo, setEnclosedAreaInfo] = useState<AreaInfoDict>({});
+	const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+	const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+	const [existingRouteNames, setExistingRouteNames] = useState<string[]>([]);
+	const featureQuerySentRef = useRef(false);
 
 	// Stable ref so handleMapMessage can always read the latest edit state without
 	// being recreated on every state change.
@@ -198,6 +229,119 @@ export default function RouteDetailScreen() {
 		};
 	}, [mapMounted, route, hexTileRecords]);
 
+	// ── Load existing route names for filtering suggestions ───────────────
+	useEffect(() => {
+		loadRoutes()
+			.then((all) => setExistingRouteNames(all.map((r) => r.name)))
+			.catch(() => setExistingRouteNames([]));
+	}, []);
+
+	// ── Request tile features from the map once the route is displayed ────
+	// We wait for the fitBounds animation to settle (2 s) before querying so
+	// that all OSM features are loaded at the appropriate zoom level.
+	useEffect(() => {
+		if (!mapMounted || !route || !mapRef.current) return;
+		if (!isH3Available() || route.hexTiles.length === 0) return;
+		if (featureQuerySentRef.current) return;
+
+		const QUERY_DELAY_MS = 2000;
+		const timer = setTimeout(() => {
+			if (!mapRef.current || featureQuerySentRef.current) return;
+			featureQuerySentRef.current = true;
+
+			// Build tile polygon descriptors for the route tiles
+			const routeTiles = route.hexTiles.map((cell) => {
+				try {
+					const boundary = cellToBoundary(cell, true); // GeoJSON order [lng, lat]
+					return { id: cell, polygon: boundary };
+				} catch {
+					return { id: cell, polygon: [] as Array<[number, number]> };
+				}
+			});
+
+			mapRef.current.sendToMap({
+				queryTileFeatures: { requestId: 'route', tiles: routeTiles },
+			});
+
+			// Compute enclosed tiles (route must form a loop)
+			try {
+				const centers = route.hexTiles.map((cell) => {
+					const [lat, lng] = cellToLatLng(cell);
+					return { lat, lng };
+				});
+				if (centers.length >= 3) {
+					const first = centers[0];
+					const last = centers[centers.length - 1];
+					const dLat = first.lat - last.lat;
+					const dLng = first.lng - last.lng;
+					const roughDistKm = Math.sqrt(dLat * dLat + dLng * dLng) * 111;
+					if (roughDistKm < 0.5) {
+						// Route forms a loop – find enclosed cells
+						const polygon: Array<[number, number]> = centers.map((c) => [c.lng, c.lat]);
+						const lats = centers.map((c) => c.lat);
+						const lngs = centers.map((c) => c.lng);
+						const minLat = Math.min(...lats) - 0.001;
+						const maxLat = Math.max(...lats) + 0.001;
+						const minLng = Math.min(...lngs) - 0.001;
+						const maxLng = Math.max(...lngs) + 0.001;
+
+						const h3Res = route.h3Resolution;
+						const centerLat = (minLat + maxLat) / 2;
+						const centerLng = (minLng + maxLng) / 2;
+						const centerCell = latLngToCell(centerLat, centerLng, h3Res);
+						let maxK = 0;
+						const corners: Array<[number, number]> = [
+							[maxLat, maxLng], [maxLat, minLng], [minLat, maxLng], [minLat, minLng],
+						];
+						for (const [lat, lng] of corners) {
+							try {
+								const cornerCell = latLngToCell(lat, lng, h3Res);
+								const dist = gridDistance(centerCell, cornerCell);
+								if (dist > maxK) maxK = dist;
+							} catch { /* ignore */ }
+						}
+						const candidates = gridDisk(centerCell, Math.min(maxK + 1, 30));
+						const routeSet = new Set(route.hexTiles);
+						const enclosedCells: string[] = [];
+						for (const cell of candidates) {
+							if (routeSet.has(cell)) continue;
+							try {
+								const [cLat, cLng] = cellToLatLng(cell);
+								if (pointInPolygon(cLng, cLat, polygon)) {
+									enclosedCells.push(cell);
+								}
+							} catch { /* ignore */ }
+						}
+						if (enclosedCells.length > 0) {
+							const enclosedTiles = enclosedCells.map((cell) => {
+								try {
+									const boundary = cellToBoundary(cell, true);
+									return { id: cell, polygon: boundary };
+								} catch {
+									return { id: cell, polygon: [] as Array<[number, number]> };
+								}
+							});
+							mapRef.current!.sendToMap({
+								queryTileFeatures: { requestId: 'enclosed', tiles: enclosedTiles },
+							});
+						}
+					}
+				}
+			} catch (err) {
+				console.warn('[RouteDetailScreen] Enclosed tile computation failed:', err);
+			}
+		}, QUERY_DELAY_MS);
+
+		return () => clearTimeout(timer);
+	}, [mapMounted, route]);
+
+	// ── Recompute name suggestions when dicts or existing names change ────
+	useEffect(() => {
+		const suggestions = suggestRouteNames(routeAreaInfo, enclosedAreaInfo);
+		setNameSuggestions(suggestions);
+		setFilteredSuggestions(filterUsedNames(suggestions, existingRouteNames, route?.name));
+	}, [routeAreaInfo, enclosedAreaInfo, existingRouteNames, route?.name]);
+
 	// Live map update during editing
 	useEffect(() => {
 		if (!isEditing || !mapMounted || !mapRef.current || !route) return;
@@ -246,11 +390,23 @@ export default function RouteDetailScreen() {
 	}, []);
 
 	const handleMapMessage = useCallback((data: object) => {
-		const msg = data as { tag?: string; h3Index?: string };
+		const msg = data as { tag?: string; h3Index?: string; requestId?: string; features?: Record<string, MapFeatureInfo[]> };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
 			return;
 		}
+
+		// ── Handle batch tile-feature query results ───────────────────────
+		if (msg.tag === 'TileFeaturesResult' && msg.features) {
+			const dict = buildAreaInfoDict(msg.features);
+			if (msg.requestId === 'route') {
+				setRouteAreaInfo(dict);
+			} else if (msg.requestId === 'enclosed') {
+				setEnclosedAreaInfo(dict);
+			}
+			return;
+		}
+
 		const state = editStateRef.current;
 		if (!state.isEditing || !msg.h3Index) return;
 
@@ -604,6 +760,81 @@ export default function RouteDetailScreen() {
 						});
 					}}
 				/>
+
+				{/* ── Name suggestions (filtered) ──────────────────────────────── */}
+				{filteredSuggestions.length > 0 && (
+					<>
+						<SettingsListGroupTitle title="Namensvorschläge" />
+						{filteredSuggestions.map((name, idx) => (
+							<SettingsList
+								key={`suggestion-${idx}`}
+								leftIcon={<MaterialIcons name="lightbulb-outline" size={20} color="#ffffff" />}
+								iconBackgroundColor="#f59e0b"
+								title={name}
+								showSeparator={idx < filteredSuggestions.length - 1}
+								groupPosition={filteredSuggestions.length === 1 ? 'single' : idx === 0 ? 'top' : idx === filteredSuggestions.length - 1 ? 'bottom' : 'middle'}
+								onPress={() => {
+									const updated: SavedRoute = { ...route, name };
+									try {
+										saveRoute(updated);
+									} catch {
+										Alert.alert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
+										return;
+									}
+									setRoute(updated);
+								}}
+							/>
+						))}
+					</>
+				)}
+
+				{/* ── Debug: Area info dicts & all suggestions ─────────────────── */}
+				{isDebugMode && (
+					<>
+						<SettingsListGroupTitle title="🐛 Debug: Routen-Gebiet Info" />
+						<SettingsList
+							leftIcon={<MaterialIcons name="map" size={20} color="#ffffff" />}
+							iconBackgroundColor="#6b7280"
+							title="routeAreaInfo"
+							value={JSON.stringify(routeAreaInfo, null, 2)}
+							groupPosition="top"
+							showSeparator
+						/>
+						<SettingsList
+							leftIcon={<MaterialIcons name="crop-free" size={20} color="#ffffff" />}
+							iconBackgroundColor="#6b7280"
+							title="enclosedAreaInfo"
+							value={JSON.stringify(enclosedAreaInfo, null, 2)}
+							groupPosition="bottom"
+						/>
+
+						<SettingsListGroupTitle title="🐛 Debug: Alle Namensvorschläge" />
+						{nameSuggestions.length === 0 ? (
+							<SettingsList
+								leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+								iconBackgroundColor="#6b7280"
+								title="Keine Vorschläge"
+								value="Warte auf Karten-Daten…"
+								groupPosition="single"
+							/>
+						) : (
+							nameSuggestions.map((name, idx) => {
+								const isFiltered = !filteredSuggestions.includes(name);
+								return (
+									<SettingsList
+										key={`debug-sug-${idx}`}
+										leftIcon={<MaterialIcons name={isFiltered ? 'block' : 'check-circle'} size={20} color="#ffffff" />}
+										iconBackgroundColor={isFiltered ? '#ef4444' : '#22c55e'}
+										title={name}
+										value={isFiltered ? 'Name bereits vergeben' : ''}
+										showSeparator={idx < nameSuggestions.length - 1}
+										groupPosition={nameSuggestions.length === 1 ? 'single' : idx === 0 ? 'top' : idx === nameSuggestions.length - 1 ? 'bottom' : 'middle'}
+									/>
+								);
+							})
+						)}
+					</>
+				)}
 
 				<TouchableOpacity
 					style={styles.deleteButton}

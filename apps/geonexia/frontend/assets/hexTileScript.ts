@@ -596,6 +596,74 @@ export const HEX_TILE_SCRIPT = `
     if (data.measurePoints !== undefined) {
       updateMeasurePointsLayer(data.measurePoints);
     }
+    // ── Batch tile-feature query ─────────────────────────────────────────
+    // Receives an array of { id, polygon: [[lng,lat], ...] } objects,
+    // projects each polygon to screen space, queries all rendered map
+    // features within the bounding box and returns the results grouped by id.
+    if (data.queryTileFeatures) {
+      var req = data.queryTileFeatures;
+      var requestId = req.requestId || '';
+      var tiles = req.tiles || [];
+      if (!map) { sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: {} }); return; }
+      var hexOverlayLayersQuery = {};
+      hexOverlayLayersQuery[HEX_TILE_FILL_LAYER] = true;
+      hexOverlayLayersQuery[HEX_TILE_STROKE_LAYER] = true;
+      hexOverlayLayersQuery[HEX_BORDER_LAYER] = true;
+      hexOverlayLayersQuery[HEX_WALK_PATH_LAYER] = true;
+      hexOverlayLayersQuery[HEX_VERTICES_LAYER] = true;
+      hexOverlayLayersQuery[HEX_CENTERS_LAYER] = true;
+      hexOverlayLayersQuery[HEX_MIDPOINTS_LAYER] = true;
+      hexOverlayLayersQuery[MEASURE_ROUTE_LAYER] = true;
+      hexOverlayLayersQuery[MEASURE_POINTS_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_FILL_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_LABELS_LAYER] = true;
+
+      var result = {};
+      for (var ti = 0; ti < tiles.length; ti++) {
+        var tile = tiles[ti];
+        var tileId = tile.id;
+        var poly = tile.polygon;
+        if (!poly || poly.length === 0) { result[tileId] = []; continue; }
+
+        var qMinX = Infinity, qMinY = Infinity, qMaxX = -Infinity, qMaxY = -Infinity;
+        for (var pi = 0; pi < poly.length; pi++) {
+          var qPt = map.project([poly[pi][0], poly[pi][1]]);
+          if (qPt.x < qMinX) qMinX = qPt.x;
+          if (qPt.y < qMinY) qMinY = qPt.y;
+          if (qPt.x > qMaxX) qMaxX = qPt.x;
+          if (qPt.y > qMaxY) qMaxY = qPt.y;
+        }
+
+        var qRendered = map.queryRenderedFeatures([[qMinX, qMinY], [qMaxX, qMaxY]]);
+        var qFeatures = [];
+        var qSeen = {};
+        for (var qi = 0; qi < qRendered.length; qi++) {
+          var qf = qRendered[qi];
+          if (qf.layer && hexOverlayLayersQuery[qf.layer.id]) continue;
+          var qfp = qf.properties || {};
+          if (qfp.name || qfp.highway || qfp.waterway || qfp.building || qfp.natural || qfp.landuse || qfp.amenity) {
+            var qKey = (qfp.name || '') + '|' + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
+              + (qfp.building || '') + '|' + (qfp.natural || '') + '|' + (qfp.landuse || '') + '|'
+              + (qfp.amenity || '') + '|' + ((qf.layer && qf.layer.id) || '');
+            if (qSeen[qKey]) continue;
+            qSeen[qKey] = true;
+            qFeatures.push({
+              layerId: (qf.layer && qf.layer.id) || null,
+              name: qfp.name || qfp['name:de'] || null,
+              highway: qfp.highway || null,
+              waterway: qfp.waterway || null,
+              building: qfp.building || null,
+              natural: qfp.natural || null,
+              landuse: qfp.landuse || null,
+              amenity: qfp.amenity || null,
+            });
+          }
+        }
+        result[tileId] = qFeatures;
+      }
+      sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
+    }
   };
 
   window._mapExtensions.onMapClick = function (e, m) {
