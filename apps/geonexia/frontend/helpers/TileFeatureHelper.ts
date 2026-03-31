@@ -406,16 +406,15 @@ export async function queryTileFeaturesGrouped(
  * Fetch all vector-tile features for a single H3 hex cell.
  *
  * Computes the bounding box of the cell from its boundary vertices and
- * queries all vector tiles that cover the area at the given zoom level.
+ * queries all vector tiles that cover the area at an automatically chosen
+ * zoom level (highest detail that keeps tile count manageable).
  * Returns a flat, deduplicated array of `MapFeatureInfo`.
  *
  * @param h3Index – H3 cell index string (e.g. `'8a1f10d5061ffff'`).
- * @param zoom – Zoom level for tile fetching (default 14).
  * @param styleUrl – Optional style URL override.
  */
 export async function queryTileFeaturesForHexCell(
 	h3Index: string,
-	zoom: number = 15,
 	styleUrl?: string,
 ): Promise<MapFeatureInfo[]> {
 	const boundary = h3CellToBoundary(h3Index); // [[lat, lng], ...]
@@ -426,14 +425,15 @@ export async function queryTileFeaturesForHexCell(
 	const lats = boundary.map((v: [number, number]) => v[0]);
 	const lngs = boundary.map((v: [number, number]) => v[1]);
 
-	return queryTileFeaturesForBounds({
+	const { features } = await queryTileFeaturesForArea({
 		minLat: Math.min(...lats),
 		minLng: Math.min(...lngs),
 		maxLat: Math.max(...lats),
 		maxLng: Math.max(...lngs),
-		zoom,
 		styleUrl,
 	});
+
+	return features;
 }
 
 // ─── Area-based convenience API (auto-zoom) ─────────────────────────────────
@@ -478,4 +478,30 @@ export async function queryTileFeaturesForArea(
 	});
 
 	return { features, zoom };
+}
+
+/**
+ * Fetch vector-tile features for **multiple** areas in a single call.
+ *
+ * Accepts an array of bounding boxes and returns an array of the same length
+ * where each entry is the flat feature array for the corresponding area.
+ * Zoom is calculated automatically per area so the caller never needs to
+ * think about tile-zoom levels.
+ *
+ * Shared tiles across areas are deduplicated by the internal cache, so
+ * overlapping / adjacent bounding boxes only incur one HTTP request per tile.
+ *
+ * @param areas – Array of bounding-box objects (minLat, minLng, maxLat, maxLng, optional styleUrl).
+ * @returns A `MapFeatureInfo[]` array for each input area, in the same order.
+ */
+export async function queryTileFeaturesForAreas(
+	areas: AreaFeatureQueryParams[],
+): Promise<MapFeatureInfo[][]> {
+	const results = await Promise.all(
+		areas.map(async (area) => {
+			const { features } = await queryTileFeaturesForArea(area);
+			return features;
+		}),
+	);
+	return results;
 }

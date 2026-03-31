@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, SettingsListNumberInput, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
 import * as Clipboard from 'expo-clipboard';
 
 import { isAvailable as isH3Available, cellToLatLng, cellToBoundary, getResolution, isValidCell } from '../../../helpers/H3Helper';
-import { queryTileFeaturesForArea, queryTileFeaturesForBounds, calculateOptimalZoom } from '../../../helpers/TileFeatureHelper';
+import { queryTileFeaturesForArea } from '../../../helpers/TileFeatureHelper';
 import type { MapFeatureInfo } from '../../../helpers/RouteNameSuggestionHelper';
 
 const HEX_ID = '8a1f10d5061ffff';
@@ -67,8 +67,6 @@ const BOUNDS_RECT_SCRIPT = `
 
 export default function HexTileInfoScreen() {
 	const { theme } = useTheme();
-	const [manualZoom, setManualZoom] = useState<number | null>(null);
-	const [usedZoom, setUsedZoom] = useState<number | null>(null);
 	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -93,9 +91,6 @@ export default function HexTileInfoScreen() {
 		};
 	}, [boundary]);
 
-	const autoZoom = bounds ? calculateOptimalZoom(bounds.minLat, bounds.minLng, bounds.maxLat, bounds.maxLng) : null;
-	const activeZoom = manualZoom ?? autoZoom;
-
 	const fetchFeatures = useCallback(async () => {
 		if (!bounds) return;
 		const runId = ++runIdRef.current;
@@ -112,24 +107,10 @@ export default function HexTileInfoScreen() {
 				throw new Error(`Ungültige H3 Zelle: ${HEX_ID}`);
 			}
 
-			let result: MapFeatureInfo[];
-			let zoom: number;
-
-			if (manualZoom !== null) {
-				result = await queryTileFeaturesForBounds({
-					...bounds,
-					zoom: manualZoom,
-				});
-				zoom = manualZoom;
-			} else {
-				const areaResult = await queryTileFeaturesForArea(bounds);
-				result = areaResult.features;
-				zoom = areaResult.zoom;
-			}
+			const areaResult = await queryTileFeaturesForArea(bounds);
 
 			if (runId !== runIdRef.current) return;
-			setFeatures(result);
-			setUsedZoom(zoom);
+			setFeatures(areaResult.features);
 		} catch (err) {
 			if (runId !== runIdRef.current) return;
 			setError(err instanceof Error ? err.message : String(err));
@@ -138,7 +119,7 @@ export default function HexTileInfoScreen() {
 				setLoading(false);
 			}
 		}
-	}, [bounds, manualZoom]);
+	}, [bounds]);
 
 	useEffect(() => {
 		fetchFeatures();
@@ -167,16 +148,6 @@ export default function HexTileInfoScreen() {
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
 		}
-	}, []);
-
-	const handleZoomIncrement = useCallback((delta: number) => {
-		const current = manualZoom ?? autoZoom ?? 14;
-		const next = Math.min(20, Math.max(1, current + delta));
-		setManualZoom(next);
-	}, [manualZoom, autoZoom]);
-
-	const handleResetAutoZoom = useCallback(() => {
-		setManualZoom(null);
 	}, []);
 
 	// Categorize features (same logic as MagnifyModalContent)
@@ -254,77 +225,6 @@ export default function HexTileInfoScreen() {
 						value={`Lat: ${bounds.minLat.toFixed(6)} – ${bounds.maxLat.toFixed(6)}\nLng: ${bounds.minLng.toFixed(6)} – ${bounds.maxLng.toFixed(6)}`}
 						groupPosition="bottom"
 					/>
-				)}
-
-				{/* ── Zoom Controls ── */}
-				<SettingsListGroupTitle title="Zoom-Stufe" />
-				{autoZoom !== null && (
-					<SettingsList
-						iconBgColor="#10b981"
-						leftIcon={<Ionicons name="sparkles-outline" size={22} color="#ffffff" />}
-						label="Auto-Zoom"
-						value={String(autoZoom)}
-						groupPosition={manualZoom !== null ? 'top' : 'single'}
-					/>
-				)}
-				{manualZoom !== null && (
-					<SettingsListNumberInput
-						iconBgColor={EXPERIMENTAL_COLOR}
-						leftIcon={<Ionicons name="search-outline" size={22} color="#ffffff" />}
-						label="Manueller Zoom"
-						value={String(manualZoom)}
-						initialValue={manualZoom}
-						min={1}
-						max={20}
-						step={1}
-						saveLabel="Übernehmen"
-						modalTitle="Zoom-Level"
-						onSave={setManualZoom}
-						groupPosition="bottom"
-					/>
-				)}
-				{usedZoom !== null && (
-					<SettingsList
-						iconBgColor="#6b7280"
-						leftIcon={<Ionicons name="information-circle-outline" size={22} color="#ffffff" />}
-						label="Verwendeter Zoom"
-						value={String(usedZoom)}
-						groupPosition="single"
-					/>
-				)}
-
-				{/* ── +/- Zoom Buttons ── */}
-				<View style={styles.zoomButtonRow}>
-					<TouchableOpacity
-						style={[styles.zoomButton, { backgroundColor: EXPERIMENTAL_COLOR }]}
-						onPress={() => handleZoomIncrement(-1)}
-						activeOpacity={0.8}
-					>
-						<Ionicons name="remove" size={22} color="#ffffff" />
-					</TouchableOpacity>
-					<Text style={[styles.zoomLabel, { color: theme.screen.text }]}>
-						Zoom: {activeZoom ?? '–'}{manualZoom === null ? ' (Auto)' : ''}
-					</Text>
-					<TouchableOpacity
-						style={[styles.zoomButton, { backgroundColor: EXPERIMENTAL_COLOR }]}
-						onPress={() => handleZoomIncrement(1)}
-						activeOpacity={0.8}
-					>
-						<Ionicons name="add" size={22} color="#ffffff" />
-					</TouchableOpacity>
-				</View>
-
-				{manualZoom !== null && (
-					<TouchableOpacity
-						style={[styles.autoZoomButton, { borderColor: EXPERIMENTAL_COLOR }]}
-						onPress={handleResetAutoZoom}
-						activeOpacity={0.8}
-					>
-						<Ionicons name="sparkles-outline" size={16} color={EXPERIMENTAL_COLOR} />
-						<Text style={[styles.autoZoomButtonText, { color: EXPERIMENTAL_COLOR }]}>
-							Auto-Zoom verwenden
-						</Text>
-					</TouchableOpacity>
 				)}
 
 				{/* ── Reload ── */}
@@ -479,42 +379,6 @@ const styles = StyleSheet.create({
 		marginBottom: 8,
 		borderRadius: 12,
 		overflow: 'hidden',
-	},
-	zoomButtonRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 16,
-		marginHorizontal: 16,
-		marginVertical: 8,
-	},
-	zoomButton: {
-		width: 44,
-		height: 44,
-		borderRadius: 22,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	zoomLabel: {
-		fontSize: 16,
-		fontWeight: '600',
-		minWidth: 120,
-		textAlign: 'center',
-	},
-	autoZoomButton: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 6,
-		marginHorizontal: 16,
-		marginBottom: 8,
-		paddingVertical: 8,
-		borderRadius: 10,
-		borderWidth: 1.5,
-	},
-	autoZoomButtonText: {
-		fontSize: 14,
-		fontWeight: '600',
 	},
 	reloadButton: {
 		flexDirection: 'row',
