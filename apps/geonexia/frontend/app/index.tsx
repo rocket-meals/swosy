@@ -2800,6 +2800,27 @@ export default function RecordScreen() {
 		return () => subscription.remove();
 	}, []);
 
+	// ── Refresh map display when returning from background during a recording ──
+	// While the screen is off the WebView may not process messages, so hex tiles,
+	// walk paths and the route line can be stale.  Re-send them once the app
+	// becomes active again.
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', (nextAppState) => {
+			if (nextAppState === 'active' && isRecordingRef.current && mapRef.current) {
+				// Re-send the GPS track line
+				if (routePointsRef.current.length > 0) {
+					sendRouteToMap(routePointsRef.current);
+				}
+				// Re-send hex tile grid and walk path
+				const vp = debugViewportRef.current;
+				if (vp) {
+					refreshNormalTileDisplay(vp);
+				}
+			}
+		});
+		return () => subscription.remove();
+	}, [sendRouteToMap, refreshNormalTileDisplay]);
+
 	// ── Route preview: when a route is selected before recording, show only the
 	// route's hex tiles and walk path on the map (hiding all other visited tiles).
 	// This gives the same view as the route detail screen (routes/[id]).
@@ -3498,7 +3519,11 @@ export default function RecordScreen() {
 				const paceMinPerKm = elapsedSec > 0 && d > 0 ? elapsedSec / 60 / d : null;
 				const locale = getLocales()[0]?.languageTag ?? 'en-US';
 				const langCode = locale.split('-')[0].toLowerCase();
-				const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale);
+				const curSs = speechSettingsRef.current;
+				const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale, {
+					announcePace: curSs.announcePace,
+					announceSpeedKmh: curSs.announceSpeed,
+				});
 				speakAnnouncement(text, langCode);
 			}
 		}
