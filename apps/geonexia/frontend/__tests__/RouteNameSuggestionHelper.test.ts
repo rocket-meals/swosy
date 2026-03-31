@@ -277,7 +277,7 @@ describe('suggestRouteNamesForHexTiles', () => {
 	};
 
 	/** Helper: mock fetch to return a style + empty PBF tiles. */
-	function setupMockFetch(features?: MapFeatureInfo[]) {
+	function setupMockFetch() {
 		const originalFetch = globalThis.fetch;
 		const mockStyle = {
 			sources: {
