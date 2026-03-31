@@ -686,10 +686,16 @@ export const HEX_TILE_SCRIPT = `
         // waiting for vector tiles to load, then querying.  Adjacent tiles
         // that are visible in the same view are queried together to avoid
         // unnecessary zoom changes.
+        //
+        // The map container is hidden during this process so the user never
+        // sees the camera jump around.
         var savedCenter = map.getCenter();
         var savedZoom = map.getZoom();
         var savedBearing = map.getBearing();
         var savedPitch = map.getPitch();
+        var mapContainer = map.getContainer();
+        var prevVisibility = mapContainer.style.visibility;
+        mapContainer.style.visibility = 'hidden';
         var asyncResult = {};
         var pending = []; // indices of tiles still to query
         for (var pi2 = 0; pi2 < tiles.length; pi2++) {
@@ -702,9 +708,10 @@ export const HEX_TILE_SCRIPT = `
 
         function processNextGroup() {
           if (pending.length === 0) {
-            // All tiles processed – restore the original view.
+            // All tiles processed – restore the original view and show the map.
             map.jumpTo({ center: savedCenter, zoom: savedZoom, bearing: savedBearing, pitch: savedPitch });
             map.once('idle', function () {
+              mapContainer.style.visibility = prevVisibility;
               sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: asyncResult });
             });
             return;
