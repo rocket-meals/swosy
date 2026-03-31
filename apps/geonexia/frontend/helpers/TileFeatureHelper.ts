@@ -491,8 +491,7 @@ export async function queryTileFeaturesForArea(
  * Shared tiles across areas are deduplicated by the internal cache, so
  * overlapping / adjacent bounding boxes only incur one HTTP request per tile.
  *
- * @param areas – Array of bounding-box objects (minLat, minLng, maxLat, maxLng).
- * @param styleUrl – Optional style URL override (applied to all areas).
+ * @param areas – Array of bounding-box objects (minLat, minLng, maxLat, maxLng, optional styleUrl).
  * @returns A `MapFeatureInfo[]` array for each input area, in the same order.
  */
 export async function queryTileFeaturesForAreas(
