@@ -1970,18 +1970,16 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	);
 }
 
-const MAGNIFY_DEFAULT_ZOOM = 15;
 const MAGNIFY_COLOR = '#3b82f6';
 
 function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
-	const [zoom, setZoom] = useState(MAGNIFY_DEFAULT_ZOOM);
 	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const runIdRef = useRef(0);
 
-	const fetchFeatures = useCallback(async (queryZoom: number) => {
+	const fetchFeatures = useCallback(async () => {
 		const runId = ++runIdRef.current;
 
 		setLoading(true);
@@ -1996,7 +1994,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 				throw new Error(`Ungültige H3 Zelle: ${h3Index}`);
 			}
 
-			const result = await queryTileFeaturesForHexCell(h3Index, queryZoom);
+			const result = await queryTileFeaturesForHexCell(h3Index);
 			if (runId !== runIdRef.current) return;
 			setFeatures(result);
 		} catch (err) {
@@ -2010,8 +2008,8 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 	}, [h3Index]);
 
 	useEffect(() => {
-		fetchFeatures(zoom);
-	}, [zoom, fetchFeatures]);
+		fetchFeatures();
+	}, [fetchFeatures]);
 
 	const resolution = isH3Available() && isValidCell(h3Index) ? getResolution(h3Index) : null;
 	const center = isH3Available() && isValidCell(h3Index) ? cellToLatLng(h3Index) : null;
@@ -2044,10 +2042,6 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 		await Clipboard.setStringAsync(json);
 		Alert.alert('Kopiert', 'JSON in Zwischenablage kopiert.');
 	}, [features]);
-
-	const handleZoomChange = useCallback((delta: number) => {
-		setZoom((prev) => Math.max(1, Math.min(20, prev + delta)));
-	}, []);
 
 	return (
 		<View>
@@ -2086,32 +2080,6 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 					groupPosition="bottom"
 				/>
 			)}
-
-			<View style={magnifyStyles.zoomRow}>
-				<TouchableOpacity
-					style={[magnifyStyles.zoomButton, { backgroundColor: MAGNIFY_COLOR }]}
-					onPress={() => handleZoomChange(-1)}
-					activeOpacity={0.8}
-				>
-					<MaterialIcons name="remove" size={20} color="#ffffff" />
-				</TouchableOpacity>
-				<Text style={[magnifyStyles.zoomText, { color: theme.screen.text }]}>Zoom: {zoom}</Text>
-				<TouchableOpacity
-					style={[magnifyStyles.zoomButton, { backgroundColor: MAGNIFY_COLOR }]}
-					onPress={() => handleZoomChange(1)}
-					activeOpacity={0.8}
-				>
-					<MaterialIcons name="add" size={20} color="#ffffff" />
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={[magnifyStyles.reloadButton, { backgroundColor: MAGNIFY_COLOR }]}
-					onPress={() => fetchFeatures(zoom)}
-					activeOpacity={0.8}
-					disabled={loading}
-				>
-					<Ionicons name="reload-outline" size={16} color="#ffffff" />
-				</TouchableOpacity>
-			</View>
 
 			{loading && (
 				<View style={magnifyStyles.loadingContainer}>
@@ -2225,33 +2193,6 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 }
 
 const magnifyStyles = StyleSheet.create({
-	zoomRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'center',
-		gap: 12,
-		marginVertical: 8,
-		paddingHorizontal: 16,
-	},
-	zoomButton: {
-		width: 36,
-		height: 36,
-		borderRadius: 18,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	zoomText: {
-		fontSize: 15,
-		fontWeight: '600',
-	},
-	reloadButton: {
-		width: 36,
-		height: 36,
-		borderRadius: 18,
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginLeft: 4,
-	},
 	loadingContainer: {
 		alignItems: 'center',
 		paddingVertical: 24,

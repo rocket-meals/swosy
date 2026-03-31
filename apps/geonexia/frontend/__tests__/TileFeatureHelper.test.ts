@@ -14,6 +14,7 @@
 import {
 	getTilesForBounds,
 	calculateOptimalZoom,
+	queryTileFeaturesForAreas,
 } from '../helpers/TileFeatureHelper';
 
 import {
@@ -90,5 +91,53 @@ describe('TileFeatureHelper – tile coordinate helpers', () => {
 		const zoom = calculateOptimalZoom(45.0, 5.0, 55.0, 15.0);
 		expect(zoom).toBeLessThan(10);
 		expect(zoom).toBeGreaterThanOrEqual(1);
+	});
+});
+
+describe('TileFeatureHelper – batch API', () => {
+	it('queryTileFeaturesForAreas returns one result array per input area', async () => {
+		// Mock fetch: return valid style JSON for style URL, 404 for tile PBFs.
+		const originalFetch = globalThis.fetch;
+		const mockStyle = {
+			sources: {
+				openmaptiles: {
+					type: 'vector',
+					tiles: ['https://example.test/tiles/{z}/{x}/{y}.pbf'],
+				},
+			},
+		};
+		globalThis.fetch = jest.fn().mockImplementation((url: string) => {
+			if (typeof url === 'string' && url.includes('.pbf')) {
+				return Promise.resolve({ ok: false, status: 404 });
+			}
+			// Style URL
+			return Promise.resolve({
+				ok: true,
+				json: () => Promise.resolve(mockStyle),
+			});
+		});
+
+		try {
+			const bounds1 = getHexBounds(HEX_ID);
+			const bounds2 = {
+				minLat: bounds1.minLat + 0.01,
+				minLng: bounds1.minLng + 0.01,
+				maxLat: bounds1.maxLat + 0.01,
+				maxLng: bounds1.maxLng + 0.01,
+			};
+
+			const results = await queryTileFeaturesForAreas([bounds1, bounds2]);
+
+			expect(results).toHaveLength(2);
+			expect(Array.isArray(results[0])).toBe(true);
+			expect(Array.isArray(results[1])).toBe(true);
+		} finally {
+			globalThis.fetch = originalFetch;
+		}
+	});
+
+	it('queryTileFeaturesForAreas returns empty array for empty input', async () => {
+		const results = await queryTileFeaturesForAreas([]);
+		expect(results).toHaveLength(0);
 	});
 });
