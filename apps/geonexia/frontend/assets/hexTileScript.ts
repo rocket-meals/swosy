@@ -601,11 +601,10 @@ export const HEX_TILE_SCRIPT = `
     // returns rendered map features for each tile grouped by id.
     //
     // When the main map's zoom is high enough (≥ QUERY_MIN_ZOOM), features
-    // are queried directly from the main map.  Otherwise an offscreen
-    // MapLibre instance (created in index.html, completely invisible and
-    // independent) is used.  The offscreen map is jumped to each tile's
-    // centre at the required zoom, waits for vector tiles to load, then
-    // queries – without touching the visible map at all.
+    // are queried directly from the main map.  Otherwise the direct
+    // vector-tile fetch + parse approach (queryVectorTileFeaturesDirect,
+    // defined in index.html) is used – no hidden map, no DOM element, no
+    // canvas, just an HTTP fetch of the raw PBF tile and inline parsing.
     if (data.queryTileFeatures) {
       var req = data.queryTileFeatures;
       var requestId = req.requestId || '';
@@ -617,21 +616,21 @@ export const HEX_TILE_SCRIPT = `
       var QUERY_MIN_ZOOM = 14;
 
       // Helper: extract deduplicated MapFeatureInfo from queryRenderedFeatures
-      // result on the given map instance within the bounding box of a tile polygon.
-      function queryOneTileOn(qMap, tile) {
+      // result on the main map within the bounding box of a tile polygon.
+      function queryOneTileOnMainMap(tile) {
         var poly = tile.polygon;
         if (!poly || poly.length === 0) return [];
 
         var qMinX = Infinity, qMinY = Infinity, qMaxX = -Infinity, qMaxY = -Infinity;
         for (var pi = 0; pi < poly.length; pi++) {
-          var qPt = qMap.project([poly[pi][0], poly[pi][1]]);
+          var qPt = map.project([poly[pi][0], poly[pi][1]]);
           if (qPt.x < qMinX) qMinX = qPt.x;
           if (qPt.y < qMinY) qMinY = qPt.y;
           if (qPt.x > qMaxX) qMaxX = qPt.x;
           if (qPt.y > qMaxY) qMaxY = qPt.y;
         }
 
-        var qRendered = qMap.queryRenderedFeatures([[qMinX, qMinY], [qMaxX, qMaxY]]);
+        var qRendered = map.queryRenderedFeatures([[qMinX, qMinY], [qMaxX, qMaxY]]);
         var qFeatures = [];
         var qSeen = {};
         for (var qi = 0; qi < qRendered.length; qi++) {
@@ -663,74 +662,14 @@ export const HEX_TILE_SCRIPT = `
         // Current zoom is high enough – query synchronously from main map.
         var result = {};
         for (var ti = 0; ti < tiles.length; ti++) {
-          result[tiles[ti].id] = queryOneTileOn(map, tiles[ti]);
+          result[tiles[ti].id] = queryOneTileOnMainMap(tiles[ti]);
         }
         sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
       } else {
-        // Zoom is too low for street-level features on the main map.
-        // Use the offscreen query map (completely independent, invisible)
-        // to jump to each tile and query features without affecting the
-        // main map display at all.
-        var capturedTiles = tiles;
-        var capturedRequestId = requestId;
-
-        getOffscreenQueryMap(function (oMap) {
-          var asyncResult = {};
-          var pending = [];
-          for (var pi2 = 0; pi2 < capturedTiles.length; pi2++) {
-            if (!capturedTiles[pi2].polygon || capturedTiles[pi2].polygon.length === 0) {
-              asyncResult[capturedTiles[pi2].id] = [];
-            } else {
-              pending.push(pi2);
-            }
-          }
-
-          function processNextGroup() {
-            if (pending.length === 0) {
-              sendToRN({ tag: 'TileFeaturesResult', requestId: capturedRequestId, features: asyncResult });
-              return;
-            }
-
-            // Pick the first pending tile as anchor and jump the offscreen map.
-            var anchorIdx = pending[0];
-            var anchorPoly = capturedTiles[anchorIdx].polygon;
-            var sumLng = 0, sumLat = 0;
-            for (var ai = 0; ai < anchorPoly.length; ai++) {
-              sumLng += anchorPoly[ai][0];
-              sumLat += anchorPoly[ai][1];
-            }
-            var cLng = sumLng / anchorPoly.length;
-            var cLat = sumLat / anchorPoly.length;
-
-            oMap.jumpTo({ center: [cLng, cLat], zoom: QUERY_MIN_ZOOM, pitch: 0, bearing: 0 });
-
-            oMap.once('idle', function () {
-              var canvasW = oMap.getCanvas().width;
-              var canvasH = oMap.getCanvas().height;
-              var nextPending = [];
-
-              for (var ni = 0; ni < pending.length; ni++) {
-                var t = capturedTiles[pending[ni]];
-                var onScreen = true;
-                for (var vi = 0; vi < t.polygon.length; vi++) {
-                  var sp = oMap.project([t.polygon[vi][0], t.polygon[vi][1]]);
-                  if (sp.x < 0 || sp.y < 0 || sp.x > canvasW || sp.y > canvasH) {
-                    onScreen = false;
-                    break;
-                  }
-                }
-                if (onScreen) {
-                  asyncResult[t.id] = queryOneTileOn(oMap, t);
-                } else {
-                  nextPending.push(pending[ni]);
-                }
-              }
-              pending = nextPending;
-              processNextGroup();
-            });
-          }
-
-          processNextGroup();
+        // Zoom is too low – use direct vector-tile fetching (no hidden map
+        // or DOM element needed, just HTTP + protobuf parsing).
+        queryVectorTileFeaturesDirect(tiles, function (directResult) {
+          sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: directResult });
         });
       }
     }
