@@ -84,9 +84,13 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 	if (!res.ok) throw new Error(`Failed to fetch style: ${res.status}`);
 	const style = await res.json();
 
-	// Walk all sources looking for a `tiles` array containing a PBF URL.
+	// Walk all sources looking for a vector source with a PBF tile URL.
+	// Only consider sources whose type is 'vector' to avoid picking up
+	// raster (PNG/JPG) tile URLs that also contain `{z}/{x}/{y}` placeholders.
 	for (const src of Object.values(style.sources ?? {})) {
 		const source = src as Record<string, unknown>;
+		if (source.type !== 'vector') continue;
+
 		const tiles = source.tiles as string[] | undefined;
 		if (tiles) {
 			for (const url of tiles) {
