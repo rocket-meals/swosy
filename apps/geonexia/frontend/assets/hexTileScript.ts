@@ -642,7 +642,8 @@ export const HEX_TILE_SCRIPT = `
           var qf = qRendered[qi];
           if (qf.layer && hexOverlayLayersQuery[qf.layer.id]) continue;
           var qfp = qf.properties || {};
-          var qKey = (qfp.name || '') + '|' + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
+          var qKey = (qfp.name || '') + '|' + (qfp['class'] || '') + '|' + (qfp.subclass || '') + '|'
+            + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
             + (qfp.building || '') + '|' + (qfp.natural || '') + '|' + (qfp.landuse || '') + '|'
             + (qfp.amenity || '') + '|' + ((qf.layer && qf.layer.id) || '');
           if (qSeen[qKey]) continue;
@@ -650,6 +651,8 @@ export const HEX_TILE_SCRIPT = `
           qFeatures.push({
             layerId: (qf.layer && qf.layer.id) || null,
             name: qfp.name || qfp['name:de'] || null,
+            'class': qfp['class'] || null,
+            subclass: qfp.subclass || null,
             highway: qfp.highway || null,
             waterway: qfp.waterway || null,
             building: qfp.building || null,
@@ -727,7 +730,8 @@ export const HEX_TILE_SCRIPT = `
         if (f.layer && hexOverlayLayers[f.layer.id]) continue;
         var fp = f.properties || {};
         // Deduplicate by building a simple key from the interesting properties
-        var dedupeKey = (fp.name || '') + '|' + (fp.highway || '') + '|' + (fp.waterway || '') + '|'
+        var dedupeKey = (fp.name || '') + '|' + (fp['class'] || '') + '|' + (fp.subclass || '') + '|'
+          + (fp.highway || '') + '|' + (fp.waterway || '') + '|'
           + (fp.building || '') + '|' + (fp.natural || '') + '|' + (fp.landuse || '') + '|'
           + (fp.amenity || '') + '|' + ((f.layer && f.layer.id) || '');
         if (seen[dedupeKey]) continue;
@@ -735,6 +739,8 @@ export const HEX_TILE_SCRIPT = `
         mapFeatures.push({
           layerId: (f.layer && f.layer.id) || null,
           name: fp.name || fp['name:de'] || null,
+          'class': fp['class'] || null,
+          subclass: fp.subclass || null,
           highway: fp.highway || null,
           waterway: fp.waterway || null,
           building: fp.building || null,

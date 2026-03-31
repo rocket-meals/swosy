@@ -1761,6 +1761,8 @@ const hexPickerStyles = StyleSheet.create({
 type MapFeatureInfo = {
 	layerId: string | null;
 	name: string | null;
+	class: string | null;
+	subclass: string | null;
 	highway: string | null;
 	waterway: string | null;
 	building: string | null;
@@ -1934,10 +1936,19 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 }
 
 function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
-	const streets = mapFeatures?.filter((f) => f.highway) ?? [];
-	const waterways = mapFeatures?.filter((f) => f.waterway) ?? [];
-	const buildings = mapFeatures?.filter((f) => f.building) ?? [];
-	const pois = mapFeatures?.filter((f) => f.amenity || f.natural || f.landuse) ?? [];
+	const streets = mapFeatures?.filter((f) =>
+		f.highway || (f.layerId && (f.layerId.includes('road') || f.layerId.includes('highway')))
+	) ?? [];
+	const waterways = mapFeatures?.filter((f) =>
+		f.waterway || (f.layerId && f.layerId.includes('water'))
+	) ?? [];
+	const buildings = mapFeatures?.filter((f) =>
+		f.building || (f.layerId && f.layerId.includes('building'))
+	) ?? [];
+	const pois = mapFeatures?.filter((f) =>
+		f.amenity || f.natural || f.landuse ||
+		(f.layerId && (f.layerId.includes('poi') || f.layerId.includes('park') || f.layerId.includes('landuse') || f.layerId.includes('landcover')))
+	) ?? [];
 	const allFeatures = mapFeatures ?? [];
 
 	return (
@@ -1958,7 +1969,7 @@ function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFea
 							key={`street-${idx}`}
 							leftIcon={<MaterialIcons name="directions" size={20} color="#ffffff" />}
 							iconBackgroundColor="#f97316"
-							title={f.name ?? f.highway ?? `Straße ${idx + 1}`}
+							title={f.name ?? f.highway ?? f.class ?? `Straße ${idx + 1}`}
 							value={JSON.stringify(f)}
 							groupPosition={streets.length === 1 ? 'single' : idx === 0 ? 'top' : idx === streets.length - 1 ? 'bottom' : 'middle'}
 						/>
@@ -1973,7 +1984,7 @@ function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFea
 							key={`water-${idx}`}
 							leftIcon={<MaterialIcons name="water" size={20} color="#ffffff" />}
 							iconBackgroundColor="#3b82f6"
-							title={f.name ?? f.waterway ?? `Gewässer ${idx + 1}`}
+							title={f.name ?? f.waterway ?? f.class ?? `Gewässer ${idx + 1}`}
 							value={JSON.stringify(f)}
 							groupPosition={waterways.length === 1 ? 'single' : idx === 0 ? 'top' : idx === waterways.length - 1 ? 'bottom' : 'middle'}
 						/>
@@ -1988,7 +1999,7 @@ function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFea
 							key={`building-${idx}`}
 							leftIcon={<MaterialIcons name="apartment" size={20} color="#ffffff" />}
 							iconBackgroundColor="#8b5cf6"
-							title={f.name ?? f.building ?? `Gebäude ${idx + 1}`}
+							title={f.name ?? f.building ?? f.class ?? `Gebäude ${idx + 1}`}
 							value={JSON.stringify(f)}
 							groupPosition={buildings.length === 1 ? 'single' : idx === 0 ? 'top' : idx === buildings.length - 1 ? 'bottom' : 'middle'}
 						/>
@@ -2003,7 +2014,7 @@ function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFea
 							key={`poi-${idx}`}
 							leftIcon={<MaterialIcons name="place" size={20} color="#ffffff" />}
 							iconBackgroundColor="#10b981"
-							title={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? `POI ${idx + 1}`}
+							title={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? f.subclass ?? f.class ?? `POI ${idx + 1}`}
 							value={JSON.stringify(f)}
 							groupPosition={pois.length === 1 ? 'single' : idx === 0 ? 'top' : idx === pois.length - 1 ? 'bottom' : 'middle'}
 						/>

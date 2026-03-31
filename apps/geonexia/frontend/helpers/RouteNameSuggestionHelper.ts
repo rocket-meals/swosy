@@ -13,6 +13,8 @@
 export type MapFeatureInfo = {
 	layerId: string | null;
 	name: string | null;
+	class: string | null;
+	subclass: string | null;
 	highway: string | null;
 	waterway: string | null;
 	building: string | null;
@@ -29,6 +31,8 @@ export type AreaInfoEntry = {
 	layerId: string;
 	name: string | null;
 	count: number;
+	class: string | null;
+	subclass: string | null;
 	highway: string | null;
 	waterway: string | null;
 	building: string | null;
@@ -65,6 +69,8 @@ export function buildAreaInfoDict(
 					layerId: f.layerId ?? '',
 					name: f.name ?? null,
 					count: 1,
+					class: f.class ?? null,
+					subclass: f.subclass ?? null,
 					highway: f.highway ?? null,
 					waterway: f.waterway ?? null,
 					building: f.building ?? null,
@@ -121,6 +127,8 @@ function categoryLabel(entry: AreaInfoEntry): string | null {
 	if (entry.waterway) return entry.waterway;
 	if (entry.building && entry.building !== 'yes') return entry.building;
 	if (entry.highway && entry.highway !== 'yes') return entry.highway;
+	if (entry.subclass) return entry.subclass;
+	if (entry.class) return entry.class;
 	for (const lp of LAYER_PRIORITY) {
 		if (entry.layerId.includes(lp.pattern) && lp.label) return lp.label;
 	}
