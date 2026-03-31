@@ -93,8 +93,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L51
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2061
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2061
+  apps/geonexia/frontend/app/index.tsx:2166
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2166
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
   apps/geonexia/frontend/app/index.tsx:961
@@ -121,20 +121,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L76
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:103
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L103
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:113
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L113
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:104
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L104
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:114
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L114
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:142
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L142
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:152
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L152
 
 - **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:143
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L143
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:153
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L153
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242
