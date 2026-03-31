@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,48 +14,26 @@ import {
 } from 'repo-depkit-common-ui';
 import { useSelector } from 'react-redux';
 
-import { SavedRoute, loadRoute, loadRoutes, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
+import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, gridDistance, cellToLatLng, cellToBoundary, latLngToCell } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
-import {
-	type MapFeatureInfo,
-	type AreaInfoDict,
-	buildAreaInfoDict,
-	suggestRouteNames,
-	filterUsedNames,
-} from '../../helpers/RouteNameSuggestionHelper';
-import { useDebugMode } from '../../hooks/useDebugMode';
+import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
+import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
+import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
 import type { RootState } from '../../store/store';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
 
-/** Delay after fitBounds animation before querying tile features (ms). */
-const TILE_FEATURE_QUERY_DELAY_MS = 2000;
-/** Rough conversion factor from degrees to kilometres. */
-const KM_PER_DEGREE = 111;
-/** Maximum distance (km) between first and last hex centers to consider the route a closed loop. */
-const LOOP_CLOSURE_THRESHOLD_KM = 0.5;
-/** Safety cap for the gridDisk radius when enumerating enclosed candidates. */
-const MAX_ENCLOSED_GRID_DISK_K = 30;
-
 type MapEditSubMode = 'add' | 'remove';
 
-/** Ray-casting point-in-polygon test (polygon in [lng, lat] order). */
-function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number]>): boolean {
-	let inside = false;
-	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-		const [xi, yi] = polygon[i];
-		const [xj, yj] = polygon[j];
-		const intersect =
-			yi > lat !== yj > lat &&
-			lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
-		if (intersect) inside = !inside;
-	}
-	return inside;
-}
+/** Aggregated feature entry keyed by layerId+name+class+subclass. */
+type AggregatedFeatureEntry = {
+	count: number;
+	feature: MapFeatureInfo;
+};
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -106,14 +84,13 @@ export default function RouteDetailScreen() {
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
-	const isDebugMode = useDebugMode();
+	const { show: showHexTileModal } = useMyScrollViewModal();
+	const { show: showAggregatedModal } = useMyScrollViewModal();
 
-	// ── Area info & name-suggestion state ─────────────────────────────────
-	const [routeAreaInfo, setRouteAreaInfo] = useState<AreaInfoDict>({});
-	const [enclosedAreaInfo, setEnclosedAreaInfo] = useState<AreaInfoDict>({});
-	const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
-	const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
-	const [existingRouteNames, setExistingRouteNames] = useState<string[]>([]);
+	// ── Hex tile feature data ────────────────────────────────────────────
+	const [hexTileFeatureMap, setHexTileFeatureMap] = useState<Record<string, MapFeatureInfo[]>>({});
+	const [aggregatedFeatures, setAggregatedFeatures] = useState<Record<string, AggregatedFeatureEntry>>({});
+	const [featuresLoading, setFeaturesLoading] = useState(false);
 	const featureQuerySentRef = useRef(false);
 
 	// Stable ref so handleMapMessage can always read the latest edit state without
@@ -238,117 +215,59 @@ export default function RouteDetailScreen() {
 		};
 	}, [mapMounted, route, hexTileRecords]);
 
-	// ── Load existing route names for filtering suggestions ───────────────
+	// ── Fetch tile features for each hex tile using TileFeatureHelper ────
 	useEffect(() => {
-		loadRoutes()
-			.then((all) => setExistingRouteNames(all.map((r) => r.name)))
-			.catch(() => setExistingRouteNames([]));
-	}, []);
-
-	// ── Request tile features from the map once the route is displayed ────
-	// We wait for the fitBounds animation to settle (2 s) before querying so
-	// that all OSM features are loaded at the appropriate zoom level.
-	useEffect(() => {
-		if (!mapMounted || !route || !mapRef.current) return;
-		if (!isH3Available() || route.hexTiles.length === 0) return;
+		if (!route || route.hexTiles.length === 0) return;
+		if (!isH3Available()) return;
 		if (featureQuerySentRef.current) return;
+		featureQuerySentRef.current = true;
 
-		const timer = setTimeout(() => {
-			if (!mapRef.current || featureQuerySentRef.current) return;
-			featureQuerySentRef.current = true;
+		let cancelled = false;
 
-			// Build tile polygon descriptors for the route tiles
-			const routeTiles = route.hexTiles.map((cell) => {
+		(async () => {
+			setFeaturesLoading(true);
+
+			// 1. Build hex tile → features dict
+			const featureMap: Record<string, MapFeatureInfo[]> = {};
+			for (const hexId of route.hexTiles) {
+				if (cancelled) return;
 				try {
-					const boundary = cellToBoundary(cell, true); // GeoJSON order [lng, lat]
-					return { id: cell, polygon: boundary };
-				} catch {
-					return { id: cell, polygon: [] as Array<[number, number]> };
+					const features = await queryTileFeaturesForHexCell(
+						hexId,
+						undefined,
+						{ nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
+					);
+					featureMap[hexId] = features;
+				} catch (err) {
+					console.warn('[RouteDetailScreen] Failed to query features for hex tile', hexId, err);
+					featureMap[hexId] = [];
 				}
-			});
+			}
 
-			mapRef.current.sendToMap({
-				queryTileFeatures: { requestId: 'route', tiles: routeTiles },
-			});
+			if (cancelled) return;
+			setHexTileFeatureMap(featureMap);
 
-			// Compute enclosed tiles (route must form a loop)
-			try {
-				const centers = route.hexTiles.map((cell) => {
-					const [lat, lng] = cellToLatLng(cell);
-					return { lat, lng };
-				});
-				if (centers.length >= 3) {
-					const first = centers[0];
-					const last = centers[centers.length - 1];
-					const dLat = first.lat - last.lat;
-					const dLng = first.lng - last.lng;
-					const roughDistKm = Math.sqrt(dLat * dLat + dLng * dLng) * KM_PER_DEGREE;
-					if (roughDistKm < LOOP_CLOSURE_THRESHOLD_KM) {
-						// Route forms a loop – find enclosed cells
-						const polygon: Array<[number, number]> = centers.map((c) => [c.lng, c.lat]);
-						const lats = centers.map((c) => c.lat);
-						const lngs = centers.map((c) => c.lng);
-						const minLat = Math.min(...lats) - 0.001;
-						const maxLat = Math.max(...lats) + 0.001;
-						const minLng = Math.min(...lngs) - 0.001;
-						const maxLng = Math.max(...lngs) + 0.001;
-
-						const h3Res = route.h3Resolution;
-						const centerLat = (minLat + maxLat) / 2;
-						const centerLng = (minLng + maxLng) / 2;
-						const centerCell = latLngToCell(centerLat, centerLng, h3Res);
-						let maxK = 0;
-						const corners: Array<[number, number]> = [
-							[maxLat, maxLng], [maxLat, minLng], [minLat, maxLng], [minLat, minLng],
-						];
-						for (const [lat, lng] of corners) {
-							try {
-								const cornerCell = latLngToCell(lat, lng, h3Res);
-								const dist = gridDistance(centerCell, cornerCell);
-								if (dist > maxK) maxK = dist;
-							} catch { /* ignore */ }
-						}
-						const candidates = gridDisk(centerCell, Math.min(maxK + 1, MAX_ENCLOSED_GRID_DISK_K));
-						const routeSet = new Set(route.hexTiles);
-						const enclosedCells: string[] = [];
-						for (const cell of candidates) {
-							if (routeSet.has(cell)) continue;
-							try {
-								const [cLat, cLng] = cellToLatLng(cell);
-								if (pointInPolygon(cLng, cLat, polygon)) {
-									enclosedCells.push(cell);
-								}
-							} catch { /* ignore */ }
-						}
-						if (enclosedCells.length > 0) {
-							const enclosedTiles = enclosedCells.map((cell) => {
-								try {
-									const boundary = cellToBoundary(cell, true);
-									return { id: cell, polygon: boundary };
-								} catch {
-									return { id: cell, polygon: [] as Array<[number, number]> };
-								}
-							});
-							mapRef.current!.sendToMap({
-								queryTileFeatures: { requestId: 'enclosed', tiles: enclosedTiles },
-							});
-						}
+			// 2. Build aggregated features dict (key = layerId|name|class|subclass)
+			const aggregated: Record<string, AggregatedFeatureEntry> = {};
+			for (const features of Object.values(featureMap)) {
+				for (const f of features) {
+					const key = `${f.layerId ?? ''}|${f.name ?? ''}|${f.class ?? ''}|${f.subclass ?? ''}`;
+					const existing = aggregated[key];
+					if (existing) {
+						existing.count += 1;
+					} else {
+						aggregated[key] = { count: 1, feature: f };
 					}
 				}
-			} catch (err) {
-				console.warn('[RouteDetailScreen] Enclosed tile computation failed:', err);
 			}
-		}, TILE_FEATURE_QUERY_DELAY_MS);
 
-		return () => clearTimeout(timer);
-	}, [mapMounted, route]);
+			if (cancelled) return;
+			setAggregatedFeatures(aggregated);
+			setFeaturesLoading(false);
+		})();
 
-	// ── Recompute name suggestions when dicts or existing names change ────
-	useEffect(() => {
-		const suggestions = suggestRouteNames(routeAreaInfo, enclosedAreaInfo);
-		setNameSuggestions(suggestions);
-		setFilteredSuggestions(filterUsedNames(suggestions, existingRouteNames, route?.name));
-	}, [routeAreaInfo, enclosedAreaInfo, existingRouteNames, route?.name]);
+		return () => { cancelled = true; };
+	}, [route]);
 
 	// Live map update during editing
 	useEffect(() => {
@@ -398,20 +317,9 @@ export default function RouteDetailScreen() {
 	}, []);
 
 	const handleMapMessage = useCallback((data: object) => {
-		const msg = data as { tag?: string; h3Index?: string; requestId?: string; features?: Record<string, MapFeatureInfo[]> };
+		const msg = data as { tag?: string; h3Index?: string };
 		if (msg.tag === 'MapComponentMounted') {
 			setMapMounted(true);
-			return;
-		}
-
-		// ── Handle batch tile-feature query results ───────────────────────
-		if (msg.tag === 'TileFeaturesResult' && msg.features) {
-			const dict = buildAreaInfoDict(msg.features);
-			if (msg.requestId === 'route') {
-				setRouteAreaInfo(dict);
-			} else if (msg.requestId === 'enclosed') {
-				setEnclosedAreaInfo(dict);
-			}
 			return;
 		}
 
@@ -718,6 +626,7 @@ export default function RouteDetailScreen() {
 				<SettingsListGroupTitle title="Name anpassen" />
 				<SettingsListTextInput
 					title="Route umbenennen"
+					value={route.name}
 					placeholder="Route Name"
 					modalTitle="Route umbenennen"
 					initialValue={route.name}
@@ -769,80 +678,81 @@ export default function RouteDetailScreen() {
 					}}
 				/>
 
-				{/* ── Name suggestions (filtered) ──────────────────────────────── */}
-				{filteredSuggestions.length > 0 && (
+				{/* ── Hex Tile Feature Map ─────────────────────────────────── */}
+				{featuresLoading && (
+					<View style={styles.loadingFeatures}>
+						<ActivityIndicator size="small" color={PRIMARY_COLOR} />
+						<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Karten-Features…</Text>
+					</View>
+				)}
+				{!featuresLoading && route.hexTiles.length > 0 && Object.keys(hexTileFeatureMap).length > 0 && (
 					<>
-						<SettingsListGroupTitle title="Namensvorschläge" />
-						{filteredSuggestions.map((name, idx) => (
-							<SettingsList
-								key={`suggestion-${idx}`}
-								leftIcon={<MaterialIcons name="lightbulb-outline" size={20} color="#ffffff" />}
-								iconBackgroundColor="#f59e0b"
-								title={name}
-								showSeparator={idx < filteredSuggestions.length - 1}
-								groupPosition={filteredSuggestions.length === 1 ? 'single' : idx === 0 ? 'top' : idx === filteredSuggestions.length - 1 ? 'bottom' : 'middle'}
-								onPress={() => {
-									const updated: SavedRoute = { ...route, name };
-									try {
-										saveRoute(updated);
-									} catch {
-										Alert.alert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
-										return;
-									}
-									setRoute(updated);
-								}}
-							/>
-						))}
+						<SettingsListGroupTitle title="Hex Tiles" />
+						{route.hexTiles.map((hexId, idx) => {
+							const features = hexTileFeatureMap[hexId] ?? [];
+							return (
+								<SettingsList
+									key={`hextile-${hexId}`}
+									leftIcon={<MaterialIcons name="hexagon" size={20} color="#ffffff" />}
+									iconBackgroundColor="#6b7280"
+									title={hexId}
+									value={String(features.length)}
+									showSeparator={idx < route.hexTiles.length - 1}
+									groupPosition={route.hexTiles.length === 1 ? 'single' : idx === 0 ? 'top' : idx === route.hexTiles.length - 1 ? 'bottom' : 'middle'}
+									onPress={() => {
+										showHexTileModal({
+											title: `🔷 ${hexId}`,
+											children: (
+												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+													{features.length === 0 ? (
+														<Text style={{ color: theme.screen.icon, textAlign: 'center', marginTop: 16, fontSize: 14 }}>Keine Features</Text>
+													) : (
+														<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+															{JSON.stringify(features, null, 2)}
+														</Text>
+													)}
+												</View>
+											),
+										});
+									}}
+								/>
+							);
+						})}
 					</>
 				)}
 
-				{/* ── Debug: Area info dicts & all suggestions ─────────────────── */}
-				{isDebugMode && (
-					<>
-						<SettingsListGroupTitle title="🐛 Debug: Routen-Gebiet Info" />
-						<SettingsList
-							leftIcon={<MaterialIcons name="map" size={20} color="#ffffff" />}
-							iconBackgroundColor="#6b7280"
-							title="routeAreaInfo"
-							value={JSON.stringify(routeAreaInfo, null, 2)}
-							groupPosition="top"
-							showSeparator
-						/>
-						<SettingsList
-							leftIcon={<MaterialIcons name="crop-free" size={20} color="#ffffff" />}
-							iconBackgroundColor="#6b7280"
-							title="enclosedAreaInfo"
-							value={JSON.stringify(enclosedAreaInfo, null, 2)}
-							groupPosition="bottom"
-						/>
-
-						<SettingsListGroupTitle title="🐛 Debug: Alle Namensvorschläge" />
-						{nameSuggestions.length === 0 ? (
-							<SettingsList
-								leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
-								iconBackgroundColor="#6b7280"
-								title="Keine Vorschläge"
-								value="Warte auf Karten-Daten…"
-								groupPosition="single"
-							/>
-						) : (
-							nameSuggestions.map((name, idx) => {
-								const isFiltered = !filteredSuggestions.includes(name);
-								return (
-									<SettingsList
-										key={`debug-sug-${idx}`}
-										leftIcon={<MaterialIcons name={isFiltered ? 'block' : 'check-circle'} size={20} color="#ffffff" />}
-										iconBackgroundColor={isFiltered ? '#ef4444' : '#22c55e'}
-										title={name}
-										value={isFiltered ? 'Name bereits vergeben' : ''}
-										showSeparator={idx < nameSuggestions.length - 1}
-										groupPosition={nameSuggestions.length === 1 ? 'single' : idx === 0 ? 'top' : idx === nameSuggestions.length - 1 ? 'bottom' : 'middle'}
-									/>
-								);
-							})
-						)}
-					</>
-				)}
+				{/* ── Aggregated Features ─────────────────────────────────── */}
+				{!featuresLoading && Object.keys(aggregatedFeatures).length > 0 && (() => {
+					const entries = Object.entries(aggregatedFeatures).sort((a, b) => b[1].count - a[1].count);
+					return (
+						<>
+							<SettingsListGroupTitle title="Aggregierte Features" />
+							{entries.map(([key, entry], idx) => (
+								<SettingsList
+									key={`agg-${key}`}
+									leftIcon={<MaterialIcons name="layers" size={20} color="#ffffff" />}
+									iconBackgroundColor="#7c3aed"
+									title={key}
+									value={String(entry.count)}
+									showSeparator={idx < entries.length - 1}
+									groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
+									onPress={() => {
+										showAggregatedModal({
+											title: `📊 Feature`,
+											children: (
+												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+													<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+														{JSON.stringify(entry.feature, null, 2)}
+													</Text>
+												</View>
+											),
+										});
+									}}
+								/>
+							))}
+						</>
+					);
+				})()}
 
 				<TouchableOpacity
 					style={styles.deleteButton}
@@ -920,6 +830,12 @@ const styles = StyleSheet.create({
 		color: '#ef4444',
 		fontSize: 15,
 		fontWeight: '600',
+	},
+	loadingFeatures: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 16,
 	},
 	// ─── Map overlay controls ─────────────────────────────────────────────
 	mapOverlayButton: {
