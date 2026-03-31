@@ -618,13 +618,55 @@ export const HEX_TILE_SCRIPT = `
     var features = m.queryRenderedFeatures(e.point, { layers: [HEX_TILE_FILL_LAYER] });
     if (features && features.length > 0) {
       var props = features[0].properties || {};
-      // Query all rendered features at the click point to collect underlying map info
-      var allRendered = m.queryRenderedFeatures(e.point);
+
+      // Compute screen-space bounding box from the hex polygon geometry so we
+      // query ALL map features that fall within the hexagon, not just at the
+      // single click point.
+      var hexOverlayLayers = {};
+      hexOverlayLayers[HEX_TILE_FILL_LAYER] = true;
+      hexOverlayLayers[HEX_TILE_STROKE_LAYER] = true;
+      hexOverlayLayers[HEX_BORDER_LAYER] = true;
+      hexOverlayLayers[HEX_WALK_PATH_LAYER] = true;
+      hexOverlayLayers[HEX_VERTICES_LAYER] = true;
+      hexOverlayLayers[HEX_CENTERS_LAYER] = true;
+      hexOverlayLayers[HEX_MIDPOINTS_LAYER] = true;
+      hexOverlayLayers[MEASURE_ROUTE_LAYER] = true;
+      hexOverlayLayers[MEASURE_POINTS_LAYER] = true;
+      hexOverlayLayers[ROUTE_EDIT_NEIGHBOR_FILL_LAYER] = true;
+      hexOverlayLayers[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
+      hexOverlayLayers[ROUTE_EDIT_LABELS_LAYER] = true;
+
+      var allRendered;
+      var geometry = features[0].geometry;
+      var coords = geometry && geometry.coordinates && geometry.coordinates[0];
+      if (coords && coords.length > 0) {
+        var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (var ci = 0; ci < coords.length; ci++) {
+          var pt = m.project([coords[ci][0], coords[ci][1]]);
+          if (pt.x < minX) minX = pt.x;
+          if (pt.y < minY) minY = pt.y;
+          if (pt.x > maxX) maxX = pt.x;
+          if (pt.y > maxY) maxY = pt.y;
+        }
+        allRendered = m.queryRenderedFeatures([[minX, minY], [maxX, maxY]]);
+      } else {
+        allRendered = m.queryRenderedFeatures(e.point);
+      }
+
       var mapFeatures = [];
+      var seen = {};
       for (var fi = 0; fi < allRendered.length; fi++) {
         var f = allRendered[fi];
+        // Skip our own hex overlay layers
+        if (f.layer && hexOverlayLayers[f.layer.id]) continue;
         var fp = f.properties || {};
         if (fp.name || fp.highway || fp.waterway || fp.building || fp.natural || fp.landuse || fp.amenity) {
+          // Deduplicate by building a simple key from the interesting properties
+          var dedupeKey = (fp.name || '') + '|' + (fp.highway || '') + '|' + (fp.waterway || '') + '|'
+            + (fp.building || '') + '|' + (fp.natural || '') + '|' + (fp.landuse || '') + '|'
+            + (fp.amenity || '') + '|' + ((f.layer && f.layer.id) || '');
+          if (seen[dedupeKey]) continue;
+          seen[dedupeKey] = true;
           mapFeatures.push({
             layerId: (f.layer && f.layer.id) || null,
             name: fp.name || fp['name:de'] || null,
