@@ -350,6 +350,37 @@ export default function RouteDetailScreen() {
 		return () => { cancelled = true; };
 	}, [route]);
 
+	// Send enclosed tiles GeoJSON to the map once computed; clear during editing
+	useEffect(() => {
+		if (!mapMounted || !mapRef.current) return;
+		if (!isH3Available()) return;
+
+		const EMPTY_FC = { type: 'FeatureCollection' as const, features: [] };
+
+		// Hide enclosed tiles while editing (route shape is in flux)
+		if (isEditing || !enclosedTilesReady) {
+			mapRef.current.sendToMap({ hexEnclosedGeoJson: EMPTY_FC });
+			return;
+		}
+
+		const features = enclosedTiles.map((cell) => {
+			try {
+				const boundary = cellToBoundary(cell, true);
+				return {
+					type: 'Feature' as const,
+					geometry: { type: 'Polygon' as const, coordinates: [boundary] },
+					properties: { h3Index: cell },
+				};
+			} catch {
+				return null;
+			}
+		}).filter((f): f is NonNullable<typeof f> => f !== null);
+
+		mapRef.current.sendToMap({
+			hexEnclosedGeoJson: { type: 'FeatureCollection', features },
+		});
+	}, [mapMounted, enclosedTilesReady, enclosedTiles, isEditing]);
+
 	// Live map update during editing
 	useEffect(() => {
 		if (!isEditing || !mapMounted || !mapRef.current || !route) return;
