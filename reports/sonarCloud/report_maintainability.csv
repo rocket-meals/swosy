@@ -7,7 +7,7 @@ Key,Message,Component,Line
 "AZ1Do-iwZhiS2cIBve5B","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",200
 "AZ1Do-iwZhiS2cIBve5C","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",218
 "AZ1Do-iwZhiS2cIBve5D","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",220
-"AZ1DfJgEWUADpMCCZhIz","Refactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",79
+"AZ1DfJgEWUADpMCCZhIz","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",79
 "AZ1C4OI_BfEcQZ3_Y0dN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1943
 "AZ1C4OI_BfEcQZ3_Y0dO","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1946
 "AZ1CkG6ygetBJX8T7gNM","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",256
