@@ -7,6 +7,7 @@ import * as Clipboard from 'expo-clipboard';
 import { isAvailable as isH3Available, cellToLatLng, cellToBoundary, getResolution, isValidCell } from '../../../helpers/H3Helper';
 import { queryTileFeaturesForArea } from '../../../helpers/TileFeatureHelper';
 import type { MapFeatureInfo } from '../../../helpers/RouteNameSuggestionHelper';
+import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../../helpers/OpenMapTilesSchema';
 
 const HEX_ID = '8a1f10d5061ffff';
 const EXPERIMENTAL_COLOR = '#7c3aed';
@@ -107,7 +108,10 @@ export default function HexTileInfoScreen() {
 				throw new Error(`Ungültige H3 Zelle: ${HEX_ID}`);
 			}
 
-			const areaResult = await queryTileFeaturesForArea(bounds);
+			const areaResult = await queryTileFeaturesForArea({
+				...bounds,
+				filterOptions: { nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
+			});
 
 			if (runId !== runIdRef.current) return;
 			setFeatures(areaResult.features);
