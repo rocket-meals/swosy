@@ -600,6 +600,12 @@ export const HEX_TILE_SCRIPT = `
     // Receives an array of { id, polygon: [[lng,lat], ...] } objects,
     // projects each polygon to screen space, queries all rendered map
     // features within the bounding box and returns the results grouped by id.
+    //
+    // When the map is zoomed out (e.g. after fitBounds on a route overview),
+    // street-level features are not rendered and queryRenderedFeatures returns
+    // empty results.  In that case we temporarily zoom into each tile at a
+    // sufficient zoom level, wait for vector tiles to load, query, then
+    // restore the original view.
     if (data.queryTileFeatures) {
       var req = data.queryTileFeatures;
       var requestId = req.requestId || '';
@@ -619,12 +625,15 @@ export const HEX_TILE_SCRIPT = `
       hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
       hexOverlayLayersQuery[ROUTE_EDIT_LABELS_LAYER] = true;
 
-      var result = {};
-      for (var ti = 0; ti < tiles.length; ti++) {
-        var tile = tiles[ti];
-        var tileId = tile.id;
+      // Minimum zoom at which street-level features (names, highway class)
+      // are rendered by OpenMapTiles vector tiles.
+      var QUERY_MIN_ZOOM = 14;
+
+      // Helper: query rendered features for a single tile at the current view
+      // and return an array of deduplicated MapFeatureInfo objects.
+      function queryOneTile(tile) {
         var poly = tile.polygon;
-        if (!poly || poly.length === 0) { result[tileId] = []; continue; }
+        if (!poly || poly.length === 0) return [];
 
         var qMinX = Infinity, qMinY = Infinity, qMaxX = -Infinity, qMaxY = -Infinity;
         for (var pi = 0; pi < poly.length; pi++) {
@@ -661,9 +670,88 @@ export const HEX_TILE_SCRIPT = `
             amenity: qfp.amenity || null,
           });
         }
-        result[tileId] = qFeatures;
+        return qFeatures;
       }
-      sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
+
+      if (map.getZoom() >= QUERY_MIN_ZOOM) {
+        // Current zoom is high enough – query synchronously as before.
+        var result = {};
+        for (var ti = 0; ti < tiles.length; ti++) {
+          result[tiles[ti].id] = queryOneTile(tiles[ti]);
+        }
+        sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
+      } else {
+        // Zoom is too low for street-level features.  Process tiles by
+        // temporarily jumping to each tile's centre at QUERY_MIN_ZOOM,
+        // waiting for vector tiles to load, then querying.  Adjacent tiles
+        // that are visible in the same view are queried together to avoid
+        // unnecessary zoom changes.
+        var savedCenter = map.getCenter();
+        var savedZoom = map.getZoom();
+        var savedBearing = map.getBearing();
+        var savedPitch = map.getPitch();
+        var asyncResult = {};
+        var pending = []; // indices of tiles still to query
+        for (var pi2 = 0; pi2 < tiles.length; pi2++) {
+          if (!tiles[pi2].polygon || tiles[pi2].polygon.length === 0) {
+            asyncResult[tiles[pi2].id] = [];
+          } else {
+            pending.push(pi2);
+          }
+        }
+
+        function processNextGroup() {
+          if (pending.length === 0) {
+            // All tiles processed – restore the original view.
+            map.jumpTo({ center: savedCenter, zoom: savedZoom, bearing: savedBearing, pitch: savedPitch });
+            map.once('idle', function () {
+              sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: asyncResult });
+            });
+            return;
+          }
+
+          // Pick the first pending tile as anchor and jump to its centre.
+          var anchorIdx = pending[0];
+          var anchorPoly = tiles[anchorIdx].polygon;
+          var sumLng = 0, sumLat = 0;
+          for (var ai = 0; ai < anchorPoly.length; ai++) {
+            sumLng += anchorPoly[ai][0];
+            sumLat += anchorPoly[ai][1];
+          }
+          var cLng = sumLng / anchorPoly.length;
+          var cLat = sumLat / anchorPoly.length;
+
+          map.jumpTo({ center: [cLng, cLat], zoom: QUERY_MIN_ZOOM, pitch: 0, bearing: 0 });
+
+          map.once('idle', function () {
+            var canvasW = map.getCanvas().width;
+            var canvasH = map.getCanvas().height;
+            var nextPending = [];
+
+            for (var ni = 0; ni < pending.length; ni++) {
+              var t = tiles[pending[ni]];
+              // Check whether this tile's polygon is on screen.
+              var onScreen = true;
+              for (var vi = 0; vi < t.polygon.length; vi++) {
+                var sp = map.project([t.polygon[vi][0], t.polygon[vi][1]]);
+                if (sp.x < 0 || sp.y < 0 || sp.x > canvasW || sp.y > canvasH) {
+                  onScreen = false;
+                  break;
+                }
+              }
+              if (onScreen) {
+                asyncResult[t.id] = queryOneTile(t);
+              } else {
+                nextPending.push(pending[ni]);
+              }
+            }
+            pending = nextPending;
+            processNextGroup();
+          });
+        }
+
+        processNextGroup();
+      }
     }
   };
 
