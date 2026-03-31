@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Keyboard,
-	KeyboardAvoidingView,
-	Platform,
 	StyleSheet,
-	TextInput,
 	TouchableOpacity,
 	Text,
 	View,
 } from 'react-native';
 import type { KeyboardTypeOptions } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -108,7 +106,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 
 	const content = (
 		<View style={styles.sheetView}>
-			<TextInput
+			<BottomSheetTextInput
 				style={[
 					styles.sheetInput,
 					{
@@ -143,19 +141,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 		</View>
 	);
 
-	if (Platform.OS === 'web') {
-		return content;
-	}
-
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'position' : undefined}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-			style={styles.keyboardAvoidingView}
-		>
-			<View style={styles.keyboardAvoidingContent}>{content}</View>
-		</KeyboardAvoidingView>
-	);
+	return content;
 };
 
 const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
@@ -262,14 +248,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		padding: 10,
 		alignItems: 'stretch',
-	},
-	keyboardAvoidingView: {
-		flex: 1,
-		width: '100%',
-	},
-	keyboardAvoidingContent: {
-		flexGrow: 1,
-		alignItems: 'center',
 	},
 	sheetInput: {
 		width: '100%',

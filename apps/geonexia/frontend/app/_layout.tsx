@@ -224,6 +224,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/keyboard-avoid-test/index"
+				options={{
+					title: 'Keyboard Avoid Test',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',
