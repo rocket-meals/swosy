@@ -99,7 +99,7 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 		// Some styles use a TileJSON URL in the `url` field instead.
 		if (typeof source.url === 'string') {
 			try {
-				const tjRes = await fetch(source.url as string);
+				const tjRes = await fetch(source.url);
 				if (tjRes.ok) {
 					const tj = await tjRes.json();
 					const tjTiles = tj.tiles as string[] | undefined;
