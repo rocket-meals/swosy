@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-31T05:28:02.387Z",
+  "report_timestamp": "2026-03-31T06:22:02.786Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 94,
-          "average": 1.591157894736842,
-          "amountSavedValuesForKeys": 3779,
+          "average": 1.5978123685317627,
+          "amountSavedValuesForKeys": 3798,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 94,
-          "average": 1.6053525913338997,
-          "amountSavedValuesForKeys": 3779,
-          "amountKeys": 27
+          "average": 1.6120543293718166,
+          "amountSavedValuesForKeys": 3798,
+          "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4009,
-        "detection_time_ms": 80,
+        "ast_generation_time_ms": 3979,
+        "detection_time_ms": 74,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 231.59,
-          "os_memory_free": 14931996672,
+          "os_uptime": 106.34,
+          "os_memory_free": 14995099648,
           "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -44,28 +44,28 @@
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 33,
-    "amount_files_with_data_clumps": 27,
+    "amount_classes_or_interfaces_with_data_clumps": 36,
+    "amount_files_with_data_clumps": 29,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 38,
+    "fields_to_fields_data_clump": 44,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 46
+    "amount_data_clumps": 52
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "5e946cafe81355aa3e1f1299da9befa09f5d788f",
-    "project_commit_hash": "5e946cafe81355aa3e1f1299da9befa09f5d788f",
+    "project_version": "311c58d9b661c0142e3be00fa879e4ba99a32d21",
+    "project_commit_hash": "311c58d9b661c0142e3be00fa879e4ba99a32d21",
     "project_tag": null,
-    "project_commit_date": "1774934790",
+    "project_commit_date": "1774938030",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 470,
-    "number_of_classes_or_interfaces": 959,
+    "number_of_files": 471,
+    "number_of_classes_or_interfaces": 963,
     "number_of_methods": 1325,
-    "number_of_data_fields": 3779,
+    "number_of_data_fields": 3798,
     "number_of_method_parameters": 1465
   },
   "detector": {
@@ -2365,6 +2365,425 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnamehighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnamehighwaywaterwaybuildingnaturallanduseamenity",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/app/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo",
+      "from_class_or_interface_name": "MapFeatureInfo",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo",
+      "to_class_or_interface_name": "MapFeatureInfo",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/layerId": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/layerId",
+          "name": "layerId",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/layerId",
+            "name": "layerId",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 14,
+              "startColumn": 2,
+              "endLine": 14,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1762,
+            "startColumn": 2,
+            "endLine": 1762,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/name": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/name",
+          "name": "name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/name",
+            "name": "name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 1763,
+            "startColumn": 2,
+            "endLine": 1763,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/highway": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/highway",
+          "name": "highway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/highway",
+            "name": "highway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1764,
+            "startColumn": 2,
+            "endLine": 1764,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/waterway": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/waterway",
+          "name": "waterway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway",
+            "name": "waterway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 1765,
+            "startColumn": 2,
+            "endLine": 1765,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/building": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 1766,
+            "startColumn": 2,
+            "endLine": 1766,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/natural": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/natural",
+          "name": "natural",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural",
+            "name": "natural",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1767,
+            "startColumn": 2,
+            "endLine": 1767,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/landuse": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/landuse",
+          "name": "landuse",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
+            "name": "landuse",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1768,
+            "startColumn": 2,
+            "endLine": 1768,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/amenity": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1769,
+            "startColumn": 2,
+            "endLine": 1769,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-namehighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-namehighwaywaterwaybuildingnaturallanduseamenity",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/app/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo",
+      "from_class_or_interface_name": "MapFeatureInfo",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry",
+      "to_class_or_interface_name": "AreaInfoEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/name": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/name",
+          "name": "name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/name",
+            "name": "name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 1763,
+            "startColumn": 2,
+            "endLine": 1763,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/highway": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/highway",
+          "name": "highway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/highway",
+            "name": "highway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 2,
+              "endLine": 32,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1764,
+            "startColumn": 2,
+            "endLine": 1764,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/waterway": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/waterway",
+          "name": "waterway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway",
+            "name": "waterway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 2,
+              "endLine": 33,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 1765,
+            "startColumn": 2,
+            "endLine": 1765,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/building": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 2,
+              "endLine": 34,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 1766,
+            "startColumn": 2,
+            "endLine": 1766,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/natural": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/natural",
+          "name": "natural",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural",
+            "name": "natural",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 2,
+              "endLine": 35,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1767,
+            "startColumn": 2,
+            "endLine": 1767,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/landuse": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/landuse",
+          "name": "landuse",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
+            "name": "landuse",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1768,
+            "startColumn": 2,
+            "endLine": 1768,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/amenity": {
+          "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 2,
+              "endLine": 37,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 1769,
+            "startColumn": 2,
+            "endLine": 1769,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListBillboard/index.tsx-apps/geonexia/frontend/components/SettingsListBillboard/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListHexTile/index.tsx/interface/Props-titleonPressgroupPosition": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListBillboard/index.tsx-apps/geonexia/frontend/components/SettingsListBillboard/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListHexTile/index.tsx/interface/Props-titleonPressgroupPosition",
@@ -2458,7 +2877,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 2
       }
     },
@@ -2555,7 +2974,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 10,
+        "cluster_id": 11,
         "cluster_type": 2
       }
     },
@@ -2652,7 +3071,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2749,7 +3168,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -2846,7 +3265,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     },
@@ -3387,8 +3806,821 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-namehighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-namehighwaywaterwaybuildingnaturallanduseamenity",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry",
+      "from_class_or_interface_name": "AreaInfoEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/app/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo",
+      "to_class_or_interface_name": "MapFeatureInfo",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/name": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/name",
+          "name": "name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/name",
+            "name": "name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1763,
+              "startColumn": 2,
+              "endLine": 1763,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/highway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/highway",
+          "name": "highway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/highway",
+            "name": "highway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1764,
+              "startColumn": 2,
+              "endLine": 1764,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 2,
+            "endLine": 32,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway",
+          "name": "waterway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/waterway",
+            "name": "waterway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1765,
+              "startColumn": 2,
+              "endLine": 1765,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 2,
+            "endLine": 33,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1766,
+              "startColumn": 2,
+              "endLine": 1766,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 2,
+            "endLine": 34,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural",
+          "name": "natural",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/natural",
+            "name": "natural",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1767,
+              "startColumn": 2,
+              "endLine": 1767,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 2,
+            "endLine": 35,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
+          "name": "landuse",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/landuse",
+            "name": "landuse",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1768,
+              "startColumn": 2,
+              "endLine": 1768,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 2,
+            "endLine": 36,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1769,
+              "startColumn": 2,
+              "endLine": 1769,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 2,
+            "endLine": 37,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-namehighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-namehighwaywaterwaybuildingnaturallanduseamenity",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry",
+      "from_class_or_interface_name": "AreaInfoEntry",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo",
+      "to_class_or_interface_name": "MapFeatureInfo",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/name": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/name",
+          "name": "name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/name",
+            "name": "name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 30,
+            "startColumn": 2,
+            "endLine": 30,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/highway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/highway",
+          "name": "highway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/highway",
+            "name": "highway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 2,
+            "endLine": 32,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway",
+          "name": "waterway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway",
+            "name": "waterway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 33,
+            "startColumn": 2,
+            "endLine": 33,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 34,
+            "startColumn": 2,
+            "endLine": 34,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural",
+          "name": "natural",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural",
+            "name": "natural",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 35,
+            "startColumn": 2,
+            "endLine": 35,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
+          "name": "landuse",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
+            "name": "landuse",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 20,
+              "startColumn": 2,
+              "endLine": 20,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 36,
+            "startColumn": 2,
+            "endLine": 36,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 21,
+              "startColumn": 2,
+              "endLine": 21,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 37,
+            "startColumn": 2,
+            "endLine": 37,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-layerIdnamehighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-layerIdnamehighwaywaterwaybuildingnaturallanduseamenity",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo",
+      "from_class_or_interface_name": "MapFeatureInfo",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/app/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo",
+      "to_class_or_interface_name": "MapFeatureInfo",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/layerId": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/layerId",
+          "name": "layerId",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/layerId",
+            "name": "layerId",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1762,
+              "startColumn": 2,
+              "endLine": 1762,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 14,
+            "startColumn": 2,
+            "endLine": 14,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/name": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/name",
+          "name": "name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/name",
+            "name": "name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1763,
+              "startColumn": 2,
+              "endLine": 1763,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/highway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/highway",
+          "name": "highway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/highway",
+            "name": "highway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1764,
+              "startColumn": 2,
+              "endLine": 1764,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway",
+          "name": "waterway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/waterway",
+            "name": "waterway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1765,
+              "startColumn": 2,
+              "endLine": 1765,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1766,
+              "startColumn": 2,
+              "endLine": 1766,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural",
+          "name": "natural",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/natural",
+            "name": "natural",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1767,
+              "startColumn": 2,
+              "endLine": 1767,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
+          "name": "landuse",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/landuse",
+            "name": "landuse",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1768,
+              "startColumn": 2,
+              "endLine": 1768,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 1769,
+              "startColumn": 2,
+              "endLine": 1769,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-namehighwaywaterwaybuildingnaturallanduseamenity": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry-namehighwaywaterwaybuildingnaturallanduseamenity",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo",
+      "from_class_or_interface_name": "MapFeatureInfo",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry",
+      "to_class_or_interface_name": "AreaInfoEntry",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/name": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/name",
+          "name": "name",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/name",
+            "name": "name",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 30,
+              "startColumn": 2,
+              "endLine": 30,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/highway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/highway",
+          "name": "highway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/highway",
+            "name": "highway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 2,
+              "endLine": 32,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway",
+          "name": "waterway",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway",
+            "name": "waterway",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 33,
+              "startColumn": 2,
+              "endLine": 33,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 34,
+              "startColumn": 2,
+              "endLine": 34,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural",
+          "name": "natural",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural",
+            "name": "natural",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 35,
+              "startColumn": 2,
+              "endLine": 35,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
+          "name": "landuse",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
+            "name": "landuse",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 36,
+              "startColumn": 2,
+              "endLine": 36,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 20,
+            "startColumn": 2,
+            "endLine": 20,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 37,
+              "startColumn": 2,
+              "endLine": 37,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 21,
+            "startColumn": 2,
+            "endLine": 21,
+            "endColumn": 25
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 10,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/RouteStorage.ts-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-idh3ResolutionsportType": {
@@ -3484,7 +4716,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 13,
         "cluster_type": 2
       }
     },
@@ -3656,7 +4888,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -3828,7 +5060,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 14,
         "cluster_type": 2
       }
     },
@@ -4022,7 +5254,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -4119,7 +5351,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -5949,7 +7181,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 12,
         "cluster_type": 3
       }
     }
