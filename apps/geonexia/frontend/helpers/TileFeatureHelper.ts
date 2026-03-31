@@ -13,6 +13,7 @@ import Pbf from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
+import { cellToBoundary as h3CellToBoundary } from './H3Helper';
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
@@ -281,11 +282,7 @@ export async function queryTileFeaturesForHexCell(
 	zoom: number = 14,
 	styleUrl?: string,
 ): Promise<MapFeatureInfo[]> {
-	// Dynamically import H3 to compute the cell boundary.
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	const h3 = require('./h3/libh3') as typeof import('./h3/libh3');
-
-	const boundary = h3.cellToBoundary(h3Index); // [[lat, lng], ...]
+	const boundary = h3CellToBoundary(h3Index); // [[lat, lng], ...]
 	if (!boundary || boundary.length === 0) {
 		throw new Error(`Invalid H3 cell or empty boundary: ${h3Index}`);
 	}
