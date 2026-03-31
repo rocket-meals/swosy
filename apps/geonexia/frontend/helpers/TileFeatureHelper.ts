@@ -76,10 +76,13 @@ function boundsOverlap(
 /**
  * Filter features based on {@link MapFeatureFilterOptions}.
  *
- * When `includeNameNull` is `true` (or the options object is omitted),
- * all features are returned unchanged.  Otherwise features whose `name`
- * is `null` are removed unless their `layerId` appears in the
- * `nameNullAllowList`.
+ * When the `options` object is omitted entirely, all features are returned
+ * unchanged (backward-compatible default).
+ *
+ * When `options` **is** provided:
+ * - `includeNameNull: true` → all features are returned.
+ * - `includeNameNull` omitted / `false` → features whose `name` is `null`
+ *   are removed unless their `layerId` appears in `nameNullAllowList`.
  */
 function applyNameFilter(
 	features: MapFeatureInfo[],

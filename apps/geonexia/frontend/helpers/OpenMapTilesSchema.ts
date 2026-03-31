@@ -176,12 +176,18 @@ export enum BoundaryClass {
 /**
  * Options to control which features with `name === null` are included or
  * excluded from query results.
+ *
+ * When this options object is **not provided** to a query method, no
+ * name-based filtering is applied (all features are returned for backward
+ * compatibility).
  */
 export type MapFeatureFilterOptions = {
 	/**
 	 * When `true`, include **all** features regardless of whether `name` is null.
-	 * When `false` (the default), features whose `name` is null are filtered out
+	 * When `false` or omitted, features whose `name` is null are filtered out
 	 * unless their `layerId` is listed in {@link nameNullAllowList}.
+	 *
+	 * @default false
 	 */
 	includeNameNull?: boolean;
 
