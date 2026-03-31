@@ -25,8 +25,8 @@ export const HEX_TILE_SCRIPT = `
   var hexTileActive = true;
   var hexDebugPointsVisible = false;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
-  // Hex border: subtle gray, low opacity
-  var hexTileStrokeColor = '#9ca3af';
+  // Hex border: light gray, low opacity
+  var hexTileStrokeColor = '#d1d5db';
   // Level-based fill colours: level 1 = lightest green, level 10 = darkest green.
   // Levels 1–10 are interpolated linearly between these two endpoints.
   var HEX_COLOR_LEVEL_MIN = '#bbf7d0'; // level  1 – light mint green

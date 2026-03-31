@@ -1933,13 +1933,114 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 	);
 }
 
-// ─── Record Screen ─────────────────────────────────────────────────────────────
+function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
+	const streets = mapFeatures?.filter((f) => f.highway) ?? [];
+	const waterways = mapFeatures?.filter((f) => f.waterway) ?? [];
+	const buildings = mapFeatures?.filter((f) => f.building) ?? [];
+	const pois = mapFeatures?.filter((f) => f.amenity || f.natural || f.landuse) ?? [];
+	const allFeatures = mapFeatures ?? [];
+
+	return (
+		<View>
+			<SettingsListGroupTitle title="Hex Tile" />
+			<SettingsList
+				leftIcon={<MaterialIcons name="tag" size={20} color="#ffffff" />}
+				iconBackgroundColor="#6b7280"
+				title="H3 Index"
+				value={h3Index}
+				groupPosition="single"
+			/>
+			{streets.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Straßen" />
+					{streets.map((f, idx) => (
+						<SettingsList
+							key={`street-${idx}`}
+							leftIcon={<MaterialIcons name="directions" size={20} color="#ffffff" />}
+							iconBackgroundColor="#f97316"
+							title={f.name ?? f.highway ?? `Straße ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={streets.length === 1 ? 'single' : idx === 0 ? 'top' : idx === streets.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{waterways.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Gewässer" />
+					{waterways.map((f, idx) => (
+						<SettingsList
+							key={`water-${idx}`}
+							leftIcon={<MaterialIcons name="water" size={20} color="#ffffff" />}
+							iconBackgroundColor="#3b82f6"
+							title={f.name ?? f.waterway ?? `Gewässer ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={waterways.length === 1 ? 'single' : idx === 0 ? 'top' : idx === waterways.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{buildings.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Gebäude" />
+					{buildings.map((f, idx) => (
+						<SettingsList
+							key={`building-${idx}`}
+							leftIcon={<MaterialIcons name="apartment" size={20} color="#ffffff" />}
+							iconBackgroundColor="#8b5cf6"
+							title={f.name ?? f.building ?? `Gebäude ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={buildings.length === 1 ? 'single' : idx === 0 ? 'top' : idx === buildings.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{pois.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Points of Interest" />
+					{pois.map((f, idx) => (
+						<SettingsList
+							key={`poi-${idx}`}
+							leftIcon={<MaterialIcons name="place" size={20} color="#ffffff" />}
+							iconBackgroundColor="#10b981"
+							title={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? `POI ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={pois.length === 1 ? 'single' : idx === 0 ? 'top' : idx === pois.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{allFeatures.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Alle Features (JSON)" />
+					<SettingsList
+						leftIcon={<MaterialIcons name="code" size={20} color="#ffffff" />}
+						iconBackgroundColor="#374151"
+						title="mapFeatures"
+						value={JSON.stringify(allFeatures, null, 2)}
+						groupPosition="single"
+					/>
+				</>
+			)}
+			{allFeatures.length === 0 && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor="#6b7280"
+					title="Keine Karteninformationen"
+					value="Keine Features in diesem Bereich gefunden."
+					groupPosition="single"
+				/>
+			)}
+		</View>
+	);
+}
 
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
 	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
+	const { show: showMagnifyModal, close: closeMagnifyModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
 	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
@@ -1973,6 +2074,10 @@ export default function RecordScreen() {
 	const [isMeasureMode, setIsMeasureMode] = useState(false);
 	const isMeasureModeRef = useRef(false);
 	const measureWaypointsRef = useRef<Array<{ lat: number; lng: number }>>([]);
+
+	// Magnify mode (debug only): show detailed map info when tapping a hex tile
+	const [isMagnifyMode, setIsMagnifyMode] = useState(false);
+	const isMagnifyModeRef = useRef(false);
 
 	// TTS: track the last whole-km milestone announced to avoid repeating.
 	// Reset to 0 when recording starts.
@@ -2613,6 +2718,16 @@ export default function RecordScreen() {
 		});
 	}, [showModal]);
 
+	const showMagnifyHexTileModal = useCallback((h3Index: string, mapFeatures?: MapFeatureInfo[]) => {
+		showMagnifyModal({
+			title: '🔍 Karte Info',
+			onClose: closeMagnifyModal,
+			children: (
+				<MagnifyModalContent h3Index={h3Index} mapFeatures={mapFeatures} />
+			),
+		});
+	}, [showMagnifyModal, closeMagnifyModal]);
+
 	// ── Measure mode (debug only) ───────────────────────────────────────────────
 
 	const startMeasureMode = useCallback(() => {
@@ -2629,6 +2744,18 @@ export default function RecordScreen() {
 		setIsMeasureMode(false);
 		measureWaypointsRef.current = [];
 		mapRef.current?.sendToMap({ measureMode: false });
+	}, []);
+
+	// ── Magnify mode (debug only) ───────────────────────────────────────────────
+
+	const startMagnifyMode = useCallback(() => {
+		isMagnifyModeRef.current = true;
+		setIsMagnifyMode(true);
+	}, []);
+
+	const cancelMagnifyMode = useCallback(() => {
+		isMagnifyModeRef.current = false;
+		setIsMagnifyMode(false);
 	}, []);
 
 	const undoMeasurePoint = useCallback(() => {
@@ -2829,6 +2956,9 @@ export default function RecordScreen() {
 				if (coloringTileImageRef.current !== null) {
 					// Coloring mode active: directly apply the selected tile image.
 					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
+				} else if (isMagnifyModeRef.current) {
+					// Magnify mode active: show detailed map info modal.
+					showMagnifyHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
 				} else {
 					showHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
 				}
@@ -2843,7 +2973,7 @@ export default function RecordScreen() {
 				mapRef.current?.sendToMap({ measurePoints: coords });
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations, dispatch]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch]);
 
 	const handleExportMapSettings = useCallback(async () => {
 		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string> }> = {};
@@ -3689,13 +3819,26 @@ export default function RecordScreen() {
 						</>
 					)}
 					{isDebugMode && !isRecording && !isMeasureMode && (
-						<TouchableOpacity
-							style={styles.debugButton}
-							onPress={showDebugModal}
-							activeOpacity={0.8}
-						>
-							<MaterialIcons name="bug-report" size={20} color="#555555" />
-						</TouchableOpacity>
+						<>
+							<TouchableOpacity
+								style={styles.debugButton}
+								onPress={showDebugModal}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="bug-report" size={20} color="#555555" />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									isMagnifyMode && { backgroundColor: '#3b82f6' },
+								]}
+								onPress={isMagnifyMode ? cancelMagnifyMode : startMagnifyMode}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="search" size={20} color={isMagnifyMode ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+						</>
 					)}
 					{isDebugMode && isMeasureMode && (
 						<>
