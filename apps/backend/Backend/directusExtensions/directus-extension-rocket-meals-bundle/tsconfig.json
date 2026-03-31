@@ -23,8 +23,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "rootDir": "./src",
-    "types": ["node", "jest"]
+    "rootDir": "./src"
   },
   "include": ["./src/**/*.ts"]
 }
