@@ -66,7 +66,7 @@ export function buildKmAnnouncement(
 	const paceMin = paceMinPerKm != null ? Math.floor(paceMinPerKm) : null;
 	const paceSec = paceMinPerKm != null ? Math.round((paceMinPerKm - Math.floor(paceMinPerKm)) * 60) : null;
 	// Derive km/h from pace so both metrics use the same base value.
-	const speedKmh = paceMinPerKm != null && paceMinPerKm > 0 ? 60 / paceMinPerKm : null;
+	const speedKmh = paceToKmh(paceMinPerKm);
 
 	function buildSpeedParts(
 		paceLabel: string,
@@ -122,6 +122,14 @@ export function speakAnnouncement(
 // ─── Distance / speed formatting helpers ─────────────────────────────────────
 
 const METERS_PER_KM = 1000;
+
+/**
+ * Derive km/h from pace (minutes per km). Returns null when pace is
+ * unavailable or zero.
+ */
+function paceToKmh(paceMinPerKm: number | null): number | null {
+	return paceMinPerKm != null && paceMinPerKm > 0 ? 60 / paceMinPerKm : null;
+}
 
 /**
  * Format a distance value for speech announcements.
@@ -229,9 +237,7 @@ export function buildPeriodicAnnouncement(
 
 	if (content.announceSpeed) {
 		// Derive km/h from pace when available so both metrics share the same base.
-		const derivedKmh = stats.paceMinPerKm != null && stats.paceMinPerKm > 0
-			? 60 / stats.paceMinPerKm
-			: stats.speedKmh;
+		const derivedKmh = paceToKmh(stats.paceMinPerKm) ?? stats.speedKmh;
 		if (derivedKmh != null) {
 			const sp = formatSpeedForSpeech(derivedKmh);
 			if (langCode === 'de') {
