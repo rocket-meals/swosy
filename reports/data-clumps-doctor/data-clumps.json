@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-31T15:51:27.932Z",
+  "report_timestamp": "2026-03-31T16:21:34.614Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.5981543624161074,
-          "amountSavedValuesForKeys": 3810,
+          "average": 1.5983228511530398,
+          "amountSavedValuesForKeys": 3812,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -20,24 +20,24 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.6123571730850614,
-          "amountSavedValuesForKeys": 3810,
+          "average": 1.6125211505922166,
+          "amountSavedValuesForKeys": 3812,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3979,
-        "detection_time_ms": 74,
+        "ast_generation_time_ms": 4089,
+        "detection_time_ms": 79,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 109.94,
-          "os_memory_free": 14955323392,
-          "os_memory_total": 16770777088,
+          "os_uptime": 236.1,
+          "os_memory_free": 14938779648,
+          "os_memory_total": 16770826240,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "17538cf6db1208b737fde43f0fde0cca3653e115",
-    "project_commit_hash": "17538cf6db1208b737fde43f0fde0cca3653e115",
+    "project_version": "3b3cdbb42831386c4db975614539fde243e2be88",
+    "project_commit_hash": "3b3cdbb42831386c4db975614539fde243e2be88",
     "project_tag": null,
-    "project_commit_date": "1774972192",
+    "project_commit_date": "1774973997",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 472,
-    "number_of_classes_or_interfaces": 964,
+    "number_of_classes_or_interfaces": 965,
     "number_of_methods": 1325,
-    "number_of_data_fields": 3810,
+    "number_of_data_fields": 3812,
     "number_of_method_parameters": 1465
   },
   "detector": {
@@ -5055,9 +5055,9 @@
             }
           },
           "position": {
-            "startLine": 109,
+            "startLine": 169,
             "startColumn": 2,
-            "endLine": 109,
+            "endLine": 169,
             "endColumn": 28
           }
         },
@@ -5080,9 +5080,9 @@
             }
           },
           "position": {
-            "startLine": 110,
+            "startLine": 170,
             "startColumn": 2,
-            "endLine": 110,
+            "endLine": 170,
             "endColumn": 24
           }
         },
@@ -5105,9 +5105,9 @@
             }
           },
           "position": {
-            "startLine": 111,
+            "startLine": 171,
             "startColumn": 2,
-            "endLine": 111,
+            "endLine": 171,
             "endColumn": 28
           }
         },
@@ -5130,9 +5130,9 @@
             }
           },
           "position": {
-            "startLine": 112,
+            "startLine": 172,
             "startColumn": 2,
-            "endLine": 112,
+            "endLine": 172,
             "endColumn": 25
           }
         },
@@ -5155,9 +5155,9 @@
             }
           },
           "position": {
-            "startLine": 113,
+            "startLine": 173,
             "startColumn": 2,
-            "endLine": 113,
+            "endLine": 173,
             "endColumn": 28
           }
         },
@@ -5180,9 +5180,9 @@
             }
           },
           "position": {
-            "startLine": 114,
+            "startLine": 174,
             "startColumn": 2,
-            "endLine": 114,
+            "endLine": 174,
             "endColumn": 29
           }
         }
@@ -5220,9 +5220,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 109,
+              "startLine": 169,
               "startColumn": 2,
-              "endLine": 109,
+              "endLine": 169,
               "endColumn": 28
             }
           },
@@ -5245,9 +5245,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 110,
+              "startLine": 170,
               "startColumn": 2,
-              "endLine": 110,
+              "endLine": 170,
               "endColumn": 24
             }
           },
@@ -5270,9 +5270,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 111,
+              "startLine": 171,
               "startColumn": 2,
-              "endLine": 111,
+              "endLine": 171,
               "endColumn": 28
             }
           },
@@ -5295,9 +5295,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 112,
+              "startLine": 172,
               "startColumn": 2,
-              "endLine": 112,
+              "endLine": 172,
               "endColumn": 25
             }
           },
@@ -5320,9 +5320,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 113,
+              "startLine": 173,
               "startColumn": 2,
-              "endLine": 113,
+              "endLine": 173,
               "endColumn": 28
             }
           },
@@ -5345,9 +5345,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 114,
+              "startLine": 174,
               "startColumn": 2,
-              "endLine": 114,
+              "endLine": 174,
               "endColumn": 29
             }
           },
