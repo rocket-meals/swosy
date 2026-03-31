@@ -375,7 +375,7 @@ export async function queryTileFeaturesGrouped(
  */
 export async function queryTileFeaturesForHexCell(
 	h3Index: string,
-	zoom: number = 14,
+	zoom: number = 15,
 	styleUrl?: string,
 ): Promise<MapFeatureInfo[]> {
 	const boundary = h3CellToBoundary(h3Index); // [[lat, lng], ...]

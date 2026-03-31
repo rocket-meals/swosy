@@ -1773,12 +1773,30 @@ type MapFeatureInfo = {
 	amenity: string | null;
 };
 
-function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
+function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorColor>(BillboardAnchorColor.Purple);
+	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
+	const [featuresLoading, setFeaturesLoading] = useState(false);
+	const runIdRef = useRef(0);
+
+	useEffect(() => {
+		const runId = ++runIdRef.current;
+		setFeaturesLoading(true);
+		queryTileFeaturesForHexCell(h3Index)
+			.then((result) => {
+				if (runId === runIdRef.current) setMapFeatures(result);
+			})
+			.catch(() => {
+				if (runId === runIdRef.current) setMapFeatures(null);
+			})
+			.finally(() => {
+				if (runId === runIdRef.current) setFeaturesLoading(false);
+			});
+	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
 	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
@@ -1917,9 +1935,14 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 			/>
 
 			{/* ── Underlying map info ── */}
+			<SettingsListGroupTitle title="Karteninformationen" />
+			{featuresLoading && (
+				<View style={{ alignItems: 'center', paddingVertical: 16 }}>
+					<ActivityIndicator size="small" color={PRIMARY_COLOR} />
+				</View>
+			)}
 			{mapFeatures && mapFeatures.length > 0 && (
 				<>
-					<SettingsListGroupTitle title="Karteninformationen" />
 					{mapFeatures.map((feature, idx) => (
 						<SettingsList
 							key={idx}
@@ -1932,12 +1955,21 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 					))}
 				</>
 			)}
+			{!featuresLoading && mapFeatures && mapFeatures.length === 0 && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor="#6b7280"
+					title="Keine Karteninformationen"
+					value="Keine Features in diesem Bereich gefunden."
+					groupPosition="single"
+				/>
+			)}
 
 		</View>
 	);
 }
 
-const MAGNIFY_DEFAULT_ZOOM = 14;
+const MAGNIFY_DEFAULT_ZOOM = 15;
 const MAGNIFY_COLOR = '#3b82f6';
 
 function MagnifyModalContent({ h3Index }: { h3Index: string }) {
@@ -2930,11 +2962,11 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexDebugPoints: val });
 	}, []);
 
-	const showHexTileModal = useCallback((h3Index: string, mapFeatures?: MapFeatureInfo[]) => {
+	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
 			children: (
-				<HexTileInfoContent h3Index={h3Index} mapFeatures={mapFeatures} />
+				<HexTileInfoContent h3Index={h3Index} />
 			),
 		});
 	}, [showModal]);
@@ -3181,7 +3213,7 @@ export default function RecordScreen() {
 					// Magnify mode active: show detailed map info modal.
 					showMagnifyHexTileModal(clickedMsg.h3Index);
 				} else {
-					showHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
+					showHexTileModal(clickedMsg.h3Index);
 				}
 			}
 		} else if (msg.tag === 'MapMeasurePoint') {
