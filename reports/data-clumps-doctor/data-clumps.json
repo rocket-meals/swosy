@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-31T22:03:12.134Z",
+  "report_timestamp": "2026-03-31T22:39:04.320Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,35 +8,35 @@
         "invertedFieldToClasses": {
           "median": 1.5,
           "maximum": 94,
-          "average": 1.601673640167364,
-          "amountSavedValuesForKeys": 3828,
+          "average": 1.603347280334728,
+          "amountSavedValuesForKeys": 3832,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 70,
-          "average": 2.370550161812298,
-          "amountSavedValuesForKeys": 1465,
+          "average": 2.368336025848142,
+          "amountSavedValuesForKeys": 1466,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 94,
-          "average": 1.615871675812579,
-          "amountSavedValuesForKeys": 3828,
+          "average": 1.6175601519628535,
+          "amountSavedValuesForKeys": 3832,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3927,
-        "detection_time_ms": 73,
+        "ast_generation_time_ms": 4041,
+        "detection_time_ms": 72,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 107.39,
-          "os_memory_free": 15007268864,
+          "os_uptime": 105.69,
+          "os_memory_free": 14948519936,
           "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "5b12bac9bdaa5e519e3c00dbc79de846202ff70e",
-    "project_commit_hash": "5b12bac9bdaa5e519e3c00dbc79de846202ff70e",
+    "project_version": "947b47d47e81ba94525c111582ac4018b3df7f59",
+    "project_commit_hash": "947b47d47e81ba94525c111582ac4018b3df7f59",
     "project_tag": null,
-    "project_commit_date": "1774994498",
+    "project_commit_date": "1774996651",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 473,
-    "number_of_classes_or_interfaces": 971,
-    "number_of_methods": 1325,
-    "number_of_data_fields": 3828,
-    "number_of_method_parameters": 1465
+    "number_of_files": 475,
+    "number_of_classes_or_interfaces": 973,
+    "number_of_methods": 1326,
+    "number_of_data_fields": 3832,
+    "number_of_method_parameters": 1466
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -3113,9 +3113,9 @@
             }
           },
           "position": {
-            "startLine": 203,
+            "startLine": 194,
             "startColumn": 2,
-            "endLine": 203,
+            "endLine": 194,
             "endColumn": 23
           }
         },
@@ -3138,9 +3138,9 @@
             }
           },
           "position": {
-            "startLine": 204,
+            "startLine": 195,
             "startColumn": 2,
-            "endLine": 204,
+            "endLine": 195,
             "endColumn": 29
           }
         },
@@ -3163,9 +3163,9 @@
             }
           },
           "position": {
-            "startLine": 205,
+            "startLine": 196,
             "startColumn": 2,
-            "endLine": 205,
+            "endLine": 196,
             "endColumn": 16
           }
         }
@@ -3203,16 +3203,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 61,
+              "startLine": 60,
               "startColumn": 2,
-              "endLine": 61,
+              "endLine": 60,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 207,
+            "startLine": 198,
             "startColumn": 2,
-            "endLine": 207,
+            "endLine": 198,
             "endColumn": 18
           }
         },
@@ -3228,16 +3228,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 62,
+              "startLine": 61,
               "startColumn": 2,
-              "endLine": 62,
+              "endLine": 61,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 208,
+            "startLine": 199,
             "startColumn": 2,
-            "endLine": 208,
+            "endLine": 199,
             "endColumn": 18
           }
         },
@@ -3253,16 +3253,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 64,
+              "startLine": 63,
               "startColumn": 2,
-              "endLine": 64,
+              "endLine": 63,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 212,
+            "startLine": 203,
             "startColumn": 2,
-            "endLine": 212,
+            "endLine": 203,
             "endColumn": 24
           }
         }
@@ -3300,16 +3300,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 207,
+              "startLine": 198,
               "startColumn": 2,
-              "endLine": 207,
+              "endLine": 198,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 61,
+            "startLine": 60,
             "startColumn": 2,
-            "endLine": 61,
+            "endLine": 60,
             "endColumn": 18
           }
         },
@@ -3325,16 +3325,16 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 208,
+              "startLine": 199,
               "startColumn": 2,
-              "endLine": 208,
+              "endLine": 199,
               "endColumn": 18
             }
           },
           "position": {
-            "startLine": 62,
+            "startLine": 61,
             "startColumn": 2,
-            "endLine": 62,
+            "endLine": 61,
             "endColumn": 18
           }
         },
@@ -3350,16 +3350,16 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 212,
+              "startLine": 203,
               "startColumn": 2,
-              "endLine": 212,
+              "endLine": 203,
               "endColumn": 24
             }
           },
           "position": {
-            "startLine": 64,
+            "startLine": 63,
             "startColumn": 2,
-            "endLine": 64,
+            "endLine": 63,
             "endColumn": 23
           }
         }
@@ -8248,9 +8248,9 @@
             "type": "React.ReactNode",
             "modifiers": [],
             "position": {
-              "startLine": 204,
+              "startLine": 195,
               "startColumn": 2,
-              "endLine": 204,
+              "endLine": 195,
               "endColumn": 29
             }
           },
@@ -8273,9 +8273,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 203,
+              "startLine": 194,
               "startColumn": 2,
-              "endLine": 203,
+              "endLine": 194,
               "endColumn": 23
             }
           },
@@ -8298,9 +8298,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 205,
+              "startLine": 196,
               "startColumn": 2,
-              "endLine": 205,
+              "endLine": 196,
               "endColumn": 16
             }
           },
