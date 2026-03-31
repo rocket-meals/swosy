@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	Keyboard,
-	KeyboardAvoidingView,
 	Platform,
 	ScrollView,
 	StyleSheet,
@@ -186,15 +185,7 @@ function PaceMinSecModal({
 
 	if (Platform.OS === 'web') return content;
 
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'position' : undefined}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-			style={styles.keyboardAvoidingView}
-		>
-			<View style={styles.keyboardAvoidingContent}>{content}</View>
-		</KeyboardAvoidingView>
-	);
+	return content;
 }
 
 // ─── PaceMinSecInput ──────────────────────────────────────────────────────────
@@ -759,13 +750,5 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '600',
 		color: '#ffffff',
-	},
-	keyboardAvoidingView: {
-		flex: 1,
-		width: '100%',
-	},
-	keyboardAvoidingContent: {
-		flexGrow: 1,
-		alignItems: 'center',
 	},
 });

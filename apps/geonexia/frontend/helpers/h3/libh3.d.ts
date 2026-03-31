@@ -55,6 +55,9 @@ export function getNumCells(res: number): number;
 export function getRes0Cells(): H3Index[];
 export function getPentagons(res: number): H3Index[];
 
+export function polygonToCells(coordinates: CoordPair[][] | CoordPair[][][], res: number, isGeoJson?: boolean): H3Index[];
+export function cellsToMultiPolygon(h3Indexes: H3Index[], formatAsGeoJson?: boolean): CoordPair[][][];
+
 export function greatCircleDistance(a: CoordPair, b: CoordPair, unit: string): number;
 export function cellArea(h3Index: H3Index, unit: string): number;
 export function getHexagonAreaAvg(res: number, unit: string): number;
