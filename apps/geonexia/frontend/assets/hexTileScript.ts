@@ -71,6 +71,10 @@ export const HEX_TILE_SCRIPT = `
   // Colours assigned to midpoints between the hex centre and each corner vertex,
   // cycling through: red, orange, yellow, blue, white, black.
   var MIDPOINT_COLORS = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#ffffff', '#000000'];
+  // Route outline mode: when enabled (routes/[id] screen), border edges are
+  // computed from tile count alone (outer-boundary only, ignoring level), and
+  // the enclosed-area stroke is hidden.
+  var routeOutlineMode = false;
   // ── Route edit overlay: neighbor highlight + action labels ───────────────
   var ROUTE_EDIT_NEIGHBOR_SOURCE = 'route-edit-neighbor-source';
   var ROUTE_EDIT_NEIGHBOR_FILL_LAYER = 'route-edit-neighbor-fill';
@@ -155,6 +159,42 @@ export const HEX_TILE_SCRIPT = `
       }
     }
 
+    return { type: 'FeatureCollection', features: borderFeatures };
+  }
+
+  // ── Compute route-tile outer-boundary edges ───────────────────────────────
+  // Returns a GeoJSON FeatureCollection of LineString features for every edge
+  // that belongs to exactly ONE tile in the provided feature set (i.e. the
+  // outer perimeter of the tile group). Level is ignored so this works even
+  // when all tiles share the same level value.
+  function buildRouteBorderEdges(features) {
+    var PRECISION = 6;
+    function edgeKey(v1, v2) {
+      var s1 = v1[0].toFixed(PRECISION) + ',' + v1[1].toFixed(PRECISION);
+      var s2 = v2[0].toFixed(PRECISION) + ',' + v2[1].toFixed(PRECISION);
+      return s1 < s2 ? s1 + '|' + s2 : s2 + '|' + s1;
+    }
+    var edgeCount = {};
+    var edgeCoords = {};
+    for (var i = 0; i < features.length; i++) {
+      var ring = features[i].geometry && features[i].geometry.coordinates && features[i].geometry.coordinates[0];
+      if (!ring) continue;
+      for (var j = 0; j < ring.length - 1; j++) {
+        var key = edgeKey(ring[j], ring[j + 1]);
+        edgeCoords[key] = [ring[j], ring[j + 1]];
+        edgeCount[key] = (edgeCount[key] || 0) + 1;
+      }
+    }
+    var borderFeatures = [];
+    for (var k in edgeCount) {
+      if (edgeCount[k] === 1) {
+        borderFeatures.push({
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: edgeCoords[k] },
+          properties: {},
+        });
+      }
+    }
     return { type: 'FeatureCollection', features: borderFeatures };
   }
 
@@ -363,7 +403,7 @@ export const HEX_TILE_SCRIPT = `
       paint: {
         'line-color': HEX_ENCLOSED_STROKE_COLOR,
         'line-width': 0.5,
-        'line-opacity': 0.4,
+        'line-opacity': routeOutlineMode ? 0 : 0.4,
       },
     });
     map.addSource(HEX_TILE_SOURCE, { type: 'geojson', data: EMPTY_FC });
@@ -558,6 +598,13 @@ export const HEX_TILE_SCRIPT = `
       }
       return;
     }
+    if (data.hexRouteOutlineMode !== undefined) {
+      routeOutlineMode = !!data.hexRouteOutlineMode;
+      if (map && map.getLayer(HEX_ENCLOSED_STROKE_LAYER)) {
+        map.setPaintProperty(HEX_ENCLOSED_STROKE_LAYER, 'line-opacity', routeOutlineMode ? 0 : 0.4);
+      }
+      return;
+    }
     if (data.hexTileGeoJson !== undefined) {
       if (!hexTileActive) return;
       var src = map && map.getSource(HEX_TILE_SOURCE);
@@ -565,7 +612,7 @@ export const HEX_TILE_SCRIPT = `
       if (src) src.setData(fc);
       // Recompute territory border edges whenever tile data changes
       var borderSrc = map && map.getSource(HEX_BORDER_SOURCE);
-      if (borderSrc) borderSrc.setData(buildBorderEdges(fc.features || []));
+      if (borderSrc) borderSrc.setData(routeOutlineMode ? buildRouteBorderEdges(fc.features || []) : buildBorderEdges(fc.features || []));
       // Update green corner-vertex dots
       var verticesSrc = map && map.getSource(HEX_VERTICES_SOURCE);
       if (verticesSrc) verticesSrc.setData(buildVerticesGeoJson(fc.features || []));
