@@ -701,7 +701,7 @@ export default function RouteDetailScreen() {
 									groupPosition={route.hexTiles.length === 1 ? 'single' : idx === 0 ? 'top' : idx === route.hexTiles.length - 1 ? 'bottom' : 'middle'}
 									onPress={() => {
 										showHexTileModal({
-											title: `🔷 ${hexId}`,
+											title: `⬡ ${hexId}`,
 											children: (
 												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
 													{features.length === 0 ? (
@@ -738,7 +738,7 @@ export default function RouteDetailScreen() {
 									groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
 									onPress={() => {
 										showAggregatedModal({
-											title: `📊 Feature`,
+											title: `📊 ${key}`,
 											children: (
 												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
 													<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
