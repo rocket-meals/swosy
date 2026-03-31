@@ -5901,6 +5901,9 @@
       // ── Direct vector-tile feature query ──────────────────────────────────────
       var _vtTileUrlTemplate = null;
       var _vtParsedCache = {};
+      var _vtParsedCacheKeys = []; // LRU tracking
+      var _VT_CACHE_MAX = 64;     // max cached tiles
+      var _VT_FALLBACK_URL = 'https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf';
 
       // Resolve the tile-URL template from the already-loaded map style.
       function _resolveVtUrl() {
@@ -5921,19 +5924,28 @@
         return null;
       }
 
-      // Fetch + parse a single PBF tile (cached).
+      // Fetch + parse a single PBF tile (cached with LRU eviction).
       function _fetchParsedTile(urlTemplate, z, x, y, callback) {
         var key = z + '/' + x + '/' + y;
         if (_vtParsedCache[key]) { callback(_vtParsedCache[key]); return; }
         var url = urlTemplate.replace('{z}', String(z)).replace('{x}', String(x)).replace('{y}', String(y));
         fetch(url).then(function (r) {
-          if (!r.ok) throw new Error(r.status);
+          if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.arrayBuffer();
         }).then(function (ab) {
           var parsed = _parseMvtTile(ab);
+          // Evict oldest entry when cache exceeds max size
+          if (_vtParsedCacheKeys.length >= _VT_CACHE_MAX) {
+            var evict = _vtParsedCacheKeys.shift();
+            delete _vtParsedCache[evict];
+          }
           _vtParsedCache[key] = parsed;
+          _vtParsedCacheKeys.push(key);
           callback(parsed);
-        }).catch(function () { callback({ layers: [] }); });
+        }).catch(function (err) {
+          console.warn('queryVectorTileFeaturesDirect: failed to fetch tile ' + key, err);
+          callback({ layers: [] });
+        });
       }
 
       /**
@@ -5949,8 +5961,7 @@
       function queryVectorTileFeaturesDirect(tiles, callback) {
         var urlTemplate = _resolveVtUrl();
         if (!urlTemplate) {
-          // Fallback: well-known OpenFreeMap tile endpoint
-          urlTemplate = 'https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf';
+          urlTemplate = _VT_FALLBACK_URL;
           _vtTileUrlTemplate = urlTemplate;
         }
         var QUERY_ZOOM = 14;

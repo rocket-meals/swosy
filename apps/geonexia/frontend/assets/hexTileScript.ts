@@ -617,6 +617,22 @@ export const HEX_TILE_SCRIPT = `
 
       // Helper: extract deduplicated MapFeatureInfo from queryRenderedFeatures
       // result on the main map within the bounding box of a tile polygon.
+      // Hex overlay layers added by this script are excluded so only real
+      // map-data features (streets, POIs, buildings, …) are returned.
+      var hexOverlayLayersQuery = {};
+      hexOverlayLayersQuery[HEX_TILE_FILL_LAYER] = true;
+      hexOverlayLayersQuery[HEX_TILE_STROKE_LAYER] = true;
+      hexOverlayLayersQuery[HEX_BORDER_LAYER] = true;
+      hexOverlayLayersQuery[HEX_WALK_PATH_LAYER] = true;
+      hexOverlayLayersQuery[HEX_VERTICES_LAYER] = true;
+      hexOverlayLayersQuery[HEX_CENTERS_LAYER] = true;
+      hexOverlayLayersQuery[HEX_MIDPOINTS_LAYER] = true;
+      hexOverlayLayersQuery[MEASURE_ROUTE_LAYER] = true;
+      hexOverlayLayersQuery[MEASURE_POINTS_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_FILL_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_LABELS_LAYER] = true;
+
       function queryOneTileOnMainMap(tile) {
         var poly = tile.polygon;
         if (!poly || poly.length === 0) return [];
@@ -635,6 +651,7 @@ export const HEX_TILE_SCRIPT = `
         var qSeen = {};
         for (var qi = 0; qi < qRendered.length; qi++) {
           var qf = qRendered[qi];
+          if (qf.layer && hexOverlayLayersQuery[qf.layer.id]) continue;
           var qfp = qf.properties || {};
           var qKey = (qfp.name || '') + '|' + (qfp['class'] || '') + '|' + (qfp.subclass || '') + '|'
             + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
