@@ -642,23 +642,21 @@ export const HEX_TILE_SCRIPT = `
           var qf = qRendered[qi];
           if (qf.layer && hexOverlayLayersQuery[qf.layer.id]) continue;
           var qfp = qf.properties || {};
-          if (qfp.name || qfp.highway || qfp.waterway || qfp.building || qfp.natural || qfp.landuse || qfp.amenity) {
-            var qKey = (qfp.name || '') + '|' + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
-              + (qfp.building || '') + '|' + (qfp.natural || '') + '|' + (qfp.landuse || '') + '|'
-              + (qfp.amenity || '') + '|' + ((qf.layer && qf.layer.id) || '');
-            if (qSeen[qKey]) continue;
-            qSeen[qKey] = true;
-            qFeatures.push({
-              layerId: (qf.layer && qf.layer.id) || null,
-              name: qfp.name || qfp['name:de'] || null,
-              highway: qfp.highway || null,
-              waterway: qfp.waterway || null,
-              building: qfp.building || null,
-              natural: qfp.natural || null,
-              landuse: qfp.landuse || null,
-              amenity: qfp.amenity || null,
-            });
-          }
+          var qKey = (qfp.name || '') + '|' + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
+            + (qfp.building || '') + '|' + (qfp.natural || '') + '|' + (qfp.landuse || '') + '|'
+            + (qfp.amenity || '') + '|' + ((qf.layer && qf.layer.id) || '');
+          if (qSeen[qKey]) continue;
+          qSeen[qKey] = true;
+          qFeatures.push({
+            layerId: (qf.layer && qf.layer.id) || null,
+            name: qfp.name || qfp['name:de'] || null,
+            highway: qfp.highway || null,
+            waterway: qfp.waterway || null,
+            building: qfp.building || null,
+            natural: qfp.natural || null,
+            landuse: qfp.landuse || null,
+            amenity: qfp.amenity || null,
+          });
         }
         result[tileId] = qFeatures;
       }
@@ -728,24 +726,22 @@ export const HEX_TILE_SCRIPT = `
         // Skip our own hex overlay layers
         if (f.layer && hexOverlayLayers[f.layer.id]) continue;
         var fp = f.properties || {};
-        if (fp.name || fp.highway || fp.waterway || fp.building || fp.natural || fp.landuse || fp.amenity) {
-          // Deduplicate by building a simple key from the interesting properties
-          var dedupeKey = (fp.name || '') + '|' + (fp.highway || '') + '|' + (fp.waterway || '') + '|'
-            + (fp.building || '') + '|' + (fp.natural || '') + '|' + (fp.landuse || '') + '|'
-            + (fp.amenity || '') + '|' + ((f.layer && f.layer.id) || '');
-          if (seen[dedupeKey]) continue;
-          seen[dedupeKey] = true;
-          mapFeatures.push({
-            layerId: (f.layer && f.layer.id) || null,
-            name: fp.name || fp['name:de'] || null,
-            highway: fp.highway || null,
-            waterway: fp.waterway || null,
-            building: fp.building || null,
-            natural: fp.natural || null,
-            landuse: fp.landuse || null,
-            amenity: fp.amenity || null,
-          });
-        }
+        // Deduplicate by building a simple key from the interesting properties
+        var dedupeKey = (fp.name || '') + '|' + (fp.highway || '') + '|' + (fp.waterway || '') + '|'
+          + (fp.building || '') + '|' + (fp.natural || '') + '|' + (fp.landuse || '') + '|'
+          + (fp.amenity || '') + '|' + ((f.layer && f.layer.id) || '');
+        if (seen[dedupeKey]) continue;
+        seen[dedupeKey] = true;
+        mapFeatures.push({
+          layerId: (f.layer && f.layer.id) || null,
+          name: fp.name || fp['name:de'] || null,
+          highway: fp.highway || null,
+          waterway: fp.waterway || null,
+          building: fp.building || null,
+          natural: fp.natural || null,
+          landuse: fp.landuse || null,
+          amenity: fp.amenity || null,
+        });
       }
       sendToRN({ tag: 'HexTileClicked', h3Index: props.h3Index, mapFeatures: mapFeatures });
       return true;

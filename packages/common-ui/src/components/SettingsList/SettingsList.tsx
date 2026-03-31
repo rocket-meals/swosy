@@ -100,13 +100,13 @@ const SettingsList: React.FC<SettingsListProps> = ({
 			{shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
 			<View style={styles.textWrapper}>
 				<View style={styles.titleContainer}>
-					<Text style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={0}>
+					<Text selectable style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={0}>
 						{title || label}
 					</Text>
 				</View>
 				{value ? (
 					<View style={styles.valueContainer}>
-						<Text style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
+						<Text selectable style={[styles.value, { color: theme.screen.text } as TextStyle]} numberOfLines={0}>
 							{value}
 						</Text>
 					</View>
