@@ -217,6 +217,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/hex-tile-info/index"
+				options={{
+					title: 'Hex Tile Info',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',

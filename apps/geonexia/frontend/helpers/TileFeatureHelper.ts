@@ -264,3 +264,41 @@ export async function queryTileFeaturesGrouped(
 
 	return grouped;
 }
+
+/**
+ * Fetch all vector-tile features for a single H3 hex cell.
+ *
+ * Computes the bounding box of the cell from its boundary vertices and
+ * queries all vector tiles that cover the area at the given zoom level.
+ * Returns a flat, deduplicated array of `MapFeatureInfo`.
+ *
+ * @param h3Index – H3 cell index string (e.g. `'8a1f10d5061ffff'`).
+ * @param zoom – Zoom level for tile fetching (default 14).
+ * @param styleUrl – Optional style URL override.
+ */
+export async function queryTileFeaturesForHexCell(
+	h3Index: string,
+	zoom: number = 14,
+	styleUrl?: string,
+): Promise<MapFeatureInfo[]> {
+	// Dynamically import H3 to compute the cell boundary.
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const h3 = require('./h3/libh3') as typeof import('./h3/libh3');
+
+	const boundary = h3.cellToBoundary(h3Index); // [[lat, lng], ...]
+	if (!boundary || boundary.length === 0) {
+		throw new Error(`Invalid H3 cell or empty boundary: ${h3Index}`);
+	}
+
+	const lats = boundary.map((v: [number, number]) => v[0]);
+	const lngs = boundary.map((v: [number, number]) => v[1]);
+
+	return queryTileFeaturesForBounds({
+		minLat: Math.min(...lats),
+		minLng: Math.min(...lngs),
+		maxLat: Math.max(...lats),
+		maxLng: Math.max(...lngs),
+		zoom,
+		styleUrl,
+	});
+}
