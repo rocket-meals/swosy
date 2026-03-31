@@ -9,7 +9,7 @@ import { queryTileFeaturesForHexCell } from '../../../helpers/TileFeatureHelper'
 import type { MapFeatureInfo } from '../../../helpers/RouteNameSuggestionHelper';
 
 const HEX_ID = '8a1f10d5061ffff';
-const DEFAULT_ZOOM = 14;
+const DEFAULT_ZOOM = 15;
 const EXPERIMENTAL_COLOR = '#7c3aed';
 
 export default function HexTileInfoScreen() {

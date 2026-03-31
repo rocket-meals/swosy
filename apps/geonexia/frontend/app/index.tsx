@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
+	ActivityIndicator,
 	Alert,
 	Animated,
 	AppState,
@@ -27,7 +28,8 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
@@ -1771,12 +1773,30 @@ type MapFeatureInfo = {
 	amenity: string | null;
 };
 
-function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
+function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorColor>(BillboardAnchorColor.Purple);
+	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
+	const [featuresLoading, setFeaturesLoading] = useState(false);
+	const runIdRef = useRef(0);
+
+	useEffect(() => {
+		const runId = ++runIdRef.current;
+		setFeaturesLoading(true);
+		queryTileFeaturesForHexCell(h3Index)
+			.then((result) => {
+				if (runId === runIdRef.current) setMapFeatures(result);
+			})
+			.catch(() => {
+				if (runId === runIdRef.current) setMapFeatures(null);
+			})
+			.finally(() => {
+				if (runId === runIdRef.current) setFeaturesLoading(false);
+			});
+	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
 	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
@@ -1915,9 +1935,14 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 			/>
 
 			{/* ── Underlying map info ── */}
+			<SettingsListGroupTitle title="Karteninformationen" />
+			{featuresLoading && (
+				<View style={{ alignItems: 'center', paddingVertical: 16 }}>
+					<ActivityIndicator size="small" color={PRIMARY_COLOR} />
+				</View>
+			)}
 			{mapFeatures && mapFeatures.length > 0 && (
 				<>
-					<SettingsListGroupTitle title="Karteninformationen" />
 					{mapFeatures.map((feature, idx) => (
 						<SettingsList
 							key={idx}
@@ -1930,26 +1955,98 @@ function HexTileInfoContent({ h3Index, mapFeatures }: { h3Index: string; mapFeat
 					))}
 				</>
 			)}
+			{!featuresLoading && mapFeatures && mapFeatures.length === 0 && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor="#6b7280"
+					title="Keine Karteninformationen"
+					value="Keine Features in diesem Bereich gefunden."
+					groupPosition="single"
+				/>
+			)}
 
 		</View>
 	);
 }
 
-function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFeatures?: MapFeatureInfo[] }) {
-	const streets = mapFeatures?.filter((f) =>
+const MAGNIFY_DEFAULT_ZOOM = 15;
+const MAGNIFY_COLOR = '#3b82f6';
+
+function MagnifyModalContent({ h3Index }: { h3Index: string }) {
+	const { theme } = useTheme();
+	const [zoom, setZoom] = useState(MAGNIFY_DEFAULT_ZOOM);
+	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const runIdRef = useRef(0);
+
+	const fetchFeatures = useCallback(async (queryZoom: number) => {
+		const runId = ++runIdRef.current;
+
+		setLoading(true);
+		setError(null);
+		setFeatures(null);
+
+		try {
+			if (!isH3Available()) {
+				throw new Error('H3 Bibliothek nicht verfügbar');
+			}
+			if (!isValidCell(h3Index)) {
+				throw new Error(`Ungültige H3 Zelle: ${h3Index}`);
+			}
+
+			const result = await queryTileFeaturesForHexCell(h3Index, queryZoom);
+			if (runId !== runIdRef.current) return;
+			setFeatures(result);
+		} catch (err) {
+			if (runId !== runIdRef.current) return;
+			setError(err instanceof Error ? err.message : String(err));
+		} finally {
+			if (runId === runIdRef.current) {
+				setLoading(false);
+			}
+		}
+	}, [h3Index]);
+
+	useEffect(() => {
+		fetchFeatures(zoom);
+	}, [zoom, fetchFeatures]);
+
+	const resolution = isH3Available() && isValidCell(h3Index) ? getResolution(h3Index) : null;
+	const center = isH3Available() && isValidCell(h3Index) ? cellToLatLng(h3Index) : null;
+
+	const boundary = isH3Available() && isValidCell(h3Index) ? cellToBoundary(h3Index) : [];
+	const lats = boundary.map((v: [number, number]) => v[0]);
+	const lngs = boundary.map((v: [number, number]) => v[1]);
+	const minLat = lats.length > 0 ? Math.min(...lats) : null;
+	const maxLat = lats.length > 0 ? Math.max(...lats) : null;
+	const minLng = lngs.length > 0 ? Math.min(...lngs) : null;
+	const maxLng = lngs.length > 0 ? Math.max(...lngs) : null;
+
+	const streets = features?.filter((f) =>
 		f.highway || (f.layerId && (f.layerId.includes('road') || f.layerId.includes('highway')))
 	) ?? [];
-	const waterways = mapFeatures?.filter((f) =>
+	const waterways = features?.filter((f) =>
 		f.waterway || (f.layerId && f.layerId.includes('water'))
 	) ?? [];
-	const buildings = mapFeatures?.filter((f) =>
+	const buildings = features?.filter((f) =>
 		f.building || (f.layerId && f.layerId.includes('building'))
 	) ?? [];
-	const pois = mapFeatures?.filter((f) =>
+	const pois = features?.filter((f) =>
 		f.amenity || f.natural || f.landuse ||
 		(f.layerId && (f.layerId.includes('poi') || f.layerId.includes('park') || f.layerId.includes('landuse') || f.layerId.includes('landcover')))
 	) ?? [];
-	const allFeatures = mapFeatures ?? [];
+
+	const handleCopyJson = useCallback(async () => {
+		if (!features) return;
+		const json = JSON.stringify(features, null, 2);
+		await Clipboard.setStringAsync(json);
+		Alert.alert('Kopiert', 'JSON in Zwischenablage kopiert.');
+	}, [features]);
+
+	const handleZoomChange = useCallback((delta: number) => {
+		setZoom((prev) => Math.max(1, Math.min(20, prev + delta)));
+	}, []);
 
 	return (
 		<View>
@@ -1959,8 +2056,88 @@ function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFea
 				iconBackgroundColor="#6b7280"
 				title="H3 Index"
 				value={h3Index}
-				groupPosition="single"
+				groupPosition="top"
 			/>
+			{resolution !== null && (
+				<SettingsList
+					leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor={MAGNIFY_COLOR}
+					title="Resolution"
+					value={String(resolution)}
+					groupPosition="middle"
+				/>
+			)}
+			{center !== null && (
+				<SettingsList
+					leftIcon={<Ionicons name="location-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor={MAGNIFY_COLOR}
+					title="Zentrum"
+					value={`${center[0].toFixed(6)}°N, ${center[1].toFixed(6)}°E`}
+					groupPosition="middle"
+				/>
+			)}
+			{minLat !== null && maxLat !== null && minLng !== null && maxLng !== null && (
+				<SettingsList
+					leftIcon={<Ionicons name="resize-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor={MAGNIFY_COLOR}
+					title="Boundary (min/max)"
+					value={`Lat: ${minLat.toFixed(6)} – ${maxLat.toFixed(6)}\nLng: ${minLng.toFixed(6)} – ${maxLng.toFixed(6)}`}
+					groupPosition="bottom"
+				/>
+			)}
+
+			<View style={magnifyStyles.zoomRow}>
+				<TouchableOpacity
+					style={[magnifyStyles.zoomButton, { backgroundColor: MAGNIFY_COLOR }]}
+					onPress={() => handleZoomChange(-1)}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="remove" size={20} color="#ffffff" />
+				</TouchableOpacity>
+				<Text style={[magnifyStyles.zoomText, { color: theme.screen.text }]}>Zoom: {zoom}</Text>
+				<TouchableOpacity
+					style={[magnifyStyles.zoomButton, { backgroundColor: MAGNIFY_COLOR }]}
+					onPress={() => handleZoomChange(1)}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="add" size={20} color="#ffffff" />
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={[magnifyStyles.reloadButton, { backgroundColor: MAGNIFY_COLOR }]}
+					onPress={() => fetchFeatures(zoom)}
+					activeOpacity={0.8}
+					disabled={loading}
+				>
+					<Ionicons name="reload-outline" size={16} color="#ffffff" />
+				</TouchableOpacity>
+			</View>
+
+			{loading && (
+				<View style={magnifyStyles.loadingContainer}>
+					<ActivityIndicator size="large" color={MAGNIFY_COLOR} />
+					<Text style={[magnifyStyles.loadingText, { color: theme.screen.text }]}>
+						Lade Tile-Features…
+					</Text>
+				</View>
+			)}
+
+			{error && (
+				<View style={magnifyStyles.errorContainer}>
+					<Ionicons name="alert-circle" size={24} color="#ef4444" />
+					<Text style={magnifyStyles.errorText}>{error}</Text>
+				</View>
+			)}
+
+			{features && features.length === 0 && !loading && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor="#6b7280"
+					title="Keine Karteninformationen"
+					value="Keine Features in diesem Bereich gefunden."
+					groupPosition="single"
+				/>
+			)}
+
 			{streets.length > 0 && (
 				<>
 					<SettingsListGroupTitle title="Straßen" />
@@ -2021,30 +2198,95 @@ function MagnifyModalContent({ h3Index, mapFeatures }: { h3Index: string; mapFea
 					))}
 				</>
 			)}
-			{allFeatures.length > 0 && (
+
+			{features && features.length > 0 && (
 				<>
 					<SettingsListGroupTitle title="Alle Features (JSON)" />
+					<TouchableOpacity
+						style={[magnifyStyles.copyButton, { backgroundColor: '#374151' }]}
+						onPress={handleCopyJson}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="content-copy" size={18} color="#ffffff" />
+						<Text style={magnifyStyles.copyButtonText}>JSON kopieren</Text>
+					</TouchableOpacity>
 					<SettingsList
 						leftIcon={<MaterialIcons name="code" size={20} color="#ffffff" />}
 						iconBackgroundColor="#374151"
 						title="mapFeatures"
-						value={JSON.stringify(allFeatures, null, 2)}
+						value={JSON.stringify(features, null, 2)}
 						groupPosition="single"
 					/>
 				</>
 			)}
-			{allFeatures.length === 0 && (
-				<SettingsList
-					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
-					iconBackgroundColor="#6b7280"
-					title="Keine Karteninformationen"
-					value="Keine Features in diesem Bereich gefunden."
-					groupPosition="single"
-				/>
-			)}
 		</View>
 	);
 }
+
+const magnifyStyles = StyleSheet.create({
+	zoomRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 12,
+		marginVertical: 8,
+		paddingHorizontal: 16,
+	},
+	zoomButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	zoomText: {
+		fontSize: 15,
+		fontWeight: '600',
+	},
+	reloadButton: {
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginLeft: 4,
+	},
+	loadingContainer: {
+		alignItems: 'center',
+		paddingVertical: 24,
+		gap: 10,
+	},
+	loadingText: {
+		fontSize: 14,
+	},
+	errorContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+	},
+	errorText: {
+		color: '#ef4444',
+		fontSize: 14,
+		flex: 1,
+	},
+	copyButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		marginHorizontal: 16,
+		marginVertical: 8,
+		paddingVertical: 10,
+		borderRadius: 10,
+	},
+	copyButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+});
 
 export default function RecordScreen() {
 	const { theme } = useTheme();
@@ -2720,21 +2962,21 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexDebugPoints: val });
 	}, []);
 
-	const showHexTileModal = useCallback((h3Index: string, mapFeatures?: MapFeatureInfo[]) => {
+	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
 			children: (
-				<HexTileInfoContent h3Index={h3Index} mapFeatures={mapFeatures} />
+				<HexTileInfoContent h3Index={h3Index} />
 			),
 		});
 	}, [showModal]);
 
-	const showMagnifyHexTileModal = useCallback((h3Index: string, mapFeatures?: MapFeatureInfo[]) => {
+	const showMagnifyHexTileModal = useCallback((h3Index: string) => {
 		showMagnifyModal({
 			title: '🔍 Karte Info',
 			onClose: closeMagnifyModal,
 			children: (
-				<MagnifyModalContent h3Index={h3Index} mapFeatures={mapFeatures} />
+				<MagnifyModalContent h3Index={h3Index} />
 			),
 		});
 	}, [showMagnifyModal, closeMagnifyModal]);
@@ -2969,9 +3211,9 @@ export default function RecordScreen() {
 					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
 				} else if (isMagnifyModeRef.current) {
 					// Magnify mode active: show detailed map info modal.
-					showMagnifyHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
+					showMagnifyHexTileModal(clickedMsg.h3Index);
 				} else {
-					showHexTileModal(clickedMsg.h3Index, clickedMsg.mapFeatures);
+					showHexTileModal(clickedMsg.h3Index);
 				}
 			}
 		} else if (msg.tag === 'MapMeasurePoint') {
