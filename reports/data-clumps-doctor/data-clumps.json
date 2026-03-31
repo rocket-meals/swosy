@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-03-31T20:09:56.738Z",
+  "report_timestamp": "2026-03-31T20:41:58.283Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,18 +28,18 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3957,
-        "detection_time_ms": 81,
+        "ast_generation_time_ms": 4023,
+        "detection_time_ms": 79,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 118.2,
-          "os_memory_free": 14995767296,
-          "os_memory_total": 16766443520,
+          "os_uptime": 115.26,
+          "os_memory_free": 14969769984,
+          "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 9V74 80-Core Processor",
+          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "a83ff495e59a90292341a5118d0f687c51a76328",
-    "project_commit_hash": "a83ff495e59a90292341a5118d0f687c51a76328",
+    "project_version": "52af7387741723550524d169e429ad40320ee347",
+    "project_commit_hash": "52af7387741723550524d169e429ad40320ee347",
     "project_tag": null,
-    "project_commit_date": "1774987692",
+    "project_commit_date": "1774989619",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -2400,9 +2400,9 @@
             }
           },
           "position": {
-            "startLine": 1765,
+            "startLine": 1766,
             "startColumn": 2,
-            "endLine": 1765,
+            "endLine": 1766,
             "endColumn": 25
           }
         },
@@ -2425,9 +2425,9 @@
             }
           },
           "position": {
-            "startLine": 1766,
+            "startLine": 1767,
             "startColumn": 2,
-            "endLine": 1766,
+            "endLine": 1767,
             "endColumn": 22
           }
         },
@@ -2450,9 +2450,9 @@
             }
           },
           "position": {
-            "startLine": 1767,
+            "startLine": 1768,
             "startColumn": 2,
-            "endLine": 1767,
+            "endLine": 1768,
             "endColumn": 23
           }
         },
@@ -2475,9 +2475,9 @@
             }
           },
           "position": {
-            "startLine": 1768,
+            "startLine": 1769,
             "startColumn": 2,
-            "endLine": 1768,
+            "endLine": 1769,
             "endColumn": 26
           }
         },
@@ -2500,9 +2500,9 @@
             }
           },
           "position": {
-            "startLine": 1769,
+            "startLine": 1770,
             "startColumn": 2,
-            "endLine": 1769,
+            "endLine": 1770,
             "endColumn": 25
           }
         },
@@ -2525,9 +2525,9 @@
             }
           },
           "position": {
-            "startLine": 1770,
+            "startLine": 1771,
             "startColumn": 2,
-            "endLine": 1770,
+            "endLine": 1771,
             "endColumn": 26
           }
         },
@@ -2550,9 +2550,9 @@
             }
           },
           "position": {
-            "startLine": 1771,
+            "startLine": 1772,
             "startColumn": 2,
-            "endLine": 1771,
+            "endLine": 1772,
             "endColumn": 26
           }
         },
@@ -2575,9 +2575,9 @@
             }
           },
           "position": {
-            "startLine": 1772,
+            "startLine": 1773,
             "startColumn": 2,
-            "endLine": 1772,
+            "endLine": 1773,
             "endColumn": 25
           }
         },
@@ -2600,9 +2600,9 @@
             }
           },
           "position": {
-            "startLine": 1773,
+            "startLine": 1774,
             "startColumn": 2,
-            "endLine": 1773,
+            "endLine": 1774,
             "endColumn": 25
           }
         },
@@ -2625,9 +2625,9 @@
             }
           },
           "position": {
-            "startLine": 1774,
+            "startLine": 1775,
             "startColumn": 2,
-            "endLine": 1774,
+            "endLine": 1775,
             "endColumn": 25
           }
         }
@@ -2672,9 +2672,9 @@
             }
           },
           "position": {
-            "startLine": 1766,
+            "startLine": 1767,
             "startColumn": 2,
-            "endLine": 1766,
+            "endLine": 1767,
             "endColumn": 22
           }
         },
@@ -2697,9 +2697,9 @@
             }
           },
           "position": {
-            "startLine": 1767,
+            "startLine": 1768,
             "startColumn": 2,
-            "endLine": 1767,
+            "endLine": 1768,
             "endColumn": 23
           }
         },
@@ -2722,9 +2722,9 @@
             }
           },
           "position": {
-            "startLine": 1768,
+            "startLine": 1769,
             "startColumn": 2,
-            "endLine": 1768,
+            "endLine": 1769,
             "endColumn": 26
           }
         },
@@ -2747,9 +2747,9 @@
             }
           },
           "position": {
-            "startLine": 1769,
+            "startLine": 1770,
             "startColumn": 2,
-            "endLine": 1769,
+            "endLine": 1770,
             "endColumn": 25
           }
         },
@@ -2772,9 +2772,9 @@
             }
           },
           "position": {
-            "startLine": 1770,
+            "startLine": 1771,
             "startColumn": 2,
-            "endLine": 1770,
+            "endLine": 1771,
             "endColumn": 26
           }
         },
@@ -2797,9 +2797,9 @@
             }
           },
           "position": {
-            "startLine": 1771,
+            "startLine": 1772,
             "startColumn": 2,
-            "endLine": 1771,
+            "endLine": 1772,
             "endColumn": 26
           }
         },
@@ -2822,9 +2822,9 @@
             }
           },
           "position": {
-            "startLine": 1772,
+            "startLine": 1773,
             "startColumn": 2,
-            "endLine": 1772,
+            "endLine": 1773,
             "endColumn": 25
           }
         },
@@ -2847,9 +2847,9 @@
             }
           },
           "position": {
-            "startLine": 1773,
+            "startLine": 1774,
             "startColumn": 2,
-            "endLine": 1773,
+            "endLine": 1774,
             "endColumn": 25
           }
         },
@@ -2872,9 +2872,9 @@
             }
           },
           "position": {
-            "startLine": 1774,
+            "startLine": 1775,
             "startColumn": 2,
-            "endLine": 1774,
+            "endLine": 1775,
             "endColumn": 25
           }
         }
@@ -3938,9 +3938,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1766,
+              "startLine": 1767,
               "startColumn": 2,
-              "endLine": 1766,
+              "endLine": 1767,
               "endColumn": 22
             }
           },
@@ -3963,9 +3963,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1767,
+              "startLine": 1768,
               "startColumn": 2,
-              "endLine": 1767,
+              "endLine": 1768,
               "endColumn": 23
             }
           },
@@ -3988,9 +3988,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1768,
+              "startLine": 1769,
               "startColumn": 2,
-              "endLine": 1768,
+              "endLine": 1769,
               "endColumn": 26
             }
           },
@@ -4013,9 +4013,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1769,
+              "startLine": 1770,
               "startColumn": 2,
-              "endLine": 1769,
+              "endLine": 1770,
               "endColumn": 25
             }
           },
@@ -4038,9 +4038,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1770,
+              "startLine": 1771,
               "startColumn": 2,
-              "endLine": 1770,
+              "endLine": 1771,
               "endColumn": 26
             }
           },
@@ -4063,9 +4063,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1771,
+              "startLine": 1772,
               "startColumn": 2,
-              "endLine": 1771,
+              "endLine": 1772,
               "endColumn": 26
             }
           },
@@ -4088,9 +4088,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1772,
+              "startLine": 1773,
               "startColumn": 2,
-              "endLine": 1772,
+              "endLine": 1773,
               "endColumn": 25
             }
           },
@@ -4113,9 +4113,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1773,
+              "startLine": 1774,
               "startColumn": 2,
-              "endLine": 1773,
+              "endLine": 1774,
               "endColumn": 25
             }
           },
@@ -4138,9 +4138,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1774,
+              "startLine": 1775,
               "startColumn": 2,
-              "endLine": 1774,
+              "endLine": 1775,
               "endColumn": 25
             }
           },
@@ -4432,9 +4432,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1765,
+              "startLine": 1766,
               "startColumn": 2,
-              "endLine": 1765,
+              "endLine": 1766,
               "endColumn": 25
             }
           },
@@ -4457,9 +4457,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1766,
+              "startLine": 1767,
               "startColumn": 2,
-              "endLine": 1766,
+              "endLine": 1767,
               "endColumn": 22
             }
           },
@@ -4482,9 +4482,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1767,
+              "startLine": 1768,
               "startColumn": 2,
-              "endLine": 1767,
+              "endLine": 1768,
               "endColumn": 23
             }
           },
@@ -4507,9 +4507,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1768,
+              "startLine": 1769,
               "startColumn": 2,
-              "endLine": 1768,
+              "endLine": 1769,
               "endColumn": 26
             }
           },
@@ -4532,9 +4532,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1769,
+              "startLine": 1770,
               "startColumn": 2,
-              "endLine": 1769,
+              "endLine": 1770,
               "endColumn": 25
             }
           },
@@ -4557,9 +4557,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1770,
+              "startLine": 1771,
               "startColumn": 2,
-              "endLine": 1770,
+              "endLine": 1771,
               "endColumn": 26
             }
           },
@@ -4582,9 +4582,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1771,
+              "startLine": 1772,
               "startColumn": 2,
-              "endLine": 1771,
+              "endLine": 1772,
               "endColumn": 26
             }
           },
@@ -4607,9 +4607,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1772,
+              "startLine": 1773,
               "startColumn": 2,
-              "endLine": 1772,
+              "endLine": 1773,
               "endColumn": 25
             }
           },
@@ -4632,9 +4632,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1773,
+              "startLine": 1774,
               "startColumn": 2,
-              "endLine": 1773,
+              "endLine": 1774,
               "endColumn": 25
             }
           },
@@ -4657,9 +4657,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1774,
+              "startLine": 1775,
               "startColumn": 2,
-              "endLine": 1774,
+              "endLine": 1775,
               "endColumn": 25
             }
           },
