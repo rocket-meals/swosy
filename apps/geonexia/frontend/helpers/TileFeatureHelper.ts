@@ -128,8 +128,18 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 
 // ─── Single-tile fetching & parsing ─────────────────────────────────────────
 
+/** Cache: `"tileUrlTemplate|z|x|y"` → parsed MapFeatureInfo[]. */
+const tileFeaturesCache: Record<string, MapFeatureInfo[]> = {};
+
+/** Build a cache key for a single tile fetch. */
+function tileCacheKey(tileUrlTemplate: string, z: number, x: number, y: number): string {
+	return `${tileUrlTemplate}|${z}|${x}|${y}`;
+}
+
 /**
  * Fetch a single vector tile and parse it into an array of `MapFeatureInfo`.
+ * Results are cached in-memory so repeated requests for the same tile
+ * (e.g. overlapping H3 bounding boxes) are served instantly.
  *
  * @param tileUrlTemplate – URL template with `{z}`, `{x}`, `{y}` placeholders.
  * @param z – Zoom level.
@@ -142,6 +152,10 @@ export async function fetchAndParseTile(
 	x: number,
 	y: number,
 ): Promise<MapFeatureInfo[]> {
+	const cacheKey = tileCacheKey(tileUrlTemplate, z, x, y);
+	const cached = tileFeaturesCache[cacheKey];
+	if (cached) return cached;
+
 	const url = tileUrlTemplate
 		.replace('{z}', String(z))
 		.replace('{x}', String(x))
@@ -150,7 +164,10 @@ export async function fetchAndParseTile(
 	const res = await fetch(url);
 	if (!res.ok) {
 		// Tiles may legitimately return 404 for ocean / empty areas.
-		if (res.status === 404) return [];
+		if (res.status === 404) {
+			tileFeaturesCache[cacheKey] = [];
+			return [];
+		}
 		throw new Error(`Tile fetch failed (${res.status}): ${url}`);
 	}
 
@@ -203,6 +220,7 @@ export async function fetchAndParseTile(
 		}
 	}
 
+	tileFeaturesCache[cacheKey] = features;
 	return features;
 }
 
