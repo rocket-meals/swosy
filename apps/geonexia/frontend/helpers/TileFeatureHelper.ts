@@ -13,6 +13,7 @@ import Pbf from 'pbf';
 import { VectorTile } from '@mapbox/vector-tile';
 
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
+import type { MapFeatureFilterOptions } from './OpenMapTilesSchema';
 import { cellToBoundary as h3CellToBoundary } from './H3Helper';
 
 // ─── Configuration ──────────────────────────────────────────────────────────
@@ -68,6 +69,33 @@ function boundsOverlap(
 ): boolean {
 	return aMinLat <= bMaxLat && aMaxLat >= bMinLat &&
 		aMinLng <= bMaxLng && aMaxLng >= bMinLng;
+}
+
+// ─── Name-null filter ───────────────────────────────────────────────────────
+
+/**
+ * Filter features based on {@link MapFeatureFilterOptions}.
+ *
+ * When `includeNameNull` is `true` (or the options object is omitted),
+ * all features are returned unchanged.  Otherwise features whose `name`
+ * is `null` are removed unless their `layerId` appears in the
+ * `nameNullAllowList`.
+ */
+function applyNameFilter(
+	features: MapFeatureInfo[],
+	options?: MapFeatureFilterOptions,
+): MapFeatureInfo[] {
+	if (!options || options.includeNameNull) return features;
+
+	const allowList = options.nameNullAllowList;
+
+	return features.filter((f) => {
+		// Named features always pass.
+		if (f.name !== null) return true;
+		// Unnamed features pass only when their layer is on the allow list.
+		if (allowList && f.layerId && allowList.has(f.layerId)) return true;
+		return false;
+	});
 }
 
 /** Return all (z, x, y) tile coordinates that cover the given bounding box. */
@@ -351,6 +379,8 @@ export type TileFeatureQueryParams = {
 	zoom: number;
 	/** Optional style URL override (default: OpenFreeMap Liberty). */
 	styleUrl?: string;
+	/** Optional filter for features with `name === null`. */
+	filterOptions?: MapFeatureFilterOptions;
 };
 
 /**
@@ -363,7 +393,7 @@ export type TileFeatureQueryParams = {
 export async function queryTileFeaturesForBounds(
 	params: TileFeatureQueryParams,
 ): Promise<MapFeatureInfo[]> {
-	const { minLat, minLng, maxLat, maxLng, zoom, styleUrl } = params;
+	const { minLat, minLng, maxLat, maxLng, zoom, styleUrl, filterOptions } = params;
 
 	const tileUrlTemplate = await resolveTileUrl(styleUrl);
 	const tiles = getTilesForBounds(minLat, minLng, maxLat, maxLng, zoom);
@@ -373,7 +403,7 @@ export async function queryTileFeaturesForBounds(
 		tiles.map((t) => fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y, filterBounds)),
 	);
 
-	return results.flat();
+	return applyNameFilter(results.flat(), filterOptions);
 }
 
 /**
@@ -384,7 +414,7 @@ export async function queryTileFeaturesForBounds(
 export async function queryTileFeaturesGrouped(
 	params: TileFeatureQueryParams,
 ): Promise<Record<string, MapFeatureInfo[]>> {
-	const { minLat, minLng, maxLat, maxLng, zoom, styleUrl } = params;
+	const { minLat, minLng, maxLat, maxLng, zoom, styleUrl, filterOptions } = params;
 
 	const tileUrlTemplate = await resolveTileUrl(styleUrl);
 	const tiles = getTilesForBounds(minLat, minLng, maxLat, maxLng, zoom);
@@ -395,7 +425,7 @@ export async function queryTileFeaturesGrouped(
 	await Promise.all(
 		tiles.map(async (t) => {
 			const features = await fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y, filterBounds);
-			grouped[`${t.z}/${t.x}/${t.y}`] = features;
+			grouped[`${t.z}/${t.x}/${t.y}`] = applyNameFilter(features, filterOptions);
 		}),
 	);
 
@@ -416,6 +446,7 @@ export async function queryTileFeaturesGrouped(
 export async function queryTileFeaturesForHexCell(
 	h3Index: string,
 	styleUrl?: string,
+	filterOptions?: MapFeatureFilterOptions,
 ): Promise<MapFeatureInfo[]> {
 	const boundary = h3CellToBoundary(h3Index); // [[lat, lng], ...]
 	if (!boundary || boundary.length === 0) {
@@ -431,6 +462,7 @@ export async function queryTileFeaturesForHexCell(
 		maxLat: Math.max(...lats),
 		maxLng: Math.max(...lngs),
 		styleUrl,
+		filterOptions,
 	});
 
 	return features;
@@ -449,6 +481,8 @@ export type AreaFeatureQueryParams = {
 	maxLng: number;
 	/** Optional style URL override (default: OpenFreeMap Liberty). */
 	styleUrl?: string;
+	/** Optional filter for features with `name === null`. */
+	filterOptions?: MapFeatureFilterOptions;
 };
 
 /**
@@ -465,7 +499,7 @@ export type AreaFeatureQueryParams = {
 export async function queryTileFeaturesForArea(
 	params: AreaFeatureQueryParams,
 ): Promise<{ features: MapFeatureInfo[]; zoom: number }> {
-	const { minLat, minLng, maxLat, maxLng, styleUrl } = params;
+	const { minLat, minLng, maxLat, maxLng, styleUrl, filterOptions } = params;
 	const zoom = calculateOptimalZoom(minLat, minLng, maxLat, maxLng);
 
 	const features = await queryTileFeaturesForBounds({
@@ -475,6 +509,7 @@ export async function queryTileFeaturesForArea(
 		maxLng,
 		zoom,
 		styleUrl,
+		filterOptions,
 	});
 
 	return { features, zoom };
