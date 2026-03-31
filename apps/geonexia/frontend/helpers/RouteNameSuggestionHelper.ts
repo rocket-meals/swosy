@@ -7,6 +7,14 @@
  * (e.g. activity → route creation).
  */
 
+import {
+	hexCellToBounds,
+	queryTileFeaturesForAreas,
+	type AreaFeatureQueryParams,
+	type LatLngBounds,
+} from './TileFeatureHelper';
+import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from './OpenMapTilesSchema';
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 /** Single map-feature record as returned by the map's queryRenderedFeatures. */
@@ -232,4 +240,92 @@ export function filterUsedNames(
 		usedSet.delete(ownName.toLowerCase());
 	}
 	return suggestions.filter((s) => !usedSet.has(s.toLowerCase()));
+}
+
+// ─── High-level hex-tile → route-name suggestion API ────────────────────────
+
+/**
+ * Convert an array of H3 hex-tile IDs into `AreaFeatureQueryParams` objects
+ * suitable for batch tile-feature queries.
+ *
+ * Each hex cell's boundary polygon is converted to an axis-aligned bounding
+ * box.  Invalid cells are silently skipped.
+ *
+ * @param hexTileIds – Array of H3 cell index strings.
+ * @returns Array of bounding-box query params (one per valid cell).
+ */
+export function hexTilesToAreaParams(hexTileIds: string[]): AreaFeatureQueryParams[] {
+	const areas: AreaFeatureQueryParams[] = [];
+	for (const id of hexTileIds) {
+		try {
+			const bounds: LatLngBounds = hexCellToBounds(id);
+			areas.push({
+				...bounds,
+				filterOptions: { nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
+			});
+		} catch {
+			// Skip invalid cells
+		}
+	}
+	return areas;
+}
+
+/**
+ * All-in-one function that takes arrays of hex-tile IDs for a route (and
+ * optionally the enclosed area of a loop) and returns prioritised route-name
+ * suggestions using the existing scoring / sorting algorithm.
+ *
+ * Steps performed:
+ * 1. Convert hex-tile IDs to lat/lng bounding boxes via {@link hexCellToBounds}.
+ * 2. Batch-fetch vector-tile features for all areas via
+ *    {@link queryTileFeaturesForAreas} (tiles are cached, so overlapping /
+ *    adjacent cells share HTTP requests).
+ * 3. Build area-info dictionaries with {@link buildAreaInfoDict}.
+ * 4. Generate scored name suggestions with {@link suggestRouteNames}.
+ * 5. Optionally filter out already-used route names.
+ *
+ * @param routeHexTiles    – Ordered H3 cell IDs the route passes through.
+ * @param enclosedHexTiles – H3 cell IDs enclosed by the route loop (empty
+ *                           array when the route is not a closed loop).
+ * @param existingNames    – Names already in use by other saved routes.
+ * @param ownName          – The current route's own name (excluded from the
+ *                           used-names filter).
+ * @returns Ordered list of unique name suggestions (highest priority first).
+ */
+export async function suggestRouteNamesForHexTiles(
+	routeHexTiles: string[],
+	enclosedHexTiles: string[] = [],
+	existingNames: string[] = [],
+	ownName?: string,
+): Promise<string[]> {
+	// ── Build query params from hex-tile IDs ──────────────────────────────
+	const routeAreas = hexTilesToAreaParams(routeHexTiles);
+	const enclosedAreas = hexTilesToAreaParams(enclosedHexTiles);
+
+	// ── Fetch features for all areas in one batch ─────────────────────────
+	const allAreas = [...routeAreas, ...enclosedAreas];
+	const allResults = allAreas.length > 0
+		? await queryTileFeaturesForAreas(allAreas)
+		: [];
+
+	const routeResults = allResults.slice(0, routeAreas.length);
+	const enclosedResults = allResults.slice(routeAreas.length);
+
+	// ── Build area-info dictionaries ──────────────────────────────────────
+	const routeGrouped: Record<string, MapFeatureInfo[]> = {};
+	routeResults.forEach((features, idx) => {
+		routeGrouped[`route-${idx}`] = features;
+	});
+
+	const enclosedGrouped: Record<string, MapFeatureInfo[]> = {};
+	enclosedResults.forEach((features, idx) => {
+		enclosedGrouped[`enclosed-${idx}`] = features;
+	});
+
+	const routeDict = buildAreaInfoDict(routeGrouped);
+	const enclosedDict = buildAreaInfoDict(enclosedGrouped);
+
+	// ── Generate & filter suggestions using existing algorithm ─────────────
+	const suggestions = suggestRouteNames(routeDict, enclosedDict, existingNames, ownName);
+	return filterUsedNames(suggestions, existingNames, ownName);
 }

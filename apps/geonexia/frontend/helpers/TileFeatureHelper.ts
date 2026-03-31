@@ -19,7 +19,7 @@ import { cellToBoundary as h3CellToBoundary } from './H3Helper';
 // ─── Configuration ──────────────────────────────────────────────────────────
 
 /** Default style URL whose `sources` block contains the PBF tile URL template. */
-const DEFAULT_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+export const DEFAULT_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 
 /**
  * Layers to skip when extracting features (overlay / UI layers that are not
@@ -181,6 +181,58 @@ export async function resolveTileUrl(styleUrl: string = DEFAULT_STYLE_URL): Prom
 	}
 
 	throw new Error('Could not find a PBF tile URL template in the style JSON.');
+}
+
+/**
+ * Pre-load and cache the tile URL template for a style so that subsequent
+ * tile-feature queries can start downloading PBF tiles immediately without
+ * waiting for the style JSON round-trip.
+ *
+ * Calling this function multiple times is cheap – a cached result is returned
+ * instantly.
+ *
+ * @param styleUrl – Optional style URL override (default: OpenFreeMap Liberty).
+ * @returns The resolved PBF tile URL template string.
+ */
+export async function preloadMapStyle(styleUrl: string = DEFAULT_STYLE_URL): Promise<string> {
+	return resolveTileUrl(styleUrl);
+}
+
+// ─── H3-cell → lat/lng bounding-box helper ──────────────────────────────────
+
+/**
+ * Lat/lng axis-aligned bounding box.
+ */
+export type LatLngBounds = {
+	minLat: number;
+	minLng: number;
+	maxLat: number;
+	maxLng: number;
+};
+
+/**
+ * Convert an H3 hex-cell index to its axis-aligned lat/lng bounding box.
+ *
+ * This is a convenience helper that computes the boundary polygon of the cell
+ * and returns the smallest rectangle that contains it.
+ *
+ * @param h3Index – H3 cell index string (e.g. `'8a1f10d5061ffff'`).
+ * @returns The bounding box of the cell.
+ * @throws When the cell index is invalid or the boundary is empty.
+ */
+export function hexCellToBounds(h3Index: string): LatLngBounds {
+	const boundary = h3CellToBoundary(h3Index); // [[lat, lng], ...]
+	if (!boundary || boundary.length === 0) {
+		throw new Error(`Invalid H3 cell or empty boundary: ${h3Index}`);
+	}
+	const lats = boundary.map((v: [number, number]) => v[0]);
+	const lngs = boundary.map((v: [number, number]) => v[1]);
+	return {
+		minLat: Math.min(...lats),
+		minLng: Math.min(...lngs),
+		maxLat: Math.max(...lats),
+		maxLng: Math.max(...lngs),
+	};
 }
 
 // ─── Single-tile fetching & parsing ─────────────────────────────────────────
@@ -451,19 +503,10 @@ export async function queryTileFeaturesForHexCell(
 	styleUrl?: string,
 	filterOptions?: MapFeatureFilterOptions,
 ): Promise<MapFeatureInfo[]> {
-	const boundary = h3CellToBoundary(h3Index); // [[lat, lng], ...]
-	if (!boundary || boundary.length === 0) {
-		throw new Error(`Invalid H3 cell or empty boundary: ${h3Index}`);
-	}
-
-	const lats = boundary.map((v: [number, number]) => v[0]);
-	const lngs = boundary.map((v: [number, number]) => v[1]);
+	const bounds = hexCellToBounds(h3Index);
 
 	const { features } = await queryTileFeaturesForArea({
-		minLat: Math.min(...lats),
-		minLng: Math.min(...lngs),
-		maxLat: Math.max(...lats),
-		maxLng: Math.max(...lngs),
+		...bounds,
 		styleUrl,
 		filterOptions,
 	});
