@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
@@ -384,7 +384,9 @@ export default function Layout() {
 					<ThemeSyncBridge />
 					<SettingsProvider primaryColor="#2563eb">
 						<ModalProvider>
+						<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
 						<ThemedDrawerNavigator />
+						</KeyboardAvoidingView>
 						</ModalProvider>
 					</SettingsProvider>
 				</ThemeProvider>
@@ -396,6 +398,9 @@ export default function Layout() {
 }
 
 const styles = StyleSheet.create({
+	keyboardAvoidingView: {
+		flex: 1,
+	},
 	errorContainer: {
 		flex: 1,
 		backgroundColor: '#fff',

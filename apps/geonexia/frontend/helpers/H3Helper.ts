@@ -67,6 +67,8 @@ const {
     compactCells: _compactCells,
     uncompactCells: _uncompactCells,
     areNeighborCells: _areNeighborCells,
+    polygonToCells: _polygonToCells,
+    cellsToMultiPolygon: _cellsToMultiPolygon,
     getNumCells: _getNumCells,
     getRes0Cells: _getRes0Cells,
     getPentagons: _getPentagons,
@@ -206,6 +208,20 @@ export const uncompactCells = (cells: H3Index[], res: number): H3Index[] =>
 
 export const areNeighborCells = (a: H3Index, b: H3Index): boolean =>
     _areNeighborCells?.(a, b) ?? false;
+
+export const polygonToCells = (
+    coordinates: CoordPair[][] | CoordPair[][][],
+    res: number,
+    isGeoJson = false,
+): H3Index[] =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (_polygonToCells?.(coordinates as any, res, isGeoJson) as H3Index[]) ?? [];
+
+export const cellsToMultiPolygon = (
+    h3Indexes: H3Index[],
+    formatAsGeoJson = false,
+): CoordPair[][][] =>
+    (_cellsToMultiPolygon?.(h3Indexes, formatAsGeoJson) as CoordPair[][][]) ?? [];
 
 // ─── Global cell sets ─────────────────────────────────────────────────────────
 

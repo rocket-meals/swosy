@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, SettingsList, SettingsListGroupTitle, useTheme } from 'repo-depkit-common-ui';
 import * as Clipboard from 'expo-clipboard';
@@ -356,21 +356,10 @@ export default function HexTileInfoScreen() {
 
 	if (Platform.OS === 'web') return content;
 
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-			style={styles.keyboardAvoidingView}
-		>
-			{content}
-		</KeyboardAvoidingView>
-	);
+	return content;
 }
 
 const styles = StyleSheet.create({
-	keyboardAvoidingView: {
-		flex: 1,
-	},
 	container: {
 		flex: 1,
 	},

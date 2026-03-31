@@ -17,12 +17,13 @@ import { useSelector } from 'react-redux';
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, cellsToMultiPolygon } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
 import type { RootState } from '../../store/store';
+import { useDebugMode } from '../../hooks/useDebugMode';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
@@ -34,6 +35,26 @@ type AggregatedFeatureEntry = {
 	count: number;
 	feature: MapFeatureInfo;
 };
+
+function featureAggregationKey(f: MapFeatureInfo): string {
+	return `${f.layerId ?? ''}|${f.name ?? ''}|${f.class ?? ''}|${f.subclass ?? ''}`;
+}
+
+function buildAggregatedFeatures(featureMap: Record<string, MapFeatureInfo[]>): Record<string, AggregatedFeatureEntry> {
+	const aggregated: Record<string, AggregatedFeatureEntry> = {};
+	for (const features of Object.values(featureMap)) {
+		for (const f of features) {
+			const key = featureAggregationKey(f);
+			const existing = aggregated[key];
+			if (existing) {
+				existing.count += 1;
+			} else {
+				aggregated[key] = { count: 1, feature: f };
+			}
+		}
+	}
+	return aggregated;
+}
 
 function formatDate(timestamp: number): string {
 	return new Date(timestamp).toLocaleDateString(undefined, {
@@ -83,15 +104,24 @@ export default function RouteDetailScreen() {
 	const [addAnchorTileIndex, setAddAnchorTileIndex] = useState<number | null>(null);
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const isDebugMode = useDebugMode();
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
 	const { show: showHexTileModal } = useMyScrollViewModal();
 	const { show: showAggregatedModal } = useMyScrollViewModal();
+	const { show: showEnclosedAggregatedModal } = useMyScrollViewModal();
 
 	// ── Hex tile feature data ────────────────────────────────────────────
 	const [hexTileFeatureMap, setHexTileFeatureMap] = useState<Record<string, MapFeatureInfo[]>>({});
 	const [aggregatedFeatures, setAggregatedFeatures] = useState<Record<string, AggregatedFeatureEntry>>({});
 	const [featuresLoading, setFeaturesLoading] = useState(false);
 	const featureQuerySentRef = useRef(false);
+
+	// ── Enclosed area data ────────────────────────────────────────────────
+	const [enclosedTiles, setEnclosedTiles] = useState<string[]>([]);
+	const [enclosedTilesReady, setEnclosedTilesReady] = useState(false);
+	const [aggregatedEnclosedFeatures, setAggregatedEnclosedFeatures] = useState<Record<string, AggregatedFeatureEntry>>({});
+	const [enclosedFeaturesLoading, setEnclosedFeaturesLoading] = useState(false);
+	const enclosedQuerySentRef = useRef(false);
 
 	// Stable ref so handleMapMessage can always read the latest edit state without
 	// being recreated on every state change.
@@ -248,22 +278,79 @@ export default function RouteDetailScreen() {
 			setHexTileFeatureMap(featureMap);
 
 			// 2. Build aggregated features dict (key = layerId|name|class|subclass)
-			const aggregated: Record<string, AggregatedFeatureEntry> = {};
-			for (const features of Object.values(featureMap)) {
-				for (const f of features) {
-					const key = `${f.layerId ?? ''}|${f.name ?? ''}|${f.class ?? ''}|${f.subclass ?? ''}`;
-					const existing = aggregated[key];
-					if (existing) {
-						existing.count += 1;
-					} else {
-						aggregated[key] = { count: 1, feature: f };
+			if (cancelled) return;
+			setAggregatedFeatures(buildAggregatedFeatures(featureMap));
+			setFeaturesLoading(false);
+		})();
+
+		return () => { cancelled = true; };
+	}, [route]);
+
+	// ── Fetch tile features for the enclosed area ────────────────────────
+	useEffect(() => {
+		if (!route || route.hexTiles.length === 0) return;
+		if (!isH3Available()) return;
+		if (enclosedQuerySentRef.current) return;
+		enclosedQuerySentRef.current = true;
+
+		let cancelled = false;
+
+		(async () => {
+			// 1. Compute enclosed tiles via polygon fill
+			const tiles: string[] = [];
+			try {
+				const firstTile = route.hexTiles[0];
+				if (firstTile) {
+					const res = getResolution(firstTile);
+					const multiPolygon = cellsToMultiPolygon(route.hexTiles, false);
+					const routeSet = new Set(route.hexTiles);
+					for (const polygon of multiPolygon) {
+						const filledCells = polygonToCells(polygon, res, false);
+						for (const cell of filledCells) {
+							if (!routeSet.has(cell)) {
+								tiles.push(cell);
+							}
+						}
 					}
+				}
+			} catch (err) {
+				console.warn('[RouteDetailScreen] Failed to compute enclosed tiles:', err);
+			}
+
+			if (cancelled) return;
+			setEnclosedTiles(tiles);
+			setEnclosedTilesReady(true);
+
+			if (tiles.length === 0) {
+				setEnclosedFeaturesLoading(false);
+				return;
+			}
+
+			setEnclosedFeaturesLoading(true);
+
+			// 2. Query features for each enclosed tile
+			const featureMap: Record<string, MapFeatureInfo[]> = {};
+			for (const hexId of tiles) {
+				if (cancelled) return;
+				try {
+					const features = await queryTileFeaturesForHexCell(
+						hexId,
+						undefined,
+						{ nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW },
+					);
+					featureMap[hexId] = features;
+				} catch (err) {
+					console.warn('[RouteDetailScreen] Failed to query features for enclosed tile', hexId, err);
+					featureMap[hexId] = [];
 				}
 			}
 
 			if (cancelled) return;
-			setAggregatedFeatures(aggregated);
-			setFeaturesLoading(false);
+
+			// 3. Aggregate enclosed tile features
+			if (cancelled) return;
+			setAggregatedEnclosedFeatures(buildAggregatedFeatures(featureMap));
+			setEnclosedFeaturesLoading(false);
 		})();
 
 		return () => { cancelled = true; };
@@ -510,7 +597,7 @@ export default function RouteDetailScreen() {
 		{ icon: 'event', label: 'Erstellt am', value: formatDate(route.createdAt) },
 		{ icon: 'straighten', label: 'Streckenlänge', value: formatDistanceKm(distanceKm) },
 		{ icon: 'grid-on', label: 'Kacheln', value: String(tileCount) },
-		{ icon: 'layers', label: 'H3-Auflösung', value: String(route.h3Resolution) },
+		{ icon: 'crop-free', label: 'Eingeschlossene Kacheln', value: enclosedTilesReady ? String(enclosedTiles.length) : '…' },
 		...(route.sportType
 			? [{ icon: 'directions-run' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Sportart', value: route.sportType }]
 			: []),
@@ -678,14 +765,14 @@ export default function RouteDetailScreen() {
 					}}
 				/>
 
-				{/* ── Hex Tile Feature Map ─────────────────────────────────── */}
-				{featuresLoading && (
+				{/* ── Hex Tile Feature Map (debug only) ───────────────────── */}
+				{isDebugMode && featuresLoading && (
 					<View style={styles.loadingFeatures}>
 						<ActivityIndicator size="small" color={PRIMARY_COLOR} />
 						<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Karten-Features…</Text>
 					</View>
 				)}
-				{!featuresLoading && route.hexTiles.length > 0 && Object.keys(hexTileFeatureMap).length > 0 && (
+				{isDebugMode && !featuresLoading && route.hexTiles.length > 0 && Object.keys(hexTileFeatureMap).length > 0 && (
 					<>
 						<SettingsListGroupTitle title="Hex Tiles" />
 						{route.hexTiles.map((hexId, idx) => {
@@ -721,8 +808,8 @@ export default function RouteDetailScreen() {
 					</>
 				)}
 
-				{/* ── Aggregated Features ─────────────────────────────────── */}
-				{!featuresLoading && Object.keys(aggregatedFeatures).length > 0 && (() => {
+				{/* ── Aggregated Features (debug only) ────────────────────── */}
+				{isDebugMode && !featuresLoading && Object.keys(aggregatedFeatures).length > 0 && (() => {
 					const entries = Object.entries(aggregatedFeatures).sort((a, b) => b[1].count - a[1].count);
 					return (
 						<>
@@ -738,6 +825,45 @@ export default function RouteDetailScreen() {
 									groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
 									onPress={() => {
 										showAggregatedModal({
+											title: `📊 ${key}`,
+											children: (
+												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+													<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+														{JSON.stringify(entry.feature, null, 2)}
+													</Text>
+												</View>
+											),
+										});
+									}}
+								/>
+							))}
+						</>
+					);
+				})()}
+
+				{/* ── Enclosed Area Aggregated Features ───────────────────── */}
+				{enclosedFeaturesLoading && (
+					<View style={styles.loadingFeatures}>
+						<ActivityIndicator size="small" color={PRIMARY_COLOR} />
+						<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Features der eingeschlossenen Fläche…</Text>
+					</View>
+				)}
+				{!enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
+					const entries = Object.entries(aggregatedEnclosedFeatures).sort((a, b) => b[1].count - a[1].count);
+					return (
+						<>
+							<SettingsListGroupTitle title="Aggregierte Features (eingeschlossene Fläche)" />
+							{entries.map(([key, entry], idx) => (
+								<SettingsList
+									key={`enc-agg-${key}`}
+									leftIcon={<MaterialIcons name="layers" size={20} color="#ffffff" />}
+									iconBackgroundColor="#059669"
+									title={key}
+									value={String(entry.count)}
+									showSeparator={idx < entries.length - 1}
+									groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
+									onPress={() => {
+										showEnclosedAggregatedModal({
 											title: `📊 ${key}`,
 											children: (
 												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
