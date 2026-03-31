@@ -200,6 +200,7 @@ export default function RouteDetailScreen() {
 		// Build and send hexagon tile GeoJSON and walk path lines
 		try {
 			const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(route, hexTileRecords);
+			mapRef.current.sendToMap({ hexRouteOutlineMode: true });
 			mapRef.current.sendToMap({ hexTileGeoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson });
 		} catch (err) {
