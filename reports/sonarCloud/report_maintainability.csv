@@ -1,4 +1,6 @@
 Key,Message,Component,Line
+"AZ1EMIc56oJbwS86_fe4","Function 'boundsOverlap' has too many parameters (8). Maximum allowed is 7.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",65
+"AZ1EMIc56oJbwS86_fe5","Refactor this function to reduce its Cognitive Complexity from 26 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",182
 "AZ1EFoIB3pt_Z9W6Yb5r","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",72
 "AZ1EFoIB3pt_Z9W6Yb5s","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",75
 "AZ1EFoIB3pt_Z9W6Yb5t","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",183
@@ -14,7 +16,7 @@ Key,Message,Component,Line
 "AZ1EFoIB3pt_Z9W6Yb53","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",236
 "AZ1D3DAB6oJbwS867d4j","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",168
 "AZ1Do-iwZhiS2cIBve5D","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",220
-"AZ1DfJgEWUADpMCCZhIz","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",79
+"AZ1DfJgEWUADpMCCZhIz","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/TileFeatureHelper.ts",105
 "AZ1C4OI_BfEcQZ3_Y0dN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1943
 "AZ1C4OI_BfEcQZ3_Y0dO","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1946
 "AZ1CkG6ygetBJX8T7gNM","Refactor this function to reduce its Cognitive Complexity from 34 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",256
@@ -9997,5 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvVPS4VhJojFFAiL","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",119
 "AZkUSvVPS4VhJojFFAiM","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",131
 "AZkUSvVPS4VhJojFFAiN","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/helper/NotificationHelper.ts",132
-"AZkUSvUHS4VhJojFFAhV","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",2
-"AZkUSvUHS4VhJojFFAha","Unexpected `await` of a non-Promise (non-""Thenable"") value.","rocket-meals_rocket-meals:apps/frontend/app/helper/SystemActionHelper.ts",32
