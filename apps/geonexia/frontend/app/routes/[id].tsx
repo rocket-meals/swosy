@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
+import SettingsListActivity from '../../components/SettingsListActivity';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, cellsToMultiPolygon } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
@@ -63,27 +64,6 @@ function formatDate(timestamp: number): string {
 		month: 'long',
 		year: 'numeric',
 	});
-}
-
-function formatActivityDate(timestamp: number): string {
-	const d = new Date(timestamp);
-	return (
-		d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) +
-		'  ' +
-		d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
-	);
-}
-
-function formatActivityValue(activity: SavedActivity): string {
-	const km = activity.stats.distanceKm;
-	const distStr = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(2)} km`;
-	const s = activity.stats.durationSeconds;
-	const h = Math.floor(s / 3600);
-	const m = Math.floor((s % 3600) / 60);
-	const sec = Math.floor(s % 60);
-	const mmss = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-	const durStr = h > 0 ? `${h}:${mmss}` : mmss;
-	return `${distStr} · ${durStr}`;
 }
 
 export default function RouteDetailScreen() {
@@ -748,13 +728,11 @@ export default function RouteDetailScreen() {
 										<Text style={{ color: theme.screen.icon, textAlign: 'center', marginTop: 16, fontSize: 14 }}>Keine Aktivitäten</Text>
 									) : (
 										routeActivities.map((act, idx) => (
-											<SettingsList
+											<SettingsListActivity
 												key={act.id}
-												leftIcon={<MaterialIcons name="directions-run" size={20} color="#ffffff" />}
-												iconBackgroundColor={PRIMARY_COLOR}
-												title={formatActivityDate(act.startedAt)}
-												value={formatActivityValue(act)}
+												activity={act}
 												groupPosition={routeActivities.length === 1 ? 'single' : idx === 0 ? 'top' : idx === routeActivities.length - 1 ? 'bottom' : 'middle'}
+												showSeparator={idx < routeActivities.length - 1}
 												onPress={() => { closeActivitiesModal(); router.navigate(`/activities/${act.id}`); }}
 											/>
 										))

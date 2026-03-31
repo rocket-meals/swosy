@@ -12,7 +12,9 @@ import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import { SettingsList, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+
+import SettingsListActivity from '../../components/SettingsListActivity';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
@@ -21,52 +23,6 @@ import { startRun, markVisited, loadPersistedState, applyMapCustomizations, addW
 import { AppDispatch, store } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
-
-function formatDate(timestamp: number): string {
-	const d = new Date(timestamp);
-	return d.toLocaleDateString(undefined, {
-		day: '2-digit',
-		month: 'short',
-		year: 'numeric',
-	});
-}
-
-function formatTime(timestamp: number): string {
-	const d = new Date(timestamp);
-	return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDuration(totalSeconds: number): string {
-	const h = Math.floor(totalSeconds / 3600);
-	const m = Math.floor((totalSeconds % 3600) / 60);
-	const s = Math.floor(totalSeconds % 60);
-	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-function formatDistance(km: number): string {
-	if (km < 1) return `${Math.round(km * 1000)} m`;
-	return `${km.toFixed(2)} km`;
-}
-
-function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
-	const m = Math.floor(minPerKm);
-	const s = Math.round((minPerKm - m) * 60);
-	return `${m}:${String(s).padStart(2, '0')} /km`;
-}
-
-function formatActivityListValue(activity: SavedActivity): string {
-	const parts: string[] = [];
-	const km = activity.stats.distanceKm;
-	parts.push(km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(2)} km`);
-	parts.push(formatDuration(activity.stats.durationSeconds));
-	if (activity.visitedTileCount != null) {
-		const tiles = activity.visitedTileCount + (activity.enclosedTileCount ?? 0);
-		parts.push(`${tiles} Felder`);
-	}
-	return parts.join(' · ');
-}
 
 // ─── Import Content (shown inside bottom sheet modal) ─────────────────────────
 
@@ -348,12 +304,8 @@ export default function ActivitiesScreen() {
 				keyExtractor={(item) => item.id}
 				contentContainerStyle={styles.listContent}
 				renderItem={({ item }) => (
-					<SettingsList
-						leftIcon={<MaterialIcons name="directions-run" size={20} color="#ffffff" />}
-						iconBackgroundColor={PRIMARY_COLOR}
-						title={formatDate(item.startedAt) + '  ' + formatTime(item.startedAt)}
-						value={formatActivityListValue(item)}
-						rightIcon={<MaterialIcons name="chevron-right" size={20} color="#9ca3af" />}
+					<SettingsListActivity
+						activity={item}
 						groupPosition="single"
 						onPress={() => handleActivityPress(item.id)}
 					/>

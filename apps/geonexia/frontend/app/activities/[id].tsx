@@ -17,6 +17,7 @@ import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, Setti
 import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
@@ -150,24 +151,20 @@ function formatTime(timestamp: number): string {
 	});
 }
 
-function formatDuration(totalSeconds: number): string {
-	const h = Math.floor(totalSeconds / 3600);
-	const m = Math.floor((totalSeconds % 3600) / 60);
-	const s = Math.floor(totalSeconds % 60);
-	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
 function formatDistance(km: number): string {
 	if (km < 1) return `${Math.round(km * 1000)} m`;
 	return `${km.toFixed(2)} km`;
 }
 
 function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
+	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:-- min/km';
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')} min/km`;
+}
+
+function formatSpeedValue(kmh: number): string {
+	return `${formatPace(60 / kmh)}\n${kmh.toFixed(1)} km/h`;
 }
 
 // ─── Share Content (shown inside bottom sheet modal) ──────────────────────────
@@ -1052,12 +1049,12 @@ export default function ActivityDetailScreen() {
 		{ icon: 'access-time', label: 'Start Time', value: formatTime(activity.startedAt) },
 		{ icon: 'access-time', label: 'End Time', value: formatTime(activity.endedAt) },
 		{ icon: 'straighten', label: 'Distance', value: formatDistance(stats.distanceKm) },
-		{ icon: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
+		{ icon: 'timer', label: 'Duration', value: TimeHelper.formatDuration(stats.durationSeconds) },
 		{ icon: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) },
-		{ icon: 'speed', label: 'Avg. Speed', value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
-		{ icon: 'speed', label: 'Median Speed', value: `${(stats.medianSpeedKmh ?? 0).toFixed(1)} km/h` },
-		{ icon: 'arrow-upward', label: 'Max. Speed', value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
-		{ icon: 'arrow-downward', label: 'Min. Speed', value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
+		{ icon: 'speed', label: 'Avg. Speed', value: formatSpeedValue(stats.avgSpeedKmh) },
+		{ icon: 'speed', label: 'Median Speed', value: formatSpeedValue(stats.medianSpeedKmh ?? 0) },
+		{ icon: 'arrow-upward', label: 'Max. Speed', value: formatSpeedValue(stats.maxSpeedKmh) },
+		{ icon: 'arrow-downward', label: 'Min. Speed', value: formatSpeedValue(stats.minSpeedKmh) },
 		{ icon: 'local-fire-department', label: 'Calories', value: `${stats.kcal} kcal` },
 		{ icon: 'directions-walk', label: 'Steps (est.)', value: stats.steps.toLocaleString() },
 		{ icon: 'trending-up', label: 'Elevation Gain', value: `${Math.round(stats.elevationGainM)} m` },
