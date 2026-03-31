@@ -522,6 +522,7 @@ const KCAL_PER_KG_PER_KM = 0.9;
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
+const SPEED_WARMUP_MS = 10_000;
 const GPS_TIME_INTERVAL_MS = 1000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
 /**
@@ -775,6 +776,9 @@ function computeStats(points: RoutePoint[]): RunStats {
 	let elevationGainM = 0;
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
+	const startTimestamp = points[0].timestamp;
+	let speedDistanceKm = 0;
+	let speedDurationSeconds = 0;
 
 	for (let i = 1; i < points.length; i++) {
 		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
@@ -794,14 +798,18 @@ function computeStats(points: RoutePoint[]): RunStats {
 				: dtSec > 0
 				? (segKm / dtSec) * 3600
 				: 0;
-		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
+			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+			speedDistanceKm += segKm;
+			speedDurationSeconds += dtSec;
+		}
 	}
 
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
 	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
 	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
-	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
 	const medianSpeedKmh = (() => {
 		if (speedsKmh.length === 0) return 0;
 		const sorted = [...speedsKmh].sort((a, b) => a - b);
