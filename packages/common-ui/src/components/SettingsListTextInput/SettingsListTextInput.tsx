@@ -25,6 +25,7 @@ export type CheckTextInputResult = {
 export type SettingsListTextInputSuggestion = {
 	key: string;
 	value: string;
+	label?: string;
 };
 
 export type CheckTextInput = (value: string) => CheckTextInputResult;
@@ -168,7 +169,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 			{suggestions && suggestions.length > 0 && (
 				<View style={styles.suggestionsContainer}>
 					<SettingsListSelectOption
-						options={suggestions.map((s) => ({ id: s.key, label: s.value }))}
+						options={suggestions.map((s) => ({ id: s.key, label: s.label ?? s.value }))}
 						selectedOption={suggestions.find((s) => s.value === value)?.key ?? null}
 						onSelect={(option) => {
 							const suggestion = suggestions.find((s) => s.key === option.id);

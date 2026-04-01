@@ -9,6 +9,7 @@ import {
 	SettingsList,
 	SettingsListGroupTitle,
 	SettingsListTextInput,
+	type SettingsListTextInputSuggestion,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
@@ -106,7 +107,7 @@ export default function RouteDetailScreen() {
 	const enclosedQuerySentRef = useRef(false);
 
 	// ── Route name suggestions ────────────────────────────────────────────
-	const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+	const [nameSuggestions, setNameSuggestions] = useState<SettingsListTextInputSuggestion[]>([]);
 	const nameSuggestionsSentRef = useRef(false);
 	// Stable ref so handleMapMessage can always read the latest edit state without
 	// being recreated on every state change.
@@ -409,7 +410,7 @@ export default function RouteDetailScreen() {
 			try {
 				const suggestions = await suggestRouteNamesForHexTiles(route.hexTiles, enclosedTiles);
 				if (!cancelled) {
-					setNameSuggestions(suggestions.slice(0, 20));
+					setNameSuggestions(suggestions.slice(0, 20).map((name, idx) => ({ key: String(idx), value: name, label: name })));
 				}
 			} catch (err) {
 				console.warn('[RouteDetailScreen] Failed to compute name suggestions:', err);
@@ -829,20 +830,7 @@ export default function RouteDetailScreen() {
 						}
 						setRoute(updated);
 					}}
-					renderModalChildren={nameSuggestions.length > 0 ? (onSuggest) => (
-						<View>
-							<SettingsListGroupTitle title="Vorschläge" />
-							{nameSuggestions.map((suggestion, idx) => (
-								<SettingsList
-									key={suggestion}
-									title={suggestion}
-									groupPosition={nameSuggestions.length === 1 ? 'single' : idx === 0 ? 'top' : idx === nameSuggestions.length - 1 ? 'bottom' : 'middle'}
-									showSeparator={idx < nameSuggestions.length - 1}
-									onPress={() => onSuggest(suggestion)}
-								/>
-							))}
-						</View>
-					) : undefined}
+					suggestions={nameSuggestions.length > 0 ? nameSuggestions : undefined}
 				/>
 
 				<SettingsListGroupTitle title="Aktivitäten" />
