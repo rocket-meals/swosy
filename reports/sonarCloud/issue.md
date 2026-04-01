@@ -89,8 +89,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L55
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2377
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2377
+  apps/geonexia/frontend/app/index.tsx:2379
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2379
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
   apps/geonexia/frontend/app/index.tsx:973
@@ -109,12 +109,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/statistics/index.tsx#L44
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:65
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L65
+  apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:72
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L72
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:76
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L76
+  apps/geonexia/frontend/components/SettingsListHexTile/index.tsx:84
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L84
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/components/SpeechSettingsModal.tsx:120
