@@ -139,9 +139,5 @@ export default StyleSheet.create({
 		width: 500,
 		height: 250,
 	},
-	logoFull: {
-		width: 500,
-		height: 250,
-	},
 	dummy: {},
 });

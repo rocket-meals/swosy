@@ -47,7 +47,6 @@ const Index = () => {
 	const [currentFoodOfferCategory, setCurrentFoodOfferCategory] = useState<any>(null);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [isConnected, setIsConnected] = useState(true);
-	const [showLogoOnly, setShowLogoOnly] = useState(false);
 	const progressAnim = useRef(new Animated.Value(0)).current;
 	const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const mountTimeRef = useRef(Date.now());
@@ -134,6 +133,8 @@ const Index = () => {
 		fetchSelectedCanteen();
 	}, [params?.canteens_id, canteens]);
 
+	const THIRTY_MINUTES_MS = 30 * 60 * 1000;
+
 	const fetchFoods = async () => {
 		try {
 			const todayDate = new Date().toISOString().split('T')[0];
@@ -156,10 +157,14 @@ const Index = () => {
 			if (filteredData?.length > 0) {
 				setFoods(filteredData);
 				lastNonEmptyFoodsFetchTimeRef.current = Date.now();
-				setShowLogoOnly(false);
 				setCurrentFood(filteredData[0]);
 				setCurrentFoodIndex(0);
 				startProgressAnimation();
+			} else {
+				const referenceTime = lastNonEmptyFoodsFetchTimeRef.current ?? mountTimeRef.current;
+				if (Date.now() - referenceTime >= THIRTY_MINUTES_MS) {
+					setFoods([]);
+				}
 			}
 		} catch (error) {
 			console.error('Error fetching Food Offers:', error);
@@ -311,19 +316,6 @@ const Index = () => {
 			useNativeDriver: false,
 		}).start();
 	};
-
-	const THIRTY_MINUTES_MS = 30 * 60 * 1000;
-
-	useEffect(() => {
-		const checkLogoInterval = setInterval(() => {
-			const referenceTime = lastNonEmptyFoodsFetchTimeRef.current ?? mountTimeRef.current;
-			if (Date.now() - referenceTime >= THIRTY_MINUTES_MS) {
-				setShowLogoOnly(true);
-			}
-		}, 60 * 1000);
-
-		return () => clearInterval(checkLogoInterval);
-	}, []);
 
 	const imageSource =
 		currentFood?.food?.image_remote_url || getImageUrl(currentFood?.food?.image)
@@ -548,18 +540,12 @@ const Index = () => {
 					)}
 				</>
 			)}
-			{showLogoOnly ? (
+			{foods && foods?.length < 1 && (
 				<View style={styles.emptyContainer}>
-					<CompanyImage appSettings={appSettings} style={styles.logoFull} />
-				</View>
-			) : (
-				foods && foods?.length < 1 && (
-					<View style={styles.emptyContainer}>
-						<View style={{ flex: 1 }}>
-							<Image source={getAppIconInsideExpoLocalSaved()} resizeMode="cover" />
-						</View>
+					<View style={{ flex: 1 }}>
+						<Image source={getAppIconInsideExpoLocalSaved()} resizeMode="cover" />
 					</View>
-				)
+				</View>
 			)}
 		</ScrollView>
 	);
