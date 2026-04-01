@@ -26,6 +26,7 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundar
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState } from '../../store/store';
+import { useDebugMode } from '../../hooks/useDebugMode';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -697,8 +698,11 @@ export default function ActivityDetailScreen() {
 	const [assignedRoute, setAssignedRoute] = useState<SavedRoute | null | undefined>(undefined);
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const walkedEdges = useSelector((state: RootState) => state.hexTiles.walkedEdges);
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
+	const isDebugMode = useDebugMode();
+	const { show: showDebugModal } = useMyScrollViewModal();
 
 	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
@@ -1158,6 +1162,106 @@ export default function ActivityDetailScreen() {
 					<MaterialIcons name="delete-outline" size={18} color="#ef4444" />
 					<Text style={styles.deleteButtonText}>Delete Activity</Text>
 				</TouchableOpacity>
+
+				{/* ── Debug: Storage JSON (debug mode only) ───────────────── */}
+				{isDebugMode && (
+					<>
+						<SettingsListGroupTitle title="🐛 Debug: Storage Info" />
+						<SettingsList
+							leftIcon={<MaterialIcons name="bug-report" size={20} color="#ffffff" />}
+							iconBackgroundColor="#0f766e"
+							title="Activity Store"
+							value={activity.routePoints.length + ' pts'}
+							showSeparator
+							groupPosition="top"
+							onPress={() => {
+								showDebugModal({
+									title: '🐛 Activity Store',
+									children: (
+										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+												{JSON.stringify(activity, null, 2)}
+											</Text>
+										</View>
+									),
+								});
+							}}
+						/>
+						<SettingsList
+							leftIcon={<MaterialIcons name="hexagon" size={20} color="#ffffff" />}
+							iconBackgroundColor="#0f766e"
+							title="World Store (Hex Tiles)"
+							value={Object.keys(hexTileRecords).length + ' tiles'}
+							showSeparator
+							groupPosition="middle"
+							onPress={() => {
+								// Show only tile records that belong to this activity's hex tiles
+								const activityTileIds = new Set(activity.hexTilesOrdered ?? []);
+								const relevantRecords: Record<string, HexTileRecord> = {};
+								for (const tileId of activityTileIds) {
+									if (hexTileRecords[tileId]) {
+										relevantRecords[tileId] = hexTileRecords[tileId];
+									}
+								}
+								const worldStoreData = {
+									totalTiles: Object.keys(hexTileRecords).length,
+									activityTiles: activityTileIds.size,
+									walkedEdges: walkedEdges.length,
+									relevantRecords,
+								};
+								showDebugModal({
+									title: '🐛 World Store',
+									children: (
+										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+												{JSON.stringify(worldStoreData, null, 2)}
+											</Text>
+										</View>
+									),
+								});
+							}}
+						/>
+						<SettingsList
+							leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
+							iconBackgroundColor="#0f766e"
+							title="Routes Store"
+							value={savedRoutes.length + ' routes'}
+							showSeparator
+							groupPosition="middle"
+							onPress={() => {
+								showDebugModal({
+									title: '🐛 Routes Store',
+									children: (
+										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+												{JSON.stringify(savedRoutes, null, 2)}
+											</Text>
+										</View>
+									),
+								});
+							}}
+						/>
+						<SettingsList
+							leftIcon={<MaterialIcons name="data-object" size={20} color="#ffffff" />}
+							iconBackgroundColor="#0f766e"
+							title="Computed Values"
+							value={activity.computed ? `${activity.computed.orderedHexTiles.length} tiles, ${activity.computed.enclosedHexTiles.length} enclosed` : 'none'}
+							groupPosition="bottom"
+							onPress={() => {
+								showDebugModal({
+									title: '🐛 Computed Values',
+									children: (
+										<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+											<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+												{JSON.stringify(activity.computed ?? null, null, 2)}
+											</Text>
+										</View>
+									),
+								});
+							}}
+						/>
+					</>
+				)}
 			</View>
 		</ScrollView>
 	);
