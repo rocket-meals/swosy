@@ -25,7 +25,7 @@ export enum BillboardAnchorColor {
  * A back-reference linking a hex tile to a specific activity that visited or
  * enclosed it.  At most one entry per activity is stored per tile.
  *
- * - `walkedIndex`   – index of this tile in the activity's `computed.orderedHexTiles` list
+ * - `walkedIndex`   – index of this tile in the activity's `computed.hexTilesVisited` list
  * - `enclosedIndex` – index of this tile in the activity's `computed.enclosedHexTiles` list
  *
  * One reference object can carry both indices when the tile was both walked and
