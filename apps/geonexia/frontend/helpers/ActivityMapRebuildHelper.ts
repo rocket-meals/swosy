@@ -177,6 +177,16 @@ export function rebuildMapFromActivities(
 		const enclosedHexTiles: string[] = activity.computed?.enclosedHexTiles ?? [];
 
 		// ── Process visited (walked) tiles ────────────────────────────────────
+		// Pre-build a map for O(1) lookup of existing references for this activity.
+		const refByHexId = new Map<string, ActivityReference>();
+		for (const rec of Object.values(records)) {
+			if (!rec.activityReferences) continue;
+			const ref = rec.activityReferences.find(
+				(r: ActivityReference) => r.activityId === activityId,
+			);
+			if (ref) refByHexId.set(rec.h3Index, ref);
+		}
+
 		for (let i = 0; i < orderedHexTiles.length; i++) {
 			const { hexId } = orderedHexTiles[i];
 			const rec = getOrCreateRecord(records, hexId);
@@ -188,13 +198,13 @@ export function rebuildMapFromActivities(
 
 			// Add or merge the activity reference
 			if (!rec.activityReferences) rec.activityReferences = [];
-			const existingRef = rec.activityReferences.find(
-				(r: ActivityReference) => r.activityId === activityId,
-			);
+			const existingRef = refByHexId.get(hexId);
 			if (existingRef) {
 				existingRef.walkedIndex = i;
 			} else {
-				rec.activityReferences.push({ activityId, walkedIndex: i });
+				const newRef: ActivityReference = { activityId, walkedIndex: i };
+				rec.activityReferences.push(newRef);
+				refByHexId.set(hexId, newRef);
 			}
 
 			// Build walked edges from consecutive tile pairs
@@ -217,13 +227,13 @@ export function rebuildMapFromActivities(
 
 			// Add or merge the activity reference
 			if (!rec.activityReferences) rec.activityReferences = [];
-			const existingRef = rec.activityReferences.find(
-				(r: ActivityReference) => r.activityId === activityId,
-			);
+			const existingRef = refByHexId.get(hexId);
 			if (existingRef) {
 				existingRef.enclosedIndex = i;
 			} else {
-				rec.activityReferences.push({ activityId, enclosedIndex: i });
+				const newRef: ActivityReference = { activityId, enclosedIndex: i };
+				rec.activityReferences.push(newRef);
+				refByHexId.set(hexId, newRef);
 			}
 		}
 	}
