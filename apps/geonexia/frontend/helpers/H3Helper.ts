@@ -67,6 +67,8 @@ const {
     compactCells: _compactCells,
     uncompactCells: _uncompactCells,
     areNeighborCells: _areNeighborCells,
+    polygonToCells: _polygonToCells,
+    cellsToMultiPolygon: _cellsToMultiPolygon,
     getNumCells: _getNumCells,
     getRes0Cells: _getRes0Cells,
     getPentagons: _getPentagons,
@@ -207,6 +209,20 @@ export const uncompactCells = (cells: H3Index[], res: number): H3Index[] =>
 export const areNeighborCells = (a: H3Index, b: H3Index): boolean =>
     _areNeighborCells?.(a, b) ?? false;
 
+export const polygonToCells = (
+    coordinates: CoordPair[][] | CoordPair[][][],
+    res: number,
+    isGeoJson = false,
+): H3Index[] =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (_polygonToCells?.(coordinates as any, res, isGeoJson) as H3Index[]) ?? [];
+
+export const cellsToMultiPolygon = (
+    h3Indexes: H3Index[],
+    formatAsGeoJson = false,
+): CoordPair[][][] =>
+    (_cellsToMultiPolygon?.(h3Indexes, formatAsGeoJson) as CoordPair[][][]) ?? [];
+
 // ─── Global cell sets ─────────────────────────────────────────────────────────
 
 export const getNumCells = (res: number): number => _getNumCells?.(res) ?? 0;
@@ -233,7 +249,10 @@ export const getHexagonEdgeLengthAvg = (res: number, unit: string): number =>
 
 // ─── Route distance ───────────────────────────────────────────────────────────
 
-function _haversineKm(a: CoordPair, b: CoordPair): number {
+/**
+ * Haversine distance in kilometres between two [lat, lng] coordinate pairs.
+ */
+export function haversineKm(a: CoordPair, b: CoordPair): number {
     const R = 6371;
     const dLat = ((b[0] - a[0]) * Math.PI) / 180;
     const dLng = ((b[1] - a[1]) * Math.PI) / 180;
@@ -266,7 +285,7 @@ export function computeRouteLengthKm(orderedCells: H3Index[]): number {
         try {
             const a = cellToLatLng(orderedCells[i - 1]);
             const b = cellToLatLng(orderedCells[i]);
-            totalKm += _haversineKm(a, b);
+            totalKm += haversineKm(a, b);
         } catch {
             // skip invalid cells
         }

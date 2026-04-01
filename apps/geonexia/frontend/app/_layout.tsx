@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
@@ -217,6 +217,20 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/hex-tile-info/index"
+				options={{
+					title: 'Hex Tile Info',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
+				name="experimental/keyboard-avoid-test/index"
+				options={{
+					title: 'Keyboard Avoid Test',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',
@@ -248,6 +262,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			onPress: () => props.navigation.navigate('activities/index'),
 		},
 		{
+			key: 'routes/index',
+			label: 'Routes',
+			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('routes/index'),
+		},
+		{
 			key: 'statistics/index',
 			label: 'Statistics',
 			renderIcon: (_, color) => <Ionicons name="bar-chart-outline" size={24} color={color} />,
@@ -264,12 +284,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			label: 'Feature Wishes',
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
-		},
-		{
-			key: 'routes/index',
-			label: 'Routes',
-			renderIcon: (_, color) => <Ionicons name="map-outline" size={24} color={color} />,
-			onPress: () => props.navigation.navigate('routes/index'),
 		},
 		...(isDevMode ? [
 			{
@@ -300,6 +314,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			items={items}
 			activeKey={activeKey}
 			primaryColor="#2563eb"
+			onLogoPress={() => props.navigation.navigate('index')}
 		/>
 	);
 }
@@ -376,7 +391,9 @@ export default function Layout() {
 					<ThemeSyncBridge />
 					<SettingsProvider primaryColor="#2563eb">
 						<ModalProvider>
+						<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoidingView}>
 						<ThemedDrawerNavigator />
+						</KeyboardAvoidingView>
 						</ModalProvider>
 					</SettingsProvider>
 				</ThemeProvider>
@@ -388,6 +405,9 @@ export default function Layout() {
 }
 
 const styles = StyleSheet.create({
+	keyboardAvoidingView: {
+		flex: 1,
+	},
 	errorContainer: {
 		flex: 1,
 		backgroundColor: '#fff',

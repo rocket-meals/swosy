@@ -25,8 +25,8 @@ export const HEX_TILE_SCRIPT = `
   var hexTileActive = true;
   var hexDebugPointsVisible = false;
   var hexTileColor = 'rgba(0, 0, 0, 0)';
-  // Hex border: subtle gray, low opacity
-  var hexTileStrokeColor = '#9ca3af';
+  // Hex border: light gray, low opacity
+  var hexTileStrokeColor = '#d1d5db';
   // Level-based fill colours: level 1 = lightest green, level 10 = darkest green.
   // Levels 1–10 are interpolated linearly between these two endpoints.
   var HEX_COLOR_LEVEL_MIN = '#bbf7d0'; // level  1 – light mint green
@@ -55,6 +55,12 @@ export const HEX_TILE_SCRIPT = `
   var HEX_CENTERS_LAYER = 'hex-centers-layer';
   var HEX_MIDPOINTS_SOURCE = 'hex-midpoints-source';
   var HEX_MIDPOINTS_LAYER = 'hex-midpoints-layer';
+  // Enclosed area: semi-transparent blue fill for tiles enclosed by a route loop
+  var HEX_ENCLOSED_SOURCE = 'hex-enclosed-source';
+  var HEX_ENCLOSED_FILL_LAYER = 'hex-enclosed-fill';
+  var HEX_ENCLOSED_STROKE_LAYER = 'hex-enclosed-stroke';
+  var HEX_ENCLOSED_FILL_COLOR = 'rgba(59, 130, 246, 0.18)'; // semi-transparent blue
+  var HEX_ENCLOSED_STROKE_COLOR = '#3b82f6'; // blue
   // Measure mode: draw tapped waypoints and the connecting polyline
   var MEASURE_ROUTE_SOURCE = 'measure-route-source';
   var MEASURE_ROUTE_LAYER = 'measure-route-layer';
@@ -65,6 +71,10 @@ export const HEX_TILE_SCRIPT = `
   // Colours assigned to midpoints between the hex centre and each corner vertex,
   // cycling through: red, orange, yellow, blue, white, black.
   var MIDPOINT_COLORS = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#ffffff', '#000000'];
+  // Route outline mode: when enabled (routes/[id] screen), border edges are
+  // computed from tile count alone (outer-boundary only, ignoring level), and
+  // the enclosed-area stroke is hidden.
+  var routeOutlineMode = false;
   // ── Route edit overlay: neighbor highlight + action labels ───────────────
   var ROUTE_EDIT_NEIGHBOR_SOURCE = 'route-edit-neighbor-source';
   var ROUTE_EDIT_NEIGHBOR_FILL_LAYER = 'route-edit-neighbor-fill';
@@ -149,6 +159,42 @@ export const HEX_TILE_SCRIPT = `
       }
     }
 
+    return { type: 'FeatureCollection', features: borderFeatures };
+  }
+
+  // ── Compute route-tile outer-boundary edges ───────────────────────────────
+  // Returns a GeoJSON FeatureCollection of LineString features for every edge
+  // that belongs to exactly ONE tile in the provided feature set (i.e. the
+  // outer perimeter of the tile group). Level is ignored so this works even
+  // when all tiles share the same level value.
+  function buildRouteBorderEdges(features) {
+    var PRECISION = 6;
+    function edgeKey(v1, v2) {
+      var s1 = v1[0].toFixed(PRECISION) + ',' + v1[1].toFixed(PRECISION);
+      var s2 = v2[0].toFixed(PRECISION) + ',' + v2[1].toFixed(PRECISION);
+      return s1 < s2 ? s1 + '|' + s2 : s2 + '|' + s1;
+    }
+    var edgeCount = {};
+    var edgeCoords = {};
+    for (var i = 0; i < features.length; i++) {
+      var ring = features[i].geometry && features[i].geometry.coordinates && features[i].geometry.coordinates[0];
+      if (!ring) continue;
+      for (var j = 0; j < ring.length - 1; j++) {
+        var key = edgeKey(ring[j], ring[j + 1]);
+        edgeCoords[key] = [ring[j], ring[j + 1]];
+        edgeCount[key] = (edgeCount[key] || 0) + 1;
+      }
+    }
+    var borderFeatures = [];
+    for (var k in edgeCount) {
+      if (edgeCount[k] === 1) {
+        borderFeatures.push({
+          type: 'Feature',
+          geometry: { type: 'LineString', coordinates: edgeCoords[k] },
+          properties: {},
+        });
+      }
+    }
     return { type: 'FeatureCollection', features: borderFeatures };
   }
 
@@ -342,6 +388,24 @@ export const HEX_TILE_SCRIPT = `
 
   function addHexTileLayer() {
     if (!map || map.getSource(HEX_TILE_SOURCE)) return;
+    // Enclosed area layer rendered first (below the main hex tile fill)
+    map.addSource(HEX_ENCLOSED_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_ENCLOSED_FILL_LAYER,
+      type: 'fill',
+      source: HEX_ENCLOSED_SOURCE,
+      paint: { 'fill-color': HEX_ENCLOSED_FILL_COLOR, 'fill-opacity': 1 },
+    });
+    map.addLayer({
+      id: HEX_ENCLOSED_STROKE_LAYER,
+      type: 'line',
+      source: HEX_ENCLOSED_SOURCE,
+      paint: {
+        'line-color': HEX_ENCLOSED_STROKE_COLOR,
+        'line-width': 0.5,
+        'line-opacity': routeOutlineMode ? 0 : 0.4,
+      },
+    });
     map.addSource(HEX_TILE_SOURCE, { type: 'geojson', data: EMPTY_FC });
     map.addLayer({
       id: HEX_TILE_FILL_LAYER,
@@ -503,6 +567,9 @@ export const HEX_TILE_SCRIPT = `
     if (map.getLayer(HEX_TILE_STROKE_LAYER)) map.removeLayer(HEX_TILE_STROKE_LAYER);
     if (map.getLayer(HEX_TILE_FILL_LAYER)) map.removeLayer(HEX_TILE_FILL_LAYER);
     if (map.getSource(HEX_TILE_SOURCE)) map.removeSource(HEX_TILE_SOURCE);
+    if (map.getLayer(HEX_ENCLOSED_STROKE_LAYER)) map.removeLayer(HEX_ENCLOSED_STROKE_LAYER);
+    if (map.getLayer(HEX_ENCLOSED_FILL_LAYER)) map.removeLayer(HEX_ENCLOSED_FILL_LAYER);
+    if (map.getSource(HEX_ENCLOSED_SOURCE)) map.removeSource(HEX_ENCLOSED_SOURCE);
   }
 
   // ── Extension hooks ───────────────────────────────────────────────────────
@@ -531,6 +598,13 @@ export const HEX_TILE_SCRIPT = `
       }
       return;
     }
+    if (data.hexRouteOutlineMode !== undefined) {
+      routeOutlineMode = !!data.hexRouteOutlineMode;
+      if (map && map.getLayer(HEX_ENCLOSED_STROKE_LAYER)) {
+        map.setPaintProperty(HEX_ENCLOSED_STROKE_LAYER, 'line-opacity', routeOutlineMode ? 0 : 0.4);
+      }
+      return;
+    }
     if (data.hexTileGeoJson !== undefined) {
       if (!hexTileActive) return;
       var src = map && map.getSource(HEX_TILE_SOURCE);
@@ -538,7 +612,7 @@ export const HEX_TILE_SCRIPT = `
       if (src) src.setData(fc);
       // Recompute territory border edges whenever tile data changes
       var borderSrc = map && map.getSource(HEX_BORDER_SOURCE);
-      if (borderSrc) borderSrc.setData(buildBorderEdges(fc.features || []));
+      if (borderSrc) borderSrc.setData(routeOutlineMode ? buildRouteBorderEdges(fc.features || []) : buildBorderEdges(fc.features || []));
       // Update green corner-vertex dots
       var verticesSrc = map && map.getSource(HEX_VERTICES_SOURCE);
       if (verticesSrc) verticesSrc.setData(buildVerticesGeoJson(fc.features || []));
@@ -553,6 +627,11 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var walkSrc = map && map.getSource(HEX_WALK_PATH_SOURCE);
       if (walkSrc) walkSrc.setData(data.hexWalkPathGeoJson || EMPTY_FC);
+    }
+    if (data.hexEnclosedGeoJson !== undefined) {
+      if (!hexTileActive) return;
+      var enclosedSrc = map && map.getSource(HEX_ENCLOSED_SOURCE);
+      if (enclosedSrc) enclosedSrc.setData(data.hexEnclosedGeoJson || EMPTY_FC);
     }
     if (data.hexDebugPoints !== undefined) {
       hexDebugPointsVisible = data.hexDebugPoints;
@@ -596,6 +675,75 @@ export const HEX_TILE_SCRIPT = `
     if (data.measurePoints !== undefined) {
       updateMeasurePointsLayer(data.measurePoints);
     }
+    // ── Batch tile-feature query ─────────────────────────────────────────
+    // Receives an array of { id, polygon: [[lng,lat], ...] } objects,
+    // projects each polygon to screen space, queries all rendered map
+    // features within the bounding box and returns the results grouped by id.
+    if (data.queryTileFeatures) {
+      var req = data.queryTileFeatures;
+      var requestId = req.requestId || '';
+      var tiles = req.tiles || [];
+      if (!map) { sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: {} }); return; }
+      var hexOverlayLayersQuery = {};
+      hexOverlayLayersQuery[HEX_TILE_FILL_LAYER] = true;
+      hexOverlayLayersQuery[HEX_TILE_STROKE_LAYER] = true;
+      hexOverlayLayersQuery[HEX_BORDER_LAYER] = true;
+      hexOverlayLayersQuery[HEX_WALK_PATH_LAYER] = true;
+      hexOverlayLayersQuery[HEX_VERTICES_LAYER] = true;
+      hexOverlayLayersQuery[HEX_CENTERS_LAYER] = true;
+      hexOverlayLayersQuery[HEX_MIDPOINTS_LAYER] = true;
+      hexOverlayLayersQuery[MEASURE_ROUTE_LAYER] = true;
+      hexOverlayLayersQuery[MEASURE_POINTS_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_FILL_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
+      hexOverlayLayersQuery[ROUTE_EDIT_LABELS_LAYER] = true;
+
+      var result = {};
+      for (var ti = 0; ti < tiles.length; ti++) {
+        var tile = tiles[ti];
+        var tileId = tile.id;
+        var poly = tile.polygon;
+        if (!poly || poly.length === 0) { result[tileId] = []; continue; }
+
+        var qMinX = Infinity, qMinY = Infinity, qMaxX = -Infinity, qMaxY = -Infinity;
+        for (var pi = 0; pi < poly.length; pi++) {
+          var qPt = map.project([poly[pi][0], poly[pi][1]]);
+          if (qPt.x < qMinX) qMinX = qPt.x;
+          if (qPt.y < qMinY) qMinY = qPt.y;
+          if (qPt.x > qMaxX) qMaxX = qPt.x;
+          if (qPt.y > qMaxY) qMaxY = qPt.y;
+        }
+
+        var qRendered = map.queryRenderedFeatures([[qMinX, qMinY], [qMaxX, qMaxY]]);
+        var qFeatures = [];
+        var qSeen = {};
+        for (var qi = 0; qi < qRendered.length; qi++) {
+          var qf = qRendered[qi];
+          if (qf.layer && hexOverlayLayersQuery[qf.layer.id]) continue;
+          var qfp = qf.properties || {};
+          var qKey = (qfp.name || '') + '|' + (qfp['class'] || '') + '|' + (qfp.subclass || '') + '|'
+            + (qfp.highway || '') + '|' + (qfp.waterway || '') + '|'
+            + (qfp.building || '') + '|' + (qfp.natural || '') + '|' + (qfp.landuse || '') + '|'
+            + (qfp.amenity || '') + '|' + ((qf.layer && qf.layer.id) || '');
+          if (qSeen[qKey]) continue;
+          qSeen[qKey] = true;
+          qFeatures.push({
+            layerId: (qf.layer && qf.layer.id) || null,
+            name: qfp.name || qfp['name:de'] || null,
+            'class': qfp['class'] || null,
+            subclass: qfp.subclass || null,
+            highway: qfp.highway || null,
+            waterway: qfp.waterway || null,
+            building: qfp.building || null,
+            natural: qfp.natural || null,
+            landuse: qfp.landuse || null,
+            amenity: qfp.amenity || null,
+          });
+        }
+        result[tileId] = qFeatures;
+      }
+      sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
+    }
   };
 
   window._mapExtensions.onMapClick = function (e, m) {
@@ -618,24 +766,67 @@ export const HEX_TILE_SCRIPT = `
     var features = m.queryRenderedFeatures(e.point, { layers: [HEX_TILE_FILL_LAYER] });
     if (features && features.length > 0) {
       var props = features[0].properties || {};
-      // Query all rendered features at the click point to collect underlying map info
-      var allRendered = m.queryRenderedFeatures(e.point);
+
+      // Compute screen-space bounding box from the hex polygon geometry so we
+      // query ALL map features that fall within the hexagon, not just at the
+      // single click point.
+      var hexOverlayLayers = {};
+      hexOverlayLayers[HEX_TILE_FILL_LAYER] = true;
+      hexOverlayLayers[HEX_TILE_STROKE_LAYER] = true;
+      hexOverlayLayers[HEX_BORDER_LAYER] = true;
+      hexOverlayLayers[HEX_WALK_PATH_LAYER] = true;
+      hexOverlayLayers[HEX_VERTICES_LAYER] = true;
+      hexOverlayLayers[HEX_CENTERS_LAYER] = true;
+      hexOverlayLayers[HEX_MIDPOINTS_LAYER] = true;
+      hexOverlayLayers[MEASURE_ROUTE_LAYER] = true;
+      hexOverlayLayers[MEASURE_POINTS_LAYER] = true;
+      hexOverlayLayers[ROUTE_EDIT_NEIGHBOR_FILL_LAYER] = true;
+      hexOverlayLayers[ROUTE_EDIT_NEIGHBOR_STROKE_LAYER] = true;
+      hexOverlayLayers[ROUTE_EDIT_LABELS_LAYER] = true;
+
+      var allRendered;
+      var geometry = features[0].geometry;
+      var coords = geometry && geometry.coordinates && geometry.coordinates[0];
+      if (coords && coords.length > 0) {
+        var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (var ci = 0; ci < coords.length; ci++) {
+          var pt = m.project([coords[ci][0], coords[ci][1]]);
+          if (pt.x < minX) minX = pt.x;
+          if (pt.y < minY) minY = pt.y;
+          if (pt.x > maxX) maxX = pt.x;
+          if (pt.y > maxY) maxY = pt.y;
+        }
+        allRendered = m.queryRenderedFeatures([[minX, minY], [maxX, maxY]]);
+      } else {
+        allRendered = m.queryRenderedFeatures(e.point);
+      }
+
       var mapFeatures = [];
+      var seen = {};
       for (var fi = 0; fi < allRendered.length; fi++) {
         var f = allRendered[fi];
+        // Skip our own hex overlay layers
+        if (f.layer && hexOverlayLayers[f.layer.id]) continue;
         var fp = f.properties || {};
-        if (fp.name || fp.highway || fp.waterway || fp.building || fp.natural || fp.landuse || fp.amenity) {
-          mapFeatures.push({
-            layerId: (f.layer && f.layer.id) || null,
-            name: fp.name || fp['name:de'] || null,
-            highway: fp.highway || null,
-            waterway: fp.waterway || null,
-            building: fp.building || null,
-            natural: fp.natural || null,
-            landuse: fp.landuse || null,
-            amenity: fp.amenity || null,
-          });
-        }
+        // Deduplicate by building a simple key from the interesting properties
+        var dedupeKey = (fp.name || '') + '|' + (fp['class'] || '') + '|' + (fp.subclass || '') + '|'
+          + (fp.highway || '') + '|' + (fp.waterway || '') + '|'
+          + (fp.building || '') + '|' + (fp.natural || '') + '|' + (fp.landuse || '') + '|'
+          + (fp.amenity || '') + '|' + ((f.layer && f.layer.id) || '');
+        if (seen[dedupeKey]) continue;
+        seen[dedupeKey] = true;
+        mapFeatures.push({
+          layerId: (f.layer && f.layer.id) || null,
+          name: fp.name || fp['name:de'] || null,
+          'class': fp['class'] || null,
+          subclass: fp.subclass || null,
+          highway: fp.highway || null,
+          waterway: fp.waterway || null,
+          building: fp.building || null,
+          natural: fp.natural || null,
+          landuse: fp.landuse || null,
+          amenity: fp.amenity || null,
+        });
       }
       sendToRN({ tag: 'HexTileClicked', h3Index: props.h3Index, mapFeatures: mapFeatures });
       return true;

@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	Keyboard,
-	KeyboardAvoidingView,
 	Platform,
 	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
 	TouchableOpacity,
+	Vibration,
 	View,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
@@ -16,6 +16,7 @@ import {
 	SettingsListBoolean,
 	SettingsListGroupTitle,
 	SettingsListNumberInput,
+	SettingsListSelectOption,
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
@@ -23,7 +24,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getLocales } from 'expo-localization';
 
 import { updateSpeechSettings, SpeechSettingsState, SPEECH_SETTINGS_DEFAULTS } from '../store/speechSettingsSlice';
-import { speakAnnouncement } from '../helpers/TTSHelper';
+import type { SpeechRate } from '../store/speechSettingsSlice';
+import { speakAnnouncement, buildPeriodicAnnouncement, speechRateToNumber } from '../helpers/TTSHelper';
 import type { AppDispatch, RootState } from '../store/store';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -36,6 +38,21 @@ const VOLUME_COLOR = '#2563eb';
 const VOLUME_STEP = 0.1;
 const VOLUME_MIN = 0.0;
 const VOLUME_MAX = 1.0;
+const PREVIEW_VIBRATION_DURATION_MS = 400;
+
+const SPEECH_RATE_OPTIONS: Array<{ id: SpeechRate; label: string }> = [
+	{ id: 'slow', label: 'Langsam' },
+	{ id: 'normal', label: 'Normal' },
+	{ id: 'fast', label: 'Schnell' },
+];
+
+// Sample stats used for preview announcements in settings
+const SAMPLE_STATS = {
+	distanceKm: 2.5,
+	elapsedSeconds: 1500,
+	paceMinPerKm: 5.5,
+	speedKmh: 10.9,
+} as const;
 
 // ─── PaceMinSecModal ──────────────────────────────────────────────────────────
 
@@ -168,15 +185,7 @@ function PaceMinSecModal({
 
 	if (Platform.OS === 'web') return content;
 
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'position' : undefined}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-			style={styles.keyboardAvoidingView}
-		>
-			<View style={styles.keyboardAvoidingContent}>{content}</View>
-		</KeyboardAvoidingView>
-	);
+	return content;
 }
 
 // ─── PaceMinSecInput ──────────────────────────────────────────────────────────
@@ -267,9 +276,58 @@ export default function SpeechSettingsContent() {
 				: '2 kilometers. Pace: 5 minutes and 30 seconds.';
 		speakAnnouncement(text, langCode, {
 			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
 			useApplicationAudioSession: settings.duckMusicDuringTTS,
 		});
-	}, [langCode, settings.volume, settings.duckMusicDuringTTS]);
+	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
+
+	// ─── Play content example (based on enabled toggles) ─────────────────────
+	const handlePlayContentSample = useCallback(() => {
+		const text = buildPeriodicAnnouncement(
+			langCode,
+			SAMPLE_STATS,
+			{
+				announceDistance: settings.announceDistance,
+				announcePace: settings.announcePace,
+				announceDuration: settings.announceDuration,
+				announceSpeed: settings.announceSpeed,
+				announceCalories: settings.announceCalories,
+				announceHeartRate: settings.announceHeartRate,
+			},
+		);
+		if (!text) return;
+		speakAnnouncement(text, langCode, {
+			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
+	}, [langCode, settings]);
+
+	// ─── Play faster hint example ─────────────────────────────────────────────
+	const handlePlayFasterSample = useCallback(() => {
+		const text =
+			langCode === 'de'
+				? 'Zu schnell. Aktuelle Pace 4 Minuten 30 Sekunden. Ziel Pace 5 Minuten 30 Sekunden.'
+				: 'Too fast. Current pace 4 minutes 30 seconds. Target pace 5 minutes 30 seconds.';
+		speakAnnouncement(text, langCode, {
+			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
+	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
+
+	// ─── Play slower hint example ─────────────────────────────────────────────
+	const handlePlaySlowerSample = useCallback(() => {
+		const text =
+			langCode === 'de'
+				? 'Zu langsam. Aktuelle Pace 6 Minuten 30 Sekunden. Ziel Pace 5 Minuten 30 Sekunden.'
+				: 'Too slow. Current pace 6 minutes 30 seconds. Target pace 5 minutes 30 seconds.';
+		speakAnnouncement(text, langCode, {
+			volume: settings.volume,
+			rate: speechRateToNumber(settings.speechRate),
+			useApplicationAudioSession: settings.duckMusicDuringTTS,
+		});
+	}, [langCode, settings.volume, settings.speechRate, settings.duckMusicDuringTTS]);
 
 	// ─── Volume stepper ───────────────────────────────────────────────────────
 	const handleVolumeDown = useCallback(() => {
@@ -286,8 +344,6 @@ export default function SpeechSettingsContent() {
 	const paceHelperActive = settings.paceTargetEnabled;
 	const showFasterInput = paceHelperActive && settings.paceHintFasterEnabled;
 	const showSlowerInput = paceHelperActive && settings.paceHintSlowerEnabled;
-
-	const slowerBoolPos: 'middle' | 'bottom' = showSlowerInput ? 'middle' : 'bottom';
 
 	// ─── Render ───────────────────────────────────────────────────────────────
 
@@ -322,8 +378,18 @@ export default function SpeechSettingsContent() {
 				groupPosition="single"
 			/>
 
-			{/* ── Volume ─────────────────────────────────────────────── */}
-			<SettingsListGroupTitle title="Lautstärke" />
+			{/* ── Musik und Lautstärke ────────────────────────────────── */}
+			<SettingsListGroupTitle title="Musik und Lautstärke" />
+			<SettingsListBoolean
+				iconBgColor={TTS_COLOR}
+				leftIcon={<MaterialCommunityIcons name="music" size={22} color="#ffffff" />}
+				label="Musik bei Ansagen leiser machen"
+				isEnabled={settings.duckMusicDuringTTS}
+				onToggle={() => update({ duckMusicDuringTTS: !settings.duckMusicDuringTTS })}
+				valueActive="Aktiv"
+				valueInactive="Deaktiviert"
+				groupPosition="top"
+			/>
 			<SettingsList
 				iconBgColor={VOLUME_COLOR}
 				leftIcon={<Ionicons name="volume-medium" size={22} color="#ffffff" />}
@@ -339,20 +405,17 @@ export default function SpeechSettingsContent() {
 						</TouchableOpacity>
 					</View>
 				}
-				groupPosition="single"
+				groupPosition="bottom"
 			/>
 
-			{/* ── Music ──────────────────────────────────────────────── */}
-			<SettingsListGroupTitle title="Musik" />
-			<SettingsListBoolean
+			{/* ── Speech rate ─────────────────────────────────────────── */}
+			<SettingsListGroupTitle title="Sprachgeschwindigkeit" />
+			<SettingsListSelectOption<SpeechRate>
+				options={SPEECH_RATE_OPTIONS}
+				selectedOption={settings.speechRate}
+				onSelect={(opt) => update({ speechRate: opt.id })}
 				iconBgColor={TTS_COLOR}
-				leftIcon={<MaterialCommunityIcons name="music" size={22} color="#ffffff" />}
-				label="Musik bei Ansagen leiser machen"
-				isEnabled={settings.duckMusicDuringTTS}
-				onToggle={() => update({ duckMusicDuringTTS: !settings.duckMusicDuringTTS })}
-				valueActive="Aktiv"
-				valueInactive="Deaktiviert"
-				groupPosition="single"
+				selectionColor={TTS_COLOR}
 			/>
 
 			{/* ── Pace target helper ──────────────────────────────────── */}
@@ -365,7 +428,7 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ paceTargetEnabled: !paceHelperActive })}
 				valueActive="Aktiv"
 				valueInactive="Deaktiviert"
-				groupPosition="single"
+				groupPosition="top"
 			/>
 
 			<View style={!paceHelperActive ? styles.sectionDisabled : undefined}>
@@ -378,7 +441,7 @@ export default function SpeechSettingsContent() {
 					seconds={settings.paceTargetSeconds}
 					onSave={(m, s) => update({ paceTargetMinutes: m, paceTargetSeconds: s })}
 					disabled={!paceHelperActive}
-					groupPosition="top"
+					groupPosition="bottom"
 				/>
 
 				<SettingsListBoolean
@@ -390,7 +453,7 @@ export default function SpeechSettingsContent() {
 					valueActive="Aktiv"
 					valueInactive="Deaktiviert"
 					disabled={!paceHelperActive}
-					groupPosition="middle"
+					groupPosition="top"
 				/>
 
 				{showFasterInput && (
@@ -406,6 +469,15 @@ export default function SpeechSettingsContent() {
 					/>
 				)}
 
+				<SettingsList
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialIcons name="play-arrow" size={22} color="#ffffff" />}
+					label="Beispiel Hinweis abspielen"
+					rightIcon={<MaterialIcons name="play-arrow" size={24} color={HINT_COLOR} />}
+					handleFunction={paceHelperActive ? handlePlayFasterSample : undefined}
+					groupPosition="bottom"
+				/>
+
 				<SettingsListBoolean
 					iconBgColor={HINT_COLOR}
 					leftIcon={<MaterialCommunityIcons name="turtle" size={22} color="#ffffff" />}
@@ -415,7 +487,7 @@ export default function SpeechSettingsContent() {
 					valueActive="Aktiv"
 					valueInactive="Deaktiviert"
 					disabled={!paceHelperActive}
-					groupPosition={slowerBoolPos}
+					groupPosition="top"
 				/>
 
 				{showSlowerInput && (
@@ -427,13 +499,71 @@ export default function SpeechSettingsContent() {
 						minutes={settings.paceHintSlowerMinutes}
 						seconds={settings.paceHintSlowerSeconds}
 						onSave={(m, s) => update({ paceHintSlowerMinutes: m, paceHintSlowerSeconds: s })}
-						groupPosition="bottom"
+						groupPosition="middle"
 					/>
 				)}
+
+				<SettingsList
+					iconBgColor={HINT_COLOR}
+					leftIcon={<MaterialIcons name="play-arrow" size={22} color="#ffffff" />}
+					label="Beispiel abspielen"
+					rightIcon={<MaterialIcons name="play-arrow" size={24} color={HINT_COLOR} />}
+					handleFunction={paceHelperActive ? handlePlaySlowerSample : undefined}
+					groupPosition="bottom"
+				/>
 			</View>
+
+			{/* ── Tone / Vibration at distance ───────────────────────── */}
+			<SettingsListGroupTitle title="Benachrichtigung bei Distanz" />
+			<SettingsListBoolean
+				iconBgColor={INTERVAL_COLOR}
+				leftIcon={<Ionicons name="musical-note" size={22} color="#ffffff" />}
+				label="Hinweiston bei Distanz"
+				isEnabled={settings.toneAtDistance}
+				onToggle={() => {
+					const next = !settings.toneAtDistance;
+					update({ toneAtDistance: next });
+					if (next) {
+						speakAnnouncement(
+							langCode === 'de' ? 'Hinweiston' : 'Hint tone',
+							langCode,
+							{ volume: settings.volume, rate: speechRateToNumber(settings.speechRate), useApplicationAudioSession: settings.duckMusicDuringTTS },
+						);
+					}
+				}}
+				valueActive="Aktiv"
+				valueInactive="Deaktiviert"
+				groupPosition="top"
+			/>
+			<SettingsListBoolean
+				iconBgColor={INTERVAL_COLOR}
+				leftIcon={<MaterialCommunityIcons name="vibrate" size={22} color="#ffffff" />}
+				label="Vibration bei Distanz"
+				isEnabled={settings.vibrationAtDistance}
+				onToggle={() => {
+					const next = !settings.vibrationAtDistance;
+					update({ vibrationAtDistance: next });
+					if (next) {
+						Vibration.vibrate(PREVIEW_VIBRATION_DURATION_MS);
+					}
+				}}
+				valueActive="Aktiv"
+				valueInactive="Deaktiviert"
+				groupPosition="bottom"
+			/>
 
 			{/* ── Information intervals ──────────────────────────────── */}
 			<SettingsListGroupTitle title="Information im Intervall von" />
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
+				label="Distanz"
+				isEnabled={settings.announceDistance}
+				onToggle={() => update({ announceDistance: !settings.announceDistance })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="top"
+			/>
 			<PaceMinSecInput
 				iconBgColor={INTERVAL_COLOR}
 				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
@@ -442,7 +572,7 @@ export default function SpeechSettingsContent() {
 				minutes={settings.intervalTimeMinutes}
 				seconds={settings.intervalTimeSeconds}
 				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
-				groupPosition="top"
+				groupPosition="middle"
 				primaryColor={INTERVAL_COLOR}
 			/>
 			<SettingsListNumberInput
@@ -462,47 +592,24 @@ export default function SpeechSettingsContent() {
 				groupPosition="bottom"
 			/>
 
-			{/* ── Tone / Vibration at distance ───────────────────────── */}
-			<SettingsListGroupTitle title="Benachrichtigung bei Distanz" />
-			<SettingsListBoolean
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<Ionicons name="musical-note" size={22} color="#ffffff" />}
-				label="Hinweiston bei Distanz"
-				isEnabled={settings.toneAtDistance}
-				onToggle={() => update({ toneAtDistance: !settings.toneAtDistance })}
-				valueActive="Aktiv"
-				valueInactive="Deaktiviert"
-				groupPosition="top"
-			/>
-			<SettingsListBoolean
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<MaterialCommunityIcons name="vibrate" size={22} color="#ffffff" />}
-				label="Vibration bei Distanz"
-				isEnabled={settings.vibrationAtDistance}
-				onToggle={() => update({ vibrationAtDistance: !settings.vibrationAtDistance })}
-				valueActive="Aktiv"
-				valueInactive="Deaktiviert"
-				groupPosition="bottom"
-			/>
-
 			{/* ── Announcement content toggles ───────────────────────── */}
 			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
-				label="Distanz"
-				isEnabled={settings.announceDistance}
-				onToggle={() => update({ announceDistance: !settings.announceDistance })}
+				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
+				label="Pace (min/km)"
+				isEnabled={settings.announcePace}
+				onToggle={() => update({ announcePace: !settings.announcePace })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="top"
 			/>
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
-				label="Pace"
-				isEnabled={settings.announcePace}
-				onToggle={() => update({ announcePace: !settings.announcePace })}
+				leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
+				label="Geschwindigkeit (km/h)"
+				isEnabled={settings.announceSpeed}
+				onToggle={() => update({ announceSpeed: !settings.announceSpeed })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
@@ -513,16 +620,6 @@ export default function SpeechSettingsContent() {
 				label="Dauer"
 				isEnabled={settings.announceDuration}
 				onToggle={() => update({ announceDuration: !settings.announceDuration })}
-				valueActive="Wird angesagt"
-				valueInactive="Deaktiviert"
-				groupPosition="middle"
-			/>
-			<SettingsListBoolean
-				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
-				label="Geschwindigkeit"
-				isEnabled={settings.announceSpeed}
-				onToggle={() => update({ announceSpeed: !settings.announceSpeed })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"
@@ -555,6 +652,14 @@ export default function SpeechSettingsContent() {
 				onToggle={() => update({ announceAppInBackground: !settings.announceAppInBackground })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
+				groupPosition="middle"
+			/>
+			<SettingsList
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialIcons name="play-circle-filled" size={22} color="#ffffff" />}
+				label="Beispiel abspielen"
+				rightIcon={<MaterialIcons name="play-arrow" size={24} color={CONTENT_COLOR} />}
+				handleFunction={handlePlayContentSample}
 				groupPosition="bottom"
 			/>
 		</ScrollView>
@@ -645,13 +750,5 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '600',
 		color: '#ffffff',
-	},
-	keyboardAvoidingView: {
-		flex: 1,
-		width: '100%',
-	},
-	keyboardAvoidingContent: {
-		flexGrow: 1,
-		alignItems: 'center',
 	},
 });

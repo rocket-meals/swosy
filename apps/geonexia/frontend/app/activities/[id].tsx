@@ -17,6 +17,7 @@ import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, Setti
 import { useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
@@ -37,6 +38,7 @@ const KCAL_PER_KG_PER_KM = 0.9;
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
+const SPEED_WARMUP_MS = 10_000;
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
 	const R = 6371;
@@ -95,6 +97,9 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 	let elevationGainM = 0;
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
+	const startTimestamp = points[0].timestamp;
+	let speedDistanceKm = 0;
+	let speedDurationSeconds = 0;
 	for (let i = 1; i < points.length; i++) {
 		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
 		distanceKm += segKm;
@@ -111,13 +116,17 @@ function computeActivityStats(points: RoutePoint[]): RunStats {
 				: dtSec > 0
 				? (segKm / dtSec) * 3600
 				: 0;
-		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
+			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+			speedDistanceKm += segKm;
+			speedDurationSeconds += dtSec;
+		}
 	}
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
 	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
 	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
-	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
 	const medianSpeedKmh = (() => {
 		if (speedsKmh.length === 0) return 0;
 		const sorted = [...speedsKmh].sort((a, b) => a - b);
@@ -150,24 +159,20 @@ function formatTime(timestamp: number): string {
 	});
 }
 
-function formatDuration(totalSeconds: number): string {
-	const h = Math.floor(totalSeconds / 3600);
-	const m = Math.floor((totalSeconds % 3600) / 60);
-	const s = Math.floor(totalSeconds % 60);
-	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
 function formatDistance(km: number): string {
 	if (km < 1) return `${Math.round(km * 1000)} m`;
 	return `${km.toFixed(2)} km`;
 }
 
 function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
+	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:-- min/km';
 	const m = Math.floor(minPerKm);
 	const s = Math.round((minPerKm - m) * 60);
 	return `${m}:${String(s).padStart(2, '0')} min/km`;
+}
+
+function formatSpeedValue(kmh: number): string {
+	return `${formatPace(60 / kmh)}\n${kmh.toFixed(1)} km/h`;
 }
 
 // ─── Share Content (shown inside bottom sheet modal) ──────────────────────────
@@ -1052,12 +1057,12 @@ export default function ActivityDetailScreen() {
 		{ icon: 'access-time', label: 'Start Time', value: formatTime(activity.startedAt) },
 		{ icon: 'access-time', label: 'End Time', value: formatTime(activity.endedAt) },
 		{ icon: 'straighten', label: 'Distance', value: formatDistance(stats.distanceKm) },
-		{ icon: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
+		{ icon: 'timer', label: 'Duration', value: TimeHelper.formatDuration(stats.durationSeconds) },
 		{ icon: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) },
-		{ icon: 'speed', label: 'Avg. Speed', value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
-		{ icon: 'speed', label: 'Median Speed', value: `${(stats.medianSpeedKmh ?? 0).toFixed(1)} km/h` },
-		{ icon: 'arrow-upward', label: 'Max. Speed', value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
-		{ icon: 'arrow-downward', label: 'Min. Speed', value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
+		{ icon: 'speed', label: 'Avg. Speed', value: formatSpeedValue(stats.avgSpeedKmh) },
+		{ icon: 'speed', label: 'Median Speed', value: formatSpeedValue(stats.medianSpeedKmh ?? 0) },
+		{ icon: 'arrow-upward', label: 'Max. Speed', value: formatSpeedValue(stats.maxSpeedKmh) },
+		{ icon: 'arrow-downward', label: 'Min. Speed', value: formatSpeedValue(stats.minSpeedKmh) },
 		{ icon: 'local-fire-department', label: 'Calories', value: `${stats.kcal} kcal` },
 		{ icon: 'directions-walk', label: 'Steps (est.)', value: stats.steps.toLocaleString() },
 		{ icon: 'trending-up', label: 'Elevation Gain', value: `${Math.round(stats.elevationGainM)} m` },
