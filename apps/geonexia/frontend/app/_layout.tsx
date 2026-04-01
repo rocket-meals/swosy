@@ -231,6 +231,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/route-switcher/index"
+				options={{
+					title: 'Route Switcher',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',
