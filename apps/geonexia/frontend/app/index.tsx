@@ -1444,12 +1444,13 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 type MeasureResultContentProps = {
 	routeLengthInTiles: number;
 	enclosedTileCount: number;
+	enclosedCells: string[];
 	routeCells: string[];
 	h3Resolution: number;
 	theme: ReturnType<typeof useTheme>['theme'];
 	savedActivities: SavedActivity[];
 	selectedSportType: SportType;
-	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
+	onSaveAsActivity: (routeCells: string[], enclosedCells: string[]) => void;
 	onSaveAsRoute: (routeCells: string[], name: string) => void;
 	onClose: () => void;
 };
@@ -1457,6 +1458,7 @@ type MeasureResultContentProps = {
 function MeasureResultContent({
 	routeLengthInTiles,
 	enclosedTileCount,
+	enclosedCells,
 	routeCells,
 	h3Resolution,
 	theme,
@@ -1570,7 +1572,7 @@ function MeasureResultContent({
 			{routeCells.length >= 2 && (
 				<TouchableOpacity
 					style={[styles.shareButton, { backgroundColor: '#43a047', marginTop: 12 }]}
-					onPress={() => { onSaveAsActivity(routeCells, enclosedTileCount); onClose(); }}
+					onPress={() => { onSaveAsActivity(routeCells, enclosedCells); onClose(); }}
 					activeOpacity={0.8}
 				>
 					<MaterialIcons name="save-alt" size={18} color="#ffffff" />
@@ -3004,7 +3006,7 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ measurePoints: coords });
 	}, []);
 
-	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCount: number) => {
+	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCells: string[]) => {
 		if (routeCells.length < 2) return;
 		const startTimestamp = Date.now();
 		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (Math.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
@@ -3021,14 +3023,16 @@ export default function RecordScreen() {
 			sportType: selectedSportTypeRef.current,
 			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
 			visitedTileCount: routeCells.length,
-			enclosedTileCount: enclosedCount,
+			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered: routeCells,
+			hexTilesEnclosed: enclosedCells,
 		};
+		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
 			saveActivity(activity);
 			Alert.alert(
 				'Activity Saved',
-				`Route saved: ${routeCells.length} hex tiles, ${enclosedCount} enclosed.`,
+				`Route saved: ${routeCells.length} hex tiles, ${enclosedCells.length} enclosed.`,
 			);
 		} catch {
 			Alert.alert('Error', 'Failed to save activity.');
@@ -3069,12 +3073,14 @@ export default function RecordScreen() {
 		const routeAsPoints: RoutePoint[] = waypoints.map((w, i) => ({
 			lat: w.lat, lng: w.lng, altitude: null, speed: null, timestamp: Date.now() + i * 1000,
 		}));
+		let enclosedCells: string[] = [];
 		let enclosedTileCount = 0;
 		try {
 			const allEnclosed = findEnclosedCells(routeAsPoints, h3ResolutionRef.current);
 			// Exclude cells that are part of the route itself
 			const routeCellSet = new Set(routeCells);
-			enclosedTileCount = allEnclosed.filter((c) => !routeCellSet.has(c)).length;
+			enclosedCells = allEnclosed.filter((c) => !routeCellSet.has(c));
+			enclosedTileCount = enclosedCells.length;
 		} catch {
 			// ignore
 		}
@@ -3092,6 +3098,7 @@ export default function RecordScreen() {
 				<MeasureResultContent
 					routeLengthInTiles={routeLengthInTiles}
 					enclosedTileCount={enclosedTileCount}
+					enclosedCells={enclosedCells}
 					routeCells={routeCells}
 					h3Resolution={h3ResolutionRef.current}
 					theme={theme}
@@ -3978,6 +3985,7 @@ export default function RecordScreen() {
 			visitedTileCount: visitedHexIdsRef.current.size,
 			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered,
+			hexTilesEnclosed: enclosedCells,
 			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);

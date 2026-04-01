@@ -116,7 +116,7 @@ export function computeActivityData(
 		}
 	}
 
-	const orderedHexTiles: ComputedHexTileEntry[] = hexTilesOrdered.map((hexId) => {
+	const hexTilesVisited: ComputedHexTileEntry[] = hexTilesOrdered.map((hexId) => {
 		const speeds = hexSpeeds[hexId] ?? [];
 		const avgSpeedKmh =
 			speeds.length > 0
@@ -129,7 +129,7 @@ export function computeActivityData(
 		maxSpeedKmh: activity.stats.maxSpeedKmh,
 		minSpeedKmh: activity.stats.minSpeedKmh,
 		avgSpeedKmh: activity.stats.avgSpeedKmh,
-		orderedHexTiles,
+		hexTilesVisited,
 		enclosedHexTiles,
 	};
 }
@@ -170,11 +170,17 @@ export function rebuildMapFromActivities(
 		// ── Derive the ordered and enclosed tile lists ────────────────────────
 		// Prefer the pre-computed field; fall back to the raw ordered list for
 		// activities saved before the computed field was introduced.
+		// For backward-compat, also accept the legacy `orderedHexTiles` field name.
 		const orderedHexTiles: ComputedHexTileEntry[] =
-			activity.computed?.orderedHexTiles ??
+			activity.computed?.hexTilesVisited ??
+			(activity.computed as { orderedHexTiles?: ComputedHexTileEntry[] } | undefined)?.orderedHexTiles ??
 			(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
 
-		const enclosedHexTiles: string[] = activity.computed?.enclosedHexTiles ?? [];
+		// Prefer the direct field (added for full backward-compat); fall back to computed.
+		const enclosedHexTiles: string[] =
+			activity.hexTilesEnclosed ??
+			activity.computed?.enclosedHexTiles ??
+			[];
 
 		// ── Process visited (walked) tiles ────────────────────────────────────
 		// Pre-build a map for O(1) lookup of existing references for this activity.

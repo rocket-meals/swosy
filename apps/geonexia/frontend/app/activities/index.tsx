@@ -20,10 +20,10 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
-import { startRun, markVisited, loadPersistedState, applyMapCustomizations, loadWalkedEdgesState } from '../../store/hexTileSlice';
-import { AppDispatch, store } from '../../store/store';
+import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState } from '../../store/hexTileSlice';
+import { AppDispatch } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -164,7 +164,7 @@ export default function ActivitiesScreen() {
 	const handleRebuildMap = useCallback(() => {
 		Alert.alert(
 			'Rebuild Map from Activities',
-			'This will recalculate the explored map from all your saved activities. Billboard and terrain tile settings will be preserved. Continue?',
+			'This will recalculate the explored map from all your saved activities. All tile customizations (including manually set tiles) will be reset. Continue?',
 			[
 				{ text: 'Cancel', style: 'cancel' },
 				{
@@ -181,31 +181,33 @@ export default function ActivitiesScreen() {
 							return;
 						}
 
-						// Preserve existing billboard / terrain customizations
-						const currentRecords = store.getState().hexTiles.records;
-						const customizations: Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }> = {};
-						for (const [h3Index, record] of Object.entries(currentRecords)) {
-							if (record.tileImage !== undefined || record.billboard !== undefined || record.billboardAnchorColor !== undefined || record.billboards !== undefined) {
-								customizations[h3Index] = {};
-								if (record.tileImage !== undefined) customizations[h3Index].tileImage = record.tileImage;
-								if (record.billboard !== undefined) customizations[h3Index].billboard = record.billboard;
-								if (record.billboardAnchorColor !== undefined) customizations[h3Index].billboardAnchorColor = record.billboardAnchorColor;
-								if (record.billboards !== undefined) customizations[h3Index].billboards = record.billboards;
+						// Migrate activities that are missing the computed field or hexTilesEnclosed.
+						for (const activity of allActivities) {
+							let updated = false;
+							if (!activity.computed) {
+								activity.computed = computeActivityData(
+									activity,
+									activity.hexTilesEnclosed ?? [],
+								);
+								updated = true;
+							}
+							if (!activity.hexTilesEnclosed && activity.computed?.enclosedHexTiles) {
+								activity.hexTilesEnclosed = activity.computed.enclosedHexTiles;
+								updated = true;
+							}
+							if (updated) {
+								try { saveActivity(activity); } catch (err) { console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err); }
 							}
 						}
 
-						// Rebuild from activity data (orderedHexTiles + enclosedHexTiles),
+						// Rebuild from activity data (hexTilesVisited + enclosedHexTiles),
 						// applying dirt/grass terrain automatically after counting visits.
+						// All existing tile state (including manual customizations) is discarded.
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
 						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache);
 						dispatch(loadPersistedState(records));
 						dispatch(loadWalkedEdgesState(walkedEdges));
-
-						// Re-apply customizations preserved from before
-						if (Object.keys(customizations).length > 0) {
-							dispatch(applyMapCustomizations(customizations));
-						}
 
 						const count = allActivities.length;
 						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);

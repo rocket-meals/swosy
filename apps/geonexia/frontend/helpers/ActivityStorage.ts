@@ -34,7 +34,7 @@ export type ComputedActivityData = {
 	 * with the average GPS speed recorded while inside that tile.
 	 * Mirrors `SavedActivity.hexTilesOrdered` but enriched with speed data.
 	 */
-	orderedHexTiles: ComputedHexTileEntry[];
+	hexTilesVisited: ComputedHexTileEntry[];
 	/**
 	 * H3 cell indices that were enclosed by the completed route loop but were
 	 * not physically walked on during the activity.
@@ -86,6 +86,12 @@ export type SavedActivity = {
 	 * Optional for backward-compat with older saves.
 	 */
 	hexTilesOrdered?: string[];
+	/**
+	 * H3 cell indices that were enclosed by the completed route loop but were
+	 * not physically walked on during the activity.
+	 * Optional for backward-compat with older saves.
+	 */
+	hexTilesEnclosed?: string[];
 	/**
 	 * ID of the saved route this activity was matched or assigned to.
 	 * - `undefined` (field absent): the user has not yet been asked to assign a route.

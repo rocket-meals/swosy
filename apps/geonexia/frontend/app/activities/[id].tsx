@@ -1245,7 +1245,7 @@ export default function ActivityDetailScreen() {
 							leftIcon={<MaterialIcons name="data-object" size={20} color="#ffffff" />}
 							iconBackgroundColor="#0f766e"
 							title="Computed Values"
-							value={activity.computed ? `${activity.computed.orderedHexTiles.length} tiles, ${activity.computed.enclosedHexTiles.length} enclosed` : 'none'}
+							value={activity.computed ? `${activity.computed.hexTilesVisited.length} tiles, ${activity.computed.enclosedHexTiles.length} enclosed` : 'none'}
 							groupPosition="bottom"
 							onPress={() => {
 								showDebugModal({
