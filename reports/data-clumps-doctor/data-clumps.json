@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-01T21:33:55.755Z",
+  "report_timestamp": "2026-04-01T21:53:10.185Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 94,
-          "average": 1.608768267223382,
-          "amountSavedValuesForKeys": 3853,
+          "average": 1.6084061589679568,
+          "amountSavedValuesForKeys": 3865,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -22,50 +22,50 @@
         "invertedParameterToClasses": {
           "median": 1.5,
           "maximum": 94,
-          "average": 1.622999157540017,
-          "amountSavedValuesForKeys": 3853,
+          "average": 1.6225860621326615,
+          "amountSavedValuesForKeys": 3865,
           "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 3910,
-        "detection_time_ms": 73,
+        "ast_generation_time_ms": 4204,
+        "detection_time_ms": 86,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 233.69,
-          "os_memory_free": 14931542016,
-          "os_memory_total": 16766435328,
+          "os_uptime": 111.18,
+          "os_memory_free": 14900674560,
+          "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 42,
+    "amount_classes_or_interfaces_with_data_clumps": 43,
     "amount_files_with_data_clumps": 33,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 56,
+    "fields_to_fields_data_clump": 60,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 64
+    "amount_data_clumps": 68
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "2d1fe2bd66e675ae8a80f14645c67f80eaed3167",
-    "project_commit_hash": "2d1fe2bd66e675ae8a80f14645c67f80eaed3167",
+    "project_version": "217515acfbe4fec53a79b6cb207c2fdbe76b2f38",
+    "project_commit_hash": "217515acfbe4fec53a79b6cb207c2fdbe76b2f38",
     "project_tag": null,
-    "project_commit_date": "1775079134",
+    "project_commit_date": "1775080291",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 478,
-    "number_of_classes_or_interfaces": 978,
+    "number_of_files": 479,
+    "number_of_classes_or_interfaces": 982,
     "number_of_methods": 1327,
-    "number_of_data_fields": 3853,
+    "number_of_data_fields": 3865,
     "number_of_method_parameters": 1467
   },
   "detector": {
@@ -945,9 +945,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 7,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 7,
+              "endLine": 46,
               "endColumn": 14
             }
           },
@@ -970,9 +970,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 8,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 8,
+              "endLine": 47,
               "endColumn": 14
             }
           },
@@ -995,9 +995,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 9,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 9,
+              "endLine": 48,
               "endColumn": 26
             }
           },
@@ -1020,9 +1020,9 @@
             "type": "number | null",
             "modifiers": [],
             "position": {
-              "startLine": 10,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 10,
+              "endLine": 49,
               "endColumn": 23
             }
           },
@@ -1045,9 +1045,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 11,
+              "startLine": 50,
               "startColumn": 2,
-              "endLine": 11,
+              "endLine": 50,
               "endColumn": 20
             }
           },
@@ -1092,9 +1092,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 15,
+              "startLine": 54,
               "startColumn": 2,
-              "endLine": 15,
+              "endLine": 54,
               "endColumn": 21
             }
           },
@@ -1117,9 +1117,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 16,
+              "startLine": 55,
               "startColumn": 2,
-              "endLine": 16,
+              "endLine": 55,
               "endColumn": 26
             }
           },
@@ -1142,9 +1142,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 17,
+              "startLine": 56,
               "startColumn": 2,
-              "endLine": 17,
+              "endLine": 56,
               "endColumn": 23
             }
           },
@@ -1167,9 +1167,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 18,
+              "startLine": 57,
               "startColumn": 2,
-              "endLine": 18,
+              "endLine": 57,
               "endColumn": 22
             }
           },
@@ -1192,9 +1192,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 19,
+              "startLine": 58,
               "startColumn": 2,
-              "endLine": 19,
+              "endLine": 58,
               "endColumn": 22
             }
           },
@@ -1217,9 +1217,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 20,
+              "startLine": 59,
               "startColumn": 2,
-              "endLine": 20,
+              "endLine": 59,
               "endColumn": 22
             }
           },
@@ -1242,9 +1242,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 61,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 61,
               "endColumn": 15
             }
           },
@@ -1267,9 +1267,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 62,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 62,
               "endColumn": 16
             }
           },
@@ -1292,9 +1292,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 63,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 63,
               "endColumn": 25
             }
           },
@@ -1317,9 +1317,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 64,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 64,
               "endColumn": 25
             }
           },
@@ -1342,9 +1342,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 65,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 65,
               "endColumn": 23
             }
           },
@@ -1358,7 +1358,104 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 4,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "from_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
+      "from_class_or_interface_name": "RunStats",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "to_class_or_interface_name": "ComputedActivityData",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 22
+          }
+        },
+        "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 2,
+              "endLine": 31,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx-apps/frontend/app/components/Drawer/CustomDrawerContent.tsx/interface/MenuItemProps-packages/common-ui/src/components/AppDrawer/types.ts/interface/DrawerItem-labelhasUnreadactiveColor": {
@@ -2400,9 +2497,9 @@
             }
           },
           "position": {
-            "startLine": 1774,
+            "startLine": 1775,
             "startColumn": 2,
-            "endLine": 1774,
+            "endLine": 1775,
             "endColumn": 25
           }
         },
@@ -2425,9 +2522,9 @@
             }
           },
           "position": {
-            "startLine": 1775,
+            "startLine": 1776,
             "startColumn": 2,
-            "endLine": 1775,
+            "endLine": 1776,
             "endColumn": 22
           }
         },
@@ -2450,9 +2547,9 @@
             }
           },
           "position": {
-            "startLine": 1776,
+            "startLine": 1777,
             "startColumn": 2,
-            "endLine": 1776,
+            "endLine": 1777,
             "endColumn": 23
           }
         },
@@ -2475,9 +2572,9 @@
             }
           },
           "position": {
-            "startLine": 1777,
+            "startLine": 1778,
             "startColumn": 2,
-            "endLine": 1777,
+            "endLine": 1778,
             "endColumn": 26
           }
         },
@@ -2500,9 +2597,9 @@
             }
           },
           "position": {
-            "startLine": 1778,
+            "startLine": 1779,
             "startColumn": 2,
-            "endLine": 1778,
+            "endLine": 1779,
             "endColumn": 25
           }
         },
@@ -2525,9 +2622,9 @@
             }
           },
           "position": {
-            "startLine": 1779,
+            "startLine": 1780,
             "startColumn": 2,
-            "endLine": 1779,
+            "endLine": 1780,
             "endColumn": 26
           }
         },
@@ -2550,9 +2647,9 @@
             }
           },
           "position": {
-            "startLine": 1780,
+            "startLine": 1781,
             "startColumn": 2,
-            "endLine": 1780,
+            "endLine": 1781,
             "endColumn": 26
           }
         },
@@ -2575,9 +2672,9 @@
             }
           },
           "position": {
-            "startLine": 1781,
+            "startLine": 1782,
             "startColumn": 2,
-            "endLine": 1781,
+            "endLine": 1782,
             "endColumn": 25
           }
         },
@@ -2600,9 +2697,9 @@
             }
           },
           "position": {
-            "startLine": 1782,
+            "startLine": 1783,
             "startColumn": 2,
-            "endLine": 1782,
+            "endLine": 1783,
             "endColumn": 25
           }
         },
@@ -2625,9 +2722,9 @@
             }
           },
           "position": {
-            "startLine": 1783,
+            "startLine": 1784,
             "startColumn": 2,
-            "endLine": 1783,
+            "endLine": 1784,
             "endColumn": 25
           }
         }
@@ -2672,9 +2769,9 @@
             }
           },
           "position": {
-            "startLine": 1775,
+            "startLine": 1776,
             "startColumn": 2,
-            "endLine": 1775,
+            "endLine": 1776,
             "endColumn": 22
           }
         },
@@ -2697,9 +2794,9 @@
             }
           },
           "position": {
-            "startLine": 1776,
+            "startLine": 1777,
             "startColumn": 2,
-            "endLine": 1776,
+            "endLine": 1777,
             "endColumn": 23
           }
         },
@@ -2722,9 +2819,9 @@
             }
           },
           "position": {
-            "startLine": 1777,
+            "startLine": 1778,
             "startColumn": 2,
-            "endLine": 1777,
+            "endLine": 1778,
             "endColumn": 26
           }
         },
@@ -2747,9 +2844,9 @@
             }
           },
           "position": {
-            "startLine": 1778,
+            "startLine": 1779,
             "startColumn": 2,
-            "endLine": 1778,
+            "endLine": 1779,
             "endColumn": 25
           }
         },
@@ -2772,9 +2869,9 @@
             }
           },
           "position": {
-            "startLine": 1779,
+            "startLine": 1780,
             "startColumn": 2,
-            "endLine": 1779,
+            "endLine": 1780,
             "endColumn": 26
           }
         },
@@ -2797,9 +2894,9 @@
             }
           },
           "position": {
-            "startLine": 1780,
+            "startLine": 1781,
             "startColumn": 2,
-            "endLine": 1780,
+            "endLine": 1781,
             "endColumn": 26
           }
         },
@@ -2822,9 +2919,9 @@
             }
           },
           "position": {
-            "startLine": 1781,
+            "startLine": 1782,
             "startColumn": 2,
-            "endLine": 1781,
+            "endLine": 1782,
             "endColumn": 25
           }
         },
@@ -2847,9 +2944,9 @@
             }
           },
           "position": {
-            "startLine": 1782,
+            "startLine": 1783,
             "startColumn": 2,
-            "endLine": 1782,
+            "endLine": 1783,
             "endColumn": 25
           }
         },
@@ -2872,9 +2969,9 @@
             }
           },
           "position": {
-            "startLine": 1783,
+            "startLine": 1784,
             "startColumn": 2,
-            "endLine": 1783,
+            "endLine": 1784,
             "endColumn": 25
           }
         }
@@ -4051,6 +4148,200 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "from_class_or_interface_name": "ComputedActivityData",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx",
+      "to_class_or_interface_key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats",
+      "to_class_or_interface_name": "RunStats",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RunStats/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 2,
+            "endLine": 31,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "from_class_or_interface_name": "ComputedActivityData",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats",
+      "to_class_or_interface_name": "RunStats",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 57,
+              "startColumn": 2,
+              "endLine": 57,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 58,
+              "startColumn": 2,
+              "endLine": 58,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 59,
+              "startColumn": 2,
+              "endLine": 59,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 31,
+            "startColumn": 2,
+            "endLine": 31,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RoutePoint-apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx/interface/RoutePoint-latlngaltitudespeedtimestamp",
@@ -4086,9 +4377,9 @@
             }
           },
           "position": {
-            "startLine": 7,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 7,
+            "endLine": 46,
             "endColumn": 14
           }
         },
@@ -4111,9 +4402,9 @@
             }
           },
           "position": {
-            "startLine": 8,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 8,
+            "endLine": 47,
             "endColumn": 14
           }
         },
@@ -4136,9 +4427,9 @@
             }
           },
           "position": {
-            "startLine": 9,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 9,
+            "endLine": 48,
             "endColumn": 26
           }
         },
@@ -4161,9 +4452,9 @@
             }
           },
           "position": {
-            "startLine": 10,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 10,
+            "endLine": 49,
             "endColumn": 23
           }
         },
@@ -4186,9 +4477,9 @@
             }
           },
           "position": {
-            "startLine": 11,
+            "startLine": 50,
             "startColumn": 2,
-            "endLine": 11,
+            "endLine": 50,
             "endColumn": 20
           }
         }
@@ -4233,9 +4524,9 @@
             }
           },
           "position": {
-            "startLine": 15,
+            "startLine": 54,
             "startColumn": 2,
-            "endLine": 15,
+            "endLine": 54,
             "endColumn": 21
           }
         },
@@ -4258,9 +4549,9 @@
             }
           },
           "position": {
-            "startLine": 16,
+            "startLine": 55,
             "startColumn": 2,
-            "endLine": 16,
+            "endLine": 55,
             "endColumn": 26
           }
         },
@@ -4283,9 +4574,9 @@
             }
           },
           "position": {
-            "startLine": 17,
+            "startLine": 56,
             "startColumn": 2,
-            "endLine": 17,
+            "endLine": 56,
             "endColumn": 23
           }
         },
@@ -4308,9 +4599,9 @@
             }
           },
           "position": {
-            "startLine": 18,
+            "startLine": 57,
             "startColumn": 2,
-            "endLine": 18,
+            "endLine": 57,
             "endColumn": 22
           }
         },
@@ -4333,9 +4624,9 @@
             }
           },
           "position": {
-            "startLine": 19,
+            "startLine": 58,
             "startColumn": 2,
-            "endLine": 19,
+            "endLine": 58,
             "endColumn": 22
           }
         },
@@ -4358,9 +4649,9 @@
             }
           },
           "position": {
-            "startLine": 20,
+            "startLine": 59,
             "startColumn": 2,
-            "endLine": 20,
+            "endLine": 59,
             "endColumn": 22
           }
         },
@@ -4383,9 +4674,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 61,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 61,
             "endColumn": 15
           }
         },
@@ -4408,9 +4699,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 62,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 62,
             "endColumn": 16
           }
         },
@@ -4433,9 +4724,9 @@
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 63,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 63,
             "endColumn": 25
           }
         },
@@ -4458,9 +4749,9 @@
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 64,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 64,
             "endColumn": 25
           }
         },
@@ -4483,16 +4774,113 @@
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 65,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 65,
             "endColumn": 23
           }
         }
       },
       "data_clump_type_additional": {
         "cluster_id": 4,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData-maxSpeedKmhminSpeedKmhavgSpeedKmh",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats",
+      "from_class_or_interface_name": "RunStats",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/ActivityStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData",
+      "to_class_or_interface_name": "ComputedActivityData",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/maxSpeedKmh",
+          "name": "maxSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/maxSpeedKmh",
+            "name": "maxSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 57,
+            "startColumn": 2,
+            "endLine": 57,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/minSpeedKmh",
+          "name": "minSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/minSpeedKmh",
+            "name": "minSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 58,
+            "startColumn": 2,
+            "endLine": 58,
+            "endColumn": 22
+          }
+        },
+        "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh": {
+          "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/RunStats/memberField/avgSpeedKmh",
+          "name": "avgSpeedKmh",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/ComputedActivityData/memberField/avgSpeedKmh",
+            "name": "avgSpeedKmh",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 31,
+              "startColumn": 2,
+              "endLine": 31,
+              "endColumn": 22
+            }
+          },
+          "position": {
+            "startLine": 59,
+            "startColumn": 2,
+            "endLine": 59,
+            "endColumn": 22
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 4,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/ActivityStorage.ts-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-apps/geonexia/frontend/helpers/RouteStorage.ts/interface/SavedRoute-idsportTypeh3Resolution": {
@@ -4530,9 +4918,9 @@
             }
           },
           "position": {
-            "startLine": 30,
+            "startLine": 69,
             "startColumn": 2,
-            "endLine": 30,
+            "endLine": 69,
             "endColumn": 13
           }
         },
@@ -4555,9 +4943,9 @@
             }
           },
           "position": {
-            "startLine": 36,
+            "startLine": 75,
             "startColumn": 2,
-            "endLine": 36,
+            "endLine": 75,
             "endColumn": 24
           }
         },
@@ -4580,9 +4968,9 @@
             }
           },
           "position": {
-            "startLine": 38,
+            "startLine": 77,
             "startColumn": 2,
-            "endLine": 38,
+            "endLine": 77,
             "endColumn": 24
           }
         }
@@ -4620,9 +5008,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1775,
+              "startLine": 1776,
               "startColumn": 2,
-              "endLine": 1775,
+              "endLine": 1776,
               "endColumn": 22
             }
           },
@@ -4645,9 +5033,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1776,
+              "startLine": 1777,
               "startColumn": 2,
-              "endLine": 1776,
+              "endLine": 1777,
               "endColumn": 23
             }
           },
@@ -4670,9 +5058,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1777,
+              "startLine": 1778,
               "startColumn": 2,
-              "endLine": 1777,
+              "endLine": 1778,
               "endColumn": 26
             }
           },
@@ -4695,9 +5083,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1778,
+              "startLine": 1779,
               "startColumn": 2,
-              "endLine": 1778,
+              "endLine": 1779,
               "endColumn": 25
             }
           },
@@ -4720,9 +5108,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1779,
+              "startLine": 1780,
               "startColumn": 2,
-              "endLine": 1779,
+              "endLine": 1780,
               "endColumn": 26
             }
           },
@@ -4745,9 +5133,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1780,
+              "startLine": 1781,
               "startColumn": 2,
-              "endLine": 1780,
+              "endLine": 1781,
               "endColumn": 26
             }
           },
@@ -4770,9 +5158,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1781,
+              "startLine": 1782,
               "startColumn": 2,
-              "endLine": 1781,
+              "endLine": 1782,
               "endColumn": 25
             }
           },
@@ -4795,9 +5183,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1782,
+              "startLine": 1783,
               "startColumn": 2,
-              "endLine": 1782,
+              "endLine": 1783,
               "endColumn": 25
             }
           },
@@ -4820,9 +5208,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1783,
+              "startLine": 1784,
               "startColumn": 2,
-              "endLine": 1783,
+              "endLine": 1784,
               "endColumn": 25
             }
           },
@@ -5114,9 +5502,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1774,
+              "startLine": 1775,
               "startColumn": 2,
-              "endLine": 1774,
+              "endLine": 1775,
               "endColumn": 25
             }
           },
@@ -5139,9 +5527,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1775,
+              "startLine": 1776,
               "startColumn": 2,
-              "endLine": 1775,
+              "endLine": 1776,
               "endColumn": 22
             }
           },
@@ -5164,9 +5552,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1776,
+              "startLine": 1777,
               "startColumn": 2,
-              "endLine": 1776,
+              "endLine": 1777,
               "endColumn": 23
             }
           },
@@ -5189,9 +5577,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1777,
+              "startLine": 1778,
               "startColumn": 2,
-              "endLine": 1777,
+              "endLine": 1778,
               "endColumn": 26
             }
           },
@@ -5214,9 +5602,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1778,
+              "startLine": 1779,
               "startColumn": 2,
-              "endLine": 1778,
+              "endLine": 1779,
               "endColumn": 25
             }
           },
@@ -5239,9 +5627,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1779,
+              "startLine": 1780,
               "startColumn": 2,
-              "endLine": 1779,
+              "endLine": 1780,
               "endColumn": 26
             }
           },
@@ -5264,9 +5652,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1780,
+              "startLine": 1781,
               "startColumn": 2,
-              "endLine": 1780,
+              "endLine": 1781,
               "endColumn": 26
             }
           },
@@ -5289,9 +5677,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1781,
+              "startLine": 1782,
               "startColumn": 2,
-              "endLine": 1781,
+              "endLine": 1782,
               "endColumn": 25
             }
           },
@@ -5314,9 +5702,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1782,
+              "startLine": 1783,
               "startColumn": 2,
-              "endLine": 1782,
+              "endLine": 1783,
               "endColumn": 25
             }
           },
@@ -5339,9 +5727,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1783,
+              "startLine": 1784,
               "startColumn": 2,
-              "endLine": 1783,
+              "endLine": 1784,
               "endColumn": 25
             }
           },
@@ -5633,9 +6021,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 30,
+              "startLine": 69,
               "startColumn": 2,
-              "endLine": 30,
+              "endLine": 69,
               "endColumn": 13
             }
           },
@@ -5658,9 +6046,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 38,
+              "startLine": 77,
               "startColumn": 2,
-              "endLine": 38,
+              "endLine": 77,
               "endColumn": 24
             }
           },
@@ -5683,9 +6071,9 @@
             "type": "SportType",
             "modifiers": [],
             "position": {
-              "startLine": 36,
+              "startLine": 75,
               "startColumn": 2,
-              "endLine": 36,
+              "endLine": 75,
               "endColumn": 24
             }
           },
