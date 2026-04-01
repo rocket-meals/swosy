@@ -1838,9 +1838,10 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 								{entries.map((entry, i) => {
 									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
 									return (
-										<SettingsListSelectOptionSingle
+										<SettingsListHexTile
 											key={entry.key}
-											label={entry.key.split('/').pop() ?? entry.key}
+											tileImageKey={entry.key}
+											title={entry.key.split('/').pop() ?? entry.key}
 											isSelected={currentTileImage === entry.key}
 											selectionColor={PRIMARY_COLOR}
 											onPress={() => {
@@ -1886,9 +1887,10 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 						const isSelected = currentAnchorBillboard === key;
 						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
 						return (
-							<SettingsListSelectOptionSingle
+							<SettingsListBillboard
 								key={key}
-								label={sprite.name}
+								spriteIndex={idx}
+								title={sprite.name}
 								isSelected={isSelected}
 								selectionColor={PRIMARY_COLOR}
 								onPress={() => {
