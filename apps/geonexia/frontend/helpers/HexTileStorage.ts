@@ -21,6 +21,24 @@ export enum BillboardAnchorColor {
 	Black = 'black',
 }
 
+/**
+ * A back-reference linking a hex tile to a specific activity that visited or
+ * enclosed it.  At most one entry per activity is stored per tile.
+ *
+ * - `walkedIndex`   – index of this tile in the activity's `computed.orderedHexTiles` list
+ * - `enclosedIndex` – index of this tile in the activity's `computed.enclosedHexTiles` list
+ *
+ * One reference object can carry both indices when the tile was both walked and
+ * enclosed in the same activity (rare, but possible with self-crossing routes).
+ */
+export type ActivityReference = {
+	activityId: string;
+	/** Position in the activity's ordered hex tile sequence, if the tile was visited. */
+	walkedIndex?: number;
+	/** Position in the activity's enclosed hex tile list, if the tile was enclosed. */
+	enclosedIndex?: number;
+};
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
@@ -78,6 +96,14 @@ export type HexTileRecord = {
 	 * `billboardAnchorColor` fields, allowing multiple billboards on one tile.
 	 */
 	billboards?: Record<string, string | null>;
+	/**
+	 * Back-references to the activities that contributed to this tile's
+	 * visit/enclosure counts.  There is at most one entry per activity.
+	 * Used by the map-rebuild helper to recompute counts from activity history
+	 * without re-processing raw GPS points.
+	 * Optional for backward-compat with older saves.
+	 */
+	activityReferences?: ActivityReference[];
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
