@@ -1,46 +1,46 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-01T10:59:11.462Z",
+  "report_timestamp": "2026-04-01T12:09:00.513Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.6082775919732442,
-          "amountSavedValuesForKeys": 3847,
+          "average": 1.6083507306889353,
+          "amountSavedValuesForKeys": 3852,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 70,
-          "average": 2.368336025848142,
-          "amountSavedValuesForKeys": 1466,
+          "average": 2.3661290322580646,
+          "amountSavedValuesForKeys": 1467,
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.6225221425558836,
-          "amountSavedValuesForKeys": 3847,
+          "average": 1.6225779275484415,
+          "amountSavedValuesForKeys": 3852,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4084,
+        "ast_generation_time_ms": 3908,
         "detection_time_ms": 82,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 173.53,
-          "os_memory_free": 14978134016,
-          "os_memory_total": 16770777088,
+          "os_uptime": 114.69,
+          "os_memory_free": 14859296768,
+          "os_memory_total": 16765403136,
           "os_cpu_cores": 4,
-          "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
-          "os_cpu_speed": 0
+          "os_cpu_model": "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
+          "os_cpu_speed": 3490
         }
       }
     },
@@ -55,18 +55,18 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "04ca7700e34bfadeb457c0b2e00c60342c1ab170",
-    "project_commit_hash": "04ca7700e34bfadeb457c0b2e00c60342c1ab170",
+    "project_version": "f92cec7e44c36e57656493bcea585ed614600ce1",
+    "project_commit_hash": "f92cec7e44c36e57656493bcea585ed614600ce1",
     "project_tag": null,
-    "project_commit_date": "1775041054",
+    "project_commit_date": "1775045235",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 478,
-    "number_of_classes_or_interfaces": 977,
-    "number_of_methods": 1326,
-    "number_of_data_fields": 3847,
-    "number_of_method_parameters": 1466
+    "number_of_classes_or_interfaces": 978,
+    "number_of_methods": 1327,
+    "number_of_data_fields": 3852,
+    "number_of_method_parameters": 1467
   },
   "detector": {
     "name": "data-clumps-doctor",
@@ -2271,9 +2271,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 58,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 58,
               "endColumn": 22
             }
           },
@@ -2296,9 +2296,9 @@
             "type": "KeyboardTypeOptions",
             "modifiers": [],
             "position": {
-              "startLine": 50,
+              "startLine": 62,
               "startColumn": 2,
-              "endLine": 50,
+              "endLine": 62,
               "endColumn": 37
             }
           },
@@ -2321,9 +2321,9 @@
             "type": "object",
             "modifiers": [],
             "position": {
-              "startLine": 53,
+              "startLine": 65,
               "startColumn": 2,
-              "endLine": 53,
+              "endLine": 65,
               "endColumn": 22
             }
           },
@@ -2346,9 +2346,9 @@
             "type": "boolean",
             "modifiers": [],
             "position": {
-              "startLine": 54,
+              "startLine": 66,
               "startColumn": 2,
-              "endLine": 54,
+              "endLine": 66,
               "endColumn": 22
             }
           },
@@ -7566,9 +7566,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 45,
+              "startLine": 57,
               "startColumn": 2,
-              "endLine": 45,
+              "endLine": 57,
               "endColumn": 23
             }
           },
@@ -7591,9 +7591,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 69,
               "startColumn": 2,
-              "endLine": 57,
+              "endLine": 69,
               "endColumn": 23
             }
           },
@@ -7616,9 +7616,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 59,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 59,
               "endColumn": 20
             }
           },
@@ -8517,9 +8517,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 58,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 58,
               "endColumn": 22
             }
           },
@@ -8542,9 +8542,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 59,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 59,
               "endColumn": 20
             }
           },
@@ -8567,9 +8567,9 @@
             "type": "string",
             "modifiers": [],
             "position": {
-              "startLine": 57,
+              "startLine": 69,
               "startColumn": 2,
-              "endLine": 57,
+              "endLine": 69,
               "endColumn": 23
             }
           },
@@ -8621,9 +8621,9 @@
             }
           },
           "position": {
-            "startLine": 45,
+            "startLine": 57,
             "startColumn": 2,
-            "endLine": 45,
+            "endLine": 57,
             "endColumn": 23
           }
         },
@@ -8646,9 +8646,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 59,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 59,
             "endColumn": 20
           }
         },
@@ -8671,9 +8671,9 @@
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 69,
             "startColumn": 2,
-            "endLine": 57,
+            "endLine": 69,
             "endColumn": 23
           }
         }
@@ -8718,9 +8718,9 @@
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 58,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 58,
             "endColumn": 22
           }
         },
@@ -8743,9 +8743,9 @@
             }
           },
           "position": {
-            "startLine": 50,
+            "startLine": 62,
             "startColumn": 2,
-            "endLine": 50,
+            "endLine": 62,
             "endColumn": 37
           }
         },
@@ -8768,9 +8768,9 @@
             }
           },
           "position": {
-            "startLine": 53,
+            "startLine": 65,
             "startColumn": 2,
-            "endLine": 53,
+            "endLine": 65,
             "endColumn": 22
           }
         },
@@ -8793,9 +8793,9 @@
             }
           },
           "position": {
-            "startLine": 54,
+            "startLine": 66,
             "startColumn": 2,
-            "endLine": 54,
+            "endLine": 66,
             "endColumn": 22
           }
         }
@@ -8840,9 +8840,9 @@
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 58,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 58,
             "endColumn": 22
           }
         },
@@ -8865,9 +8865,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 59,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 59,
             "endColumn": 20
           }
         },
@@ -8890,9 +8890,9 @@
             }
           },
           "position": {
-            "startLine": 57,
+            "startLine": 69,
             "startColumn": 2,
-            "endLine": 57,
+            "endLine": 69,
             "endColumn": 23
           }
         }
