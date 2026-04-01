@@ -242,6 +242,56 @@ export function filterUsedNames(
 	return suggestions.filter((s) => !usedSet.has(s.toLowerCase()));
 }
 
+// ─── Merged & sorted feature list ───────────────────────────────────────────
+
+/**
+ * A single entry in the merged, count-sorted map-feature list that is used to
+ * drive the route-name suggestion UI.
+ */
+export type MergedFeatureEntry = AreaInfoEntry & {
+	/** The merged dict key (`layerId::name`). */
+	key: string;
+};
+
+/**
+ * Merge two {@link AreaInfoDict} dictionaries (route tiles + enclosed tiles)
+ * by summing their counts for matching keys, then return the entries sorted
+ * by total count (descending).
+ *
+ * This gives a unified ranked view of every map feature encountered across
+ * both the route path and the area it encloses, which is used to populate the
+ * list of route-name suggestions in the rename modal.
+ *
+ * @param routeDict    – AreaInfoDict from the tiles the route passes through.
+ * @param enclosedDict – AreaInfoDict from the tiles enclosed by the route loop
+ *                       (may be an empty object for open routes).
+ * @returns Array of {@link MergedFeatureEntry} sorted by count descending.
+ */
+export function buildMergedSortedAreaInfoList(
+	routeDict: AreaInfoDict,
+	enclosedDict: AreaInfoDict,
+): MergedFeatureEntry[] {
+	const merged: Record<string, MergedFeatureEntry> = {};
+
+	const addEntry = (key: string, entry: AreaInfoEntry) => {
+		const existing = merged[key];
+		if (existing) {
+			existing.count += entry.count;
+		} else {
+			merged[key] = { ...entry, key };
+		}
+	};
+
+	for (const [key, entry] of Object.entries(routeDict)) {
+		addEntry(key, entry);
+	}
+	for (const [key, entry] of Object.entries(enclosedDict)) {
+		addEntry(key, entry);
+	}
+
+	return Object.values(merged).sort((a, b) => b.count - a.count);
+}
+
 // ─── High-level hex-tile → route-name suggestion API ────────────────────────
 
 /**
