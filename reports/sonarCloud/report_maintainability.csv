@@ -1,8 +1,10 @@
 Key,Message,Component,Line
+"AZ1IKDNF5QknjuWHJIHB","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",331
+"AZ1IKDNF5QknjuWHJIHC","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",338
+"AZ1IKDNF5QknjuWHJIHD","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",338
 "AZ1HbB0TSWSK42iQT1Up","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",300
 "AZ1HbBxwSWSK42iQT1Un","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SettingsListBillboard/index.tsx",83
 "AZ1HbBz3SWSK42iQT1Uo","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SettingsListHexTile/index.tsx",95
-"AZ1GXrhdxuRvoptrSbTW","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SettingsListRoute/index.tsx",23
 "AZ1GO60pZjBb0RPX3ZeZ","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",321
 "AZ1GDyeaxSn_iKVSgNMP","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",168
 "AZ1GDyfOxSn_iKVSgNMQ","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",69
@@ -140,7 +142,7 @@ Key,Message,Component,Line
 "AZ05li8OkGZROQtBFiA7","Refactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",3149
 "AZ05li8OkGZROQtBFiA9","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4102
 "AZ05fiTpoHL-2mk7ikSL","Use `export…from` to re-export `GpsIntervalMode`.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/gpsIntervalSlice.ts",3
-"AZ05NCTQvIUCM9Fw0Ek9","Refactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",166
+"AZ05NCTQvIUCM9Fw0Ek9","Refactor this function to reduce its Cognitive Complexity from 61 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",171
 "AZ05NCP9vIUCM9Fw0Ek7","'billboardAnchorColor' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTileSlice.ts",184
 "AZ05NCSZvIUCM9Fw0Ek8","Remove this useless assignment to variable ""isDevMode"".","rocket-meals_rocket-meals:apps/geonexia/frontend/store/store.ts",65
 "AZ05GDsMoxp4O0LdguSC","Refactor this function to reduce its Cognitive Complexity from 19 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/billboard-config/index.tsx",52
@@ -216,8 +218,8 @@ Key,Message,Component,Line
 "AZ0g-E4sY2nYllnnSuWD","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",224
 "AZ0g-E4sY2nYllnnSuWE","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",736
 "AZ0g-E7-Y2nYllnnSuWF","'expo-router' imported multiple times.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",11
-"AZ0g-E7-Y2nYllnnSuWG","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",31
-"AZ0g-E7-Y2nYllnnSuWH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",268
+"AZ0g-E7-Y2nYllnnSuWG","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",32
+"AZ0g-E7-Y2nYllnnSuWH","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/index.tsx",273
 "AZ0g-E8wY2nYllnnSuWI","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",76
 "AZ0gvA-Mar6aFTbyyukA","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",182
 "AZ0gqxSuu7sWfngUT9HJ","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1350
@@ -9997,5 +9999,3 @@ Key,Message,Component,Line
 "AZlyj_pn0YdgFOBafBMb","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",48
 "AZlyj_pn0YdgFOBafBMc","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",48
 "AZlyj_pn0YdgFOBafBMd","Prefer `globalThis` over `window`.","rocket-meals_rocket-meals:apps/frontend/app/constants/HelperFunctions.ts",48
-"AZkUSvelS4VhJojFFCVx","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/UrlHelper.ts",8
-"AZkUSvelS4VhJojFFCVy","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/UrlHelper.ts",11
