@@ -135,5 +135,13 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		marginVertical: 20,
 	},
+	logoFull: {
+		width: 500,
+		height: 250,
+	},
+	logoFull: {
+		width: 500,
+		height: 250,
+	},
 	dummy: {},
 });
