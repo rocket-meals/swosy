@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ1GXrhdxuRvoptrSbTW","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SettingsListRoute/index.tsx",23
 "AZ1GO60pZjBb0RPX3ZeZ","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",312
 "AZ1GDyeaxSn_iKVSgNMP","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",168
 "AZ1GDyfOxSn_iKVSgNMQ","Refactor this function to not always return the same value.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/hex-tile-info/index.tsx",69
@@ -71,8 +72,6 @@ Key,Message,Component,Line
 "AZ0_muQpsbZkP7zZ--hD","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",752
 "AZ0_muQpsbZkP7zZ--hE","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/[id].tsx",752
 "AZ09-cPf1yt80T-hwzzL","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1565
-"AZ09zPie1XV5X7ZcuP8Z","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",74
-"AZ09zPie1XV5X7ZcuP8a","Refactor this code to not use nested template literals.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",74
 "AZ09r1guBqdBuPqsrvbq","Remove this useless assignment to variable ""savedRoutes"".","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",701
 "AZ09r1guBqdBuPqsrvbr","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",949
 "AZ09r1guBqdBuPqsrvbs","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",953
@@ -80,8 +79,8 @@ Key,Message,Component,Line
 "AZ09r1kMBqdBuPqsrvbu","Prefer `Number.isFinite` over `isFinite`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",705
 "AZ09b9gJsbZkP7zZmkn_","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",790
 "AZ08h-ZiRnJvyhKaMRpv","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",786
-"AZ08h-XvRnJvyhKaMRpt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",76
-"AZ08h-XvRnJvyhKaMRpu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",76
+"AZ08h-XvRnJvyhKaMRpt","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",68
+"AZ08h-XvRnJvyhKaMRpu","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",68
 "AZ08dPhhPU4l3pg_uGRW","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",383
 "AZ08WWGAPU4l3pg_soFq","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1072
 "AZ08WWGAPU4l3pg_soFr","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/activities/[id].tsx",1075
@@ -9999,3 +9998,4 @@ Key,Message,Component,Line
 "AZkUSvelS4VhJojFFCVy","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/UrlHelper.ts",11
 "AZkUSvelS4VhJojFFCVz","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/constants/UrlHelper.ts",26
 "AZkUSvT9S4VhJojFFAhR","Complete the task associated to this ""TODO"" comment.","rocket-meals_rocket-meals:apps/frontend/app/helper/ColorHelper.tsx",5
+"AZkUSvT9S4VhJojFFAhU","Remove this useless assignment to variable ""isDark"".","rocket-meals_rocket-meals:apps/frontend/app/helper/ColorHelper.tsx",63
