@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
+	ActivityIndicator,
 	Alert,
 	Animated,
+	AppState,
 	PanResponder,
 	Platform,
 	SafeAreaView,
@@ -20,102 +22,136 @@ import { isRunningInExpoGo } from 'expo';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { WebView } from 'react-native-webview';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
-import { TERRAIN_ASSETS, TERRAIN_CATEGORIES, TerrainCategory } from '../assets/terrainAssets';
-import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe } from '../helpers/H3Helper';
-import { RoutePoint, RunStats, saveActivity, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { HexTileRecord } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization } from '../store/hexTileSlice';
+import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
+import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
+import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
+import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
+import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
+import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
+import * as Speech from 'expo-speech';
+import { getLocales } from 'expo-localization';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import type { PaceHintState } from '../helpers/TTSHelper';
+import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
+import SettingsListBillboard from '../components/SettingsListBillboard';
+import SettingsListHexTile from '../components/SettingsListHexTile';
+import { useDebugMode } from '../hooks/useDebugMode';
 
-/** Module-level cache so individual SVG data URIs are only computed once per app session. */
-const cachedObjectSvgDataUrls: string[] = [];
-let cachedObjectSvgDataUrlsLoaded = false;
-
-async function loadAllObjectSvgDataUrls(): Promise<string[]> {
-	if (cachedObjectSvgDataUrlsLoaded) return cachedObjectSvgDataUrls;
-	const results: string[] = [];
-	for (const sprite of OBJECT_SPRITES) {
-		try {
-			const asset = Asset.fromModule(sprite.source);
-			await asset.downloadAsync();
-			let url: string;
-			if (Platform.OS === 'web') {
-				url = asset.uri ?? '';
-			} else {
-				if (!asset.localUri) { results.push(''); continue; }
-				const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-					encoding: FileSystem.EncodingType.Base64,
-				});
-				url = `data:image/svg+xml;base64,${base64}`;
-			}
-			results.push(url);
-		} catch (e) {
-			console.warn(`[loadAllObjectSvgDataUrls] Failed for ${sprite.name}:`, e);
-			results.push('');
-		}
-	}
-	cachedObjectSvgDataUrls.push(...results);
-	cachedObjectSvgDataUrlsLoaded = true;
-	return cachedObjectSvgDataUrls;
+/** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
+function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
+	const colonIdx = billboard.indexOf(':');
+	if (colonIdx < 0 || billboard.slice(0, colonIdx) !== 'objects') return null;
+	const idx = parseInt(billboard.slice(colonIdx + 1), 10);
+	const sprite = OBJECT_SPRITES[idx];
+	if (!sprite) return null;
+	return { sprite, idx };
 }
 
-/** Module-level cache mapping terrain asset key → base64 data URI. */
-const cachedTerrainSvgDataUrls = new Map<string, string>();
-let cachedTerrainSvgDataUrlsLoaded = false;
-
-async function loadAllTerrainSvgDataUrls(): Promise<Map<string, string>> {
-	if (cachedTerrainSvgDataUrlsLoaded) return cachedTerrainSvgDataUrls;
-	for (const entries of Object.values(TERRAIN_ASSETS)) {
-		for (const entry of entries) {
-			try {
-				const asset = Asset.fromModule(entry.source as number);
-				await asset.downloadAsync();
-				let url: string;
-				if (Platform.OS === 'web') {
-					url = asset.uri ?? '';
-				} else {
-					if (!asset.localUri) continue;
-					const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-						encoding: FileSystem.EncodingType.Base64,
-					});
-					url = `data:image/svg+xml;base64,${base64}`;
-				}
-				cachedTerrainSvgDataUrls.set(entry.key, url);
-			} catch (e) {
-				console.warn(`[loadAllTerrainSvgDataUrls] Failed for ${entry.key}:`, e);
-			}
+/**
+ * Return the effective per-anchor billboard map for a hex tile record,
+ * merging the new `billboards` field with the legacy `billboard`/`billboardAnchorColor` pair.
+ * The new `billboards` field takes precedence when present.
+ */
+function getEffectiveBillboards(record: { billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }): Record<BillboardAnchorColor, string> {
+	const result: Record<string, string> = {};
+	if (record.billboards) {
+		for (const [ac, bk] of Object.entries(record.billboards)) {
+			if (bk) result[ac] = bk;
 		}
+	} else if (record.billboard) {
+		result[record.billboardAnchorColor ?? BillboardAnchorColor.Purple] = record.billboard;
 	}
-	cachedTerrainSvgDataUrlsLoaded = true;
-	return cachedTerrainSvgDataUrls;
+	return result as Record<BillboardAnchorColor, string>;
 }
 
 const PRIMARY_COLOR = '#2563eb';
-const DEBUG_BILLBOARD_ANCHOR_COLOR = '#ff69b4';
 
 // Debug status indicator colours
 const STATUS_SUCCESS_COLOR = '#22c55e';
 const STATUS_WARNING_COLOR = '#f59e0b';
 const STATUS_ERROR_COLOR = '#ef4444';
 
+// ─── Measure mode constants ───────────────────────────────────────────────────
+
+// Speed range for synthetic activity points generated from a measure route.
+// Slightly randomised jogging pace: base ± variation km/h.
+const MEASURE_SPEED_BASE_KMH = 10;
+const MEASURE_SPEED_VARIATION_KMH = 2;
+// Coordinate noise (degrees) applied to each synthetic GPS point to make the
+// route look organic.  ~0.00003° ≈ 3 m at the equator.
+const MEASURE_COORD_NOISE_DEG = 0.00003;
+
 // ─── H3 hex-grid helpers ──────────────────────────────────────────────────────
 
 const H3_DEFAULT_RESOLUTION = 10;
 const H3_MAX_CELLS = 5000;
-const H3_MIN_ZOOM = 14;
+const H3_MIN_ZOOM_DEFAULT = 12;
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
+
+// Average H3 hexagon edge lengths in km for each integer resolution 0–15.
+// Source: https://h3geo.org/docs/core-library/restable
+const H3_EDGE_LENGTH_KM: readonly number[] = [
+	1107.712591, // 0
+	418.676005,  // 1
+	158.244655,  // 2
+	59.810857,   // 3
+	22.606379,   // 4
+	8.544408,    // 5
+	3.229482,    // 6
+	1.220629,    // 7
+	0.461354,    // 8
+	0.174375,    // 9
+	0.065907,    // 10  ← default resolution
+	0.024910,    // 11
+	0.009415,    // 12
+	0.003559,    // 13
+	0.001348,    // 14
+	0.000509,    // 15
+];
+
+// Base billboard size unit in pixels at H3 resolution 10.
+// townhall (scaleFactor 7.0) renders at exactly 7 × BILLBOARD_UNIT_PX pixels wide.
+// All other sprites are scaled by their own scaleFactor relative to this unit.
+const BILLBOARD_UNIT_PX = 48 / 7; // townhall ≈ 48 px at res 10
+// Reference H3 resolution for billboard sizing. Billboard sizes scale proportionally
+// with the H3 edge length so they are larger on bigger hexagons and smaller on
+// smaller ones.
+const BILLBOARD_REFERENCE_RESOLUTION = 10;
+// Default billboard scale multiplier (adjustable in the debug modal).
+const BILLBOARD_SCALE_DEFAULT = 0.4;
+// Precision factor for rounding billboard scale values (1 decimal place).
+const BILLBOARD_SCALE_DECIMAL_PRECISION = 10;
+// Minimum rendered pixel size for billboard icons so that sprites at very small
+// H3 resolutions or low user-scale settings remain visible and tappable.
+const BILLBOARD_MIN_SIZE_PX = 8;
 // cellToBoundary flag: true returns vertices in [lng, lat] GeoJSON coordinate order
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
+
+// Billboard anchor color options. Each maps to a position within the hex cell.
+// Colors match the debug point layer colors in hexTileScript.ts.
+const BILLBOARD_ANCHOR_COLORS = [
+	{ id: BillboardAnchorColor.Purple, hex: '#a855f7', label: 'Center (Purple)' },
+	{ id: BillboardAnchorColor.Green, hex: '#22c55e', label: 'Vertex (Green)' },
+	{ id: BillboardAnchorColor.Red, hex: '#ef4444', label: 'Midpoint 1 (Red)' },
+	{ id: BillboardAnchorColor.Orange, hex: '#f97316', label: 'Midpoint 2 (Orange)' },
+	{ id: BillboardAnchorColor.Yellow, hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
+	{ id: BillboardAnchorColor.Blue, hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
+	{ id: BillboardAnchorColor.White, hex: '#ffffff', label: 'Midpoint 5 (White)' },
+	{ id: BillboardAnchorColor.Black, hex: '#000000', label: 'Midpoint 6 (Black)' },
+] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
 
@@ -138,8 +174,30 @@ function buildH3GeoJson(
 	resolution: number,
 	showAlways: boolean,
 	hexTileRecords: Record<string, HexTileRecord>,
+	minZoom: number = H3_MIN_ZOOM_DEFAULT,
 ): H3FeatureCollection {
-	if (!showAlways && zoom < H3_MIN_ZOOM) return { type: 'FeatureCollection', features: [] };
+	if (!showAlways && zoom < minZoom) {
+		// At low zoom: hide the unvisited grid, but still show tiles that have been
+		// visited or enclosed (level > 0) so the user can see their overall progress.
+		const features: H3GeoJsonFeature[] = [];
+		for (const [cell, record] of Object.entries(hexTileRecords)) {
+			if (record.level <= 0) continue;
+			if (features.length >= H3_MAX_CELLS) break;
+			try {
+				const boundary = cellToBoundary(cell, H3_GEOJSON_ORDER);
+				if (boundary.length > 0) {
+					features.push({
+						type: 'Feature',
+						geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+						properties: { h3Index: cell, level: record.level },
+					});
+				}
+			} catch {
+				// Skip invalid cells
+			}
+		}
+		return { type: 'FeatureCollection', features };
+	}
 
 	// Fractional resolutions (e.g. 10.5) use the floor as the base integer
 	// resolution and visually subdivide each parent cell into its children at
@@ -254,49 +312,44 @@ type WalkPathFeatureCollection = {
 
 /**
  * Build a GeoJSON FeatureCollection of LineString features representing the
- * walk paths across all visited tiles. For each pair of adjacent cells that
- * are both walked-on, a line is drawn from one cell's centre to the other.
- * Lines are deduplicated (each pair drawn once) by comparing H3 indices.
+ * walk path, using the actual hex-to-hex transitions that were recorded during
+ * activities. Only edges that are present in `walkedEdges` (and whose endpoints
+ * are both visible in the current viewport) are drawn, preventing spurious
+ * connections between adjacent but non-consecutively-traversed hexagons.
  *
- * Only considers cells that appear in `viewportCells` so that the output stays
- * bounded to the visible map area.
+ * Each edge in `walkedEdges` is stored as "cellA:cellB" with the
+ * lexicographically smaller index first.
  */
 function buildWalkPathGeoJson(
 	viewportCells: string[],
-	hexTileRecords: Record<string, HexTileRecord>,
+	walkedEdges: string[],
 ): WalkPathFeatureCollection {
 	const viewportSet = new Set(viewportCells);
 	const features: WalkPathFeature[] = [];
 
-	for (const cell of viewportCells) {
-		const record = hexTileRecords[cell];
-		if (!record?.walkedOn) continue;
-
-		const [centerLat, centerLng] = cellToLatLng(cell);
-
-		// Find all immediate H3 neighbours (ring 1, excluding the cell itself)
-		const neighbours = gridDisk(cell, 1).filter((neighbor) => neighbor !== cell);
-
-		for (const neighborH3 of neighbours) {
-			// Deduplicate edges: each pair (cell, neighbor) is drawn exactly once by
-			// the tile whose H3 index is lexicographically smaller.
-			if (cell >= neighborH3) continue;
-			// Only draw if the neighbour is also in the viewport and was walked on.
-			if (!viewportSet.has(neighborH3)) continue;
-			if (!hexTileRecords[neighborH3]?.walkedOn) continue;
-
-			const [nLat, nLng] = cellToLatLng(neighborH3);
+	for (const edge of walkedEdges) {
+		const colonIdx = edge.indexOf(':');
+		if (colonIdx === -1) continue;
+		const cellA = edge.slice(0, colonIdx);
+		const cellB = edge.slice(colonIdx + 1);
+		// Only draw if both endpoints are visible in the current viewport.
+		if (!viewportSet.has(cellA) || !viewportSet.has(cellB)) continue;
+		try {
+			const [aLat, aLng] = cellToLatLng(cellA);
+			const [bLat, bLng] = cellToLatLng(cellB);
 			features.push({
 				type: 'Feature',
 				geometry: {
 					type: 'LineString',
 					coordinates: [
-						[centerLng, centerLat],
-						[nLng, nLat],
+						[aLng, aLat],
+						[bLng, bLat],
 					],
 				},
 				properties: {},
 			});
+		} catch {
+			// cellToLatLng can throw for invalid indices; skip silently
 		}
 	}
 
@@ -469,7 +522,8 @@ const KCAL_PER_KG_PER_KM = 0.9;
 const AVERAGE_STRIDE_LENGTH_METERS = 0.77;
 const FLUID_BASELINE_DURATION_SECONDS = 3600;
 const FLUID_BASELINE_ML = 600;
-const GPS_TIME_INTERVAL_MS = 5000;
+const SPEED_WARMUP_MS = 10_000;
+const GPS_TIME_INTERVAL_MS = 1000;
 const GPS_DISTANCE_INTERVAL_METERS = 5;
 /**
  * Maximum number of intermediate H3 cells to fill in when a GPS gap is detected
@@ -615,6 +669,90 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 	return enclosed;
 }
 
+/**
+ * Build an ordered list of H3 cells that the measure route passes through.
+ * For each consecutive pair of waypoints, uses gridPathCells to find the
+ * direct hex path. Only outer border cells are included (no filled interior).
+ */
+function computeOrderedMeasureRouteCells(
+	waypoints: Array<{ lat: number; lng: number }>,
+	resolution: number,
+): string[] {
+	if (waypoints.length < 2 || !isH3Available()) return [];
+	const res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+	const result: string[] = [];
+	const seen = new Set<string>();
+	for (let i = 1; i < waypoints.length; i++) {
+		const cellA = latLngToCell(waypoints[i - 1].lat, waypoints[i - 1].lng, res);
+		const cellB = latLngToCell(waypoints[i].lat, waypoints[i].lng, res);
+		if (!cellA || !cellB) continue;
+		try {
+			const path = gridPathCells(cellA, cellB);
+			for (const c of path) {
+				if (!seen.has(c)) {
+					seen.add(c);
+					result.push(c);
+				}
+			}
+		} catch {
+			// skip segment if gridPathCells throws (e.g. cells on different icosahedron faces)
+		}
+	}
+	return result;
+}
+
+function formatEstimatedDuration(totalMinutes: number): string {
+	if (totalMinutes <= 0 || !isFinite(totalMinutes)) return '--:--';
+	const h = Math.floor(totalMinutes / 60);
+	const m = Math.floor(totalMinutes % 60);
+	const s = Math.round((totalMinutes % 1) * 60);
+	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} h`;
+	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} min`;
+}
+
+function formatActivityLabel(activity: SavedActivity): string {
+	const d = new Date(activity.startedAt);
+	const date = d.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+	const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+	return `${date} ${time}`;
+}
+
+/**
+ * Generate synthetic RoutePoints along the centers of the given ordered hex cells,
+ * using slightly randomised speeds for a realistic-looking activity.
+ */
+function generateMeasureRoutePoints(
+	orderedCells: string[],
+	speedBaseKmh: number,
+	speedVariationKmh: number,
+	startTimestamp: number,
+): RoutePoint[] {
+	if (orderedCells.length === 0) return [];
+	const points: RoutePoint[] = [];
+	let currentTime = startTimestamp;
+	for (let i = 0; i < orderedCells.length; i++) {
+		const [cellLat, cellLng] = cellToLatLng(orderedCells[i]);
+		// Add slight coordinate noise to make the synthetic route look organic.
+		const noisyLat = cellLat + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const noisyLng = cellLng + (Math.random() - 0.5) * MEASURE_COORD_NOISE_DEG;
+		const speedKmh = Math.max(1, speedBaseKmh + (Math.random() - 0.5) * speedVariationKmh);
+		points.push({
+			lat: noisyLat,
+			lng: noisyLng,
+			altitude: null,
+			speed: speedKmh / 3.6, // m/s
+			timestamp: currentTime,
+		});
+		if (i < orderedCells.length - 1) {
+			const [nextLat, nextLng] = cellToLatLng(orderedCells[i + 1]);
+			const distKm = haversineKm(cellLat, cellLng, nextLat, nextLng);
+			const timeSeconds = (distKm / speedKmh) * 3600;
+			currentTime += Math.round(timeSeconds * 1000);
+		}
+	}
+	return points;
+}
+
 function computeStats(points: RoutePoint[]): RunStats {
 	if (points.length < 2) {
 		const durationSeconds = points.length === 1 ? (Date.now() - points[0].timestamp) / 1000 : 0;
@@ -625,6 +763,7 @@ function computeStats(points: RoutePoint[]): RunStats {
 			maxSpeedKmh: 0,
 			minSpeedKmh: 0,
 			avgSpeedKmh: 0,
+			medianSpeedKmh: 0,
 			kcal: 0,
 			steps: 0,
 			elevationGainM: 0,
@@ -637,6 +776,9 @@ function computeStats(points: RoutePoint[]): RunStats {
 	let elevationGainM = 0;
 	let elevationLossM = 0;
 	const speedsKmh: number[] = [];
+	const startTimestamp = points[0].timestamp;
+	let speedDistanceKm = 0;
+	let speedDurationSeconds = 0;
 
 	for (let i = 1; i < points.length; i++) {
 		const segKm = haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
@@ -656,14 +798,24 @@ function computeStats(points: RoutePoint[]): RunStats {
 				: dtSec > 0
 				? (segKm / dtSec) * 3600
 				: 0;
-		if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+		if (points[i].timestamp - startTimestamp >= SPEED_WARMUP_MS) {
+			if (segSpeedKmh > 0) speedsKmh.push(segSpeedKmh);
+			speedDistanceKm += segKm;
+			speedDurationSeconds += dtSec;
+		}
 	}
 
 	const durationSeconds = (points[points.length - 1].timestamp - points[0].timestamp) / 1000;
 	const paceMinPerKm = distanceKm > 0 ? durationSeconds / 60 / distanceKm : 0;
 	const maxSpeedKmh = speedsKmh.length > 0 ? Math.max(...speedsKmh) : 0;
 	const minSpeedKmh = speedsKmh.length > 0 ? Math.min(...speedsKmh) : 0;
-	const avgSpeedKmh = durationSeconds > 0 ? (distanceKm / durationSeconds) * 3600 : 0;
+	const avgSpeedKmh = speedDurationSeconds > 0 ? (speedDistanceKm / speedDurationSeconds) * 3600 : 0;
+	const medianSpeedKmh = (() => {
+		if (speedsKmh.length === 0) return 0;
+		const sorted = [...speedsKmh].sort((a, b) => a - b);
+		const mid = Math.floor(sorted.length / 2);
+		return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+	})();
 	const kcal = Math.round(distanceKm * DEFAULT_RUNNER_WEIGHT_KG * KCAL_PER_KG_PER_KM);
 	const steps = Math.round((distanceKm * 1000) / AVERAGE_STRIDE_LENGTH_METERS);
 	const fluidNeedsMl = Math.round((durationSeconds / FLUID_BASELINE_DURATION_SECONDS) * FLUID_BASELINE_ML);
@@ -675,6 +827,7 @@ function computeStats(points: RoutePoint[]): RunStats {
 		maxSpeedKmh,
 		minSpeedKmh,
 		avgSpeedKmh,
+		medianSpeedKmh,
 		kcal,
 		steps,
 		elevationGainM,
@@ -736,13 +889,23 @@ type DebugInfoContentProps = {
 	theme: ReturnType<typeof useTheme>['theme'];
 	initialShowGridAlways: boolean;
 	initialH3Resolution: number;
+	initialMinZoom: number;
 	initialSpeed: number;
+	initialBillboardScale: number;
+	initialBillboardFaceCamera: boolean;
 	initialShowBillboardAnchors: boolean;
+	initialShowDebugPoints: boolean;
 	onShowGridAlwaysChange: (val: boolean) => void;
 	onH3ResolutionChange: (val: number) => void;
+	onMinZoomChange: (val: number) => void;
 	onZoomAdjust: (delta: number) => void;
 	onSpeedChange: (speed: number) => void;
+	onBillboardScaleChange: (scale: number) => void;
+	onBillboardFaceCameraChange: (val: boolean) => void;
 	onShowBillboardAnchorsChange: (val: boolean) => void;
+	onShowDebugPointsChange: (val: boolean) => void;
+	onExportMapSettings: () => void;
+	onImportMapSettings: (json: string) => void;
 };
 
 // Precision factor for rounding fractional H3 resolution values (1 decimal place).
@@ -753,29 +916,40 @@ function DebugInfoContent({
 	theme,
 	initialShowGridAlways,
 	initialH3Resolution,
+	initialMinZoom,
 	initialSpeed,
+	initialBillboardScale,
+	initialBillboardFaceCamera,
 	initialShowBillboardAnchors,
+	initialShowDebugPoints,
 	onShowGridAlwaysChange,
 	onH3ResolutionChange,
+	onMinZoomChange,
 	onZoomAdjust,
 	onSpeedChange,
+	onBillboardScaleChange,
+	onBillboardFaceCameraChange,
 	onShowBillboardAnchorsChange,
+	onShowDebugPointsChange,
+	onExportMapSettings,
+	onImportMapSettings,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
 	const [h3Resolution, setH3Resolution] = useState(initialH3Resolution);
+	const [minZoom, setMinZoom] = useState(initialMinZoom);
 	const [speedText, setSpeedText] = useState(String(initialSpeed));
+	const [billboardScale, setBillboardScale] = useState(initialBillboardScale);
+	const [billboardFaceCamera, setBillboardFaceCamera] = useState(initialBillboardFaceCamera);
 	const [showBillboardAnchors, setShowBillboardAnchors] = useState(initialShowBillboardAnchors);
+	const [showDebugPoints, setShowDebugPoints] = useState(initialShowDebugPoints);
+	const [showImportArea, setShowImportArea] = useState(false);
+	const [importJson, setImportJson] = useState('');
 
 	const handleShowGridAlwaysChange = useCallback((val: boolean) => {
 		setShowGridAlways(val);
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
-
-	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
-		setShowBillboardAnchors(val);
-		onShowBillboardAnchorsChange(val);
-	}, [onShowBillboardAnchorsChange]);
 
 	const adjustResolution = useCallback((delta: number) => {
 		setH3Resolution((prev) => {
@@ -786,6 +960,14 @@ function DebugInfoContent({
 		});
 	}, [onH3ResolutionChange]);
 
+	const adjustMinZoom = useCallback((delta: number) => {
+		setMinZoom((prev) => {
+			const next = Math.max(0, Math.min(22, prev + delta));
+			onMinZoomChange(next);
+			return next;
+		});
+	}, [onMinZoomChange]);
+
 	const handleSpeedTextChange = useCallback((text: string) => {
 		setSpeedText(text);
 		const parsed = parseFloat(text);
@@ -794,7 +976,30 @@ function DebugInfoContent({
 		}
 	}, [onSpeedChange]);
 
-	const tilesExpected = info != null && (showGridAlways || info.zoom >= H3_MIN_ZOOM);
+	const adjustBillboardScale = useCallback((delta: number) => {
+		setBillboardScale((prev) => {
+			const next = Math.max(0.1, Math.round((prev + delta) * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
+			onBillboardScaleChange(next);
+			return next;
+		});
+	}, [onBillboardScaleChange]);
+
+	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
+		setBillboardFaceCamera(val);
+		onBillboardFaceCameraChange(val);
+	}, [onBillboardFaceCameraChange]);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		setShowBillboardAnchors(val);
+		onShowBillboardAnchorsChange(val);
+	}, [onShowBillboardAnchorsChange]);
+
+	const handleShowDebugPointsChange = useCallback((val: boolean) => {
+		setShowDebugPoints(val);
+		onShowDebugPointsChange(val);
+	}, [onShowDebugPointsChange]);
+
+	const tilesExpected = info != null && (showGridAlways || info.zoom >= minZoom);
 
 	const statusColor = !h3Available
 		? STATUS_ERROR_COLOR
@@ -811,14 +1016,14 @@ function DebugInfoContent({
 		: info == null
 		? '⚠️ No viewport data yet. Move or zoom the map.'
 		: !tilesExpected
-		? `⚠️ Zoom in to ≥${H3_MIN_ZOOM} to see tiles`
+		? `⚠️ Zoom in to ≥${minZoom} to see tiles`
 		: info.tileCount > 0
 		? `✅ ${info.tileCount} H3 tiles computed`
 		: '❌ 0 tiles – H3 library may not be working';
 
 	const viewportRows: { label: string; value: string }[] = info
 		? [
-			{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${H3_MIN_ZOOM})` },
+			{ label: 'Tiles Visible', value: tilesExpected ? `${info.tileCount} cells` : `0 (zoom < ${minZoom})` },
 			{ label: 'North', value: info.bounds.north.toFixed(5) },
 			{ label: 'South', value: info.bounds.south.toFixed(5) },
 			{ label: 'East', value: info.bounds.east.toFixed(5) },
@@ -847,17 +1052,6 @@ function DebugInfoContent({
 					value={showGridAlways}
 					onValueChange={handleShowGridAlwaysChange}
 					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
-
-			{/* Show Billboard Anchors debug toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Billboard Anchors 🩷</Text>
-				<Switch
-					value={showBillboardAnchors}
-					onValueChange={handleShowBillboardAnchorsChange}
-					trackColor={{ true: DEBUG_BILLBOARD_ANCHOR_COLOR }}
 					thumbColor="#ffffff"
 				/>
 			</View>
@@ -953,12 +1147,105 @@ function DebugInfoContent({
 				/>
 			</View>
 
-			{/* Min zoom info row */}
+			{/* Billboard Scale row */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
+				<View style={styles.resolutionPickerMultiRow}>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+							onPress={() => adjustBillboardScale(-0.5)}
+							disabled={billboardScale <= 0.1}
+						>
+							<Text style={styles.resolutionButtonText}>−</Text>
+						</TouchableOpacity>
+						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+							{billboardScale.toFixed(1)}×
+						</Text>
+						<TouchableOpacity
+							style={styles.resolutionButton}
+							onPress={() => adjustBillboardScale(0.5)}
+						>
+							<Text style={styles.resolutionButtonText}>+</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.resolutionPickerRow}>
+						<TouchableOpacity
+							style={[styles.resolutionFineButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
+							onPress={() => adjustBillboardScale(-0.1)}
+							disabled={billboardScale <= 0.1}
+						>
+							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.resolutionFineButton}
+							onPress={() => adjustBillboardScale(0.1)}
+						>
+							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</View>
+
+			{/* Billboard Face Camera toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Face Camera</Text>
+				<Switch
+					value={billboardFaceCamera}
+					onValueChange={handleBillboardFaceCameraChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Billboard Anchor Points toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Anchor Points</Text>
+				<Switch
+					value={showBillboardAnchors}
+					onValueChange={handleShowBillboardAnchorsChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Show Debug Points toggle */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Debug Points</Text>
+				<Switch
+					value={showDebugPoints}
+					onValueChange={handleShowDebugPointsChange}
+					trackColor={{ true: PRIMARY_COLOR }}
+					thumbColor="#ffffff"
+				/>
+			</View>
+
+			{/* Min Zoom for Tiles row with ±1 buttons */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
-				<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>
-					{showGridAlways ? 'disabled (always on)' : String(H3_MIN_ZOOM)}
-				</Text>
+				{showGridAlways ? (
+					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
+				) : (
+					<View style={styles.resolutionPicker}>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: minZoom <= 0 ? 0.4 : 1 }]}
+							onPress={() => adjustMinZoom(-1)}
+							disabled={minZoom <= 0}
+						>
+							<Text style={styles.resolutionButtonText}>−</Text>
+						</TouchableOpacity>
+						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
+							{minZoom}
+						</Text>
+						<TouchableOpacity
+							style={[styles.resolutionButton, { opacity: minZoom >= 22 ? 0.4 : 1 }]}
+							onPress={() => adjustMinZoom(1)}
+							disabled={minZoom >= 22}
+						>
+							<Text style={styles.resolutionButtonText}>+</Text>
+						</TouchableOpacity>
+					</View>
+				)}
 			</View>
 
 			{/* Viewport rows */}
@@ -968,6 +1255,64 @@ function DebugInfoContent({
 					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>{row.value}</Text>
 				</View>
 			))}
+
+			{/* Map Settings export / import */}
+			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22', flexDirection: 'column', alignItems: 'stretch', gap: 8, paddingVertical: 12 }]}>
+				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text, marginBottom: 2 }]}>Map Settings</Text>
+				<View style={{ flexDirection: 'row', gap: 8 }}>
+					<TouchableOpacity
+						style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
+						onPress={onExportMapSettings}
+						activeOpacity={0.7}
+					>
+						<MaterialIcons name="file-upload" size={16} color={PRIMARY_COLOR} />
+						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Export</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR + '18', borderRadius: 8, paddingVertical: 8 }]}
+						onPress={() => { setShowImportArea((v) => !v); setImportJson(''); }}
+						activeOpacity={0.7}
+					>
+						<MaterialIcons name="file-download" size={16} color={PRIMARY_COLOR} />
+						<Text style={[styles.debugRowLabel, { color: PRIMARY_COLOR, marginLeft: 4 }]}>Import</Text>
+					</TouchableOpacity>
+				</View>
+				{showImportArea && (
+					<View style={{ gap: 8 }}>
+						<TextInput
+							style={[styles.debugSpeedInput, { minHeight: 80, textAlignVertical: 'top', borderRadius: 8, padding: 8, fontFamily: 'monospace', fontSize: 11 }]}
+							placeholder="Paste map settings JSON here…"
+							placeholderTextColor={theme.screen.icon}
+							value={importJson}
+							onChangeText={setImportJson}
+							multiline
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+						<View style={{ flexDirection: 'row', gap: 8 }}>
+							<TouchableOpacity
+								style={[styles.resolutionButton, { flex: 1, backgroundColor: PRIMARY_COLOR, borderRadius: 8, paddingVertical: 8, opacity: importJson.trim().length === 0 ? 0.4 : 1 }]}
+								onPress={() => {
+									onImportMapSettings(importJson.trim());
+									setShowImportArea(false);
+									setImportJson('');
+								}}
+								disabled={importJson.trim().length === 0}
+								activeOpacity={0.8}
+							>
+								<Text style={[styles.debugRowLabel, { color: '#ffffff' }]}>Apply</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.resolutionButton, { flex: 1, backgroundColor: theme.screen.text + '18', borderRadius: 8, paddingVertical: 8 }]}
+								onPress={() => { setShowImportArea(false); setImportJson(''); }}
+								activeOpacity={0.8}
+							>
+								<Text style={[styles.debugRowLabel, { color: theme.screen.text }]}>Cancel</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				)}
+			</View>
 		</View>
 	);
 }
@@ -1059,6 +1404,7 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 		{ iconName: 'timer', label: 'Duration', value: formatDuration(stats.durationSeconds) },
 		{ iconName: 'speed', label: 'Pace', value: formatPace(stats.paceMinPerKm) + ' min/km' },
 		{ iconName: 'speed', label: 'Avg. Speed', value: `${stats.avgSpeedKmh.toFixed(1)} km/h` },
+		{ iconName: 'speed', label: 'Median Speed', value: `${stats.medianSpeedKmh.toFixed(1)} km/h` },
 		{ iconName: 'arrow-upward', label: 'Max. Speed', value: `${stats.maxSpeedKmh.toFixed(1)} km/h` },
 		{ iconName: 'arrow-downward', label: 'Min. Speed', value: `${stats.minSpeedKmh.toFixed(1)} km/h` },
 		{ iconName: 'local-fire-department', label: 'Calories', value: `${stats.kcal} kcal` },
@@ -1092,6 +1438,174 @@ function RunStatsContent({ stats, theme, shareData }: { stats: RunStats; theme: 
 	);
 }
 
+// ─── Measure Result Content ────────────────────────────────────────────────────
+
+type MeasureResultContentProps = {
+	routeLengthInTiles: number;
+	enclosedTileCount: number;
+	routeCells: string[];
+	h3Resolution: number;
+	theme: ReturnType<typeof useTheme>['theme'];
+	savedActivities: SavedActivity[];
+	selectedSportType: SportType;
+	onSaveAsActivity: (routeCells: string[], enclosedCount: number) => void;
+	onSaveAsRoute: (routeCells: string[], name: string) => void;
+	onClose: () => void;
+};
+
+function MeasureResultContent({
+	routeLengthInTiles,
+	enclosedTileCount,
+	routeCells,
+	h3Resolution,
+	theme,
+	savedActivities,
+	selectedSportType,
+	onSaveAsActivity,
+	onSaveAsRoute,
+	onClose,
+}: MeasureResultContentProps) {
+	const rows: { iconName: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
+		{ iconName: 'straighten', label: 'Route Length (hex tiles)', value: String(routeLengthInTiles) },
+		{ iconName: 'grid-on', label: 'Enclosed Tiles', value: String(enclosedTileCount) },
+		{ iconName: 'grain', label: 'H3 Resolution', value: String(Math.floor(h3Resolution)) },
+	];
+	const [pendingRouteName, setPendingRouteName] = useState<string | null>(null);
+
+	const routeLengthKm = useMemo(() => computeRouteLengthKm(routeCells), [routeCells]);
+
+	const sportDef = useMemo(
+		() => SPORT_TYPES.find((s) => s.type === selectedSportType) ?? SPORT_TYPES[0],
+		[selectedSportType],
+	);
+
+	const activitiesOfType = useMemo(
+		() =>
+			savedActivities
+				.filter((a) => a.sportType === selectedSportType)
+				.sort((a, b) => b.startedAt - a.startedAt),
+		[savedActivities, selectedSportType],
+	);
+
+	const lastActivity = activitiesOfType[0] ?? null;
+
+	const generalAvgSpeedKmh = useMemo(() => {
+		const validActivities = activitiesOfType.filter((a) => a.stats.avgSpeedKmh > 0);
+		if (validActivities.length === 0) return 0;
+		return validActivities.reduce((sum, a) => sum + a.stats.avgSpeedKmh, 0) / validActivities.length;
+	}, [activitiesOfType]);
+
+	const sourceActivity =
+		lastActivity !== null && lastActivity.stats.avgSpeedKmh > 0 ? lastActivity : null;
+
+	const effectiveSpeedKmh = sourceActivity ? sourceActivity.stats.avgSpeedKmh : generalAvgSpeedKmh;
+
+	const estimatedMinutes = effectiveSpeedKmh > 0 ? (routeLengthKm / effectiveSpeedKmh) * 60 : null;
+
+	const sportIcon =
+		sportDef.iconLibrary === 'MaterialCommunityIcons' ? (
+			<MaterialCommunityIcons
+				name={sportDef.iconName as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+				size={20}
+				color="#ffffff"
+			/>
+		) : (
+			<MaterialIcons
+				name={sportDef.iconName as React.ComponentProps<typeof MaterialIcons>['name']}
+				size={20}
+				color="#ffffff"
+			/>
+		);
+
+	return (
+		<>
+			{rows.map((row, index) => (
+				<View
+					key={row.label}
+					style={[
+						styles.statsRow,
+						{ borderBottomColor: theme.screen.text + '22' },
+						index === rows.length - 1 && styles.statsRowLast,
+					]}
+				>
+					<MaterialIcons name={row.iconName} size={20} color={theme.screen.icon} style={styles.statsRowIcon} />
+					<Text style={[styles.statsRowLabel, { color: theme.screen.text }]}>{row.label}</Text>
+					<Text style={[styles.statsRowValue, { color: theme.screen.text }]}>{row.value}</Text>
+				</View>
+			))}
+			{routeLengthKm > 0 && (
+				<>
+					<SettingsListGroupTitle title="Distanz" />
+					<SettingsList
+						leftIcon={<MaterialIcons name="social-distance" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Streckenlänge"
+						value={formatDistanceKm(routeLengthKm)}
+						groupPosition="single"
+					/>
+				</>
+			)}
+			{estimatedMinutes !== null && (
+				<>
+					<SettingsListGroupTitle title="Geschätzte Dauer" />
+					{sourceActivity !== null && (
+						<SettingsList
+							leftIcon={sportIcon}
+							iconBackgroundColor={sportDef.color}
+							title={sportDef.label}
+							value={formatActivityLabel(sourceActivity)}
+							groupPosition="top"
+						/>
+					)}
+					<SettingsList
+						leftIcon={<MaterialIcons name="timer" size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title="Geschätzte Dauer"
+						value={formatEstimatedDuration(estimatedMinutes)}
+						groupPosition={sourceActivity !== null ? 'bottom' : 'single'}
+					/>
+				</>
+			)}
+			{routeCells.length >= 2 && (
+				<TouchableOpacity
+					style={[styles.shareButton, { backgroundColor: '#43a047', marginTop: 12 }]}
+					onPress={() => { onSaveAsActivity(routeCells, enclosedTileCount); onClose(); }}
+					activeOpacity={0.8}
+				>
+					<MaterialIcons name="save-alt" size={18} color="#ffffff" />
+					<Text style={styles.shareButtonText}>Als Aktivität speichern</Text>
+				</TouchableOpacity>
+			)}
+			{routeCells.length >= 2 && (
+				<>
+					<SettingsListGroupTitle title="Als Route speichern" />
+					<SettingsListTextInput
+						title="Route benennen"
+						placeholder="Route Name"
+						modalTitle="Neue Route"
+						groupPosition={pendingRouteName ? 'top' : 'single'}
+						value={pendingRouteName ?? undefined}
+						initialValue={pendingRouteName ?? ''}
+						onSave={(name) => {
+							const trimmed = name.trim();
+							if (trimmed) setPendingRouteName(trimmed);
+						}}
+					/>
+					{pendingRouteName && (
+						<SettingsList
+							leftIcon={<MaterialIcons name="save" size={20} color="#ffffff" />}
+							iconBackgroundColor="#43a047"
+							title="Route speichern"
+							groupPosition="bottom"
+							onPress={() => { onSaveAsRoute(routeCells, pendingRouteName); onClose(); }}
+						/>
+					)}
+				</>
+			)}
+		</>
+	);
+}
+
 // ─── Hex Tile Info Content ─────────────────────────────────────────────────────
 
 function formatTimestamp(ts: number | null): string {
@@ -1105,38 +1619,200 @@ function formatTimestamp(ts: number | null): string {
 	});
 }
 
-const TILE_THUMB_SIZE = 64;
-const TILE_THUMB_GAP = 6;
-const SPRITE_THUMB_SIZE = 52;
-const SPRITE_THUMB_GAP = 4;
-/** Reference scale factor for the townhall sprite; a scaleFactor of 7.0 fills the hex cell. */
-const TOWNHALL_SCALE_FACTOR = 7.0;
+// ── Hex Anchor Picker ──────────────────────────────────────────────────────────
+// Pointy-top hexagon with 9 interactive anchor points:
+//   center (purple), vertex[0] (green), and 6 midpoints (red/orange/yellow/blue/white/black)
+//   between the center and each of the 6 vertices.
+
+const HEX_PICKER_SIZE = 180;
+const HEX_PICKER_R = HEX_PICKER_SIZE * 0.38;
+const HEX_PICKER_CX = HEX_PICKER_SIZE / 2;
+const HEX_PICKER_CY = HEX_PICKER_SIZE / 2;
+const HEX_DOT_SIZE = 20;
+const HEX_DOT_SELECTED_SIZE = 26;
+
+// √3/4
+const SQRT3_4 = Math.sqrt(3) / 4;
+// √3/2
+const SQRT3_2 = Math.sqrt(3) / 2;
+
+// Positions for each BILLBOARD_ANCHOR_COLOR entry.
+// Midpoints are rotated one step clockwise vs. the original layout so that black
+// lands at the top (directly above the center).
+// Green vertex has been moved one step clockwise to vertex[1] (upper-right).
+const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
+	purple: { x: HEX_PICKER_CX, y: HEX_PICKER_CY }, // center
+	green:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // vertex[1] upper-right
+	black:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint[0] top
+	red:    { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[1] upper-right
+	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[2] lower-right
+	yellow: { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint[3] bottom
+	blue:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[4] lower-left
+	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[5] upper-left
+};
+
+// Hexagon outline polygon points (pointy-top, 6 vertices).
+const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
+	const angle = (Math.PI / 2) - (i * Math.PI) / 3;
+	return {
+		x: HEX_PICKER_CX + HEX_PICKER_R * Math.cos(angle),
+		y: HEX_PICKER_CY - HEX_PICKER_R * Math.sin(angle),
+	};
+});
+
+function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorColor; onSelect: (id: BillboardAnchorColor) => void; occupiedAnchors?: Record<string, string | null> }) {
+	const { theme } = useTheme();
+	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
+
+	return (
+		<View style={hexPickerStyles.wrapper}>
+			<View style={hexPickerStyles.container}>
+				{/* Hexagon outline using thin border lines between vertices */}
+				{HEX_POLYGON_POINTS.map((pt, i) => {
+					const next = HEX_POLYGON_POINTS[(i + 1) % 6];
+					const dx = next.x - pt.x;
+					const dy = next.y - pt.y;
+					const len = Math.sqrt(dx * dx + dy * dy);
+					const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+					return (
+						<View
+							key={i}
+							pointerEvents="none"
+							style={[
+								hexPickerStyles.hexEdge,
+								{
+									width: len,
+									left: pt.x,
+									top: pt.y - 0.75,
+									transform: [{ rotate: `${angle}deg` }],
+									backgroundColor: theme.screen.text + '30',
+								},
+							]}
+						/>
+					);
+				})}
+				{/* Anchor dots */}
+				{BILLBOARD_ANCHOR_COLORS.map((ac) => {
+					const pos = HEX_ANCHOR_POSITIONS[ac.id];
+					if (!pos) return null;
+					const isSelected = selected === ac.id;
+					const isOccupied = occupiedAnchors ? !!occupiedAnchors[ac.id] : false;
+					const dotSize = isSelected ? HEX_DOT_SELECTED_SIZE : HEX_DOT_SIZE;
+					return (
+						<TouchableOpacity
+							key={ac.id}
+							onPress={() => onSelect(ac.id)}
+							style={[
+								hexPickerStyles.dot,
+								{
+									width: dotSize,
+									height: dotSize,
+									borderRadius: dotSize / 2,
+									left: pos.x - dotSize / 2,
+									top: pos.y - dotSize / 2,
+									backgroundColor: ac.hex,
+									borderColor: isSelected ? PRIMARY_COLOR : (ac.id === 'white' ? '#d1d5db' : 'transparent'),
+									borderWidth: isSelected ? 3 : (ac.id === 'white' ? 1 : 0),
+									shadowColor: isSelected ? PRIMARY_COLOR : 'transparent',
+									shadowOpacity: isSelected ? 0.6 : 0,
+									shadowRadius: 4,
+									elevation: isSelected ? 4 : 0,
+								},
+							]}
+						>
+							{isOccupied && (
+								<View style={hexPickerStyles.occupiedBadge} />
+							)}
+						</TouchableOpacity>
+					);
+				})}
+			</View>
+			<Text style={[hexPickerStyles.label, { color: theme.screen.icon }]}>{selectedLabel}</Text>
+		</View>
+	);
+}
+
+const hexPickerStyles = StyleSheet.create({
+	wrapper: {
+		alignItems: 'center',
+		paddingVertical: 8,
+	},
+	container: {
+		width: HEX_PICKER_SIZE,
+		height: HEX_PICKER_SIZE,
+		position: 'relative',
+	},
+	hexEdge: {
+		position: 'absolute',
+		height: 1.5,
+		transformOrigin: '0 50%',
+	},
+	dot: {
+		position: 'absolute',
+	},
+	occupiedBadge: {
+		position: 'absolute',
+		top: -4,
+		right: -4,
+		width: 10,
+		height: 10,
+		borderRadius: 5,
+		backgroundColor: '#22c55e',
+		borderWidth: 1.5,
+		borderColor: '#ffffff',
+	},
+	label: {
+		fontSize: 12,
+		fontWeight: '500',
+		marginTop: 6,
+	},
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+type MapFeatureInfo = {
+	layerId: string | null;
+	name: string | null;
+	class: string | null;
+	subclass: string | null;
+	highway: string | null;
+	waterway: string | null;
+	building: string | null;
+	natural: string | null;
+	landuse: string | null;
+	amenity: string | null;
+};
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
+	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
+	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorColor>(BillboardAnchorColor.Purple);
+	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
+	const [featuresLoading, setFeaturesLoading] = useState(false);
+	const runIdRef = useRef(0);
 
-	const [selectedCategory, setSelectedCategory] = useState<TerrainCategory>('Grass');
-	const [objectSvgUrls, setObjectSvgUrls] = useState<string[]>([]);
-	const [terrainSvgUrls, setTerrainSvgUrls] = useState<Map<string, string>>(new Map());
+	useEffect(() => {
+		const runId = ++runIdRef.current;
+		setFeaturesLoading(true);
+		queryTileFeaturesForHexCell(h3Index, undefined, { nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW })
+			.then((result) => {
+				if (runId === runIdRef.current) setMapFeatures(result);
+			})
+			.catch(() => {
+				if (runId === runIdRef.current) setMapFeatures(null);
+			})
+			.finally(() => {
+				if (runId === runIdRef.current) setFeaturesLoading(false);
+			});
+	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
-	const currentBillboard = record?.billboard ?? null;
-
-	// Load all individual object SVGs as base64 data URIs for use in the sprite picker WebView.
-	useEffect(() => {
-		loadAllObjectSvgDataUrls().then(urls => {
-			setObjectSvgUrls(urls);
-		});
-	}, []);
-
-	// Load all terrain SVGs as base64 data URIs for use in the tile picker WebView.
-	useEffect(() => {
-		loadAllTerrainSvgDataUrls().then(urls => {
-			setTerrainSvgUrls(new Map(urls));
-		});
-	}, []);
+	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
+	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorColor, string>;
+	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
+	const parsedCurrentBillboard = currentAnchorBillboard ? parseBillboardKey(currentAnchorBillboard) : null;
 
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
@@ -1148,77 +1824,87 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 	];
 
-	// Build the HTML for the WebView-based tile picker using individual terrain SVG data URIs.
-	const tilePickerHtml = useMemo(() => {
-		if (terrainSvgUrls.size === 0) return null;
-		const thumbSize = TILE_THUMB_SIZE;
-		const gap = TILE_THUMB_GAP;
+	const openTileSelection = useCallback(() => {
+		showModal({
+			title: '🌿 Select Tile Image',
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					{TERRAIN_CATEGORIES.map((cat) => {
+						const entries = TERRAIN_ASSETS[cat];
+						return (
+							<View key={cat}>
+								<SettingsListGroupTitle title={cat} />
+								{entries.map((entry, i) => {
+									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
+									return (
+										<SettingsListHexTile
+											key={entry.key}
+											tileImageKey={entry.key}
+											title={entry.key.split('/').pop() ?? entry.key}
+											isSelected={currentTileImage === entry.key}
+											selectionColor={PRIMARY_COLOR}
+											onPress={() => {
+												dispatch(setHexTileCustomization({
+													h3Index,
+													tileImage: currentTileImage === entry.key ? null : entry.key,
+												}));
+												closeModal();
+											}}
+											groupPosition={position}
+										/>
+									);
+								})}
+							</View>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
-		const tileItems = TERRAIN_ASSETS[selectedCategory].map((asset) => {
-			const url = terrainSvgUrls.get(asset.key) ?? '';
-			const isSelected = currentTileImage === asset.key;
-			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
-			return `<div class="tile" data-key="${asset.key}" style="border:${border};"><img src="${url}" /></div>`;
-		}).join('');
-
-		return [
-			'<!DOCTYPE html><html>',
-			'<head>',
-			'<meta name="viewport" content="width=device-width,initial-scale=1">',
-			'<style>',
-			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
-			`html,body{background:transparent;overflow:hidden;}`,
-			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
-			`.tile{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
-			`.tile img{width:100%;height:100%;object-fit:cover;}`,
-			'</style>',
-			'</head>',
-			'<body>',
-			`<div class="row">${tileItems}</div>`,
-			'<script>',
-			`document.querySelectorAll('.tile').forEach(function(el){`,
-			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.key);});`,
-			`});`,
-			'<\/script>',
-			'</body></html>',
-		].join('');
-	}, [terrainSvgUrls, selectedCategory, currentTileImage]);
-
-	// Build the HTML for the WebView-based sprite picker using individual SVG data URIs.
-	const spritePickerHtml = useMemo(() => {
-		if (objectSvgUrls.length === 0) return null;
-		const thumbSize = SPRITE_THUMB_SIZE;
-		const gap = SPRITE_THUMB_GAP;
-
-		const spriteItems = OBJECT_SPRITES.map((sprite, idx) => {
-			const url = objectSvgUrls[idx] ?? '';
-			const isSelected = currentBillboard === `objects:${idx}`;
-			const border = isSelected ? `2px solid ${PRIMARY_COLOR}` : '2px solid transparent';
-			return `<div class="sprite" data-idx="${idx}" style="border:${border};"><img src="${url}" /></div>`;
-		}).join('');
-
-		return [
-			'<!DOCTYPE html><html>',
-			'<head>',
-			'<meta name="viewport" content="width=device-width,initial-scale=1">',
-			'<style>',
-			`*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}`,
-			`html,body{background:transparent;overflow:hidden;}`,
-			`.row{display:flex;flex-direction:row;gap:${gap}px;padding:4px 12px 10px;overflow-x:scroll;-webkit-overflow-scrolling:touch;width:100%;}`,
-			`.sprite{flex-shrink:0;width:${thumbSize}px;height:${thumbSize}px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}`,
-			`.sprite img{width:100%;height:100%;object-fit:contain;}`,
-			'</style>',
-			'</head>',
-			'<body>',
-			`<div class="row">${spriteItems}</div>`,
-			'<script>',
-			`document.querySelectorAll('.sprite').forEach(function(el){`,
-			`  el.addEventListener('click',function(){window.ReactNativeWebView.postMessage(this.dataset.idx);});`,
-			`});`,
-			'<\/script>',
-			'</body></html>',
-		].join('');
-	}, [objectSvgUrls, currentBillboard]);
+	const openBillboardSelection = useCallback(() => {
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor;
+		showModal({
+			title: `🏗️ Select Billboard — ${anchorLabel}`,
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					{/* None option at the top */}
+					<SettingsListSelectOptionSingle
+						key="none"
+						label="None (clear)"
+						isSelected={!currentAnchorBillboard}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: null }));
+							closeModal();
+						}}
+						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
+					/>
+					{OBJECT_SPRITES.map((sprite, idx) => {
+						const key = `objects:${idx}`;
+						const isSelected = currentAnchorBillboard === key;
+						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListBillboard
+								key={key}
+								spriteIndex={idx}
+								title={sprite.name}
+								isSelected={isSelected}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: key }));
+									closeModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentAnchorBillboard, h3Index, dispatch, selectedAnchorColor]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -1239,157 +1925,342 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 			{/* ── Tile Image section ── */}
 			<SettingsListGroupTitle title="Tile Image" />
-
-			{/* Category tabs */}
-			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={styles.tilePickerCategoryRow}
-			>
-				{TERRAIN_CATEGORIES.map((cat) => {
-					const isActive = selectedCategory === cat;
-					return (
-						<TouchableOpacity
-							key={cat}
-							onPress={() => setSelectedCategory(cat)}
-							style={[
-								styles.tilePickerCategoryTab,
-								{
-									backgroundColor: isActive ? PRIMARY_COLOR : theme.screen.text + '18',
-								},
-							]}
-						>
-							<Text
-								style={[
-									styles.tilePickerCategoryLabel,
-									{ color: isActive ? '#ffffff' : theme.screen.text },
-								]}
-							>
-								{cat}
-							</Text>
-						</TouchableOpacity>
-					);
-				})}
-			</ScrollView>
-
-			{/* Thumbnail row */}
-			{tilePickerHtml != null ? (
-				<WebView
-					source={{ html: tilePickerHtml }}
-					style={{ height: TILE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
-					originWhitelist={['*']}
-					scrollEnabled={true}
-					onMessage={event => {
-						const key = event.nativeEvent.data;
-						if (!key) return;
-						dispatch(
-							setHexTileCustomization({
-								h3Index,
-								tileImage: currentTileImage === key ? null : key,
-							}),
-						);
-					}}
-				/>
-			) : (
-				<Text style={[styles.tilePickerCategoryLabel, { color: theme.screen.text + '80', paddingHorizontal: 16, paddingBottom: 10 }]}>
-					Loading…
-				</Text>
-			)}
-
-			{currentTileImage && (
-				<View style={styles.tilePickerCurrentRow}>
-					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						Selected: {currentTileImage}
-					</Text>
-					<TouchableOpacity
-						onPress={() => dispatch(setHexTileCustomization({ h3Index, tileImage: null }))}
-					>
-						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
-					</TouchableOpacity>
-				</View>
-			)}
-
-			{/* ── Billboard section ── */}
-			<SettingsListGroupTitle title="Billboard" />
-
-			{currentBillboard && (
-				<View style={styles.tilePickerCurrentRow}>
-					<Text style={[styles.tilePickerCurrentLabel, { color: theme.screen.icon }]}>
-						Selected: {currentBillboard}
-					</Text>
-					<TouchableOpacity
-						onPress={() => dispatch(setHexTileCustomization({ h3Index, billboard: null }))}
-					>
-						<Text style={[styles.tilePickerClearBtn, { color: '#ef4444' }]}>Remove</Text>
-					</TouchableOpacity>
-				</View>
-			)}
-
-			<SettingsListSelectOptionSingle
-				label="🌲 Tree"
-				isSelected={currentBillboard === 'tree'}
-				selectionColor={PRIMARY_COLOR}
-				groupPosition="top"
-				onPress={() =>
-					dispatch(
-						setHexTileCustomization({
-							h3Index,
-							billboard: currentBillboard === 'tree' ? null : 'tree',
-						}),
-					)
-				}
+			<SettingsListHexTile
+				tileImageKey={currentTileImage}
+				title="Tile Image"
+				onPress={openTileSelection}
+				groupPosition="single"
 			/>
 
-			{/* Object sprite picker */}
-			<View
-				style={[
-					styles.spriteSectionContainer,
-					{ borderColor: theme.screen.text + '20', backgroundColor: theme.screen.text + '08' },
-				]}
-			>
-				<Text style={[styles.spriteSectionLabel, { color: theme.screen.text }]}>
-					🏗️ Objects
-				</Text>
-				{spritePickerHtml != null ? (
-					<WebView
-						source={{ html: spritePickerHtml }}
-						style={{ height: SPRITE_THUMB_SIZE + 20, backgroundColor: 'transparent' }}
-						originWhitelist={['*']}
-						scrollEnabled={true}
-						onMessage={event => {
-							const idx = parseInt(event.nativeEvent.data, 10);
-							if (isNaN(idx)) return;
-							const spriteKey = `objects:${idx}`;
-							dispatch(
-								setHexTileCustomization({
-									h3Index,
-									billboard: currentBillboard === spriteKey ? null : spriteKey,
-								}),
-							);
-						}}
-					/>
-				) : (
-					<Text style={[styles.spriteSectionLabel, { color: theme.screen.text + '80' }]}>
-						Loading…
-					</Text>
-				)}
-			</View>
+			{/* ── Billboard / Object section (per anchor) ── */}
+			<SettingsListGroupTitle title="Objects (per Anchor)" />
+			<HexAnchorPicker
+				selected={selectedAnchorColor}
+				onSelect={setSelectedAnchorColor}
+				occupiedAnchors={effectiveBillboards}
+			/>
+			<SettingsListBillboard
+				spriteIndex={parsedCurrentBillboard?.idx ?? null}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor}
+				onPress={openBillboardSelection}
+				groupPosition="single"
+			/>
+
+			{/* ── Underlying map info ── */}
+			<SettingsListGroupTitle title="Karteninformationen" />
+			{featuresLoading && (
+				<View style={{ alignItems: 'center', paddingVertical: 16 }}>
+					<ActivityIndicator size="small" color={PRIMARY_COLOR} />
+				</View>
+			)}
+			{mapFeatures && mapFeatures.length > 0 && (
+				<>
+					{mapFeatures.map((feature, idx) => (
+						<SettingsList
+							key={idx}
+							leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+							iconBackgroundColor={PRIMARY_COLOR}
+							title={feature.name ?? feature.layerId ?? `Feature ${idx + 1}`}
+							value={JSON.stringify(feature, null, 2)}
+							groupPosition={mapFeatures.length === 1 ? 'single' : idx === 0 ? 'top' : idx === mapFeatures.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{!featuresLoading && mapFeatures && mapFeatures.length === 0 && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor="#6b7280"
+					title="Keine Karteninformationen"
+					value="Keine Features in diesem Bereich gefunden."
+					groupPosition="single"
+				/>
+			)}
+
 		</View>
 	);
 }
 
-// ─── Record Screen ─────────────────────────────────────────────────────────────
+const MAGNIFY_COLOR = '#3b82f6';
+
+function MagnifyModalContent({ h3Index }: { h3Index: string }) {
+	const { theme } = useTheme();
+	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const runIdRef = useRef(0);
+
+	const fetchFeatures = useCallback(async () => {
+		const runId = ++runIdRef.current;
+
+		setLoading(true);
+		setError(null);
+		setFeatures(null);
+
+		try {
+			if (!isH3Available()) {
+				throw new Error('H3 Bibliothek nicht verfügbar');
+			}
+			if (!isValidCell(h3Index)) {
+				throw new Error(`Ungültige H3 Zelle: ${h3Index}`);
+			}
+
+			const result = await queryTileFeaturesForHexCell(h3Index, undefined, { nameNullAllowList: ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW });
+			if (runId !== runIdRef.current) return;
+			setFeatures(result);
+		} catch (err) {
+			if (runId !== runIdRef.current) return;
+			setError(err instanceof Error ? err.message : String(err));
+		} finally {
+			if (runId === runIdRef.current) {
+				setLoading(false);
+			}
+		}
+	}, [h3Index]);
+
+	useEffect(() => {
+		fetchFeatures();
+	}, [fetchFeatures]);
+
+	const resolution = isH3Available() && isValidCell(h3Index) ? getResolution(h3Index) : null;
+	const center = isH3Available() && isValidCell(h3Index) ? cellToLatLng(h3Index) : null;
+
+	const boundary = isH3Available() && isValidCell(h3Index) ? cellToBoundary(h3Index) : [];
+	const lats = boundary.map((v: [number, number]) => v[0]);
+	const lngs = boundary.map((v: [number, number]) => v[1]);
+	const minLat = lats.length > 0 ? Math.min(...lats) : null;
+	const maxLat = lats.length > 0 ? Math.max(...lats) : null;
+	const minLng = lngs.length > 0 ? Math.min(...lngs) : null;
+	const maxLng = lngs.length > 0 ? Math.max(...lngs) : null;
+
+	const streets = features?.filter((f) =>
+		f.highway || (f.layerId && (f.layerId.includes('road') || f.layerId.includes('highway') || f.layerId.includes('transportation')))
+	) ?? [];
+	const waterways = features?.filter((f) =>
+		f.waterway || (f.layerId && f.layerId.includes('water'))
+	) ?? [];
+	const buildings = features?.filter((f) =>
+		f.building || (f.layerId && f.layerId.includes('building'))
+	) ?? [];
+	const pois = features?.filter((f) =>
+		f.amenity || f.natural || f.landuse ||
+		(f.layerId && (f.layerId.includes('poi') || f.layerId.includes('park') || f.layerId.includes('landuse') || f.layerId.includes('landcover')))
+	) ?? [];
+
+	const handleCopyJson = useCallback(async () => {
+		if (!features) return;
+		const json = JSON.stringify(features, null, 2);
+		await Clipboard.setStringAsync(json);
+		Alert.alert('Kopiert', 'JSON in Zwischenablage kopiert.');
+	}, [features]);
+
+	return (
+		<View>
+			<SettingsListGroupTitle title="Hex Tile" />
+			<SettingsList
+				leftIcon={<MaterialIcons name="tag" size={20} color="#ffffff" />}
+				iconBackgroundColor="#6b7280"
+				title="H3 Index"
+				value={h3Index}
+				groupPosition="top"
+			/>
+			{resolution !== null && (
+				<SettingsList
+					leftIcon={<Ionicons name="grid-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor={MAGNIFY_COLOR}
+					title="Resolution"
+					value={String(resolution)}
+					groupPosition="middle"
+				/>
+			)}
+			{center !== null && (
+				<SettingsList
+					leftIcon={<Ionicons name="location-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor={MAGNIFY_COLOR}
+					title="Zentrum"
+					value={`${center[0].toFixed(6)}°N, ${center[1].toFixed(6)}°E`}
+					groupPosition="middle"
+				/>
+			)}
+			{minLat !== null && maxLat !== null && minLng !== null && maxLng !== null && (
+				<SettingsList
+					leftIcon={<Ionicons name="resize-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor={MAGNIFY_COLOR}
+					title="Boundary (min/max)"
+					value={`Lat: ${minLat.toFixed(6)} – ${maxLat.toFixed(6)}\nLng: ${minLng.toFixed(6)} – ${maxLng.toFixed(6)}`}
+					groupPosition="bottom"
+				/>
+			)}
+
+			{loading && (
+				<View style={magnifyStyles.loadingContainer}>
+					<ActivityIndicator size="large" color={MAGNIFY_COLOR} />
+					<Text style={[magnifyStyles.loadingText, { color: theme.screen.text }]}>
+						Lade Tile-Features…
+					</Text>
+				</View>
+			)}
+
+			{error && (
+				<View style={magnifyStyles.errorContainer}>
+					<Ionicons name="alert-circle" size={24} color="#ef4444" />
+					<Text style={magnifyStyles.errorText}>{error}</Text>
+				</View>
+			)}
+
+			{features && features.length === 0 && !loading && (
+				<SettingsList
+					leftIcon={<MaterialIcons name="info-outline" size={20} color="#ffffff" />}
+					iconBackgroundColor="#6b7280"
+					title="Keine Karteninformationen"
+					value="Keine Features in diesem Bereich gefunden."
+					groupPosition="single"
+				/>
+			)}
+
+			{streets.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Straßen" />
+					{streets.map((f, idx) => (
+						<SettingsList
+							key={`street-${idx}`}
+							leftIcon={<MaterialIcons name="directions" size={20} color="#ffffff" />}
+							iconBackgroundColor="#f97316"
+							title={f.name ?? f.highway ?? f.class ?? `Straße ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={streets.length === 1 ? 'single' : idx === 0 ? 'top' : idx === streets.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{waterways.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Gewässer" />
+					{waterways.map((f, idx) => (
+						<SettingsList
+							key={`water-${idx}`}
+							leftIcon={<MaterialIcons name="water" size={20} color="#ffffff" />}
+							iconBackgroundColor="#3b82f6"
+							title={f.name ?? f.waterway ?? f.class ?? `Gewässer ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={waterways.length === 1 ? 'single' : idx === 0 ? 'top' : idx === waterways.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{buildings.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Gebäude" />
+					{buildings.map((f, idx) => (
+						<SettingsList
+							key={`building-${idx}`}
+							leftIcon={<MaterialIcons name="apartment" size={20} color="#ffffff" />}
+							iconBackgroundColor="#8b5cf6"
+							title={f.name ?? f.building ?? f.class ?? `Gebäude ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={buildings.length === 1 ? 'single' : idx === 0 ? 'top' : idx === buildings.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+			{pois.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Points of Interest" />
+					{pois.map((f, idx) => (
+						<SettingsList
+							key={`poi-${idx}`}
+							leftIcon={<MaterialIcons name="place" size={20} color="#ffffff" />}
+							iconBackgroundColor="#10b981"
+							title={f.name ?? f.amenity ?? f.natural ?? f.landuse ?? f.subclass ?? f.class ?? `POI ${idx + 1}`}
+							value={JSON.stringify(f)}
+							groupPosition={pois.length === 1 ? 'single' : idx === 0 ? 'top' : idx === pois.length - 1 ? 'bottom' : 'middle'}
+						/>
+					))}
+				</>
+			)}
+
+			{features && features.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Alle Features (JSON)" />
+					<TouchableOpacity
+						style={[magnifyStyles.copyButton, { backgroundColor: '#374151' }]}
+						onPress={handleCopyJson}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons name="content-copy" size={18} color="#ffffff" />
+						<Text style={magnifyStyles.copyButtonText}>JSON kopieren</Text>
+					</TouchableOpacity>
+					<SettingsList
+						leftIcon={<MaterialIcons name="code" size={20} color="#ffffff" />}
+						iconBackgroundColor="#374151"
+						title="mapFeatures"
+						value={JSON.stringify(features, null, 2)}
+						groupPosition="single"
+					/>
+				</>
+			)}
+		</View>
+	);
+}
+
+const magnifyStyles = StyleSheet.create({
+	loadingContainer: {
+		alignItems: 'center',
+		paddingVertical: 24,
+		gap: 10,
+	},
+	loadingText: {
+		fontSize: 14,
+	},
+	errorContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+	},
+	errorText: {
+		color: '#ef4444',
+		fontSize: 14,
+		flex: 1,
+	},
+	copyButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 8,
+		marginHorizontal: 16,
+		marginVertical: 8,
+		paddingVertical: 10,
+		borderRadius: 10,
+	},
+	copyButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
+	},
+});
 
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
+	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
+	const { show: showMagnifyModal, close: closeMagnifyModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
+	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
 	const mapRef = useRef<MyMapHandle>(null);
 
 	// Redux selectors
 	const resetToken = useSelector((state: RootState) => state.hexTiles.resetToken);
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
+	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
+	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
+	const isDebugMode = useDebugMode();
+	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
+	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
+	const speechSettings = useSelector((state: RootState) => state.speechSettings);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -1405,6 +2276,34 @@ export default function RecordScreen() {
 	const [liveDistanceKm, setLiveDistanceKm] = useState(0);
 	const [liveSpeedKmh, setLiveSpeedKmh] = useState<number | null>(null);
 
+	// Measure mode (debug only): collect waypoints by tapping the map
+	const [isMeasureMode, setIsMeasureMode] = useState(false);
+	const isMeasureModeRef = useRef(false);
+	const measureWaypointsRef = useRef<Array<{ lat: number; lng: number }>>([]);
+
+	// Magnify mode (debug only): show detailed map info when tapping a hex tile
+	const [isMagnifyMode, setIsMagnifyMode] = useState(false);
+	const isMagnifyModeRef = useRef(false);
+
+	// TTS: track the last whole-km milestone announced to avoid repeating.
+	// Reset to 0 when recording starts.
+	const lastAnnouncedKmRef = useRef(0);
+	const isTTSEnabledRef = useRef(isTTSEnabled);
+	isTTSEnabledRef.current = isTTSEnabled;
+	const announceAppInBackgroundRef = useRef(announceAppInBackground);
+	announceAppInBackgroundRef.current = announceAppInBackground;
+	const speechSettingsRef = useRef(speechSettings);
+	speechSettingsRef.current = speechSettings;
+	// Timer for periodic (time-based) speech announcements during recording
+	const periodicAnnouncementTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	// Pace hint hysteresis: tracks the last announced pace warning state and
+	// a cooldown timestamp to avoid overwhelming the TTS engine with frequent
+	// "too fast" / "too slow" announcements.
+	const paceHintStateRef = useRef<PaceHintState>('on_target');
+	const lastPaceHintTimeRef = useRef(0);
+	/** Minimum cooldown between pace hint announcements (ms). */
+	const PACE_HINT_COOLDOWN_MS = 15_000;
+
 	// Follow mode: when active the map stays centred on the user's location.
 	// Starts as true so the map tracks the user by default.
 	const isFollowingRef = useRef(true);
@@ -1416,6 +2315,21 @@ export default function RecordScreen() {
 
 	const [isPanelCollapsed, setIsPanelCollapsed] = useState(false);
 
+	// Pre-run route selection: selected route to follow during the next recording.
+	const [selectedRoute, setSelectedRoute] = useState<SavedRoute | null>(null);
+	const selectedRouteRef = useRef<SavedRoute | null>(null);
+	selectedRouteRef.current = selectedRoute;
+
+	// Coloring tool state:
+	// - coloringTileImage: the currently selected tile key; null means coloring mode is off.
+	// - coloringTileImageRef: ref copy for use in map message callbacks (avoids stale closures).
+	// - coloringSelectionMadeRef: tracks whether the user made a selection in the modal,
+	//   used to distinguish "closed by selection" vs "dismissed without selection".
+	const [coloringTileImage, setColoringTileImage] = useState<string | null>(null);
+	const coloringTileImageRef = useRef<string | null>(null);
+	const coloringSelectionMadeRef = useRef(false);
+	coloringTileImageRef.current = coloringTileImage;
+
 	// Debug: last viewport info for the debug modal (ref avoids stale closure issues).
 	const debugViewportRef = useRef<DebugViewportInfo | null>(null);
 
@@ -1424,9 +2338,7 @@ export default function RecordScreen() {
 	const [showGridAlways, setShowGridAlways] = useState(false);
 	const h3ResolutionRef = useRef(H3_DEFAULT_RESOLUTION);
 	const [h3Resolution, setH3Resolution] = useState(H3_DEFAULT_RESOLUTION);
-
-	// Debug: show pink anchor dots on billboard markers.
-	const showBillboardAnchorsRef = useRef(false);
+	const h3MinZoomRef = useRef(H3_MIN_ZOOM_DEFAULT);
 
 	// Heading mode: when active during recording, the map rotates to face the
 	// direction of travel. Toggled by the compass button.
@@ -1462,10 +2374,16 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage || r.billboard)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}`)
+			.filter(([, r]) => r.tileImage || r.billboard || r.billboards)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}`)
 			.sort()
-			.join(';'),
+			.join('\n'),
+	);
+
+	// Stable key for billboard anchor config changes so the map is updated when
+	// anchor overrides are adjusted in the Billboard Config screen.
+	const billboardConfigKey = useSelector((state: RootState) =>
+		JSON.stringify(state.billboardConfig.spriteAnchors),
 	);
 
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
@@ -1498,11 +2416,12 @@ export default function RecordScreen() {
 		}
 	}, []);
 
-	// Build and send imageOverlays + billboards to the map based on current Redux state.
+	// Build and send imageOverlays to the map based on current Redux state.
 	const loadAndSendCustomizations = useCallback(async () => {
 		if (!mapWebViewReadyRef.current || !mapRef.current) return;
 
 		const records = store.getState().hexTiles.records;
+		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
 
 		// Flat lookup: terrain asset key → module ID
 		const terrainLookup = new Map<string, number>();
@@ -1523,20 +2442,8 @@ export default function RecordScreen() {
 			// Used to rotate the texture so it aligns with the H3 hex orientation.
 			rotation: number;
 		};
-		type BillboardMarker = {
-			id: string;
-			type: string;
-			position: { lng: number; lat: number };
-			/** Geographic diameter of the billboard in metres, used for zoom-proportional scaling. */
-			sizem: number;
-			/** Vertical anchor as a fraction of image height (0=top, 1=bottom). The geographic coordinate attaches here. */
-			anchorY: number;
-			/** The 6 outer vertices of the H3 hex cell as [lng, lat] pairs, used to compute the visual centroid when the map is pitched. */
-			hexBoundary?: [number, number][];
-		};
 
 		const imageOverlays: ImageOverlay[] = [];
-		const billboards: BillboardMarker[] = [];
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			// ── Tile image overlay ──────────────────────────────────────────────
@@ -1586,70 +2493,138 @@ export default function RecordScreen() {
 					}
 				}
 			}
+		}
 
-			// ── Billboard marker ────────────────────────────────────────────────
-			if (record.billboard) {
-				const center = cellToLatLng(h3Index); // [lat, lng]
-				const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
-				// Compute hex diameter (centre-to-first-vertex × 2) in metres so the
-				// billboard scales proportionally to the PNG tile overlay on zoom.
-				let sizem = 72; // safe fallback for H3 resolution 10
-				if (boundary.length >= 1) {
-					const EARTH_RADIUS_METERS = 6371000;
-					const lat1 = center[0] * Math.PI / 180;
-					const lat2 = boundary[0][0] * Math.PI / 180;
-					const dlat = lat2 - lat1;
-					const dlng = (boundary[0][1] - center[1]) * Math.PI / 180;
-					const sinHalfDlat = Math.sin(dlat / 2);
-					const sinHalfDlng = Math.sin(dlng / 2);
-					const a = sinHalfDlat * sinHalfDlat
-						+ Math.cos(lat1) * Math.cos(lat2) * sinHalfDlng * sinHalfDlng;
-					sizem = EARTH_RADIUS_METERS * 2 * Math.asin(Math.sqrt(a)) * 2;
+		// ── Billboard GeoJSON symbol layer ───────────────────────────────────────────
+		// Billboards are rendered as a MapLibre symbol layer whose icon-size is set to
+		// a fixed value per feature. The zoom-based exponential expression in the
+		// MapLibre HTML ensures the icon scales proportionally with the map so that
+		// each billboard occupies a constant geographic area. Billboard size also
+		// scales with the H3 edge length: larger on bigger hexagons, smaller on
+		// smaller ones.
+		//
+		// Each unique billboard SVG is rasterized at 4× resolution (512×512 actual pixels
+		// for a 128×128 logical icon) via canvas + pixelRatio, keeping SVGs crisp when
+		// zoomed in or on high-DPI screens. Features carry an iconSizeAtRefZoom property
+		// (= desiredPixelSize / BILLBOARD_STANDARD_ICON_SIZE at zoom 14) so the layer's
+		// icon-size zoom expression scales it correctly at all zoom levels.
+		// NOTE: Keep this value in sync with BILLBOARD_ICON_SIZE in the MapLibre HTML.
+		const BILLBOARD_STANDARD_ICON_SIZE = 128;
+
+		// Billboard pixel size is determined by the sprite's scaleFactor, the
+		// user-adjustable billboard scale multiplier, AND the H3 edge length ratio
+		// relative to the reference resolution (10). This makes billboards larger on
+		// bigger hexagons and smaller on smaller ones.
+		// townhall (scaleFactor 7.0) renders at 7 × BILLBOARD_UNIT_PX ≈ 48 px at zoom 14
+		// at the reference resolution.
+
+		const billboardImages: Record<string, { url: string }> = {};
+		type BillboardFeature = {
+			type: 'Feature';
+			geometry: { type: 'Point'; coordinates: [number, number] };
+			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number };
+		};
+		const billboardFeatures: BillboardFeature[] = [];
+
+		// Midpoint anchor colors in the order they map to hex vertices 0–5.
+		const MIDPOINT_ANCHOR_COLORS = [BillboardAnchorColor.Red, BillboardAnchorColor.Orange, BillboardAnchorColor.Yellow, BillboardAnchorColor.Blue, BillboardAnchorColor.White, BillboardAnchorColor.Black];
+
+		for (const [h3Index, record] of Object.entries(records)) {
+			// Build an effective billboard map using the shared helper.
+			const effectiveBillboards = getEffectiveBillboards(record);
+			if (Object.keys(effectiveBillboards).length === 0) continue;
+
+			// Compute hex boundary (centroid + vertices) once per tile.
+			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
+			let sumLng = 0, sumLat = 0;
+			const n = boundary.length - 1;
+			if (n <= 0) continue;
+			for (let j = 0; j < n; j++) {
+				const [bLng, bLat] = boundary[j] as [number, number];
+				sumLng += bLng;
+				sumLat += bLat;
+			}
+			const centerLng = sumLng / n;
+			const centerLat = sumLat / n;
+
+			// Size constants for this tile's resolution (shared across all anchors).
+			const cellRes = getResolution(h3Index);
+			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
+			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
+
+			// Render one billboard feature per occupied anchor position.
+			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
+				const parsed = parseBillboardKey(billboardKey);
+				if (!parsed) continue;
+				const { sprite, idx } = parsed;
+				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+				if (!url) continue;
+
+				const iconKey = `billboard-${billboardKey}`;
+
+				// Look up global anchor overrides for this sprite type.
+				const anchorOverride = spriteAnchors[idx];
+				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+
+				// Determine billboard placement position based on anchor color.
+				// Matches debug point positions: purple=center, green=vertex[0],
+				// red/orange/yellow/blue/white/black = midpoints 0–5.
+				let lng = centerLng;
+				let lat = centerLat;
+				if (anchorColor === BillboardAnchorColor.Green && n > 0) {
+					// Use the first vertex (corner) of the hex polygon.
+					const [vLng, vLat] = boundary[0] as [number, number];
+					lng = vLng;
+					lat = vLat;
+				} else if (anchorColor !== BillboardAnchorColor.Purple) {
+					// Midpoint between center and a corner vertex.
+					const midIdx = MIDPOINT_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
+					if (midIdx >= 0 && midIdx < n) {
+						const [vLng, vLat] = boundary[midIdx] as [number, number];
+						lng = (centerLng + vLng) / 2;
+						lat = (centerLat + vLat) / 2;
+					}
 				}
-				// Individual object sprites use a per-sprite geographic size derived from
-				// their scaleFactor (relative to townhall = 7.0), scaled to the actual hex
-				// cell size so billboards fit correctly at any H3 level.
-				let billboardSizem = sizem;
-				let billboardAnchorY = 0.5;
-				if (record.billboard.startsWith('objects:')) {
-					const spriteIdx = parseInt(record.billboard.slice('objects:'.length), 10);
-					const sprite = (!isNaN(spriteIdx) && spriteIdx >= 0 && spriteIdx < OBJECT_SPRITES.length)
-						? OBJECT_SPRITES[spriteIdx] : undefined;
-					const scale = sprite ? sprite.scaleFactor : TOWNHALL_SCALE_FACTOR;
-					billboardSizem = sizem * (scale / TOWNHALL_SCALE_FACTOR);
-					billboardAnchorY = sprite ? sprite.anchorY : 0.5;
+
+				// Per-sprite scale multiplier from the billboard config screen (default 1.0).
+				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+				// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
+				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+				));
+				// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
+				// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
+				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+				if (!billboardImages[iconKey]) {
+					billboardImages[iconKey] = { url };
 				}
-				billboards.push({
-					id: `tile-billboard-${h3Index}`,
-					type: record.billboard,
-					position: { lng: center[1], lat: center[0] },
-					sizem: billboardSizem,
-					anchorY: billboardAnchorY,
-					hexBoundary: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
+				billboardFeatures.push({
+					type: 'Feature',
+					geometry: { type: 'Point', coordinates: [lng, lat] },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
 				});
 			}
 		}
 
-		mapRef.current.sendToMap({ imageOverlays });
-		// Register each individual object SVG as a billboard image so the map can render them.
-		const billboardImages: Record<string, { url: string; ratio: number }> = {};
-		for (let idx = 0; idx < OBJECT_SPRITES.length; idx++) {
-			const sprite = OBJECT_SPRITES[idx];
-			const url = await loadAssetUrl(`objects:${idx}`, sprite.source as number, 'image/svg+xml');
-			if (url) {
-				billboardImages[`objects:${idx}`] = { url, ratio: 1 };
-			}
-		}
-		if (Object.keys(billboardImages).length > 0) {
-			mapRef.current.sendToMap({ billboardImages });
-		}
-		mapRef.current.sendToMap({ billboards });
+		mapRef.current.sendToMap({
+			imageOverlays,
+			// Clear any legacy DOM markers from previous versions.
+			mapMarkers: [],
+			billboards: {
+				images: billboardImages,
+				features: billboardFeatures,
+			},
+		});
 	}, [loadAssetUrl]);
 
-	// Re-send customizations whenever tile image / model selections change.
+	// Re-send customizations whenever tile image / model selections or
+	// billboard anchor config change.
+	// Billboard sizes scale proportionally with the H3 edge length.
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [hexTileCustomizationsKey, loadAndSendCustomizations]);
+	}, [hexTileCustomizationsKey, billboardConfigKey, loadAndSendCustomizations]);
 
 
 	useLayoutEffect(() => {
@@ -1687,12 +2662,23 @@ export default function RecordScreen() {
 	// Visited H3 hex cells during the active recording (used for immediate GeoJSON updates;
 	// persistent data lives in the Redux store)
 	const visitedHexIdsRef = useRef<Set<string>>(new Set());
+	// Ordered sequence of visited H3 hex cells during the active recording.
+	// Each cell appears only once, in the order it was first entered.
+	const orderedHexTilesRef = useRef<string[]>([]);
 	// The last H3 cell visited; used to detect cell transitions in handleLocationUpdate.
 	const lastCellRef = useRef<string | null>(null);
 	// Current player position (updated from real GPS and from debug gamepad)
 	const debugPlayerPositionRef = useRef<{ lat: number; lng: number } | null>(null);
 	// Joystick speed, configurable from the debug modal
 	const debugMoveSpeedKmhRef = useRef(DEBUG_MOVE_SPEED_KMH);
+	// Billboard scale multiplier, configurable from the debug modal
+	const billboardScaleRef = useRef(BILLBOARD_SCALE_DEFAULT);
+	// Whether billboards face the camera (true) or lie flat on the map (false)
+	const billboardFaceCameraRef = useRef(true);
+	// Whether to show anchor point indicators at the base of each billboard
+	const showBillboardAnchorsRef = useRef(false);
+	// Whether debug point layers (vertices, centers, midpoints) are visible
+	const showDebugPointsRef = useRef(false);
 	// Mirrors isRecording state for use inside callbacks without stale closures
 	const isRecordingRef = useRef(false);
 	// Last GPS point that passed the speed filter; used to detect unrealistic jumps.
@@ -1716,6 +2702,28 @@ export default function RecordScreen() {
 		});
 	}, []);
 
+	/**
+	 * Rebuild and send the standard hex tile and walk path GeoJSON to the map
+	 * based on the current viewport. Used when restoring normal (non-route-preview)
+	 * display after a route is deselected and on viewport changes.
+	 */
+	const refreshNormalTileDisplay = useCallback((vp: { bounds: ViewportBounds; zoom: number }) => {
+		if (!mapRef.current) return;
+		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
+		try {
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
+		} catch {
+			// ignore
+		}
+		if (debugViewportRef.current) {
+			debugViewportRef.current.tileCount = geoJson.features.length;
+		}
+		const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
+		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
+		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
+		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+	}, []);
+
 	// Load persisted OSM consent on mount
 	useEffect(() => {
 		loadOsmConsent().then((consented) => {
@@ -1729,9 +2737,92 @@ export default function RecordScreen() {
 			_onLocationUpdate = null;
 			fgSubRef.current?.remove();
 			if (timerRef.current) clearInterval(timerRef.current);
+			if (periodicAnnouncementTimerRef.current) clearInterval(periodicAnnouncementTimerRef.current);
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
 	}, []);
+
+	// ── Announce when the app moves to the background during an active recording
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', (nextAppState) => {
+			if (
+				nextAppState === 'background' &&
+				isRecordingRef.current &&
+				isTTSEnabledRef.current &&
+				announceAppInBackgroundRef.current
+			) {
+				const locale = getLocales()[0]?.languageTag ?? 'en-US';
+				const langCode = locale.split('-')[0].toLowerCase();
+				const text = buildBackgroundAnnouncement(locale);
+				const curSs = speechSettingsRef.current;
+				speakAnnouncement(text, langCode, {
+					rate: speechRateToNumber(curSs.speechRate),
+				});
+			}
+		});
+		return () => subscription.remove();
+	}, []);
+
+	// ── Refresh map display when returning from background during a recording ──
+	// While the screen is off the WebView may not process messages, so hex tiles,
+	// walk paths and the route line can be stale.  Re-send them once the app
+	// becomes active again.
+	useEffect(() => {
+		const subscription = AppState.addEventListener('change', (nextAppState) => {
+			if (nextAppState === 'active' && isRecordingRef.current && mapRef.current) {
+				// Re-send the GPS track line
+				if (routePointsRef.current.length > 0) {
+					sendRouteToMap(routePointsRef.current);
+				}
+				// Re-send hex tile grid and walk path
+				const vp = debugViewportRef.current;
+				if (vp) {
+					refreshNormalTileDisplay(vp);
+				}
+			}
+		});
+		return () => subscription.remove();
+	}, [sendRouteToMap, refreshNormalTileDisplay]);
+
+	// ── Route preview: when a route is selected before recording, show only the
+	// route's hex tiles and walk path on the map (hiding all other visited tiles).
+	// This gives the same view as the route detail screen (routes/[id]).
+	useEffect(() => {
+		if (!mapRef.current) return;
+		if (selectedRoute && !isRecordingRef.current) {
+			// Show route preview
+			try {
+				const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+					selectedRoute,
+					store.getState().hexTiles.records,
+				);
+				mapRef.current.sendToMap({ hexTileGeoJson });
+				mapRef.current.sendToMap({ hexWalkPathGeoJson });
+
+				// Fit the camera to the route extent
+				const bounds = computeHexBounds(selectedRoute.hexTiles);
+				if (bounds) {
+					const { minLat, maxLat, minLng, maxLng } = bounds;
+					const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+					const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
+					mapRef.current.sendToMap({
+						fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+						fitBoundsPadding: 20,
+						pitch: 45,
+						bearing: 0,
+					});
+				}
+			} catch (err) {
+				console.warn('[RecordScreen] Route preview failed:', err);
+			}
+		} else if (!selectedRoute) {
+			// Route deselected: refresh normal tile and walk path display
+			const vp = debugViewportRef.current;
+			if (vp) {
+				refreshNormalTileDisplay(vp);
+			}
+		}
+	}, [selectedRoute, refreshNormalTileDisplay]);
 
 	// Pre-populate debug player position from last known location once consent is given
 	useEffect(() => {
@@ -1800,7 +2891,7 @@ export default function RecordScreen() {
 		if (!vp || !mapRef.current) return;
 		let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 		try {
-			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+			geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
 		} catch (err) {
 			console.warn('[RecordScreen] buildH3GeoJson failed:', err);
 		}
@@ -1814,14 +2905,14 @@ export default function RecordScreen() {
 		recomputeH3();
 	}, [recomputeH3]);
 
-	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
-		showBillboardAnchorsRef.current = val;
-		mapRef.current?.sendToMap({ billboardDebugAnchors: val });
-	}, []);
-
 	const handleH3ResolutionChange = useCallback((val: number) => {
 		h3ResolutionRef.current = val;
 		setH3Resolution(val);
+		recomputeH3();
+	}, [recomputeH3]);
+
+	const handleH3MinZoomChange = useCallback((val: number) => {
+		h3MinZoomRef.current = val;
 		recomputeH3();
 	}, [recomputeH3]);
 
@@ -1834,15 +2925,226 @@ export default function RecordScreen() {
 		debugMoveSpeedKmhRef.current = speed;
 	}, []);
 
+	const handleBillboardScaleChange = useCallback((scale: number) => {
+		billboardScaleRef.current = scale;
+		// Resend billboards so the new scale takes effect immediately.
+		loadAndSendCustomizations();
+	}, [loadAndSendCustomizations]);
+
+	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
+		billboardFaceCameraRef.current = val;
+		mapRef.current?.sendToMap({ billboardPitchAlignment: val ? 'viewport' : 'map' });
+	}, []);
+
+	const handleShowBillboardAnchorsChange = useCallback((val: boolean) => {
+		showBillboardAnchorsRef.current = val;
+		mapRef.current?.sendToMap({ billboardShowAnchors: val });
+	}, []);
+
+	const handleShowDebugPointsChange = useCallback((val: boolean) => {
+		showDebugPointsRef.current = val;
+		mapRef.current?.sendToMap({ hexDebugPoints: val });
+	}, []);
+
 	const showHexTileModal = useCallback((h3Index: string) => {
 		showModal({
 			title: '🗺️ Hex Tile Info',
-			onClose: closeModal,
 			children: (
 				<HexTileInfoContent h3Index={h3Index} />
 			),
 		});
-	}, [showModal, closeModal]);
+	}, [showModal]);
+
+	const showMagnifyHexTileModal = useCallback((h3Index: string) => {
+		showMagnifyModal({
+			title: '🔍 Karte Info',
+			onClose: closeMagnifyModal,
+			children: (
+				<MagnifyModalContent h3Index={h3Index} />
+			),
+		});
+	}, [showMagnifyModal, closeMagnifyModal]);
+
+	// ── Measure mode (debug only) ───────────────────────────────────────────────
+
+	const startMeasureMode = useCallback(() => {
+		isMeasureModeRef.current = true;
+		setIsMeasureMode(true);
+		measureWaypointsRef.current = [];
+		mapRef.current?.sendToMap({ measureMode: true });
+		mapRef.current?.sendToMap({ measureRouteCoords: [] });
+		mapRef.current?.sendToMap({ measurePoints: [] });
+	}, []);
+
+	const cancelMeasureMode = useCallback(() => {
+		isMeasureModeRef.current = false;
+		setIsMeasureMode(false);
+		measureWaypointsRef.current = [];
+		mapRef.current?.sendToMap({ measureMode: false });
+	}, []);
+
+	// ── Magnify mode (debug only) ───────────────────────────────────────────────
+
+	const startMagnifyMode = useCallback(() => {
+		isMagnifyModeRef.current = true;
+		setIsMagnifyMode(true);
+	}, []);
+
+	const cancelMagnifyMode = useCallback(() => {
+		isMagnifyModeRef.current = false;
+		setIsMagnifyMode(false);
+	}, []);
+
+	const undoMeasurePoint = useCallback(() => {
+		const prev = measureWaypointsRef.current.slice(0, -1);
+		measureWaypointsRef.current = prev;
+		const coords = prev.map((w) => [w.lng, w.lat]);
+		mapRef.current?.sendToMap({ measureRouteCoords: coords });
+		mapRef.current?.sendToMap({ measurePoints: coords });
+	}, []);
+
+	const handleSaveMeasureAsActivity = useCallback((routeCells: string[], enclosedCount: number) => {
+		if (routeCells.length < 2) return;
+		const startTimestamp = Date.now();
+		const speedBaseKmh = MEASURE_SPEED_BASE_KMH + (Math.random() - 0.5) * MEASURE_SPEED_VARIATION_KMH;
+		const routePoints = generateMeasureRoutePoints(routeCells, speedBaseKmh, MEASURE_SPEED_VARIATION_KMH, startTimestamp);
+		if (routePoints.length < 2) return;
+		const stats = computeStats(routePoints);
+		const endedAt = routePoints[routePoints.length - 1].timestamp;
+		const activity: SavedActivity = {
+			id: String(startTimestamp),
+			startedAt: startTimestamp,
+			endedAt,
+			routePoints,
+			stats,
+			sportType: selectedSportTypeRef.current,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			visitedTileCount: routeCells.length,
+			enclosedTileCount: enclosedCount,
+			hexTilesOrdered: routeCells,
+		};
+		try {
+			saveActivity(activity);
+			Alert.alert(
+				'Activity Saved',
+				`Route saved: ${routeCells.length} hex tiles, ${enclosedCount} enclosed.`,
+			);
+		} catch {
+			Alert.alert('Error', 'Failed to save activity.');
+		}
+	}, []);
+
+	const handleSaveMeasureAsRoute = useCallback((routeCells: string[], name: string) => {
+		if (routeCells.length < 2 || !name.trim()) return;
+		const now = Date.now();
+		const route: SavedRoute = {
+			id: String(now),
+			name: name.trim(),
+			hexTiles: routeCells,
+			h3Resolution: Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current))),
+			createdAt: now,
+			sportType: selectedSportTypeRef.current,
+			walkedEdges: computeEdgesFromHexTiles(routeCells),
+		};
+		try {
+			saveRoute(route);
+			Alert.alert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
+		} catch {
+			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+		}
+	}, []);
+
+	const finishMeasurement = useCallback(async () => {
+		const waypoints = measureWaypointsRef.current;
+		if (waypoints.length < 2) {
+			Alert.alert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
+			return;
+		}
+
+		const routeCells = computeOrderedMeasureRouteCells(waypoints, h3ResolutionRef.current);
+		const routeLengthInTiles = routeCells.length;
+
+		// Compute enclosed tiles: use waypoints as the route polygon
+		const routeAsPoints: RoutePoint[] = waypoints.map((w, i) => ({
+			lat: w.lat, lng: w.lng, altitude: null, speed: null, timestamp: Date.now() + i * 1000,
+		}));
+		let enclosedTileCount = 0;
+		try {
+			const allEnclosed = findEnclosedCells(routeAsPoints, h3ResolutionRef.current);
+			// Exclude cells that are part of the route itself
+			const routeCellSet = new Set(routeCells);
+			enclosedTileCount = allEnclosed.filter((c) => !routeCellSet.has(c)).length;
+		} catch {
+			// ignore
+		}
+
+		// Load saved activities for time estimation
+		const savedActivities = await loadActivities().catch(() => [] as SavedActivity[]);
+
+		// Exit measure mode and clear overlay
+		cancelMeasureMode();
+
+		showModal({
+			title: '📏 Measure Results',
+			onClose: closeModal,
+			children: (
+				<MeasureResultContent
+					routeLengthInTiles={routeLengthInTiles}
+					enclosedTileCount={enclosedTileCount}
+					routeCells={routeCells}
+					h3Resolution={h3ResolutionRef.current}
+					theme={theme}
+					savedActivities={savedActivities}
+					selectedSportType={selectedSportTypeRef.current}
+					onSaveAsActivity={handleSaveMeasureAsActivity}
+					onSaveAsRoute={handleSaveMeasureAsRoute}
+					onClose={closeModal}
+				/>
+			),
+		});
+	}, [showModal, closeModal, theme, cancelMeasureMode, handleSaveMeasureAsActivity, handleSaveMeasureAsRoute]);
+
+	const openColoringModal = useCallback(() => {
+		coloringSelectionMadeRef.current = false;
+		showColoringModal({
+			title: '🎨 Tile Color',
+			onClose: () => {
+				if (!coloringSelectionMadeRef.current) {
+					setColoringTileImage(null);
+				}
+				closeColoringModal();
+			},
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					{TERRAIN_CATEGORIES.map((cat) => {
+						const entries = TERRAIN_ASSETS[cat];
+						return (
+							<View key={cat}>
+								<SettingsListGroupTitle title={cat} />
+								{entries.map((entry, i) => {
+									const position = entries.length === 1 ? 'single' : i === 0 ? 'top' : i === entries.length - 1 ? 'bottom' : 'middle';
+									return (
+										<SettingsListSelectOptionSingle
+											key={entry.key}
+											label={entry.key.split('/').pop() ?? entry.key}
+											isSelected={coloringTileImageRef.current === entry.key}
+											selectionColor={PRIMARY_COLOR}
+											onPress={() => {
+												coloringSelectionMadeRef.current = true;
+												setColoringTileImage(entry.key);
+												closeColoringModal();
+											}}
+											groupPosition={position}
+										/>
+									);
+								})}
+							</View>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showColoringModal, closeColoringModal]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
@@ -1860,30 +3162,88 @@ export default function RecordScreen() {
 			if (pos) {
 				centerMapOnPosition(pos);
 			}
-			// Send any already-selected tile images / billboards to the map.
+			// Send any already-selected tile images to the map.
 			loadAndSendCustomizations();
 		} else if (msg.tag === 'MapInteracted') {
 			setFollowMode(false);
 		} else if (msg.tag === 'MapViewportChanged') {
 			const vp = msg as { bounds: ViewportBounds; zoom: number };
-			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
-			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
-			} catch (err) {
-				console.warn('[RecordScreen] buildH3GeoJson failed:', err);
+			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: 0 };
+
+			// When a route is selected (pre-recording), show only the route's tiles
+			// and walk path instead of the full global tile set.
+			if (selectedRouteRef.current && !isRecordingRef.current) {
+				try {
+					const { hexTileGeoJson, hexWalkPathGeoJson } = buildRouteDisplayData(
+						selectedRouteRef.current,
+						store.getState().hexTiles.records,
+					);
+					debugViewportRef.current.tileCount = hexTileGeoJson.features.length;
+					mapRef.current?.sendToMap({ hexTileGeoJson });
+					mapRef.current?.sendToMap({ hexWalkPathGeoJson });
+				} catch (err) {
+					console.warn('[RecordScreen] Route preview viewport update failed:', err);
+				}
+			} else {
+				refreshNormalTileDisplay(vp);
 			}
-			debugViewportRef.current = { bounds: vp.bounds, zoom: vp.zoom, tileCount: geoJson.features.length };
-			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
-			mapRef.current?.sendToMap({ hexTileGeoJson: geoJson });
-			mapRef.current?.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		} else if (msg.tag === 'HexTileClicked') {
-			const clickedMsg = msg as { h3Index?: string };
+			const clickedMsg = msg as { h3Index?: string; mapFeatures?: MapFeatureInfo[] };
 			if (clickedMsg.h3Index) {
-				showHexTileModal(clickedMsg.h3Index);
+				if (coloringTileImageRef.current !== null) {
+					// Coloring mode active: directly apply the selected tile image.
+					dispatch(setHexTileCustomization({ h3Index: clickedMsg.h3Index, tileImage: coloringTileImageRef.current }));
+				} else if (isMagnifyModeRef.current) {
+					// Magnify mode active: show detailed map info modal.
+					showMagnifyHexTileModal(clickedMsg.h3Index);
+				} else {
+					showHexTileModal(clickedMsg.h3Index);
+				}
+			}
+		} else if (msg.tag === 'MapMeasurePoint') {
+			const ptMsg = msg as { lat: number; lng: number };
+			if (isMeasureModeRef.current) {
+				const newWaypoints = [...measureWaypointsRef.current, { lat: ptMsg.lat, lng: ptMsg.lng }];
+				measureWaypointsRef.current = newWaypoints;
+				const coords = newWaypoints.map((w) => [w.lng, w.lat]);
+				mapRef.current?.sendToMap({ measureRouteCoords: coords });
+				mapRef.current?.sendToMap({ measurePoints: coords });
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, loadAndSendCustomizations]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch]);
+
+	const handleExportMapSettings = useCallback(async () => {
+		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string> }> = {};
+		for (const [h3Index, record] of Object.entries(hexTileRecords)) {
+			const billboards = getEffectiveBillboards(record);
+			const hasBillboards = Object.keys(billboards).length > 0;
+			if (record.tileImage || hasBillboards) {
+				exportData[h3Index] = {};
+				if (record.tileImage) exportData[h3Index].tileImage = record.tileImage;
+				if (hasBillboards) exportData[h3Index].billboards = billboards;
+			}
+		}
+		const json = JSON.stringify({ version: 1, hexTiles: exportData }, null, 2);
+		await Clipboard.setStringAsync(json);
+		Alert.alert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
+	}, [hexTileRecords]);
+
+	const handleImportMapSettings = useCallback((json: string) => {
+		let parsed: unknown;
+		try {
+			parsed = JSON.parse(json);
+		} catch {
+			Alert.alert('Import Failed', 'The text is not valid JSON.');
+			return;
+		}
+		const data = parsed as { version?: number; hexTiles?: Record<string, { tileImage?: string | null; billboards?: Record<string, string | null> }> };
+		if (!data.hexTiles || typeof data.hexTiles !== 'object') {
+			Alert.alert('Import Failed', 'No "hexTiles" object found in the data.');
+			return;
+		}
+		dispatch(applyMapCustomizations(data.hexTiles));
+		Alert.alert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
+	}, [dispatch]);
 
 	const showDebugModal = useCallback(() => {
 		const info = debugViewportRef.current;
@@ -1896,17 +3256,27 @@ export default function RecordScreen() {
 					theme={theme}
 					initialShowGridAlways={showGridAlwaysRef.current}
 					initialH3Resolution={h3ResolutionRef.current}
+					initialMinZoom={h3MinZoomRef.current}
 					initialSpeed={debugMoveSpeedKmhRef.current}
+					initialBillboardScale={billboardScaleRef.current}
+					initialBillboardFaceCamera={billboardFaceCameraRef.current}
 					initialShowBillboardAnchors={showBillboardAnchorsRef.current}
+					initialShowDebugPoints={showDebugPointsRef.current}
 					onShowGridAlwaysChange={handleShowGridAlwaysChange}
 					onH3ResolutionChange={handleH3ResolutionChange}
+					onMinZoomChange={handleH3MinZoomChange}
 					onZoomAdjust={handleZoomAdjust}
 					onSpeedChange={handleSpeedChange}
+					onBillboardScaleChange={handleBillboardScaleChange}
+					onBillboardFaceCameraChange={handleBillboardFaceCameraChange}
 					onShowBillboardAnchorsChange={handleShowBillboardAnchorsChange}
+					onShowDebugPointsChange={handleShowDebugPointsChange}
+					onExportMapSettings={handleExportMapSettings}
+					onImportMapSettings={handleImportMapSettings}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleZoomAdjust, handleSpeedChange, handleShowBillboardAnchorsChange]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleH3MinZoomChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
@@ -2047,12 +3417,22 @@ export default function RecordScreen() {
 							// first and last), so `<= GPS_PATH_INTERPOLATION_MAX_CELLS` allows
 							// exactly that many intermediate cells at most.
 							if (pathCells.length - 2 <= GPS_PATH_INTERPOLATION_MAX_CELLS) {
-								for (let i = 1; i < pathCells.length - 1; i++) {
-									const intermediate = pathCells[i];
-									if (!visitedHexIdsRef.current.has(intermediate)) {
-										visitedHexIdsRef.current.add(intermediate);
-										dispatch(markVisited({ h3Indices: [intermediate], timestamp: point.timestamp }));
+								const newEdges: string[] = [];
+								for (let i = 0; i < pathCells.length - 1; i++) {
+									const a = pathCells[i];
+									const b = pathCells[i + 1];
+									newEdges.push(a < b ? `${a}:${b}` : `${b}:${a}`);
+									if (i > 0) {
+										// Intermediate cell (not pathCells[0] which is lastCellRef, already visited)
+										if (!visitedHexIdsRef.current.has(pathCells[i])) {
+											visitedHexIdsRef.current.add(pathCells[i]);
+											orderedHexTilesRef.current.push(pathCells[i]);
+											dispatch(markVisited({ h3Indices: [pathCells[i]], timestamp: point.timestamp }));
+										}
 									}
+								}
+								if (newEdges.length > 0) {
+									dispatch(addWalkedEdges(newEdges));
 								}
 							}
 						} catch (pathErr) {
@@ -2066,6 +3446,7 @@ export default function RecordScreen() {
 					// one step during a single activity.
 					if (!visitedHexIdsRef.current.has(cell)) {
 						visitedHexIdsRef.current.add(cell);
+						orderedHexTilesRef.current.push(cell);
 						dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
 					}
 					if (cell !== lastCellRef.current) {
@@ -2090,6 +3471,79 @@ export default function RecordScreen() {
 		}
 		setLiveDistanceKm(d);
 
+		// Announce each whole-km milestone via TTS when enabled.
+		if (isTTSEnabledRef.current) {
+			const crossedKm = Math.floor(d);
+			if (crossedKm > 0 && crossedKm > lastAnnouncedKmRef.current) {
+				lastAnnouncedKmRef.current = crossedKm;
+				const elapsedSec = startTimeRef.current > 0
+						? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+						: accumulatedSecondsRef.current;
+				const paceMinPerKm = elapsedSec > 0 && d > 0 ? elapsedSec / 60 / d : null;
+				const locale = getLocales()[0]?.languageTag ?? 'en-US';
+				const langCode = locale.split('-')[0].toLowerCase();
+				const curSs = speechSettingsRef.current;
+				const text = buildKmAnnouncement(crossedKm, paceMinPerKm, locale, {
+					announcePace: curSs.announcePace,
+					announceSpeedKmh: curSs.announceSpeed,
+				});
+				speakAnnouncement(text, langCode, {
+					rate: speechRateToNumber(curSs.speechRate),
+				});
+			}
+		}
+
+		// ── Pace hint announcements with hysteresis threshold ────────────
+		if (isTTSEnabledRef.current && d > 0) {
+			const curSs = speechSettingsRef.current;
+			if (curSs.paceTargetEnabled) {
+				const elapsedSec = startTimeRef.current > 0
+					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+					: accumulatedSecondsRef.current;
+				const currentPace = elapsedSec > 0 ? elapsedSec / 60 / d : null;
+				if (currentPace != null) {
+					const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
+					const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;
+					const slowerThreshold = curSs.paceHintSlowerMinutes + curSs.paceHintSlowerSeconds / 60;
+
+					// Lower pace value = faster running.  Thresholds are subtracted/added
+					// from the target to define the acceptable range boundaries.
+					const fasterBound = targetPace - fasterThreshold;
+					const slowerBound = targetPace + slowerThreshold;
+
+					const prev = paceHintStateRef.current;
+					let next: PaceHintState = 'on_target';
+
+					if (curSs.paceHintFasterEnabled && currentPace < fasterBound) {
+						next = 'too_fast';
+					} else if (curSs.paceHintSlowerEnabled && currentPace > slowerBound) {
+						next = 'too_slow';
+					}
+
+					// Announce only on a *transition* into a warning state from on_target
+					// and only if the cooldown has elapsed.
+					const now = Date.now();
+					if (
+						next !== 'on_target' &&
+						prev === 'on_target' &&
+						now - lastPaceHintTimeRef.current >= PACE_HINT_COOLDOWN_MS
+					) {
+						const locale = getLocales()[0]?.languageTag ?? 'en-US';
+						const langCode = locale.split('-')[0].toLowerCase();
+						const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
+						speakAnnouncement(text, langCode, {
+							volume: curSs.volume,
+							rate: speechRateToNumber(curSs.speechRate),
+							useApplicationAudioSession: curSs.duckMusicDuringTTS,
+						});
+						lastPaceHintTimeRef.current = now;
+					}
+
+					paceHintStateRef.current = next;
+				}
+			}
+		}
+
 		if (point.speed != null && point.speed >= 0) {
 			setLiveSpeedKmh(point.speed * 3.6);
 		}
@@ -2108,13 +3562,13 @@ export default function RecordScreen() {
 		if (vp && mapRef.current) {
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
 			} catch (err) {
 				console.warn('[RecordScreen] buildH3GeoJson failed during location update:', err);
 			}
 			debugViewportRef.current = { ...vp, tileCount: geoJson.features.length };
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
@@ -2164,9 +3618,76 @@ export default function RecordScreen() {
 		}
 	}, []);
 
+	// ── Periodic speech announcement helpers ──────────────────────────────────
+	const stopPeriodicAnnouncementTimer = useCallback(() => {
+		if (periodicAnnouncementTimerRef.current) {
+			clearInterval(periodicAnnouncementTimerRef.current);
+			periodicAnnouncementTimerRef.current = null;
+		}
+	}, []);
+
+	const startPeriodicAnnouncementTimer = useCallback(() => {
+		stopPeriodicAnnouncementTimer();
+		const ss = speechSettingsRef.current;
+		if (!ss.enabled) return;
+		const intervalSec = ss.intervalTimeMinutes * 60 + ss.intervalTimeSeconds;
+		if (intervalSec <= 0) return;
+
+		periodicAnnouncementTimerRef.current = setInterval(() => {
+			if (!isRecordingRef.current || isPausedRef.current || !isTTSEnabledRef.current) return;
+			const curSs = speechSettingsRef.current;
+			if (!curSs.enabled) return;
+
+			const elapsedSec = startTimeRef.current > 0
+				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
+				: accumulatedSecondsRef.current;
+			const points = routePointsRef.current;
+			let totalDistanceKm = 0;
+			for (let i = 1; i < points.length; i++) {
+				totalDistanceKm += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+			}
+			const paceMinPerKm = totalDistanceKm > 0 && elapsedSec > 0 ? elapsedSec / 60 / totalDistanceKm : null;
+			const lastPt = points.length > 0 ? points[points.length - 1] : null;
+			const speedKmh = lastPt?.speed != null && lastPt.speed >= 0 ? lastPt.speed * 3.6 : null;
+
+			const locale = getLocales()[0]?.languageTag ?? 'en-US';
+			const langCode = locale.split('-')[0].toLowerCase();
+			const text = buildPeriodicAnnouncement(locale, {
+				distanceKm: totalDistanceKm,
+				elapsedSeconds: elapsedSec,
+				paceMinPerKm,
+				speedKmh,
+			}, {
+				announceDistance: curSs.announceDistance,
+				announcePace: curSs.announcePace,
+				announceDuration: curSs.announceDuration,
+				announceSpeed: curSs.announceSpeed,
+				announceCalories: curSs.announceCalories,
+				announceHeartRate: curSs.announceHeartRate,
+			});
+			if (text.length > 0) {
+				speakAnnouncement(text, langCode, {
+					volume: curSs.volume,
+					rate: speechRateToNumber(curSs.speechRate),
+					useApplicationAudioSession: curSs.duckMusicDuringTTS,
+				});
+			}
+		}, intervalSec * 1000);
+	}, [stopPeriodicAnnouncementTimer]);
+
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
+		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
 		console.log('[RecordScreen] startRecording called. isRunningInExpoGo:', expoGo);
+
+		// Cancel measure mode before starting a recording
+		if (isMeasureModeRef.current) {
+			isMeasureModeRef.current = false;
+			setIsMeasureMode(false);
+			measureWaypointsRef.current = [];
+			mapRef.current?.sendToMap({ measureMode: false });
+		}
+
 		try {
 			console.log('[RecordScreen] Requesting foreground location permission...');
 			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
@@ -2176,8 +3697,12 @@ export default function RecordScreen() {
 				return;
 			}
 
+			// Enable background audio so TTS announcements work when the app is backgrounded
+			await enableBackgroundAudio();
+
 			routePointsRef.current = [];
 			visitedHexIdsRef.current = new Set();
+			orderedHexTilesRef.current = [];
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
@@ -2189,6 +3714,9 @@ export default function RecordScreen() {
 			setElapsedSeconds(0);
 			setLiveDistanceKm(0);
 			setLiveSpeedKmh(null);
+			lastAnnouncedKmRef.current = 0;
+			paceHintStateRef.current = 'on_target';
+			lastPaceHintTimeRef.current = 0;
 			isRecordingRef.current = true;
 			setIsRecording(true);
 			setFollowMode(true);
@@ -2204,6 +3732,9 @@ export default function RecordScreen() {
 			timerRef.current = setInterval(() => {
 				setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 			}, 1000);
+
+			// Start periodic (time-based) speech announcements if enabled
+			startPeriodicAnnouncementTimer();
 
 			if (expoGo) {
 				console.log('[RecordScreen] Running in Expo Go – skipping background permission, using foreground-only tracking.');
@@ -2222,7 +3753,7 @@ export default function RecordScreen() {
 				const sub = await Location.watchPositionAsync(
 					{
 						accuracy: Location.Accuracy.BestForNavigation,
-						timeInterval: GPS_TIME_INTERVAL_MS,
+						timeInterval: gpsTimeIntervalMs,
 						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					},
 					(loc) => {
@@ -2257,7 +3788,7 @@ export default function RecordScreen() {
 				_onLocationUpdate = handleLocationUpdate;
 				await Location.startLocationUpdatesAsync(ACTIVITY_LOCATION_TASK, {
 					accuracy: Location.Accuracy.BestForNavigation,
-					timeInterval: GPS_TIME_INTERVAL_MS,
+					timeInterval: gpsTimeIntervalMs,
 					distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					showsBackgroundLocationIndicator: true,
 					foregroundService: {
@@ -2272,7 +3803,7 @@ export default function RecordScreen() {
 				const sub = await Location.watchPositionAsync(
 					{
 						accuracy: Location.Accuracy.BestForNavigation,
-						timeInterval: GPS_TIME_INTERVAL_MS,
+						timeInterval: gpsTimeIntervalMs,
 						distanceInterval: GPS_DISTANCE_INTERVAL_METERS,
 					},
 					(loc) => {
@@ -2301,8 +3832,60 @@ export default function RecordScreen() {
 				clearInterval(timerRef.current);
 				timerRef.current = null;
 			}
+			stopPeriodicAnnouncementTimer();
 		}
-	}, [handleLocationUpdate, setFollowMode, showModal, theme]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer]);
+
+	// Show a modal to select a saved route before starting a recording.
+	const showRouteSelectionModal = useCallback(async () => {
+		let routes: SavedRoute[] = [];
+		try {
+			routes = await loadRoutes();
+		} catch {
+			// ignore
+		}
+		if (routes.length === 0) {
+			Alert.alert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
+			return;
+		}
+		showRouteModal({
+			title: '🗺️ Select Route',
+			onClose: closeRouteModal,
+			children: (
+				<View>
+					<SettingsListGroupTitle title="Run this route today" />
+					<SettingsListSelectOptionSingle
+						key="__none__"
+						label="Automatisch"
+						isSelected={selectedRoute === null}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							setSelectedRoute(null);
+							closeRouteModal();
+						}}
+						groupPosition={routes.length === 0 ? 'single' : 'top'}
+					/>
+					{routes.map((route, i) => {
+						const position = i === routes.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={route.id}
+								label={route.name}
+								isSelected={selectedRoute?.id === route.id}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									setSelectedRoute(route);
+									closeRouteModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showRouteModal, closeRouteModal, selectedRoute]);
+
 
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
@@ -2314,6 +3897,7 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
+		stopPeriodicAnnouncementTimer();
 
 		try {
 			const isTaskRunning = await TaskManager.isTaskRegisteredAsync(ACTIVITY_LOCATION_TASK);
@@ -2332,6 +3916,8 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
+		Speech.stop();
+		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
 		isHeadingModeRef.current = false;
@@ -2367,24 +3953,31 @@ export default function RecordScreen() {
 		if (vp && mapRef.current) {
 			let geoJson: H3FeatureCollection = { type: 'FeatureCollection', features: [] };
 			try {
-				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records);
+				geoJson = buildH3GeoJson(vp.bounds, vp.zoom, h3ResolutionRef.current, showGridAlwaysRef.current, store.getState().hexTiles.records, h3MinZoomRef.current);
 			} catch {
 				// ignore
 			}
 			const viewportCells = [...new Set(geoJson.features.map((f) => f.properties.h3Index))];
-			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.records);
+			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
 
-		// Save activity to persistent storage
-		const activity = {
+		// Save activity to persistent storage (including ordered hex tiles for route matching)
+		const activityH3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(h3ResolutionRef.current)));
+		const hexTilesOrdered = orderedHexTilesRef.current.slice();
+		const activity: SavedActivity = {
 			id: String(startTimeRef.current),
 			startedAt: startTimeRef.current,
 			endedAt,
 			routePoints: points,
 			stats,
 			sportType: selectedSportType,
+			h3Resolution: activityH3Res,
+			visitedTileCount: visitedHexIdsRef.current.size,
+			enclosedTileCount: enclosedCells.length,
+			hexTilesOrdered,
+			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
 		try {
 			saveActivity(activity);
@@ -2392,26 +3985,13 @@ export default function RecordScreen() {
 			console.warn('[RecordScreen] Failed to save activity:', err);
 		}
 
-		// Build share data from the final Redux state (after all dispatches above).
-		const finalRecords = store.getState().hexTiles.records;
-		const shareData: RunShareData = {
-			startedAt: startTimeRef.current,
-			endedAt,
-			durationSeconds: stats.durationSeconds,
-			distanceKm: stats.distanceKm,
-			tiles: {
-				h3Resolution: Math.round(h3ResolutionRef.current),
-				visited: Array.from(visitedHexIdsRef.current).map((id) => [id, finalRecords[id]?.level ?? 0]),
-				enclosed: enclosedCells.map((id) => [id, finalRecords[id]?.level ?? 0]),
-			},
-		};
+		// Clear the pre-run selected route after the run ends
+		setSelectedRoute(null);
 
-		showModal({
-			title: '🏃 Run Statistics',
-			onClose: closeModal,
-			children: <RunStatsContent stats={stats} theme={theme} shareData={shareData} />,
-		});
-	}, [showModal, closeModal, theme, dispatch]);
+		// Navigate directly to the activity detail screen.
+		// Route assignment (if needed) is handled there via the scroll-view modal.
+		router.push(`/activities/${activity.id}`);
+	}, [theme, dispatch, selectedSportType, router, stopPeriodicAnnouncementTimer]);
 
 	const pauseRecording = useCallback(() => {
 		accumulatedSecondsRef.current += Math.floor((Date.now() - startTimeRef.current) / 1000);
@@ -2419,22 +3999,24 @@ export default function RecordScreen() {
 			clearInterval(timerRef.current);
 			timerRef.current = null;
 		}
+		stopPeriodicAnnouncementTimer();
 		isPausedRef.current = true;
 		setIsPaused(true);
-	}, []);
+	}, [stopPeriodicAnnouncementTimer]);
 
 	const resumeRecording = useCallback(() => {
 		startTimeRef.current = Date.now();
 		timerRef.current = setInterval(() => {
 			setElapsedSeconds(accumulatedSecondsRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000));
 		}, 1000);
+		startPeriodicAnnouncementTimer();
 		// Allow GPS to resume as the authoritative position source. If the user
 		// navigated via joystick during the pause, GPS will smoothly re-anchor
 		// to the physical device location from the current player position.
 		movedPlayerManuallyRef.current = false;
 		isPausedRef.current = false;
 		setIsPaused(false);
-	}, []);
+	}, [startPeriodicAnnouncementTimer]);
 
 	/**
 	 * Compass / North button handler:
@@ -2462,14 +4044,14 @@ export default function RecordScreen() {
 
 	if (!osmConsent) {
 		return (
-			<SafeAreaView style={styles.container}>
+			<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 				<OsmConsentScreen onConsent={handleConsent} />
 			</SafeAreaView>
 		);
 	}
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
 				{mapCanRender && (
@@ -2500,23 +4082,85 @@ export default function RecordScreen() {
 						iconColor="#555555"
 						activeColor={PRIMARY_COLOR}
 						isFollowing={isFollowing}
+						zoom={17}
 						onLocationFound={() => {
 							movedPlayerManuallyRef.current = false;
 							setFollowMode(true);
 						}}
 					/>
 					<View style={styles.buttonSpacer} />
-					<TouchableOpacity
-						style={styles.debugButton}
-						onPress={showDebugModal}
-						activeOpacity={0.8}
-					>
-						<MaterialIcons name="bug-report" size={20} color="#555555" />
-					</TouchableOpacity>
+					{isDebugMode && !isRecording && (
+						<>
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									coloringTileImage !== null && { backgroundColor: PRIMARY_COLOR },
+								]}
+								onPress={openColoringModal}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="format-paint" size={20} color={coloringTileImage !== null ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									isMeasureMode && { backgroundColor: '#f97316' },
+								]}
+								onPress={isMeasureMode ? cancelMeasureMode : startMeasureMode}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="straighten" size={20} color={isMeasureMode ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+						</>
+					)}
+					{isDebugMode && !isRecording && !isMeasureMode && (
+						<>
+							<TouchableOpacity
+								style={styles.debugButton}
+								onPress={showDebugModal}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="bug-report" size={20} color="#555555" />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									isMagnifyMode && { backgroundColor: '#3b82f6' },
+								]}
+								onPress={isMagnifyMode ? cancelMagnifyMode : startMagnifyMode}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="search" size={20} color={isMagnifyMode ? '#ffffff' : '#555555'} />
+							</TouchableOpacity>
+						</>
+					)}
+					{isDebugMode && isMeasureMode && (
+						<>
+							<TouchableOpacity
+								style={[styles.debugButton, { backgroundColor: '#43a047' }]}
+								onPress={finishMeasurement}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="check" size={20} color="#ffffff" />
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+							<TouchableOpacity
+								style={styles.debugButton}
+								onPress={undoMeasurePoint}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons name="undo" size={20} color="#555555" />
+							</TouchableOpacity>
+						</>
+					)}
 				</View>
 
 				{/* Joystick controller – bottom-left overlay */}
-			<View style={styles.gamepadOverlay} pointerEvents="box-none">
+				{isDebugMode && (
+				<View style={styles.gamepadOverlay} pointerEvents="box-none">
 					<JoystickController
 						positionRef={debugPlayerPositionRef}
 						speedKmhRef={debugMoveSpeedKmhRef}
@@ -2528,6 +4172,7 @@ export default function RecordScreen() {
 						onHeadingChange={handleHeadingChange}
 					/>
 				</View>
+				)}
 
 				</View>
 
@@ -2578,6 +4223,19 @@ export default function RecordScreen() {
 								<Text style={[styles.liveStatUnit, { color: theme.screen.icon }]}>km/h</Text>
 							</View>
 						</View>
+
+						{/* Selected route indicator (shown only before recording starts) */}
+						{!isRecording && selectedRoute && (
+							<View style={styles.selectedRouteRow}>
+								<MaterialIcons name="route" size={14} color={PRIMARY_COLOR} />
+								<Text style={[styles.selectedRouteText, { color: theme.screen.text }]} numberOfLines={1}>
+									{selectedRoute.name}
+								</Text>
+								<TouchableOpacity onPress={() => setSelectedRoute(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+						)}
 
 						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
 						<View style={styles.liveBarControlsRow}>
@@ -2644,13 +4302,23 @@ export default function RecordScreen() {
 
 							{/* Chevron-down collapse button – right side */}
 							<View style={styles.liveBarSideSlot}>
-								<TouchableOpacity
-									style={styles.chevronButton}
-									onPress={() => setIsPanelCollapsed(true)}
-									activeOpacity={0.7}
-								>
-									<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
-								</TouchableOpacity>
+								{!isRecording ? (
+									<TouchableOpacity
+										style={[styles.routeButton, selectedRoute ? { backgroundColor: PRIMARY_COLOR + '22' } : {}]}
+										onPress={showRouteSelectionModal}
+										activeOpacity={0.8}
+									>
+										<MaterialIcons name="route" size={24} color={selectedRoute ? PRIMARY_COLOR : theme.screen.icon} />
+									</TouchableOpacity>
+								) : (
+									<TouchableOpacity
+										style={styles.chevronButton}
+										onPress={() => setIsPanelCollapsed(true)}
+										activeOpacity={0.7}
+									>
+										<MaterialIcons name="expand-more" size={24} color={theme.screen.icon} />
+									</TouchableOpacity>
+								)}
 							</View>
 						</View>
 					</>
@@ -2663,7 +4331,6 @@ export default function RecordScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#ffffff',
 	},
 	mapWrapper: {
 		flex: 1,
@@ -3050,6 +4717,26 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	routeButton: {
+		width: 52,
+		height: 52,
+		borderRadius: 26,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	selectedRouteRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: 6,
+		paddingHorizontal: 16,
+		paddingVertical: 4,
+	},
+	selectedRouteText: {
+		fontSize: 13,
+		fontWeight: '600',
+		maxWidth: 200,
+	},
 	// Hex tile info modal
 	hexInfoContainer: {
 		paddingBottom: 8,
@@ -3071,51 +4758,5 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		flexShrink: 1,
 		textAlign: 'right',
-	},
-	// Tile image picker
-	tilePickerCategoryRow: {
-		flexDirection: 'row',
-		gap: TILE_THUMB_GAP,
-		paddingHorizontal: 16,
-		paddingBottom: 10,
-	},
-	tilePickerCategoryTab: {
-		paddingHorizontal: 12,
-		paddingVertical: 6,
-		borderRadius: 16,
-	},
-	tilePickerCategoryLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-	},
-	tilePickerCurrentRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		paddingHorizontal: 16,
-		paddingBottom: 8,
-	},
-	tilePickerCurrentLabel: {
-		fontSize: 12,
-		flex: 1,
-	},
-	tilePickerClearBtn: {
-		fontSize: 13,
-		fontWeight: '600',
-		paddingLeft: 8,
-	},
-	// Object sprite picker
-	spriteSectionContainer: {
-		marginHorizontal: 16,
-		marginBottom: 10,
-		borderRadius: 8,
-		borderWidth: StyleSheet.hairlineWidth,
-		paddingTop: 8,
-	},
-	spriteSectionLabel: {
-		fontSize: 13,
-		fontWeight: '600',
-		paddingHorizontal: 12,
-		paddingBottom: 6,
 	},
 });

@@ -3763,6 +3763,11 @@
       var mapReady = false;
       var pendingMessage = null;
       var activeMarkers = {};
+      var DEFAULT_REFERENCE_ZOOM = 14;
+      var MIN_MARKER_SCALE = 0.05;
+      var MAX_MARKER_SCALE = 50;
+      var markerReferenceZoom = null; // zoom level at which marker sizes are "correct"
+      var markerMetaMap = {};         // markerId → { el, baseWidth, baseHeight, baseOffsetX, baseOffsetY }
       var vehicleMarkerEl = null;
       var vehicleMarkerInstance = null;
       var peopleModeActive = false;
@@ -3791,12 +3796,17 @@
         }
       }
 
-      function updateMarkers(markersData) {
+      function updateMarkers(markersData, referenceZoom) {
         Object.keys(activeMarkers).forEach(function (id) {
           activeMarkers[id].remove();
         });
         activeMarkers = {};
+        markerMetaMap = {};
         mapMarkerPositions = [];
+
+        // Store the reference zoom – the zoom at which the supplied sizes are "correct".
+        // If not provided, fall back to the current map zoom.
+        markerReferenceZoom = (referenceZoom != null) ? referenceZoom : (map ? map.getZoom() : DEFAULT_REFERENCE_ZOOM);
 
         if (!markersData || !Array.isArray(markersData)) return;
 
@@ -3806,47 +3816,82 @@
           mapMarkerPositions.push({ lng: markerData.position.lng, lat: markerData.position.lat });
 
           var el = document.createElement('div');
-          el.style.cursor = 'pointer';
+          el.style.pointerEvents = 'none';
+
+          var baseWidth = 24;
+          var baseHeight = 24;
 
           if (markerData.icon) {
             el.innerHTML = markerData.icon;
             if (markerData.size && markerData.size.length === 2) {
-              el.style.width = markerData.size[0] + 'px';
-              el.style.height = markerData.size[1] + 'px';
+              baseWidth = markerData.size[0];
+              baseHeight = markerData.size[1];
+              el.style.width = baseWidth + 'px';
+              el.style.height = baseHeight + 'px';
             }
           } else {
-            el.style.width = '24px';
-            el.style.height = '24px';
+            el.style.width = baseWidth + 'px';
+            el.style.height = baseHeight + 'px';
             el.style.backgroundColor = '#1565c0';
             el.style.borderRadius = '50%';
             el.style.border = '2px solid white';
           }
 
           var markerId = markerData.id;
-          el.addEventListener('click', function (e) {
-            e.stopPropagation();
-            sendToRN({ tag: 'onMapMarkerClicked', mapMarkerId: markerId });
-          });
 
-          var offset = [0, 0];
+          var baseOffsetX = 0;
+          var baseOffsetY = 0;
           if (
             markerData.iconAnchor &&
             markerData.iconAnchor.length === 2 &&
             markerData.size &&
             markerData.size.length === 2
           ) {
-            offset = [
-              markerData.size[0] / 2 - markerData.iconAnchor[0],
-              markerData.size[1] / 2 - markerData.iconAnchor[1],
-            ];
+            baseOffsetX = markerData.size[0] / 2 - markerData.iconAnchor[0];
+            baseOffsetY = markerData.size[1] / 2 - markerData.iconAnchor[1];
           }
 
-          var marker = new maplibregl.Marker({ element: el, offset: offset })
+          var marker = new maplibregl.Marker({ element: el, offset: [baseOffsetX, baseOffsetY] })
             .setLngLat([markerData.position.lng, markerData.position.lat])
             .addTo(map);
 
           activeMarkers[markerId] = marker;
+          markerMetaMap[markerId] = {
+            el: el,
+            marker: marker,
+            baseWidth: baseWidth,
+            baseHeight: baseHeight,
+            baseOffsetX: baseOffsetX,
+            baseOffsetY: baseOffsetY,
+          };
         });
+
+        // Apply initial zoom-based scaling immediately
+        rescaleMarkers();
+      }
+
+      /**
+       * Rescale all active markers based on the current zoom relative to the
+       * reference zoom at which their base sizes were defined. This makes
+       * billboards grow when zooming in and shrink when zooming out, behaving
+       * like objects anchored in the 3-D world.
+       */
+      function rescaleMarkers() {
+        if (markerReferenceZoom == null || !map) return;
+        var currentZoom = map.getZoom();
+        var scale = Math.pow(2, currentZoom - markerReferenceZoom);
+        // Clamp scale to avoid absurdly large or tiny markers
+        scale = Math.max(MIN_MARKER_SCALE, Math.min(scale, MAX_MARKER_SCALE));
+        var ids = Object.keys(markerMetaMap);
+        for (var i = 0; i < ids.length; i++) {
+          var meta = markerMetaMap[ids[i]];
+          var w = meta.baseWidth * scale;
+          var h = meta.baseHeight * scale;
+          meta.el.style.width = w + 'px';
+          meta.el.style.height = h + 'px';
+          // Scale the marker offset proportionally so the anchor stays correct
+          meta.marker.setOffset([meta.baseOffsetX * scale, meta.baseOffsetY * scale]);
+        }
       }
 
       var PEOPLE_COUNT = 80;
@@ -4416,6 +4461,8 @@
                     id: layId, type: 'raster', source: srcId,
                     paint: { 'raster-opacity': ov.opacity != null ? ov.opacity : 0.9 },
                   });
+                  // Keep billboard layer above newly added image overlay layers
+                  if (map.getLayer(BILLBOARD_LAYER_ID)) map.moveLayer(BILLBOARD_LAYER_ID);
                 } catch (e) {
                   console.error('Image overlay canvas error for ' + ov.id + ':', e);
                 }
@@ -4428,6 +4475,8 @@
                 id: layId, type: 'raster', source: srcId,
                 paint: { 'raster-opacity': ov.opacity != null ? ov.opacity : 0.85 },
               });
+              // Keep billboard layer above newly added image overlay layers
+              if (map.getLayer(BILLBOARD_LAYER_ID)) map.moveLayer(BILLBOARD_LAYER_ID);
             }
           })(validOverlays[i]);
         }
@@ -4596,218 +4645,320 @@
       }
 
 
-      // ── Billboard markers (upright SVG sprites on map, zoom-scaled) ──────────────
-      var activeBillboardMarkers = {};
-      // Stores sizing data for each active billboard to allow zoom-driven resize.
-      var activeBillboardData = [];
-      // Debug: when true, shows a pink dot at the anchor point (center) of each billboard.
-      var debugShowBillboardAnchors = false;
+      // ── Static dot markers (fixed colored circles at lat/lng positions) ──────────
+      // Each marker: { id, lat, lng, color, sizePx }
+      var activeStaticMarkers = {};
 
-      // SVG templates for built-in billboard types.
-      // No width/height attributes – sizes are set dynamically based on zoom.
-      // Each entry has: svg (string) and ratio (height/width).
-      var BILLBOARD_SVG = {
-        tree: {
-          svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 60">' +
-               '<polygon points="20,2 38,22 2,22" fill="#2e7d32"/>' +
-               '<polygon points="20,12 36,32 4,32" fill="#388e3c"/>' +
-               '<polygon points="20,22 35,42 5,42" fill="#43a047"/>' +
-               '<rect x="17" y="42" width="6" height="14" fill="#5d4037"/>' +
-               '</svg>',
-          ratio: 1.5,
-        },
-      };
-
-      // Image-based billboard types registered at runtime via the billboardImages message.
-      // Simple image entry: { url, ratio }  (ratio = height/width)
-      // Sprite-sheet entry: { url, sprites, sheetW, sheetH }
-      //   sprites = array of { x, y, w, h } bounding boxes in SVG coordinate space.
-      //   Individual sprite N is rendered via CSS background-image clipping.
-      var BILLBOARD_IMAGES = {};
-
-      // Compute metres represented by one CSS pixel at a given zoom and latitude.
-      function billboardMetersPerPixel(zoom, lat) {
-        return 40075016.686 * Math.cos(lat * Math.PI / 180) / (256 * Math.pow(2, zoom));
-      }
-
-      // Resize all active billboard elements to match the current map zoom.
-      // Also recomputes the visual-centroid offset to keep each billboard centred on the
-      // projected hex tile regardless of map pitch or bearing.
-      function refreshBillboardSizes() {
-        if (!map || activeBillboardData.length === 0) return;
-        var zoom = map.getZoom();
-        for (var i = 0; i < activeBillboardData.length; i++) {
-          var d = activeBillboardData[i];
-          var mpp = billboardMetersPerPixel(zoom, d.lat);
-          var px = d.sizem / mpp;
-          d.sizeEl.style.width = px + 'px';
-          d.sizeEl.style.height = (px * d.ratio) + 'px';
-          // Spacer height: shifts image up so the anchorY point on the image sits at the
-          // geographic coordinate. Formula derived from: anchorY*H = (H+spacer)/2
-          //   => spacer = (2*anchorY - 1) * H
-          var spacerH = Math.max(0, (2 * d.anchorY - 1) * px * d.ratio);
-          if (d.spacerEl) {
-            d.spacerEl.style.height = spacerH + 'px';
-            d.spacerEl.style.width = px + 'px';
-          }
-          // Set explicit wrapper dimensions so MapLibre always sees the correct element size.
-          var totalH = px * d.ratio + spacerH;
-          if (d.wrapperEl) {
-            d.wrapperEl.style.width = px + 'px';
-            d.wrapperEl.style.height = totalH + 'px';
-          }
-          // Visual-centroid correction: with a pitched map, the perspective projection places
-          // the geographic centre higher than the visual centroid of the hex tile shape. Shift
-          // the billboard so the element centre lands on the mean of the projected hex vertices
-          // (the true visual centroid), which stays correct for any pitch and bearing.
-          if (d.marker) {
-            var vcOffsetX = 0, vcOffsetY = 0;
-            if (d.hexBoundary && d.hexBoundary.length > 0) {
-              var gc = map.project([d.lng, d.lat]);
-              var sumX = 0, sumY = 0;
-              for (var j = 0; j < d.hexBoundary.length; j++) {
-                var vp = map.project(d.hexBoundary[j]);
-                sumX += vp.x;
-                sumY += vp.y;
-              }
-              vcOffsetX = sumX / d.hexBoundary.length - gc.x;
-              vcOffsetY = sumY / d.hexBoundary.length - gc.y;
-            }
-            d.marker.setOffset([vcOffsetX, vcOffsetY]);
-          }
-          // For sprite-sheet billboards: update CSS background-position and background-size
-          // so only the selected sprite region is visible at the correct zoom scale.
-          if (d.sprite) {
-            var scale = px / d.sprite.w;
-            d.sizeEl.style.backgroundSize = (d.sheetW * scale) + 'px ' + (d.sheetH * scale) + 'px';
-            d.sizeEl.style.backgroundPosition = (-d.sprite.x * scale) + 'px ' + (-d.sprite.y * scale) + 'px';
-          }
+      function updateStaticMarkers(markers) {
+        var keys = Object.keys(activeStaticMarkers);
+        for (var i = 0; i < keys.length; i++) {
+          activeStaticMarkers[keys[i]].remove();
         }
-      }
+        activeStaticMarkers = {};
 
-      function updateBillboards(billboards) {
-        // Remove existing billboard markers.
-        var ids = Object.keys(activeBillboardMarkers);
-        for (var i = 0; i < ids.length; i++) {
-          activeBillboardMarkers[ids[i]].remove();
-        }
-        activeBillboardMarkers = {};
-        activeBillboardData = [];
-        if (!billboards || !Array.isArray(billboards)) return;
-        for (var j = 0; j < billboards.length; j++) {
-          var bb = billboards[j];
+        if (!markers || !Array.isArray(markers)) return;
+
+        for (var j = 0; j < markers.length; j++) {
+          var m = markers[j];
+          var size = m.sizePx || 14;
           var el = document.createElement('div');
+          el.style.width = size + 'px';
+          el.style.height = size + 'px';
+          el.style.borderRadius = '50%';
+          el.style.background = m.color || '#facc15';
+          el.style.border = '2px solid rgba(0,0,0,0.45)';
           el.style.pointerEvents = 'none';
-          var sizeEl;
-          var ratio;
-          var sprite = null;
-          var sheetW = 0;
-          var sheetH = 0;
+          el.style.boxSizing = 'border-box';
 
-          // Resolve base type and optional sprite index (format: 'baseType:index')
-          var colonIdx = bb.type.indexOf(':');
-          var baseType = colonIdx >= 0 ? bb.type.slice(0, colonIdx) : bb.type;
-          var spriteIdxStr = colonIdx >= 0 ? bb.type.slice(colonIdx + 1) : null;
-
-          if (BILLBOARD_SVG[bb.type] !== undefined) {
-            var def = BILLBOARD_SVG[bb.type];
-            el.innerHTML = def.svg;
-            sizeEl = el.querySelector('svg');
-            ratio = def.ratio;
-          } else if (spriteIdxStr !== null && BILLBOARD_IMAGES[baseType] !== undefined && BILLBOARD_IMAGES[baseType].sprites) {
-            // Sprite-sheet billboard: render only the selected sprite using CSS background clipping.
-            var imgDef = BILLBOARD_IMAGES[baseType];
-            var spriteIdx = parseInt(spriteIdxStr, 10);
-            sprite = (!isNaN(spriteIdx) && spriteIdx >= 0) ? imgDef.sprites[spriteIdx] : undefined;
-            if (sprite) {
-              sheetW = imgDef.sheetW;
-              sheetH = imgDef.sheetH;
-              el.style.overflow = 'hidden';
-              el.style.backgroundImage = 'url(' + imgDef.url + ')';
-              el.style.backgroundRepeat = 'no-repeat';
-              sizeEl = el;
-              ratio = sprite.h / sprite.w;
-            } else {
-              sprite = null;
-              var fallbackSpr = BILLBOARD_SVG.tree;
-              el.innerHTML = fallbackSpr.svg;
-              sizeEl = el.querySelector('svg');
-              ratio = fallbackSpr.ratio;
-            }
-          } else if (BILLBOARD_IMAGES[bb.type] !== undefined) {
-            var imgDef = BILLBOARD_IMAGES[bb.type];
-            var img = document.createElement('img');
-            img.src = imgDef.url;
-            img.style.display = 'block';
-            el.appendChild(img);
-            sizeEl = img;
-            ratio = imgDef.ratio;
-          } else {
-            var fallback = BILLBOARD_SVG.tree;
-            el.innerHTML = fallback.svg;
-            sizeEl = el.querySelector('svg');
-            ratio = fallback.ratio;
-          }
-          el.style.display = 'block';
-          // Per-sprite anchor: wrap the visual element in a container with a transparent spacer
-          // below it so the anchor point (anchorY fraction from top of visual) aligns with the
-          // geographic coordinate. With anchor:'center', MapLibre reads the wrapper dimensions
-          // and centres the element on the geographic coordinate; refreshBillboardSizes() then
-          // applies a visual-centroid correction offset to account for map pitch.
-          var anchorY = (typeof bb.anchorY === 'number') ? bb.anchorY : 0.5;
-          var spacerEl = document.createElement('div');
-          spacerEl.style.pointerEvents = 'none';
-          spacerEl.style.display = 'block';
-          spacerEl.style.height = '0px';
-          var wrapperEl = document.createElement('div');
-          wrapperEl.style.pointerEvents = 'none';
-          wrapperEl.style.position = 'relative';
-          wrapperEl.style.display = 'inline-block';
-          wrapperEl.style.lineHeight = '0';
-          wrapperEl.appendChild(el);
-          wrapperEl.appendChild(spacerEl);
-          // Debug anchor dot: pink circle shown only when debugShowBillboardAnchors is true.
-          // Marks the visual centroid of the hex tile (= element centre after perspective correction).
-          var anchorDot = document.createElement('div');
-          anchorDot.style.position = 'absolute';
-          anchorDot.style.top = '50%';
-          anchorDot.style.left = '50%';
-          anchorDot.style.transform = 'translate(-50%, -50%)';
-          anchorDot.style.width = '10px';
-          anchorDot.style.height = '10px';
-          anchorDot.style.borderRadius = '50%';
-          anchorDot.style.background = '#ff69b4';
-          anchorDot.style.pointerEvents = 'none';
-          anchorDot.style.zIndex = '9999';
-          anchorDot.style.display = debugShowBillboardAnchors ? 'block' : 'none';
-          wrapperEl.appendChild(anchorDot);
-          // anchor:'center' lets MapLibre automatically centre the wrapper element on the
-          // geographic coordinate. refreshBillboardSizes() adds a perspective-correction
-          // setOffset so the element centre lands on the visual centroid of the hex tile.
-          var marker = new maplibregl.Marker({ element: wrapperEl, anchor: 'center' })
-            .setLngLat([bb.position.lng, bb.position.lat])
+          var marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+            .setLngLat([m.lng, m.lat])
             .addTo(map);
-          activeBillboardMarkers[bb.id] = marker;
-          activeBillboardData.push({
-            id: bb.id,
-            sizeEl: sizeEl,
-            spacerEl: spacerEl,
-            wrapperEl: wrapperEl,
-            marker: marker,
-            anchorY: anchorY,
-            anchorDot: anchorDot,
-            lat: bb.position.lat,
-            lng: bb.position.lng,
-            sizem: bb.sizem || 72,
-            ratio: ratio,
-            sprite: sprite,
-            sheetW: sheetW,
-            sheetH: sheetH,
-            hexBoundary: (bb.hexBoundary && Array.isArray(bb.hexBoundary)) ? bb.hexBoundary : null,
-          });
+
+          activeStaticMarkers[m.id] = marker;
         }
-        // Apply correct size at the current zoom immediately after placing markers.
-        refreshBillboardSizes();
+      }
+
+      // ── Billboard THREE.js custom layer (fixed world-space size with 3D perspective) ──
+      // Billboards are rendered as THREE.js plane meshes inside a MapLibre custom
+      // layer. The layer uses the default (2D) renderingMode so that billboards
+      // are drawn AFTER 3D buildings and hex tiles. Perspective scaling is handled
+      // by the projection matrix provided by MapLibre.
+      // Pitch alignment can be toggled between 'map' (flat on ground) and
+      // 'viewport' (face camera, following both bearing and pitch) via billboardPitchAlignment.
+      var BILLBOARD_LAYER_ID = 'billboard-3d-layer';
+      // Logical icon size used for pixel-to-meter conversion (must match BILLBOARD_STANDARD_ICON_SIZE in index.tsx).
+      var BILLBOARD_ICON_SIZE = 128;
+      // SVGs are rasterized at high resolution for crisp textures when viewed up close.
+      var BILLBOARD_RENDER_SIZE = 512;
+      // Earth circumference at equator / 256 tile-pixels.
+      // Used to convert pixel sizes at a given zoom to meters.
+      var BILLBOARD_METERS_PER_PIXEL_Z0 = 156543.03392;
+      var billboardTextureCache = {}; // iconKey → THREE.CanvasTexture
+      var billboardUpdateGeneration = 0;
+      // Current pitch alignment: 'map' = flat on ground, 'viewport' = face camera
+      var billboardPitchAlignment = 'viewport';
+      // Whether to show anchor point indicators at the base of each billboard
+      var billboardShowAnchors = false;
+      // THREE.js state for the billboard custom layer
+      var billboardScene = null;
+      var billboardCamera = null;
+      var billboardRenderer = null;
+      var billboardLayerAdded = false;
+      // Center point in mercator coordinates for floating-point precision
+      var billboardCenter = { x: 0, y: 0, z: 0 };
+      // metersPerUnit at the center for coordinate conversion
+      var billboardMPU = 1;
+      // Pending meshes to add when the layer's onAdd fires
+      var billboardPendingMeshes = null;
+
+      function removeBillboardLayer() {
+        if (map && map.getLayer(BILLBOARD_LAYER_ID)) {
+          map.removeLayer(BILLBOARD_LAYER_ID);
+        }
+        billboardScene = null;
+        billboardCamera = null;
+        billboardRenderer = null;
+        billboardLayerAdded = false;
+        billboardPendingMeshes = null;
+      }
+
+      function updateBillboards(data) {
+        if (!map) return;
+        if (typeof THREE === 'undefined') return;
+        var images = data.images || {};
+        var features = data.features || [];
+        var imageKeys = Object.keys(images);
+        var pending = imageKeys.length;
+        var generation = ++billboardUpdateGeneration;
+
+        function buildScene() {
+          if (generation !== billboardUpdateGeneration) return;
+
+          // Dispose old meshes from existing scene
+          if (billboardScene) {
+            while (billboardScene.children.length > 0) {
+              var child = billboardScene.children[0];
+              billboardScene.remove(child);
+              if (child.geometry) child.geometry.dispose();
+              if (child.material) child.material.dispose();
+            }
+          }
+
+          if (features.length === 0) {
+            if (map) map.triggerRepaint();
+            return;
+          }
+
+          // Compute mercator positions for all features
+          var mercPositions = [];
+          var sumX = 0, sumY = 0;
+          for (var i = 0; i < features.length; i++) {
+            var coords = features[i].geometry.coordinates;
+            var merc = maplibregl.MercatorCoordinate.fromLngLat(coords, 0);
+            mercPositions.push(merc);
+            sumX += merc.x;
+            sumY += merc.y;
+          }
+          billboardCenter.x = sumX / features.length;
+          billboardCenter.y = sumY / features.length;
+          billboardCenter.z = 0;
+          // meterInMercatorCoordinateUnits at the first feature's position.
+          // For a local cluster of billboards, the variation is negligible.
+          billboardMPU = mercPositions[0].meterInMercatorCoordinateUnits();
+
+          // Create plane meshes for each billboard
+          var meshes = [];
+          // Equatorial meters-per-pixel at zoom 14 (no cos(lat) factor).
+          // Using the equatorial value ensures the billboard width in Mercator units
+          // scales by the same 1/cos(lat) factor as the surrounding H3 hex tiles
+          // (Mercator stretch), so the billboard maintains a constant visual ratio to
+          // its hex regardless of the user's latitude.
+          // With cos(lat) included, the billboard would have a fixed screen-pixel size
+          // while hexes grow toward the poles, making the billboard appear progressively
+          // smaller relative to its hex at higher latitudes.
+          var metersPerPixelZ14Equator = BILLBOARD_METERS_PER_PIXEL_Z0 / Math.pow(2, 14);
+          for (var fi = 0; fi < features.length; fi++) {
+            var feature = features[fi];
+            var merc = mercPositions[fi];
+            var iconKey = feature.properties.iconKey;
+            var iconSizeAtRefZoom = feature.properties.iconSizeAtRefZoom;
+            var anchorX = feature.properties.anchorX !== undefined ? feature.properties.anchorX : 0.5;
+            var anchorY = feature.properties.anchorY !== undefined ? feature.properties.anchorY : 1.0;
+
+            var texture = billboardTextureCache[iconKey];
+            if (!texture) continue;
+
+            // Convert pixel size at zoom 14 (equator-relative) to geographic meters.
+            var sizeMeters = iconSizeAtRefZoom * BILLBOARD_ICON_SIZE * metersPerPixelZ14Equator;
+
+            var geometry = new THREE.PlaneGeometry(1, 1);
+            // Shift geometry so the anchor point (anchorX/anchorY fraction) aligns with the mesh origin.
+            // anchorX=0.5 → horizontally centered (no shift), anchorX=0 → left-anchored.
+            // anchorY=1.0 → bottom-anchored (shift up by 0.5), anchorY=0.5 → vertically centered (no shift).
+            geometry.translate(anchorX - 0.5, anchorY - 0.5, 0);
+            var material = new THREE.MeshBasicMaterial({
+              map: texture,
+              transparent: true,
+              side: THREE.DoubleSide,
+              depthTest: false,
+              depthWrite: false,
+            });
+            var mesh = new THREE.Mesh(geometry, material);
+
+            // Position relative to center, in meters (reuse cached billboardMPU).
+            // dy is negated because the local→mercator scale matrix uses
+            // -billboardMPU on Y (Y-flip). Without the negation, multiple
+            // billboards would be reflected around the group center.
+            var dx = (merc.x - billboardCenter.x) / billboardMPU;
+            var dy = (billboardCenter.y - merc.y) / billboardMPU;
+            mesh.position.set(dx, dy, 0);
+            mesh.scale.set(sizeMeters, sizeMeters, sizeMeters);
+
+            meshes.push(mesh);
+
+            // Anchor point indicator: round circle overlaid on the billboard.
+            // renderOrder > 0 ensures it renders after the transparent billboard mesh.
+            // transparent: true places it in the same render pass so renderOrder is respected.
+            // Always create anchor meshes so toggling billboardShowAnchors later works
+            // without requiring a map reload.
+            var anchorGeo = new THREE.CircleGeometry(0.05, 16);
+            var anchorMat = new THREE.MeshBasicMaterial({
+              color: 0xff4444,
+              depthTest: false,
+              depthWrite: false,
+              transparent: true,
+            });
+            var anchorMesh = new THREE.Mesh(anchorGeo, anchorMat);
+            anchorMesh.position.set(dx, dy, 0);
+            anchorMesh.scale.set(sizeMeters, sizeMeters, sizeMeters);
+            anchorMesh.renderOrder = 1;
+            // Tag so we can identify anchor meshes later
+            anchorMesh.userData.isAnchorPoint = true;
+            anchorMesh.visible = billboardShowAnchors;
+            meshes.push(anchorMesh);
+          }
+
+          // If the layer is already added and the scene exists, add meshes directly
+          if (billboardLayerAdded && billboardScene) {
+            for (var mi = 0; mi < meshes.length; mi++) {
+              billboardScene.add(meshes[mi]);
+            }
+            map.triggerRepaint();
+          } else {
+            // Store meshes for when the layer's onAdd fires
+            billboardPendingMeshes = meshes;
+            addBillboardLayer();
+          }
+        }
+
+        // Load images and create textures
+        if (pending === 0) {
+          buildScene();
+          return;
+        }
+
+        imageKeys.forEach(function (key) {
+          if (billboardTextureCache[key]) {
+            pending--;
+            if (pending === 0) buildScene();
+            return;
+          }
+          var imgData = images[key];
+          var canvas = document.createElement('canvas');
+          canvas.width = BILLBOARD_RENDER_SIZE;
+          canvas.height = BILLBOARD_RENDER_SIZE;
+          var ctx = canvas.getContext('2d');
+          var img = new Image();
+          img.onload = function () {
+            if (generation !== billboardUpdateGeneration) return;
+            ctx.drawImage(img, 0, 0, BILLBOARD_RENDER_SIZE, BILLBOARD_RENDER_SIZE);
+            var texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            billboardTextureCache[key] = texture;
+            pending--;
+            if (pending === 0) buildScene();
+          };
+          img.onerror = function () {
+            if (generation !== billboardUpdateGeneration) return;
+            pending--;
+            if (pending === 0) buildScene();
+          };
+          img.src = imgData.url;
+        });
+      }
+
+      function addBillboardLayer() {
+        if (billboardLayerAdded) return;
+        if (!map || typeof THREE === 'undefined') return;
+
+        var customLayer = {
+          id: BILLBOARD_LAYER_ID,
+          type: 'custom',
+          onAdd: function (mapInst, gl) {
+            billboardCamera = new THREE.Camera();
+            billboardScene = new THREE.Scene();
+            billboardRenderer = new THREE.WebGLRenderer({
+              canvas: mapInst.getCanvas(),
+              context: gl,
+              antialias: true,
+            });
+            billboardRenderer.autoClear = false;
+
+            // Add any meshes that were created before onAdd fired
+            if (billboardPendingMeshes) {
+              for (var i = 0; i < billboardPendingMeshes.length; i++) {
+                billboardScene.add(billboardPendingMeshes[i]);
+              }
+              billboardPendingMeshes = null;
+            }
+          },
+          render: function (gl, args) {
+            if (!billboardScene || !billboardCamera || !billboardRenderer) return;
+            if (billboardScene.children.length === 0) return;
+
+            var rawMatrix = (args && args.projectionMatrix) ? args.projectionMatrix : args;
+            var m = new THREE.Matrix4().fromArray(rawMatrix);
+
+            // Local transform: translate to center, then scale from meters to
+            // mercator units with Y-flip for coordinate system conversion.
+            var l = new THREE.Matrix4()
+              .makeTranslation(billboardCenter.x, billboardCenter.y, billboardCenter.z)
+              .scale(new THREE.Vector3(billboardMPU, -billboardMPU, billboardMPU));
+
+            // For 'viewport' mode, tilt each billboard to face the camera
+            // (follows both bearing and pitch). For 'map' mode, leave flat on
+            // the ground.
+            if (billboardPitchAlignment === 'viewport') {
+              var pitchRad = map.getPitch() * Math.PI / 180;
+              var bearingRad = map.getBearing() * Math.PI / 180;
+              for (var vi = 0; vi < billboardScene.children.length; vi++) {
+                var child = billboardScene.children[vi];
+                // pitchRad tilts the billboard up from the ground by the camera
+                // pitch angle; -bearingRad rotates it around Z to face the
+                // camera direction. The negative sign on bearingRad compensates
+                // for the Y-flip (-billboardMPU) in the local→mercator scale
+                // matrix, which mirrors the Z-rotation direction.
+                child.rotation.set(pitchRad, 0, -bearingRad, 'ZXY');
+              }
+            } else {
+              for (var fi = 0; fi < billboardScene.children.length; fi++) {
+                billboardScene.children[fi].rotation.set(0, 0, 0);
+              }
+            }
+
+            billboardCamera.projectionMatrix = m.multiply(l);
+            billboardRenderer.resetState();
+            billboardRenderer.render(billboardScene, billboardCamera);
+            // In viewport mode, billboard rotations change with camera bearing,
+            // so request continuous repaints. In map mode the scene is static.
+            if (billboardPitchAlignment === 'viewport') {
+              map.triggerRepaint();
+            }
+          },
+        };
+
+        map.addLayer(customLayer);
+        billboardLayerAdded = true;
       }
 
       // Emoji fallback map for icons referenced by the map style but missing from its sprite sheet.
@@ -4913,19 +5064,36 @@
 
       // ─── Speed-colored route segments (activity detail view) ──────────────────
       // Each segment is { coords: [[lng,lat],[lng,lat]], speedKmh: number }.
-      // Slow segments (≤ 4 km/h) are red, fast segments (≥ 15 km/h) are green.
+      // Colors: min speed → red, avg speed → green, max speed → blue.
       var ROUTE_SEG_SOURCE  = 'route-seg-source';
       var ROUTE_SEG_BORDER  = 'route-seg-border-layer';
       var ROUTE_SEG_COLOR   = 'route-seg-color-layer';
       var routeSegmentsData = null;
+      // Speed range from the last routeSpeedRange message (min/avg/max in km/h).
+      var routeSpeedMin = 0, routeSpeedAvg = 0, routeSpeedMax = 0;
 
-      // Speed color: ≤ 4 km/h (slow walk) → red, ≥ 15 km/h (brisk run) → green
+      // Speed color: min → red (#ef4444), avg → green (#22c55e), max → blue (#3b82f6).
+      // Two-stage linear interpolation through the three color stops.
       function speedToColor(speedKmh) {
-        var slow = 4, fast = 15;
-        var t = Math.max(0, Math.min(1, (speedKmh - slow) / (fast - slow)));
-        var r = Math.round(229 * (1 - t) + 67 * t);
-        var g = Math.round(57  * (1 - t) + 160 * t);
-        var b = Math.round(53  * (1 - t) + 71  * t);
+        var minS = routeSpeedMin, avgS = routeSpeedAvg, maxS = routeSpeedMax;
+        var r, g, b;
+        if (maxS <= minS) {
+          // No useful range – use green for everything
+          r = 0x22; g = 0xc5; b = 0x5e;
+        } else if (speedKmh <= avgS || avgS <= minS) {
+          // Lower half: red → green
+          var lo = minS, hi = (avgS > minS) ? avgS : maxS;
+          var t = (hi > lo) ? Math.max(0, Math.min(1, (speedKmh - lo) / (hi - lo))) : 1;
+          r = Math.round(0xef + (0x22 - 0xef) * t);
+          g = Math.round(0x44 + (0xc5 - 0x44) * t);
+          b = Math.round(0x44 + (0x5e - 0x44) * t);
+        } else {
+          // Upper half: green → blue
+          var t2 = (maxS > avgS) ? Math.max(0, Math.min(1, (speedKmh - avgS) / (maxS - avgS))) : 1;
+          r = Math.round(0x22 + (0x3b - 0x22) * t2);
+          g = Math.round(0xc5 + (0x82 - 0xc5) * t2);
+          b = Math.round(0x5e + (0xf6 - 0x5e) * t2);
+        }
         return 'rgb(' + r + ',' + g + ',' + b + ')';
       }
 
@@ -4974,6 +5142,43 @@
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
+      // ─── Route start point circle ─────────────────────────────────────────────────
+      var ROUTE_START_SOURCE = 'route-start-source';
+      var ROUTE_START_LAYER  = 'route-start-layer';
+      var routeStartCoord    = null; // [lng, lat] or null
+      var ROUTE_POINT_RADIUS_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 6, 13, 9, 18, 14];
+
+      function updateRoutePointLayer(sourceId, layerId, color, coord) {
+        if (!map) return;
+        var geojson = {
+          type: 'FeatureCollection',
+          features: coord ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: coord }, properties: {} }] : [],
+        };
+        if (map.getSource(sourceId)) {
+          map.getSource(sourceId).setData(geojson);
+        } else {
+          map.addSource(sourceId, { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: layerId,
+            type: 'circle',
+            source: sourceId,
+            paint: {
+              'circle-radius': ROUTE_POINT_RADIUS_EXPR,
+              'circle-color': color,
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#ffffff',
+              'circle-opacity': 1,
+            },
+          });
+        }
+      }
+
+      function updateRouteStartPoint(coord) {
+        routeStartCoord = coord || null;
+        updateRoutePointLayer(ROUTE_START_SOURCE, ROUTE_START_LAYER, '#22c55e', routeStartCoord);
+      }
+      // ─────────────────────────────────────────────────────────────────────────────
+
       // ─── User location marker ─────────────────────────────────────────────────────
       var userLocationMarker = null;
       var userHeadingDeg = 0;
@@ -5018,10 +5223,71 @@
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
+      // ─── Auto-Rotate (requestAnimationFrame-based) ─────────────────────────────
+      var AUTO_ROTATE_DEFAULT_SPEED = 5;     // degrees per second
+      var AUTO_ROTATE_MAX_DELTA_SEC = 0.1;   // clamp frame delta to avoid jumps after tab-switch
+      var autoRotateState = { active: false, speed: 0, lastTime: null, rafId: null };
+
+      function autoRotateFrame(time) {
+        if (!autoRotateState.active || !map) {
+          autoRotateState.rafId = null;
+          return;
+        }
+        if (autoRotateState.lastTime !== null) {
+          var deltaSec = (time - autoRotateState.lastTime) / 1000;
+          // Clamp delta to avoid large jumps after tab-switch / background
+          if (deltaSec > AUTO_ROTATE_MAX_DELTA_SEC) deltaSec = AUTO_ROTATE_MAX_DELTA_SEC;
+          var newBearing = map.getBearing() + autoRotateState.speed * deltaSec;
+          map.setBearing(newBearing);
+        }
+        autoRotateState.lastTime = time;
+        autoRotateState.rafId = requestAnimationFrame(autoRotateFrame);
+      }
+
+      function startAutoRotate(speed) {
+        autoRotateState.speed = speed;
+        if (!autoRotateState.active) {
+          autoRotateState.active = true;
+          autoRotateState.lastTime = null;
+          autoRotateState.rafId = requestAnimationFrame(autoRotateFrame);
+        }
+      }
+
+      function stopAutoRotate(notify) {
+        autoRotateState.active = false;
+        autoRotateState.speed = 0;
+        autoRotateState.lastTime = null;
+        if (autoRotateState.rafId !== null) {
+          cancelAnimationFrame(autoRotateState.rafId);
+          autoRotateState.rafId = null;
+        }
+        if (notify) {
+          sendToRN({ tag: 'AutoRotateStopped' });
+        }
+      }
+      // ───────────────────────────────────────────────────────────────────────────
+
       function applyMessage(data) {
         if (!map) return;
 
+        // Auto-rotate control messages
+        if (data.autoRotate !== undefined) {
+          if (data.autoRotate) {
+            var speed = data.autoRotateSpeed != null ? data.autoRotateSpeed : AUTO_ROTATE_DEFAULT_SPEED;
+            startAutoRotate(speed);
+          } else {
+            stopAutoRotate(false);
+          }
+        }
+        if (data.autoRotateSpeed !== undefined && autoRotateState.active) {
+          autoRotateState.speed = data.autoRotateSpeed;
+          if (data.autoRotateSpeed === 0) {
+            stopAutoRotate(false);
+          }
+        }
+
         if (data.resetBearing) {
+          stopAutoRotate(true);
           map.resetNorth({ animate: true });
           return;
         }
@@ -5098,6 +5364,16 @@
           } else {
             map.jumpTo(bearingOpts);
           }
+        } else if (data.bearingDelta != null) {
+          // Relative bearing change
+          var newBearing = map.getBearing() + data.bearingDelta;
+          var bdOpts = { bearing: newBearing };
+          if (data.easeAnimation) {
+            bdOpts.duration = data.easeDuration != null ? data.easeDuration : 100;
+            map.easeTo(bdOpts);
+          } else {
+            map.jumpTo(bdOpts);
+          }
         } else if (data.zoomTo != null) {
           map.easeTo({ zoom: data.zoomTo, duration: data.easeDuration != null ? data.easeDuration : 300 });
         } else if (data.pitch != null) {
@@ -5105,7 +5381,7 @@
         }
 
         if (data.mapMarkers !== undefined) {
-          updateMarkers(data.mapMarkers);
+          updateMarkers(data.mapMarkers, data.mapMarkersReferenceZoom);
         }
 
         if (data.vehicleMarker !== undefined) {
@@ -5161,22 +5437,33 @@
           updateGlbModels(data.glbModels);
         }
 
-        if (data.billboardImages !== undefined && data.billboardImages !== null) {
-          var imgs = data.billboardImages;
-          var imgKeys = Object.keys(imgs);
-          for (var bi = 0; bi < imgKeys.length; bi++) {
-            BILLBOARD_IMAGES[imgKeys[bi]] = imgs[imgKeys[bi]];
-          }
+        if (data.staticMarkers !== undefined) {
+          updateStaticMarkers(data.staticMarkers);
         }
 
         if (data.billboards !== undefined) {
           updateBillboards(data.billboards);
         }
 
-        if (data.billboardDebugAnchors !== undefined) {
-          debugShowBillboardAnchors = !!data.billboardDebugAnchors;
-          for (var bda = 0; bda < activeBillboardData.length; bda++) {
-            activeBillboardData[bda].anchorDot.style.display = debugShowBillboardAnchors ? 'block' : 'none';
+        if (data.billboardPitchAlignment !== undefined) {
+          var align = data.billboardPitchAlignment === 'viewport' ? 'viewport' : 'map';
+          billboardPitchAlignment = align;
+          // The THREE.js billboard layer handles alignment in its render loop,
+          // so just trigger a repaint to apply the change immediately.
+          if (map) map.triggerRepaint();
+        }
+
+        if (data.billboardShowAnchors !== undefined) {
+          billboardShowAnchors = !!data.billboardShowAnchors;
+          // Toggle visibility of existing anchor point meshes in the scene
+          if (billboardScene) {
+            for (var ai = 0; ai < billboardScene.children.length; ai++) {
+              var child = billboardScene.children[ai];
+              if (child.userData && child.userData.isAnchorPoint) {
+                child.visible = billboardShowAnchors;
+              }
+            }
+            if (map) map.triggerRepaint();
           }
         }
 
@@ -5255,8 +5542,18 @@
           updateRouteTrackLayer(data.routeCoordinates);
         }
 
+        if (data.routeSpeedRange !== undefined) {
+          var sr = data.routeSpeedRange;
+          routeSpeedMin = (sr && sr.min != null) ? sr.min : 0;
+          routeSpeedAvg = (sr && sr.avg != null) ? sr.avg : 0;
+          routeSpeedMax = (sr && sr.max != null) ? sr.max : 0;
+        }
         if (data.routeSegments !== undefined) {
           updateRouteSegmentsLayer(data.routeSegments);
+        }
+
+        if (data.routeStartPoint !== undefined) {
+          updateRouteStartPoint(data.routeStartPoint);
         }
 
         if (data.userLocation !== undefined) {
@@ -5332,20 +5629,14 @@
           }
         });
 
-        map.on('zoom', function () {
-          refreshBillboardSizes();
-        });
-
-        map.on('rotate', function () {
-          refreshBillboardSizes();
-        });
-
-        map.on('pitch', function () {
-          refreshBillboardSizes();
-        });
-
         map.on('zoomend', function () {
           sendToRN({ tag: 'onZoomEnd', zoom: map.getZoom() });
+        });
+
+        // Continuously rescale billboard markers during zoom so they behave
+        // like world-anchored objects (grow on zoom-in, shrink on zoom-out).
+        map.on('zoom', function () {
+          rescaleMarkers();
         });
 
         map.on('pitchend', function () {
@@ -5416,8 +5707,24 @@
           }
         });
 
+        // Stop auto-rotate as early as possible when the user touches/clicks the map,
+        // before MapLibre's gesture handler or movestart fires.
+        var mapCanvas = map.getCanvasContainer();
+        function onUserGestureStart() {
+          if (autoRotateState.active) {
+            stopAutoRotate(true);
+          }
+        }
+        mapCanvas.addEventListener('touchstart', onUserGestureStart, { passive: true, capture: true });
+        mapCanvas.addEventListener('mousedown', onUserGestureStart, { capture: true });
+
         map.on('movestart', function (e) {
           if (e.originalEvent) {
+            // Stop auto-rotate on user interaction (fallback for programmatic gestures
+            // that still carry an originalEvent, e.g. scroll-zoom).
+            if (autoRotateState.active) {
+              stopAutoRotate(true);
+            }
             sendToRN({ tag: 'MapInteracted' });
           }
         });
@@ -5444,6 +5751,9 @@
           }
           if (routeSegmentsData && !map.getSource(ROUTE_SEG_SOURCE)) {
             updateRouteSegmentsLayer(routeSegmentsData);
+          }
+          if (routeStartCoord && !map.getSource(ROUTE_START_SOURCE)) {
+            updateRouteStartPoint(routeStartCoord);
           }
         });
       }

@@ -1,7 +1,7 @@
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
 	Alert,
-	FlatList,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -11,98 +11,19 @@ import {
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import * as Clipboard from 'expo-clipboard';
+import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+
+import SettingsListActivity from '../../components/SettingsListActivity';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
-import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { startRun, markVisited } from '../../store/hexTileSlice';
-import { AppDispatch } from '../../store/store';
+import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
+import { isAvailable as isH3Available, latLngToCell, gridPathCells } from '../../helpers/H3Helper';
+import { startRun, markVisited, loadPersistedState, applyMapCustomizations, addWalkedEdges, loadWalkedEdgesState } from '../../store/hexTileSlice';
+import { AppDispatch, store } from '../../store/store';
 
 const PRIMARY_COLOR = '#2563eb';
-
-function formatDate(timestamp: number): string {
-	const d = new Date(timestamp);
-	return d.toLocaleDateString(undefined, {
-		day: '2-digit',
-		month: 'short',
-		year: 'numeric',
-	});
-}
-
-function formatTime(timestamp: number): string {
-	const d = new Date(timestamp);
-	return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDuration(totalSeconds: number): string {
-	const h = Math.floor(totalSeconds / 3600);
-	const m = Math.floor((totalSeconds % 3600) / 60);
-	const s = Math.floor(totalSeconds % 60);
-	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-	return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-function formatDistance(km: number): string {
-	if (km < 1) return `${Math.round(km * 1000)} m`;
-	return `${km.toFixed(2)} km`;
-}
-
-function formatPace(minPerKm: number): string {
-	if (minPerKm <= 0 || !isFinite(minPerKm)) return '--:--';
-	const m = Math.floor(minPerKm);
-	const s = Math.round((minPerKm - m) * 60);
-	return `${m}:${String(s).padStart(2, '0')} /km`;
-}
-
-type ActivityListItemProps = {
-	activity: SavedActivity;
-	onPress: () => void;
-	theme: ReturnType<typeof useTheme>['theme'];
-};
-
-function ActivityListItem({ activity, onPress, theme }: ActivityListItemProps) {
-	const { stats } = activity;
-	return (
-		<TouchableOpacity
-			style={[styles.itemCard, { backgroundColor: theme.screen.background, borderColor: theme.screen.text + '18' }]}
-			onPress={onPress}
-			activeOpacity={0.75}
-		>
-			<View style={[styles.itemIconWrapper, { backgroundColor: PRIMARY_COLOR + '18' }]}>
-				<MaterialIcons name="directions-run" size={26} color={PRIMARY_COLOR} />
-			</View>
-			<View style={styles.itemContent}>
-				<Text style={[styles.itemDate, { color: theme.screen.text }]}>
-					{formatDate(activity.startedAt)}
-					{'  '}
-					<Text style={[styles.itemTime, { color: theme.screen.icon }]}>{formatTime(activity.startedAt)}</Text>
-				</Text>
-				<View style={styles.itemStats}>
-					<View style={styles.itemStatChip}>
-						<MaterialIcons name="straighten" size={13} color={PRIMARY_COLOR} />
-						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-							{formatDistance(stats.distanceKm)}
-						</Text>
-					</View>
-					<View style={styles.itemStatChip}>
-						<MaterialIcons name="speed" size={13} color={PRIMARY_COLOR} />
-						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-							{formatPace(stats.paceMinPerKm)}
-						</Text>
-					</View>
-					<View style={styles.itemStatChip}>
-						<MaterialIcons name="timer" size={13} color={theme.screen.icon} />
-						<Text style={[styles.itemStatText, { color: theme.screen.text }]}>
-							{formatDuration(stats.durationSeconds)}
-						</Text>
-					</View>
-				</View>
-			</View>
-			<MaterialIcons name="chevron-right" size={22} color={theme.screen.icon} />
-		</TouchableOpacity>
-	);
-}
 
 // ─── Import Content (shown inside bottom sheet modal) ─────────────────────────
 
@@ -159,12 +80,16 @@ export default function ActivitiesScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
+	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	const loadData = useCallback(() => {
 		setLoading(true);
-		loadActivities()
-			.then(setActivities)
+		Promise.all([loadActivities(), loadRoutes()])
+			.then(([acts, rts]) => {
+				setActivities(acts);
+				setRoutes(rts);
+			})
 			.finally(() => setLoading(false));
 	}, []);
 
@@ -196,21 +121,137 @@ export default function ActivitiesScreen() {
 			Alert.alert('Import Failed', 'The code is not valid JSON.');
 			return;
 		}
-		const activity = parsed as SavedActivity;
-		if (
-			typeof activity.id !== 'string' ||
-			typeof activity.startedAt !== 'number' ||
-			!Array.isArray(activity.routePoints)
-		) {
-			Alert.alert('Import Failed', 'The data does not look like a valid activity.');
-			return;
+
+		// Support both a single activity object and an array of activities.
+		const rawActivities: unknown[] = Array.isArray(parsed) ? parsed : [parsed];
+		const validActivities: SavedActivity[] = [];
+		for (const item of rawActivities) {
+			const activity = item as SavedActivity;
+			if (
+				typeof activity.id !== 'string' ||
+				typeof activity.startedAt !== 'number' ||
+				!Array.isArray(activity.routePoints)
+			) {
+				Alert.alert('Import Failed', 'One or more entries do not look like valid activities.');
+				return;
+			}
+			validActivities.push(activity);
 		}
-		saveActivity(activity);
-		applyImportedHexTiles(activity);
+		for (const activity of validActivities) {
+			saveActivity(activity);
+			applyImportedHexTiles(activity);
+		}
 		closeImportModal();
 		loadData();
-		Alert.alert('Imported', 'The run has been imported successfully.');
+		const count = validActivities.length;
+		Alert.alert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
 	}, [applyImportedHexTiles, closeImportModal, loadData]);
+
+	const handleExportAll = useCallback(async () => {
+		const allActivities = await loadActivities();
+		if (allActivities.length === 0) {
+			Alert.alert('Nothing to Export', 'There are no activities to export.');
+			return;
+		}
+		const json = JSON.stringify(allActivities, null, 2);
+		await Clipboard.setStringAsync(json);
+		const count = allActivities.length;
+		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+	}, []);
+
+	const handleRebuildMap = useCallback(() => {
+		Alert.alert(
+			'Rebuild Map from Activities',
+			'This will recalculate the explored map from all your saved activities. Billboard and terrain tile settings will be preserved. Continue?',
+			[
+				{ text: 'Cancel', style: 'cancel' },
+				{
+					text: 'Rebuild',
+					style: 'destructive',
+					onPress: async () => {
+						if (!isH3Available()) {
+							Alert.alert('Not Available', 'H3 library is not available on this device.');
+							return;
+						}
+						const allActivities = await loadActivities();
+						if (allActivities.length === 0) {
+							Alert.alert('No Activities', 'There are no activities to rebuild the map from.');
+							return;
+						}
+
+						// Preserve existing billboard / terrain customizations
+						const currentRecords = store.getState().hexTiles.records;
+						const customizations: Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }> = {};
+						for (const [h3Index, record] of Object.entries(currentRecords)) {
+							if (record.tileImage !== undefined || record.billboard !== undefined || record.billboardAnchorColor !== undefined || record.billboards !== undefined) {
+								customizations[h3Index] = {};
+								if (record.tileImage !== undefined) customizations[h3Index].tileImage = record.tileImage;
+								if (record.billboard !== undefined) customizations[h3Index].billboard = record.billboard;
+								if (record.billboardAnchorColor !== undefined) customizations[h3Index].billboardAnchorColor = record.billboardAnchorColor;
+								if (record.billboards !== undefined) customizations[h3Index].billboards = record.billboards;
+							}
+						}
+
+						// Clear all tile data, then replay each activity oldest-first
+						dispatch(loadPersistedState({}));
+						dispatch(loadWalkedEdgesState([]));
+						const rebuildEdgeSet = new Set<string>();
+						const GPS_INTERPOLATION_MAX = 10;
+						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+						for (const activity of sorted) {
+							dispatch(startRun());
+							const h3Set = new Set<string>();
+							let lastCell: string | null = null;
+							for (const point of activity.routePoints) {
+								try {
+									const cell = latLngToCell(point.lat, point.lng, H3_IMPORT_RESOLUTION);
+									if (!cell) continue;
+									// Interpolate path cells for GPS gaps
+									if (lastCell && cell !== lastCell) {
+										try {
+											const pathCells = gridPathCells(lastCell, cell);
+											if (pathCells.length - 2 <= GPS_INTERPOLATION_MAX) {
+												for (let i = 0; i < pathCells.length - 1; i++) {
+													const a = pathCells[i];
+													const b = pathCells[i + 1];
+													const edgeKey = a < b ? `${a}:${b}` : `${b}:${a}`;
+													rebuildEdgeSet.add(edgeKey);
+													if (!h3Set.has(a)) {
+														h3Set.add(a);
+														dispatch(markVisited({ h3Indices: [a], timestamp: point.timestamp }));
+													}
+												}
+											}
+										} catch {
+											// gridPathCells can throw for cells on different faces
+										}
+									}
+									if (!h3Set.has(cell)) {
+										h3Set.add(cell);
+										dispatch(markVisited({ h3Indices: [cell], timestamp: point.timestamp }));
+									}
+									lastCell = cell;
+								} catch {
+									// Skip invalid points
+								}
+							}
+						}
+						if (rebuildEdgeSet.size > 0) {
+							dispatch(addWalkedEdges(Array.from(rebuildEdgeSet)));
+						}
+
+						// Re-apply customizations preserved from before
+						if (Object.keys(customizations).length > 0) {
+							dispatch(applyMapCustomizations(customizations));
+						}
+
+						const count = allActivities.length;
+						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
+					},
+				},
+			],
+		);
+	}, [dispatch]);
 
 	const openImportModal = useCallback(() => {
 		showImportModal({
@@ -226,16 +267,24 @@ export default function ActivitiesScreen() {
 		});
 	}, [showImportModal, handleImport, closeImportModal, theme]);
 
-	// Show import button in the header
+	// Show import, export, and rebuild buttons in the header
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => (
-				<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
-					<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
-				</TouchableOpacity>
+				<View style={styles.headerButtons}>
+					<TouchableOpacity onPress={handleRebuildMap} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="refresh" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+					<TouchableOpacity onPress={handleExportAll} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="file-upload" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+					<TouchableOpacity onPress={openImportModal} style={styles.headerImportButton} activeOpacity={0.7}>
+						<MaterialIcons name="file-download" size={24} color={PRIMARY_COLOR} />
+					</TouchableOpacity>
+				</View>
 			),
 		});
-	}, [navigation, openImportModal]);
+	}, [navigation, openImportModal, handleExportAll, handleRebuildMap]);
 
 	const handleActivityPress = useCallback((id: string) => {
 		router.push(`/activities/${id}`);
@@ -253,21 +302,54 @@ export default function ActivitiesScreen() {
 		);
 	}
 
+	// Build a map from routeId → SavedRoute for quick lookups
+	const routeMap = new Map<string, SavedRoute>(routes.map((r) => [r.id, r]));
+
+	// Group activities by routeId; undefined/null go into the 'unassigned' bucket
+	const groupMap = new Map<string | null, SavedActivity[]>();
+	for (const activity of activities) {
+		const key = activity.routeId ?? null;
+		if (!groupMap.has(key)) groupMap.set(key, []);
+		groupMap.get(key)!.push(activity);
+	}
+
+	// Sort groups: named routes first (by name), then unassigned last
+	const assignedRouteIds = [...groupMap.keys()]
+		.filter((k): k is string => k !== null)
+		.sort((a, b) => {
+			const nameA = routeMap.get(a)?.name ?? a;
+			const nameB = routeMap.get(b)?.name ?? b;
+			return nameA.localeCompare(nameB);
+		});
+	const groupOrder: Array<string | null> = [...assignedRouteIds];
+	if (groupMap.has(null)) groupOrder.push(null);
+
 	return (
-		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
-			<FlatList
-				data={activities}
-				keyExtractor={(item) => item.id}
-				contentContainerStyle={styles.listContent}
-				renderItem={({ item }) => (
-					<ActivityListItem
-						activity={item}
-						onPress={() => handleActivityPress(item.id)}
-						theme={theme}
-					/>
-				)}
-			/>
-		</View>
+		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.listContent}>
+			{groupOrder.map((routeId) => {
+				const groupActivities = groupMap.get(routeId) ?? [];
+				const routeName = routeId !== null ? (routeMap.get(routeId)?.name ?? routeId) : 'Ohne Route';
+				return (
+					<View key={routeId ?? '__unassigned__'}>
+						<SettingsListGroupTitle title={routeName} />
+						{groupActivities.map((item, idx) => {
+							const count = groupActivities.length;
+							const groupPosition =
+								count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
+							return (
+								<SettingsListActivity
+									key={item.id}
+									activity={item}
+									groupPosition={groupPosition}
+									showSeparator={idx < count - 1}
+									onPress={() => handleActivityPress(item.id)}
+								/>
+							);
+						})}
+					</View>
+				);
+			})}
+		</ScrollView>
 	);
 }
 
@@ -280,48 +362,6 @@ const styles = StyleSheet.create({
 		paddingTop: 12,
 		paddingBottom: 24,
 		gap: 10,
-	},
-	itemCard: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		borderRadius: 12,
-		borderWidth: 1,
-		paddingVertical: 12,
-		paddingHorizontal: 14,
-		gap: 12,
-	},
-	itemIconWrapper: {
-		width: 46,
-		height: 46,
-		borderRadius: 23,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	itemContent: {
-		flex: 1,
-		gap: 6,
-	},
-	itemDate: {
-		fontSize: 14,
-		fontWeight: '600',
-	},
-	itemTime: {
-		fontSize: 13,
-		fontWeight: '400',
-	},
-	itemStats: {
-		flexDirection: 'row',
-		gap: 10,
-		flexWrap: 'wrap',
-	},
-	itemStatChip: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 3,
-	},
-	itemStatText: {
-		fontSize: 13,
-		fontWeight: '500',
 	},
 	emptyContainer: {
 		flex: 1,
@@ -340,8 +380,14 @@ const styles = StyleSheet.create({
 		lineHeight: 20,
 	},
 	headerImportButton: {
-		marginRight: 12,
+		marginRight: 4,
 		padding: 4,
+	},
+	headerButtons: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginRight: 8,
+		gap: 4,
 	},
 	importContainer: {
 		paddingTop: 4,

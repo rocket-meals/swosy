@@ -67,6 +67,8 @@ const {
     compactCells: _compactCells,
     uncompactCells: _uncompactCells,
     areNeighborCells: _areNeighborCells,
+    polygonToCells: _polygonToCells,
+    cellsToMultiPolygon: _cellsToMultiPolygon,
     getNumCells: _getNumCells,
     getRes0Cells: _getRes0Cells,
     getPentagons: _getPentagons,
@@ -207,6 +209,20 @@ export const uncompactCells = (cells: H3Index[], res: number): H3Index[] =>
 export const areNeighborCells = (a: H3Index, b: H3Index): boolean =>
     _areNeighborCells?.(a, b) ?? false;
 
+export const polygonToCells = (
+    coordinates: CoordPair[][] | CoordPair[][][],
+    res: number,
+    isGeoJson = false,
+): H3Index[] =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (_polygonToCells?.(coordinates as any, res, isGeoJson) as H3Index[]) ?? [];
+
+export const cellsToMultiPolygon = (
+    h3Indexes: H3Index[],
+    formatAsGeoJson = false,
+): CoordPair[][][] =>
+    (_cellsToMultiPolygon?.(h3Indexes, formatAsGeoJson) as CoordPair[][][]) ?? [];
+
 // ─── Global cell sets ─────────────────────────────────────────────────────────
 
 export const getNumCells = (res: number): number => _getNumCells?.(res) ?? 0;
@@ -230,3 +246,49 @@ export const getHexagonAreaAvg = (res: number, unit: string): number =>
 
 export const getHexagonEdgeLengthAvg = (res: number, unit: string): number =>
     _getHexagonEdgeLengthAvg?.(res, unit) ?? 0;
+
+// ─── Route distance ───────────────────────────────────────────────────────────
+
+/**
+ * Haversine distance in kilometres between two [lat, lng] coordinate pairs.
+ */
+export function haversineKm(a: CoordPair, b: CoordPair): number {
+    const R = 6371;
+    const dLat = ((b[0] - a[0]) * Math.PI) / 180;
+    const dLng = ((b[1] - a[1]) * Math.PI) / 180;
+    const x =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos((a[0] * Math.PI) / 180) * Math.cos((b[0] * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+/**
+ * Format a kilometre distance for display.  Values ≥ 1 km are shown with two
+ * decimal places (e.g. "1.23 km"); shorter distances are shown in metres
+ * (e.g. "450 m").  Returns "—" for zero or negative values.
+ */
+export function formatDistanceKm(km: number): string {
+    if (km <= 0) return '—';
+    if (km >= 1) return `${km.toFixed(2)} km`;
+    return `${Math.round(km * 1000)} m`;
+}
+
+/**
+ * Sum haversine distances between consecutive cell centers to get total route
+ * length in kilometres.  Returns 0 when the H3 library is unavailable or the
+ * cell list has fewer than 2 entries.
+ */
+export function computeRouteLengthKm(orderedCells: H3Index[]): number {
+    if (orderedCells.length < 2 || !isAvailable()) return 0;
+    let totalKm = 0;
+    for (let i = 1; i < orderedCells.length; i++) {
+        try {
+            const a = cellToLatLng(orderedCells[i - 1]);
+            const b = cellToLatLng(orderedCells[i]);
+            totalKm += haversineKm(a, b);
+        } catch {
+            // skip invalid cells
+        }
+    }
+    return totalKm;
+}

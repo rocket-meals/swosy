@@ -5692,5 +5692,175 @@
     "ru": "Одобрено",
     "tr": "Onaylandı",
     "zh": "已批准"
+  },
+  "feature_wishes_filter_published": {
+    "de": "Veröffentlichte Wünsche",
+    "en": "Published Wishes",
+    "ar": "الأمنيات المنشورة",
+    "es": "Deseos publicados",
+    "fr": "Souhaits publiés",
+    "ru": "Опубликованные пожелания",
+    "tr": "Yayınlanan İstekler",
+    "zh": "已发布的愿望"
+  },
+  "feature_wishes_filter_draft": {
+    "de": "Neue Wünsche",
+    "en": "New Wishes",
+    "ar": "الأمنيات الجديدة",
+    "es": "Nuevos deseos",
+    "fr": "Nouveaux souhaits",
+    "ru": "Новые пожелания",
+    "tr": "Yeni İstekler",
+    "zh": "新愿望"
+  },
+  "feature_wishes_search_placeholder": {
+    "de": "Feature Wunsch suchen oder erstellen …",
+    "en": "Search or create a feature wish …",
+    "ar": "ابحث أو أنشئ أمنية ميزة …",
+    "es": "Busca o crea un deseo de función …",
+    "fr": "Rechercher ou créer un souhait …",
+    "ru": "Найти или создать пожелание …",
+    "tr": "Özellik isteği ara veya oluştur …",
+    "zh": "搜索或创建功能愿望 …"
+  },
+  "feature_wishes_create_button": {
+    "de": "Feature Wunsch erstellen",
+    "en": "Create Feature Wish",
+    "ar": "إنشاء أمنية ميزة",
+    "es": "Crear deseo de función",
+    "fr": "Créer un souhait de fonctionnalité",
+    "ru": "Создать пожелание",
+    "tr": "Özellik İsteği Oluştur",
+    "zh": "创建功能愿望"
+  },
+  "feature_wishes_create_description_placeholder": {
+    "de": "Beschreibe deinen Feature Wunsch …",
+    "en": "Describe your feature wish …",
+    "ar": "صف أمنيتك …",
+    "es": "Describe tu deseo de función …",
+    "fr": "Décris ton souhait …",
+    "ru": "Опишите своё пожелание …",
+    "tr": "Özellik isteğini açıkla …",
+    "zh": "描述你的功能愿望 …"
+  },
+  "feature_wishes_create_confirm": {
+    "de": "Erstellen",
+    "en": "Create",
+    "ar": "إنشاء",
+    "es": "Crear",
+    "fr": "Créer",
+    "ru": "Создать",
+    "tr": "Oluştur",
+    "zh": "创建"
+  },
+  "feature_wishes_pending_review_title": {
+    "de": "Wunsch eingereicht",
+    "en": "Wish Submitted",
+    "ar": "تم تقديم الأمنية",
+    "es": "Deseo enviado",
+    "fr": "Souhait soumis",
+    "ru": "Пожелание отправлено",
+    "tr": "İstek Gönderildi",
+    "zh": "愿望已提交"
+  },
+  "feature_wishes_pending_review_message": {
+    "de": "Dein Feature Wunsch wird nun geprüft (z. B. auf Verstöße oder unangemessene Sprache) und danach veröffentlicht.",
+    "en": "Your feature wish is now being reviewed (e.g. for violations or inappropriate language) and will be published afterwards.",
+    "ar": "يتم الآن مراجعة أمنيتك (مثلاً للتحقق من الانتهاكات أو اللغة غير اللائقة) وستُنشر بعد ذلك.",
+    "es": "Tu deseo de función se está revisando ahora (p. ej., por infracciones o lenguaje inapropiado) y se publicará después.",
+    "fr": "Ton souhait est en cours de vérification (p. ex. pour des violations ou un langage inapproprié) et sera publié ensuite.",
+    "ru": "Ваше пожелание сейчас проверяется (например, на нарушения или неприемлемый язык) и будет опубликовано после.",
+    "tr": "Özellik isteğiniz şu anda inceleniyor (örn. ihlaller veya uygunsuz dil için) ve daha sonra yayınlanacak.",
+    "zh": "您的功能愿望正在审核中（例如检查违规或不当语言），之后将会发布。"
+  },
+  "edge_speech_test": {
+    "de": "Edge Speech Test",
+    "en": "Edge Speech Test",
+    "ar": "Edge Speech Test",
+    "es": "Edge Speech Test",
+    "fr": "Edge Speech Test",
+    "ru": "Edge Speech Test",
+    "tr": "Edge Speech Test",
+    "zh": "Edge Speech Test"
+  },
+  "edge_speech_test_description": {
+    "de": "Teste Microsoft Edge TTS mit über 400 natürlichen Stimmen.",
+    "en": "Test Microsoft Edge TTS with 400+ natural voices.",
+    "ar": "اختبر Microsoft Edge TTS مع أكثر من 400 صوت طبيعي.",
+    "es": "Prueba Microsoft Edge TTS con más de 400 voces naturales.",
+    "fr": "Teste Microsoft Edge TTS avec plus de 400 voix naturelles.",
+    "ru": "Проверьте Microsoft Edge TTS с более чем 400 естественными голосами.",
+    "tr": "400'den fazla doğal sesle Microsoft Edge TTS'yi test edin.",
+    "zh": "使用 400 多种自然语音测试 Microsoft Edge TTS。"
+  },
+  "edge_speech_enter_text": {
+    "de": "Text eingeben...",
+    "en": "Enter text...",
+    "ar": "أدخل النص...",
+    "es": "Ingresa el texto...",
+    "fr": "Saisir le texte...",
+    "ru": "Введите текст...",
+    "tr": "Metin girin...",
+    "zh": "输入文本..."
+  },
+  "edge_speech_speak": {
+    "de": "Vorlesen",
+    "en": "Speak",
+    "ar": "تحدث",
+    "es": "Hablar",
+    "fr": "Parler",
+    "ru": "Говорить",
+    "tr": "Konuş",
+    "zh": "朗读"
+  },
+  "edge_speech_stop": {
+    "de": "Stoppen",
+    "en": "Stop",
+    "ar": "إيقاف",
+    "es": "Detener",
+    "fr": "Arrêter",
+    "ru": "Стоп",
+    "tr": "Durdur",
+    "zh": "停止"
+  },
+  "edge_speech_status": {
+    "de": "Status",
+    "en": "Status",
+    "ar": "الحالة",
+    "es": "Estado",
+    "fr": "Statut",
+    "ru": "Статус",
+    "tr": "Durum",
+    "zh": "状态"
+  },
+  "edge_speech_status_idle": {
+    "de": "Bereit",
+    "en": "Idle",
+    "ar": "جاهز",
+    "es": "Listo",
+    "fr": "Prêt",
+    "ru": "Готов",
+    "tr": "Hazır",
+    "zh": "空闲"
+  },
+  "edge_speech_status_speaking": {
+    "de": "Spricht...",
+    "en": "Speaking...",
+    "ar": "يتحدث...",
+    "es": "Hablando...",
+    "fr": "Parle...",
+    "ru": "Говорит...",
+    "tr": "Konuşuyor...",
+    "zh": "正在朗读..."
+  },
+  "edge_speech_voice_label": {
+    "de": "Stimme",
+    "en": "Voice",
+    "ar": "الصوت",
+    "es": "Voz",
+    "fr": "Voix",
+    "ru": "Голос",
+    "tr": "Ses",
+    "zh": "语音"
   }
 }

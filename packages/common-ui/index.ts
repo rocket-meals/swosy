@@ -42,7 +42,7 @@ export { default as SettingsListLikeButton } from './src/components/SettingsList
 export type { SettingsListLikeButtonProps } from './src/components/SettingsListLikeButton';
 
 export { default as SettingsListTextInput } from './src/components/SettingsListTextInput';
-export type { SettingsListTextInputProps, CheckTextInput, CheckTextInputResult } from './src/components/SettingsListTextInput';
+export type { SettingsListTextInputProps, CheckTextInput, CheckTextInputResult, SettingsListTextInputSuggestion } from './src/components/SettingsListTextInput';
 
 export { default as SettingsListDate } from './src/components/SettingsListDate';
 export type { SettingsListDateProps } from './src/components/SettingsListDate';
@@ -52,6 +52,9 @@ export type { SettingsListCoordinateProps, LinkCoordinate } from './src/componen
 
 export { default as SettingsListProgress } from './src/components/SettingsListProgress';
 export type { SettingsListProgressProps } from './src/components/SettingsListProgress';
+
+export { default as SettingsListNumberInput } from './src/components/SettingsListNumberInput';
+export type { SettingsListNumberInputProps } from './src/components/SettingsListNumberInput';
 
 export { default as AppDrawer } from './src/components/AppDrawer';
 export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
@@ -79,3 +82,6 @@ export type { MyScrollViewModalConfig } from './src/components/GlobalModal/useMy
 
 export { default as FeatureWishesScreen } from './src/components/FeatureWishesScreen';
 export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishItem } from './src/components/FeatureWishesScreen';
+
+export { default as ScreenHeader } from './src/components/ScreenHeader';
+export type { ScreenHeaderProps } from './src/components/ScreenHeader';

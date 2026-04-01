@@ -1,0 +1,586 @@
+{
+  "route_rename": {
+    "de": "Route umbenennen",
+    "en": "Rename Route"
+  },
+  "route_name": {
+    "de": "Route Name",
+    "en": "Route name"
+  },
+  "route_info": {
+    "de": "Routen-Informationen",
+    "en": "Route Information"
+  },
+  "name_adjust": {
+    "de": "Name anpassen",
+    "en": "Adjust Name"
+  },
+  "activities": {
+    "de": "Aktivitäten",
+    "en": "Activities"
+  },
+  "no_activities": {
+    "de": "Keine Aktivitäten",
+    "en": "No Activities"
+  },
+  "name_suggestions": {
+    "de": "Namensvorschläge",
+    "en": "Name Suggestions"
+  },
+  "no_suggestions": {
+    "de": "Keine Vorschläge gefunden",
+    "en": "No suggestions found"
+  },
+  "loading_suggestions": {
+    "de": "Lade Namensvorschläge…",
+    "en": "Loading name suggestions…"
+  },
+  "save": {
+    "de": "Speichern",
+    "en": "Save"
+  },
+  "cancel": {
+    "de": "Abbrechen",
+    "en": "Cancel"
+  },
+  "error": {
+    "de": "Fehler",
+    "en": "Error"
+  },
+  "route_name_save_error": {
+    "de": "Der Name der Route konnte nicht gespeichert werden.",
+    "en": "The route name could not be saved."
+  },
+  "route_not_found": {
+    "de": "Route nicht gefunden.",
+    "en": "Route not found."
+  },
+  "back": {
+    "de": "Zurück",
+    "en": "Back"
+  },
+  "loading": {
+    "de": "Laden…",
+    "en": "Loading…"
+  },
+  "loading_map_features": {
+    "de": "Lade Karten-Features…",
+    "en": "Loading map features…"
+  },
+  "loading_enclosed_features": {
+    "de": "Lade Features der eingeschlossenen Fläche…",
+    "en": "Loading features of enclosed area…"
+  },
+  "hex_tiles": {
+    "de": "Hex Tiles",
+    "en": "Hex Tiles"
+  },
+  "no_features": {
+    "de": "Keine Features",
+    "en": "No Features"
+  },
+  "aggregated_features": {
+    "de": "Aggregierte Features",
+    "en": "Aggregated Features"
+  },
+  "aggregated_features_enclosed": {
+    "de": "Aggregierte Features (eingeschlossene Fläche)",
+    "en": "Aggregated Features (Enclosed Area)"
+  },
+  "route_delete": {
+    "de": "Route löschen",
+    "en": "Delete Route"
+  },
+  "route_delete_confirm_title": {
+    "de": "Route löschen",
+    "en": "Delete Route"
+  },
+  "route_delete_confirm_message": {
+    "de": "Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    "en": "Do you really want to delete this route? This action cannot be undone."
+  },
+  "delete": {
+    "de": "Löschen",
+    "en": "Delete"
+  },
+  "discard_changes_title": {
+    "de": "Änderungen verwerfen?",
+    "en": "Discard changes?"
+  },
+  "discard_changes_message": {
+    "de": "Ungespeicherte Änderungen gehen verloren.",
+    "en": "Unsaved changes will be lost."
+  },
+  "keep_editing": {
+    "de": "Weiter bearbeiten",
+    "en": "Keep editing"
+  },
+  "discard": {
+    "de": "Verwerfen",
+    "en": "Discard"
+  },
+  "edit_hint_select_anchor": {
+    "de": "Kachel antippen als Einfügepunkt wählen",
+    "en": "Tap tile to select insertion point"
+  },
+  "edit_hint_tap_neighbor": {
+    "de": "Nachbar-Kachel antippen zum Einfügen",
+    "en": "Tap neighbor tile to insert"
+  },
+  "created_at": {
+    "de": "Erstellt am",
+    "en": "Created on"
+  },
+  "distance": {
+    "de": "Streckenlänge",
+    "en": "Distance"
+  },
+  "tiles": {
+    "de": "Kacheln",
+    "en": "Tiles"
+  },
+  "enclosed_tiles": {
+    "de": "Eingeschlossene Kacheln",
+    "en": "Enclosed Tiles"
+  },
+  "sport_type": {
+    "de": "Sportart",
+    "en": "Sport Type"
+  },
+  "layer_aerodrome_label": {
+    "de": "Flughafen",
+    "en": "Aerodrome"
+  },
+  "layer_aeroway": {
+    "de": "Flughafen-Infrastruktur",
+    "en": "Aeroway"
+  },
+  "layer_boundary": {
+    "de": "Grenze",
+    "en": "Boundary"
+  },
+  "layer_building": {
+    "de": "Gebäude",
+    "en": "Building"
+  },
+  "layer_housenumber": {
+    "de": "Hausnummer",
+    "en": "House Number"
+  },
+  "layer_landcover": {
+    "de": "Landbedeckung",
+    "en": "Land Cover"
+  },
+  "layer_landuse": {
+    "de": "Landnutzung",
+    "en": "Land Use"
+  },
+  "layer_mountain_peak": {
+    "de": "Berggipfel",
+    "en": "Mountain Peak"
+  },
+  "layer_park": {
+    "de": "Park",
+    "en": "Park"
+  },
+  "layer_place": {
+    "de": "Ort",
+    "en": "Place"
+  },
+  "layer_poi": {
+    "de": "Sehenswürdigkeit",
+    "en": "Point of Interest"
+  },
+  "layer_transportation": {
+    "de": "Verkehr",
+    "en": "Transportation"
+  },
+  "layer_transportation_name": {
+    "de": "Straßenname",
+    "en": "Road Name"
+  },
+  "layer_water": {
+    "de": "Wasser",
+    "en": "Water"
+  },
+  "layer_water_name": {
+    "de": "Gewässername",
+    "en": "Water Name"
+  },
+  "layer_waterway": {
+    "de": "Fließgewässer",
+    "en": "Waterway"
+  },
+  "class_farmland": {
+    "de": "Ackerland",
+    "en": "Farmland"
+  },
+  "class_grass": {
+    "de": "Gras",
+    "en": "Grass"
+  },
+  "class_ice": {
+    "de": "Eis",
+    "en": "Ice"
+  },
+  "class_rock": {
+    "de": "Fels",
+    "en": "Rock"
+  },
+  "class_sand": {
+    "de": "Sand",
+    "en": "Sand"
+  },
+  "class_wetland": {
+    "de": "Feuchtgebiet",
+    "en": "Wetland"
+  },
+  "class_wood": {
+    "de": "Wald",
+    "en": "Wood"
+  },
+  "class_bus_station": {
+    "de": "Busbahnhof",
+    "en": "Bus Station"
+  },
+  "class_cemetery": {
+    "de": "Friedhof",
+    "en": "Cemetery"
+  },
+  "class_commercial": {
+    "de": "Gewerbegebiet",
+    "en": "Commercial"
+  },
+  "class_dam": {
+    "de": "Staudamm",
+    "en": "Dam"
+  },
+  "class_garages": {
+    "de": "Garagen",
+    "en": "Garages"
+  },
+  "class_hospital": {
+    "de": "Krankenhaus",
+    "en": "Hospital"
+  },
+  "class_industrial": {
+    "de": "Industriegebiet",
+    "en": "Industrial"
+  },
+  "class_military": {
+    "de": "Militär",
+    "en": "Military"
+  },
+  "class_pitch": {
+    "de": "Sportplatz",
+    "en": "Pitch"
+  },
+  "class_playground": {
+    "de": "Spielplatz",
+    "en": "Playground"
+  },
+  "class_quarry": {
+    "de": "Steinbruch",
+    "en": "Quarry"
+  },
+  "class_railway": {
+    "de": "Bahn",
+    "en": "Railway"
+  },
+  "class_residential": {
+    "de": "Wohngebiet",
+    "en": "Residential"
+  },
+  "class_retail": {
+    "de": "Einzelhandel",
+    "en": "Retail"
+  },
+  "class_school": {
+    "de": "Schule",
+    "en": "School"
+  },
+  "class_stadium": {
+    "de": "Stadion",
+    "en": "Stadium"
+  },
+  "class_theme_park": {
+    "de": "Freizeitpark",
+    "en": "Theme Park"
+  },
+  "class_university": {
+    "de": "Universität",
+    "en": "University"
+  },
+  "class_zoo": {
+    "de": "Zoo",
+    "en": "Zoo"
+  },
+  "class_busway": {
+    "de": "Busspur",
+    "en": "Busway"
+  },
+  "class_cycleway": {
+    "de": "Radweg",
+    "en": "Cycleway"
+  },
+  "class_ferry": {
+    "de": "Fähre",
+    "en": "Ferry"
+  },
+  "class_minor": {
+    "de": "Nebenstraße",
+    "en": "Minor Road"
+  },
+  "class_motorway": {
+    "de": "Autobahn",
+    "en": "Motorway"
+  },
+  "class_path": {
+    "de": "Pfad",
+    "en": "Path"
+  },
+  "class_primary": {
+    "de": "Hauptstraße",
+    "en": "Primary Road"
+  },
+  "class_raceway": {
+    "de": "Rennstrecke",
+    "en": "Raceway"
+  },
+  "class_rail": {
+    "de": "Schiene",
+    "en": "Rail"
+  },
+  "class_secondary": {
+    "de": "Bundesstraße",
+    "en": "Secondary Road"
+  },
+  "class_service": {
+    "de": "Zufahrtsstraße",
+    "en": "Service Road"
+  },
+  "class_tertiary": {
+    "de": "Kreisstraße",
+    "en": "Tertiary Road"
+  },
+  "class_track": {
+    "de": "Feldweg",
+    "en": "Track"
+  },
+  "class_transit": {
+    "de": "ÖPNV",
+    "en": "Transit"
+  },
+  "class_trunk": {
+    "de": "Schnellstraße",
+    "en": "Trunk Road"
+  },
+  "class_dock": {
+    "de": "Hafen",
+    "en": "Dock"
+  },
+  "class_lake": {
+    "de": "See",
+    "en": "Lake"
+  },
+  "class_ocean": {
+    "de": "Ozean",
+    "en": "Ocean"
+  },
+  "class_pond": {
+    "de": "Teich",
+    "en": "Pond"
+  },
+  "class_river": {
+    "de": "Fluss",
+    "en": "River"
+  },
+  "class_swimming_pool": {
+    "de": "Schwimmbad",
+    "en": "Swimming Pool"
+  },
+  "class_canal": {
+    "de": "Kanal",
+    "en": "Canal"
+  },
+  "class_ditch": {
+    "de": "Graben",
+    "en": "Ditch"
+  },
+  "class_drain": {
+    "de": "Entwässerungsgraben",
+    "en": "Drain"
+  },
+  "class_stream": {
+    "de": "Bach",
+    "en": "Stream"
+  },
+  "class_forest": {
+    "de": "Wald",
+    "en": "Forest"
+  },
+  "class_national_park": {
+    "de": "Nationalpark",
+    "en": "National Park"
+  },
+  "class_nature_reserve": {
+    "de": "Naturschutzgebiet",
+    "en": "Nature Reserve"
+  },
+  "class_protected_area": {
+    "de": "Schutzgebiet",
+    "en": "Protected Area"
+  },
+  "class_city": {
+    "de": "Stadt",
+    "en": "City"
+  },
+  "class_country": {
+    "de": "Land",
+    "en": "Country"
+  },
+  "class_county": {
+    "de": "Landkreis",
+    "en": "County"
+  },
+  "class_district": {
+    "de": "Bezirk",
+    "en": "District"
+  },
+  "class_hamlet": {
+    "de": "Weiler",
+    "en": "Hamlet"
+  },
+  "class_island": {
+    "de": "Insel",
+    "en": "Island"
+  },
+  "class_isolated_dwelling": {
+    "de": "Einzelgehöft",
+    "en": "Isolated Dwelling"
+  },
+  "class_municipality": {
+    "de": "Gemeinde",
+    "en": "Municipality"
+  },
+  "class_neighbourhood": {
+    "de": "Stadtviertel",
+    "en": "Neighbourhood"
+  },
+  "class_province": {
+    "de": "Provinz",
+    "en": "Province"
+  },
+  "class_quarter": {
+    "de": "Quartier",
+    "en": "Quarter"
+  },
+  "class_region": {
+    "de": "Region",
+    "en": "Region"
+  },
+  "class_state": {
+    "de": "Bundesland",
+    "en": "State"
+  },
+  "class_suburb": {
+    "de": "Vorort",
+    "en": "Suburb"
+  },
+  "class_town": {
+    "de": "Kleinstadt",
+    "en": "Town"
+  },
+  "class_village": {
+    "de": "Dorf",
+    "en": "Village"
+  },
+  "class_aerodrome": {
+    "de": "Flugplatz",
+    "en": "Aerodrome"
+  },
+  "class_apron": {
+    "de": "Vorfeld",
+    "en": "Apron"
+  },
+  "class_gate": {
+    "de": "Gate",
+    "en": "Gate"
+  },
+  "class_helipad": {
+    "de": "Hubschrauberlandeplatz",
+    "en": "Helipad"
+  },
+  "class_heliport": {
+    "de": "Heliport",
+    "en": "Heliport"
+  },
+  "class_runway": {
+    "de": "Startbahn",
+    "en": "Runway"
+  },
+  "class_taxiway": {
+    "de": "Rollbahn",
+    "en": "Taxiway"
+  },
+  "class_aboriginal_lands": {
+    "de": "Indigenes Land",
+    "en": "Aboriginal Lands"
+  },
+  "class_administrative": {
+    "de": "Verwaltungsgrenze",
+    "en": "Administrative"
+  },
+  "subclass_allotments": {
+    "de": "Kleingartenanlage",
+    "en": "Allotments"
+  },
+  "subclass_bog": {
+    "de": "Hochmoor",
+    "en": "Bog"
+  },
+  "subclass_fen": {
+    "de": "Niedermoor",
+    "en": "Fen"
+  },
+  "subclass_field": {
+    "de": "Feld",
+    "en": "Field"
+  },
+  "subclass_glacier": {
+    "de": "Gletscher",
+    "en": "Glacier"
+  },
+  "subclass_heath": {
+    "de": "Heide",
+    "en": "Heath"
+  },
+  "subclass_marsh": {
+    "de": "Sumpf",
+    "en": "Marsh"
+  },
+  "subclass_meadow": {
+    "de": "Wiese",
+    "en": "Meadow"
+  },
+  "subclass_orchard": {
+    "de": "Obstgarten",
+    "en": "Orchard"
+  },
+  "subclass_reedbed": {
+    "de": "Schilf",
+    "en": "Reedbed"
+  },
+  "subclass_scrub": {
+    "de": "Gestrüpp",
+    "en": "Scrub"
+  },
+  "subclass_swamp": {
+    "de": "Sumpfgebiet",
+    "en": "Swamp"
+  },
+  "subclass_vineyard": {
+    "de": "Weinberg",
+    "en": "Vineyard"
+  }
+}

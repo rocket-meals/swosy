@@ -64,6 +64,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const appElements = useMemo(() => Object.values(appElementsDict || {}), [appElementsDict]);
 	
 	const selectedCanteen = (canteensDict?.[String(canteenId)] ?? canteens?.find(c => String(c.id) === String(canteenId))) as DatabaseTypes.Canteens | undefined;
+	const flatListRef = useRef<FlatList<DayData>>(null);
 	const [days, setDays] = useState<DayData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
@@ -91,7 +92,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	}, [dispatch]);
 
 	const cacheKey = useMemo(
-		() => `${canteenId}_${format(new Date(startDate), 'yyyy-MM-dd')}`,
+		() => `${canteenId}_${startDate}`,
 		[canteenId, startDate]
 	);
 
@@ -314,11 +315,11 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			}
 
 			setLoading(true);
-			const baseDate = new Date(startDate);
+			const baseDate = parseDateOnly(startDate);
 			const toLoad = [0, 1, 2];
 			const loaded: DayData[] = [];
 			for (const offset of toLoad) {
-				const d = addDays(baseDate, offset).toISOString().split('T')[0];
+				const d = format(addDays(baseDate, offset), 'yyyy-MM-dd');
 				loaded.push(await loadDay(d));
 			}
 			setDays(loaded);
@@ -349,6 +350,12 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}, [init])
 	);
 
+	// Scroll to top when the selected date changes so that cached dates (e.g. today)
+	// behave the same as freshly loaded dates which reset scroll via the loading indicator.
+	useEffect(() => {
+		flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+	}, [startDate]);
+
 	useEffect(() => {
 		const handleResize = () => setScreenWidth(Dimensions.get('window').width);
 		const subscription = Dimensions.addEventListener('change', handleResize);
@@ -358,7 +365,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const loadNext = async () => {
 		if (!days.length) return;
 		const lastDate = days[days.length - 1].date;
-		const nextDate = addDays(new Date(lastDate), 1).toISOString().split('T')[0];
+		const nextDate = format(addDays(parseDateOnly(lastDate), 1), 'yyyy-MM-dd');
 		const nextDay = await loadDay(nextDate);
 		setDays(prev => {
 			const updated = [...prev, nextDay];
@@ -490,6 +497,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	return (
 		<>
 			<FlatList
+				ref={flatListRef}
 				data={days}
 				keyExtractor={item => item.date}
 				renderItem={renderDay}

@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Keyboard,
-	KeyboardAvoidingView,
-	Platform,
 	StyleSheet,
-	TextInput,
 	TouchableOpacity,
 	Text,
 	View,
 } from 'react-native';
 import type { KeyboardTypeOptions } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useSettingsContext } from '../../context/SettingsContext';
@@ -17,10 +15,17 @@ import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
 import { borderRadiusContainer } from '../../constants/ui';
+import SettingsListSelectOption from '../SettingsListSelectOption';
 
 export type CheckTextInputResult = {
 	isValid: boolean;
 	value: string;
+};
+
+export type SettingsListTextInputSuggestion = {
+	key: string;
+	value: string;
+	label?: string;
 };
 
 export type CheckTextInput = (value: string) => CheckTextInputResult;
@@ -41,6 +46,12 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
+	/** Optional list of suggestions rendered as selectable options below the Save button.
+	 *  Clicking a suggestion is equivalent to typing its value and pressing Save. */
+	suggestions?: SettingsListTextInputSuggestion[];
+	/** Optional render function for extra content rendered below the Save button.
+	 *  Receives a callback to programmatically set the text input value. */
+	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 }
 
 type ModalSheetProps = {
@@ -57,6 +68,8 @@ type ModalSheetProps = {
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
 	primaryColor: string;
+	suggestions?: SettingsListTextInputSuggestion[];
+	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 };
 
 const ModalSheet: React.FC<ModalSheetProps> = ({
@@ -73,6 +86,8 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 	checkTextInput,
 	allowSubmitWhenDisabled = true,
 	primaryColor,
+	suggestions,
+	renderModalChildren,
 }) => {
 	const { theme } = useTheme();
 	const [value, setValue] = useState(initialValue);
@@ -101,6 +116,17 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 		onSave(validationResult.value);
 	}, [allowSubmitWhenDisabled, disableSave, onSave, validationResult]);
 
+	const handleSelectSuggestion = useCallback(
+		(suggestion: SettingsListTextInputSuggestion) => {
+			const result = (checkTextInput ?? defaultCheckTextInput)(suggestion.value);
+			if (result.isValid) {
+				Keyboard.dismiss();
+				onSave(result.value);
+			}
+		},
+		[checkTextInput, onSave]
+	);
+
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;
 		handleSave();
@@ -108,7 +134,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 
 	const content = (
 		<View style={styles.sheetView}>
-			<TextInput
+			<BottomSheetTextInput
 				style={[
 					styles.sheetInput,
 					{
@@ -140,22 +166,26 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 			>
 				<Text style={[styles.saveButtonText, { color: theme.button.text }]}>{saveLabel}</Text>
 			</TouchableOpacity>
+			{suggestions && suggestions.length > 0 && (
+				<View style={styles.suggestionsContainer}>
+					<SettingsListSelectOption
+						options={suggestions.map((s) => ({ id: s.key, label: s.label ?? s.value }))}
+						selectedOption={suggestions.find((s) => s.value === value)?.key ?? null}
+						onSelect={(option) => {
+							const suggestion = suggestions.find((s) => s.key === option.id);
+							if (suggestion) {
+								handleSelectSuggestion(suggestion);
+							}
+						}}
+						selectionColor={primaryColor}
+					/>
+				</View>
+			)}
+			{renderModalChildren?.(setValue)}
 		</View>
 	);
 
-	if (Platform.OS === 'web') {
-		return content;
-	}
-
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'position' : undefined}
-			keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
-			style={styles.keyboardAvoidingView}
-		>
-			<View style={styles.keyboardAvoidingContent}>{content}</View>
-		</KeyboardAvoidingView>
-	);
+	return content;
 };
 
 const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
@@ -178,6 +208,8 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	label,
 	title,
 	primaryColor,
+	suggestions,
+	renderModalChildren,
 	...props
 }) => {
 	const { theme } = useTheme();
@@ -219,6 +251,8 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 					checkTextInput={checkTextInput}
 					allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}
 					primaryColor={resolvedPrimaryColor}
+					suggestions={suggestions}
+					renderModalChildren={renderModalChildren}
 				/>
 			),
 		});
@@ -233,11 +267,13 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 		numberOfLines,
 		onSave,
 		placeholder,
+		renderModalChildren,
 		resolvedInitialValue,
 		resolvedPrimaryColor,
 		resolvedTitle,
 		saveLabel,
 		show,
+		suggestions,
 		textAlignVertical,
 	]);
 
@@ -263,14 +299,6 @@ const styles = StyleSheet.create({
 		padding: 10,
 		alignItems: 'stretch',
 	},
-	keyboardAvoidingView: {
-		flex: 1,
-		width: '100%',
-	},
-	keyboardAvoidingContent: {
-		flexGrow: 1,
-		alignItems: 'center',
-	},
 	sheetInput: {
 		width: '100%',
 		height: 56,
@@ -290,5 +318,8 @@ const styles = StyleSheet.create({
 	saveButtonText: {
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	suggestionsContainer: {
+		marginTop: 16,
 	},
 });
