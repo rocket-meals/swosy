@@ -8,9 +8,7 @@ import {
 } from 'repo-depkit-common-ui';
 import { useRouter } from 'expo-router';
 import { SavedRoute, loadRoutes, deleteAllRoutes } from '../../helpers/RouteStorage';
-import { computeRouteLengthKm, formatDistanceKm } from '../../helpers/H3Helper';
-
-const PRIMARY_COLOR = '#2563eb';
+import SettingsListRoute from '../../components/SettingsListRoute';
 
 export default function RoutesScreen() {
 	const { theme } = useTheme();
@@ -66,23 +64,14 @@ export default function RoutesScreen() {
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<SettingsListGroupTitle title="Gespeicherte Routen" />
 			{routes.map((route, idx) => {
-				const date = new Date(route.createdAt);
-				const dateStr = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-				const tileCount = route.hexTiles.length;
-				const distanceKm = computeRouteLengthKm(route.hexTiles);
-				const distStr = distanceKm > 0 ? ` · ${formatDistanceKm(distanceKm)}` : '';
-				const metaStr = `${dateStr} · ${tileCount} tile${tileCount !== 1 ? 's' : ''}${distStr} · Res ${route.h3Resolution}${route.sportType ? ` · ${route.sportType}` : ''}`;
 				const groupPosition =
 					routes.length === 1 ? 'single' : idx === 0 ? 'top' : idx === routes.length - 1 ? 'bottom' : 'middle';
 				return (
-					<SettingsList
+					<SettingsListRoute
 						key={route.id}
-						leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
-						iconBackgroundColor={PRIMARY_COLOR}
-						title={route.name}
-						value={metaStr}
-						showSeparator={idx < routes.length - 1}
+						route={route}
 						groupPosition={groupPosition}
+						showSeparator={idx < routes.length - 1}
 						onPress={() => handleSelectRoute(route)}
 					/>
 				);
