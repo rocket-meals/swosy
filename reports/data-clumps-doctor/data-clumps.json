@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-01T08:33:21.767Z",
+  "report_timestamp": "2026-04-01T10:59:11.462Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.6064408197406943,
-          "amountSavedValuesForKeys": 3841,
+          "average": 1.6082775919732442,
+          "amountSavedValuesForKeys": 3847,
           "amountKeys": 26
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.620675105485232,
-          "amountSavedValuesForKeys": 3841,
+          "average": 1.6225221425558836,
+          "amountSavedValuesForKeys": 3847,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4136,
-        "detection_time_ms": 80,
+        "ast_generation_time_ms": 4084,
+        "detection_time_ms": 82,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 126.8,
-          "os_memory_free": 14992818176,
-          "os_memory_total": 16766443520,
+          "os_uptime": 173.53,
+          "os_memory_free": 14978134016,
+          "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 41,
-    "amount_files_with_data_clumps": 32,
+    "amount_classes_or_interfaces_with_data_clumps": 42,
+    "amount_files_with_data_clumps": 33,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 52,
+    "fields_to_fields_data_clump": 56,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 60
+    "amount_data_clumps": 64
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "8e0c10ad57c73d236477677d98e467976e1c4cdd",
-    "project_commit_hash": "8e0c10ad57c73d236477677d98e467976e1c4cdd",
+    "project_version": "04ca7700e34bfadeb457c0b2e00c60342c1ab170",
+    "project_commit_hash": "04ca7700e34bfadeb457c0b2e00c60342c1ab170",
     "project_tag": null,
-    "project_commit_date": "1775032287",
+    "project_commit_date": "1775041054",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 477,
-    "number_of_classes_or_interfaces": 976,
+    "number_of_files": 478,
+    "number_of_classes_or_interfaces": 977,
     "number_of_methods": 1326,
-    "number_of_data_fields": 3841,
+    "number_of_data_fields": 3847,
     "number_of_method_parameters": 1466
   },
   "detector": {
@@ -2884,6 +2884,103 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListActivity/index.tsx-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-groupPositionshowSeparatoronPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListActivity/index.tsx-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-groupPositionshowSeparatoronPress",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props",
+      "from_class_or_interface_name": "Props",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props",
+      "to_class_or_interface_name": "Props",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/groupPosition": {
+          "key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/groupPosition",
+          "name": "groupPosition",
+          "type": "'top' | 'middle' | 'bottom' | 'single'",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/groupPosition",
+            "name": "groupPosition",
+            "type": "'top' | 'middle' | 'bottom' | 'single'",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 57
+            }
+          },
+          "position": {
+            "startLine": 25,
+            "startColumn": 2,
+            "endLine": 25,
+            "endColumn": 57
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/showSeparator": {
+          "key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/showSeparator",
+          "name": "showSeparator",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/showSeparator",
+            "name": "showSeparator",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 26,
+            "startColumn": 2,
+            "endLine": 26,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/onPress": {
+          "key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListActivity/index.tsx-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-groupPositionshowSeparatoronPress": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListActivity/index.tsx-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-groupPositionshowSeparatoronPress",
@@ -2978,7 +3075,7 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 11,
-        "cluster_type": 2
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListBillboard/index.tsx-apps/geonexia/frontend/components/SettingsListBillboard/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListHexTile/index.tsx/interface/Props-titleonPressgroupPositionisSelectedselectionColor": {
@@ -3275,6 +3372,200 @@
         "cluster_type": 2
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-groupPositionshowSeparatoronPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-groupPositionshowSeparatoronPress",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props",
+      "from_class_or_interface_name": "Props",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props",
+      "to_class_or_interface_name": "Props",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/groupPosition": {
+          "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/groupPosition",
+          "name": "groupPosition",
+          "type": "'top' | 'middle' | 'bottom' | 'single'",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/groupPosition",
+            "name": "groupPosition",
+            "type": "'top' | 'middle' | 'bottom' | 'single'",
+            "modifiers": [],
+            "position": {
+              "startLine": 25,
+              "startColumn": 2,
+              "endLine": 25,
+              "endColumn": 57
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 57
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/showSeparator": {
+          "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/showSeparator",
+          "name": "showSeparator",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/showSeparator",
+            "name": "showSeparator",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 26,
+              "startColumn": 2,
+              "endLine": 26,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/onPress": {
+          "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 27,
+              "startColumn": 2,
+              "endLine": 27,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-groupPositionshowSeparatoronPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-groupPositionshowSeparatoronPress",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props",
+      "from_class_or_interface_name": "Props",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props",
+      "to_class_or_interface_name": "Props",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/groupPosition": {
+          "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/groupPosition",
+          "name": "groupPosition",
+          "type": "'top' | 'middle' | 'bottom' | 'single'",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/groupPosition",
+            "name": "groupPosition",
+            "type": "'top' | 'middle' | 'bottom' | 'single'",
+            "modifiers": [],
+            "position": {
+              "startLine": 22,
+              "startColumn": 2,
+              "endLine": 22,
+              "endColumn": 57
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 57
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/showSeparator": {
+          "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/showSeparator",
+          "name": "showSeparator",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/showSeparator",
+            "name": "showSeparator",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 23,
+              "startColumn": 2,
+              "endLine": 23,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 12,
+            "startColumn": 2,
+            "endLine": 12,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/onPress": {
+          "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 24,
+              "startColumn": 2,
+              "endLine": 24,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 3
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListRoute/index.tsx-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-groupPositionshowSeparatoronPress": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListRoute/index.tsx-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListActivity/index.tsx/interface/Props-groupPositionshowSeparatoronPress",
@@ -3369,7 +3660,104 @@
       },
       "data_clump_type_additional": {
         "cluster_id": 11,
-        "cluster_type": 2
+        "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListRoute/index.tsx-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-groupPositionshowSeparatoronPress": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/components/SettingsListRoute/index.tsx-apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props-apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props-groupPositionshowSeparatoronPress",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx",
+      "from_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props",
+      "from_class_or_interface_name": "Props",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx",
+      "to_class_or_interface_key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props",
+      "to_class_or_interface_name": "Props",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/groupPosition": {
+          "key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/groupPosition",
+          "name": "groupPosition",
+          "type": "'top' | 'middle' | 'bottom' | 'single'",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/groupPosition",
+            "name": "groupPosition",
+            "type": "'top' | 'middle' | 'bottom' | 'single'",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 57
+            }
+          },
+          "position": {
+            "startLine": 22,
+            "startColumn": 2,
+            "endLine": 22,
+            "endColumn": 57
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/showSeparator": {
+          "key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/showSeparator",
+          "name": "showSeparator",
+          "type": "boolean",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/showSeparator",
+            "name": "showSeparator",
+            "type": "boolean",
+            "modifiers": [],
+            "position": {
+              "startLine": 12,
+              "startColumn": 2,
+              "endLine": 12,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 23,
+            "startColumn": 2,
+            "endLine": 23,
+            "endColumn": 26
+          }
+        },
+        "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/onPress": {
+          "key": "apps/geonexia/frontend/components/SettingsListRoute/index.tsx/interface/Props/memberField/onPress",
+          "name": "onPress",
+          "type": "() => void",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/components/SettingsListMapFeature/index.tsx/interface/Props/memberField/onPress",
+            "name": "onPress",
+            "type": "() => void",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 23
+            }
+          },
+          "position": {
+            "startLine": 24,
+            "startColumn": 2,
+            "endLine": 24,
+            "endColumn": 23
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 11,
+        "cluster_type": 3
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/components/SpeechSettingsModal.tsx-apps/geonexia/frontend/components/SpeechSettingsModal.tsx/interface/PaceMinSecInputProps-packages/common-ui/src/components/SettingsList/types.ts/interface/SettingsListItemBaseProps-iconBgColorleftIconlabel": {
