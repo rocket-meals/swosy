@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
+import SettingsListMapFeature from '../../components/SettingsListMapFeature';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, haversineKm, type CoordPair } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
@@ -279,7 +280,7 @@ export default function RouteDetailScreen() {
 		})();
 
 		return () => { cancelled = true; };
-	}, [route]);
+	}, [route, mapKey]);
 
 	// ── Fetch tile features for the enclosed area ────────────────────────
 	// Depends on `mapKey` so it re-runs whenever the screen is re-focused
@@ -876,76 +877,74 @@ export default function RouteDetailScreen() {
 				)}
 
 				{/* ── Aggregated Features (debug only) ────────────────────── */}
-				{isDebugMode && !featuresLoading && Object.keys(aggregatedFeatures).length > 0 && (() => {
-					const entries = Object.entries(aggregatedFeatures).sort((a, b) => b[1].count - a[1].count);
-					return (
-						<>
-							<SettingsListGroupTitle title="Aggregierte Features" />
-							{entries.map(([key, entry], idx) => (
-								<SettingsList
-									key={`agg-${key}`}
-									leftIcon={<MaterialIcons name="layers" size={20} color="#ffffff" />}
-									iconBackgroundColor="#7c3aed"
-									title={key}
-									value={String(entry.count)}
-									showSeparator={idx < entries.length - 1}
-									groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
-									onPress={() => {
-										showAggregatedModal({
-											title: `📊 ${key}`,
-											children: (
-												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-													<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
-														{JSON.stringify(entry.feature, null, 2)}
-													</Text>
-												</View>
-											),
-										});
-									}}
-								/>
-							))}
-						</>
-					);
-				})()}
+			{isDebugMode && !featuresLoading && Object.keys(aggregatedFeatures).length > 0 && (() => {
+				const entries = Object.entries(aggregatedFeatures).sort((a, b) => b[1].count - a[1].count);
+				return (
+					<>
+						<SettingsListGroupTitle title="Aggregierte Features" />
+						{entries.map(([key, entry], idx) => (
+							<SettingsListMapFeature
+								key={`agg-${key}`}
+								feature={entry.feature}
+								count={entry.count}
+								showSeparator={idx < entries.length - 1}
+								groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
+								iconBackgroundColor="#7c3aed"
+								onPress={() => {
+									showAggregatedModal({
+										title: `📊 ${key}`,
+										children: (
+											<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+												<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+													{JSON.stringify(entry.feature, null, 2)}
+												</Text>
+											</View>
+										),
+									});
+								}}
+							/>
+						))}
+					</>
+				);
+			})()}
 
-				{/* ── Enclosed Area Aggregated Features ───────────────────── */}
-				{enclosedFeaturesLoading && (
-					<View style={styles.loadingFeatures}>
-						<ActivityIndicator size="small" color={PRIMARY_COLOR} />
-						<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Features der eingeschlossenen Fläche…</Text>
-					</View>
-				)}
-				{!enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
-					const entries = Object.entries(aggregatedEnclosedFeatures).sort((a, b) => b[1].count - a[1].count);
-					return (
-						<>
-							<SettingsListGroupTitle title="Aggregierte Features (eingeschlossene Fläche)" />
-							{entries.map(([key, entry], idx) => (
-								<SettingsList
-									key={`enc-agg-${key}`}
-									leftIcon={<MaterialIcons name="layers" size={20} color="#ffffff" />}
-									iconBackgroundColor="#059669"
-									title={key}
-									value={String(entry.count)}
-									showSeparator={idx < entries.length - 1}
-									groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
-									onPress={() => {
-										showEnclosedAggregatedModal({
-											title: `📊 ${key}`,
-											children: (
-												<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
-													<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
-														{JSON.stringify(entry.feature, null, 2)}
-													</Text>
-												</View>
-											),
-										});
-									}}
-								/>
-							))}
-						</>
-					);
-				})()}
+			{/* ── Enclosed Area Aggregated Features ───────────────────── */}
+			{enclosedFeaturesLoading && (
+				<View style={styles.loadingFeatures}>
+					<ActivityIndicator size="small" color={PRIMARY_COLOR} />
+					<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Features der eingeschlossenen Fläche…</Text>
+				</View>
+			)}
+			{!enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
+				const entries = Object.entries(aggregatedEnclosedFeatures).sort((a, b) => b[1].count - a[1].count);
+				return (
+					<>
+						<SettingsListGroupTitle title="Aggregierte Features (eingeschlossene Fläche)" />
+						{entries.map(([key, entry], idx) => (
+							<SettingsListMapFeature
+								key={`enc-agg-${key}`}
+								feature={entry.feature}
+								count={entry.count}
+								showSeparator={idx < entries.length - 1}
+								groupPosition={entries.length === 1 ? 'single' : idx === 0 ? 'top' : idx === entries.length - 1 ? 'bottom' : 'middle'}
+								iconBackgroundColor="#059669"
+								onPress={() => {
+									showEnclosedAggregatedModal({
+										title: `📊 ${key}`,
+										children: (
+											<View style={{ paddingBottom: 24, paddingHorizontal: 12 }}>
+												<Text style={{ color: theme.screen.text, fontSize: 11, fontFamily: 'monospace' }} selectable>
+													{JSON.stringify(entry.feature, null, 2)}
+												</Text>
+											</View>
+										),
+									});
+								}}
+							/>
+						))}
+					</>
+				);
+			})()}
 
 				<TouchableOpacity
 					style={styles.deleteButton}
