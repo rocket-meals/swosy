@@ -282,6 +282,8 @@ export default function RouteDetailScreen() {
 	}, [route]);
 
 	// ── Fetch tile features for the enclosed area ────────────────────────
+	// Depends on `mapKey` so it re-runs whenever the screen is re-focused
+	// (useFocusEffect increments mapKey on every non-first focus).
 	useEffect(() => {
 		if (!route || route.hexTiles.length === 0) return;
 		if (!isH3Available()) return;
@@ -291,39 +293,61 @@ export default function RouteDetailScreen() {
 		let cancelled = false;
 
 		(async () => {
-			// 1. Compute enclosed tiles using the same algorithm as the activity end screen:
-			//    build a polygon from the ordered tile center points and fill it with
-			//    polygonToCells.  cellsToMultiPolygon + polygonToCells does NOT work here
-			//    because for a ring of tiles it produces a donut, and filling a donut just
-			//    returns the ring tiles themselves (leaving 0 enclosed cells after exclusion).
-			const tiles: string[] = [];
-			try {
-				const firstTile = route.hexTiles[0];
-				const lastTile = route.hexTiles[route.hexTiles.length - 1];
-				if (firstTile && lastTile && route.hexTiles.length >= 3) {
-					const res = getResolution(firstTile);
+			let tiles: string[];
 
-					// Check loop closure: first and last tile centers must be ≤ 300 m apart
-					// (same threshold used by findEnclosedCells when finishing an activity).
-					const distKm = haversineKm(cellToLatLng(firstTile), cellToLatLng(lastTile));
+			// Use cached enclosed tiles if already stored on the route object to
+			// avoid recomputing the polygon fill on every screen visit.
+			if (route.enclosedTiles !== undefined) {
+				tiles = route.enclosedTiles;
+			} else {
+				// 1. Compute enclosed tiles using the same algorithm as the activity end screen:
+				//    build a polygon from the ordered tile center points and fill it with
+				//    polygonToCells.  cellsToMultiPolygon + polygonToCells does NOT work here
+				//    because for a ring of tiles it produces a donut, and filling a donut just
+				//    returns the ring tiles themselves (leaving 0 enclosed cells after exclusion).
+				tiles = [];
+				try {
+					const firstTile = route.hexTiles[0];
+					const lastTile = route.hexTiles[route.hexTiles.length - 1];
+					if (firstTile && lastTile && route.hexTiles.length >= 3) {
+						const res = getResolution(firstTile);
 
-					if (distKm <= 0.3) {
-						// Build closed ring from ordered tile center points [lat, lng]
-						const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
-						ring.push(ring[0]); // close the ring
+						// Check loop closure: first and last tile centers must be ≤ 300 m apart
+						// (same threshold used by findEnclosedCells when finishing an activity).
+						const distKm = haversineKm(cellToLatLng(firstTile), cellToLatLng(lastTile));
 
-						// Fill the polygon interior with H3 cells, then exclude the route tiles
-						const filledCells = polygonToCells([ring], res, false);
-						const routeSet = new Set(route.hexTiles);
-						for (const cell of filledCells) {
-							if (!routeSet.has(cell)) {
-								tiles.push(cell);
+						if (distKm <= 0.3) {
+							// Build closed ring from ordered tile center points [lat, lng]
+							const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
+							ring.push(ring[0]); // close the ring
+
+							// Fill the polygon interior with H3 cells, then exclude the route tiles
+							const filledCells = polygonToCells([ring], res, false);
+							const routeSet = new Set(route.hexTiles);
+							for (const cell of filledCells) {
+								if (!routeSet.has(cell)) {
+									tiles.push(cell);
+								}
 							}
 						}
 					}
+				} catch (err) {
+					console.warn('[RouteDetailScreen] Failed to compute enclosed tiles:', err);
 				}
-			} catch (err) {
-				console.warn('[RouteDetailScreen] Failed to compute enclosed tiles:', err);
+
+				if (cancelled) return;
+
+				// Persist computed tiles on the route object so they are available
+				// immediately on subsequent screen visits without recomputation.
+				const updatedRoute: SavedRoute = { ...route, enclosedTiles: tiles };
+				try {
+					saveRoute(updatedRoute);
+				} catch (err) {
+					console.warn('[RouteDetailScreen] Failed to save enclosed tiles to route:', err);
+				}
+				// Update in-memory state regardless of whether the file write succeeded,
+				// so the UI reflects the computed tiles on this visit.
+				setRoute(updatedRoute);
 			}
 
 			if (cancelled) return;
@@ -363,7 +387,7 @@ export default function RouteDetailScreen() {
 		})();
 
 		return () => { cancelled = true; };
-	}, [route]);
+	}, [route, mapKey]);
 
 	// Send enclosed tiles GeoJSON to the map once computed; clear during editing
 	useEffect(() => {
@@ -514,6 +538,8 @@ export default function RouteDetailScreen() {
 			...route,
 			hexTiles: editedHexTiles,
 			walkedEdges: computeEdgesFromHexTiles(editedHexTiles),
+			// Clear cached enclosed tiles so they are recomputed for the new tile set.
+			enclosedTiles: undefined,
 		};
 		try {
 			saveRoute(updatedRoute);

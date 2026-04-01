@@ -27,6 +27,15 @@ export type SavedRoute = {
 	 * Optional for backward-compat with older saves that lack this field.
 	 */
 	activityIds?: string[];
+	/**
+	 * H3 cell indices of the tiles enclosed by the route loop.
+	 * Computed once on the route detail screen and cached here to avoid
+	 * recomputation on every screen visit.  An empty array means the route
+	 * was checked and found to enclose no cells (not a closed loop).
+	 * `undefined` means not yet computed (older saves or shape changed).
+	 * Optional for backward-compat with older saves that lack this field.
+	 */
+	enclosedTiles?: string[];
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────
