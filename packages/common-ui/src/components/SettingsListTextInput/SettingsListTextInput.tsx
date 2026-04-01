@@ -15,9 +15,15 @@ import { useMyScrollViewModal } from '../GlobalModal/useMyScrollViewModal';
 import SettingsList from '../SettingsList';
 import type { SettingsListProps } from '../SettingsList/types';
 import { borderRadiusContainer } from '../../constants/ui';
+import SettingsListSelectOption from '../SettingsListSelectOption';
 
 export type CheckTextInputResult = {
 	isValid: boolean;
+	value: string;
+};
+
+export type SettingsListTextInputSuggestion = {
+	key: string;
 	value: string;
 };
 
@@ -39,6 +45,12 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
+	/** Optional list of suggestions rendered as selectable options below the Save button.
+	 *  Clicking a suggestion is equivalent to typing its value and pressing Save. */
+	suggestions?: SettingsListTextInputSuggestion[];
+	/** Optional render function for extra content rendered below the Save button.
+	 *  Receives a callback to programmatically set the text input value. */
+	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 }
 
 type ModalSheetProps = {
@@ -55,6 +67,8 @@ type ModalSheetProps = {
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
 	primaryColor: string;
+	suggestions?: SettingsListTextInputSuggestion[];
+	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 };
 
 const ModalSheet: React.FC<ModalSheetProps> = ({
@@ -71,6 +85,8 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 	checkTextInput,
 	allowSubmitWhenDisabled = true,
 	primaryColor,
+	suggestions,
+	renderModalChildren,
 }) => {
 	const { theme } = useTheme();
 	const [value, setValue] = useState(initialValue);
@@ -98,6 +114,17 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 		Keyboard.dismiss();
 		onSave(validationResult.value);
 	}, [allowSubmitWhenDisabled, disableSave, onSave, validationResult]);
+
+	const handleSelectSuggestion = useCallback(
+		(suggestion: SettingsListTextInputSuggestion) => {
+			const result = (checkTextInput ?? defaultCheckTextInput)(suggestion.value);
+			if (result.isValid) {
+				Keyboard.dismiss();
+				onSave(result.value);
+			}
+		},
+		[checkTextInput, onSave]
+	);
 
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;
@@ -138,6 +165,22 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 			>
 				<Text style={[styles.saveButtonText, { color: theme.button.text }]}>{saveLabel}</Text>
 			</TouchableOpacity>
+			{suggestions && suggestions.length > 0 && (
+				<View style={styles.suggestionsContainer}>
+					<SettingsListSelectOption
+						options={suggestions.map((s) => ({ id: s.key, label: s.value }))}
+						selectedOption={suggestions.find((s) => s.value === value)?.key ?? null}
+						onSelect={(option) => {
+							const suggestion = suggestions.find((s) => s.key === option.id);
+							if (suggestion) {
+								handleSelectSuggestion(suggestion);
+							}
+						}}
+						selectionColor={primaryColor}
+					/>
+				</View>
+			)}
+			{renderModalChildren?.(setValue)}
 		</View>
 	);
 
@@ -164,6 +207,8 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	label,
 	title,
 	primaryColor,
+	suggestions,
+	renderModalChildren,
 	...props
 }) => {
 	const { theme } = useTheme();
@@ -205,6 +250,8 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 					checkTextInput={checkTextInput}
 					allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}
 					primaryColor={resolvedPrimaryColor}
+					suggestions={suggestions}
+					renderModalChildren={renderModalChildren}
 				/>
 			),
 		});
@@ -219,11 +266,13 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 		numberOfLines,
 		onSave,
 		placeholder,
+		renderModalChildren,
 		resolvedInitialValue,
 		resolvedPrimaryColor,
 		resolvedTitle,
 		saveLabel,
 		show,
+		suggestions,
 		textAlignVertical,
 	]);
 
@@ -268,5 +317,8 @@ const styles = StyleSheet.create({
 	saveButtonText: {
 		fontSize: 16,
 		fontWeight: '600',
+	},
+	suggestionsContainer: {
+		marginTop: 16,
 	},
 });

@@ -22,6 +22,7 @@ import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, haversineKm, type CoordPair } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
+import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
 import type { RootState } from '../../store/store';
@@ -104,6 +105,9 @@ export default function RouteDetailScreen() {
 	const [enclosedFeaturesLoading, setEnclosedFeaturesLoading] = useState(false);
 	const enclosedQuerySentRef = useRef(false);
 
+	// ── Route name suggestions ────────────────────────────────────────────
+	const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+	const nameSuggestionsSentRef = useRef(false);
 	// Stable ref so handleMapMessage can always read the latest edit state without
 	// being recreated on every state change.
 	const editStateRef = useRef({
@@ -119,11 +123,13 @@ export default function RouteDetailScreen() {
 	const resetTileQueryState = useCallback(() => {
 		enclosedQuerySentRef.current = false;
 		featureQuerySentRef.current = false;
+		nameSuggestionsSentRef.current = false;
 		setEnclosedTiles([]);
 		setEnclosedTilesReady(false);
 		setAggregatedEnclosedFeatures({});
 		setHexTileFeatureMap({});
 		setAggregatedFeatures({});
+		setNameSuggestions([]);
 	}, []);
 
 	// Stop map-side auto-rotate on unmount
@@ -389,6 +395,29 @@ export default function RouteDetailScreen() {
 
 		return () => { cancelled = true; };
 	}, [route, mapKey]);
+
+	// ── Compute route name suggestions once enclosed tiles are ready ──────
+	useEffect(() => {
+		if (!route || route.hexTiles.length === 0) return;
+		if (!enclosedTilesReady) return;
+		if (nameSuggestionsSentRef.current) return;
+		nameSuggestionsSentRef.current = true;
+
+		let cancelled = false;
+
+		(async () => {
+			try {
+				const suggestions = await suggestRouteNamesForHexTiles(route.hexTiles, enclosedTiles);
+				if (!cancelled) {
+					setNameSuggestions(suggestions.slice(0, 20));
+				}
+			} catch (err) {
+				console.warn('[RouteDetailScreen] Failed to compute name suggestions:', err);
+			}
+		})();
+
+		return () => { cancelled = true; };
+	}, [route, enclosedTilesReady, enclosedTiles, mapKey]);
 
 	// Send enclosed tiles GeoJSON to the map once computed; clear during editing
 	useEffect(() => {
@@ -800,6 +829,20 @@ export default function RouteDetailScreen() {
 						}
 						setRoute(updated);
 					}}
+					renderModalChildren={nameSuggestions.length > 0 ? (onSuggest) => (
+						<View>
+							<SettingsListGroupTitle title="Vorschläge" />
+							{nameSuggestions.map((suggestion, idx) => (
+								<SettingsList
+									key={suggestion}
+									title={suggestion}
+									groupPosition={nameSuggestions.length === 1 ? 'single' : idx === 0 ? 'top' : idx === nameSuggestions.length - 1 ? 'bottom' : 'middle'}
+									showSeparator={idx < nameSuggestions.length - 1}
+									onPress={() => onSuggest(suggestion)}
+								/>
+							))}
+						</View>
+					) : undefined}
 				/>
 
 				<SettingsListGroupTitle title="Aktivitäten" />
