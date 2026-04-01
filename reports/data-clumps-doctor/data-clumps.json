@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-01T12:38:28.366Z",
+  "report_timestamp": "2026-04-01T13:14:46.475Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -28,15 +28,15 @@
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4086,
-        "detection_time_ms": 81,
+        "ast_generation_time_ms": 4146,
+        "detection_time_ms": 80,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 169.97,
-          "os_memory_free": 14974214144,
+          "os_uptime": 356.51,
+          "os_memory_free": 14952026112,
           "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,10 +55,10 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "404177a30c8bf27d7481c2d48edcc7eb31edb946",
-    "project_commit_hash": "404177a30c8bf27d7481c2d48edcc7eb31edb946",
+    "project_version": "d51eeeb8b7e309e29060f3078cb2d4735eef9a8c",
+    "project_commit_hash": "d51eeeb8b7e309e29060f3078cb2d4735eef9a8c",
     "project_tag": null,
-    "project_commit_date": "1775047015",
+    "project_commit_date": "1775049184",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
@@ -2393,9 +2393,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 22,
+              "startLine": 23,
               "startColumn": 2,
-              "endLine": 22,
+              "endLine": 23,
               "endColumn": 25
             }
           },
@@ -2418,9 +2418,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 24,
               "endColumn": 22
             }
           },
@@ -2443,9 +2443,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 25,
               "endColumn": 23
             }
           },
@@ -2468,9 +2468,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 26,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 26,
               "endColumn": 26
             }
           },
@@ -2493,9 +2493,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 27,
               "endColumn": 25
             }
           },
@@ -2518,9 +2518,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 27,
+              "startLine": 28,
               "startColumn": 2,
-              "endLine": 27,
+              "endLine": 28,
               "endColumn": 26
             }
           },
@@ -2543,9 +2543,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 28,
+              "startLine": 29,
               "startColumn": 2,
-              "endLine": 28,
+              "endLine": 29,
               "endColumn": 26
             }
           },
@@ -2568,9 +2568,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 29,
+              "startLine": 30,
               "startColumn": 2,
-              "endLine": 29,
+              "endLine": 30,
               "endColumn": 25
             }
           },
@@ -2593,9 +2593,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 30,
+              "startLine": 31,
               "startColumn": 2,
-              "endLine": 30,
+              "endLine": 31,
               "endColumn": 25
             }
           },
@@ -2618,9 +2618,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 31,
+              "startLine": 32,
               "startColumn": 2,
-              "endLine": 31,
+              "endLine": 32,
               "endColumn": 25
             }
           },
@@ -2665,9 +2665,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 41,
               "startColumn": 2,
-              "endLine": 40,
+              "endLine": 41,
               "endColumn": 22
             }
           },
@@ -2690,9 +2690,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 42,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 42,
+              "endLine": 43,
               "endColumn": 23
             }
           },
@@ -2715,9 +2715,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 43,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 43,
+              "endLine": 44,
               "endColumn": 26
             }
           },
@@ -2740,9 +2740,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 44,
+              "endLine": 45,
               "endColumn": 25
             }
           },
@@ -2765,9 +2765,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 45,
+              "startLine": 46,
               "startColumn": 2,
-              "endLine": 45,
+              "endLine": 46,
               "endColumn": 26
             }
           },
@@ -2790,9 +2790,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 46,
+              "startLine": 47,
               "startColumn": 2,
-              "endLine": 46,
+              "endLine": 47,
               "endColumn": 26
             }
           },
@@ -2815,9 +2815,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 47,
+              "startLine": 48,
               "startColumn": 2,
-              "endLine": 47,
+              "endLine": 48,
               "endColumn": 25
             }
           },
@@ -2840,9 +2840,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 48,
+              "startLine": 49,
               "startColumn": 2,
-              "endLine": 48,
+              "endLine": 49,
               "endColumn": 25
             }
           },
@@ -2865,9 +2865,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 49,
+              "startLine": 50,
               "startColumn": 2,
-              "endLine": 49,
+              "endLine": 50,
               "endColumn": 25
             }
           },
@@ -4627,9 +4627,9 @@
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 41,
             "startColumn": 2,
-            "endLine": 40,
+            "endLine": 41,
             "endColumn": 22
           }
         },
@@ -4652,9 +4652,9 @@
             }
           },
           "position": {
-            "startLine": 42,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 42,
+            "endLine": 43,
             "endColumn": 23
           }
         },
@@ -4677,9 +4677,9 @@
             }
           },
           "position": {
-            "startLine": 43,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 43,
+            "endLine": 44,
             "endColumn": 26
           }
         },
@@ -4702,9 +4702,9 @@
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 25
           }
         },
@@ -4727,9 +4727,9 @@
             }
           },
           "position": {
-            "startLine": 45,
+            "startLine": 46,
             "startColumn": 2,
-            "endLine": 45,
+            "endLine": 46,
             "endColumn": 26
           }
         },
@@ -4752,9 +4752,9 @@
             }
           },
           "position": {
-            "startLine": 46,
+            "startLine": 47,
             "startColumn": 2,
-            "endLine": 46,
+            "endLine": 47,
             "endColumn": 26
           }
         },
@@ -4777,9 +4777,9 @@
             }
           },
           "position": {
-            "startLine": 47,
+            "startLine": 48,
             "startColumn": 2,
-            "endLine": 47,
+            "endLine": 48,
             "endColumn": 25
           }
         },
@@ -4802,9 +4802,9 @@
             }
           },
           "position": {
-            "startLine": 48,
+            "startLine": 49,
             "startColumn": 2,
-            "endLine": 48,
+            "endLine": 49,
             "endColumn": 25
           }
         },
@@ -4827,9 +4827,9 @@
             }
           },
           "position": {
-            "startLine": 49,
+            "startLine": 50,
             "startColumn": 2,
-            "endLine": 49,
+            "endLine": 50,
             "endColumn": 25
           }
         }
@@ -4867,16 +4867,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 23,
+              "startLine": 24,
               "startColumn": 2,
-              "endLine": 23,
+              "endLine": 24,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 40,
+            "startLine": 41,
             "startColumn": 2,
-            "endLine": 40,
+            "endLine": 41,
             "endColumn": 22
           }
         },
@@ -4892,16 +4892,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 24,
+              "startLine": 25,
               "startColumn": 2,
-              "endLine": 24,
+              "endLine": 25,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 42,
+            "startLine": 43,
             "startColumn": 2,
-            "endLine": 42,
+            "endLine": 43,
             "endColumn": 23
           }
         },
@@ -4917,16 +4917,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 25,
+              "startLine": 26,
               "startColumn": 2,
-              "endLine": 25,
+              "endLine": 26,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 43,
+            "startLine": 44,
             "startColumn": 2,
-            "endLine": 43,
+            "endLine": 44,
             "endColumn": 26
           }
         },
@@ -4942,16 +4942,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 26,
+              "startLine": 27,
               "startColumn": 2,
-              "endLine": 26,
+              "endLine": 27,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 44,
+            "startLine": 45,
             "startColumn": 2,
-            "endLine": 44,
+            "endLine": 45,
             "endColumn": 25
           }
         },
@@ -4964,31 +4964,6 @@
           "to_variable": {
             "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/waterway",
             "name": "waterway",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 27,
-              "startColumn": 2,
-              "endLine": 27,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 45,
-            "startColumn": 2,
-            "endLine": 45,
-            "endColumn": 26
-          }
-        },
-        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building": {
-          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
-          "name": "building",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
-            "name": "building",
             "type": "string | null",
             "modifiers": [],
             "position": {
@@ -5005,6 +4980,31 @@
             "endColumn": 26
           }
         },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 29,
+              "startColumn": 2,
+              "endLine": 29,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 47,
+            "startColumn": 2,
+            "endLine": 47,
+            "endColumn": 26
+          }
+        },
         "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural": {
           "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural",
           "name": "natural",
@@ -5014,31 +5014,6 @@
           "to_variable": {
             "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural",
             "name": "natural",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 29,
-              "startColumn": 2,
-              "endLine": 29,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 47,
-            "startColumn": 2,
-            "endLine": 47,
-            "endColumn": 25
-          }
-        },
-        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse": {
-          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
-          "name": "landuse",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
-            "name": "landuse",
             "type": "string | null",
             "modifiers": [],
             "position": {
@@ -5055,15 +5030,15 @@
             "endColumn": 25
           }
         },
-        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity": {
-          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
-          "name": "amenity",
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
+          "name": "landuse",
           "type": "string | null",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
-            "name": "amenity",
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
+            "name": "landuse",
             "type": "string | null",
             "modifiers": [],
             "position": {
@@ -5077,6 +5052,31 @@
             "startLine": 49,
             "startColumn": 2,
             "endLine": 49,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 32,
+              "startColumn": 2,
+              "endLine": 32,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 50,
+            "startColumn": 2,
+            "endLine": 50,
             "endColumn": 25
           }
         }
@@ -5121,9 +5121,9 @@
             }
           },
           "position": {
-            "startLine": 22,
+            "startLine": 23,
             "startColumn": 2,
-            "endLine": 22,
+            "endLine": 23,
             "endColumn": 25
           }
         },
@@ -5146,9 +5146,9 @@
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 24,
             "endColumn": 22
           }
         },
@@ -5171,9 +5171,9 @@
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 25,
             "endColumn": 23
           }
         },
@@ -5196,9 +5196,9 @@
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 26,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 26
           }
         },
@@ -5221,9 +5221,9 @@
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 25
           }
         },
@@ -5246,9 +5246,9 @@
             }
           },
           "position": {
-            "startLine": 27,
+            "startLine": 28,
             "startColumn": 2,
-            "endLine": 27,
+            "endLine": 28,
             "endColumn": 26
           }
         },
@@ -5271,9 +5271,9 @@
             }
           },
           "position": {
-            "startLine": 28,
+            "startLine": 29,
             "startColumn": 2,
-            "endLine": 28,
+            "endLine": 29,
             "endColumn": 26
           }
         },
@@ -5296,9 +5296,9 @@
             }
           },
           "position": {
-            "startLine": 29,
+            "startLine": 30,
             "startColumn": 2,
-            "endLine": 29,
+            "endLine": 30,
             "endColumn": 25
           }
         },
@@ -5321,9 +5321,9 @@
             }
           },
           "position": {
-            "startLine": 30,
+            "startLine": 31,
             "startColumn": 2,
-            "endLine": 30,
+            "endLine": 31,
             "endColumn": 25
           }
         },
@@ -5346,9 +5346,9 @@
             }
           },
           "position": {
-            "startLine": 31,
+            "startLine": 32,
             "startColumn": 2,
-            "endLine": 31,
+            "endLine": 32,
             "endColumn": 25
           }
         }
@@ -5386,16 +5386,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 40,
+              "startLine": 41,
               "startColumn": 2,
-              "endLine": 40,
+              "endLine": 41,
               "endColumn": 22
             }
           },
           "position": {
-            "startLine": 23,
+            "startLine": 24,
             "startColumn": 2,
-            "endLine": 23,
+            "endLine": 24,
             "endColumn": 22
           }
         },
@@ -5411,16 +5411,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 42,
+              "startLine": 43,
               "startColumn": 2,
-              "endLine": 42,
+              "endLine": 43,
               "endColumn": 23
             }
           },
           "position": {
-            "startLine": 24,
+            "startLine": 25,
             "startColumn": 2,
-            "endLine": 24,
+            "endLine": 25,
             "endColumn": 23
           }
         },
@@ -5436,16 +5436,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 43,
+              "startLine": 44,
               "startColumn": 2,
-              "endLine": 43,
+              "endLine": 44,
               "endColumn": 26
             }
           },
           "position": {
-            "startLine": 25,
+            "startLine": 26,
             "startColumn": 2,
-            "endLine": 25,
+            "endLine": 26,
             "endColumn": 26
           }
         },
@@ -5461,16 +5461,16 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 44,
+              "startLine": 45,
               "startColumn": 2,
-              "endLine": 44,
+              "endLine": 45,
               "endColumn": 25
             }
           },
           "position": {
-            "startLine": 26,
+            "startLine": 27,
             "startColumn": 2,
-            "endLine": 26,
+            "endLine": 27,
             "endColumn": 25
           }
         },
@@ -5483,31 +5483,6 @@
           "to_variable": {
             "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/waterway",
             "name": "waterway",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 45,
-              "startColumn": 2,
-              "endLine": 45,
-              "endColumn": 26
-            }
-          },
-          "position": {
-            "startLine": 27,
-            "startColumn": 2,
-            "endLine": 27,
-            "endColumn": 26
-          }
-        },
-        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building": {
-          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
-          "name": "building",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
-            "name": "building",
             "type": "string | null",
             "modifiers": [],
             "position": {
@@ -5524,6 +5499,31 @@
             "endColumn": 26
           }
         },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/building",
+          "name": "building",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/building",
+            "name": "building",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 47,
+              "startColumn": 2,
+              "endLine": 47,
+              "endColumn": 26
+            }
+          },
+          "position": {
+            "startLine": 29,
+            "startColumn": 2,
+            "endLine": 29,
+            "endColumn": 26
+          }
+        },
         "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural": {
           "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/natural",
           "name": "natural",
@@ -5533,31 +5533,6 @@
           "to_variable": {
             "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/natural",
             "name": "natural",
-            "type": "string | null",
-            "modifiers": [],
-            "position": {
-              "startLine": 47,
-              "startColumn": 2,
-              "endLine": 47,
-              "endColumn": 25
-            }
-          },
-          "position": {
-            "startLine": 29,
-            "startColumn": 2,
-            "endLine": 29,
-            "endColumn": 25
-          }
-        },
-        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse": {
-          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
-          "name": "landuse",
-          "type": "string | null",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
-            "name": "landuse",
             "type": "string | null",
             "modifiers": [],
             "position": {
@@ -5574,15 +5549,15 @@
             "endColumn": 25
           }
         },
-        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity": {
-          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
-          "name": "amenity",
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/landuse",
+          "name": "landuse",
           "type": "string | null",
           "probability": 1,
           "modifiers": [],
           "to_variable": {
-            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
-            "name": "amenity",
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/landuse",
+            "name": "landuse",
             "type": "string | null",
             "modifiers": [],
             "position": {
@@ -5596,6 +5571,31 @@
             "startLine": 31,
             "startColumn": 2,
             "endLine": 31,
+            "endColumn": 25
+          }
+        },
+        "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity": {
+          "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo/memberField/amenity",
+          "name": "amenity",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/AreaInfoEntry/memberField/amenity",
+            "name": "amenity",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 50,
+              "startColumn": 2,
+              "endLine": 50,
+              "endColumn": 25
+            }
+          },
+          "position": {
+            "startLine": 32,
+            "startColumn": 2,
+            "endLine": 32,
             "endColumn": 25
           }
         }
