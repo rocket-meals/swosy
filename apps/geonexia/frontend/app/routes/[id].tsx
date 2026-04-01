@@ -156,11 +156,12 @@ export default function RouteDetailScreen() {
 		}, [resetTileQueryState])
 	);
 
-	// Show back arrow in header
+	// Show back arrow and route name in header
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerStyle: { backgroundColor: theme.header.background },
 			headerTintColor: theme.header.text,
+			title: route?.name ?? '',
 			headerLeft: () => (
 				<TouchableOpacity
 					onPress={() => router.navigate('/routes')}
@@ -171,7 +172,7 @@ export default function RouteDetailScreen() {
 				</TouchableOpacity>
 			),
 		});
-	}, [navigation, router, theme.header.background, theme.header.text]);
+	}, [navigation, router, theme.header.background, theme.header.text, route?.name]);
 
 	// Load route by id
 	useEffect(() => {
@@ -847,6 +848,7 @@ export default function RouteDetailScreen() {
 					iconBackgroundColor={PRIMARY_COLOR}
 					title="Aktivitäten"
 					value={String(routeActivities.length)}
+					rightIcon={<MaterialIcons name="chevron-right" size={20} color={theme.screen.icon} />}
 					groupPosition="single"
 					onPress={() => {
 						showActivitiesModal({
@@ -948,13 +950,13 @@ export default function RouteDetailScreen() {
 			})()}
 
 			{/* ── Enclosed Area Aggregated Features ───────────────────── */}
-			{enclosedFeaturesLoading && (
+			{isDebugMode && enclosedFeaturesLoading && (
 				<View style={styles.loadingFeatures}>
 					<ActivityIndicator size="small" color={PRIMARY_COLOR} />
 					<Text style={{ color: theme.screen.icon, fontSize: 13, marginLeft: 8 }}>Lade Features der eingeschlossenen Fläche…</Text>
 				</View>
 			)}
-			{!enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
+			{isDebugMode && !enclosedFeaturesLoading && Object.keys(aggregatedEnclosedFeatures).length > 0 && (() => {
 				const entries = Object.entries(aggregatedEnclosedFeatures).sort((a, b) => b[1].count - a[1].count);
 				return (
 					<>
@@ -985,6 +987,7 @@ export default function RouteDetailScreen() {
 				);
 			})()}
 
+				{isDebugMode && (
 				<TouchableOpacity
 					style={styles.deleteButton}
 					onPress={handleDelete}
@@ -993,6 +996,7 @@ export default function RouteDetailScreen() {
 					<MaterialIcons name="delete-outline" size={18} color="#ef4444" />
 					<Text style={styles.deleteButtonText}>Route löschen</Text>
 				</TouchableOpacity>
+			)}
 			</View>
 		</ScrollView>
 	);
