@@ -35,6 +35,16 @@ export default function ExperimentalScreen() {
 					groupPosition="single"
 				/>
 
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<Ionicons name="map-outline" size={22} color="#ffffff" />}
+					label="Route Switcher"
+					value="F1-Style Route-Karussell"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/route-switcher')}
+					groupPosition="single"
+				/>
+
 				<SettingsListGroupTitle title="UI" />
 				<SettingsList
 					iconBgColor={EXPERIMENTAL_COLOR}
