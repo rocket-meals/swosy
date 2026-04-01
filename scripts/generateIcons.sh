@@ -70,6 +70,31 @@ calculate_splash_logo_width() {
     SPLASH_LOGO_WIDTH=$(echo "$splash_width * 0.9" | bc)
 }
 
+## Converts transparent pixels in a PNG from black-transparent (0,0,0,0) to
+## white-transparent (255,255,255,0). This prevents dark fringe / halo artifacts
+## when the image is rendered on a white background, because anti-aliasing blends
+## with the underlying RGB values of transparent pixels.
+##
+## How it works:
+##   1. Clone the image and flatten it onto a white background (alpha removed) –
+##      transparent areas become white.
+##   2. Clone the original and extract its alpha channel as a grayscale mask.
+##   3. Discard the original, re-apply the saved alpha mask to the white-flattened
+##      version via CopyOpacity.
+## The result has identical alpha to the input but RGB=(255,255,255) wherever
+## pixels were transparent.
+convert_transparent_to_white() {
+    local input_path=$1
+    local output_path=$2
+
+    convert "$input_path" \
+        \( +clone -background white -alpha remove \) \
+        \( -clone 0 -alpha extract \) \
+        -delete 0 -compose CopyOpacity -composite \
+        -colorspace sRGB \
+        PNG32:"$output_path"
+}
+
 generate_splash_icon() {
     local splash_icon_size="1024x1024"
     local splash_icon_path="$OUTPUT_FOLDER/splash-icon.png"
@@ -172,8 +197,12 @@ generate_images() {
     # Generate notification-icon.png
     convert "$icon_path" -resize $NOTIFICATION_ICON_SIZE "$OUTPUT_FOLDER/notification-icon.png"
 
-    # Copy the logo_path image to the output folder
-    cp "$logo_path" "$OUTPUT_FOLDER/company.png"
+    # Convert the logo to white-transparent and copy to output folder.
+    # Source logos may use black-transparent (0,0,0,0) for their background,
+    # which causes dark fringe / halo artifacts on the splash screen and
+    # wherever the image is rendered on a white background. Converting to
+    # white-transparent (255,255,255,0) eliminates this.
+    convert_transparent_to_white "$logo_path" "$OUTPUT_FOLDER/company.png"
 
     generate_adaptive_icon "$icon_path"
     generate_adaptive_icon_background
