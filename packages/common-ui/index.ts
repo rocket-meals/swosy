@@ -42,7 +42,7 @@ export { default as SettingsListLikeButton } from './src/components/SettingsList
 export type { SettingsListLikeButtonProps } from './src/components/SettingsListLikeButton';
 
 export { default as SettingsListTextInput } from './src/components/SettingsListTextInput';
-export type { SettingsListTextInputProps, CheckTextInput, CheckTextInputResult } from './src/components/SettingsListTextInput';
+export type { SettingsListTextInputProps, CheckTextInput, CheckTextInputResult, SettingsListTextInputSuggestion } from './src/components/SettingsListTextInput';
 
 export { default as SettingsListDate } from './src/components/SettingsListDate';
 export type { SettingsListDateProps } from './src/components/SettingsListDate';
