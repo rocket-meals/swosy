@@ -33,6 +33,7 @@ import Labels from '@/components/Labels';
 import { useMyContrastColor } from '@/helper/ColorHelper';
 import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSettingsItem';
+import AppButton from '@/components/AppButton';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -366,8 +367,10 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                     </TouchableOpacity>
 
                   {foodItem?.image_generated && (
-                    <TouchableOpacity
-                      style={styles.aiBadgeContainer}
+                    <AppButton
+                      variant="ghost"
+                      usePlainText
+                      text={translate(TranslationKeys.ai_generated_badge_label)}
                       onPress={() =>
                         showScrollViewModal(
                           {
@@ -377,11 +380,9 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                           {}
                         )
                       }
-                    >
-                      <Text style={styles.aiGeneratedBadgeText}>
-                        {translate(TranslationKeys.ai_generated_badge_label)}
-                      </Text>
-                    </TouchableOpacity>
+                      style={[styles.aiBadgeContainer, { marginVertical: 0 }]}
+                      textStyle={styles.aiGeneratedBadgeText}
+                    />
                   )}
 
                     {dislikedMarkings.length > 0 && (
@@ -419,10 +420,15 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                       ) : null
                     )}
                   </View>
-
-                  <TouchableOpacity style={styles.priceTag} onPress={handlePriceChange}>
-                    <Text style={styles.priceText}>{priceLabel}</Text>
-                  </TouchableOpacity>
+                    
+                  <AppButton
+                    variant="ghost"
+                    usePlainText
+                    text={priceLabel}
+                    onPress={handlePriceChange}
+                    style={[styles.priceTag, { marginVertical: 0 }]}
+                    textStyle={styles.priceText}
+                  />
                 </>
               }
             >

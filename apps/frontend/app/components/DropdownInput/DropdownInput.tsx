@@ -118,7 +118,6 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 				<AppButton
 					variant="ghost"
 					usePlainText
-					text=""
 					style={[
 						styles.selectorButton,
 						{

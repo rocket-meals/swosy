@@ -387,7 +387,6 @@ const Index = () => {
 					<AppButton
 						variant="ghost"
 						usePlainText
-						text=""
 						onPress={() => {
 							setCurrentPath(item.path);
 						}}
@@ -405,7 +404,6 @@ const Index = () => {
 
 			return (
 				<AppButton
-					text=""
 					onPress={() => {
 						router.push({
 							pathname: '/form-submission',

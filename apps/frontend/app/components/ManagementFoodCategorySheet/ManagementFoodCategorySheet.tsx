@@ -1,4 +1,4 @@
-import { Dimensions, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Text, TextInput, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ManagementFoodCategorySheetProps } from './types';
 import styles from './styles';
@@ -12,10 +12,14 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import SettingsList from '@/components/SettingsList';
 import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
+import { TranslationKeys } from '@/locales/keys';
+import { useLanguage } from '@/hooks/useLanguage';
+import AppButton from '@/components/AppButton';
 
 export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheetProps> = ({ closeSheet, selectedFoodCategory }) => {
 	const { theme } = useTheme();
 	const dispatch = useDispatch();
+	const { translate } = useLanguage();
 	const [isCustom, setIsCustom] = useState(false);
 	const [list, setList] = useState<DatabaseTypes.FoodsCategories[] | DatabaseTypes.FoodoffersCategories[]>([]);
 	const { dayPlan } = useAppSelector(state => state.management);
@@ -127,7 +131,10 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 					/>
 
 					<View style={[styles.buttonContainer, { width: '30%' }]}>
-						<TouchableOpacity
+						<AppButton
+							variant="ghost"
+							usePlainText
+							text={translate(TranslationKeys.cancel)}
 							onPress={() => {
 								setIsCustom(false);
 								setValue('');
@@ -136,19 +143,22 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 							style={{
 								...styles.cancelButton,
 								borderColor: primaryColor,
+								marginVertical: 0,
 							}}
-						>
-							<Text style={[styles.buttonText, { color: theme.screen.text }]}>cancel</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
+							textStyle={[styles.buttonText, { color: theme.screen.text }]}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							text={translate(TranslationKeys.save)}
 							onPress={handleSaveCustom}
 							style={{
 								...styles.saveButton,
 								backgroundColor: primaryColor,
+								marginVertical: 0,
 							}}
-						>
-							<Text style={[styles.buttonText, { color: theme.activeText }]}>save</Text>
-						</TouchableOpacity>
+							textStyle={[styles.buttonText, { color: theme.activeText }]}
+						/>
 					</View>
 				</View>
 			) : (

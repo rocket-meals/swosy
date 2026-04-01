@@ -16,6 +16,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
+import AppButton from '@/components/AppButton';
 
 const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet, selectedFoodId, handleFetch, fileName }) => {
 	const { theme } = useTheme();
@@ -221,64 +222,120 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({ closeSheet,
 			>
 				{isDelete ? (
 					<View>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={handleDeleteImage}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
-							</View>
-							{loading?.delete ? <ActivityIndicator size="small" color={theme.screen.icon} /> : <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />}
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={{ ...styles.row, backgroundColor: theme.background }}
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={handleDeleteImage}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+							iconLeft={
+								<View style={styles.col}>
+									<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
+								</View>
+							}
+							iconRight={
+								loading?.delete ? (
+									<ActivityIndicator size="small" color={theme.screen.icon} />
+								) : (
+									<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
+								)
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
 							onPress={() => {
 								setIsDelete(false);
 								closeSheet();
 							}}
-						>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
-							</View>
-							<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => setIsDelete(false)}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="keyboard-backspace" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.navigate_back)}</Text>
-							</View>
-						</TouchableOpacity>
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+							iconLeft={
+								<View style={styles.col}>
+									<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
+								</View>
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={() => setIsDelete(false)}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+							iconLeft={
+								<View style={styles.col}>
+									<MaterialCommunityIcons name="keyboard-backspace" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.navigate_back)}</Text>
+								</View>
+							}
+						/>
 					</View>
 				) : (
 					<>
 						{!isWeb && (
-							<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => handleImagePick(true)}>
-								<View style={styles.col}>
-									<Ionicons name="camera" size={24} color={theme.screen.icon} />
-									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.camera)}</Text>
-								</View>
-								{loading?.camera ? <ActivityIndicator size="small" color={theme.screen.icon} /> : <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />}
-							</TouchableOpacity>
+							<AppButton
+								variant="ghost"
+								usePlainText
+								onPress={() => handleImagePick(true)}
+								style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+								iconLeft={
+									<View style={styles.col}>
+										<Ionicons name="camera" size={24} color={theme.screen.icon} />
+										<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.camera)}</Text>
+									</View>
+								}
+								iconRight={
+									loading?.camera ? (
+										<ActivityIndicator size="small" color={theme.screen.icon} />
+									) : (
+										<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
+									)
+								}
+							/>
 						)}
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => handleImagePick(false)}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="folder-image" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.gallery)}</Text>
-							</View>
-							{loading?.image ? <ActivityIndicator size="small" color={theme.screen.icon} /> : <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />}
-						</TouchableOpacity>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={() => setIsDelete(true)}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
-							</View>
-							<MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />
-						</TouchableOpacity>
-						<TouchableOpacity style={{ ...styles.row, backgroundColor: theme.background }} onPress={closeSheet}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
-							</View>
-						</TouchableOpacity>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={() => handleImagePick(false)}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+							iconLeft={
+								<View style={styles.col}>
+									<MaterialCommunityIcons name="folder-image" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.gallery)}</Text>
+								</View>
+							}
+							iconRight={
+								loading?.image ? (
+									<ActivityIndicator size="small" color={theme.screen.icon} />
+								) : (
+									<MaterialCommunityIcons name="checkbox-blank-circle-outline" size={24} color={theme.screen.icon} />
+								)
+							}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={() => setIsDelete(true)}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+							iconLeft={
+								<View style={styles.col}>
+									<MaterialCommunityIcons name="delete" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.delete)}</Text>
+								</View>
+							}
+							iconRight={<MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />}
+						/>
+						<AppButton
+							variant="ghost"
+							usePlainText
+							onPress={closeSheet}
+							style={{ ...styles.row, backgroundColor: theme.background, marginVertical: 0 }}
+							iconLeft={
+								<View style={styles.col}>
+									<MaterialCommunityIcons name="close" size={24} color={theme.screen.icon} />
+									<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.cancel)}</Text>
+								</View>
+							}
+						/>
 					</>
 				)}
 			</View>

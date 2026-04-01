@@ -1,4 +1,4 @@
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { styles } from './styles';
@@ -13,6 +13,7 @@ import { Entypo } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguageModal } from '@/hooks/useLanguageModal';
 import { useAppSelector } from '@/redux/hooks';
+import AppButton from '@/components/AppButton';
 
 const LoginHeader = () => {
         const { setLanguageMode, language } = useLanguage();
@@ -82,24 +83,31 @@ const LoginHeader = () => {
 					borderRadius: 6,
 				}}
 			/>
-                        <TouchableOpacity
-                                onPress={openLanguageModal}
-                                style={{
+			<AppButton
+				variant="ghost"
+				usePlainText
+				onPress={openLanguageModal}
+				style={{
 					...styles.picker,
 					height: isWeb ? 41 : 'auto',
 					backgroundColor: theme.login.pickerBg,
+					marginVertical: 0,
 				}}
-			>
-				<Text
-					style={{
-						...styles.selectText,
-						color: theme.screen.text,
-					}}
-				>
-                                        {selectedLanguageOption?.emoji}{' '}{selectedLanguageOption?.label || 'selected language'}
-                                </Text>
-                                <Entypo name="chevron-small-down" size={25} color={theme.screen.icon} />
-                        </TouchableOpacity>
+				iconLeft={
+					<View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+						<Text
+							style={{
+								...styles.selectText,
+								color: theme.screen.text,
+							}}
+						>
+							{selectedLanguageOption?.emoji}{' '}
+							{selectedLanguageOption?.label || 'selected language'}
+						</Text>
+					</View>
+				}
+				iconRight={<Entypo name="chevron-small-down" size={25} color={theme.screen.icon} />}
+			/>
                 </View>
         );
 };

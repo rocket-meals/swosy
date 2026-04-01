@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { CommonSystemActionHelper } from '@/helper/SystemActionHelper';
 import styles from '@/app/(app)/collectible-event/styles';
+import AppButton from '@/components/AppButton';
 
 const useRateAppModal = (buttonColorOverride?: string) => {
         const { show, close } = useMyScrollViewModal();
@@ -76,38 +77,34 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                 </Text>
 
                                                 {canRate && (
-                                                        <TouchableOpacity
+                                                        <AppButton
+                                                                variant="ghost"
+                                                                usePlainText
+                                                                text={translate(TranslationKeys.rate_now)}
+                                                                onPress={handleRateApp}
                                                                 style={{
                                                                         ...styles.button,
                                                                         backgroundColor: rateButtonColor,
+                                                                        marginVertical: 0,
                                                                 }}
-                                                                onPress={handleRateApp}
-                                                        >
-                                                                <Text style={{ ...styles.buttonText, color: rateButtonTextColor }}>
-                                                                        {translate(TranslationKeys.rate_now)}
-                                                                </Text>
-                                                        </TouchableOpacity>
+                                                                textStyle={{ ...styles.buttonText, color: rateButtonTextColor }}
+                                                        />
                                                 )}
 
-                                                <TouchableOpacity
-                                                        style={{ ...styles.button, backgroundColor: theme.drawerBg }}
+                                                <AppButton
+                                                        variant="ghost"
+                                                        usePlainText
+                                                        text={translate(TranslationKeys.rate_later)}
                                                         onPress={close}
-                                                >
-                                                        <Text style={{ ...styles.buttonText, color: theme.screen.text }}>
-                                                                {translate(TranslationKeys.rate_later)}
-                                                        </Text>
-                                                </TouchableOpacity>
+                                                        style={{ ...styles.button, backgroundColor: theme.drawerBg, marginVertical: 0 }}
+                                                        textStyle={{ ...styles.buttonText, color: theme.screen.text }}
+                                                />
 
                                                 <View style={{ gap: 12 }}>
-                                                        <TouchableOpacity
-                                                                style={{
-                                                                        ...styles.button,
-                                                                        marginTop: 0,
-                                                                        flexDirection: 'row',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                        backgroundColor: rateButtonColor,
-                                                                }}
+                                                        <AppButton
+                                                                variant="ghost"
+                                                                usePlainText
+                                                                text="Google Play Store"
                                                                 onPress={() => {
                                                                         if (appSettings?.app_stores_url_to_google) {
                                                                                 CommonSystemActionHelper.openExternalURL(
@@ -116,19 +113,6 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                                                 );
                                                                         }
                                                                 }}
-                                                        >
-                                                                <Ionicons
-                                                                        name="logo-google-playstore"
-                                                                        size={20}
-                                                                        color={rateButtonTextColor}
-                                                                        style={{ marginRight: 8 }}
-                                                                />
-                                                                <Text style={{ ...styles.buttonText, color: rateButtonTextColor }}>
-                                                                        Google Play Store
-                                                                </Text>
-                                                        </TouchableOpacity>
-
-                                                        <TouchableOpacity
                                                                 style={{
                                                                         ...styles.button,
                                                                         marginTop: 0,
@@ -136,7 +120,23 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
                                                                         backgroundColor: rateButtonColor,
+                                                                        marginVertical: 0,
                                                                 }}
+                                                                textStyle={{ ...styles.buttonText, color: rateButtonTextColor }}
+                                                                iconLeft={
+                                                                        <Ionicons
+                                                                                name="logo-google-playstore"
+                                                                                size={20}
+                                                                                color={rateButtonTextColor}
+                                                                                style={{ marginRight: 8 }}
+                                                                        />
+                                                                }
+                                                        />
+
+                                                        <AppButton
+                                                                variant="ghost"
+                                                                usePlainText
+                                                                text="App Store"
                                                                 onPress={() => {
                                                                         if (appSettings?.app_stores_url_to_apple) {
                                                                                 CommonSystemActionHelper.openExternalURL(
@@ -145,17 +145,25 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                                                                 );
                                                                         }
                                                                 }}
-                                                        >
-                                                                <Ionicons
-                                                                        name="logo-apple"
-                                                                        size={20}
-                                                                        color={rateButtonTextColor}
-                                                                        style={{ marginRight: 8 }}
-                                                                />
-                                                                <Text style={{ ...styles.buttonText, color: rateButtonTextColor }}>
-                                                                        App Store
-                                                                </Text>
-                                                        </TouchableOpacity>
+                                                                style={{
+                                                                        ...styles.button,
+                                                                        marginTop: 0,
+                                                                        flexDirection: 'row',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'center',
+                                                                        backgroundColor: rateButtonColor,
+                                                                        marginVertical: 0,
+                                                                }}
+                                                                textStyle={{ ...styles.buttonText, color: rateButtonTextColor }}
+                                                                iconLeft={
+                                                                        <Ionicons
+                                                                                name="logo-apple"
+                                                                                size={20}
+                                                                                color={rateButtonTextColor}
+                                                                                style={{ marginRight: 8 }}
+                                                                        />
+                                                                }
+                                                        />
                                                 </View>
                                         </View>
                                 ),

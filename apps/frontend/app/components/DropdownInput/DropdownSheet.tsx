@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -8,6 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/reducer';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
+import AppButton from '@/components/AppButton';
 
 export interface DropdownSheetProps {
   closeSheet: () => void;
@@ -97,34 +98,57 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
         if (item.kind === 'deselect') {
           const active = !customSelected && value.trim().length === 0;
           return (
-            <TouchableOpacity
+            <AppButton
               key={`deselect-${index}`}
-              style={[styles.optionRow, { backgroundColor: active ? primaryColor : theme.screen.iconBg }]}
+              variant="ghost"
+              usePlainText
+              text={translate(TranslationKeys.deselect)}
+              style={[
+                styles.optionRow,
+                { backgroundColor: active ? primaryColor : theme.screen.iconBg, marginVertical: 0 },
+              ]}
+              textStyle={[styles.optionLabel, { color: active ? theme.activeText : theme.screen.text }]}
+              iconRight={
+                <MaterialCommunityIcons
+                  name={active ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  size={24}
+                  color={active ? theme.activeText : theme.screen.icon}
+                />
+              }
               onPress={handleDeselect}
               disabled={isDisabled}
-              onPressIn={() => console.log('[DropdownSheet] deselect pressed')}
-            >
-              <Text style={[styles.optionLabel, { color: active ? theme.activeText : theme.screen.text }]}>
-                {translate(TranslationKeys.deselect)}
-              </Text>
-              <MaterialCommunityIcons name={active ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={active ? theme.activeText : theme.screen.icon} />
-            </TouchableOpacity>
+            />
           );
         }
         if (item.kind === 'custom') {
           return (
-            <TouchableOpacity
+            <AppButton
               key={`custom-${index}`}
-              style={[styles.optionRow, { backgroundColor: customSelected ? primaryColor : theme.screen.iconBg }]}
-              onPress={handleSelectCustom}
+              variant="ghost"
+              usePlainText
+              text={translate(TranslationKeys.enter_custom_value)}
+              style={[
+                styles.optionRow,
+                {
+                  backgroundColor: customSelected ? primaryColor : theme.screen.iconBg,
+                  marginVertical: 0,
+                  opacity: 1,
+                },
+              ]}
+              textStyle={[styles.optionLabel, { color: customSelected ? theme.activeText : theme.screen.text }]}
+              iconRight={
+                <MaterialCommunityIcons
+                  name={customSelected ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  size={24}
+                  color={customSelected ? theme.activeText : theme.screen.icon}
+                />
+              }
+              onPress={() => {
+                console.log('[DropdownSheet] select custom pressed');
+                handleSelectCustom();
+              }}
               disabled={isDisabled}
-              onPressIn={() => console.log('[DropdownSheet] select custom pressed')}
-            >
-              <Text style={[styles.optionLabel, { color: customSelected ? theme.activeText : theme.screen.text }]}>
-                {translate(TranslationKeys.enter_custom_value)}
-              </Text>
-              <MaterialCommunityIcons name={customSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={customSelected ? theme.activeText : theme.screen.icon} />
-            </TouchableOpacity>
+            />
           );
         }
         if (item.kind === 'customInput') {
@@ -151,16 +175,33 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
         // option
         const isSelected = !customSelected && value === item.value;
         return (
-          <TouchableOpacity
+          <AppButton
             key={`option-${item.value}-${index}`}
-            style={[styles.optionRow, { backgroundColor: isSelected ? primaryColor : theme.screen.iconBg }]}
-            onPress={() => handleSelectOption(item.value)}
+            variant="ghost"
+            usePlainText
+            text={item.value}
+            style={[
+              styles.optionRow,
+              {
+                backgroundColor: isSelected ? primaryColor : theme.screen.iconBg,
+                marginVertical: 0,
+                opacity: 1,
+              },
+            ]}
+            textStyle={[styles.optionLabel, { color: isSelected ? theme.activeText : theme.screen.text }]}
+            iconRight={
+              <MaterialCommunityIcons
+                name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                size={24}
+                color={isSelected ? theme.activeText : theme.screen.icon}
+              />
+            }
+            onPress={() => {
+              console.log('[DropdownSheet] option pressed', item.value);
+              handleSelectOption(item.value);
+            }}
             disabled={isDisabled}
-            onPressIn={() => console.log('[DropdownSheet] option pressed', item.value)}
-          >
-            <Text style={[styles.optionLabel, { color: isSelected ? theme.activeText : theme.screen.text }]}>{item.value}</Text>
-            <MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={24} color={isSelected ? theme.activeText : theme.screen.icon} />
-          </TouchableOpacity>
+          />
         );
       })}
     </View>

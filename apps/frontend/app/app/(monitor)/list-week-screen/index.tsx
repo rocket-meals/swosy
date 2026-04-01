@@ -114,7 +114,6 @@ const Index = () => {
 				<AppButton
 					variant="ghost"
 					usePlainText
-					text=""
 					onPress={() => handleWeekPress('current', selectedWeek)}
 					style={{ ...styles.currentWeekButton, backgroundColor: foods_area_color, marginVertical: 0, justifyContent: 'center' }}
 					textStyle={{ width: 0, height: 0 }}

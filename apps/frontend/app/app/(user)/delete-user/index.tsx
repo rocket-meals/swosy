@@ -159,7 +159,6 @@ const Index = () => {
 					</View>
 					<View style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}>
 						<AppButton
-							text=""
 							style={{
 								...styles.list,
 								backgroundColor: theme.screen.iconBg,

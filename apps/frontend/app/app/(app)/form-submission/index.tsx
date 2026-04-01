@@ -1044,7 +1044,6 @@ const Index = () => {
 				<AppButton
 					variant="ghost"
 					usePlainText
-					text=""
 					onPress={openFilterSheet}
 					style={{
 						...styles.stateChangeButton,

@@ -12,6 +12,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { CustomTooltip, TooltipContent, TooltipText } from '@/components/CustomTooltip';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import AppButton from '@/components/AppButton';
 
 const NewsItem: React.FC<any> = ({ news }) => {
 	const { theme } = useTheme();
@@ -121,18 +122,21 @@ const NewsItem: React.FC<any> = ({ news }) => {
 					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
-							<TouchableOpacity
+							<AppButton
 								{...triggerProps}
+								variant="ghost"
+								usePlainText
+								text={translate(TranslationKeys.read_more)}
+								onPress={handleNewsDetails}
 								style={{
 									...styles.readMoreButton,
 									backgroundColor: news_area_color,
 									width: screenWidth > 768 ? 210 : '100%',
+									marginVertical: 0,
 								}}
-								onPress={handleNewsDetails}
-							>
-								<Text style={{ ...styles.readMore, color: contrastColor }}>{translate(TranslationKeys.read_more)}</Text>
-								<FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />
-							</TouchableOpacity>
+								textStyle={{ ...styles.readMore, color: contrastColor }}
+								iconRight={<FontAwesome6 name="arrow-up-right-from-square" size={20} color={contrastColor} />}
+							/>
 						)}
 					>
 						<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">

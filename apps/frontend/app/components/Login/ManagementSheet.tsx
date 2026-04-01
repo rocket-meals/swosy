@@ -9,6 +9,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { EmailHelper } from 'repo-depkit-common';
 import { SettingsListTextInputField } from '@/components/SettingsListTextInput';
+import AppButton from '@/components/AppButton';
 
 const ManagementSheet: React.FC<SheetProps> = ({ handleLogin, loading }) => {
 	const { translate } = useLanguage();
@@ -70,27 +71,27 @@ const ManagementSheet: React.FC<SheetProps> = ({ handleLogin, loading }) => {
 				returnKeyType="done"
 				onSubmitEditing={onSubmit}
 			/>
-			<TouchableOpacity
+			<AppButton
+				variant="ghost"
+				usePlainText
+				text={loading ? '' : translate(TranslationKeys.sign_in)}
+				onPress={onSubmit}
+				loadingIndicatorColor={theme.screen.text}
+				loadingIndicatorSize={20}
 				style={{
 					...styles.sheetLoginButton,
 					backgroundColor: isFormValid ? primaryColor : theme.sheet.buttonDisabled,
+					marginVertical: 0,
 				}}
-				disabled={!isFormValid}
-				onPress={onSubmit}
-			>
-				{loading ? (
-					<ActivityIndicator size={'small'} color={theme.screen.text} />
-				) : (
-					<Text
-						style={{
-							...styles.sheetLoginLabel,
-							color: isFormValid ? contrastColor : theme.screen.text,
-						}}
-					>
-						{translate(TranslationKeys.sign_in)}
-					</Text>
-				)}
-			</TouchableOpacity>
+				textStyle={
+					loading
+						? { width: 0, height: 0 }
+						: {
+								...styles.sheetLoginLabel,
+								color: isFormValid ? contrastColor : theme.screen.text,
+							}
+				}
+			/>
 		</View>
 	);
 };

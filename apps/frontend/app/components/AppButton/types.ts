@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { StyleProp, ViewStyle, TextStyle } from 'react-native';
 
 export interface AppButtonProps {
-	text: string;
+	text?: string;
 	onPress?: () => void;
 	variant?: 'primary' | 'outline' | 'ghost';
 	iconLeft?: ReactNode;
