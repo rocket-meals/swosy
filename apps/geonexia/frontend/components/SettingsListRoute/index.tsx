@@ -9,18 +9,12 @@ const PRIMARY_COLOR = '#2563eb';
 const ICON_COLOR = '#ffffff';
 const CHEVRON_COLOR = '#9ca3af';
 
-function formatRouteDate(timestamp: number): string {
-	const d = new Date(timestamp);
-	return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
 function buildRouteMeta(route: SavedRoute): string {
-	const dateStr = formatRouteDate(route.createdAt);
-	const tileCount = route.hexTiles.length;
 	const distanceKm = computeRouteLengthKm(route.hexTiles);
-	const distStr = distanceKm > 0 ? ` · ${formatDistanceKm(distanceKm)}` : '';
-	const sportStr = route.sportType ? ` · ${route.sportType}` : '';
-	return `${dateStr} · ${tileCount} tile${tileCount !== 1 ? 's' : ''}${distStr} · Res ${route.h3Resolution}${sportStr}`;
+	const distStr = distanceKm > 0 ? formatDistanceKm(distanceKm) : '0 km';
+	const activityCount = route.activityIds?.length ?? 0;
+	const activityStr = `${activityCount} ${activityCount === 1 ? 'Activity' : 'Activities'}`;
+	return `${distStr} · ${activityStr}`;
 }
 
 type Props = {

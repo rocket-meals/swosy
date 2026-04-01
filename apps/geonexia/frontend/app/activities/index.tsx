@@ -1,7 +1,7 @@
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
 	Alert,
-	FlatList,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -12,12 +12,13 @@ import { useFocusEffect, useNavigation } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import { useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { SettingsListGroupTitle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 
 import SettingsListActivity from '../../components/SettingsListActivity';
 import { useDispatch } from 'react-redux';
 
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell, gridPathCells } from '../../helpers/H3Helper';
 import { startRun, markVisited, loadPersistedState, applyMapCustomizations, addWalkedEdges, loadWalkedEdgesState } from '../../store/hexTileSlice';
 import { AppDispatch, store } from '../../store/store';
@@ -79,12 +80,16 @@ export default function ActivitiesScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
+	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	const loadData = useCallback(() => {
 		setLoading(true);
-		loadActivities()
-			.then(setActivities)
+		Promise.all([loadActivities(), loadRoutes()])
+			.then(([acts, rts]) => {
+				setActivities(acts);
+				setRoutes(rts);
+			})
 			.finally(() => setLoading(false));
 	}, []);
 
@@ -297,21 +302,54 @@ export default function ActivitiesScreen() {
 		);
 	}
 
+	// Build a map from routeId → SavedRoute for quick lookups
+	const routeMap = new Map<string, SavedRoute>(routes.map((r) => [r.id, r]));
+
+	// Group activities by routeId; undefined/null go into the 'unassigned' bucket
+	const groupMap = new Map<string | null, SavedActivity[]>();
+	for (const activity of activities) {
+		const key = activity.routeId ?? null;
+		if (!groupMap.has(key)) groupMap.set(key, []);
+		groupMap.get(key)!.push(activity);
+	}
+
+	// Sort groups: named routes first (by name), then unassigned last
+	const assignedRouteIds = [...groupMap.keys()]
+		.filter((k): k is string => k !== null)
+		.sort((a, b) => {
+			const nameA = routeMap.get(a)?.name ?? a;
+			const nameB = routeMap.get(b)?.name ?? b;
+			return nameA.localeCompare(nameB);
+		});
+	const groupOrder: Array<string | null> = [...assignedRouteIds];
+	if (groupMap.has(null)) groupOrder.push(null);
+
 	return (
-		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
-			<FlatList
-				data={activities}
-				keyExtractor={(item) => item.id}
-				contentContainerStyle={styles.listContent}
-				renderItem={({ item }) => (
-					<SettingsListActivity
-						activity={item}
-						groupPosition="single"
-						onPress={() => handleActivityPress(item.id)}
-					/>
-				)}
-			/>
-		</View>
+		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.listContent}>
+			{groupOrder.map((routeId) => {
+				const groupActivities = groupMap.get(routeId) ?? [];
+				const routeName = routeId !== null ? (routeMap.get(routeId)?.name ?? routeId) : 'Ohne Route';
+				return (
+					<View key={routeId ?? '__unassigned__'}>
+						<SettingsListGroupTitle title={routeName} />
+						{groupActivities.map((item, idx) => {
+							const count = groupActivities.length;
+							const groupPosition =
+								count === 1 ? 'single' : idx === 0 ? 'top' : idx === count - 1 ? 'bottom' : 'middle';
+							return (
+								<SettingsListActivity
+									key={item.id}
+									activity={item}
+									groupPosition={groupPosition}
+									showSeparator={idx < count - 1}
+									onPress={() => handleActivityPress(item.id)}
+								/>
+							);
+						})}
+					</View>
+				);
+			})}
+		</ScrollView>
 	);
 }
 
