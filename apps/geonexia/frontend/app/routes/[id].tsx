@@ -694,7 +694,6 @@ export default function RouteDetailScreen() {
 	})();
 
 	const infoRows: { icon: React.ComponentProps<typeof MaterialIcons>['name']; label: string; value: string }[] = [
-		{ icon: 'event', label: 'Erstellt am', value: formatDate(route.createdAt) },
 		{ icon: 'straighten', label: 'Streckenlänge', value: formatDistanceKm(distanceKm) },
 		{ icon: 'grid-on', label: 'Kacheln', value: String(tileCount) },
 		{ icon: 'crop-free', label: 'Eingeschlossene Kacheln', value: enclosedTilesReady ? String(enclosedTiles.length) : '…' },
@@ -798,26 +797,24 @@ export default function RouteDetailScreen() {
 			{/* Info list */}
 			<View style={styles.statsContent}>
 				<SettingsListGroupTitle title="Routen-Informationen" />
-				{infoRows.map((row, idx) => (
-					<SettingsList
-						key={row.label}
-						leftIcon={<MaterialIcons name={row.icon} size={20} color="#ffffff" />}
-						iconBackgroundColor={PRIMARY_COLOR}
-						title={row.label}
-						value={row.value}
-						showSeparator={idx < lastInfoIdx}
-						groupPosition={infoRows.length === 1 ? 'single' : idx === 0 ? 'top' : idx === lastInfoIdx ? 'bottom' : 'middle'}
-					/>
-				))}
-
-				<SettingsListGroupTitle title="Name anpassen" />
+				<SettingsList
+					leftIcon={<MaterialIcons name="event" size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title="Erstellt am"
+					value={formatDate(route.createdAt)}
+					showSeparator={true}
+					groupPosition="top"
+				/>
 				<SettingsListTextInput
-					title="Route umbenennen"
+					leftIcon={<MaterialIcons name="edit" size={20} color="#ffffff" />}
+					iconBackgroundColor={PRIMARY_COLOR}
+					title="Name"
 					value={route.name}
 					placeholder="Route Name"
 					modalTitle="Route umbenennen"
 					initialValue={route.name}
-					groupPosition="single"
+					groupPosition={infoRows.length === 0 ? 'bottom' : 'middle'}
+					showSeparator={infoRows.length > 0}
 					onSave={(newName) => {
 						const trimmed = newName.trim();
 						if (!trimmed) return;
@@ -832,6 +829,17 @@ export default function RouteDetailScreen() {
 					}}
 					suggestions={nameSuggestions.length > 0 ? nameSuggestions : undefined}
 				/>
+				{infoRows.map((row, idx) => (
+					<SettingsList
+						key={row.label}
+						leftIcon={<MaterialIcons name={row.icon} size={20} color="#ffffff" />}
+						iconBackgroundColor={PRIMARY_COLOR}
+						title={row.label}
+						value={row.value}
+						showSeparator={idx < lastInfoIdx}
+						groupPosition={idx === lastInfoIdx ? 'bottom' : 'middle'}
+					/>
+				))}
 
 				<SettingsListGroupTitle title="Aktivitäten" />
 				<SettingsList

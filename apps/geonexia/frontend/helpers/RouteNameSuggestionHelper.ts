@@ -14,6 +14,7 @@ import {
 	type LatLngBounds,
 } from './TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from './OpenMapTilesSchema';
+import { translateClass, translateSubclass } from '../hooks/useTranslation';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -129,14 +130,15 @@ function layerWeight(layerId: string): number {
 
 /** Return a human-readable category label for a feature if available. */
 function categoryLabel(entry: AreaInfoEntry): string | null {
-	if (entry.amenity) return entry.amenity;
-	if (entry.landuse) return entry.landuse;
-	if (entry.natural) return entry.natural;
-	if (entry.waterway) return entry.waterway;
-	if (entry.building && entry.building !== 'yes') return entry.building;
-	if (entry.highway && entry.highway !== 'yes') return entry.highway;
-	if (entry.subclass) return entry.subclass;
-	if (entry.class) return entry.class;
+	// Priority: subclass translation → class translation → other fields (translated) → layer label
+	if (entry.subclass) return translateSubclass(entry.subclass);
+	if (entry.class) return translateClass(entry.class);
+	if (entry.amenity) return translateClass(entry.amenity);
+	if (entry.landuse) return translateClass(entry.landuse);
+	if (entry.natural) return translateClass(entry.natural);
+	if (entry.waterway) return translateClass(entry.waterway);
+	if (entry.building && entry.building !== 'yes') return translateClass(entry.building);
+	if (entry.highway && entry.highway !== 'yes') return translateClass(entry.highway);
 	for (const lp of LAYER_PRIORITY) {
 		if (entry.layerId.includes(lp.pattern) && lp.label) return lp.label;
 	}
