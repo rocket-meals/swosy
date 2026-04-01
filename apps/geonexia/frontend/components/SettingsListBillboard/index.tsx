@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { WebView } from 'react-native-webview';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SettingsList, useTheme } from 'repo-depkit-common-ui';
 
 import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
@@ -15,6 +16,10 @@ type Props = {
 	/** Called when the row is pressed (e.g. to open a selection modal). */
 	onPress?: () => void;
 	groupPosition?: 'top' | 'middle' | 'bottom' | 'single';
+	/** When true, renders a filled radio button on the right side. */
+	isSelected?: boolean;
+	/** Color used for the radio button when isSelected is true. */
+	selectionColor?: string;
 };
 
 const THUMB_SIZE = 32;
@@ -24,6 +29,8 @@ const SettingsListBillboard: React.FC<Props> = ({
 	title = 'Billboard',
 	onPress,
 	groupPosition,
+	isSelected,
+	selectionColor,
 }) => {
 	const { theme } = useTheme();
 	const [svgUri, setSvgUri] = useState<string | null>(null);
@@ -73,6 +80,14 @@ const SettingsListBillboard: React.FC<Props> = ({
 		<View style={[styles.thumb, { backgroundColor: 'transparent', borderRadius: 6 }]} />
 	);
 
+	const radioButton = isSelected !== undefined ? (
+		<MaterialCommunityIcons
+			name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
+			size={24}
+			color={isSelected && selectionColor ? selectionColor : theme.screen.icon}
+		/>
+	) : undefined;
+
 	return (
 		<SettingsList
 			title={title}
@@ -84,6 +99,7 @@ const SettingsListBillboard: React.FC<Props> = ({
 					{thumbnail}
 				</View>
 			}
+			rightElement={radioButton}
 		/>
 	);
 };
