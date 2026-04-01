@@ -39,6 +39,9 @@ export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onP
 	autoFocus?: boolean;
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
+	/** Optional render function for extra content rendered below the Save button.
+	 *  Receives a callback to programmatically set the text input value. */
+	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 }
 
 type ModalSheetProps = {
@@ -55,6 +58,7 @@ type ModalSheetProps = {
 	checkTextInput?: CheckTextInput;
 	allowSubmitWhenDisabled?: boolean;
 	primaryColor: string;
+	renderModalChildren?: (onSuggest: (value: string) => void) => React.ReactNode;
 };
 
 const ModalSheet: React.FC<ModalSheetProps> = ({
@@ -71,6 +75,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 	checkTextInput,
 	allowSubmitWhenDisabled = true,
 	primaryColor,
+	renderModalChildren,
 }) => {
 	const { theme } = useTheme();
 	const [value, setValue] = useState(initialValue);
@@ -138,6 +143,7 @@ const ModalSheet: React.FC<ModalSheetProps> = ({
 			>
 				<Text style={[styles.saveButtonText, { color: theme.button.text }]}>{saveLabel}</Text>
 			</TouchableOpacity>
+			{renderModalChildren?.(setValue)}
 		</View>
 	);
 
@@ -164,6 +170,7 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	label,
 	title,
 	primaryColor,
+	renderModalChildren,
 	...props
 }) => {
 	const { theme } = useTheme();
@@ -205,6 +212,7 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 					checkTextInput={checkTextInput}
 					allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}
 					primaryColor={resolvedPrimaryColor}
+					renderModalChildren={renderModalChildren}
 				/>
 			),
 		});
@@ -219,6 +227,7 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 		numberOfLines,
 		onSave,
 		placeholder,
+		renderModalChildren,
 		resolvedInitialValue,
 		resolvedPrimaryColor,
 		resolvedTitle,
