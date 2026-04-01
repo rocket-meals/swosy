@@ -32,6 +32,7 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gri
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
+import { computeActivityData } from '../helpers/ActivityMapRebuildHelper';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
@@ -3979,6 +3980,7 @@ export default function RecordScreen() {
 			hexTilesOrdered,
 			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
+		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
 			saveActivity(activity);
 		} catch (err) {

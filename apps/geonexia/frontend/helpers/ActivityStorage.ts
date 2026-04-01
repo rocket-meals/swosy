@@ -3,6 +3,45 @@ import { SportType } from '../store/sportTypeSlice';
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
 
+/**
+ * A single hex tile entry in the computed ordered sequence of an activity,
+ * storing the tile index and the average GPS speed observed while traversing it.
+ */
+export type ComputedHexTileEntry = {
+	/** H3 cell index */
+	hexId: string;
+	/** Average speed in km/h across all GPS points recorded within this tile */
+	avgSpeedKmh: number;
+};
+
+/**
+ * Pre-computed data derived from an activity's raw GPS points.
+ * Stored alongside the activity to avoid re-processing the full point array.
+ *
+ * These values are (re-)generated:
+ *  1. Immediately after a recording is stopped.
+ *  2. Whenever the map is rebuilt from activity history.
+ */
+export type ComputedActivityData = {
+	/** Maximum speed in km/h observed during the activity */
+	maxSpeedKmh: number;
+	/** Minimum speed in km/h observed during the activity */
+	minSpeedKmh: number;
+	/** Average speed in km/h during the activity */
+	avgSpeedKmh: number;
+	/**
+	 * Ordered sequence of hex tiles visited during the activity, each paired
+	 * with the average GPS speed recorded while inside that tile.
+	 * Mirrors `SavedActivity.hexTilesOrdered` but enriched with speed data.
+	 */
+	orderedHexTiles: ComputedHexTileEntry[];
+	/**
+	 * H3 cell indices that were enclosed by the completed route loop but were
+	 * not physically walked on during the activity.
+	 */
+	enclosedHexTiles: string[];
+};
+
 export type RoutePoint = {
 	lat: number;
 	lng: number;
@@ -64,6 +103,12 @@ export type SavedActivity = {
 	 * Optional for backward-compat with older saves.
 	 */
 	batteryLevelEnd?: number | null;
+	/**
+	 * Pre-computed data derived from the raw GPS points and the route geometry.
+	 * Generated when the activity is saved and when the map is rebuilt.
+	 * Optional for backward-compat with older saves.
+	 */
+	computed?: ComputedActivityData;
 };
 
 // ─── Storage directories and files ───────────────────────────────────────────
