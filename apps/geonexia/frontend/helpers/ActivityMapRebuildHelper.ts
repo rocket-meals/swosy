@@ -281,7 +281,7 @@ export function checkAndApplyForest(
 	const lastChar = hexId[hexId.length - 1] ?? '0';
 	const hexDigit = parseInt(lastChar, 16);
 	const positionIndex = hexDigit % MIDDLE_RING_BY_DEGREE.length;
-	rec.billboards[MIDDLE_RING_BY_DEGREE[positionIndex]] = BILLBOARD_PINE_TREE_LARGE;
+	rec.billboards[MIDDLE_RING_BY_DEGREE[positionIndex]] = BILLBOARD_PINE_TREE_SMALL;
 }
 
 function getOrCreateRecord(

@@ -1669,6 +1669,8 @@ const HEX_DOT_SELECTED_SIZE = 26;
 
 // √3/4
 const SQRT3_4 = Math.sqrt(3) / 4;
+// √3/8
+const SQRT3_8 = Math.sqrt(3) / 8;
 // √3/2
 const SQRT3_2 = Math.sqrt(3) / 2;
 
@@ -1705,12 +1707,12 @@ const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
 	[BillboardAnchorPosition.MIDDLE_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // toward vertex[5]
 
 	// ── Middle ring: toward edge midpoints (30°, 90°, 150°, 210°, 270°, 330°) ───
-	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[0]
+	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[0]
 	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[1]
-	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[2]
-	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[3]
+	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[2]
+	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[3]
 	[BillboardAnchorPosition.MIDDLE_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[4]
-	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[5]
+	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[5]
 };
 
 // Hexagon outline polygon points (pointy-top, 6 vertices).
