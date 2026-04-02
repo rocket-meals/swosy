@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { HexTileRecord, BillboardAnchorColor, computeHexTileLevel } from '../helpers/HexTileStorage';
+import { HexTileRecord, BillboardAnchorPosition, computeHexTileLevel } from '../helpers/HexTileStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
@@ -149,7 +149,7 @@ const hexTileSlice = createSlice({
 		 */
 		setBillboardAtAnchor(
 			state,
-			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorColor; billboard: string | null }>,
+			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorPosition; billboard: string | null }>,
 		) {
 			const { h3Index, anchorColor, billboard } = action.payload;
 			const rec = getOrCreate(state.records, h3Index);
@@ -157,7 +157,7 @@ const hexTileSlice = createSlice({
 				rec.billboards = {};
 				// Migrate legacy single-billboard field if present
 				if (rec.billboard) {
-					const legacyAnchor = rec.billboardAnchorColor ?? BillboardAnchorColor.Purple;
+					const legacyAnchor = rec.billboardAnchorColor ?? BillboardAnchorPosition.CENTER;
 					rec.billboards[legacyAnchor] = rec.billboard;
 				}
 			}
@@ -175,7 +175,7 @@ const hexTileSlice = createSlice({
 		 */
 		setBillboardFlatAtAnchor(
 			state,
-			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorColor; flat: boolean }>,
+			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorPosition; flat: boolean }>,
 		) {
 			const { h3Index, anchorColor, flat } = action.payload;
 			const rec = getOrCreate(state.records, h3Index);

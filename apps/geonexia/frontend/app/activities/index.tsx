@@ -23,7 +23,7 @@ import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Help
 import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
-import { BillboardAnchorColor } from '../../helpers/HexTileStorage';
+import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch } from '../../store/store';
 
@@ -256,7 +256,7 @@ export default function ActivitiesScreen() {
 										if (hasForestFeature(features)) {
 											dispatch(setBillboardAtAnchor({
 												h3Index: hexId,
-												anchorColor: BillboardAnchorColor.Purple,
+												anchorColor: BillboardAnchorPosition.CENTER,
 												billboard: BILLBOARD_PINE_TREE_LARGE,
 											}));
 										}

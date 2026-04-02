@@ -37,7 +37,7 @@ import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from
 import { mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
-import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
+import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
@@ -66,16 +66,16 @@ function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)
  * merging the new `billboards` field with the legacy `billboard`/`billboardAnchorColor` pair.
  * The new `billboards` field takes precedence when present.
  */
-function getEffectiveBillboards(record: { billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }): Record<BillboardAnchorColor, string> {
+function getEffectiveBillboards(record: { billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }): Record<BillboardAnchorPosition, string> {
 	const result: Record<string, string> = {};
 	if (record.billboards) {
 		for (const [ac, bk] of Object.entries(record.billboards)) {
 			if (bk) result[ac] = bk;
 		}
 	} else if (record.billboard) {
-		result[record.billboardAnchorColor ?? BillboardAnchorColor.Purple] = record.billboard;
+		result[record.billboardAnchorColor ?? BillboardAnchorPosition.CENTER] = record.billboard;
 	}
-	return result as Record<BillboardAnchorColor, string>;
+	return result as Record<BillboardAnchorPosition, string>;
 }
 
 /**
@@ -150,23 +150,33 @@ const BILLBOARD_MIN_SIZE_PX = 8;
 // AND automatically closes the ring (appends the first vertex at the end).
 const H3_GEOJSON_ORDER = true;
 
-// Billboard anchor color options. Each maps to a position within the hex cell.
-// Colors match the debug point layer colors in hexTileScript.ts.
+// Billboard anchor position options. Each maps to a position within the hex cell.
 const BILLBOARD_ANCHOR_COLORS = [
-	{ id: BillboardAnchorColor.Purple, hex: '#a855f7', label: 'Center (Purple)' },
-	{ id: BillboardAnchorColor.Green, hex: '#22c55e', label: 'Vertex (Green)' },
-	{ id: BillboardAnchorColor.Red, hex: '#ef4444', label: 'Midpoint 1 (Red)' },
-	{ id: BillboardAnchorColor.Orange, hex: '#f97316', label: 'Midpoint 2 (Orange)' },
-	{ id: BillboardAnchorColor.Yellow, hex: '#eab308', label: 'Midpoint 3 (Yellow)' },
-	{ id: BillboardAnchorColor.Blue, hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
-	{ id: BillboardAnchorColor.White, hex: '#ffffff', label: 'Midpoint 5 (White)' },
-	{ id: BillboardAnchorColor.Black, hex: '#000000', label: 'Midpoint 6 (Black)' },
-	{ id: BillboardAnchorColor.EdgeNE, hex: '#f59e0b', label: 'Edge NE' },
-	{ id: BillboardAnchorColor.EdgeE,  hex: '#10b981', label: 'Edge E' },
-	{ id: BillboardAnchorColor.EdgeSE, hex: '#06b6d4', label: 'Edge SE' },
-	{ id: BillboardAnchorColor.EdgeSW, hex: '#8b5cf6', label: 'Edge SW' },
-	{ id: BillboardAnchorColor.EdgeW,  hex: '#ec4899', label: 'Edge W' },
-	{ id: BillboardAnchorColor.EdgeNW, hex: '#f43f5e', label: 'Edge NW' },
+	{ id: BillboardAnchorPosition.CENTER,        hex: '#a855f7', label: 'Center' },
+	{ id: BillboardAnchorPosition.OUTER_0_DEGREE,   hex: '#ffffff', label: 'Outer 0°' },
+	{ id: BillboardAnchorPosition.OUTER_30_DEGREE,  hex: '#f43f5e', label: 'Outer 30°' },
+	{ id: BillboardAnchorPosition.OUTER_60_DEGREE,  hex: '#22c55e', label: 'Outer 60°' },
+	{ id: BillboardAnchorPosition.OUTER_90_DEGREE,  hex: '#f59e0b', label: 'Outer 90°' },
+	{ id: BillboardAnchorPosition.OUTER_120_DEGREE, hex: '#10b981', label: 'Outer 120°' },
+	{ id: BillboardAnchorPosition.OUTER_150_DEGREE, hex: '#06b6d4', label: 'Outer 150°' },
+	{ id: BillboardAnchorPosition.OUTER_180_DEGREE, hex: '#ffffff', label: 'Outer 180°' },
+	{ id: BillboardAnchorPosition.OUTER_210_DEGREE, hex: '#8b5cf6', label: 'Outer 210°' },
+	{ id: BillboardAnchorPosition.OUTER_240_DEGREE, hex: '#ffffff', label: 'Outer 240°' },
+	{ id: BillboardAnchorPosition.OUTER_270_DEGREE, hex: '#ec4899', label: 'Outer 270°' },
+	{ id: BillboardAnchorPosition.OUTER_300_DEGREE, hex: '#ffffff', label: 'Outer 300°' },
+	{ id: BillboardAnchorPosition.OUTER_330_DEGREE, hex: '#f43f5e', label: 'Outer 330°' },
+	{ id: BillboardAnchorPosition.MIDDLE_0_DEGREE,   hex: '#ffffff', label: 'Middle 0°' },
+	{ id: BillboardAnchorPosition.MIDDLE_30_DEGREE,  hex: '#f43f5e', label: 'Middle 30°' },
+	{ id: BillboardAnchorPosition.MIDDLE_60_DEGREE,  hex: '#ef4444', label: 'Middle 60°' },
+	{ id: BillboardAnchorPosition.MIDDLE_90_DEGREE,  hex: '#f97316', label: 'Middle 90°' },
+	{ id: BillboardAnchorPosition.MIDDLE_120_DEGREE, hex: '#eab308', label: 'Middle 120°' },
+	{ id: BillboardAnchorPosition.MIDDLE_150_DEGREE, hex: '#10b981', label: 'Middle 150°' },
+	{ id: BillboardAnchorPosition.MIDDLE_180_DEGREE, hex: '#3b82f6', label: 'Middle 180°' },
+	{ id: BillboardAnchorPosition.MIDDLE_210_DEGREE, hex: '#8b5cf6', label: 'Middle 210°' },
+	{ id: BillboardAnchorPosition.MIDDLE_240_DEGREE, hex: '#6366f1', label: 'Middle 240°' },
+	{ id: BillboardAnchorPosition.MIDDLE_270_DEGREE, hex: '#ec4899', label: 'Middle 270°' },
+	{ id: BillboardAnchorPosition.MIDDLE_300_DEGREE, hex: '#000000', label: 'Middle 300°' },
+	{ id: BillboardAnchorPosition.MIDDLE_330_DEGREE, hex: '#64748b', label: 'Middle 330°' },
 ] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
@@ -1642,9 +1652,13 @@ function formatTimestamp(ts: number | null): string {
 }
 
 // ── Hex Anchor Picker ──────────────────────────────────────────────────────────
-// Pointy-top hexagon with 9 interactive anchor points:
-//   center (purple), vertex[0] (green), and 6 midpoints (red/orange/yellow/blue/white/black)
-//   between the center and each of the 6 vertices.
+// Pointy-top hexagon showing all 25 anchor positions:
+//   CENTER (hex centroid), 12 OUTER positions (6 vertices + 6 edge midpoints),
+//   and 12 MIDDLE positions (midpoints between CENTER and each OUTER point).
+//
+// Degree convention: 0° = vertex[0] (top), clockwise.
+//   Vertices at 0°, 60°, 120°, 180°, 240°, 300°.
+//   Edge midpoints at 30°, 90°, 150°, 210°, 270°, 330°.
 
 const HEX_PICKER_SIZE = 180;
 const HEX_PICKER_R = HEX_PICKER_SIZE * 0.38;
@@ -1658,29 +1672,45 @@ const SQRT3_4 = Math.sqrt(3) / 4;
 // √3/2
 const SQRT3_2 = Math.sqrt(3) / 2;
 
-// Positions for each BILLBOARD_ANCHOR_COLOR entry.
-// Midpoints are rotated one step clockwise vs. the original layout so that black
-// lands at the top (directly above the center).
-// Green vertex has been moved one step clockwise to vertex[1] (upper-right).
+// Positions for each BillboardAnchorPosition entry keyed by the enum string value.
+// All coordinates are in the local HEX_PICKER coordinate system.
+// Outer positions use full radius R; middle positions use R/2.
+// √3/2 ≈ 0.866,  √3/4 ≈ 0.433,  √3/8 ≈ 0.217
 const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
-	purple: { x: HEX_PICKER_CX, y: HEX_PICKER_CY }, // center
-	green:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // vertex[1] upper-right
-	black:  { x: HEX_PICKER_CX, y: HEX_PICKER_CY - HEX_PICKER_R / 2 }, // midpoint[0] top
-	red:    { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[1] upper-right
-	orange: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[2] lower-right
-	yellow: { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint[3] bottom
-	blue:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[4] lower-left
-	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[5] upper-left
-	// Edge midpoints (midpoint of each hex boundary edge, at apothem distance from center)
-	// Edge i = midpoint of vertices[i] and vertices[(i+1)%6]
-	// vertex[0] = top (90°), vertex[1] = upper-right (30°), vertex[2] = lower-right (-30°),
-	// vertex[3] = bottom (-90°), vertex[4] = lower-left (-150°), vertex[5] = upper-left (150°)
-	edgeNE: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 }, // (v0+v1)/2
-	edgeE:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY }, // (v1+v2)/2
-	edgeSE: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 }, // (v2+v3)/2
-	edgeSW: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 }, // (v3+v4)/2
-	edgeW:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY }, // (v4+v5)/2
-	edgeNW: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 }, // (v5+v0)/2
+	// ── Center ──────────────────────────────────────────────────────────────────
+	[BillboardAnchorPosition.CENTER]: { x: HEX_PICKER_CX, y: HEX_PICKER_CY },
+
+	// ── Outer ring: vertices (0°, 60°, 120°, 180°, 240°, 300°) ─────────────────
+	[BillboardAnchorPosition.OUTER_0_DEGREE]:   { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R },                // vertex[0] top
+	[BillboardAnchorPosition.OUTER_60_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // vertex[1] upper-right
+	[BillboardAnchorPosition.OUTER_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // vertex[2] lower-right
+	[BillboardAnchorPosition.OUTER_180_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R },                // vertex[3] bottom
+	[BillboardAnchorPosition.OUTER_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // vertex[4] lower-left
+	[BillboardAnchorPosition.OUTER_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // vertex[5] upper-left
+
+	// ── Outer ring: edge midpoints (30°, 90°, 150°, 210°, 270°, 330°) ───────────
+	[BillboardAnchorPosition.OUTER_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // edge[0] midpoint
+	[BillboardAnchorPosition.OUTER_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // edge[1] midpoint
+	[BillboardAnchorPosition.OUTER_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // edge[2] midpoint
+	[BillboardAnchorPosition.OUTER_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // edge[3] midpoint
+	[BillboardAnchorPosition.OUTER_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // edge[4] midpoint
+	[BillboardAnchorPosition.OUTER_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // edge[5] midpoint
+
+	// ── Middle ring: toward vertices (0°, 60°, 120°, 180°, 240°, 300°) ──────────
+	[BillboardAnchorPosition.MIDDLE_0_DEGREE]:   { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // toward vertex[0]
+	[BillboardAnchorPosition.MIDDLE_60_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // toward vertex[1]
+	[BillboardAnchorPosition.MIDDLE_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // toward vertex[2]
+	[BillboardAnchorPosition.MIDDLE_180_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // toward vertex[3]
+	[BillboardAnchorPosition.MIDDLE_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // toward vertex[4]
+	[BillboardAnchorPosition.MIDDLE_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // toward vertex[5]
+
+	// ── Middle ring: toward edge midpoints (30°, 90°, 150°, 210°, 270°, 330°) ───
+	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[0]
+	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[1]
+	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[2]
+	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[3]
+	[BillboardAnchorPosition.MIDDLE_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[4]
+	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4 / 2,  y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[5]
 };
 
 // Hexagon outline polygon points (pointy-top, 6 vertices).
@@ -1692,7 +1722,7 @@ const HEX_POLYGON_POINTS = [0, 1, 2, 3, 4, 5].map((i) => {
 	};
 });
 
-function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorColor; onSelect: (id: BillboardAnchorColor) => void; occupiedAnchors?: Record<string, string | null> }) {
+function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: BillboardAnchorPosition; onSelect: (id: BillboardAnchorPosition) => void; occupiedAnchors?: Record<string, string | null> }) {
 	const { theme } = useTheme();
 	const selectedLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selected)?.label ?? selected;
 
@@ -1743,8 +1773,8 @@ function HexAnchorPicker({ selected, onSelect, occupiedAnchors }: { selected: Bi
 									left: pos.x - dotSize / 2,
 									top: pos.y - dotSize / 2,
 									backgroundColor: ac.hex,
-									borderColor: isSelected ? PRIMARY_COLOR : (ac.id === 'white' ? '#d1d5db' : 'transparent'),
-									borderWidth: isSelected ? 3 : (ac.id === 'white' ? 1 : 0),
+									borderColor: isSelected ? PRIMARY_COLOR : (ac.hex === '#ffffff' ? '#d1d5db' : 'transparent'),
+									borderWidth: isSelected ? 3 : (ac.hex === '#ffffff' ? 1 : 0),
 									shadowColor: isSelected ? PRIMARY_COLOR : 'transparent',
 									shadowOpacity: isSelected ? 0.6 : 0,
 									shadowRadius: 4,
@@ -1820,7 +1850,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
-	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorColor>(BillboardAnchorColor.Purple);
+	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [featuresLoading, setFeaturesLoading] = useState(false);
 	const runIdRef = useRef(0);
@@ -1842,7 +1872,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 
 	const currentTileImage = record?.tileImage ?? null;
 	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
-	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorColor, string>;
+	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
 	const effectiveFlat = record ? getEffectiveBillboardsFlat(record) : {};
 	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
 	const currentAnchorFlat = effectiveFlat[selectedAnchorColor] === true;
@@ -2570,10 +2600,55 @@ export default function RecordScreen() {
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
-		// Midpoint anchor colors in the order they map to hex vertices 0–5.
-		const MIDPOINT_ANCHOR_COLORS = [BillboardAnchorColor.Red, BillboardAnchorColor.Orange, BillboardAnchorColor.Yellow, BillboardAnchorColor.Blue, BillboardAnchorColor.White, BillboardAnchorColor.Black];
-		// Edge anchor colors in the order they map to hex boundary edges 0–5.
-		const EDGE_ANCHOR_COLORS = [BillboardAnchorColor.EdgeNE, BillboardAnchorColor.EdgeE, BillboardAnchorColor.EdgeSE, BillboardAnchorColor.EdgeSW, BillboardAnchorColor.EdgeW, BillboardAnchorColor.EdgeNW];
+		// Geometric lookup for all 12 degree positions (index = degree / 30).
+		// type 'vertex': use boundary[idx] directly.
+		// type 'edge':   midpoint of boundary[idx] and boundary[(idx+1)%n].
+		const DEGREE_POSITION_GEO: Array<{ type: 'vertex' | 'edge'; idx: number }> = [
+			{ type: 'vertex', idx: 0 },  // 0°   vertex[0] top
+			{ type: 'edge',   idx: 0 },  // 30°  edge[0] (vertex[0]→vertex[1])
+			{ type: 'vertex', idx: 1 },  // 60°  vertex[1]
+			{ type: 'edge',   idx: 1 },  // 90°  edge[1]
+			{ type: 'vertex', idx: 2 },  // 120° vertex[2]
+			{ type: 'edge',   idx: 2 },  // 150° edge[2]
+			{ type: 'vertex', idx: 3 },  // 180° vertex[3]
+			{ type: 'edge',   idx: 3 },  // 210° edge[3]
+			{ type: 'vertex', idx: 4 },  // 240° vertex[4]
+			{ type: 'edge',   idx: 4 },  // 270° edge[4]
+			{ type: 'vertex', idx: 5 },  // 300° vertex[5]
+			{ type: 'edge',   idx: 5 },  // 330° edge[5] (vertex[5]→vertex[0])
+		];
+
+		// OUTER ring: 12 positions at 0°, 30°, …, 330°
+		const OUTER_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
+			BillboardAnchorPosition.OUTER_0_DEGREE,
+			BillboardAnchorPosition.OUTER_30_DEGREE,
+			BillboardAnchorPosition.OUTER_60_DEGREE,
+			BillboardAnchorPosition.OUTER_90_DEGREE,
+			BillboardAnchorPosition.OUTER_120_DEGREE,
+			BillboardAnchorPosition.OUTER_150_DEGREE,
+			BillboardAnchorPosition.OUTER_180_DEGREE,
+			BillboardAnchorPosition.OUTER_210_DEGREE,
+			BillboardAnchorPosition.OUTER_240_DEGREE,
+			BillboardAnchorPosition.OUTER_270_DEGREE,
+			BillboardAnchorPosition.OUTER_300_DEGREE,
+			BillboardAnchorPosition.OUTER_330_DEGREE,
+		];
+
+		// MIDDLE ring: 12 positions at 0°, 30°, …, 330°
+		const MIDDLE_ANCHOR_BY_DEGREE: BillboardAnchorPosition[] = [
+			BillboardAnchorPosition.MIDDLE_0_DEGREE,
+			BillboardAnchorPosition.MIDDLE_30_DEGREE,
+			BillboardAnchorPosition.MIDDLE_60_DEGREE,
+			BillboardAnchorPosition.MIDDLE_90_DEGREE,
+			BillboardAnchorPosition.MIDDLE_120_DEGREE,
+			BillboardAnchorPosition.MIDDLE_150_DEGREE,
+			BillboardAnchorPosition.MIDDLE_180_DEGREE,
+			BillboardAnchorPosition.MIDDLE_210_DEGREE,
+			BillboardAnchorPosition.MIDDLE_240_DEGREE,
+			BillboardAnchorPosition.MIDDLE_270_DEGREE,
+			BillboardAnchorPosition.MIDDLE_300_DEGREE,
+			BillboardAnchorPosition.MIDDLE_330_DEGREE,
+		];
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			// Build an effective billboard map using the shared helper.
@@ -2616,36 +2691,42 @@ export default function RecordScreen() {
 				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
 
-				// Determine billboard placement position based on anchor color.
-				// purple=center, green=vertex[0],
-				// red/orange/yellow/blue/white/black = midpoints between center and each vertex,
-				// edgeNE/edgeE/edgeSE/edgeSW/edgeW/edgeNW = hex boundary edge midpoints.
+				// Determine geographic placement position based on anchor position.
+				// CENTER → hex centroid (default, lng/lat already set).
+				// OUTER_N_DEGREE → on the hex boundary (vertex or edge midpoint).
+				// MIDDLE_N_DEGREE → midpoint between centroid and the corresponding OUTER point.
 				let lng = centerLng;
 				let lat = centerLat;
-				if (anchorColor === BillboardAnchorColor.Green && n > 0) {
-					// Use the first vertex (corner) of the hex polygon.
-					const [vLng, vLat] = boundary[0] as [number, number];
-					lng = vLng;
-					lat = vLat;
-				} else if (anchorColor !== BillboardAnchorColor.Purple) {
-					// Check if it's an edge midpoint anchor.
-					const edgeIdx = EDGE_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
-					if (edgeIdx >= 0 && edgeIdx < n) {
-						// Midpoint of hex boundary edge i (between vertex[i] and vertex[(i+1)%n]).
-						const [lng1, lat1] = boundary[edgeIdx] as [number, number];
-						const [lng2, lat2] = boundary[(edgeIdx + 1) % n] as [number, number];
+
+				const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
+				const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
+
+				if (outerIdx >= 0) {
+					const geo = DEGREE_POSITION_GEO[outerIdx];
+					if (geo.type === 'vertex' && geo.idx < n) {
+						[lng, lat] = boundary[geo.idx] as [number, number];
+					} else if (geo.type === 'edge' && geo.idx < n) {
+						const [lng1, lat1] = boundary[geo.idx] as [number, number];
+						const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
 						lng = (lng1 + lng2) / 2;
 						lat = (lat1 + lat2) / 2;
-					} else {
-						// Midpoint between center and a corner vertex.
-						const midIdx = MIDPOINT_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
-						if (midIdx >= 0 && midIdx < n) {
-							const [vLng, vLat] = boundary[midIdx] as [number, number];
-							lng = (centerLng + vLng) / 2;
-							lat = (centerLat + vLat) / 2;
-						}
 					}
+				} else if (middleIdx >= 0) {
+					const geo = DEGREE_POSITION_GEO[middleIdx];
+					let outerLng = centerLng;
+					let outerLat = centerLat;
+					if (geo.type === 'vertex' && geo.idx < n) {
+						[outerLng, outerLat] = boundary[geo.idx] as [number, number];
+					} else if (geo.type === 'edge' && geo.idx < n) {
+						const [lng1, lat1] = boundary[geo.idx] as [number, number];
+						const [lng2, lat2] = boundary[(geo.idx + 1) % n] as [number, number];
+						outerLng = (lng1 + lng2) / 2;
+						outerLat = (lat1 + lat2) / 2;
+					}
+					lng = (centerLng + outerLng) / 2;
+					lat = (centerLat + outerLat) / 2;
 				}
+				// else: CENTER → use centerLng/centerLat (already set above)
 
 				// Per-sprite scale multiplier from the billboard config screen (default 1.0).
 				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
@@ -4041,7 +4122,7 @@ export default function RecordScreen() {
 								if (hasForestFeature(features)) {
 									dispatch(setBillboardAtAnchor({
 										h3Index: hexId,
-										anchorColor: BillboardAnchorColor.Purple,
+										anchorColor: BillboardAnchorPosition.CENTER,
 										billboard: BILLBOARD_PINE_TREE_LARGE,
 									}));
 								}
