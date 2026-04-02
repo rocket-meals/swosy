@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState } from '../../store/hexTileSlice';
 import { AppDispatch } from '../../store/store';
@@ -189,10 +189,23 @@ export default function ActivitiesScreen() {
 								activity.enclosedHexTiles = activity.hexTilesEnclosed;
 								updated = true;
 							}
+							// Recompute from visited hex tiles when enclosedHexTiles is still empty.
+							// Using hex-tile centroids is faster than raw GPS points (fewer vertices).
+							if (!activity.enclosedHexTiles?.length && activity.hexTilesOrdered?.length) {
+								const recomputed = findEnclosedCellsFromHexTiles(
+									activity.hexTilesOrdered,
+									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+								);
+								if (recomputed.length > 0) {
+									activity.enclosedHexTiles = recomputed;
+									activity.enclosedTileCount = recomputed.length;
+									updated = true;
+								}
+							}
 							if (!activity.computed) {
 								activity.computed = computeActivityData(
 									activity,
-									activity.enclosedHexTiles ?? activity.hexTilesEnclosed ?? [],
+									activity.enclosedHexTiles ?? [],
 								);
 								updated = true;
 							}

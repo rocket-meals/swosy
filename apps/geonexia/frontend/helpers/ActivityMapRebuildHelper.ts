@@ -15,7 +15,7 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, isAvailable as isH3Available } from './H3Helper';
+import { latLngToCell, cellToLatLng, gridDisk, gridDistance, isAvailable as isH3Available } from './H3Helper';
 import { BillboardAnchorColor, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
@@ -30,7 +30,21 @@ import {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
-const H3_RESOLUTION_FALLBACK = 10;
+export const H3_RESOLUTION_FALLBACK = 10;
+const H3_RESOLUTION_MIN = 0;
+const H3_RESOLUTION_MAX = 15;
+
+/**
+ * Maximum start-to-end distance (km) for a route to be considered a closed
+ * loop when computing enclosed tiles from hex-tile centroids.
+ */
+const ENCLOSED_LOOP_CLOSURE_THRESHOLD_KM = 0.5;
+
+/** Padding added to the bounding box (degrees) when enumerating candidate cells. */
+const BBOX_PADDING_DEG = 0.001;
+
+/** Safety cap on the grid-disk radius used to enumerate candidate cells. */
+const MAX_GRID_DISK_RADIUS = 30;
 
 /**
  * Billboard key for the treePineSmall sprite (index 51 in OBJECT_SPRITES).
@@ -45,6 +59,111 @@ const TILE_IMAGE_DIRT = 'Dirt/dirt';
 const TILE_IMAGE_GRASS = 'Grass/grass';
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
+
+/** Ray-casting point-in-polygon test. Polygon is an array of [lng, lat] pairs. */
+function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number]>): boolean {
+	let inside = false;
+	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+		const [xi, yi] = polygon[i];
+		const [xj, yj] = polygon[j];
+		const intersect =
+			yi > lat !== yj > lat &&
+			lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+		if (intersect) inside = !inside;
+	}
+	return inside;
+}
+
+/**
+ * Find all H3 cells enclosed by the polygon formed by the centroids of the
+ * visited hex tiles (in visit order). Visited tiles are excluded from the
+ * result. Returns an empty array when:
+ *  – fewer than 3 tiles were visited,
+ *  – the first and last centroid are more than 500 m apart (open route), or
+ *  – the H3 library is unavailable.
+ *
+ * Using hex-tile centroids instead of raw GPS points is faster because the
+ * polygon has far fewer vertices (one per unique visited tile).
+ */
+export function findEnclosedCellsFromHexTiles(
+	visitedHexIds: string[],
+	resolution: number,
+): string[] {
+	if (!isH3Available() || visitedHexIds.length < 3) return [];
+
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+
+	// Build a polygon ([lng, lat] pairs) from the centroids of the visited tiles.
+	const polygon: Array<[number, number]> = [];
+	for (const hexId of visitedHexIds) {
+		try {
+			const [lat, lng] = cellToLatLng(hexId);
+			polygon.push([lng, lat]);
+		} catch {
+			// skip invalid cells
+		}
+	}
+	if (polygon.length < 3) return [];
+
+	// Check loop closure: first and last centroid must be within ~500 m.
+	const [firstLng, firstLat] = polygon[0];
+	const [lastLng, lastLat] = polygon[polygon.length - 1];
+	const dLat = ((firstLat - lastLat) * Math.PI) / 180;
+	const dLngRad = ((firstLng - lastLng) * Math.PI) / 180;
+	const sinA =
+		Math.sin(dLat / 2) ** 2 +
+		Math.cos((lastLat * Math.PI) / 180) *
+			Math.cos((firstLat * Math.PI) / 180) *
+			Math.sin(dLngRad / 2) ** 2;
+	const distKm = 6371 * 2 * Math.atan2(Math.sqrt(sinA), Math.sqrt(1 - sinA));
+	if (distKm > ENCLOSED_LOOP_CLOSURE_THRESHOLD_KM) return [];
+
+	// Bounding box with small padding.
+	const lngs = polygon.map(([lng]) => lng);
+	const lats = polygon.map(([, lat]) => lat);
+	const minLat = Math.min(...lats) - BBOX_PADDING_DEG;
+	const maxLat = Math.max(...lats) + BBOX_PADDING_DEG;
+	const minLng = Math.min(...lngs) - BBOX_PADDING_DEG;
+	const maxLng = Math.max(...lngs) + BBOX_PADDING_DEG;
+
+	const centerLat = (maxLat + minLat) / 2;
+	const centerLng = (maxLng + minLng) / 2;
+	const centerCell = latLngToCell(centerLat, centerLng, h3Res);
+
+	let maxK = 0;
+	const corners: Array<[number, number]> = [
+		[maxLat, maxLng],
+		[maxLat, minLng],
+		[minLat, maxLng],
+		[minLat, minLng],
+	];
+	for (const [lat, lng] of corners) {
+		try {
+			const cornerCell = latLngToCell(lat, lng, h3Res);
+			const dist = gridDistance(centerCell, cornerCell);
+			if (dist > maxK) maxK = dist;
+		} catch {
+			// ignore
+		}
+	}
+
+	const visitedSet = new Set(visitedHexIds);
+	const candidates = gridDisk(centerCell, Math.min(maxK + 1, MAX_GRID_DISK_RADIUS));
+	const enclosed: string[] = [];
+	for (const cell of candidates) {
+		if (visitedSet.has(cell)) continue;
+		try {
+			const [cellLat, cellLng] = cellToLatLng(cell);
+			if (pointInPolygon(cellLng, cellLat, polygon)) {
+				enclosed.push(cell);
+			}
+		} catch {
+			// ignore invalid cells
+		}
+	}
+	return enclosed;
+}
+
 
 function getOrCreateRecord(
 	records: Record<string, HexTileRecord>,
