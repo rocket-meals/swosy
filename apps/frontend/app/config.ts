@@ -170,11 +170,11 @@ export function getCustomerConfigurations(): CustomerConfig[] {
 	];
 }
 
-// EXPO_PUBLIC_CUSTOMER wird von Metro beim Bundle-Build direkt in den JS-Code eingebettet
-// und ist daher auch nach einem OTA-Update (eas update) im laufenden App-Bundle verfügbar.
-// CUSTOMER ist nur im Node-Kontext zur Build-Zeit vorhanden (z.B. app.config.ts, Icon-Generierung),
-// aber nicht im App-Bundle selbst. Beide Variablen werden benötigt, damit der Kunde
-// sowohl beim nativen Build als auch bei OTA-Updates korrekt aufgelöst wird.
+// EXPO_PUBLIC_CUSTOMER is inlined into the JS bundle by Metro at build time and therefore
+// remains available after an OTA update (eas update) in the running app bundle.
+// CUSTOMER is only available in the Node context at build time (e.g. app.config.ts, icon generation)
+// but not in the app bundle itself. Both variables are needed so that the customer
+// is resolved correctly for both native builds and OTA updates.
 export function getCustomerEnvVariable(): string | undefined {
 	return process.env.EXPO_PUBLIC_CUSTOMER || process.env.CUSTOMER || undefined;
 }
