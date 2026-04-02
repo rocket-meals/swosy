@@ -3025,7 +3025,6 @@ export default function RecordScreen() {
 			visitedTileCount: routeCells.length,
 			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered: routeCells,
-			enclosedHexTiles: enclosedCells,
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
@@ -3985,7 +3984,6 @@ export default function RecordScreen() {
 			visitedTileCount: visitedHexIdsRef.current.size,
 			enclosedTileCount: enclosedCells.length,
 			hexTilesOrdered,
-			enclosedHexTiles: enclosedCells,
 			routeId: selectedRouteRef.current?.id ?? undefined,
 		};
 		activity.computed = computeActivityData(activity, enclosedCells);
