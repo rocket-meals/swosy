@@ -19,7 +19,7 @@ import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIn
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
-import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges } from '../helpers/HexTileStorage';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -27,6 +27,10 @@ import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
+import { WORLD_BUILDING_ID, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
+import { loadActivities } from '../helpers/ActivityStorage';
+import { loadHexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
+import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
 
@@ -333,10 +337,43 @@ export default function Layout() {
 	useEffect(() => {
 		(async () => {
 			const isDevMode = await loadDevModeFlag();
-			const [records, walkedEdges] = await Promise.all([
+			const [records, walkedEdges, storedBuildingId] = await Promise.all([
 				isDevMode ? loadDevHexTileState() : loadHexTileState(),
 				isDevMode ? loadDevWalkedEdges() : loadWalkedEdges(),
+				isDevMode ? loadDevWorldBuildingId() : loadWorldBuildingId(),
 			]);
+
+			if (storedBuildingId !== WORLD_BUILDING_ID && isH3Available()) {
+				try {
+					const allActivities = await loadActivities();
+					if (allActivities.length > 0) {
+						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+						const hexTileFeatureCache = await loadHexTileFeatureCache();
+						const { records: rebuiltRecords, walkedEdges: rebuiltEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache);
+						if (isDevMode) {
+							saveDevHexTileState(rebuiltRecords);
+							saveDevWalkedEdges(rebuiltEdges);
+							saveDevWorldBuildingId(WORLD_BUILDING_ID);
+						} else {
+							saveHexTileState(rebuiltRecords);
+							saveWalkedEdges(rebuiltEdges);
+							saveWorldBuildingId(WORLD_BUILDING_ID);
+						}
+						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges }));
+						return;
+					}
+				} catch (err) {
+					console.warn('[Layout] Failed to rebuild world from activities:', err);
+				}
+				// No activities or rebuild failed – still update the stored ID so we
+				// don't attempt a rebuild on every subsequent launch.
+				if (isDevMode) {
+					saveDevWorldBuildingId(WORLD_BUILDING_ID);
+				} else {
+					saveWorldBuildingId(WORLD_BUILDING_ID);
+				}
+			}
+
 			store.dispatch(setDevMode({ isDevMode, records, walkedEdges }));
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
