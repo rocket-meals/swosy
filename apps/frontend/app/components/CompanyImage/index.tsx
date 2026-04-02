@@ -1,6 +1,7 @@
 import React from 'react';
 import { ImageResizeMode, ImageStyle, StyleProp } from 'react-native';
 import MyImage from '@/components/MyImage';
+import { getCompanyLogoLocalSaved } from '@/config';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { DatabaseTypes } from 'repo-depkit-common';
 
@@ -17,7 +18,7 @@ const CompanyImage: React.FC<CompanyImageProps> = ({ appSettings, style, resizeM
 		return <MyImage remote_image_url={imageUri} style={style} resizeMode={resizeMode} />;
 	}
 
-	return <MyImage defaultImage={require('@/assets/images/company.png')} style={style} resizeMode={resizeMode} />;
+	return <MyImage defaultImage={getCompanyLogoLocalSaved()} style={style} resizeMode={resizeMode} />;
 };
 
 export default CompanyImage;
