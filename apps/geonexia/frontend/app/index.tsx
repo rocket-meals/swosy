@@ -2791,6 +2791,8 @@ export default function RecordScreen() {
 	// the WebView does not process injected JavaScript messages, so any opacity
 	// changes dispatched from the settings screen are silently dropped.
 	// Re-sending them on focus ensures the map is always in sync with the current settings.
+	// hexTileOpacity is sent directly (updates the fill layer paint property in hexTileScript).
+	// objectOpacity is applied via loadAndSendCustomizations (which rebuilds all image overlays).
 	useFocusEffect(
 		useCallback(() => {
 			if (!mapWebViewReadyRef.current) return;
