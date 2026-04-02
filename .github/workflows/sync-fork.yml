@@ -60,10 +60,9 @@ jobs:
           echo "Upstream repository: rocket-meals/rocket-meals"
           echo "Target branch: master"
 
-          # Sync the fork with the upstream repository
-          # --force ensures the fork's branch is overwritten to match upstream exactly,
-          # even when there are diverging commits (e.g. from previously tracked generated files).
-          if gh repo sync "$REPO_FULL_NAME" -b master --force; then
+          # Sync the fork with the upstream repository without overwriting local commits.
+          # Forks intentionally diverge for tenant-specific settings (e.g. getCustomerConfig()).
+          if gh repo sync "$REPO_FULL_NAME" -b master; then
             echo "✅ Fork synchronization completed successfully!"
             echo "sync-success=true" >> $GITHUB_OUTPUT
           else
