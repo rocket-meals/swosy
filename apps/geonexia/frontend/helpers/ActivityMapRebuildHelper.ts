@@ -99,8 +99,10 @@ export function findEnclosedCellsFromHexTiles(
 	}
 	if (polygon.length < 3) return [];
 
-	// Check loop closure: first and last hex tiles must be adjacent (neighbors).
-	if (!areNeighborCells(visitedHexIds[0], visitedHexIds[visitedHexIds.length - 1])) return [];
+	// Check loop closure: first and last hex tiles must be the same cell or adjacent neighbors.
+	const firstHex = visitedHexIds[0];
+	const lastHex = visitedHexIds[visitedHexIds.length - 1];
+	if (firstHex !== lastHex && !areNeighborCells(firstHex, lastHex)) return [];
 
 	// Bounding box with small padding.
 	const lngs = polygon.map(([lng]) => lng);
