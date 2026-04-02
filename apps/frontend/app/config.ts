@@ -171,7 +171,8 @@ export function getCustomerConfigurations(): CustomerConfig[] {
 }
 
 export function getCustomerConfig(): CustomerConfig {
-	return devConfig;
+	const customer = process.env.EXPO_PUBLIC_CUSTOMER ?? process.env.CUSTOMER;
+	return getCustomerConfigsDict()[customer as ConfigCustomerEnum] ?? devConfig;
 }
 
 export function getFinalConfig(config?: any) {

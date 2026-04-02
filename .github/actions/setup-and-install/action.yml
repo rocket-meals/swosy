@@ -85,6 +85,10 @@ runs:
           echo "$ASC_ENV_VARS"
         } >> "$GITHUB_ENV"
 
+    - name: 🏷️ Resolve customer from repository name
+      shell: bash
+      run: bash scripts/customer-config.sh >> "$GITHUB_ENV"
+
     - name: 🛠️ Generate EAS config
       run: yarn workspace rocket-meals-scripts generate:eas
       shell: bash
