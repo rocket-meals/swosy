@@ -19,6 +19,8 @@ import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, are
 import { BillboardAnchorColor, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
+import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
+import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } from './OpenMapTilesSchema';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -202,6 +204,21 @@ export function findEnclosedCellsFromHexTiles(
 }
 
 
+/**
+ * Returns `true` when the given feature list contains at least one feature that
+ * indicates a forest / wooded area.  Checks:
+ *  - `landcover` layer with `class = 'wood'` or `subclass = 'forest'`
+ *  - `park` layer with `class = 'forest'`
+ */
+function hasForestFeature(features: MapFeatureInfo[]): boolean {
+	return features.some(
+		(f) =>
+			(f.layerId === OpenMapTilesLayerId.LANDCOVER &&
+				(f.class === LandcoverClass.WOOD || f.subclass === LandcoverSubclass.FOREST)) ||
+			(f.layerId === OpenMapTilesLayerId.PARK && f.class === ParkClass.FOREST),
+	);
+}
+
 function getOrCreateRecord(
 	records: Record<string, HexTileRecord>,
 	h3Index: string,
@@ -290,18 +307,23 @@ export function computeActivityData(
  *      → pathRounded billboard (flat) at each edge midpoint that faces a walked neighbor
  *  - **Enclosed-only tiles** (enclosedCount > 0, visitCount = 0)
  *      → tileImage = "Grass/grass"
- *      → pineTreeLarge billboard at purple anchor (hex centroid)
+ *      → pineTreeLarge billboard at purple anchor (hex centroid), only when the
+ *         hex-tile feature cache confirms a forest / wooded area on that tile
  *
  * @param activities         All saved activities to process.
- * @param hexTileFeatureCache  Kept for API backward-compatibility; no longer used.
+ * @param hexTileFeatureCache  Optional per-hex feature cache.  When provided,
+ *                             the pineTreeLarge billboard is only placed on
+ *                             enclosed tiles that have a forest feature
+ *                             (landcover class=wood / subclass=forest, or
+ *                             park class=forest).  Tiles without cached
+ *                             features receive only the grass terrain image.
  * @returns `{ records, walkedEdges }` – fresh state ready to be loaded into
  *          the Redux hex-tile slice via `loadPersistedState` /
  *          `loadWalkedEdgesState`.
  */
 export function rebuildMapFromActivities(
 	activities: SavedActivity[],
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	_hexTileFeatureCache: HexTileFeatureCache = {},
+	hexTileFeatureCache: HexTileFeatureCache = {},
 ): { records: Record<string, HexTileRecord>; walkedEdges: string[] } {
 	const records: Record<string, HexTileRecord> = {};
 	const edgeSet = new Set<string>();
@@ -429,11 +451,15 @@ export function rebuildMapFromActivities(
 				}
 			}
 		} else if (rec.enclosedCount > 0) {
-			// Enclosed but not visited → grass terrain + pineTreeLarge at center.
+			// Enclosed but not visited → grass terrain; pineTreeLarge only when
+			// the feature cache confirms a forest / wooded area on this tile.
 			rec.tileImage = TILE_IMAGE_GRASS;
 
-			if (!rec.billboards) rec.billboards = {};
-			rec.billboards[BillboardAnchorColor.Purple] = BILLBOARD_PINE_TREE_LARGE;
+			const cachedFeatures = hexTileFeatureCache[hexId];
+			if (cachedFeatures && hasForestFeature(cachedFeatures)) {
+				if (!rec.billboards) rec.billboards = {};
+				rec.billboards[BillboardAnchorColor.Purple] = BILLBOARD_PINE_TREE_LARGE;
+			}
 		}
 	}
 
