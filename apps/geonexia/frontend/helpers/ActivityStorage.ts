@@ -91,6 +91,11 @@ export type SavedActivity = {
 	 * not physically walked on during the activity.
 	 * Optional for backward-compat with older saves.
 	 */
+	enclosedHexTiles?: string[];
+	/**
+	 * @deprecated Use `enclosedHexTiles` instead.
+	 * Kept for reading activities saved by older app versions.
+	 */
 	hexTilesEnclosed?: string[];
 	/**
 	 * ID of the saved route this activity was matched or assigned to.

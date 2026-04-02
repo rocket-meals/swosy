@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState } from '../../store/hexTileSlice';
 import { AppDispatch } from '../../store/store';
@@ -181,18 +181,37 @@ export default function ActivitiesScreen() {
 							return;
 						}
 
-						// Migrate activities that are missing the computed field or hexTilesEnclosed.
+						// Migrate activities that are missing the computed field or enclosedHexTiles.
 						for (const activity of allActivities) {
 							let updated = false;
+							// Migrate old `hexTilesEnclosed` → new `enclosedHexTiles` field name.
+							if (!activity.enclosedHexTiles && activity.hexTilesEnclosed) {
+								activity.enclosedHexTiles = activity.hexTilesEnclosed;
+								updated = true;
+							}
+							// Recompute from visited hex tiles when enclosedHexTiles is still empty.
+							// Using hex-tile centroids is faster than raw GPS points (fewer vertices).
+							if (!activity.enclosedHexTiles?.length && activity.hexTilesOrdered?.length) {
+								const recomputed = findEnclosedCellsFromHexTiles(
+									activity.hexTilesOrdered,
+									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+								);
+								if (recomputed.length > 0) {
+									activity.enclosedHexTiles = recomputed;
+									activity.enclosedTileCount = recomputed.length;
+									updated = true;
+								}
+							}
 							if (!activity.computed) {
 								activity.computed = computeActivityData(
 									activity,
-									activity.hexTilesEnclosed ?? [],
+									activity.enclosedHexTiles ?? [],
 								);
 								updated = true;
 							}
-							if (!activity.hexTilesEnclosed && activity.computed?.enclosedHexTiles) {
-								activity.hexTilesEnclosed = activity.computed.enclosedHexTiles;
+							// If enclosedHexTiles is still missing but computed has the data, populate it.
+							if (!activity.enclosedHexTiles && Array.isArray(activity.computed?.enclosedHexTiles)) {
+								activity.enclosedHexTiles = activity.computed.enclosedHexTiles;
 								updated = true;
 							}
 							if (updated) {
