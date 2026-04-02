@@ -1,3 +1,5 @@
+import type React from 'react';
+
 export interface MyMapHandle {
 	sendToMap: (data: object) => void;
 }
@@ -7,6 +9,12 @@ export interface MyMapProps {
 	initialZoom?: number;
 	initialPitch?: number;
 	loadingText?: string;
+	/**
+	 * Optional React node rendered as an overlay on top of the map while it is loading.
+	 * It is automatically faded out and removed once the map signals it is ready
+	 * (`MapComponentMounted`). When provided, it replaces the default HTML loading spinner.
+	 */
+	loadingOverlay?: React.ReactNode;
 	onMessage: (data: object) => void;
 	/** When true (default) and no initialCenter is given, request the user's location and center the map there. */
 	centerAtUserLocationIfNoInitialPosition?: boolean;

@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Animated, Linking, StyleSheet, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { Asset } from 'expo-asset';
@@ -18,7 +18,7 @@ function escapeHtml(text: string): string {
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, initialZoom, initialPitch, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
+	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const webViewRef = useRef<WebView>(null);
 		// The HTML is written to a local cache file and loaded via a file:// URI so that the WebView
 		// has a proper file:// origin and can fetch sibling local assets (e.g. GLB models, PNG tiles)
@@ -27,6 +27,10 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		// Note: this file (index.tsx) is the native-only implementation; the web build uses
 		// index.web.tsx which serves the map via an iframe and doesn't need this approach.
 		const [htmlUri, setHtmlUri] = useState<string | null>(null);
+
+		// Overlay state: visible until MapComponentMounted fires, then fades out.
+		const [overlayVisible, setOverlayVisible] = useState(true);
+		const overlayOpacity = useRef(new Animated.Value(1)).current;
 
 		// Refs used to coordinate auto-centering on user location (only when no initialCenter is given).
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -134,6 +138,14 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 							sendToMap({ mapCenterPosition: locationForInitRef.current, zoom: initialZoom, animate: false });
 						}
 					}
+					// Fade out and remove the loading overlay when the map is ready.
+					if (data.tag === 'MapComponentMounted') {
+						Animated.timing(overlayOpacity, {
+							toValue: 0,
+							duration: 600,
+							useNativeDriver: true,
+						}).start(() => setOverlayVisible(false));
+					}
 					onMessage(data);
 				} catch {
 					// ignore malformed messages
@@ -171,6 +183,11 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					onMessage={handleMessage}
 					onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
 				/>
+				{loadingOverlay && overlayVisible && (
+					<Animated.View style={[StyleSheet.absoluteFill, { opacity: overlayOpacity }]} pointerEvents="box-none">
+						{loadingOverlay}
+					</Animated.View>
+				)}
 			</View>
 		);
 	},
