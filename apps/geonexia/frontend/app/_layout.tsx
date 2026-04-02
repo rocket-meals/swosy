@@ -26,6 +26,7 @@ import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import type { RootState } from '../store/store';
+import { getAppIconInsideExpoLocalSaved } from '../config';
 
 // ─── Error Boundary ───────────────────────────────────────────────────────────
 
@@ -316,7 +317,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 	return (
 		<AppDrawer
-			logoSource={require('../assets/icon.png')}
+			logoSource={getAppIconInsideExpoLocalSaved()}
 			title="Geonexia"
 			items={items}
 			activeKey={activeKey}

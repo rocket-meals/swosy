@@ -5,6 +5,7 @@ import usePlatformHelper from '@/helper/platformHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isInExpoGo } from '@/helper/DeviceRuntimeHelper';
+import { getCompanyLogoLocalSaved } from '@/config';
 
 interface ExpoUpdateLoaderProps {
 	children?: React.ReactNode;
@@ -80,7 +81,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 
 	return (
 		<View style={styles.container}>
-			<Image source={require('@/assets/images/company.png')} style={styles.logo} resizeMode="contain" />
+			<Image source={getCompanyLogoLocalSaved()} style={styles.logo} resizeMode="contain" />
 			<View style={styles.bottomContainer}>
 				{showCancel && (
 					<TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
