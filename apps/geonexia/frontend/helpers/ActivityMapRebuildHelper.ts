@@ -24,6 +24,14 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+/**
+ * Monotonically increasing integer that identifies the current world-building
+ * logic version.  Increment this value whenever the rebuild algorithm changes
+ * in a way that should force all users' worlds to be recalculated from their
+ * activity history on the next app start.
+ */
+export const WORLD_BUILDING_ID = 1;
+
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
 const H3_RESOLUTION_MIN = 0;
