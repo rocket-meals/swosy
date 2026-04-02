@@ -181,18 +181,24 @@ export default function ActivitiesScreen() {
 							return;
 						}
 
-						// Migrate activities that are missing the computed field or hexTilesEnclosed.
+						// Migrate activities that are missing the computed field or enclosedHexTiles.
 						for (const activity of allActivities) {
 							let updated = false;
+							// Migrate old `hexTilesEnclosed` → new `enclosedHexTiles` field name.
+							if (!activity.enclosedHexTiles && activity.hexTilesEnclosed) {
+								activity.enclosedHexTiles = activity.hexTilesEnclosed;
+								updated = true;
+							}
 							if (!activity.computed) {
 								activity.computed = computeActivityData(
 									activity,
-									activity.hexTilesEnclosed ?? [],
+									activity.enclosedHexTiles ?? activity.hexTilesEnclosed ?? [],
 								);
 								updated = true;
 							}
-							if (!activity.hexTilesEnclosed && activity.computed?.enclosedHexTiles) {
-								activity.hexTilesEnclosed = activity.computed.enclosedHexTiles;
+							// If enclosedHexTiles is still missing but computed has the data, populate it.
+							if (!activity.enclosedHexTiles && Array.isArray(activity.computed?.enclosedHexTiles)) {
+								activity.enclosedHexTiles = activity.computed.enclosedHexTiles;
 								updated = true;
 							}
 							if (updated) {

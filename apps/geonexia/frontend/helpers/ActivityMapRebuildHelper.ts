@@ -176,8 +176,10 @@ export function rebuildMapFromActivities(
 			(activity.computed as { orderedHexTiles?: ComputedHexTileEntry[] } | undefined)?.orderedHexTiles ??
 			(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
 
-		// Prefer the direct field (added for full backward-compat); fall back to computed.
+		// Prefer the new primary field; fall back to deprecated `hexTilesEnclosed`
+		// (older saves) and then to computed for maximum backward-compat.
 		const enclosedHexTiles: string[] =
+			activity.enclosedHexTiles ??
 			activity.hexTilesEnclosed ??
 			activity.computed?.enclosedHexTiles ??
 			[];
