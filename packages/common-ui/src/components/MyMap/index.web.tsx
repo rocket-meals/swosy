@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as Location from 'expo-location';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
@@ -6,7 +6,7 @@ import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 const DEFAULT_ZOOM = 16;
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, loadingText, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
+	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
 		const iframeRef = useRef<HTMLIFrameElement>(null);
 		const htmlBase = require('../../../assets/maplibre/index.html') as string;
 
@@ -14,6 +14,9 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
 		const mapReadyRef = useRef(false);
 		const initCenterSentRef = useRef(false);
+
+		// Overlay state: visible until MapComponentMounted fires.
+		const [overlayVisible, setOverlayVisible] = useState(true);
 
 		const iframeSrc = useMemo(
 			// Computed only once: the iframe src is set on mount with the initial map position.
@@ -81,6 +84,10 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 							sendToMap({ mapCenterPosition: locationForInitRef.current, animate: false });
 						}
 					}
+					// Hide the loading overlay when the map is ready.
+					if (data.tag === 'MapComponentMounted') {
+						setOverlayVisible(false);
+					}
 					onMessage(data);
 				} catch {
 					// ignore malformed messages
@@ -113,6 +120,11 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					title="OSM Vector Map"
 					onLoad={handleIframeLoad}
 				/>
+				{loadingOverlay && overlayVisible && (
+					<View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+						{loadingOverlay}
+					</View>
+				)}
 			</View>
 		);
 	},
