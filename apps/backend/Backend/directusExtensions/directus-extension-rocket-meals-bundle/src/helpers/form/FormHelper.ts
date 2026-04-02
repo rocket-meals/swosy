@@ -479,7 +479,7 @@ export class FormHelper {
       return (
         `<div style="margin:8px 0 0 0;">${this.generateFieldNameHtml(fieldName)}</div>\n` +
         `<div style="display:inline-block; border-bottom:1px solid #000; min-width:200px; vertical-align:bottom; margin:2px 0 14px 0;">` +
-        `<img src="${imageUrl}" alt="${fieldName}" style="max-height:40px; width:auto; display:block; max-width:100%;"/>` +
+        `<img src="${imageUrl}" alt="${fieldName}" style="max-height:80px; width:auto; display:block; max-width:100%;"/>` +
         `</div>\n`
       );
     }
