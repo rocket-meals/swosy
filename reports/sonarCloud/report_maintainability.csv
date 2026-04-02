@@ -8714,18 +8714,18 @@ Key,Message,Component,Line
 "AZ0TpkoFufp2jxPAhSuP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/plain-component-full/index.tsx",49
 "AZ0TpkpUufp2jxPAhSuZ","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/plain-component-with-image/index.tsx",129
 "AZ0TpkpHufp2jxPAhSuU","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/plain-text-image/index.tsx",51
-"AZ0Tpkpmufp2jxPAhSue","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",210
-"AZ0Tpkpmufp2jxPAhSuf","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",213
-"AZ0Tpkpmufp2jxPAhSug","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",216
-"AZ0Tpkpmufp2jxPAhSuh","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",218
-"AZ0Tpkpmufp2jxPAhSui","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",234
+"AZ0Tpkpmufp2jxPAhSue","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",216
+"AZ0Tpkpmufp2jxPAhSuf","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",219
+"AZ0Tpkpmufp2jxPAhSug","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",222
+"AZ0Tpkpmufp2jxPAhSuh","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",224
+"AZ0Tpkpmufp2jxPAhSui","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/full/index.tsx",240
 "AZ0TpkpAufp2jxPAhSuS","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/index.tsx",116
 "AZ0TpkpAufp2jxPAhSuT","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/index.tsx",116
-"AZ0Tpkpyufp2jxPAhSuj","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-defer/index.tsx",191
-"AZ0Tpkpyufp2jxPAhSuk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-defer/index.tsx",208
-"AZ0Tpkp5ufp2jxPAhSul","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-lottie/index.tsx",148
-"AZ0Tpkp5ufp2jxPAhSum","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-lottie/index.tsx",150
-"AZ0Tpkp5ufp2jxPAhSun","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-lottie/index.tsx",166
+"AZ0Tpkpyufp2jxPAhSuj","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-defer/index.tsx",197
+"AZ0Tpkpyufp2jxPAhSuk","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-defer/index.tsx",214
+"AZ0Tpkp5ufp2jxPAhSul","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-lottie/index.tsx",154
+"AZ0Tpkp5ufp2jxPAhSum","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-lottie/index.tsx",156
+"AZ0Tpkp5ufp2jxPAhSun","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/experimentell/eating-habits-performance/no-lottie/index.tsx",172
 "AZ0TplBeufp2jxPAhSzr","Remove this unused import of 'CustomTooltip'.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentItem/ApartmentItem.tsx",10
 "AZ0TplBeufp2jxPAhSzs","Remove this unused import of 'TooltipContent'.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentItem/ApartmentItem.tsx",10
 "AZ0TplBeufp2jxPAhSzt","Remove this unused import of 'TooltipText'.","rocket-meals_rocket-meals:apps/frontend/app/components/ApartmentItem/ApartmentItem.tsx",10
