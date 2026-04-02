@@ -2337,6 +2337,8 @@ export default function RecordScreen() {
 	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
 	const speechSettings = useSelector((state: RootState) => state.speechSettings);
+	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
+	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -2498,6 +2500,7 @@ export default function RecordScreen() {
 
 		const records = store.getState().hexTiles.records;
 		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
+		const currentObjectOpacity = store.getState().displaySettings.objectOpacity;
 
 		// Flat lookup: terrain asset key → module ID
 		const terrainLookup = new Map<string, number>();
@@ -2560,7 +2563,7 @@ export default function RecordScreen() {
 									[maxLng, minLat],
 									[minLng, minLat],
 								],
-								opacity: 0.9,
+								opacity: currentObjectOpacity,
 								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
 								polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
 								rotation,
@@ -2772,6 +2775,16 @@ export default function RecordScreen() {
 		loadAndSendCustomizations();
 	}, [hexTileCustomizationsKey, billboardConfigKey, loadAndSendCustomizations]);
 
+	// Send updated hex tile fill opacity to the map whenever the setting changes.
+	useEffect(() => {
+		if (!mapWebViewReadyRef.current) return;
+		mapRef.current?.sendToMap({ hexTileOpacity });
+	}, [hexTileOpacity]);
+
+	// Re-send object customizations (terrain images) when object opacity changes.
+	useEffect(() => {
+		loadAndSendCustomizations();
+	}, [objectOpacity, loadAndSendCustomizations]);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -3322,7 +3335,7 @@ export default function RecordScreen() {
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
 			mapRef.current?.sendToMap({
-				hexTileLayer: { color: 'rgba(0, 0, 0, 0)' },
+				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: store.getState().displaySettings.hexTileOpacity },
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);

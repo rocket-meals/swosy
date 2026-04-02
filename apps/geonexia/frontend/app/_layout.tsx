@@ -18,6 +18,7 @@ import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
+import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
@@ -25,6 +26,7 @@ import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
+import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
 
@@ -387,6 +389,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted speech settings:', err);
+			});
+		loadDisplaySettings()
+			.then((settings) => {
+				store.dispatch(loadDisplaySettingsAction(settings));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted display settings:', err);
 			});
 	}, []);
 
