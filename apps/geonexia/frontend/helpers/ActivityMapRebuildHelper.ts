@@ -16,7 +16,7 @@
  */
 
 import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
-import { BillboardAnchorColor, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
+import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
@@ -37,9 +37,15 @@ const MAX_GRID_DISK_RADIUS = 30;
 
 /**
  * Billboard key for the treePineLarge sprite (index 50 in OBJECT_SPRITES).
- * Placed at the purple anchor (hex centroid) on all enclosed tiles.
+ * Placed at CENTER on enclosed forest tiles.
  */
 export const BILLBOARD_PINE_TREE_LARGE = 'objects:50';
+
+/**
+ * Billboard key for the treePineSmall sprite (index 51 in OBJECT_SPRITES).
+ * Placed at a MIDDLE ring position on enclosed forest tiles (determined by hex ID).
+ */
+export const BILLBOARD_PINE_TREE_SMALL = 'objects:51';
 
 /**
  * Billboard key for the pathRounded sprite (index 58 in OBJECT_SPRITES).
@@ -56,16 +62,43 @@ const TILE_IMAGE_GRASS = 'Grass/grass';
 // ─── Edge anchor helpers ──────────────────────────────────────────────────────
 
 /**
- * Maps boundary edge index (0–5) to the corresponding BillboardAnchorColor for
- * edge-midpoint positions. Edge 0 is between vertex[0] and vertex[1], etc.
+ * Maps boundary edge index (0–5) to the corresponding OUTER BillboardAnchorPosition
+ * for edge-midpoint positions.
+ *
+ * Each edge sits between two consecutive vertices:
+ *   edge[0]: vertex[0] → vertex[1]  →  OUTER_30_DEGREE  (30° = midway between 0° and 60°)
+ *   edge[1]: vertex[1] → vertex[2]  →  OUTER_90_DEGREE
+ *   edge[2]: vertex[2] → vertex[3]  →  OUTER_150_DEGREE
+ *   edge[3]: vertex[3] → vertex[4]  →  OUTER_210_DEGREE
+ *   edge[4]: vertex[4] → vertex[5]  →  OUTER_270_DEGREE
+ *   edge[5]: vertex[5] → vertex[0]  →  OUTER_330_DEGREE
  */
-const EDGE_INDEX_TO_ANCHOR: BillboardAnchorColor[] = [
-	BillboardAnchorColor.EdgeNE, // edge 0: vertex[0]→vertex[1]
-	BillboardAnchorColor.EdgeE,  // edge 1: vertex[1]→vertex[2]
-	BillboardAnchorColor.EdgeSE, // edge 2: vertex[2]→vertex[3]
-	BillboardAnchorColor.EdgeSW, // edge 3: vertex[3]→vertex[4]
-	BillboardAnchorColor.EdgeW,  // edge 4: vertex[4]→vertex[5]
-	BillboardAnchorColor.EdgeNW, // edge 5: vertex[5]→vertex[0]
+const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
+	BillboardAnchorPosition.OUTER_30_DEGREE,  // edge 0: vertex[0]→vertex[1]
+	BillboardAnchorPosition.OUTER_90_DEGREE,  // edge 1: vertex[1]→vertex[2]
+	BillboardAnchorPosition.OUTER_150_DEGREE, // edge 2: vertex[2]→vertex[3]
+	BillboardAnchorPosition.OUTER_210_DEGREE, // edge 3: vertex[3]→vertex[4]
+	BillboardAnchorPosition.OUTER_270_DEGREE, // edge 4: vertex[4]→vertex[5]
+	BillboardAnchorPosition.OUTER_330_DEGREE, // edge 5: vertex[5]→vertex[0]
+];
+
+/**
+ * All 12 MIDDLE ring anchor positions in clockwise degree order (0°, 30°, …, 330°).
+ * Used to deterministically pick a tree placement position from the hex ID.
+ */
+const MIDDLE_RING_BY_DEGREE: BillboardAnchorPosition[] = [
+	BillboardAnchorPosition.MIDDLE_0_DEGREE,
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,
+	BillboardAnchorPosition.MIDDLE_60_DEGREE,
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,
+	BillboardAnchorPosition.MIDDLE_120_DEGREE,
+	BillboardAnchorPosition.MIDDLE_150_DEGREE,
+	BillboardAnchorPosition.MIDDLE_180_DEGREE,
+	BillboardAnchorPosition.MIDDLE_210_DEGREE,
+	BillboardAnchorPosition.MIDDLE_240_DEGREE,
+	BillboardAnchorPosition.MIDDLE_270_DEGREE,
+	BillboardAnchorPosition.MIDDLE_300_DEGREE,
+	BillboardAnchorPosition.MIDDLE_330_DEGREE,
 ];
 
 /**
@@ -217,6 +250,38 @@ export function hasForestFeature(features: MapFeatureInfo[]): boolean {
 				(f.class === LandcoverClass.WOOD || f.subclass === LandcoverSubclass.FOREST)) ||
 			(f.layerId === OpenMapTilesLayerId.PARK && f.class === ParkClass.FOREST),
 	);
+}
+
+/**
+ * Check whether the cached features for a tile indicate a forest, and if so
+ * apply forest tree billboards to the record.
+ *
+ * Called for tiles that are already confirmed to be enclosed and not visited.
+ * Places:
+ *  - a `treePineLarge` billboard at CENTER (hex centroid).
+ *  - a `treePineLarge` billboard at a MIDDLE ring position that is deterministically
+ *    chosen from the last hex character of `hexId` (parsed as a hex digit modulo 12).
+ *
+ * Does nothing when `features` is undefined or contains no forest indicator.
+ */
+export function checkAndApplyForest(
+	hexId: string,
+	rec: HexTileRecord,
+	features: MapFeatureInfo[] | undefined,
+): void {
+	if (!features || !hasForestFeature(features)) return;
+	if (!rec.billboards) rec.billboards = {};
+
+	// Large tree at the hex centroid.
+	rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_PINE_TREE_LARGE;
+
+	// Additional tree at a MIDDLE ring position derived from the hex ID.
+	// Parse the last character of the hex ID as a hex digit (0–15), then map
+	// it to one of the 12 MIDDLE positions via modulo 12.
+	const lastChar = hexId[hexId.length - 1] ?? '0';
+	const hexDigit = parseInt(lastChar, 16);
+	const positionIndex = hexDigit % MIDDLE_RING_BY_DEGREE.length;
+	rec.billboards[MIDDLE_RING_BY_DEGREE[positionIndex]] = BILLBOARD_PINE_TREE_SMALL;
 }
 
 function getOrCreateRecord(
@@ -451,15 +516,10 @@ export function rebuildMapFromActivities(
 				}
 			}
 		} else if (rec.enclosedCount > 0) {
-			// Enclosed but not visited → grass terrain; pineTreeLarge only when
+			// Enclosed but not visited → grass terrain; forest trees only when
 			// the feature cache confirms a forest / wooded area on this tile.
 			rec.tileImage = TILE_IMAGE_GRASS;
-
-			const cachedFeatures = hexTileFeatureCache[hexId];
-			if (cachedFeatures && hasForestFeature(cachedFeatures)) {
-				if (!rec.billboards) rec.billboards = {};
-				rec.billboards[BillboardAnchorColor.Purple] = BILLBOARD_PINE_TREE_LARGE;
-			}
+			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
 		}
 	}
 

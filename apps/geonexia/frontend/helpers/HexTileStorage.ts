@@ -4,36 +4,74 @@ import { File, Paths } from 'expo-file-system';
 
 /**
  * Anchor positions within a hex cell for billboard placement.
- * Each value corresponds to a specific geographic position inside the cell:
- * - Purple: hex centroid (center)
- * - Green: vertex[0] (topmost corner in pointy-top orientation)
- * - Red, Orange, Yellow, Blue, White, Black: midpoints between the center
- *   and each of the six vertices (cycling clockwise from vertex[0])
- * - EdgeNE, EdgeE, EdgeSE, EdgeSW, EdgeW, EdgeNW: midpoints of the six hex
- *   boundary edges (between vertex[i] and vertex[i+1]), used for path objects
- *   pointing toward neighboring tiles.
+ *
+ * Degree values use a clockwise convention starting from the topmost vertex
+ * (vertex[0], pointing north in a pointy-top H3 hex, 0°).  Degrees increase
+ * clockwise: 0° = top, 90° = right, 180° = bottom, 270° = left.
+ *
+ * Three rings are defined:
+ *  - CENTER               – hex centroid.
+ *  - OUTER_N_DEGREE (12)  – on the hex boundary: the six vertices (0°, 60°,
+ *                           120°, 180°, 240°, 300°) interleaved with the six
+ *                           edge midpoints (30°, 90°, 150°, 210°, 270°, 330°).
+ *  - MIDDLE_N_DEGREE (12) – midpoints between CENTER and the corresponding
+ *                           OUTER position at the same degree.
  */
-export enum BillboardAnchorColor {
-	Purple = 'purple',
-	Green = 'green',
-	Red = 'red',
-	Orange = 'orange',
-	Yellow = 'yellow',
-	Blue = 'blue',
-	White = 'white',
-	Black = 'black',
-	/** Midpoint of the edge between vertex[0] and vertex[1] (upper-right edge) */
-	EdgeNE = 'edgeNE',
-	/** Midpoint of the edge between vertex[1] and vertex[2] (right edge) */
-	EdgeE = 'edgeE',
-	/** Midpoint of the edge between vertex[2] and vertex[3] (lower-right edge) */
-	EdgeSE = 'edgeSE',
-	/** Midpoint of the edge between vertex[3] and vertex[4] (lower-left edge) */
-	EdgeSW = 'edgeSW',
-	/** Midpoint of the edge between vertex[4] and vertex[5] (left edge) */
-	EdgeW = 'edgeW',
-	/** Midpoint of the edge between vertex[5] and vertex[0] (upper-left edge) */
-	EdgeNW = 'edgeNW',
+export enum BillboardAnchorPosition {
+	// ── Center ────────────────────────────────────────────────────────────────
+	CENTER = 'center',
+
+	// ── Outer ring (hex boundary) ─────────────────────────────────────────────
+	/** vertex[0] – topmost corner (0°) */
+	OUTER_0_DEGREE   = 'outer_0',
+	/** midpoint of edge between vertex[0] and vertex[1] (30°) */
+	OUTER_30_DEGREE  = 'outer_30',
+	/** vertex[1] – upper-right corner (60°) */
+	OUTER_60_DEGREE  = 'outer_60',
+	/** midpoint of edge between vertex[1] and vertex[2] (90°) */
+	OUTER_90_DEGREE  = 'outer_90',
+	/** vertex[2] – lower-right corner (120°) */
+	OUTER_120_DEGREE = 'outer_120',
+	/** midpoint of edge between vertex[2] and vertex[3] (150°) */
+	OUTER_150_DEGREE = 'outer_150',
+	/** vertex[3] – bottom corner (180°) */
+	OUTER_180_DEGREE = 'outer_180',
+	/** midpoint of edge between vertex[3] and vertex[4] (210°) */
+	OUTER_210_DEGREE = 'outer_210',
+	/** vertex[4] – lower-left corner (240°) */
+	OUTER_240_DEGREE = 'outer_240',
+	/** midpoint of edge between vertex[4] and vertex[5] (270°) */
+	OUTER_270_DEGREE = 'outer_270',
+	/** vertex[5] – upper-left corner (300°) */
+	OUTER_300_DEGREE = 'outer_300',
+	/** midpoint of edge between vertex[5] and vertex[0] (330°) */
+	OUTER_330_DEGREE = 'outer_330',
+
+	// ── Middle ring (halfway between center and outer boundary) ───────────────
+	/** midpoint toward vertex[0] (0°) */
+	MIDDLE_0_DEGREE   = 'middle_0',
+	/** midpoint toward edge[0] midpoint (30°) */
+	MIDDLE_30_DEGREE  = 'middle_30',
+	/** midpoint toward vertex[1] (60°) */
+	MIDDLE_60_DEGREE  = 'middle_60',
+	/** midpoint toward edge[1] midpoint (90°) */
+	MIDDLE_90_DEGREE  = 'middle_90',
+	/** midpoint toward vertex[2] (120°) */
+	MIDDLE_120_DEGREE = 'middle_120',
+	/** midpoint toward edge[2] midpoint (150°) */
+	MIDDLE_150_DEGREE = 'middle_150',
+	/** midpoint toward vertex[3] (180°) */
+	MIDDLE_180_DEGREE = 'middle_180',
+	/** midpoint toward edge[3] midpoint (210°) */
+	MIDDLE_210_DEGREE = 'middle_210',
+	/** midpoint toward vertex[4] (240°) */
+	MIDDLE_240_DEGREE = 'middle_240',
+	/** midpoint toward edge[4] midpoint (270°) */
+	MIDDLE_270_DEGREE = 'middle_270',
+	/** midpoint toward vertex[5] (300°) */
+	MIDDLE_300_DEGREE = 'middle_300',
+	/** midpoint toward edge[5] midpoint (330°) */
+	MIDDLE_330_DEGREE = 'middle_330',
 }
 
 /**
@@ -96,23 +134,20 @@ export type HexTileRecord = {
 	 */
 	billboard?: string | null;
 	/**
-	 * Anchor color for billboard placement within the hex cell.
-	 * Determines where the billboard is positioned:
-	 * - 'purple' (default): hex centroid (center)
-	 * - 'green': nearest vertex (corner)
-	 * - 'red' | 'orange' | 'yellow' | 'blue' | 'white' | 'black': midpoint positions
+	 * Anchor position for billboard placement within the hex cell.
+	 * Should be a `BillboardAnchorPosition` value.
 	 * @deprecated Use `billboards` instead. Kept for backward compatibility.
 	 */
 	billboardAnchorColor?: string | null;
 	/**
-	 * Per-anchor billboard map. Keys are BillboardAnchorColor values.
+	 * Per-anchor billboard map. Keys are BillboardAnchorPosition values.
 	 * Each key maps to a billboard key (e.g. "objects:47") or null.
 	 * When present, this field takes precedence over the legacy `billboard` and
 	 * `billboardAnchorColor` fields, allowing multiple billboards on one tile.
 	 */
 	billboards?: Record<string, string | null>;
 	/**
-	 * Per-anchor flat-rendering flag. Keys are BillboardAnchorColor values.
+	 * Per-anchor flat-rendering flag. Keys are BillboardAnchorPosition values.
 	 * When `true` for an anchor, the billboard at that position is rendered flat
 	 * on the map surface (pitch-alignment = 'map') instead of facing the camera
 	 * (pitch-alignment = 'viewport').  Defaults to false when absent.
