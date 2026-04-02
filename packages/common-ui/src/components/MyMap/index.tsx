@@ -151,7 +151,7 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					// ignore malformed messages
 				}
 			},
-			[onMessage, sendToMap, initialCenter, centerAtUserLocationIfNoInitialPosition, overlayOpacity],
+			[onMessage, sendToMap, initialCenter, centerAtUserLocationIfNoInitialPosition],
 		);
 
 		const handleShouldStartLoadWithRequest = useCallback((request: ShouldStartLoadRequest): boolean => {

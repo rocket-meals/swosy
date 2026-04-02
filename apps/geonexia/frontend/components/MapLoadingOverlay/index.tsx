@@ -46,8 +46,7 @@ function CloudLayer({ fontSize, left, startFraction, duration, opacity }: CloudL
 		}).start(({ finished }) => {
 			if (finished) loopFromBottom();
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [translateY, duration, endY, startY, firstDuration]);
 
 	return (
 		<Animated.Text
