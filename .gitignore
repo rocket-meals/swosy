@@ -28,15 +28,36 @@ apps/frontend/app/android
 # Ignore generated icon/splash files (created by scripts/generateIcons.sh)
 # These are regenerated during CI setup (setup-and-install action) before build/submit.
 # Source images live in apps/frontend/app/assets/images/customers/
-apps/frontend/app/assets/images/adaptive-icon.png
-apps/frontend/app/assets/images/adaptive-icon-background.png
-apps/frontend/app/assets/images/company.png
-apps/frontend/app/assets/images/favicon.png
-apps/frontend/app/assets/images/icon.png
-apps/frontend/app/assets/images/notification-icon.png
-apps/frontend/app/assets/images/splash.png
-apps/frontend/app/assets/images/splash-icon.png
-apps/frontend/app/assets/images/icons_hash.json
+apps/frontend/app/assets/images/generated/adaptive-icon.png
+apps/frontend/app/assets/images/generated/adaptive-icon-background.png
+apps/frontend/app/assets/images/generated/company.png
+apps/frontend/app/assets/images/generated/favicon.png
+apps/frontend/app/assets/images/generated/icon.png
+apps/frontend/app/assets/images/generated/notification-icon.png
+apps/frontend/app/assets/images/generated/splash.png
+apps/frontend/app/assets/images/generated/splash-icon.png
+apps/frontend/app/assets/images/generated/icons_hash.json
+# Geonexia generated icon/splash files (created by scripts/generateIcons.sh)
+# Old location (now replaced by generated/ subfolder)
+apps/geonexia/frontend/assets/adaptive-icon.png
+apps/geonexia/frontend/assets/adaptive-icon-background.png
+apps/geonexia/frontend/assets/company.png
+apps/geonexia/frontend/assets/favicon.png
+apps/geonexia/frontend/assets/icon.png
+apps/geonexia/frontend/assets/notification-icon.png
+apps/geonexia/frontend/assets/splash.png
+apps/geonexia/frontend/assets/splash-icon.png
+apps/geonexia/frontend/assets/icons_hash.json
+# New location
+apps/geonexia/frontend/assets/generated/adaptive-icon.png
+apps/geonexia/frontend/assets/generated/adaptive-icon-background.png
+apps/geonexia/frontend/assets/generated/company.png
+apps/geonexia/frontend/assets/generated/favicon.png
+apps/geonexia/frontend/assets/generated/icon.png
+apps/geonexia/frontend/assets/generated/notification-icon.png
+apps/geonexia/frontend/assets/generated/splash.png
+apps/geonexia/frontend/assets/generated/splash-icon.png
+apps/geonexia/frontend/assets/generated/icons_hash.json
 
 apps/screenshotGenerator/dist/
 apps/screenshotGenerator/.yarn/

@@ -182,9 +182,9 @@ export function getFinalConfig(config?: any) {
 			slug: customerConfig.projectSlug,
 			version: getVersion(),
 			orientation: 'default',
-			icon: './assets/images/icon.png',
+			icon: './assets/images/generated/icon.png',
 			notification: {
-				icon: './assets/images/notification-icon.png',
+				icon: './assets/images/generated/notification-icon.png',
 			},
 			updates: {
 				enabled: true,
@@ -194,7 +194,7 @@ export function getFinalConfig(config?: any) {
 			scheme: customerConfig.appScheme,
 			userInterfaceStyle: 'automatic',
 			splash: {
-				image: './assets/images/splash.png',
+				image: './assets/images/generated/splash.png',
 				resizeMode: 'contain',
 				backgroundColor: '#ffffff',
 			},
@@ -269,7 +269,7 @@ export function getFinalConfig(config?: any) {
 			},
 			android: {
 				adaptiveIcon: {
-					foregroundImage: './assets/images/adaptive-icon.png',
+					foregroundImage: './assets/images/generated/adaptive-icon.png',
 					backgroundColor: '#ffffff',
 				},
 				package: customerConfig.bundleIdAndroid,
@@ -279,7 +279,7 @@ export function getFinalConfig(config?: any) {
 			web: {
 				bundler: 'metro',
 				output: 'static',
-				favicon: './assets/images/favicon.png',
+				favicon: './assets/images/generated/favicon.png',
 			},
 			plugins: [
 				'expo-router',
@@ -291,7 +291,7 @@ export function getFinalConfig(config?: any) {
 				[
 					'expo-splash-screen',
 					{
-						image: './assets/images/splash-icon.png',
+						image: './assets/images/generated/splash-icon.png',
 						imageWidth: 200,
 						resizeMode: 'contain',
 						backgroundColor: '#ffffff',
