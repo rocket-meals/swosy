@@ -32,7 +32,8 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gri
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { computeActivityData } from '../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../helpers/ActivityMapRebuildHelper';
+import { mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
@@ -3094,6 +3095,25 @@ export default function RecordScreen() {
 		} catch {
 			Alert.alert('Error', 'Failed to save activity.');
 		}
+		// Fire-and-forget: fetch and cache map features for enclosed cells so that
+		// the next map rebuild can apply the pine tree billboard on forest tiles.
+		if (enclosedCells.length > 0) {
+			void (async () => {
+				try {
+					const newEntries: HexTileFeatureCache = {};
+					for (const hexId of enclosedCells) {
+						try {
+							newEntries[hexId] = await queryTileFeaturesForHexCell(hexId);
+						} catch {
+							// ignore per-cell errors
+						}
+					}
+					await mergeHexTileFeatureCache(newEntries);
+				} catch (err) {
+					console.warn('[MeasureSave] Feature cache update failed:', err);
+				}
+			})();
+		}
 	}, []);
 
 	const handleSaveMeasureAsRoute = useCallback((routeCells: string[], name: string) => {
@@ -4008,6 +4028,31 @@ export default function RecordScreen() {
 			enclosedCells = allEnclosed.filter((cell) => !visitedHexIdsRef.current.has(cell));
 			if (enclosedCells.length > 0) {
 				dispatch(markEnclosed({ h3Indices: enclosedCells, timestamp: endedAt }));
+				// Fire-and-forget: fetch map features for enclosed cells, cache them,
+				// and immediately apply the pine tree billboard on forest tiles.
+				void (async () => {
+					try {
+						const newEntries: HexTileFeatureCache = {};
+						for (const hexId of enclosedCells) {
+							try {
+								const features = await queryTileFeaturesForHexCell(hexId);
+								newEntries[hexId] = features;
+								if (hasForestFeature(features)) {
+									dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: BillboardAnchorColor.Purple,
+										billboard: BILLBOARD_PINE_TREE_LARGE,
+									}));
+								}
+							} catch {
+								// ignore per-cell errors
+							}
+						}
+						await mergeHexTileFeatureCache(newEntries);
+					} catch (err) {
+						console.warn('[RecordScreen] Feature cache update failed:', err);
+					}
+				})();
 			}
 		} catch (err) {
 			console.warn('[RecordScreen] Enclosed tile detection failed:', err);

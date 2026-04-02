@@ -39,7 +39,7 @@ const MAX_GRID_DISK_RADIUS = 30;
  * Billboard key for the treePineLarge sprite (index 50 in OBJECT_SPRITES).
  * Placed at the purple anchor (hex centroid) on all enclosed tiles.
  */
-const BILLBOARD_PINE_TREE_LARGE = 'objects:50';
+export const BILLBOARD_PINE_TREE_LARGE = 'objects:50';
 
 /**
  * Billboard key for the pathRounded sprite (index 58 in OBJECT_SPRITES).
@@ -210,7 +210,7 @@ export function findEnclosedCellsFromHexTiles(
  *  - `landcover` layer with `class = 'wood'` or `subclass = 'forest'`
  *  - `park` layer with `class = 'forest'`
  */
-function hasForestFeature(features: MapFeatureInfo[]): boolean {
+export function hasForestFeature(features: MapFeatureInfo[]): boolean {
 	return features.some(
 		(f) =>
 			(f.layerId === OpenMapTilesLayerId.LANDCOVER &&
