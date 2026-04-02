@@ -294,7 +294,7 @@ export default function SettingsScreen() {
 					activeOpacity={0.7}
 				>
 					<Image
-						source={require('../../assets/company.png')}
+						source={require('../../assets/generated/company.png')}
 						style={styles.companyLogo}
 						resizeMode="contain"
 					/>
