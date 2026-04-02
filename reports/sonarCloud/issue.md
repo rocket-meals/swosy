@@ -132,9 +132,9 @@
   apps/geonexia/frontend/components/SpeechSettingsModal.tsx:160
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L160
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:282
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L282
+- **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:284
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L284
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242
