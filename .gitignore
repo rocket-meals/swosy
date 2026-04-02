@@ -25,6 +25,19 @@ apps/frontend/app/eas.json
 # Ignore all android generated files
 apps/frontend/app/android
 
+# Ignore generated icon/splash files (created by scripts/generateIcons.sh)
+# These are regenerated during CI setup (setup-and-install action) before build/submit.
+# Source images live in apps/frontend/app/assets/images/customers/
+apps/frontend/app/assets/images/adaptive-icon.png
+apps/frontend/app/assets/images/adaptive-icon-background.png
+apps/frontend/app/assets/images/company.png
+apps/frontend/app/assets/images/favicon.png
+apps/frontend/app/assets/images/icon.png
+apps/frontend/app/assets/images/notification-icon.png
+apps/frontend/app/assets/images/splash.png
+apps/frontend/app/assets/images/splash-icon.png
+apps/frontend/app/assets/images/icons_hash.json
+
 apps/screenshotGenerator/dist/
 apps/screenshotGenerator/.yarn/
 apps/screenshotGenerator/.yarnrc.yml
