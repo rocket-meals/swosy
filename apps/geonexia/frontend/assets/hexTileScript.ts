@@ -31,8 +31,8 @@ export const HEX_TILE_SCRIPT = `
   // Levels 1–10 are interpolated linearly between these two endpoints.
   var HEX_COLOR_LEVEL_MIN = '#bbf7d0'; // level  1 – light mint green
   var HEX_COLOR_LEVEL_MAX = '#15803d'; // level 10 – dark forest green
-  var HEX_OPACITY_LEVEL_MIN = 0.45;   // level  1
-  var HEX_OPACITY_LEVEL_MAX = 0.65;   // level 10
+  var HEX_OPACITY_LEVEL_MIN = 0.21;   // level  1  (default: 70 % of HEX_OPACITY_LEVEL_MAX)
+  var HEX_OPACITY_LEVEL_MAX = 0.30;   // level 10  (default: 0.30, user-adjustable)
   // Territory border: thick, dark line between level-0 and level>0 tiles
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
@@ -589,12 +589,35 @@ export const HEX_TILE_SCRIPT = `
       if (data.hexTileLayer) {
         if (data.hexTileLayer.color) hexTileColor = data.hexTileLayer.color;
         if (data.hexTileLayer.strokeColor) hexTileStrokeColor = data.hexTileLayer.strokeColor;
+        if (typeof data.hexTileLayer.opacityMax === 'number') {
+          HEX_OPACITY_LEVEL_MAX = data.hexTileLayer.opacityMax;
+          HEX_OPACITY_LEVEL_MIN = data.hexTileLayer.opacityMax * 0.7;
+        }
         hexTileActive = true;
         removeHexTileLayer();
         addHexTileLayer();
       } else {
         hexTileActive = false;
         removeHexTileLayer();
+      }
+      return;
+    }
+    if (data.hexTileOpacity !== undefined) {
+      var newMax = Math.min(1, Math.max(0, data.hexTileOpacity));
+      HEX_OPACITY_LEVEL_MAX = newMax;
+      HEX_OPACITY_LEVEL_MIN = newMax * 0.7;
+      if (map && map.getLayer(HEX_TILE_FILL_LAYER)) {
+        map.setPaintProperty(HEX_TILE_FILL_LAYER, 'fill-opacity', ['case',
+          ['has', 'colorIndex'],
+          0.75,
+          ['case',
+            ['==', ['get', 'level'], 0], 0,
+            ['interpolate', ['linear'], ['get', 'level'],
+              1, HEX_OPACITY_LEVEL_MIN,
+              10, HEX_OPACITY_LEVEL_MAX
+            ]
+          ]
+        ]);
       }
       return;
     }

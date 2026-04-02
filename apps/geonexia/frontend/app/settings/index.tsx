@@ -21,6 +21,7 @@ import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
 import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
+import { updateDisplaySettings } from '../../store/displaySettingsSlice';
 import {
 	saveDebugModeFlag,
 	saveDevModeFlag,
@@ -43,6 +44,11 @@ const GPS_COLOR = '#7c3aed';
 const TTS_COLOR = '#0369a1';
 const DEBUG_COLOR = '#0f766e';
 const DEV_COLOR = '#f59e0b';
+const MAP_COLOR = '#0891b2';
+
+const OPACITY_STEP = 0.05;
+const OPACITY_MIN = 0.05;
+const OPACITY_MAX = 1.0;
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
 	{ id: 'light', label: 'Light', icon: <MaterialCommunityIcons name="white-balance-sunny" size={22} color="#ffffff" /> },
@@ -116,6 +122,8 @@ export default function SettingsScreen() {
 	const speechEnabled = useSelector((state: RootState) => state.speechSettings.enabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
+	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
+	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
@@ -210,6 +218,26 @@ export default function SettingsScreen() {
 		}
 	}, [dispatch]);
 
+	const handleHexTileOpacityDown = useCallback(() => {
+		const next = Math.max(OPACITY_MIN, Math.round((hexTileOpacity - OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexTileOpacity: next }));
+	}, [dispatch, hexTileOpacity]);
+
+	const handleHexTileOpacityUp = useCallback(() => {
+		const next = Math.min(OPACITY_MAX, Math.round((hexTileOpacity + OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexTileOpacity: next }));
+	}, [dispatch, hexTileOpacity]);
+
+	const handleObjectOpacityDown = useCallback(() => {
+		const next = Math.max(OPACITY_MIN, Math.round((objectOpacity - OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ objectOpacity: next }));
+	}, [dispatch, objectOpacity]);
+
+	const handleObjectOpacityUp = useCallback(() => {
+		const next = Math.min(OPACITY_MAX, Math.round((objectOpacity + OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ objectOpacity: next }));
+	}, [dispatch, objectOpacity]);
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView contentContainerStyle={styles.listContent}>
@@ -258,6 +286,42 @@ export default function SettingsScreen() {
 					valueActive="Enabled"
 					valueInactive="Disabled"
 					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Karten-Darstellung" />
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialCommunityIcons name="hexagon-outline" size={22} color="#ffffff" />}
+					label="Hex-Feld Deckkraft"
+					value={`${Math.round(hexTileOpacity * 100)}%`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTileOpacityDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTileOpacityUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialCommunityIcons name="image-outline" size={22} color="#ffffff" />}
+					label="Objekte Deckkraft"
+					value={`${Math.round(objectOpacity * 100)}%`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleObjectOpacityDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleObjectOpacityUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="bottom"
 				/>
 
 				<SettingsListGroupTitle title="Daten Verwaltung" />
@@ -381,5 +445,13 @@ const styles = StyleSheet.create({
 		width: 120,
 		height: 120,
 		opacity: 0.6,
+	},
+	stepper: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
+	stepBtn: {
+		padding: 6,
 	},
 });

@@ -6,6 +6,7 @@ import billboardConfigReducer from './billboardConfigSlice';
 import gpsIntervalReducer from './gpsIntervalSlice';
 import ttsReducer from './ttsSlice';
 import speechSettingsReducer from './speechSettingsSlice';
+import displaySettingsReducer from './displaySettingsSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
@@ -13,7 +14,9 @@ import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardC
 import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
+import { saveDisplaySettings } from '../helpers/DisplaySettingsStorage';
 import type { SpeechSettingsState } from './speechSettingsSlice';
+import type { DisplaySettingsState } from './displaySettingsSlice';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
 import type { GpsIntervalMode } from './gpsIntervalSlice';
@@ -29,6 +32,7 @@ export const store = configureStore({
 		gpsInterval: gpsIntervalReducer,
 		tts: ttsReducer,
 		speechSettings: speechSettingsReducer,
+		displaySettings: displaySettingsReducer,
 	},
 });
 
@@ -58,6 +62,10 @@ let _lastSavedTTSEnabled: boolean | null = null;
 // Auto-persist speech settings to disk whenever they change.
 let _speechSettingsTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedSpeechSettings: SpeechSettingsState | null = null;
+
+// Auto-persist display settings to disk whenever they change.
+let _displaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedDisplaySettings: DisplaySettingsState | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -134,6 +142,16 @@ store.subscribe(() => {
 		_speechSettingsTimer = setTimeout(() => {
 			saveSpeechSettings(speechSettings);
 			_speechSettingsTimer = null;
+		}, 500);
+	}
+
+	const displaySettings = state.displaySettings;
+	if (displaySettings !== _lastSavedDisplaySettings) {
+		_lastSavedDisplaySettings = displaySettings;
+		if (_displaySettingsTimer) clearTimeout(_displaySettingsTimer);
+		_displaySettingsTimer = setTimeout(() => {
+			saveDisplaySettings(displaySettings);
+			_displaySettingsTimer = null;
 		}, 500);
 	}
 });
