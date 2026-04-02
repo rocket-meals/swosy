@@ -28,7 +28,7 @@ import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollVie
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
@@ -604,15 +604,20 @@ function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number
  * Given a completed run route, find all H3 cells that are enclosed by the
  * route polygon (i.e. inside the loop). Returns an empty array when:
  *   – the route has fewer than 3 points,
- *   – the start and end are more than 300 m apart (not a loop), or
+ *   – the first and last GPS points do not map to adjacent hex tiles (not a loop), or
  *   – the H3 library is unavailable.
  */
 function findEnclosedCells(routePoints: RoutePoint[], resolution: number): string[] {
 	if (!isH3Available() || routePoints.length < 3) return [];
 
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+
+	// Check loop closure: first and last GPS points must map to adjacent hex tiles.
 	const first = routePoints[0];
 	const last = routePoints[routePoints.length - 1];
-	if (haversineKm(first.lat, first.lng, last.lat, last.lng) > 0.3) return [];
+	const firstCell = latLngToCell(first.lat, first.lng, h3Res);
+	const lastCell = latLngToCell(last.lat, last.lng, h3Res);
+	if (!areNeighborCells(firstCell, lastCell)) return [];
 
 	// Route polygon in [lng, lat] order (same as GeoJSON).
 	const polygon: Array<[number, number]> = routePoints.map((p) => [p.lng, p.lat]);
@@ -631,7 +636,6 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 	// as buildH3GeoJson, but with showAlways=true and a high zoom.
 	// Use Math.floor to match buildH3GeoJson's base-resolution logic for
 	// fractional resolutions (e.g. 10.5 → base res 10).
-	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
 	const centerLat = (bounds.north + bounds.south) / 2;
 	const centerLng = (bounds.east + bounds.west) / 2;
 	const centerCell = latLngToCell(centerLat, centerLng, h3Res);

@@ -15,7 +15,7 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, cellToLatLng, gridDisk, gridDistance, isAvailable as isH3Available } from './H3Helper';
+import { latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
 import { BillboardAnchorColor, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
@@ -33,12 +33,6 @@ import {
 export const H3_RESOLUTION_FALLBACK = 10;
 const H3_RESOLUTION_MIN = 0;
 const H3_RESOLUTION_MAX = 15;
-
-/**
- * Maximum start-to-end distance (km) for a route to be considered a closed
- * loop when computing enclosed tiles from hex-tile centroids.
- */
-const ENCLOSED_LOOP_CLOSURE_THRESHOLD_KM = 0.5;
 
 /** Padding added to the bounding box (degrees) when enumerating candidate cells. */
 const BBOX_PADDING_DEG = 0.001;
@@ -79,7 +73,7 @@ function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number
  * visited hex tiles (in visit order). Visited tiles are excluded from the
  * result. Returns an empty array when:
  *  – fewer than 3 tiles were visited,
- *  – the first and last centroid are more than 500 m apart (open route), or
+ *  – the first and last hex tiles are not adjacent (open route), or
  *  – the H3 library is unavailable.
  *
  * Using hex-tile centroids instead of raw GPS points is faster because the
@@ -105,18 +99,8 @@ export function findEnclosedCellsFromHexTiles(
 	}
 	if (polygon.length < 3) return [];
 
-	// Check loop closure: first and last centroid must be within ~500 m.
-	const [firstLng, firstLat] = polygon[0];
-	const [lastLng, lastLat] = polygon[polygon.length - 1];
-	const dLat = ((firstLat - lastLat) * Math.PI) / 180;
-	const dLngRad = ((firstLng - lastLng) * Math.PI) / 180;
-	const sinA =
-		Math.sin(dLat / 2) ** 2 +
-		Math.cos((lastLat * Math.PI) / 180) *
-			Math.cos((firstLat * Math.PI) / 180) *
-			Math.sin(dLngRad / 2) ** 2;
-	const distKm = 6371 * 2 * Math.atan2(Math.sqrt(sinA), Math.sqrt(1 - sinA));
-	if (distKm > ENCLOSED_LOOP_CLOSURE_THRESHOLD_KM) return [];
+	// Check loop closure: first and last hex tiles must be adjacent (neighbors).
+	if (!areNeighborCells(visitedHexIds[0], visitedHexIds[visitedHexIds.length - 1])) return [];
 
 	// Bounding box with small padding.
 	const lngs = polygon.map(([lng]) => lng);
