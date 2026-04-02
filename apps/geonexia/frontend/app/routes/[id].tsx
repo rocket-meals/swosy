@@ -20,7 +20,7 @@ import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
-import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, haversineKm, type CoordPair } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, areNeighborCells, type CoordPair } from '../../helpers/H3Helper';
 import { buildRouteDisplayData, computeHexBounds, computeEdgesFromHexTiles } from '../../helpers/RouteDisplayHelper';
 import type { MapFeatureInfo } from '../../helpers/RouteNameSuggestionHelper';
 import { suggestRouteNamesForHexTiles } from '../../helpers/RouteNameSuggestionHelper';
@@ -321,11 +321,8 @@ export default function RouteDetailScreen() {
 					if (firstTile && lastTile && route.hexTiles.length >= 3) {
 						const res = getResolution(firstTile);
 
-						// Check loop closure: first and last tile centers must be ≤ 300 m apart
-						// (same threshold used by findEnclosedCells when finishing an activity).
-						const distKm = haversineKm(cellToLatLng(firstTile), cellToLatLng(lastTile));
-
-						if (distKm <= 0.3) {
+						// Check loop closure: first and last tiles must be adjacent (neighbors).
+						if (areNeighborCells(firstTile, lastTile)) {
 							// Build closed ring from ordered tile center points [lat, lng]
 							const ring: CoordPair[] = route.hexTiles.map((cell) => cellToLatLng(cell) as CoordPair);
 							ring.push(ring[0]); // close the ring

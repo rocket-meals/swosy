@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+  <!-- Rounded gray path / road segment seen from above -->
+  <rect x="4" y="8" width="112" height="24" rx="12" ry="12" fill="#9ca3af" />
+  <!-- Subtle edge highlight for depth -->
+  <rect x="4" y="8" width="112" height="10" rx="12" ry="12" fill="#d1d5db" opacity="0.4" />
+  <!-- Center dashed line -->
+  <line x1="20" y1="20" x2="100" y2="20" stroke="#6b7280" stroke-width="2" stroke-dasharray="10 6" stroke-linecap="round" />
+</svg>

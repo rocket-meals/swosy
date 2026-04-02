@@ -922,6 +922,38 @@ export default function ActivityDetailScreen() {
 			}
 		};
 	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords]);
+
+	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
+	useEffect(() => {
+		if (!mapMounted || !mapRef.current || !activity) return;
+		if (!isH3Available()) return;
+
+		const EMPTY_FC = { type: 'FeatureCollection' as const, features: [] };
+		const enclosedCells = activity.computed?.enclosedHexTiles ?? [];
+
+		if (enclosedCells.length === 0) {
+			mapRef.current.sendToMap({ hexEnclosedGeoJson: EMPTY_FC });
+			return;
+		}
+
+		const features = enclosedCells.map((cell) => {
+			try {
+				const boundary = cellToBoundary(cell, true);
+				return {
+					type: 'Feature' as const,
+					geometry: { type: 'Polygon' as const, coordinates: [boundary] },
+					properties: { h3Index: cell },
+				};
+			} catch {
+				return null;
+			}
+		}).filter((f): f is NonNullable<typeof f> => f !== null);
+
+		mapRef.current.sendToMap({
+			hexEnclosedGeoJson: { type: 'FeatureCollection', features },
+		});
+	}, [mapMounted, activity]);
+
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {

@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState } from '../../store/hexTileSlice';
 import { AppDispatch } from '../../store/store';
@@ -181,20 +181,46 @@ export default function ActivitiesScreen() {
 							return;
 						}
 
-						// Migrate activities that are missing the computed field or hexTilesEnclosed.
+						// Migrate activities that are missing computed.enclosedHexTiles.
+						// The canonical home for enclosed-tile data is computed.enclosedHexTiles.
+						// The top-level fields enclosedHexTiles / hexTilesEnclosed are legacy and
+						// must never be written; they are only kept for reading old activity files.
 						for (const activity of allActivities) {
 							let updated = false;
-							if (!activity.computed) {
-								activity.computed = computeActivityData(
-									activity,
-									activity.hexTilesEnclosed ?? [],
+
+							// Determine enclosed tiles: prefer computed, then fall back to legacy fields.
+							let enclosedTiles: string[] =
+								activity.computed?.enclosedHexTiles ??
+								activity.enclosedHexTiles ??
+								activity.hexTilesEnclosed ??
+								[];
+
+							// Recompute from visited hex tiles when enclosed tiles are still unavailable.
+							// Using hex-tile centroids is faster than raw GPS points (fewer vertices).
+							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								enclosedTiles = findEnclosedCellsFromHexTiles(
+									activity.hexTilesOrdered,
+									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
 								);
+							}
+
+							if (!activity.computed) {
+								activity.computed = computeActivityData(activity, enclosedTiles);
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
+								}
+								updated = true;
+							} else if (
+								!Array.isArray(activity.computed.enclosedHexTiles) ||
+								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+							) {
+								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
+								}
 								updated = true;
 							}
-							if (!activity.hexTilesEnclosed && activity.computed?.enclosedHexTiles) {
-								activity.hexTilesEnclosed = activity.computed.enclosedHexTiles;
-								updated = true;
-							}
+
 							if (updated) {
 								try { saveActivity(activity); } catch (err) { console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err); }
 							}
