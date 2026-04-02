@@ -6,15 +6,17 @@ import { useRouter } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
-import { RootState } from '@/redux/reducer';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { weekPlan } = useAppSelector((state) => state.management);
+	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const [headerVisible, setHeaderVisible] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const isMobile = screenWidth < 800;
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
+	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
 
 	const router = useRouter();
 
@@ -41,14 +43,14 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 			{/* FoodPlanHeader */}
 			{headerVisible && (
 				<View>
-					<View style={[styles.container, { backgroundColor: theme.header.background }]}>
-						<View style={{ flexDirection: 'row', gap: 20, width: '60%' }}>
+					<View style={[styles.container, { backgroundColor: theme.header.background }, isArabicRight ? { flexDirection: 'row-reverse' } : undefined]}>
+						<View style={{ flexDirection: isArabicRight ? 'row-reverse' : 'row', gap: 20, width: '60%' }}>
 							<TouchableOpacity onPress={() => router.navigate('/list-week-screen')}>
-								<Ionicons name="arrow-back" size={24} color={theme.screen.icon} />
+								<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={24} color={theme.screen.icon} />
 							</TouchableOpacity>
-							<Text style={[styles.title, { color: theme.header.text }]}>Food Plan: Week</Text>
+							<Text style={[styles.title, { color: theme.header.text }, isArabicRight ? { textAlign: 'right' } : undefined]}>Food Plan: Week</Text>
 						</View>
-						<View style={{ ...styles.icons, gap: isMobile ? 10 : 20 }}>
+						<View style={{ ...styles.icons, gap: isMobile ? 10 : 20, ...(isArabicRight ? { justifyContent: 'flex-start' } : {}) }}>
 							<TouchableOpacity onPress={() => router.navigate('/foodPlanWeek')}>
 								<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
 							</TouchableOpacity>

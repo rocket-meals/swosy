@@ -7,9 +7,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { parse, format } from 'date-fns';
 import useMyScrollviewModalDatePicker from '@/hooks/useMyScrollviewModalDatePicker';
 import { StringHelper } from 'repo-depkit-common';
+import { useAppSelector } from '@/redux/hooks';
 
 const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const language = useAppSelector((state) => state.settings.language);
 	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
 	const isThirdDotManual = useRef(false);
@@ -147,6 +149,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 							width: isWeb ? '90%' : '80%',
 						},
 						{ color: theme.screen.text },
+						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
@@ -191,6 +194,7 @@ const DateWithTimeInput = ({ id, value, onChange, onError, error, isDisabled, cu
 
 const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const language = useAppSelector((state) => state.settings.language);
 	const flag = !suffix && !prefix;
 
 	const [localValue, setLocalValue] = useState<string>(value || '');
@@ -271,6 +275,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 							width: isWeb ? '80%' : '70%',
 						},
 						{ color: theme.screen.text },
+						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
@@ -315,6 +320,7 @@ const DateInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 
 const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const language = useAppSelector((state) => state.settings.language);
 	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
 	const isThirdColonManual = useRef(false);
@@ -383,6 +389,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 									width: isWeb ? '90%' : '80%',
 								},
 						{ color: theme.screen.text },
+						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}
@@ -412,6 +419,7 @@ const TimeInput = ({ id, value, onChange, onError, error, isDisabled, custom_typ
 
 const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled, custom_type, prefix, suffix }: { id: string; value: string; onChange: (id: string, value: string, custom_type: string) => void; onError: (id: string, error: string) => void; error: string; isDisabled: boolean; custom_type: string; prefix: string | null | undefined; suffix: string | null | undefined }) => {
 	const { theme } = useTheme();
+	const language = useAppSelector((state) => state.settings.language);
 	const previousValue = useRef<string>(value);
 	const flag = !suffix && !prefix;
 	const isThirdDotManual = useRef(false);
@@ -521,6 +529,7 @@ const PreciseTimestampInput = ({ id, value, onChange, onError, error, isDisabled
 									width: isWeb ? '90%' : '80%',
 								},
 						{ color: theme.screen.text },
+						{ textAlign: language === 'ar' ? 'right' : 'left' },
 					]}
 					cursorColor={theme.screen.text}
 					placeholderTextColor={theme.screen.placeholder}

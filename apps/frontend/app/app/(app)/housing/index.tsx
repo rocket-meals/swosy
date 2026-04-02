@@ -297,7 +297,7 @@ const Index: React.FC = () => {
 				<HousingHeader
 					theme={theme}
 					translate={translate}
-					drawerPosition={drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
 					openHousingSortingModal={openHousingSortingModal}
 				/>
 

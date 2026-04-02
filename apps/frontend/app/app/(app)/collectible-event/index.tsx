@@ -502,6 +502,7 @@ const CollectibleEventScreen = () => {
                                                     color: theme.screen.text,
                                                     backgroundColor: theme.drawerBg,
                                                     borderColor: theme.screen.icon,
+                                                    textAlign: language === 'ar' ? 'right' : 'left',
                                             }}
                                             value={email}
                                             onChangeText={setEmail}
@@ -520,6 +521,7 @@ const CollectibleEventScreen = () => {
                                                     color: theme.screen.text,
                                                     backgroundColor: theme.drawerBg,
                                                     borderColor: theme.screen.icon,
+                                                    textAlign: language === 'ar' ? 'right' : 'left',
                                             }}
                                             value={phoneNumber}
                                             onChangeText={setPhoneNumber}

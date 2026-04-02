@@ -11,7 +11,7 @@ import AppButton from '@/components/AppButton';
 const RssFeedConfig = () => {
 	useSetPageTitle(TranslationKeys.rss_feed);
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const [urls, setUrls] = useState<string[]>(['']);
 	const [interval, setInterval] = useState('10');
 
@@ -37,6 +37,7 @@ const RssFeedConfig = () => {
 								borderColor: theme.screen.icon,
 								marginBottom: 8,
 							},
+							{ textAlign: language === 'ar' ? 'right' : 'left' },
 						]}
 						value={url}
 						onChangeText={text => updateUrl(index, text)}
@@ -56,7 +57,7 @@ const RssFeedConfig = () => {
 			</View>
 			<View style={styles.field}>
 				<Text style={[styles.label, { color: theme.screen.text }]}>Switch Interval (seconds)</Text>
-				<TextInput style={[styles.input, { color: theme.screen.text, borderColor: theme.screen.icon }]} value={interval} onChangeText={setInterval} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.screen.icon} />
+				<TextInput style={[styles.input, { color: theme.screen.text, borderColor: theme.screen.icon }, { textAlign: language === 'ar' ? 'right' : 'left' }]} value={interval} onChangeText={setInterval} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.screen.icon} />
 			</View>
 			<AppButton
 				variant="ghost"

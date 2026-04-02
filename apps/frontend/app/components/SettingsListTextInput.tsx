@@ -85,7 +85,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 	onSubmitEditing,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor } = useAppSelector((state: RootState) => state.settings);
+	const { primaryColor, language } = useAppSelector((state: RootState) => state.settings);
 
 	return (
 		<TextInput
@@ -94,6 +94,7 @@ export const SettingsListTextInputField: React.FC<SettingsListTextInputFieldProp
 				color: theme.sheet.text,
 				backgroundColor: theme.sheet.inputBg,
 				borderColor: theme.sheet.inputBorder,
+				textAlign: language === 'ar' ? 'right' : 'left',
 				...(inputStyle ?? {}),
 			}}
 			autoFocus={autoFocus}
@@ -130,7 +131,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 	allowSubmitWhenDisabled = false,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { primaryColor, language } = useAppSelector((state) => state.settings);
 
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;
@@ -157,6 +158,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 					color: theme.sheet.text,
 					backgroundColor: theme.sheet.inputBg,
 					borderColor: theme.sheet.inputBorder,
+					textAlign: language === 'ar' ? 'right' : 'left',
 					...(inputStyle ?? {}),
 				}}
 				autoFocus={autoFocus}

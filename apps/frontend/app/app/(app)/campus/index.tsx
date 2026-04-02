@@ -41,7 +41,7 @@ const Index: React.FC = () => {
 	const { theme } = useTheme();
 	const toast = useToast();
 	const dispatch = useDispatch();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { width: windowWidth } = useWindowDimensions();
 
 	// Refs for helpers to avoid recreation
@@ -358,7 +358,7 @@ const Index: React.FC = () => {
 					translate={translate}
 					onToggleDrawer={toggleDrawer}
 					onSort={openCampusSortingModal}
-					drawerPosition={drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
 				/>
 
 				<View style={{ flex: 1, alignItems: 'center' }}>

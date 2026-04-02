@@ -14,6 +14,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 	activeKey,
 	primaryColor,
 	footerContent,
+	reverseItemLayout,
 }) => {
 	const { theme, isDark } = useTheme();
 	const resolvedPrimaryColor = primaryColor ?? theme.primary;
@@ -46,10 +47,14 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 		return (
 			<TouchableOpacity
 				key={item.key ?? index}
-				style={[styles.menuItem, { backgroundColor: bgColor }]}
+				style={[
+					styles.menuItem,
+					reverseItemLayout ? styles.menuItemReverse : null,
+					{ backgroundColor: bgColor },
+				]}
 				onPress={item.onPress}
 			>
-				<View style={styles.menuIconWrapper}>
+				<View style={[styles.menuIconWrapper, reverseItemLayout ? styles.menuIconWrapperReverse : null]}>
 					{item.renderIcon(active, iconColor)}
 					{item.hasUnread ? (
 						<View
@@ -60,7 +65,15 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
 						/>
 					) : null}
 				</View>
-				<Text style={[styles.menuLabel, { color: textColor }]}>{item.label}</Text>
+				<Text
+					style={[
+						styles.menuLabel,
+						reverseItemLayout ? styles.menuLabelReverse : null,
+						{ color: textColor },
+					]}
+				>
+					{item.label}
+				</Text>
 			</TouchableOpacity>
 		);
 	};
@@ -161,14 +174,25 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 		width: '100%',
 	},
+	menuItemReverse: {
+		flexDirection: 'row-reverse',
+		justifyContent: 'flex-start',
+	},
 	menuIconWrapper: {
 		marginRight: 12,
 		position: 'relative',
+	},
+	menuIconWrapperReverse: {
+		marginRight: 0,
+		marginLeft: 12,
 	},
 	menuLabel: {
 		flex: 1,
 		fontSize: 16,
 		marginTop: 4,
+	},
+	menuLabelReverse: {
+		textAlign: 'right',
 	},
 	notificationDot: {
 		position: 'absolute',

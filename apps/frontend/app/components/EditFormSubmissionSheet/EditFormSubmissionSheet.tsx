@@ -16,7 +16,7 @@ import AppButton from '@/components/AppButton';
 
 const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
 	const { formSubmission } = useAppSelector((state) => state.form);
 	const [alias, setAlias] = useState(formSubmission ? formSubmission?.alias : '');
@@ -67,7 +67,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
 						...styles.inputContainer,
 					}}
 				>
-					<TextInput style={[styles.input, { color: theme.screen.text }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder="Type here..." />
+					<TextInput style={[styles.input, { color: theme.screen.text }, { textAlign: language === 'ar' ? 'right' : 'left' }]} cursorColor={theme.screen.text} placeholderTextColor={theme.screen.placeholder} onChangeText={setAlias} value={alias || ''} placeholder="Type here..." />
 				</View>
 				<View style={styles.actionContainer}>
 					<AppButton

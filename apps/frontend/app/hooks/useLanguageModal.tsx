@@ -121,6 +121,8 @@ export const useLanguageModal = () => {
                                 <SettingsList
                                         key={`${languageOption.value}-${index}`}
                                         label={languageOption.label}
+                                        reverseLayout={false}
+                                        titleTextAlign="left"
                                         leftIcon={
                                                 <View style={styles.flagWrapper}>
                                                         <Text style={styles.flagText}>{languageOption.emoji}</Text>

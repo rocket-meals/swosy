@@ -22,7 +22,7 @@ const EdgeSpeechScreen = () => {
 	useSetPageTitle(TranslationKeys.edge_speech_test);
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor } = useAppSelector((state) => state.settings);
+	const { primaryColor, language } = useAppSelector((state) => state.settings);
 
 	const [inputText, setInputText] = useState('Guten Appetit! Hier sind heute leckere Gerichte für euch.');
 	const [selectedVoice, setSelectedVoice] = useState(VOICES[0].key);
@@ -67,7 +67,7 @@ const EdgeSpeechScreen = () => {
 
 				<View style={styles.section}>
 					<TextInput
-						style={[styles.textInput, { color: theme.screen.text, borderColor: primaryColor, backgroundColor: theme.card.background }]}
+						style={[styles.textInput, { color: theme.screen.text, borderColor: primaryColor, backgroundColor: theme.card.background }, { textAlign: language === 'ar' ? 'right' : 'left' }]}
 						value={inputText}
 						onChangeText={setInputText}
 						placeholder={translate(TranslationKeys.edge_speech_enter_text)}

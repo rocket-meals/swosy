@@ -84,7 +84,7 @@ export default function Layout() {
 	const organizationsHelper = useMemo(() => new OrganizationsHelper(), []);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
-	const { drawerPosition } = useAppSelector((state) => state.settings);
+	const { drawerPosition, language } = useAppSelector((state) => state.settings);
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 
@@ -572,11 +572,16 @@ export default function Layout() {
 			headerTintColor: theme.header.text,
 			drawerType: 'front' as const,
 			drawerPosition: (() => {
-				const position = drawerPosition === 'system' ? 'left' : drawerPosition;
+				const position =
+					drawerPosition === 'system'
+						? language === 'ar'
+							? 'right'
+							: 'left'
+						: drawerPosition;
 				return position === 'left' || position === 'right' ? position : 'left';
 			})() as 'left' | 'right',
 		}),
-		[theme.header.background, theme.header.text, drawerPosition]
+		[theme.header.background, theme.header.text, drawerPosition, language]
 	);
 
 	if (!loggedIn && !kioskMode) {

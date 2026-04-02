@@ -142,6 +142,8 @@ const Index = () => {
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
+	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const [imageFolderIdState, setImageFolderIdState] = useState<string | null>(null);
 	const [filesFolderIdState, setFilesFolderIdState] = useState<string | null>(null);
@@ -837,7 +839,7 @@ const Index = () => {
 					style={[
 						styles.row,
 						{
-							flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+							flexDirection: resolvedDrawerPosition === 'right' ? 'row-reverse' : 'row',
 						},
 					]}
 				>
@@ -852,7 +854,7 @@ const Index = () => {
 										gap: 10,
 									},
 							{
-								flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row',
+								flexDirection: resolvedDrawerPosition === 'right' ? 'row-reverse' : 'row',
 							},
 						]}
 					>
@@ -863,9 +865,9 @@ const Index = () => {
 								router.navigate('/form-categories');
 							}
 						}} style={{ padding: 10 }}>
-							<Ionicons name="arrow-back" size={26} color={theme.header.text} />
+							<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
 						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>
+						<Text style={{ ...styles.heading, color: theme.header.text, ...(isArabicRight ? { textAlign: 'right' } : {}) }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>
 					</View>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openEditSheet} style={{ padding: 10 }}>

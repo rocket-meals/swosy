@@ -31,7 +31,7 @@ let _cachedPrimaryColor: string | null = null;
 const Index = () => {
 	useSetPageTitle(TranslationKeys.price_group);
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
 	const profileHelper = new ProfileHelper();
 	const [loading, setLoading] = useState(false);
@@ -158,6 +158,8 @@ const Index = () => {
 							label={option.label}
 							leftIcon={option.icon}
 							iconBgColor={primaryColor}
+							reverseLayout={language === 'ar'}
+							titleTextAlign={language === 'ar' ? 'right' : undefined}
 							groupPosition={groupPosition}
 							showSeparator={index !== sortingOptions.length - 1}
 							rightIcon={

@@ -48,7 +48,7 @@ export const SHEET_COMPONENTS = {
 const Index: React.FC<DrawerContentComponentProps> = () => {
 	const dispatch = useDispatch();
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 
 	const appSettings = useAppSelector((state) => state.settings.appSettings, shallowEqual);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
@@ -137,7 +137,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: theme.screen.background }]}>
 			<FoodOffersHeader
-				drawerPosition={drawerPosition as 'left' | 'right'}
+				drawerPosition={(drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition) as 'left' | 'right'}
 				hasUnreadChats={hasUnreadChats}
 				selectedCanteen={selectedCanteen}
 				selectedDate={selectedDate}

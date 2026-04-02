@@ -26,6 +26,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	const { openAccountRequiredModal } = useAccountRequiredModal();
 	const [showTooltip, setShowTooltip] = useState(false);
 	const { language } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 	const [count, setCount] = useState({ likes: 0, dislikes: 0 });
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const { ownCanteenFeedBackLabelEntriesDict } = useAppSelector((state) => state.canteenReducer);
@@ -90,7 +91,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 	const labelText = getTextFromTranslation(label?.translations, language);
 
 	const leftIconComponent = (
-		<View style={styles.leftIconWrapper}>
+		<View style={[styles.leftIconWrapper, isArabic ? styles.leftIconWrapperReverse : undefined]}>
 			<CustomTooltip
 				placement="top"
 				isOpen={showTooltip}
@@ -138,9 +139,11 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({ label, dat
 		<SettingsList
 			leftIconComponent={leftIconComponent}
 			title={labelText || ''}
+			titleTextAlign={isArabic ? 'right' : undefined}
 			rightElement={rightElement}
 			groupPosition={groupPosition}
 			isAccountRequired={isAccountRequired}
+			reverseLayout={isArabic}
 		/>
 	);
 };
@@ -150,6 +153,10 @@ export default CanteenFeedbackLabels;
 const styles = StyleSheet.create({
 	leftIconWrapper: {
 		marginRight: 10,
+	},
+	leftIconWrapperReverse: {
+		marginRight: 0,
+		marginLeft: 10,
 	},
 	icon: {
 		width: 30,

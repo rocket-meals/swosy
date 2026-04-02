@@ -17,11 +17,14 @@ import IconButton from '../UI/IconButton';
 
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightElement }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { loggedIn } = useAppSelector(state => state.authReducer);
+	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
+	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
 
 	const handleGoback = () => {
 		if (pathname.includes(`/${AppScreens.FOOD_OFFERS}/details`)) {
@@ -81,13 +84,13 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 				paddingHorizontal: isWeb ? 20 : 10,
 			}}
 		>
-                        <View style={styles.row}>
-                                <View style={styles.col1}>
+                        <View style={[styles.row, isArabicRight && !rightElement ? { justifyContent: 'flex-end' } : undefined]}>
+                                <View style={[styles.col1, isArabicRight ? { flexDirection: 'row-reverse' } : undefined]}>
 					<CustomTooltip
 						placement="top"
 						trigger={triggerProps => (
 							<TouchableOpacity activeOpacity={0.4} {...triggerProps} onPress={handleGoback} style={{ padding: 10 }}>
-								<Ionicons name="arrow-back" size={26} color={theme.header.text} />
+								<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
 							</TouchableOpacity>
 						)}
 					>
@@ -98,7 +101,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 						</TooltipContent>
 					</CustomTooltip>
 
-					<Text style={{ ...styles.heading, color: theme.header.text }}>{excerpt(label, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
+					<Text style={{ ...styles.heading, color: theme.header.text, ...(isArabicRight ? { textAlign: 'right' } : {}) }}>{excerpt(label, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
                                 </View>
                                 {rightElement ? <View style={styles.col2}>{rightElement}</View> : null}
                         </View>

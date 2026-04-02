@@ -731,7 +731,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const selectedCanteen = useSelectedCanteen();
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { show, close } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
@@ -1531,7 +1531,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: isFullscreen ? 'transparent' : theme.header.background }]}>
 			{!isFullscreen && (
 				<MapHeader
-					drawerPosition={drawerPosition}
+					drawerPosition={drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition}
 					query={gameMode ? '' : searchQuery}
 					onQueryChange={gameMode ? noop : setSearchQuery}
 					onSettingsPress={openSettingsModal}

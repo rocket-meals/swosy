@@ -33,7 +33,7 @@ const Index = () => {
 	const { translate } = useLanguage();
 	const { markingsDict } = useAppSelector((state) => state.food);
 	const markings = useMemo(() => Object.values(markingsDict || {}), [markingsDict]);
-	const { primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme: mode, language } = useAppSelector((state) => state.settings);
 	const { user, profile } = useAppSelector((state) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [readMore, setReadMore] = useState(false);
@@ -133,7 +133,7 @@ const Index = () => {
 		>
 			<Text style={{ ...styles.body1, color: theme.screen.text }}>{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}</Text>
 			{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
-			<View style={styles.readMoreContainer}>
+			<View style={[styles.readMoreContainer, language === 'ar' ? { alignItems: 'flex-end' } : undefined]}>
 				<AppButton
 					text={readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}
 					onPress={handleReadMore}
@@ -142,7 +142,7 @@ const Index = () => {
 						backgroundColor: theme.primary,
 						marginVertical: 0,
 					}}
-					textStyle={{ ...styles.readMore, color: contrastColor }}
+					textStyle={{ ...styles.readMore, color: contrastColor, ...(language === 'ar' ? { textAlign: 'right' } : {}) }}
 				/>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
@@ -150,12 +150,13 @@ const Index = () => {
 				iconBgColor={primaryColor}
 				leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
 				label={translate(TranslationKeys.clear_markings_selection)}
+				titleTextAlign={language === 'ar' ? 'right' : undefined}
 				handleFunction={handleClearMarkings}
 				groupPosition="single"
 			/>
 			<View style={styles.markingsTopSpacer} />
 		</View>
-	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkings]);
+	), [readMore, screenWidth, theme, translate, primaryColor, contrastColor, handleReadMore, handleClearMarkings, language]);
 
 	const ListFooterComponent = useMemo(() => (
 		<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_markings} />

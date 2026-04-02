@@ -30,7 +30,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 	isFilterActive,
 }) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
 	const isRTL = drawerPosition === 'right';
@@ -74,6 +74,7 @@ const MapHeader: React.FC<MapHeaderProps> = ({
 							{
 								color: theme.header.text,
 							},
+							{ textAlign: language === 'ar' ? 'right' : 'left' },
 						]}
 						cursorColor={theme.header.text}
 						placeholderTextColor={theme.header.text + '88'}

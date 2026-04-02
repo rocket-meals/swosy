@@ -19,10 +19,12 @@ const Index = () => {
 	const { translate, translateDynamic } = useLanguage();
 	const [wiki, setWiki] = useState<DatabaseTypes.Wikis>();
 	const [loading, setLoading] = useState(true);
-	const { wikisDict, language, primaryColor } = useAppSelector((state) => state.settings);
+	const { wikisDict, language, primaryColor, drawerPosition } = useAppSelector((state) => state.settings);
 	const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
 	const { deviceMock } = useGlobalSearchParams();
 	const { custom_id, id } = useLocalSearchParams();
+	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
+	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
 	//Set Page Title
 	const title = wiki?.translations ? translateDynamic(getTitleFromTranslation(wiki?.translations, language)) : 'Wikis';
 	useSetPageTitle(title);
@@ -61,12 +63,12 @@ const Index = () => {
 					paddingHorizontal: isWeb ? 20 : 10,
 				}}
 			>
-				<View style={styles.row}>
-					<View style={styles.col1}>
+				<View style={[styles.row, isArabicRight ? { justifyContent: 'flex-end' } : undefined]}>
+					<View style={[styles.col1, isArabicRight ? { flexDirection: 'row-reverse' } : undefined]}>
 						<TouchableOpacity onPress={() => router.navigate(('/(app)/' + AppScreens.FOOD_OFFERS) as any)} style={{ padding: 10 }}>
-							<Ionicons name="arrow-back" size={24} color={theme.header.text} />
+							<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={24} color={theme.header.text} />
 						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text }}>{wiki?.translations && translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
+						<Text style={{ ...styles.heading, color: theme.header.text, ...(isArabicRight ? { textAlign: 'right' } : {}) }}>{wiki?.translations && translateDynamic(getTitleFromTranslation(wiki?.translations, language))}</Text>
 					</View>
 				</View>
 			</View>

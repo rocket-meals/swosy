@@ -519,7 +519,7 @@ const ChatDetailsScreen = () => {
 				</View>
 			)}
 			<View style={styles.inputContainer}>
-				<TextInput style={[styles.textInput, { color: theme.screen.text, borderColor: theme.screen.placeholder }]} placeholder={translate(TranslationKeys.type_here)} placeholderTextColor={theme.screen.placeholder} multiline value={newMessage} onChangeText={setNewMessage} />
+				<TextInput style={[styles.textInput, { color: theme.screen.text, borderColor: theme.screen.placeholder }, { textAlign: language === 'ar' ? 'right' : 'left' }]} placeholder={translate(TranslationKeys.type_here)} placeholderTextColor={theme.screen.placeholder} multiline value={newMessage} onChangeText={setNewMessage} />
 				<TouchableOpacity
 					onPress={handleSendMessage}
 					disabled={!newMessage.trim() || sending}
