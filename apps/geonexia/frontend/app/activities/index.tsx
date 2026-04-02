@@ -181,39 +181,46 @@ export default function ActivitiesScreen() {
 							return;
 						}
 
-						// Migrate activities that are missing the computed field or enclosedHexTiles.
+						// Migrate activities that are missing computed.enclosedHexTiles.
+						// The canonical home for enclosed-tile data is computed.enclosedHexTiles.
+						// The top-level fields enclosedHexTiles / hexTilesEnclosed are legacy and
+						// must never be written; they are only kept for reading old activity files.
 						for (const activity of allActivities) {
 							let updated = false;
-							// Migrate old `hexTilesEnclosed` → new `enclosedHexTiles` field name.
-							if (!activity.enclosedHexTiles && activity.hexTilesEnclosed) {
-								activity.enclosedHexTiles = activity.hexTilesEnclosed;
-								updated = true;
-							}
-							// Recompute from visited hex tiles when enclosedHexTiles is still empty.
+
+							// Determine enclosed tiles: prefer computed, then fall back to legacy fields.
+							let enclosedTiles: string[] =
+								activity.computed?.enclosedHexTiles ??
+								activity.enclosedHexTiles ??
+								activity.hexTilesEnclosed ??
+								[];
+
+							// Recompute from visited hex tiles when enclosed tiles are still unavailable.
 							// Using hex-tile centroids is faster than raw GPS points (fewer vertices).
-							if (!activity.enclosedHexTiles?.length && activity.hexTilesOrdered?.length) {
-								const recomputed = findEnclosedCellsFromHexTiles(
+							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								enclosedTiles = findEnclosedCellsFromHexTiles(
 									activity.hexTilesOrdered,
 									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
 								);
-								if (recomputed.length > 0) {
-									activity.enclosedHexTiles = recomputed;
-									activity.enclosedTileCount = recomputed.length;
-									updated = true;
-								}
 							}
+
 							if (!activity.computed) {
-								activity.computed = computeActivityData(
-									activity,
-									activity.enclosedHexTiles ?? [],
-								);
+								activity.computed = computeActivityData(activity, enclosedTiles);
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
+								}
+								updated = true;
+							} else if (
+								!Array.isArray(activity.computed.enclosedHexTiles) ||
+								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+							) {
+								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
+								}
 								updated = true;
 							}
-							// If enclosedHexTiles is still missing but computed has the data, populate it.
-							if (!activity.enclosedHexTiles && Array.isArray(activity.computed?.enclosedHexTiles)) {
-								activity.enclosedHexTiles = activity.computed.enclosedHexTiles;
-								updated = true;
-							}
+
 							if (updated) {
 								try { saveActivity(activity); } catch (err) { console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err); }
 							}

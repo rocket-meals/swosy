@@ -295,12 +295,12 @@ export function rebuildMapFromActivities(
 			(activity.computed as { orderedHexTiles?: ComputedHexTileEntry[] } | undefined)?.orderedHexTiles ??
 			(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
 
-		// Prefer the new primary field; fall back to deprecated `hexTilesEnclosed`
-		// (older saves) and then to computed for maximum backward-compat.
+		// Prefer computed.enclosedHexTiles (the canonical field); fall back to the
+		// legacy top-level fields for activities saved by older app versions.
 		const enclosedHexTiles: string[] =
+			activity.computed?.enclosedHexTiles ??
 			activity.enclosedHexTiles ??
 			activity.hexTilesEnclosed ??
-			activity.computed?.enclosedHexTiles ??
 			[];
 
 		// ── Process visited (walked) tiles ────────────────────────────────────
