@@ -344,6 +344,72 @@ export async function loadDevModeFlag(): Promise<boolean> {
 	}
 }
 
+// ─── World building ID ────────────────────────────────────────────────────────
+
+function getWorldBuildingIdFile(): File {
+	return new File(Paths.document, 'geonexia-world-building-id.json');
+}
+
+function getDevWorldBuildingIdFile(): File {
+	return new File(Paths.document, 'geonexia-dev-world-building-id.json');
+}
+
+/**
+ * Persist the world building ID to disk.
+ * Silently ignores write errors.
+ */
+export function saveWorldBuildingId(id: number): void {
+	try {
+		getWorldBuildingIdFile().write(JSON.stringify({ id }));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save world building id:', err);
+	}
+}
+
+/**
+ * Load the world building ID from disk. Returns null when the file does not
+ * yet exist or cannot be parsed.
+ */
+export async function loadWorldBuildingId(): Promise<number | null> {
+	try {
+		const file = getWorldBuildingIdFile();
+		if (!file.exists) return null;
+		const content = await file.text();
+		const data = JSON.parse(content) as { id?: number };
+		return typeof data.id === 'number' ? data.id : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Persist the dev-mode world building ID to disk.
+ * Silently ignores write errors.
+ */
+export function saveDevWorldBuildingId(id: number): void {
+	try {
+		getDevWorldBuildingIdFile().write(JSON.stringify({ id }));
+	} catch (err) {
+		console.warn('[HexTileStorage] Failed to save dev world building id:', err);
+	}
+}
+
+/**
+ * Load the dev-mode world building ID from disk. Returns null when the file
+ * does not yet exist or cannot be parsed.
+ */
+export async function loadDevWorldBuildingId(): Promise<number | null> {
+	try {
+		const file = getDevWorldBuildingIdFile();
+		if (!file.exists) return null;
+		const content = await file.text();
+		const data = JSON.parse(content) as { id?: number };
+		return typeof data.id === 'number' ? data.id : null;
+	} catch {
+		return null;
+	}
+}
+
 // ─── Debug mode flag ──────────────────────────────────────────────────────────
 
 function getDebugModeFlagFile(): File {
