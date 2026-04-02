@@ -33,6 +33,7 @@ import {
 	loadWalkedEdges,
 	loadDevWalkedEdges,
 } from '../../helpers/HexTileStorage';
+import { getCompanyLogoLocalSaved } from '../../config';
 
 const PRIMARY_COLOR = '#2563eb';
 const NOTIFICATION_COLOR = '#16a34a';
@@ -294,7 +295,7 @@ export default function SettingsScreen() {
 					activeOpacity={0.7}
 				>
 					<Image
-						source={require('../../assets/company.png')}
+						source={getCompanyLogoLocalSaved()}
 						style={styles.companyLogo}
 						resizeMode="contain"
 					/>
