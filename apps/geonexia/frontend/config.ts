@@ -5,3 +5,7 @@
 export function getBuildNumber() {
 	return 12;
 }
+
+export function getAppIconInsideExpoLocalSaved() {
+	return require('./assets/icons/app_icon_source.png');
+}
