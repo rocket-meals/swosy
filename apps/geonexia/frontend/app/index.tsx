@@ -24,7 +24,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
@@ -36,7 +36,7 @@ import { computeActivityData } from '../helpers/ActivityMapRebuildHelper';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorColor } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
@@ -74,6 +74,13 @@ function getEffectiveBillboards(record: { billboard?: string | null; billboardAn
 		result[record.billboardAnchorColor ?? BillboardAnchorColor.Purple] = record.billboard;
 	}
 	return result as Record<BillboardAnchorColor, string>;
+}
+
+/**
+ * Return the effective per-anchor flat-rendering flag map for a hex tile record.
+ */
+function getEffectiveBillboardsFlat(record: { billboardsFlat?: Record<string, boolean> }): Record<string, boolean> {
+	return record.billboardsFlat ?? {};
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -152,6 +159,12 @@ const BILLBOARD_ANCHOR_COLORS = [
 	{ id: BillboardAnchorColor.Blue, hex: '#3b82f6', label: 'Midpoint 4 (Blue)' },
 	{ id: BillboardAnchorColor.White, hex: '#ffffff', label: 'Midpoint 5 (White)' },
 	{ id: BillboardAnchorColor.Black, hex: '#000000', label: 'Midpoint 6 (Black)' },
+	{ id: BillboardAnchorColor.EdgeNE, hex: '#f59e0b', label: 'Edge NE' },
+	{ id: BillboardAnchorColor.EdgeE,  hex: '#10b981', label: 'Edge E' },
+	{ id: BillboardAnchorColor.EdgeSE, hex: '#06b6d4', label: 'Edge SE' },
+	{ id: BillboardAnchorColor.EdgeSW, hex: '#8b5cf6', label: 'Edge SW' },
+	{ id: BillboardAnchorColor.EdgeW,  hex: '#ec4899', label: 'Edge W' },
+	{ id: BillboardAnchorColor.EdgeNW, hex: '#f43f5e', label: 'Edge NW' },
 ] as const;
 
 type ViewportBounds = { north: number; south: number; east: number; west: number };
@@ -1656,6 +1669,16 @@ const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
 	yellow: { x: HEX_PICKER_CX, y: HEX_PICKER_CY + HEX_PICKER_R / 2 }, // midpoint[3] bottom
 	blue:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R / 4 }, // midpoint[4] lower-left
 	white:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R / 4 }, // midpoint[5] upper-left
+	// Edge midpoints (midpoint of each hex boundary edge, at apothem distance from center)
+	// Edge i = midpoint of vertices[i] and vertices[(i+1)%6]
+	// vertex[0] = top (90°), vertex[1] = upper-right (30°), vertex[2] = lower-right (-30°),
+	// vertex[3] = bottom (-90°), vertex[4] = lower-left (-150°), vertex[5] = upper-left (150°)
+	edgeNE: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 }, // (v0+v1)/2
+	edgeE:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY }, // (v1+v2)/2
+	edgeSE: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 }, // (v2+v3)/2
+	edgeSW: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 }, // (v3+v4)/2
+	edgeW:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2, y: HEX_PICKER_CY }, // (v4+v5)/2
+	edgeNW: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4, y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 }, // (v5+v0)/2
 };
 
 // Hexagon outline polygon points (pointy-top, 6 vertices).
@@ -1818,7 +1841,9 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const currentTileImage = record?.tileImage ?? null;
 	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
 	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorColor, string>;
+	const effectiveFlat = record ? getEffectiveBillboardsFlat(record) : {};
 	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
+	const currentAnchorFlat = effectiveFlat[selectedAnchorColor] === true;
 	const parsedCurrentBillboard = currentAnchorBillboard ? parseBillboardKey(currentAnchorBillboard) : null;
 
 	const infoRows: { label: string; value: string }[] = [
@@ -1950,8 +1975,18 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				spriteIndex={parsedCurrentBillboard?.idx ?? null}
 				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor}
 				onPress={openBillboardSelection}
-				groupPosition="single"
+				groupPosition={currentAnchorBillboard ? 'top' : 'single'}
 			/>
+			{currentAnchorBillboard && (
+				<SettingsListBoolean
+					title="Flat (map surface)"
+					isEnabled={currentAnchorFlat}
+					onToggle={() => {
+						dispatch(setBillboardFlatAtAnchor({ h3Index, anchorColor: selectedAnchorColor, flat: !currentAnchorFlat }));
+					}}
+					groupPosition="bottom"
+				/>
+			)}
 
 			{/* ── Underlying map info ── */}
 			<SettingsListGroupTitle title="Karteninformationen" />
@@ -2529,17 +2564,22 @@ export default function RecordScreen() {
 		type BillboardFeature = {
 			type: 'Feature';
 			geometry: { type: 'Point'; coordinates: [number, number] };
-			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number };
+			properties: { iconKey: string; iconSizeAtRefZoom: number; anchorX: number; anchorY: number; flat: boolean };
 		};
 		const billboardFeatures: BillboardFeature[] = [];
 
 		// Midpoint anchor colors in the order they map to hex vertices 0–5.
 		const MIDPOINT_ANCHOR_COLORS = [BillboardAnchorColor.Red, BillboardAnchorColor.Orange, BillboardAnchorColor.Yellow, BillboardAnchorColor.Blue, BillboardAnchorColor.White, BillboardAnchorColor.Black];
+		// Edge anchor colors in the order they map to hex boundary edges 0–5.
+		const EDGE_ANCHOR_COLORS = [BillboardAnchorColor.EdgeNE, BillboardAnchorColor.EdgeE, BillboardAnchorColor.EdgeSE, BillboardAnchorColor.EdgeSW, BillboardAnchorColor.EdgeW, BillboardAnchorColor.EdgeNW];
 
 		for (const [h3Index, record] of Object.entries(records)) {
 			// Build an effective billboard map using the shared helper.
 			const effectiveBillboards = getEffectiveBillboards(record);
 			if (Object.keys(effectiveBillboards).length === 0) continue;
+
+			// Build the per-anchor flat flags map.
+			const effectiveFlat = getEffectiveBillboardsFlat(record);
 
 			// Compute hex boundary (centroid + vertices) once per tile.
 			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
@@ -2575,8 +2615,9 @@ export default function RecordScreen() {
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
 
 				// Determine billboard placement position based on anchor color.
-				// Matches debug point positions: purple=center, green=vertex[0],
-				// red/orange/yellow/blue/white/black = midpoints 0–5.
+				// purple=center, green=vertex[0],
+				// red/orange/yellow/blue/white/black = midpoints between center and each vertex,
+				// edgeNE/edgeE/edgeSE/edgeSW/edgeW/edgeNW = hex boundary edge midpoints.
 				let lng = centerLng;
 				let lat = centerLat;
 				if (anchorColor === BillboardAnchorColor.Green && n > 0) {
@@ -2585,12 +2626,22 @@ export default function RecordScreen() {
 					lng = vLng;
 					lat = vLat;
 				} else if (anchorColor !== BillboardAnchorColor.Purple) {
-					// Midpoint between center and a corner vertex.
-					const midIdx = MIDPOINT_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
-					if (midIdx >= 0 && midIdx < n) {
-						const [vLng, vLat] = boundary[midIdx] as [number, number];
-						lng = (centerLng + vLng) / 2;
-						lat = (centerLat + vLat) / 2;
+					// Check if it's an edge midpoint anchor.
+					const edgeIdx = EDGE_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
+					if (edgeIdx >= 0 && edgeIdx < n) {
+						// Midpoint of hex boundary edge i (between vertex[i] and vertex[(i+1)%n]).
+						const [lng1, lat1] = boundary[edgeIdx] as [number, number];
+						const [lng2, lat2] = boundary[(edgeIdx + 1) % n] as [number, number];
+						lng = (lng1 + lng2) / 2;
+						lat = (lat1 + lat2) / 2;
+					} else {
+						// Midpoint between center and a corner vertex.
+						const midIdx = MIDPOINT_ANCHOR_COLORS.indexOf(anchorColor as BillboardAnchorColor);
+						if (midIdx >= 0 && midIdx < n) {
+							const [vLng, vLat] = boundary[midIdx] as [number, number];
+							lng = (centerLng + vLng) / 2;
+							lat = (centerLat + vLat) / 2;
+						}
 					}
 				}
 
@@ -2604,13 +2655,16 @@ export default function RecordScreen() {
 				// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
 				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
 
+				// Per-billboard flat flag: true = render flat on map, false = face camera.
+				const flat = effectiveFlat[anchorColor] === true;
+
 				if (!billboardImages[iconKey]) {
 					billboardImages[iconKey] = { url };
 				}
 				billboardFeatures.push({
 					type: 'Feature',
 					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat },
 				});
 			}
 		}

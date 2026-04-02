@@ -9,6 +9,9 @@ import { File, Paths } from 'expo-file-system';
  * - Green: vertex[0] (topmost corner in pointy-top orientation)
  * - Red, Orange, Yellow, Blue, White, Black: midpoints between the center
  *   and each of the six vertices (cycling clockwise from vertex[0])
+ * - EdgeNE, EdgeE, EdgeSE, EdgeSW, EdgeW, EdgeNW: midpoints of the six hex
+ *   boundary edges (between vertex[i] and vertex[i+1]), used for path objects
+ *   pointing toward neighboring tiles.
  */
 export enum BillboardAnchorColor {
 	Purple = 'purple',
@@ -19,6 +22,18 @@ export enum BillboardAnchorColor {
 	Blue = 'blue',
 	White = 'white',
 	Black = 'black',
+	/** Midpoint of the edge between vertex[0] and vertex[1] (upper-right edge) */
+	EdgeNE = 'edgeNE',
+	/** Midpoint of the edge between vertex[1] and vertex[2] (right edge) */
+	EdgeE = 'edgeE',
+	/** Midpoint of the edge between vertex[2] and vertex[3] (lower-right edge) */
+	EdgeSE = 'edgeSE',
+	/** Midpoint of the edge between vertex[3] and vertex[4] (lower-left edge) */
+	EdgeSW = 'edgeSW',
+	/** Midpoint of the edge between vertex[4] and vertex[5] (left edge) */
+	EdgeW = 'edgeW',
+	/** Midpoint of the edge between vertex[5] and vertex[0] (upper-left edge) */
+	EdgeNW = 'edgeNW',
 }
 
 /**
@@ -96,6 +111,13 @@ export type HexTileRecord = {
 	 * `billboardAnchorColor` fields, allowing multiple billboards on one tile.
 	 */
 	billboards?: Record<string, string | null>;
+	/**
+	 * Per-anchor flat-rendering flag. Keys are BillboardAnchorColor values.
+	 * When `true` for an anchor, the billboard at that position is rendered flat
+	 * on the map surface (pitch-alignment = 'map') instead of facing the camera
+	 * (pitch-alignment = 'viewport').  Defaults to false when absent.
+	 */
+	billboardsFlat?: Record<string, boolean>;
 	/**
 	 * Back-references to the activities that contributed to this tile's
 	 * visit/enclosure counts.  There is at most one entry per activity.

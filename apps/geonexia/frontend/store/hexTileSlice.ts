@@ -169,13 +169,32 @@ const hexTileSlice = createSlice({
 		},
 
 		/**
+		 * Set or clear the flat-rendering flag for a billboard at a specific anchor
+		 * position on a hex tile.  When `flat` is true the billboard is rendered
+		 * lying flat on the map surface; when false (or absent) it faces the camera.
+		 */
+		setBillboardFlatAtAnchor(
+			state,
+			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorColor; flat: boolean }>,
+		) {
+			const { h3Index, anchorColor, flat } = action.payload;
+			const rec = getOrCreate(state.records, h3Index);
+			if (!rec.billboardsFlat) rec.billboardsFlat = {};
+			if (!flat) {
+				delete rec.billboardsFlat[anchorColor];
+			} else {
+				rec.billboardsFlat[anchorColor] = true;
+			}
+		},
+
+		/**
 		 * Apply map customizations (tileImage, billboards) to the tile records,
 		 * merging the provided data into the existing state. Useful for importing
 		 * map settings without overwriting activity tracking data.
 		 */
 		applyMapCustomizations(
 			state,
-			action: PayloadAction<Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null> }>>,
+			action: PayloadAction<Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null>; billboardsFlat?: Record<string, boolean> }>>,
 		) {
 			for (const [h3Index, customization] of Object.entries(action.payload)) {
 				const rec = getOrCreate(state.records, h3Index);
@@ -183,6 +202,7 @@ const hexTileSlice = createSlice({
 				if (customization.billboard !== undefined) rec.billboard = customization.billboard;
 				if (customization.billboardAnchorColor !== undefined) rec.billboardAnchorColor = customization.billboardAnchorColor;
 				if (customization.billboards !== undefined) rec.billboards = customization.billboards;
+				if (customization.billboardsFlat !== undefined) rec.billboardsFlat = customization.billboardsFlat;
 			}
 		},
 
@@ -231,5 +251,5 @@ const hexTileSlice = createSlice({
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
 export default hexTileSlice.reducer;

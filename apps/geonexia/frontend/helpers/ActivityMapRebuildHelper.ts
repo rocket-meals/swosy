@@ -15,17 +15,10 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
+import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
 import { BillboardAnchorColor, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
-import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
-import {
-	OpenMapTilesLayerId,
-	LandcoverClass,
-	LandcoverSubclass,
-	ParkClass,
-} from './OpenMapTilesSchema';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -41,16 +34,74 @@ const BBOX_PADDING_DEG = 0.001;
 const MAX_GRID_DISK_RADIUS = 30;
 
 /**
- * Billboard key for the treePineSmall sprite (index 51 in OBJECT_SPRITES).
- * Placed at the purple anchor (hex centroid) on forest tiles that are enclosed.
+ * Billboard key for the treePineLarge sprite (index 50 in OBJECT_SPRITES).
+ * Placed at the purple anchor (hex centroid) on all enclosed tiles.
  */
-const BILLBOARD_PINE_TREE_SMALL = 'objects:51';
+const BILLBOARD_PINE_TREE_LARGE = 'objects:50';
+
+/**
+ * Billboard key for the pathRounded sprite (index 58 in OBJECT_SPRITES).
+ * Placed flat at edge-midpoint anchors on walked tiles toward walked neighbors.
+ */
+const BILLBOARD_PATH_ROUNDED = 'objects:58';
 
 /** Terrain image key applied to tiles that have been visited (walked on). */
 const TILE_IMAGE_DIRT = 'Dirt/dirt';
 
 /** Terrain image key applied to tiles that are enclosed but not walked on. */
 const TILE_IMAGE_GRASS = 'Grass/grass';
+
+// ─── Edge anchor helpers ──────────────────────────────────────────────────────
+
+/**
+ * Maps boundary edge index (0–5) to the corresponding BillboardAnchorColor for
+ * edge-midpoint positions. Edge 0 is between vertex[0] and vertex[1], etc.
+ */
+const EDGE_INDEX_TO_ANCHOR: BillboardAnchorColor[] = [
+	BillboardAnchorColor.EdgeNE, // edge 0: vertex[0]→vertex[1]
+	BillboardAnchorColor.EdgeE,  // edge 1: vertex[1]→vertex[2]
+	BillboardAnchorColor.EdgeSE, // edge 2: vertex[2]→vertex[3]
+	BillboardAnchorColor.EdgeSW, // edge 3: vertex[3]→vertex[4]
+	BillboardAnchorColor.EdgeW,  // edge 4: vertex[4]→vertex[5]
+	BillboardAnchorColor.EdgeNW, // edge 5: vertex[5]→vertex[0]
+];
+
+/**
+ * Find which edge index (0–5) of `hexId` faces toward `neighborId`.
+ * Uses the hex boundary vertices: the edge whose midpoint is closest to the
+ * neighbor's centroid is the shared edge.
+ * Returns -1 when the boundary cannot be computed or H3 is unavailable.
+ */
+function getEdgeIndexTowardNeighbor(hexId: string, neighborId: string): number {
+	try {
+		// cellToBoundary with geoJsonOrder=true returns [lng,lat] pairs and closes
+		// the ring (first vertex repeated at end). We have n unique vertices.
+		const boundary = cellToBoundary(hexId, true) as Array<[number, number]>;
+		const n = boundary.length - 1; // exclude the repeated closing vertex
+		if (n < 6) return -1;
+
+		const [nLat, nLng] = cellToLatLng(neighborId);
+
+		let bestIdx = 0;
+		let bestDist = Infinity;
+		for (let i = 0; i < n; i++) {
+			const [lng1, lat1] = boundary[i];
+			const [lng2, lat2] = boundary[(i + 1) % n];
+			const midLng = (lng1 + lng2) / 2;
+			const midLat = (lat1 + lat2) / 2;
+			const dLat = midLat - nLat;
+			const dLng = midLng - nLng;
+			const dist = dLat * dLat + dLng * dLng;
+			if (dist < bestDist) {
+				bestDist = dist;
+				bestIdx = i;
+			}
+		}
+		return bestIdx;
+	} catch {
+		return -1;
+	}
+}
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
@@ -169,19 +220,6 @@ function getOrCreateRecord(
 	return records[h3Index];
 }
 
-/**
- * Returns true when any of the map features indicate that the tile contains
- * a forested area (landcover wood/forest or park forest class).
- */
-function isForestTile(features: MapFeatureInfo[]): boolean {
-	return features.some(
-		(f) =>
-			(f.layerId === OpenMapTilesLayerId.LANDCOVER &&
-				(f.class === LandcoverClass.WOOD || f.subclass === LandcoverSubclass.FOREST)) ||
-			(f.layerId === OpenMapTilesLayerId.PARK && f.class === ParkClass.FOREST),
-	);
-}
-
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -247,23 +285,23 @@ export function computeActivityData(
  * It aggregates per-tile visit/enclosure counts, stores back-references for
  * fast future lookups, and applies automatic terrain customisations:
  *
- *  - **Visited tiles** (visitCount > 0) → tileImage = "Dirt/dirt"
+ *  - **Visited tiles** (visitCount > 0)
+ *      → tileImage = "Dirt/dirt"
+ *      → pathRounded billboard (flat) at each edge midpoint that faces a walked neighbor
  *  - **Enclosed-only tiles** (enclosedCount > 0, visitCount = 0)
  *      → tileImage = "Grass/grass"
- *      → if the tile is a forest (according to `hexTileFeatureCache`)
- *           → billboard at purple anchor = "objects:51" (treePineSmall)
+ *      → pineTreeLarge billboard at purple anchor (hex centroid)
  *
  * @param activities         All saved activities to process.
- * @param hexTileFeatureCache  Cache of map features keyed by H3 index.
- *                             Used for forest detection.  Pass an empty object
- *                             if the cache is not available.
+ * @param hexTileFeatureCache  Kept for API backward-compatibility; no longer used.
  * @returns `{ records, walkedEdges }` – fresh state ready to be loaded into
  *          the Redux hex-tile slice via `loadPersistedState` /
  *          `loadWalkedEdgesState`.
  */
 export function rebuildMapFromActivities(
 	activities: SavedActivity[],
-	hexTileFeatureCache: HexTileFeatureCache = {},
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	_hexTileFeatureCache: HexTileFeatureCache = {},
 ): { records: Record<string, HexTileRecord>; walkedEdges: string[] } {
 	const records: Record<string, HexTileRecord> = {};
 	const edgeSet = new Set<string>();
@@ -372,16 +410,30 @@ export function rebuildMapFromActivities(
 		if (rec.visitCount > 0) {
 			// Visited tile → dirt terrain
 			rec.tileImage = TILE_IMAGE_DIRT;
+
+			// Place a path object (flat) at each edge midpoint that faces a walked
+			// neighbor tile, indicating the route direction.
+			if (isH3Available()) {
+				// Get the 6 immediate neighbors of this tile.
+				const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+				for (const neighbor of neighbors) {
+					const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
+					if (!edgeSet.has(edgeStr)) continue;
+					const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
+					if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
+					const anchorColor = EDGE_INDEX_TO_ANCHOR[edgeIdx];
+					if (!rec.billboards) rec.billboards = {};
+					rec.billboards[anchorColor] = BILLBOARD_PATH_ROUNDED;
+					if (!rec.billboardsFlat) rec.billboardsFlat = {};
+					rec.billboardsFlat[anchorColor] = true;
+				}
+			}
 		} else if (rec.enclosedCount > 0) {
-			// Enclosed but not visited → grass terrain
+			// Enclosed but not visited → grass terrain + pineTreeLarge at center.
 			rec.tileImage = TILE_IMAGE_GRASS;
 
-			// Forest tiles additionally get a pine tree billboard at the centroid.
-			const features = hexTileFeatureCache[hexId] ?? [];
-			if (isForestTile(features)) {
-				if (!rec.billboards) rec.billboards = {};
-				rec.billboards[BillboardAnchorColor.Purple] = BILLBOARD_PINE_TREE_SMALL;
-			}
+			if (!rec.billboards) rec.billboards = {};
+			rec.billboards[BillboardAnchorColor.Purple] = BILLBOARD_PINE_TREE_LARGE;
 		}
 	}
 
