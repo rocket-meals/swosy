@@ -17,14 +17,12 @@ import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 	const { theme } = useTheme();
         const { translate } = useLanguage();
-        const { drawerPosition, language } = useAppSelector((state) => state.settings);
+        const { drawerPosition } = useAppSelector((state) => state.settings);
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
         const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
 
         const showNotificationDot = hasUnreadChats || hasActiveCollectibleEvent;
-        const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
-        const isRTL = resolvedDrawerPosition === 'right';
 
         return (
 		<View
@@ -38,7 +36,7 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
 				<View
 					style={[
 						styles.col1,
-						isRTL
+						drawerPosition === 'right'
 							? {
 									justifyContent: 'flex-start',
 									flexDirection: 'row-reverse',

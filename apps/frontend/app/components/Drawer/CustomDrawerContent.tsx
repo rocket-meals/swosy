@@ -59,19 +59,18 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 	const toast = useToast();
 	const dispatch = useDispatch();
 	const router = useRouter();
-	const wikisHelper = new WikisHelper();
-	const activeIndex = state.index;
-	const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
-	const { chatsDict } = useAppSelector((state) => state.chats);
-	const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
-	const { serverInfo, primaryColor: projectColor, language, drawerPosition, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
-	const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
-	const { hasUnreadChats } = useChatUnreadStatus();
-	const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
-	const { openConfirmLogoutModal } = useConfirmLogoutModal();
-	const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
-	const { theme } = useTheme();
-	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
+        const wikisHelper = new WikisHelper();
+        const activeIndex = state.index;
+        const { user, isManagement, isDevMode } = useAppSelector((state) => state.authReducer);
+        const { chatsDict } = useAppSelector((state) => state.chats);
+        const chats = useMemo(() => Object.values(chatsDict || {}) as DatabaseTypes.Chats[], [chatsDict]);
+        const { serverInfo, primaryColor: projectColor, language, drawerPosition, appSettings, wikisDict, selectedTheme: mode } = useAppSelector((state) => state.settings);
+        const wikis = useMemo(() => Object.values(wikisDict || {}) as DatabaseTypes.Wikis[], [wikisDict]);
+        const { hasUnreadChats } = useChatUnreadStatus();
+        const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
+        const { openConfirmLogoutModal } = useConfirmLogoutModal();
+        const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
+        const { theme } = useTheme();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -366,7 +365,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 			activeKey={activeKey}
 			primaryColor={projectColor}
 			footerContent={footerContent}
-			reverseItemLayout={language === 'ar' && resolvedDrawerPosition === 'right'}
+			reverseItemLayout={language === 'ar' && drawerPosition === 'right'}
 		/>
 	);
 };

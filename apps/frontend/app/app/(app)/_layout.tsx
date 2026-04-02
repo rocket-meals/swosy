@@ -53,7 +53,7 @@ import { loadChatReadStatus } from '@/helper/chatReadStatus';
 
 export default function Layout() {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { deviceMock } = useGlobalSearchParams();
 	const kioskMode = useKioskMode();
 	const dispatch = useDispatch();
@@ -84,7 +84,7 @@ export default function Layout() {
 	const organizationsHelper = useMemo(() => new OrganizationsHelper(), []);
 	const { hashValue } = useAppSelector((state) => state.popup_events_hash);
 	const { lastUpdatedMap } = useAppSelector((state) => state.lastUpdated);
-	const { drawerPosition, language } = useAppSelector((state) => state.settings);
+	const { drawerPosition } = useAppSelector((state) => state.settings);
 	const { loggedIn, user } = useAppSelector((state) => state.authReducer);
 	const selectedCanteen = useSelectedCanteen();
 
