@@ -276,11 +276,14 @@ export function checkAndApplyForest(
 	rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_PINE_TREE_LARGE;
 
 	// Additional tree at a MIDDLE ring position derived from the hex ID.
-	// Parse the last character of the hex ID as a hex digit (0–15), then map
-	// it to one of the 12 MIDDLE positions via modulo 12.
-	const lastChar = hexId[hexId.length - 1] ?? '0';
-	const hexDigit = parseInt(lastChar, 16);
-	const positionIndex = hexDigit % MIDDLE_RING_BY_DEGREE.length;
+	// Hash all characters of the hex ID into a 32-bit unsigned integer, then
+	// map to one of the 12 MIDDLE positions via modulo 12. Using the full ID
+	// avoids the uneven distribution caused by only reading the last character.
+	let hash = 0;
+	for (let i = 0; i < hexId.length; i++) {
+		hash = (hash * 31 + hexId.charCodeAt(i)) >>> 0;
+	}
+	const positionIndex = hash % MIDDLE_RING_BY_DEGREE.length;
 	rec.billboards[MIDDLE_RING_BY_DEGREE[positionIndex]] = BILLBOARD_PINE_TREE_SMALL;
 }
 
