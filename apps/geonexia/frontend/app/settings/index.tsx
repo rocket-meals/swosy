@@ -292,7 +292,7 @@ export default function SettingsScreen() {
 				<SettingsList
 					iconBgColor={MAP_COLOR}
 					leftIcon={<MaterialCommunityIcons name="hexagon-outline" size={22} color="#ffffff" />}
-					label="Hex-Feld Transparenz"
+					label="Hex-Feld Deckkraft"
 					value={`${Math.round(hexTileOpacity * 100)}%`}
 					rightElement={
 						<View style={styles.stepper}>
@@ -309,7 +309,7 @@ export default function SettingsScreen() {
 				<SettingsList
 					iconBgColor={MAP_COLOR}
 					leftIcon={<MaterialCommunityIcons name="image-outline" size={22} color="#ffffff" />}
-					label="Objekte Transparenz"
+					label="Objekte Deckkraft"
 					value={`${Math.round(objectOpacity * 100)}%`}
 					rightElement={
 						<View style={styles.stepper}>
