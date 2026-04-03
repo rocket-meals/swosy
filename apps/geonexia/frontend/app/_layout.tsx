@@ -245,6 +245,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/onboarding/index"
+				options={{
+					title: 'Onboarding',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="settings/index"
 				options={{
 					title: 'Settings',
