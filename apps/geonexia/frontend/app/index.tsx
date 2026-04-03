@@ -38,7 +38,7 @@ import { mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/H
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, HexTileCustomizationPayload } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
@@ -3819,7 +3819,7 @@ export default function RecordScreen() {
 			Alert.alert('Import Failed', 'The text is not valid JSON.');
 			return;
 		}
-		const data = parsed as { version?: number; hexTiles?: Record<string, { tileImage?: string | null; billboards?: Record<string, string | null>; billboardsTexture?: Record<string, string | null> }> };
+		const data = parsed as { version?: number; hexTiles?: Record<string, HexTileCustomizationPayload> };
 		if (!data.hexTiles || typeof data.hexTiles !== 'object') {
 			Alert.alert('Import Failed', 'No "hexTiles" object found in the data.');
 			return;
