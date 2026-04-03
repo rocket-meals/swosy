@@ -30,7 +30,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 1;
+export const WORLD_BUILDING_ID = 2;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -58,10 +58,15 @@ export const BILLBOARD_PINE_TREE_SMALL = 'objects:51';
 /**
  * Billboard key for the pathRounded sprite (index 58 in OBJECT_SPRITES).
  * Placed flat at edge-midpoint anchors on walked tiles toward walked neighbors.
+ * @deprecated Path objects are no longer placed during world building.
  */
 const BILLBOARD_PATH_ROUNDED = 'objects:58';
 
-/** Terrain image key applied to tiles that have been visited (walked on). */
+/**
+ * Billboard key for the castle2 sprite (index 12 in OBJECT_SPRITES).
+ * Placed at CENTER on the player's home hex tile.
+ */
+const BILLBOARD_CASTLE2 = 'objects:12';
 const TILE_IMAGE_DIRT = 'Dirt/dirt';
 
 /** Terrain image key applied to tiles that are enclosed but not walked on. */
@@ -393,6 +398,9 @@ export function computeActivityData(
  *                             (landcover class=wood / subclass=forest, or
  *                             park class=forest).  Tiles without cached
  *                             features receive only the grass terrain image.
+ * @param homeHexTile        Optional H3 cell index of the player's home tile.
+ *                           When provided, a castle2 billboard is placed at
+ *                           the CENTER of that tile after the rebuild.
  * @returns `{ records, walkedEdges }` – fresh state ready to be loaded into
  *          the Redux hex-tile slice via `loadPersistedState` /
  *          `loadWalkedEdgesState`.
@@ -400,6 +408,7 @@ export function computeActivityData(
 export function rebuildMapFromActivities(
 	activities: SavedActivity[],
 	hexTileFeatureCache: HexTileFeatureCache = {},
+	homeHexTile?: string | null,
 ): { records: Record<string, HexTileRecord>; walkedEdges: string[] } {
 	const records: Record<string, HexTileRecord> = {};
 	const edgeSet = new Set<string>();
@@ -508,30 +517,19 @@ export function rebuildMapFromActivities(
 		if (rec.visitCount > 0) {
 			// Visited tile → dirt terrain
 			rec.tileImage = TILE_IMAGE_DIRT;
-
-			// Place a path object (flat) at each edge midpoint that faces a walked
-			// neighbor tile, indicating the route direction.
-			if (isH3Available()) {
-				// Get the 6 immediate neighbors of this tile.
-				const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
-				for (const neighbor of neighbors) {
-					const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
-					if (!edgeSet.has(edgeStr)) continue;
-					const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
-					if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
-					const anchorColor = EDGE_INDEX_TO_ANCHOR[edgeIdx];
-					if (!rec.billboards) rec.billboards = {};
-					rec.billboards[anchorColor] = BILLBOARD_PATH_ROUNDED;
-					if (!rec.billboardsFlat) rec.billboardsFlat = {};
-					rec.billboardsFlat[anchorColor] = true;
-				}
-			}
 		} else if (rec.enclosedCount > 0) {
 			// Enclosed but not visited → grass terrain; forest trees only when
 			// the feature cache confirms a forest / wooded area on this tile.
 			rec.tileImage = TILE_IMAGE_GRASS;
 			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
 		}
+	}
+
+	// Apply home tile castle2 billboard if a home tile is set.
+	if (homeHexTile) {
+		const homeRec = getOrCreateRecord(records, homeHexTile);
+		if (!homeRec.billboards) homeRec.billboards = {};
+		homeRec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_CASTLE2;
 	}
 
 	return { records, walkedEdges: Array.from(edgeSet) };
