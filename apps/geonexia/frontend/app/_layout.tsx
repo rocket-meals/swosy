@@ -19,6 +19,7 @@ import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIn
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
+import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
@@ -27,6 +28,7 @@ import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
+import { loadPlayerInformation } from '../helpers/PlayerInformationStorage';
 import { WORLD_BUILDING_ID, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
 import { loadActivities } from '../helpers/ActivityStorage';
 import { loadHexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
@@ -337,11 +339,14 @@ export default function Layout() {
 	useEffect(() => {
 		(async () => {
 			const isDevMode = await loadDevModeFlag();
-			const [records, walkedEdges, storedBuildingId] = await Promise.all([
+			const [records, walkedEdges, storedBuildingId, playerInfo] = await Promise.all([
 				isDevMode ? loadDevHexTileState() : loadHexTileState(),
 				isDevMode ? loadDevWalkedEdges() : loadWalkedEdges(),
 				isDevMode ? loadDevWorldBuildingId() : loadWorldBuildingId(),
+				loadPlayerInformation(),
 			]);
+
+			store.dispatch(loadPersistedPlayerInformation(playerInfo));
 
 			if (storedBuildingId !== WORLD_BUILDING_ID && isH3Available()) {
 				try {
@@ -349,7 +354,7 @@ export default function Layout() {
 					if (allActivities.length > 0) {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
-						const { records: rebuiltRecords, walkedEdges: rebuiltEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache);
+						const { records: rebuiltRecords, walkedEdges: rebuiltEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
 						if (isDevMode) {
 							saveDevHexTileState(rebuiltRecords);
 							saveDevWalkedEdges(rebuiltEdges);

@@ -8,19 +8,29 @@ import {
 } from 'repo-depkit-common-ui';
 import { useRouter } from 'expo-router';
 import { SavedRoute, loadRoutes, deleteAllRoutes } from '../../helpers/RouteStorage';
+import { loadActivities } from '../../helpers/ActivityStorage';
 import SettingsListRoute from '../../components/SettingsListRoute';
 
 export default function RoutesScreen() {
 	const { theme } = useTheme();
 	const router = useRouter();
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
+	const [activityCountByRouteId, setActivityCountByRouteId] = useState<Record<string, number>>({});
 
 	const refreshRoutes = useCallback(async () => {
 		try {
-			const loaded = await loadRoutes();
+			const [loaded, activities] = await Promise.all([loadRoutes(), loadActivities()]);
 			setRoutes(loaded);
+			const countMap: Record<string, number> = {};
+			for (const activity of activities) {
+				if (activity.routeId) {
+					countMap[activity.routeId] = (countMap[activity.routeId] ?? 0) + 1;
+				}
+			}
+			setActivityCountByRouteId(countMap);
 		} catch {
 			setRoutes([]);
+			setActivityCountByRouteId({});
 		}
 	}, []);
 
@@ -70,6 +80,7 @@ export default function RoutesScreen() {
 					<SettingsListRoute
 						key={route.id}
 						route={route}
+						activityCount={activityCountByRouteId[route.id] ?? 0}
 						groupPosition={groupPosition}
 						showSeparator={idx < routes.length - 1}
 						onPress={() => handleSelectRoute(route)}

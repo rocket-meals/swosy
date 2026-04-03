@@ -7,6 +7,7 @@ import gpsIntervalReducer from './gpsIntervalSlice';
 import ttsReducer from './ttsSlice';
 import speechSettingsReducer from './speechSettingsSlice';
 import displaySettingsReducer from './displaySettingsSlice';
+import playerInformationReducer from './playerInformationSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
@@ -15,6 +16,7 @@ import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { saveDisplaySettings } from '../helpers/DisplaySettingsStorage';
+import { PlayerInformation, savePlayerInformation } from '../helpers/PlayerInformationStorage';
 import type { SpeechSettingsState } from './speechSettingsSlice';
 import type { DisplaySettingsState } from './displaySettingsSlice';
 import type { SportType } from './sportTypeSlice';
@@ -33,6 +35,7 @@ export const store = configureStore({
 		tts: ttsReducer,
 		speechSettings: speechSettingsReducer,
 		displaySettings: displaySettingsReducer,
+		playerInformation: playerInformationReducer,
 	},
 });
 
@@ -66,6 +69,9 @@ let _lastSavedSpeechSettings: SpeechSettingsState | null = null;
 // Auto-persist display settings to disk whenever they change.
 let _displaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedDisplaySettings: DisplaySettingsState | null = null;
+
+// Auto-persist player information to disk whenever it changes.
+let _lastSavedPlayerInformation: PlayerInformation | null = null;
 
 store.subscribe(() => {
 	const state = store.getState();
@@ -153,6 +159,12 @@ store.subscribe(() => {
 			saveDisplaySettings(displaySettings);
 			_displaySettingsTimer = null;
 		}, 500);
+	}
+
+	const { homeHexTile } = state.playerInformation;
+	if (state.playerInformation !== _lastSavedPlayerInformation) {
+		_lastSavedPlayerInformation = state.playerInformation;
+		savePlayerInformation({ homeHexTile });
 	}
 });
 
