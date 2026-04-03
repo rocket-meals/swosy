@@ -4649,8 +4649,13 @@ export default function RecordScreen() {
 									!isSettingHome && homeHexTile !== null && { backgroundColor: STATUS_SUCCESS_COLOR + '22' },
 								]}
 								onPress={() => {
-									isSettingHomeRef.current = !isSettingHome;
-									setIsSettingHome(!isSettingHome);
+									if (!isSettingHome && homeHexTile !== null) {
+										const [lat, lng] = cellToLatLng(homeHexTile);
+										centerMapOnPosition({ lat, lng });
+									} else {
+										isSettingHomeRef.current = !isSettingHome;
+										setIsSettingHome(!isSettingHome);
+									}
 								}}
 								activeOpacity={0.8}
 							>
