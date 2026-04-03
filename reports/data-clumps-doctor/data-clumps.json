@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-03T16:06:07.156Z",
+  "report_timestamp": "2026-04-03T18:41:23.605Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.6107438016528925,
-          "amountSavedValuesForKeys": 3898,
+          "average": 1.6129698471705907,
+          "amountSavedValuesForKeys": 3905,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.6255212677231026,
-          "amountSavedValuesForKeys": 3898,
+          "average": 1.6277615673197166,
+          "amountSavedValuesForKeys": 3905,
           "amountKeys": 25
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4061,
+        "ast_generation_time_ms": 4127,
         "detection_time_ms": 77,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 312.09,
-          "os_memory_free": 14939541504,
-          "os_memory_total": 16766439424,
+          "os_uptime": 112.55,
+          "os_memory_free": 14915633152,
+          "os_memory_total": 16766443520,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 44,
-    "amount_files_with_data_clumps": 34,
+    "amount_classes_or_interfaces_with_data_clumps": 46,
+    "amount_files_with_data_clumps": 36,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 62,
+    "fields_to_fields_data_clump": 64,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 70
+    "amount_data_clumps": 72
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "a85e1fe8fd3f2727e97f3db553319078d7a2a1d0",
-    "project_commit_hash": "a85e1fe8fd3f2727e97f3db553319078d7a2a1d0",
+    "project_version": "920a0d4332c4e7203a307019b3eedb9ec4b8a90a",
+    "project_commit_hash": "920a0d4332c4e7203a307019b3eedb9ec4b8a90a",
     "project_tag": null,
-    "project_commit_date": "1775232270",
+    "project_commit_date": "1775241586",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 487,
-    "number_of_classes_or_interfaces": 991,
+    "number_of_classes_or_interfaces": 992,
     "number_of_methods": 1327,
-    "number_of_data_fields": 3898,
+    "number_of_data_fields": 3905,
     "number_of_method_parameters": 1467
   },
   "detector": {
@@ -2497,9 +2497,9 @@
             }
           },
           "position": {
-            "startLine": 1844,
+            "startLine": 1858,
             "startColumn": 2,
-            "endLine": 1844,
+            "endLine": 1858,
             "endColumn": 25
           }
         },
@@ -2522,9 +2522,9 @@
             }
           },
           "position": {
-            "startLine": 1845,
+            "startLine": 1859,
             "startColumn": 2,
-            "endLine": 1845,
+            "endLine": 1859,
             "endColumn": 22
           }
         },
@@ -2547,9 +2547,9 @@
             }
           },
           "position": {
-            "startLine": 1846,
+            "startLine": 1860,
             "startColumn": 2,
-            "endLine": 1846,
+            "endLine": 1860,
             "endColumn": 23
           }
         },
@@ -2572,9 +2572,9 @@
             }
           },
           "position": {
-            "startLine": 1847,
+            "startLine": 1861,
             "startColumn": 2,
-            "endLine": 1847,
+            "endLine": 1861,
             "endColumn": 26
           }
         },
@@ -2597,9 +2597,9 @@
             }
           },
           "position": {
-            "startLine": 1848,
+            "startLine": 1862,
             "startColumn": 2,
-            "endLine": 1848,
+            "endLine": 1862,
             "endColumn": 25
           }
         },
@@ -2622,9 +2622,9 @@
             }
           },
           "position": {
-            "startLine": 1849,
+            "startLine": 1863,
             "startColumn": 2,
-            "endLine": 1849,
+            "endLine": 1863,
             "endColumn": 26
           }
         },
@@ -2647,9 +2647,9 @@
             }
           },
           "position": {
-            "startLine": 1850,
+            "startLine": 1864,
             "startColumn": 2,
-            "endLine": 1850,
+            "endLine": 1864,
             "endColumn": 26
           }
         },
@@ -2672,9 +2672,9 @@
             }
           },
           "position": {
-            "startLine": 1851,
+            "startLine": 1865,
             "startColumn": 2,
-            "endLine": 1851,
+            "endLine": 1865,
             "endColumn": 25
           }
         },
@@ -2697,9 +2697,9 @@
             }
           },
           "position": {
-            "startLine": 1852,
+            "startLine": 1866,
             "startColumn": 2,
-            "endLine": 1852,
+            "endLine": 1866,
             "endColumn": 25
           }
         },
@@ -2722,9 +2722,9 @@
             }
           },
           "position": {
-            "startLine": 1853,
+            "startLine": 1867,
             "startColumn": 2,
-            "endLine": 1853,
+            "endLine": 1867,
             "endColumn": 25
           }
         }
@@ -2769,9 +2769,9 @@
             }
           },
           "position": {
-            "startLine": 1845,
+            "startLine": 1859,
             "startColumn": 2,
-            "endLine": 1845,
+            "endLine": 1859,
             "endColumn": 22
           }
         },
@@ -2794,9 +2794,9 @@
             }
           },
           "position": {
-            "startLine": 1846,
+            "startLine": 1860,
             "startColumn": 2,
-            "endLine": 1846,
+            "endLine": 1860,
             "endColumn": 23
           }
         },
@@ -2819,9 +2819,9 @@
             }
           },
           "position": {
-            "startLine": 1847,
+            "startLine": 1861,
             "startColumn": 2,
-            "endLine": 1847,
+            "endLine": 1861,
             "endColumn": 26
           }
         },
@@ -2844,9 +2844,9 @@
             }
           },
           "position": {
-            "startLine": 1848,
+            "startLine": 1862,
             "startColumn": 2,
-            "endLine": 1848,
+            "endLine": 1862,
             "endColumn": 25
           }
         },
@@ -2869,9 +2869,9 @@
             }
           },
           "position": {
-            "startLine": 1849,
+            "startLine": 1863,
             "startColumn": 2,
-            "endLine": 1849,
+            "endLine": 1863,
             "endColumn": 26
           }
         },
@@ -2894,9 +2894,9 @@
             }
           },
           "position": {
-            "startLine": 1850,
+            "startLine": 1864,
             "startColumn": 2,
-            "endLine": 1850,
+            "endLine": 1864,
             "endColumn": 26
           }
         },
@@ -2919,9 +2919,9 @@
             }
           },
           "position": {
-            "startLine": 1851,
+            "startLine": 1865,
             "startColumn": 2,
-            "endLine": 1851,
+            "endLine": 1865,
             "endColumn": 25
           }
         },
@@ -2944,9 +2944,9 @@
             }
           },
           "position": {
-            "startLine": 1852,
+            "startLine": 1866,
             "startColumn": 2,
-            "endLine": 1852,
+            "endLine": 1866,
             "endColumn": 25
           }
         },
@@ -2969,9 +2969,9 @@
             }
           },
           "position": {
-            "startLine": 1853,
+            "startLine": 1867,
             "startColumn": 2,
-            "endLine": 1853,
+            "endLine": 1867,
             "endColumn": 25
           }
         }
@@ -5152,6 +5152,178 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTileStorage.ts-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTileStorage.ts-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/HexTileStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord",
+      "from_class_or_interface_name": "HexTileRecord",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/store/hexTileSlice.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload",
+      "to_class_or_interface_name": "HexTileCustomizationPayload",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/tileImage": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/tileImage",
+          "name": "tileImage",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/tileImage",
+            "name": "tileImage",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 11,
+              "startColumn": 2,
+              "endLine": 11,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 129,
+            "startColumn": 2,
+            "endLine": 129,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboard": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboard",
+          "name": "billboard",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboard",
+            "name": "billboard",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 13,
+              "startColumn": 2,
+              "endLine": 13,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 135,
+            "startColumn": 2,
+            "endLine": 135,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardAnchorColor": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardAnchorColor",
+          "name": "billboardAnchorColor",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardAnchorColor",
+            "name": "billboardAnchorColor",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 141,
+            "startColumn": 2,
+            "endLine": 141,
+            "endColumn": 39
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboards": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboards",
+          "name": "billboards",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboards",
+            "name": "billboards",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 16,
+              "startColumn": 2,
+              "endLine": 16,
+              "endColumn": 45
+            }
+          },
+          "position": {
+            "startLine": 148,
+            "startColumn": 2,
+            "endLine": 148,
+            "endColumn": 45
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsFlat": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsFlat",
+          "name": "billboardsFlat",
+          "type": "Record<string, boolean>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsFlat",
+            "name": "billboardsFlat",
+            "type": "Record<string, boolean>",
+            "modifiers": [],
+            "position": {
+              "startLine": 18,
+              "startColumn": 2,
+              "endLine": 18,
+              "endColumn": 43
+            }
+          },
+          "position": {
+            "startLine": 156,
+            "startColumn": 2,
+            "endLine": 156,
+            "endColumn": 43
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsTexture": {
+          "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsTexture",
+          "name": "billboardsTexture",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsTexture",
+            "name": "billboardsTexture",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 19,
+              "startColumn": 2,
+              "endLine": 19,
+              "endColumn": 52
+            }
+          },
+          "position": {
+            "startLine": 165,
+            "startColumn": 2,
+            "endLine": 165,
+            "endColumn": 52
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-startedAtroutePointshexTilesOrderedh3ResolutionsportTyperouteId": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts-apps/geonexia/frontend/helpers/InterruptedRecordingStorage.ts/interface/InterruptedRecordingSnapshot-apps/geonexia/frontend/helpers/ActivityStorage.ts/interface/SavedActivity-startedAtroutePointshexTilesOrderedh3ResolutionsportTyperouteId",
@@ -5352,9 +5524,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1845,
+              "startLine": 1859,
               "startColumn": 2,
-              "endLine": 1845,
+              "endLine": 1859,
               "endColumn": 22
             }
           },
@@ -5377,9 +5549,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1846,
+              "startLine": 1860,
               "startColumn": 2,
-              "endLine": 1846,
+              "endLine": 1860,
               "endColumn": 23
             }
           },
@@ -5402,9 +5574,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1847,
+              "startLine": 1861,
               "startColumn": 2,
-              "endLine": 1847,
+              "endLine": 1861,
               "endColumn": 26
             }
           },
@@ -5427,9 +5599,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1848,
+              "startLine": 1862,
               "startColumn": 2,
-              "endLine": 1848,
+              "endLine": 1862,
               "endColumn": 25
             }
           },
@@ -5452,9 +5624,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1849,
+              "startLine": 1863,
               "startColumn": 2,
-              "endLine": 1849,
+              "endLine": 1863,
               "endColumn": 26
             }
           },
@@ -5477,9 +5649,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1850,
+              "startLine": 1864,
               "startColumn": 2,
-              "endLine": 1850,
+              "endLine": 1864,
               "endColumn": 26
             }
           },
@@ -5502,9 +5674,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1851,
+              "startLine": 1865,
               "startColumn": 2,
-              "endLine": 1851,
+              "endLine": 1865,
               "endColumn": 25
             }
           },
@@ -5527,9 +5699,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1852,
+              "startLine": 1866,
               "startColumn": 2,
-              "endLine": 1852,
+              "endLine": 1866,
               "endColumn": 25
             }
           },
@@ -5552,9 +5724,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1853,
+              "startLine": 1867,
               "startColumn": 2,
-              "endLine": 1853,
+              "endLine": 1867,
               "endColumn": 25
             }
           },
@@ -5846,9 +6018,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1844,
+              "startLine": 1858,
               "startColumn": 2,
-              "endLine": 1844,
+              "endLine": 1858,
               "endColumn": 25
             }
           },
@@ -5871,9 +6043,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1845,
+              "startLine": 1859,
               "startColumn": 2,
-              "endLine": 1845,
+              "endLine": 1859,
               "endColumn": 22
             }
           },
@@ -5896,9 +6068,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1846,
+              "startLine": 1860,
               "startColumn": 2,
-              "endLine": 1846,
+              "endLine": 1860,
               "endColumn": 23
             }
           },
@@ -5921,9 +6093,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1847,
+              "startLine": 1861,
               "startColumn": 2,
-              "endLine": 1847,
+              "endLine": 1861,
               "endColumn": 26
             }
           },
@@ -5946,9 +6118,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1848,
+              "startLine": 1862,
               "startColumn": 2,
-              "endLine": 1848,
+              "endLine": 1862,
               "endColumn": 25
             }
           },
@@ -5971,9 +6143,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1849,
+              "startLine": 1863,
               "startColumn": 2,
-              "endLine": 1849,
+              "endLine": 1863,
               "endColumn": 26
             }
           },
@@ -5996,9 +6168,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1850,
+              "startLine": 1864,
               "startColumn": 2,
-              "endLine": 1850,
+              "endLine": 1864,
               "endColumn": 26
             }
           },
@@ -6021,9 +6193,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1851,
+              "startLine": 1865,
               "startColumn": 2,
-              "endLine": 1851,
+              "endLine": 1865,
               "endColumn": 25
             }
           },
@@ -6046,9 +6218,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1852,
+              "startLine": 1866,
               "startColumn": 2,
-              "endLine": 1852,
+              "endLine": 1866,
               "endColumn": 25
             }
           },
@@ -6071,9 +6243,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1853,
+              "startLine": 1867,
               "startColumn": 2,
-              "endLine": 1853,
+              "endLine": 1867,
               "endColumn": 25
             }
           },
@@ -6602,7 +6774,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -6724,7 +6896,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -6896,7 +7068,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -7018,7 +7190,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -7140,7 +7312,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -7312,7 +7484,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
       }
     },
@@ -7434,8 +7606,180 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 3
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/store/hexTileSlice.ts-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/store/hexTileSlice.ts-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/store/hexTileSlice.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload",
+      "from_class_or_interface_name": "HexTileCustomizationPayload",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/HexTileStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord",
+      "to_class_or_interface_name": "HexTileRecord",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/tileImage": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/tileImage",
+          "name": "tileImage",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/tileImage",
+            "name": "tileImage",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 129,
+              "startColumn": 2,
+              "endLine": 129,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 11,
+            "startColumn": 2,
+            "endLine": 11,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboard": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboard",
+          "name": "billboard",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboard",
+            "name": "billboard",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 135,
+              "startColumn": 2,
+              "endLine": 135,
+              "endColumn": 28
+            }
+          },
+          "position": {
+            "startLine": 13,
+            "startColumn": 2,
+            "endLine": 13,
+            "endColumn": 28
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardAnchorColor": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardAnchorColor",
+          "name": "billboardAnchorColor",
+          "type": "string | null",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardAnchorColor",
+            "name": "billboardAnchorColor",
+            "type": "string | null",
+            "modifiers": [],
+            "position": {
+              "startLine": 141,
+              "startColumn": 2,
+              "endLine": 141,
+              "endColumn": 39
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 39
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboards": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboards",
+          "name": "billboards",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboards",
+            "name": "billboards",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 148,
+              "startColumn": 2,
+              "endLine": 148,
+              "endColumn": 45
+            }
+          },
+          "position": {
+            "startLine": 16,
+            "startColumn": 2,
+            "endLine": 16,
+            "endColumn": 45
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsFlat": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsFlat",
+          "name": "billboardsFlat",
+          "type": "Record<string, boolean>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsFlat",
+            "name": "billboardsFlat",
+            "type": "Record<string, boolean>",
+            "modifiers": [],
+            "position": {
+              "startLine": 156,
+              "startColumn": 2,
+              "endLine": 156,
+              "endColumn": 43
+            }
+          },
+          "position": {
+            "startLine": 18,
+            "startColumn": 2,
+            "endLine": 18,
+            "endColumn": 43
+          }
+        },
+        "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsTexture": {
+          "key": "apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload/memberField/billboardsTexture",
+          "name": "billboardsTexture",
+          "type": "Record<string, string | null>",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord/memberField/billboardsTexture",
+            "name": "billboardsTexture",
+            "type": "Record<string, string | null>",
+            "modifiers": [],
+            "position": {
+              "startLine": 165,
+              "startColumn": 2,
+              "endLine": 165,
+              "endColumn": 52
+            }
+          },
+          "position": {
+            "startLine": 19,
+            "startColumn": 2,
+            "endLine": 19,
+            "endColumn": 52
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 2
       }
     },
     "fields_to_fields_data_clump-apps/geonexia/frontend/store/speechSettingsSlice.ts-apps/geonexia/frontend/store/speechSettingsSlice.ts/interface/SpeechSettingsState-apps/geonexia/frontend/helpers/TTSHelper.ts/interface/PeriodicAnnouncementContent-announceDistanceannouncePaceannounceDurationannounceSpeedannounceCaloriesannounceHeartRate": {
@@ -7606,7 +7950,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -7800,7 +8144,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -7897,7 +8241,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
