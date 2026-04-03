@@ -4645,8 +4645,8 @@ export default function RecordScreen() {
 							<TouchableOpacity
 								style={[
 									styles.debugButton,
-									isSettingHome && { backgroundColor: '#f59e0b' },
-									!isSettingHome && homeHexTile !== null && { backgroundColor: '#22c55e22' },
+									isSettingHome && { backgroundColor: STATUS_WARNING_COLOR },
+									!isSettingHome && homeHexTile !== null && { backgroundColor: STATUS_SUCCESS_COLOR + '22' },
 								]}
 								onPress={() => {
 									isSettingHomeRef.current = !isSettingHome;
@@ -4657,7 +4657,7 @@ export default function RecordScreen() {
 								<MaterialIcons
 									name="home"
 									size={20}
-									color={isSettingHome ? '#ffffff' : homeHexTile !== null ? '#22c55e' : '#555555'}
+									color={isSettingHome ? '#ffffff' : homeHexTile !== null ? STATUS_SUCCESS_COLOR : '#555555'}
 								/>
 							</TouchableOpacity>
 							<View style={styles.buttonSpacer} />
