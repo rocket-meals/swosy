@@ -575,6 +575,10 @@ export function rebuildMapFromActivities(
 			// Override tileImage to stone when the feature cache confirms rocky
 			// ground (pebble-stone terrain).  This is a tileImage-level change only –
 			// not a billboard (hex object) and not a texture adaption (hex texture).
+			// Note: pebbleStone runs after forest so the stone terrain wins when
+			// both features are present.  In practice, ROCK and WOOD landcovers
+			// are mutually exclusive in OpenMapTiles data, so this scenario does
+			// not occur on real tiles.
 			checkAndApplyPebbleStone(rec, hexTileFeatureCache[hexId]);
 		}
 	}
