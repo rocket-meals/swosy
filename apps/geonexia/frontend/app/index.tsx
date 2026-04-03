@@ -22,7 +22,7 @@ import { isRunningInExpoGo } from 'expo';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean } from 'repo-depkit-common-ui';
 
@@ -2785,6 +2785,22 @@ export default function RecordScreen() {
 	useEffect(() => {
 		loadAndSendCustomizations();
 	}, [objectOpacity, loadAndSendCustomizations]);
+
+	// Re-apply display settings when the screen comes back into focus.
+	// While the recording screen is hidden behind a drawer screen (e.g. Settings),
+	// the WebView does not process injected JavaScript messages, so any opacity
+	// changes dispatched from the settings screen are silently dropped.
+	// Re-sending them on focus ensures the map is always in sync with the current settings.
+	// hexTileOpacity is sent directly (updates the fill layer paint property in hexTileScript).
+	// objectOpacity is applied via loadAndSendCustomizations (which rebuilds all image overlays).
+	useFocusEffect(
+		useCallback(() => {
+			if (!mapWebViewReadyRef.current) return;
+			const { hexTileOpacity: currentHexTileOpacity } = store.getState().displaySettings;
+			mapRef.current?.sendToMap({ hexTileOpacity: currentHexTileOpacity });
+			loadAndSendCustomizations();
+		}, [loadAndSendCustomizations]),
+	);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
