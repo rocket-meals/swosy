@@ -30,7 +30,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 2;
+export const WORLD_BUILDING_ID = 3;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -57,8 +57,7 @@ export const BILLBOARD_PINE_TREE_SMALL = 'objects:51';
 
 /**
  * Billboard key for the pathRounded sprite (index 58 in OBJECT_SPRITES).
- * Placed flat at edge-midpoint anchors on walked tiles toward walked neighbors.
- * @deprecated Path objects are no longer placed during world building.
+ * Placed flat at MIDDLE ring anchors on walked tiles toward walked neighbors.
  */
 const BILLBOARD_PATH_ROUNDED = 'objects:58';
 
@@ -75,24 +74,24 @@ const TILE_IMAGE_GRASS = 'Grass/grass';
 // ─── Edge anchor helpers ──────────────────────────────────────────────────────
 
 /**
- * Maps boundary edge index (0–5) to the corresponding OUTER BillboardAnchorPosition
- * for edge-midpoint positions.
+ * Maps boundary edge index (0–5) to the corresponding MIDDLE BillboardAnchorPosition
+ * for edge-midpoint positions (halfway between center and the hex boundary).
  *
  * Each edge sits between two consecutive vertices:
- *   edge[0]: vertex[0] → vertex[1]  →  OUTER_30_DEGREE  (30° = midway between 0° and 60°)
- *   edge[1]: vertex[1] → vertex[2]  →  OUTER_90_DEGREE
- *   edge[2]: vertex[2] → vertex[3]  →  OUTER_150_DEGREE
- *   edge[3]: vertex[3] → vertex[4]  →  OUTER_210_DEGREE
- *   edge[4]: vertex[4] → vertex[5]  →  OUTER_270_DEGREE
- *   edge[5]: vertex[5] → vertex[0]  →  OUTER_330_DEGREE
+ *   edge[0]: vertex[0] → vertex[1]  →  MIDDLE_30_DEGREE  (30° = midway between 0° and 60°)
+ *   edge[1]: vertex[1] → vertex[2]  →  MIDDLE_90_DEGREE
+ *   edge[2]: vertex[2] → vertex[3]  →  MIDDLE_150_DEGREE
+ *   edge[3]: vertex[3] → vertex[4]  →  MIDDLE_210_DEGREE
+ *   edge[4]: vertex[4] → vertex[5]  →  MIDDLE_270_DEGREE
+ *   edge[5]: vertex[5] → vertex[0]  →  MIDDLE_330_DEGREE
  */
 const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
-	BillboardAnchorPosition.OUTER_30_DEGREE,  // edge 0: vertex[0]→vertex[1]
-	BillboardAnchorPosition.OUTER_90_DEGREE,  // edge 1: vertex[1]→vertex[2]
-	BillboardAnchorPosition.OUTER_150_DEGREE, // edge 2: vertex[2]→vertex[3]
-	BillboardAnchorPosition.OUTER_210_DEGREE, // edge 3: vertex[3]→vertex[4]
-	BillboardAnchorPosition.OUTER_270_DEGREE, // edge 4: vertex[4]→vertex[5]
-	BillboardAnchorPosition.OUTER_330_DEGREE, // edge 5: vertex[5]→vertex[0]
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 0: vertex[0]→vertex[1]
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 1: vertex[1]→vertex[2]
+	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 2: vertex[2]→vertex[3]
+	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 3: vertex[3]→vertex[4]
+	BillboardAnchorPosition.MIDDLE_270_DEGREE, // edge 4: vertex[4]→vertex[5]
+	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 5: vertex[5]→vertex[0]
 ];
 
 /**
@@ -517,6 +516,23 @@ export function rebuildMapFromActivities(
 		if (rec.visitCount > 0) {
 			// Visited tile → dirt terrain
 			rec.tileImage = TILE_IMAGE_DIRT;
+
+			// Place a path object (flat) at each MIDDLE ring anchor that faces a
+			// walked neighbor tile, indicating the route direction.
+			if (isH3Available()) {
+				const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+				for (const neighbor of neighbors) {
+					const edgeStr = hexId < neighbor ? `${hexId}:${neighbor}` : `${neighbor}:${hexId}`;
+					if (!edgeSet.has(edgeStr)) continue;
+					const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
+					if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
+					const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
+					if (!rec.billboards) rec.billboards = {};
+					rec.billboards[anchorPosition] = BILLBOARD_PATH_ROUNDED;
+					if (!rec.billboardsFlat) rec.billboardsFlat = {};
+					rec.billboardsFlat[anchorPosition] = true;
+				}
+			}
 		} else if (rec.enclosedCount > 0) {
 			// Enclosed but not visited → grass terrain; forest trees only when
 			// the feature cache confirms a forest / wooded area on this tile.
