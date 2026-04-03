@@ -30,7 +30,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 3;
+export const WORLD_BUILDING_ID = 4;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -70,6 +70,9 @@ const TILE_IMAGE_DIRT = 'Dirt/dirt';
 
 /** Terrain image key applied to tiles that are enclosed but not walked on. */
 const TILE_IMAGE_GRASS = 'Grass/grass';
+
+/** Terrain image key applied to tiles that are enclosed on rocky / stony terrain. */
+const TILE_IMAGE_STONE = 'Stone/stone';
 
 // ─── Edge anchor helpers ──────────────────────────────────────────────────────
 
@@ -297,6 +300,37 @@ export function checkAndApplyForest(
 	}
 	const positionIndex = hash % MIDDLE_RING_BY_DEGREE.length;
 	rec.billboards[MIDDLE_RING_BY_DEGREE[positionIndex]] = BILLBOARD_PINE_TREE_SMALL;
+}
+
+/**
+ * Returns `true` when the given feature list contains at least one feature that
+ * indicates rocky / stony ground (pebble-stone terrain).  Checks:
+ *  - `landcover` layer with `class = 'rock'`
+ */
+export function hasPebbleStoneFeature(features: MapFeatureInfo[]): boolean {
+	return features.some(
+		(f) =>
+			f.layerId === OpenMapTilesLayerId.LANDCOVER &&
+			f.class === LandcoverClass.ROCK,
+	);
+}
+
+/**
+ * Check whether the cached features for a tile indicate rocky / stony terrain,
+ * and if so apply the pebble-stone terrain image to the record.
+ *
+ * Called for tiles that are already confirmed to be enclosed and not visited.
+ * Sets `tileImage = 'Stone/stone'` – at the terrain (tileImage) level only,
+ * not as a billboard (hex object) and not as a flat texture adaption (hex texture).
+ *
+ * Does nothing when `features` is undefined or contains no rock indicator.
+ */
+export function checkAndApplyPebbleStone(
+	rec: HexTileRecord,
+	features: MapFeatureInfo[] | undefined,
+): void {
+	if (!features || !hasPebbleStoneFeature(features)) return;
+	rec.tileImage = TILE_IMAGE_STONE;
 }
 
 function getOrCreateRecord(
@@ -538,6 +572,10 @@ export function rebuildMapFromActivities(
 			// the feature cache confirms a forest / wooded area on this tile.
 			rec.tileImage = TILE_IMAGE_GRASS;
 			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
+			// Override tileImage to stone when the feature cache confirms rocky
+			// ground (pebble-stone terrain).  This is a tileImage-level change only –
+			// not a billboard (hex object) and not a texture adaption (hex texture).
+			checkAndApplyPebbleStone(rec, hexTileFeatureCache[hexId]);
 		}
 	}
 
