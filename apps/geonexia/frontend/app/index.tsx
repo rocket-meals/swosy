@@ -1660,12 +1660,12 @@ function formatTimestamp(ts: number | null): string {
 //   Vertices at 0°, 60°, 120°, 180°, 240°, 300°.
 //   Edge midpoints at 30°, 90°, 150°, 210°, 270°, 330°.
 
-const HEX_PICKER_SIZE = 180;
+const HEX_PICKER_SIZE = 260;
 const HEX_PICKER_R = HEX_PICKER_SIZE * 0.38;
 const HEX_PICKER_CX = HEX_PICKER_SIZE / 2;
 const HEX_PICKER_CY = HEX_PICKER_SIZE / 2;
-const HEX_DOT_SIZE = 20;
-const HEX_DOT_SELECTED_SIZE = 26;
+const HEX_DOT_SIZE = 28;
+const HEX_DOT_SELECTED_SIZE = 36;
 
 // √3/4
 const SQRT3_4 = Math.sqrt(3) / 4;
