@@ -26,11 +26,6 @@ import type { AppDispatch, RootState } from '../../../store/store';
 // ─── Colors ───────────────────────────────────────────────────────────────────
 
 const COLOR_PRIMARY = '#2563eb';
-const COLOR_GPS = '#7c3aed';
-const COLOR_NOTIF = '#16a34a';
-const COLOR_TTS = '#0369a1';
-const COLOR_THEME = '#f59e0b';
-const COLOR_FINISH = '#16a34a';
 const COLOR_BACK = '#6b7280';
 
 // ─── Step IDs ─────────────────────────────────────────────────────────────────
@@ -44,8 +39,6 @@ type StepId =
 	| 'gps_precision'
 	| 'theme'
 	| 'finish';
-
-const BASE_STEPS: StepId[] = ['welcome', 'gps', 'notifications', 'tts', 'gps_precision', 'theme', 'finish'];
 
 // ─── Permission status helper ─────────────────────────────────────────────────
 
@@ -80,7 +73,7 @@ function GpsStep({
 	status: PermStatus;
 	onRequest: () => void;
 }) {
-	const statusColor = status === 'granted' ? COLOR_FINISH : status === 'denied' ? '#dc2626' : COLOR_GPS;
+	const statusColor = status === 'granted' ? COLOR_PRIMARY : status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
 	const statusLabel =
 		status === 'granted'
 			? '✅ Berechtigung erteilt'
@@ -92,8 +85,8 @@ function GpsStep({
 
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_GPS + '22' }]}>
-				<MaterialCommunityIcons name="crosshairs-gps" size={56} color={COLOR_GPS} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<MaterialCommunityIcons name="crosshairs-gps" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>GPS & Standort 📍</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -109,7 +102,7 @@ function GpsStep({
 			)}
 			{status === 'idle' && (
 				<TouchableOpacity
-					style={[styles.actionButton, { backgroundColor: COLOR_GPS }]}
+					style={[styles.actionButton, { backgroundColor: COLOR_PRIMARY }]}
 					onPress={onRequest}
 					activeOpacity={0.85}
 				>
@@ -137,7 +130,7 @@ function NotificationsStep({
 	status: PermStatus;
 	onRequest: () => void;
 }) {
-	const statusColor = status === 'granted' ? COLOR_FINISH : status === 'denied' ? '#dc2626' : COLOR_NOTIF;
+	const statusColor = status === 'granted' ? COLOR_PRIMARY : status === 'denied' ? '#dc2626' : COLOR_PRIMARY;
 	const statusLabel =
 		status === 'granted'
 			? '✅ Benachrichtigungen aktiviert'
@@ -149,8 +142,8 @@ function NotificationsStep({
 
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_NOTIF + '22' }]}>
-				<Ionicons name="notifications-outline" size={56} color={COLOR_NOTIF} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<Ionicons name="notifications-outline" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>Push-Benachrichtigungen 🔔</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -163,7 +156,7 @@ function NotificationsStep({
 			)}
 			{status === 'idle' && (
 				<TouchableOpacity
-					style={[styles.actionButton, { backgroundColor: COLOR_NOTIF }]}
+					style={[styles.actionButton, { backgroundColor: COLOR_PRIMARY }]}
 					onPress={onRequest}
 					activeOpacity={0.85}
 				>
@@ -193,8 +186,8 @@ function TTSStep({
 }) {
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_TTS + '22' }]}>
-				<MaterialCommunityIcons name="account-voice" size={56} color={COLOR_TTS} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<MaterialCommunityIcons name="account-voice" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>Sprachansagen 🔊</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -203,7 +196,7 @@ function TTSStep({
 			</Text>
 			<View style={styles.toggleCard}>
 				<SettingsListBoolean
-					iconBgColor={COLOR_TTS}
+					iconBgColor={COLOR_PRIMARY}
 					leftIcon={<MaterialCommunityIcons name="account-voice" size={22} color="#ffffff" />}
 					label="Sprachansagen"
 					isEnabled={ttsEnabled}
@@ -214,7 +207,7 @@ function TTSStep({
 				/>
 			</View>
 			{ttsEnabled && (
-				<Text style={[styles.hintText, { color: COLOR_TTS }]}>
+				<Text style={[styles.hintText, { color: COLOR_PRIMARY }]}>
 					💡 Im nächsten Schritt kannst du festlegen, was angesagt werden soll.
 				</Text>
 			)}
@@ -247,8 +240,8 @@ function TTSDetailsStep({
 }) {
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_TTS + '22' }]}>
-				<MaterialIcons name="record-voice-over" size={56} color={COLOR_TTS} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<MaterialIcons name="record-voice-over" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>Was soll angesagt werden? 📢</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -257,7 +250,7 @@ function TTSDetailsStep({
 			<View style={styles.toggleCard}>
 				<SettingsListGroupTitle title="Ansage-Inhalte" />
 				<SettingsListBoolean
-					iconBgColor={COLOR_TTS}
+					iconBgColor={COLOR_PRIMARY}
 					leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
 					label="Distanz"
 					isEnabled={announceDistance}
@@ -267,7 +260,7 @@ function TTSDetailsStep({
 					groupPosition="top"
 				/>
 				<SettingsListBoolean
-					iconBgColor={COLOR_TTS}
+					iconBgColor={COLOR_PRIMARY}
 					leftIcon={<MaterialIcons name="speed" size={22} color="#ffffff" />}
 					label="Tempo (min/km)"
 					isEnabled={announcePace}
@@ -277,7 +270,7 @@ function TTSDetailsStep({
 					groupPosition="middle"
 				/>
 				<SettingsListBoolean
-					iconBgColor={COLOR_TTS}
+					iconBgColor={COLOR_PRIMARY}
 					leftIcon={<Ionicons name="time-outline" size={22} color="#ffffff" />}
 					label="Dauer"
 					isEnabled={announceDuration}
@@ -287,7 +280,7 @@ function TTSDetailsStep({
 					groupPosition="middle"
 				/>
 				<SettingsListBoolean
-					iconBgColor={COLOR_TTS}
+					iconBgColor={COLOR_PRIMARY}
 					leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
 					label="Geschwindigkeit (km/h)"
 					isEnabled={announceSpeed}
@@ -335,8 +328,8 @@ function GpsPrecisionStep({
 
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_GPS + '22' }]}>
-				<MaterialCommunityIcons name="radar" size={56} color={COLOR_GPS} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<MaterialCommunityIcons name="radar" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>GPS-Präzision ⚡</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -352,22 +345,22 @@ function GpsPrecisionStep({
 							style={[
 								styles.optionCard,
 								{
-									backgroundColor: isSelected ? COLOR_GPS + '18' : theme.screen.iconBg,
-									borderColor: isSelected ? COLOR_GPS : 'transparent',
+									backgroundColor: isSelected ? COLOR_PRIMARY + '18' : theme.screen.iconBg,
+									borderColor: isSelected ? COLOR_PRIMARY : 'transparent',
 									borderWidth: 2,
 								},
 							]}
 							onPress={() => onSelect(opt.id)}
 							activeOpacity={0.8}
 						>
-							<View style={[styles.optionIcon, { backgroundColor: isSelected ? COLOR_GPS : COLOR_GPS + '55' }]}>
+							<View style={[styles.optionIcon, { backgroundColor: isSelected ? COLOR_PRIMARY : COLOR_PRIMARY + '55' }]}>
 								<MaterialCommunityIcons name={opt.icon as any} size={24} color="#ffffff" />
 							</View>
 							<View style={styles.optionText}>
 								<Text style={[styles.optionLabel, { color: theme.screen.text }]}>{opt.label}</Text>
 								<Text style={[styles.optionDesc, { color: theme.screen.text + '99' }]}>{opt.description}</Text>
 							</View>
-							{isSelected && <Ionicons name="checkmark-circle" size={24} color={COLOR_GPS} />}
+							{isSelected && <Ionicons name="checkmark-circle" size={24} color={COLOR_PRIMARY} />}
 						</TouchableOpacity>
 					);
 				})}
@@ -410,8 +403,8 @@ function ThemeStep({
 
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_THEME + '22' }]}>
-				<MaterialCommunityIcons name="theme-light-dark" size={56} color={COLOR_THEME} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<MaterialCommunityIcons name="theme-light-dark" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>Erscheinungsbild 🎨</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -426,8 +419,8 @@ function ThemeStep({
 							style={[
 								styles.optionCard,
 								{
-									backgroundColor: isSelected ? COLOR_THEME + '18' : theme.screen.iconBg,
-									borderColor: isSelected ? COLOR_THEME : 'transparent',
+									backgroundColor: isSelected ? COLOR_PRIMARY + '18' : theme.screen.iconBg,
+									borderColor: isSelected ? COLOR_PRIMARY : 'transparent',
 									borderWidth: 2,
 								},
 							]}
@@ -439,7 +432,7 @@ function ThemeStep({
 								<Text style={[styles.optionLabel, { color: theme.screen.text }]}>{opt.label}</Text>
 								<Text style={[styles.optionDesc, { color: theme.screen.text + '99' }]}>{opt.description}</Text>
 							</View>
-							{isSelected && <Ionicons name="checkmark-circle" size={24} color={COLOR_THEME} />}
+							{isSelected && <Ionicons name="checkmark-circle" size={24} color={COLOR_PRIMARY} />}
 						</TouchableOpacity>
 					);
 				})}
@@ -453,8 +446,8 @@ function ThemeStep({
 function FinishStep({ theme }: { theme: ReturnType<typeof useTheme>['theme'] }) {
 	return (
 		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_FINISH + '22' }]}>
-				<MaterialCommunityIcons name="check-circle-outline" size={56} color={COLOR_FINISH} />
+			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
+				<MaterialCommunityIcons name="check-circle-outline" size={56} color={COLOR_PRIMARY} />
 			</View>
 			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>Alles bereit! 🎉</Text>
 			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
@@ -462,8 +455,8 @@ function FinishStep({ theme }: { theme: ReturnType<typeof useTheme>['theme'] }) 
 				{'\n\n'}
 				Alle Einstellungen können jederzeit in den <Text style={{ fontWeight: '600' }}>Einstellungen</Text> angepasst werden.
 			</Text>
-			<View style={[styles.summaryCard, { backgroundColor: COLOR_FINISH + '12' }]}>
-				<Text style={[styles.summaryTitle, { color: COLOR_FINISH }]}>💡 Tipp</Text>
+			<View style={[styles.summaryCard, { backgroundColor: COLOR_PRIMARY + '12' }]}>
+				<Text style={[styles.summaryTitle, { color: COLOR_PRIMARY }]}>💡 Tipp</Text>
 				<Text style={[styles.summaryText, { color: theme.screen.text + 'cc' }]}>
 					Starte eine neue Aktivität über den Hauptscreen. Die Karte zeigt dir in Echtzeit, welche Bereiche du
 					bereits erkundet hast – unbekannte Hexagone warten auf dich!
@@ -535,20 +528,6 @@ export default function OnboardingScreen() {
 	// ─── Permission states ────────────────────────────────────────────────────
 	const [gpsStatus, setGpsStatus] = useState<PermStatus>('idle');
 	const [notifStatus, setNotifStatus] = useState<PermStatus>('idle');
-
-	// ─── Step color ───────────────────────────────────────────────────────────
-	const stepColor: Record<StepId, string> = {
-		welcome: COLOR_PRIMARY,
-		gps: COLOR_GPS,
-		notifications: COLOR_NOTIF,
-		tts: COLOR_TTS,
-		tts_details: COLOR_TTS,
-		gps_precision: COLOR_GPS,
-		theme: COLOR_THEME,
-		finish: COLOR_FINISH,
-	};
-
-	const activeColor = stepColor[currentStep];
 
 	// ─── Animated transition ──────────────────────────────────────────────────
 	const animateToStep = useCallback(
@@ -698,8 +677,8 @@ export default function OnboardingScreen() {
 			</ScrollView>
 
 			{/* ── Bottom Navigation ────────────────────────────────────────── */}
-			<View style={[styles.bottomBar, { backgroundColor: theme.screen.background, borderTopColor: activeColor + '33' }]}>
-				<ProgressDots total={steps.length} current={stepIndex} color={activeColor} />
+			<View style={[styles.bottomBar, { backgroundColor: theme.screen.background, borderTopColor: COLOR_PRIMARY + '33' }]}>
+				<ProgressDots total={steps.length} current={stepIndex} color={COLOR_PRIMARY} />
 				<View style={styles.navRow}>
 					{/* Back */}
 					<TouchableOpacity
@@ -719,14 +698,14 @@ export default function OnboardingScreen() {
 					</TouchableOpacity>
 
 					{/* Step label */}
-					<Text style={[styles.stepCounter, { color: activeColor }]}>
+					<Text style={[styles.stepCounter, { color: COLOR_PRIMARY }]}>
 						{stepIndex + 1} / {steps.length}
 					</Text>
 
 					{/* Next / Finish */}
 					{isLast ? (
 						<TouchableOpacity
-							style={[styles.navButton, styles.navButtonPrimary, { backgroundColor: COLOR_FINISH }]}
+							style={[styles.navButton, styles.navButtonPrimary, { backgroundColor: COLOR_PRIMARY }]}
 							onPress={handleFinish}
 							activeOpacity={0.85}
 						>
@@ -735,7 +714,7 @@ export default function OnboardingScreen() {
 						</TouchableOpacity>
 					) : (
 						<TouchableOpacity
-							style={[styles.navButton, styles.navButtonPrimary, { backgroundColor: activeColor }]}
+							style={[styles.navButton, styles.navButtonPrimary, { backgroundColor: COLOR_PRIMARY }]}
 							onPress={handleNext}
 							activeOpacity={0.85}
 						>
