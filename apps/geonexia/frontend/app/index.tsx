@@ -38,7 +38,7 @@ import { mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/H
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
@@ -86,6 +86,20 @@ function getEffectiveBillboards(record: { billboard?: string | null; billboardAn
  */
 function getEffectiveBillboardsFlat(record: { billboardsFlat?: Record<string, boolean> }): Record<string, boolean> {
 	return record.billboardsFlat ?? {};
+}
+
+/**
+ * Return the effective per-anchor Hex Texture Adaption map for a hex tile record.
+ * These are always rendered flat on the map surface (pitch-alignment = 'map').
+ */
+function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<string, string | null> }): Record<BillboardAnchorPosition, string> {
+	const result: Record<string, string> = {};
+	if (record.billboardsTexture) {
+		for (const [ac, bk] of Object.entries(record.billboardsTexture)) {
+			if (bk) result[ac] = bk;
+		}
+	}
+	return result as Record<BillboardAnchorPosition, string>;
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -1858,6 +1872,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
+	// Separate anchor pickers for Hex Texture Adaption and Hex Objects layers.
+	const [selectedTextureAnchorColor, setSelectedTextureAnchorColor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [featuresLoading, setFeaturesLoading] = useState(false);
@@ -1879,11 +1895,13 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
-	// Effective billboards: prefer the new `billboards` map, fall back to legacy fields.
+	// Hex Texture Adaption (always flat, separate from Hex Objects).
+	const effectiveBillboardsTexture = record ? getEffectiveBillboardsTexture(record) : {} as Record<BillboardAnchorPosition, string>;
+	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAnchorColor] ?? null;
+	const parsedCurrentTextureBillboard = currentTextureAnchorBillboard ? parseBillboardKey(currentTextureAnchorBillboard) : null;
+	// Hex Objects (face-camera): prefer the new `billboards` map, fall back to legacy fields.
 	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
-	const effectiveFlat = record ? getEffectiveBillboardsFlat(record) : {};
 	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
-	const currentAnchorFlat = effectiveFlat[selectedAnchorColor] === true;
 	const parsedCurrentBillboard = currentAnchorBillboard ? parseBillboardKey(currentAnchorBillboard) : null;
 
 	const infoRows: { label: string; value: string }[] = [
@@ -1935,10 +1953,52 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		});
 	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
+	const openTextureAdaptionSelection = useCallback(() => {
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAnchorColor)?.label ?? selectedTextureAnchorColor;
+		showModal({
+			title: `🖼️ Select Texture Adaption — ${anchorLabel}`,
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					<SettingsListSelectOptionSingle
+						key="none"
+						label="None (clear)"
+						isSelected={!currentTextureAnchorBillboard}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAnchorColor, billboard: null }));
+							closeModal();
+						}}
+						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
+					/>
+					{OBJECT_SPRITES.map((sprite, idx) => {
+						const key = `objects:${idx}`;
+						const isSelected = currentTextureAnchorBillboard === key;
+						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListBillboard
+								key={key}
+								spriteIndex={idx}
+								title={sprite.name}
+								isSelected={isSelected}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAnchorColor, billboard: key }));
+									closeModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentTextureAnchorBillboard, h3Index, dispatch, selectedTextureAnchorColor]);
+
 	const openBillboardSelection = useCallback(() => {
 		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor;
 		showModal({
-			title: `🏗️ Select Billboard — ${anchorLabel}`,
+			title: `🏗️ Select Object — ${anchorLabel}`,
 			onClose: closeModal,
 			children: (
 				<View style={{ paddingBottom: 20 }}>
@@ -1995,17 +2055,31 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			))}
 
-			{/* ── Tile Image section ── */}
-			<SettingsListGroupTitle title="Tile Image" />
+			{/* ── Hex Textur section (terrain fill image) ── */}
+			<SettingsListGroupTitle title="Hex Textur" />
 			<SettingsListHexTile
 				tileImageKey={currentTileImage}
-				title="Tile Image"
+				title="Hex Textur"
 				onPress={openTileSelection}
 				groupPosition="single"
 			/>
 
-			{/* ── Billboard / Object section (per anchor) ── */}
-			<SettingsListGroupTitle title="Objects (per Anchor)" />
+			{/* ── Hex Texture Adaption section (flat sprites at anchor positions) ── */}
+			<SettingsListGroupTitle title="Hex Texture Adaption" />
+			<HexAnchorPicker
+				selected={selectedTextureAnchorColor}
+				onSelect={setSelectedTextureAnchorColor}
+				occupiedAnchors={effectiveBillboardsTexture}
+			/>
+			<SettingsListBillboard
+				spriteIndex={parsedCurrentTextureBillboard?.idx ?? null}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAnchorColor)?.label ?? selectedTextureAnchorColor}
+				onPress={openTextureAdaptionSelection}
+				groupPosition="single"
+			/>
+
+			{/* ── Hex Objects section (face-camera sprites at anchor positions) ── */}
+			<SettingsListGroupTitle title="Hex Objects" />
 			<HexAnchorPicker
 				selected={selectedAnchorColor}
 				onSelect={setSelectedAnchorColor}
@@ -2015,18 +2089,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				spriteIndex={parsedCurrentBillboard?.idx ?? null}
 				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor}
 				onPress={openBillboardSelection}
-				groupPosition={currentAnchorBillboard ? 'top' : 'single'}
+				groupPosition="single"
 			/>
-			{currentAnchorBillboard && (
-				<SettingsListBoolean
-					title="Flat (map surface)"
-					isEnabled={currentAnchorFlat}
-					onToggle={() => {
-						dispatch(setBillboardFlatAtAnchor({ h3Index, anchorColor: selectedAnchorColor, flat: !currentAnchorFlat }));
-					}}
-					groupPosition="bottom"
-				/>
-			)}
 
 			{/* ── Underlying map info ── */}
 			<SettingsListGroupTitle title="Karteninformationen" />
@@ -2679,8 +2743,8 @@ export default function RecordScreen() {
 	// the actual customization values change (not on every GPS update).
 	const hexTileCustomizationsKey = useSelector((state: RootState) =>
 		Object.entries(state.hexTiles.records)
-			.filter(([, r]) => r.tileImage || r.billboard || r.billboards)
-			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}`)
+			.filter(([, r]) => r.tileImage || r.billboard || r.billboards || r.billboardsTexture)
+			.map(([h3, r]) => `${h3}=${r.tileImage ?? ''}|${r.billboard ?? ''}|${JSON.stringify(r.billboards ?? {})}|${JSON.stringify(r.billboardsTexture ?? {})}`)
 			.sort()
 			.join('\n'),
 	);
@@ -2883,12 +2947,15 @@ export default function RecordScreen() {
 		];
 
 		for (const [h3Index, record] of Object.entries(records)) {
-			// Build an effective billboard map using the shared helper.
+			// Build effective billboard maps for Hex Objects and Hex Texture Adaptions.
 			const effectiveBillboards = getEffectiveBillboards(record);
-			if (Object.keys(effectiveBillboards).length === 0) continue;
-
-			// Build the per-anchor flat flags map.
+			const effectiveBillboardsTexture = getEffectiveBillboardsTexture(record);
+			// Per-anchor flat flags (legacy; used only for old `billboards` data).
 			const effectiveFlat = getEffectiveBillboardsFlat(record);
+
+			const hasBillboards = Object.keys(effectiveBillboards).length > 0;
+			const hasTextureAdaptions = Object.keys(effectiveBillboardsTexture).length > 0;
+			if (!hasBillboards && !hasTextureAdaptions) continue;
 
 			// Compute hex boundary (centroid + vertices) once per tile.
 			const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER); // [[lng, lat], ...]
@@ -2908,31 +2975,14 @@ export default function RecordScreen() {
 			const clampedRes = Math.max(0, Math.min(cellRes, H3_EDGE_LENGTH_KM.length - 1));
 			const edgeLengthRatio = H3_EDGE_LENGTH_KM[clampedRes] / H3_EDGE_LENGTH_KM[BILLBOARD_REFERENCE_RESOLUTION];
 
-			// Render one billboard feature per occupied anchor position.
-			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
-				const parsed = parseBillboardKey(billboardKey);
-				if (!parsed) continue;
-				const { sprite, idx } = parsed;
-				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
-				if (!url) continue;
-
-				const iconKey = `billboard-${billboardKey}`;
-
-				// Look up global anchor overrides for this sprite type.
-				const anchorOverride = spriteAnchors[idx];
-				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
-				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
-
-				// Determine geographic placement position based on anchor position.
-				// CENTER → hex centroid (default, lng/lat already set).
-				// OUTER_N_DEGREE → on the hex boundary (vertex or edge midpoint).
-				// MIDDLE_N_DEGREE → midpoint between centroid and the corresponding OUTER point.
+			/**
+			 * Resolve the geographic [lng, lat] for a given anchor position string.
+			 */
+			function resolveAnchorPosition(anchorColor: string): [number, number] {
 				let lng = centerLng;
 				let lat = centerLat;
-
 				const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
 				const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
-
 				if (outerIdx >= 0) {
 					const geo = DEGREE_POSITION_GEO[outerIdx];
 					if (geo.type === 'vertex' && geo.idx < n) {
@@ -2959,18 +3009,60 @@ export default function RecordScreen() {
 					lat = (centerLat + outerLat) / 2;
 				}
 				// else: CENTER → use centerLng/centerLat (already set above)
+				return [lng, lat];
+			}
 
-				// Per-sprite scale multiplier from the billboard config screen (default 1.0).
+			// ── Hex Texture Adaptions (always flat on the map surface) ────────────
+			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboardsTexture)) {
+				const parsed = parseBillboardKey(billboardKey);
+				if (!parsed) continue;
+				const { sprite, idx } = parsed;
+				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+				if (!url) continue;
+
+				const iconKey = `billboard-${billboardKey}`;
+				const anchorOverride = spriteAnchors[idx];
+				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+				const [lng, lat] = resolveAnchorPosition(anchorColor);
 				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
-				// Minimum BILLBOARD_MIN_SIZE_PX so extremely small sprites remain visible and tappable.
 				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
 					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
 				));
-				// iconSizeAtRefZoom is the MapLibre icon-size value at zoom 14:
-				// icon renders at BILLBOARD_STANDARD_ICON_SIZE × iconSizeAtRefZoom pixels on screen.
 				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
 
-				// Per-billboard flat flag: true = render flat on map, false = face camera.
+				if (!billboardImages[iconKey]) {
+					billboardImages[iconKey] = { url };
+				}
+				// Hex Texture Adaptions are always flat.
+				billboardFeatures.push({
+					type: 'Feature',
+					geometry: { type: 'Point', coordinates: [lng, lat] },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true },
+				});
+			}
+
+			// ── Hex Objects (face-camera; legacy billboardsFlat flag still respected) ──
+			for (const [anchorColor, billboardKey] of Object.entries(effectiveBillboards)) {
+				const parsed = parseBillboardKey(billboardKey);
+				if (!parsed) continue;
+				const { sprite, idx } = parsed;
+				const url = await loadAssetUrl(billboardKey, sprite.source as number, 'image/svg+xml');
+				if (!url) continue;
+
+				const iconKey = `billboard-${billboardKey}`;
+				const anchorOverride = spriteAnchors[idx];
+				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
+				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
+				const [lng, lat] = resolveAnchorPosition(anchorColor);
+				const perSpriteScale = anchorOverride?.scaleMultiplier ?? 1.0;
+				const billboardSizePx = Math.max(BILLBOARD_MIN_SIZE_PX, Math.round(
+					BILLBOARD_UNIT_PX * sprite.scaleFactor * billboardScaleRef.current * perSpriteScale * edgeLengthRatio,
+				));
+				const iconSizeAtRefZoom = billboardSizePx / BILLBOARD_STANDARD_ICON_SIZE;
+
+				// Hex Objects are face-camera by default; legacy per-anchor flat flag
+				// is still respected for backward compatibility with existing data.
 				const flat = effectiveFlat[anchorColor] === true;
 
 				if (!billboardImages[iconKey]) {
@@ -3701,14 +3793,17 @@ export default function RecordScreen() {
 	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch]);
 
 	const handleExportMapSettings = useCallback(async () => {
-		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string> }> = {};
+		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string>; billboardsTexture?: Record<string, string> }> = {};
 		for (const [h3Index, record] of Object.entries(hexTileRecords)) {
 			const billboards = getEffectiveBillboards(record);
+			const billboardsTexture = getEffectiveBillboardsTexture(record);
 			const hasBillboards = Object.keys(billboards).length > 0;
-			if (record.tileImage || hasBillboards) {
+			const hasBillboardsTexture = Object.keys(billboardsTexture).length > 0;
+			if (record.tileImage || hasBillboards || hasBillboardsTexture) {
 				exportData[h3Index] = {};
 				if (record.tileImage) exportData[h3Index].tileImage = record.tileImage;
 				if (hasBillboards) exportData[h3Index].billboards = billboards;
+				if (hasBillboardsTexture) exportData[h3Index].billboardsTexture = billboardsTexture;
 			}
 		}
 		const json = JSON.stringify({ version: 1, hexTiles: exportData }, null, 2);
@@ -3724,7 +3819,7 @@ export default function RecordScreen() {
 			Alert.alert('Import Failed', 'The text is not valid JSON.');
 			return;
 		}
-		const data = parsed as { version?: number; hexTiles?: Record<string, { tileImage?: string | null; billboards?: Record<string, string | null> }> };
+		const data = parsed as { version?: number; hexTiles?: Record<string, { tileImage?: string | null; billboards?: Record<string, string | null>; billboardsTexture?: Record<string, string | null> }> };
 		if (!data.hexTiles || typeof data.hexTiles !== 'object') {
 			Alert.alert('Import Failed', 'No "hexTiles" object found in the data.');
 			return;

@@ -151,8 +151,18 @@ export type HexTileRecord = {
 	 * When `true` for an anchor, the billboard at that position is rendered flat
 	 * on the map surface (pitch-alignment = 'map') instead of facing the camera
 	 * (pitch-alignment = 'viewport').  Defaults to false when absent.
+	 * @deprecated Use `billboardsTexture` for flat anchor-positioned sprites.
 	 */
 	billboardsFlat?: Record<string, boolean>;
+	/**
+	 * Per-anchor texture adaption map. Keys are BillboardAnchorPosition values.
+	 * Each key maps to a billboard/sprite key (e.g. "objects:47") or null.
+	 * Unlike `billboards` (Hex Objects, always face-camera), texture adaptions
+	 * are always rendered flat on the map surface (pitch-alignment = 'map').
+	 * This is the "Hex Texture Adaption" layer, sitting between the Hex Textur
+	 * fill and the Hex Objects in the render stack.
+	 */
+	billboardsTexture?: Record<string, string | null>;
 	/**
 	 * Back-references to the activities that contributed to this tile's
 	 * visit/enclosure counts.  There is at most one entry per activity.

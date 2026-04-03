@@ -172,6 +172,7 @@ const hexTileSlice = createSlice({
 		 * Set or clear the flat-rendering flag for a billboard at a specific anchor
 		 * position on a hex tile.  When `flat` is true the billboard is rendered
 		 * lying flat on the map surface; when false (or absent) it faces the camera.
+		 * @deprecated Prefer `setTextureAdaptionAtAnchor` for flat anchor-positioned sprites.
 		 */
 		setBillboardFlatAtAnchor(
 			state,
@@ -188,13 +189,33 @@ const hexTileSlice = createSlice({
 		},
 
 		/**
+		 * Set or clear a Hex Texture Adaption sprite at a specific anchor position
+		 * on a hex tile.  Texture adaptions are always rendered flat on the map
+		 * surface (pitch-alignment = 'map') and form the layer between the Hex
+		 * Textur fill and the Hex Objects (face-camera) layer.
+		 */
+		setTextureAdaptionAtAnchor(
+			state,
+			action: PayloadAction<{ h3Index: string; anchorColor: BillboardAnchorPosition; billboard: string | null }>,
+		) {
+			const { h3Index, anchorColor, billboard } = action.payload;
+			const rec = getOrCreate(state.records, h3Index);
+			if (!rec.billboardsTexture) rec.billboardsTexture = {};
+			if (billboard === null) {
+				delete rec.billboardsTexture[anchorColor];
+			} else {
+				rec.billboardsTexture[anchorColor] = billboard;
+			}
+		},
+
+		/**
 		 * Apply map customizations (tileImage, billboards) to the tile records,
 		 * merging the provided data into the existing state. Useful for importing
 		 * map settings without overwriting activity tracking data.
 		 */
 		applyMapCustomizations(
 			state,
-			action: PayloadAction<Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null>; billboardsFlat?: Record<string, boolean> }>>,
+			action: PayloadAction<Record<string, { tileImage?: string | null; billboard?: string | null; billboardAnchorColor?: string | null; billboards?: Record<string, string | null>; billboardsFlat?: Record<string, boolean>; billboardsTexture?: Record<string, string | null> }>>,
 		) {
 			for (const [h3Index, customization] of Object.entries(action.payload)) {
 				const rec = getOrCreate(state.records, h3Index);
@@ -203,6 +224,7 @@ const hexTileSlice = createSlice({
 				if (customization.billboardAnchorColor !== undefined) rec.billboardAnchorColor = customization.billboardAnchorColor;
 				if (customization.billboards !== undefined) rec.billboards = customization.billboards;
 				if (customization.billboardsFlat !== undefined) rec.billboardsFlat = customization.billboardsFlat;
+				if (customization.billboardsTexture !== undefined) rec.billboardsTexture = customization.billboardsTexture;
 			}
 		},
 
@@ -251,5 +273,5 @@ const hexTileSlice = createSlice({
 	},
 });
 
-export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
+export const { startRun, markVisited, markEnclosed, loadPersistedState, setHexTileCustomization, setBillboardAtAnchor, setBillboardFlatAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, setDevMode, setDebugMode, addWalkedEdges, loadWalkedEdgesState } = hexTileSlice.actions;
 export default hexTileSlice.reducer;
