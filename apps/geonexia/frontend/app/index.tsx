@@ -45,6 +45,8 @@ import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
 import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
+import { saveRecordingSnapshot, loadRecordingSnapshot, clearRecordingSnapshot, type InterruptedRecordingSnapshot } from '../helpers/InterruptedRecordingStorage';
 import type { PaceHintState } from '../helpers/TTSHelper';
 import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
@@ -2317,12 +2319,227 @@ const magnifyStyles = StyleSheet.create({
 	},
 });
 
+// ─── Interrupted Recording Reconstruction ────────────────────────────────────
+
+/**
+ * Reconstruct an interrupted recording by matching it against a saved route.
+ * The interrupted activity's hex tiles are compared to the route's hex tiles.
+ * For the portion of the route that the user hadn't reached yet (the "gap"),
+ * synthetic GPS points are generated at hex tile centers using the average pace
+ * observed during the recorded portion.
+ *
+ * @returns A new `RoutePoint[]` array containing the original points plus
+ *          synthetic points for the gap, or `null` if reconstruction is not possible.
+ */
+function reconstructInterruptedRoute(
+	snapshot: InterruptedRecordingSnapshot,
+	route: SavedRoute,
+): RoutePoint[] | null {
+	if (snapshot.routePoints.length < 2 || route.hexTiles.length < 2) return null;
+	if (snapshot.hexTilesOrdered.length === 0) return null;
+
+	const recordedSet = new Set(snapshot.hexTilesOrdered);
+
+	// Find where the interrupted recording diverges from the route.
+	// Walk through the route's hex tiles and find the last one that appears
+	// in the recorded tiles (in order).
+	let lastMatchIndex = -1;
+	for (let i = 0; i < route.hexTiles.length; i++) {
+		if (recordedSet.has(route.hexTiles[i])) {
+			lastMatchIndex = i;
+		}
+	}
+
+	if (lastMatchIndex < 0) return null; // No overlap at all
+
+	// The remaining route tiles that were NOT visited form the gap.
+	const gapTiles: string[] = [];
+	for (let i = lastMatchIndex + 1; i < route.hexTiles.length; i++) {
+		if (!recordedSet.has(route.hexTiles[i])) {
+			gapTiles.push(route.hexTiles[i]);
+		}
+	}
+
+	if (gapTiles.length === 0) return null; // Route was fully covered
+
+	// Compute average pace from the recorded portion.
+	const totalDistanceKm = computeRoutePointsDistance(snapshot.routePoints);
+	const totalSec = snapshot.accumulatedSeconds +
+		(snapshot.routePoints[snapshot.routePoints.length - 1].timestamp - snapshot.routePoints[0].timestamp) / 1000;
+	if (totalDistanceKm <= 0 || totalSec <= 0) return null;
+	const avgSpeedKmPerSec = totalDistanceKm / totalSec;
+
+	// Generate synthetic GPS points along the gap tiles using their center
+	// coordinates and the average speed to compute timestamps.
+	const lastRecordedPoint = snapshot.routePoints[snapshot.routePoints.length - 1];
+	let prevLat = lastRecordedPoint.lat;
+	let prevLng = lastRecordedPoint.lng;
+	let currentTimestamp = lastRecordedPoint.timestamp;
+	const syntheticPoints: RoutePoint[] = [];
+
+	for (const hexId of gapTiles) {
+		const [lat, lng] = cellToLatLng(hexId);
+		if (lat === 0 && lng === 0) continue;
+		const segmentKm = haversineKm(prevLat, prevLng, lat, lng);
+		const segmentSec = avgSpeedKmPerSec > 0 ? segmentKm / avgSpeedKmPerSec : 1;
+		currentTimestamp += segmentSec * 1000;
+		syntheticPoints.push({
+			lat,
+			lng,
+			altitude: null,
+			speed: avgSpeedKmPerSec * 3600, // m/s → km/h? no: speed field is m/s in Location API
+			timestamp: currentTimestamp,
+		});
+		prevLat = lat;
+		prevLng = lng;
+	}
+
+	return [...snapshot.routePoints, ...syntheticPoints];
+}
+
+/**
+ * Compute the total distance in km from an array of RoutePoint.
+ */
+function computeRoutePointsDistance(points: RoutePoint[]): number {
+	let totalKm = 0;
+	for (let i = 1; i < points.length; i++) {
+		totalKm += haversineKm(points[i - 1].lat, points[i - 1].lng, points[i].lat, points[i].lng);
+	}
+	return totalKm;
+}
+
+// ─── Interrupted Recovery Content ────────────────────────────────────────────
+
+function InterruptedRecoveryContent({
+	snapshot,
+	theme,
+	onDiscard,
+	onSave,
+}: {
+	snapshot: InterruptedRecordingSnapshot;
+	theme: ReturnType<typeof useTheme>['theme'];
+	onDiscard: () => void;
+	onSave: (activity: SavedActivity) => void;
+}) {
+	const [routes, setRoutes] = useState<SavedRoute[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		loadRoutes().then((r) => {
+			setRoutes(r);
+			setLoading(false);
+		});
+	}, []);
+
+	const durationSec = snapshot.accumulatedSeconds +
+		(snapshot.routePoints.length > 1
+			? (snapshot.routePoints[snapshot.routePoints.length - 1].timestamp - snapshot.routePoints[0].timestamp) / 1000
+			: 0);
+	const distKm = computeRoutePointsDistance(snapshot.routePoints);
+	const dateStr = new Date(snapshot.startedAt).toLocaleString();
+
+	const handleSaveAsIs = useCallback(() => {
+		const stats = computeStats(snapshot.routePoints);
+		const activity: SavedActivity = {
+			id: String(snapshot.startedAt),
+			startedAt: snapshot.startedAt,
+			endedAt: snapshot.savedAt,
+			routePoints: snapshot.routePoints,
+			stats,
+			sportType: snapshot.sportType,
+			h3Resolution: snapshot.h3Resolution,
+			visitedTileCount: snapshot.hexTilesOrdered.length,
+			enclosedTileCount: 0,
+			hexTilesOrdered: snapshot.hexTilesOrdered,
+			routeId: snapshot.routeId,
+		};
+		activity.computed = computeActivityData(activity, []);
+		onSave(activity);
+	}, [snapshot, onSave]);
+
+	const handleReconstructWithRoute = useCallback((route: SavedRoute) => {
+		const reconstructed = reconstructInterruptedRoute(snapshot, route);
+		const points = reconstructed ?? snapshot.routePoints;
+		const stats = computeStats(points);
+		const activity: SavedActivity = {
+			id: String(snapshot.startedAt),
+			startedAt: snapshot.startedAt,
+			endedAt: snapshot.savedAt,
+			routePoints: points,
+			stats,
+			sportType: snapshot.sportType,
+			h3Resolution: snapshot.h3Resolution,
+			visitedTileCount: snapshot.hexTilesOrdered.length,
+			enclosedTileCount: 0,
+			hexTilesOrdered: snapshot.hexTilesOrdered,
+			routeId: route.id,
+		};
+		activity.computed = computeActivityData(activity, []);
+		onSave(activity);
+	}, [snapshot, onSave]);
+
+	const matchingRoutes = useMemo(() => {
+		if (routes.length === 0 || snapshot.hexTilesOrdered.length === 0) return [];
+		return findMatchingRoutes(snapshot.hexTilesOrdered, routes, snapshot.h3Resolution, 0.3);
+	}, [routes, snapshot]);
+
+	return (
+		<View style={{ paddingTop: 8, gap: 12 }}>
+			<Text style={{ color: theme.screen.text, fontSize: 15, lineHeight: 22 }}>
+				Eine Aktivität vom {dateStr} wurde durch einen App-Absturz unterbrochen.{'\n'}
+				{snapshot.routePoints.length} GPS-Punkte, {distKm.toFixed(2)} km, {Math.round(durationSec)}s aufgezeichnet.
+			</Text>
+
+			<TouchableOpacity
+				style={{ backgroundColor: '#2563eb', paddingVertical: 12, borderRadius: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8 }}
+				onPress={handleSaveAsIs}
+				activeOpacity={0.8}
+			>
+				<MaterialIcons name="save" size={18} color="#ffffff" />
+				<Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '600' }}>Aktivität speichern (wie aufgezeichnet)</Text>
+			</TouchableOpacity>
+
+			{loading ? (
+				<Text style={{ color: theme.screen.text, opacity: 0.5 }}>Routen werden geladen…</Text>
+			) : matchingRoutes.length > 0 ? (
+				<>
+					<Text style={{ color: theme.screen.text, fontSize: 14, fontWeight: '600' }}>
+						Route zuordnen und fehlende Strecke ergänzen:
+					</Text>
+					{matchingRoutes.map((match) => (
+						<TouchableOpacity
+							key={match.route.id}
+							style={{ backgroundColor: '#16a34a', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }}
+							onPress={() => handleReconstructWithRoute(match.route)}
+							activeOpacity={0.8}
+						>
+							<MaterialIcons name="route" size={18} color="#ffffff" />
+							<Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', flex: 1 }}>
+								{match.route.name} ({Math.round(match.overlap * 100)}% Übereinstimmung)
+							</Text>
+						</TouchableOpacity>
+					))}
+				</>
+			) : null}
+
+			<TouchableOpacity
+				style={{ paddingVertical: 12, alignItems: 'center' }}
+				onPress={onDiscard}
+				activeOpacity={0.8}
+			>
+				<Text style={{ color: theme.screen.text, fontSize: 15, fontWeight: '500' }}>Verwerfen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
 export default function RecordScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showColoringModal, close: closeColoringModal } = useMyScrollViewModal();
 	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const { show: showMagnifyModal, close: closeMagnifyModal } = useMyScrollViewModal();
+	const { show: showRecoveryModal, close: closeRecoveryModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
 	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
@@ -2866,6 +3083,8 @@ export default function RecordScreen() {
 	// Ref mirror of selectedSportType so callbacks can read it without stale closures.
 	const selectedSportTypeRef = useRef<SportType>(selectedSportType);
 	selectedSportTypeRef.current = selectedSportType;
+	// Timestamp of the last recording snapshot persisted to disk (crash recovery).
+	const lastSnapshotSaveRef = useRef(0);
 
 	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }) => {
 		if (!mapRef.current) return;
@@ -2915,6 +3134,49 @@ export default function RecordScreen() {
 			if (periodicAnnouncementTimerRef.current) clearInterval(periodicAnnouncementTimerRef.current);
 			Location.stopLocationUpdatesAsync(ACTIVITY_LOCATION_TASK).catch(() => {});
 		};
+	}, []);
+
+	// ── Check for an interrupted recording from a previous crash ──
+	useEffect(() => {
+		void (async () => {
+			try {
+				const snapshot = await loadRecordingSnapshot();
+				if (!snapshot || snapshot.routePoints.length < 2) {
+					// No interrupted recording or too few points – nothing to recover.
+					clearRecordingSnapshot();
+					return;
+				}
+				const ageMs = Date.now() - snapshot.savedAt;
+				// Discard snapshots older than 24 hours – they are likely stale.
+				if (ageMs > 24 * 60 * 60 * 1000) {
+					clearRecordingSnapshot();
+					return;
+				}
+
+				showRecoveryModal({
+					title: '🔄 Unterbrochene Aktivität',
+					children: (
+						<InterruptedRecoveryContent
+							snapshot={snapshot}
+							theme={theme}
+							onDiscard={() => {
+								clearRecordingSnapshot();
+								closeRecoveryModal();
+							}}
+							onSave={(activity) => {
+								try { saveActivity(activity); } catch (err) { console.warn('[RecordScreen] Failed to save recovered activity:', err); }
+								clearRecordingSnapshot();
+								closeRecoveryModal();
+								router.push(`/activities/${activity.id}`);
+							}}
+						/>
+					),
+				});
+			} catch (err) {
+				console.warn('[RecordScreen] Interrupted recording check failed:', err);
+			}
+		})();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// ── Announce when the app moves to the background during an active recording
@@ -3782,6 +4044,26 @@ export default function RecordScreen() {
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
 		}
+
+		// ── Periodically persist a recording snapshot for crash recovery ──
+		if (isRecordingRef.current && !isPausedRef.current) {
+			const now = Date.now();
+			// Save a snapshot at most every 10 seconds to limit I/O.
+			if (now - lastSnapshotSaveRef.current >= 10_000) {
+				lastSnapshotSaveRef.current = now;
+				saveRecordingSnapshot({
+					startedAt: startTimeRef.current,
+					accumulatedSeconds: accumulatedSecondsRef.current,
+					segmentStart: startTimeRef.current,
+					routePoints: routePointsRef.current,
+					hexTilesOrdered: orderedHexTilesRef.current,
+					h3Resolution: Math.floor(h3ResolutionRef.current),
+					sportType: selectedSportTypeRef.current,
+					routeId: selectedRouteRef.current?.id ?? null,
+					savedAt: now,
+				});
+			}
+		}
 	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
 
 	// Moves the player to a new position (used by the debug gamepad).
@@ -3920,6 +4202,7 @@ export default function RecordScreen() {
 			lastCellRef.current = null;
 			lastAcceptedGpsPointRef.current = null;
 			movedPlayerManuallyRef.current = false;
+			lastSnapshotSaveRef.current = 0;
 			dispatch(startRun());
 			startTimeRef.current = Date.now();
 			accumulatedSecondsRef.current = 0;
@@ -4106,6 +4389,9 @@ export default function RecordScreen() {
 		_onLocationUpdate = null;
 		fgSubRef.current?.remove();
 		fgSubRef.current = null;
+
+		// Clear the crash-recovery snapshot since this is a clean stop.
+		clearRecordingSnapshot();
 
 		if (timerRef.current) {
 			clearInterval(timerRef.current);
