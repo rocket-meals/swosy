@@ -123,7 +123,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 							<View key={componentFoodoffer?.id}>
 								<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
 								{componentMarkingIds.length === 0 ? (
-									<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
+									<SettingsList title={translate(TranslationKeys.no_allergens_or_additives_contained)} italic noIconIndent groupPosition="single" showSeparator={false} />
 								) : (
 									<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
 								)}
@@ -142,34 +142,34 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 			)}
 
 			<DebugView title="Foodoffer Components">
-			{foodofferComponents.map((component: any) => {
-				const componentFoodoffer = component?.component_foodoffers_id;
-				if (!componentFoodoffer) return null;
-				const componentName =
-					getTextFromTranslation(componentFoodoffer?.translations, language) ||
-					componentFoodoffer?.alias ||
-					`Component #${componentFoodoffer?.id}`;
-				const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
-					(m: any) => m?.markings_id
-				);
-				return (
-					<View key={componentFoodoffer?.id}>
-						<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
-						{componentMarkingIds.length === 0 ? (
-							<SettingsList title="Keine Lebensmittelkennzeichnungsdaten übermittelt worden" italic noIconIndent groupPosition="single" showSeparator={false} />
-						) : (
-							<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
-						)}
+				{foodofferComponents.map((component: any) => {
+					const componentFoodoffer = component?.component_foodoffers_id;
+					if (!componentFoodoffer) return null;
+					const componentName =
+						getTextFromTranslation(componentFoodoffer?.translations, language) ||
+						componentFoodoffer?.alias ||
+						`Component #${componentFoodoffer?.id}`;
+					const componentMarkingIds: string[] = (componentFoodoffer?.markings ?? []).map(
+						(m: any) => m?.markings_id
+					);
+					return (
+						<View key={componentFoodoffer?.id}>
+							<SettingsGroupTitle fontSize={26}>{componentName}</SettingsGroupTitle>
+							{componentMarkingIds.length === 0 ? (
+								<SettingsList title={translate(TranslationKeys.no_allergens_or_additives_contained)} italic noIconIndent groupPosition="single" showSeparator={false} />
+							) : (
+								<SettingsListMarkingLabels markingIds={componentMarkingIds} handleMenuSheet={handleMenuSheet} />
+							)}
+						</View>
+					);
+				})}
+				{globalMarkingIds.length > 0 && (
+					<View>
+						<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
+						<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
 					</View>
-				);
-			})}
-			{globalMarkingIds.length > 0 && (
-				<View>
-					<SettingsGroupTitle fontSize={26}>{translate(TranslationKeys.global_markings)}</SettingsGroupTitle>
-					<SettingsListMarkingLabels markingIds={globalMarkingIds} handleMenuSheet={handleMenuSheet} />
-				</View>
-			)}
-		</DebugView>
+				)}
+			</DebugView>
 
 			<DebugView title="Foodoffer Markings Data">
 				<Text style={{ ...styles.body, color: theme.screen.text }}>
