@@ -1873,8 +1873,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
 	// Separate anchor pickers for Hex Texture Adaption and Hex Objects layers.
-	const [selectedTextureAnchorColor, setSelectedTextureAnchorColor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
-	const [selectedAnchorColor, setSelectedAnchorColor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
+	const [selectedTextureAdaptionAnchor, setSelectedTextureAdaptionAnchor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
+	const [selectedObjectAnchor, setSelectedObjectAnchor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [featuresLoading, setFeaturesLoading] = useState(false);
 	const runIdRef = useRef(0);
@@ -1897,11 +1897,11 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const currentTileImage = record?.tileImage ?? null;
 	// Hex Texture Adaption (always flat, separate from Hex Objects).
 	const effectiveBillboardsTexture = record ? getEffectiveBillboardsTexture(record) : {} as Record<BillboardAnchorPosition, string>;
-	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAnchorColor] ?? null;
+	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAdaptionAnchor] ?? null;
 	const parsedCurrentTextureBillboard = currentTextureAnchorBillboard ? parseBillboardKey(currentTextureAnchorBillboard) : null;
 	// Hex Objects (face-camera): prefer the new `billboards` map, fall back to legacy fields.
 	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
-	const currentAnchorBillboard = effectiveBillboards[selectedAnchorColor] ?? null;
+	const currentAnchorBillboard = effectiveBillboards[selectedObjectAnchor] ?? null;
 	const parsedCurrentBillboard = currentAnchorBillboard ? parseBillboardKey(currentAnchorBillboard) : null;
 
 	const infoRows: { label: string; value: string }[] = [
@@ -1954,7 +1954,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
 
 	const openTextureAdaptionSelection = useCallback(() => {
-		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAnchorColor)?.label ?? selectedTextureAnchorColor;
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAdaptionAnchor)?.label ?? selectedTextureAdaptionAnchor;
 		showModal({
 			title: `🖼️ Select Texture Adaption — ${anchorLabel}`,
 			onClose: closeModal,
@@ -1966,7 +1966,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 						isSelected={!currentTextureAnchorBillboard}
 						selectionColor={PRIMARY_COLOR}
 						onPress={() => {
-							dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAnchorColor, billboard: null }));
+							dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAdaptionAnchor, billboard: null }));
 							closeModal();
 						}}
 						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
@@ -1983,7 +1983,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 								isSelected={isSelected}
 								selectionColor={PRIMARY_COLOR}
 								onPress={() => {
-									dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAnchorColor, billboard: key }));
+									dispatch(setTextureAdaptionAtAnchor({ h3Index, anchorColor: selectedTextureAdaptionAnchor, billboard: key }));
 									closeModal();
 								}}
 								groupPosition={position}
@@ -1993,10 +1993,10 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			),
 		});
-	}, [showModal, closeModal, currentTextureAnchorBillboard, h3Index, dispatch, selectedTextureAnchorColor]);
+	}, [showModal, closeModal, currentTextureAnchorBillboard, h3Index, dispatch, selectedTextureAdaptionAnchor]);
 
 	const openBillboardSelection = useCallback(() => {
-		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor;
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedObjectAnchor)?.label ?? selectedObjectAnchor;
 		showModal({
 			title: `🏗️ Select Object — ${anchorLabel}`,
 			onClose: closeModal,
@@ -2009,7 +2009,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 						isSelected={!currentAnchorBillboard}
 						selectionColor={PRIMARY_COLOR}
 						onPress={() => {
-							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: null }));
+							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedObjectAnchor, billboard: null }));
 							closeModal();
 						}}
 						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
@@ -2026,7 +2026,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 								isSelected={isSelected}
 								selectionColor={PRIMARY_COLOR}
 								onPress={() => {
-									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedAnchorColor, billboard: key }));
+									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedObjectAnchor, billboard: key }));
 									closeModal();
 								}}
 								groupPosition={position}
@@ -2036,7 +2036,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				</View>
 			),
 		});
-	}, [showModal, closeModal, currentAnchorBillboard, h3Index, dispatch, selectedAnchorColor]);
+	}, [showModal, closeModal, currentAnchorBillboard, h3Index, dispatch, selectedObjectAnchor]);
 
 	return (
 		<View style={styles.hexInfoContainer}>
@@ -2067,13 +2067,13 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			{/* ── Hex Texture Adaption section (flat sprites at anchor positions) ── */}
 			<SettingsListGroupTitle title="Hex Texture Adaption" />
 			<HexAnchorPicker
-				selected={selectedTextureAnchorColor}
-				onSelect={setSelectedTextureAnchorColor}
+				selected={selectedTextureAdaptionAnchor}
+				onSelect={setSelectedTextureAdaptionAnchor}
 				occupiedAnchors={effectiveBillboardsTexture}
 			/>
 			<SettingsListBillboard
 				spriteIndex={parsedCurrentTextureBillboard?.idx ?? null}
-				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAnchorColor)?.label ?? selectedTextureAnchorColor}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAdaptionAnchor)?.label ?? selectedTextureAdaptionAnchor}
 				onPress={openTextureAdaptionSelection}
 				groupPosition="single"
 			/>
@@ -2081,13 +2081,13 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			{/* ── Hex Objects section (face-camera sprites at anchor positions) ── */}
 			<SettingsListGroupTitle title="Hex Objects" />
 			<HexAnchorPicker
-				selected={selectedAnchorColor}
-				onSelect={setSelectedAnchorColor}
+				selected={selectedObjectAnchor}
+				onSelect={setSelectedObjectAnchor}
 				occupiedAnchors={effectiveBillboards}
 			/>
 			<SettingsListBillboard
 				spriteIndex={parsedCurrentBillboard?.idx ?? null}
-				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedAnchorColor)?.label ?? selectedAnchorColor}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedObjectAnchor)?.label ?? selectedObjectAnchor}
 				onPress={openBillboardSelection}
 				groupPosition="single"
 			/>
