@@ -2930,9 +2930,13 @@ export default function RecordScreen() {
 				const langCode = locale.split('-')[0].toLowerCase();
 				const text = buildBackgroundAnnouncement(locale);
 				const curSs = speechSettingsRef.current;
-				speakAnnouncement(text, langCode, {
-					rate: speechRateToNumber(curSs.speechRate),
-				});
+				try {
+					speakAnnouncement(text, langCode, {
+						rate: speechRateToNumber(curSs.speechRate),
+					}, 'background');
+				} catch (err) {
+					console.warn('[RecordScreen] Background announcement failed:', err);
+				}
 			}
 		});
 		return () => subscription.remove();
@@ -3685,9 +3689,13 @@ export default function RecordScreen() {
 					announcePace: curSs.announcePace,
 					announceSpeedKmh: curSs.announceSpeed,
 				});
-				speakAnnouncement(text, langCode, {
-					rate: speechRateToNumber(curSs.speechRate),
-				});
+				try {
+					speakAnnouncement(text, langCode, {
+						rate: speechRateToNumber(curSs.speechRate),
+					}, 'km_milestone');
+				} catch (err) {
+					console.warn('[RecordScreen] Km milestone announcement failed:', err);
+				}
 			}
 		}
 
@@ -3729,11 +3737,15 @@ export default function RecordScreen() {
 						const locale = getLocales()[0]?.languageTag ?? 'en-US';
 						const langCode = locale.split('-')[0].toLowerCase();
 						const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
-						speakAnnouncement(text, langCode, {
-							volume: curSs.volume,
-							rate: speechRateToNumber(curSs.speechRate),
-							useApplicationAudioSession: curSs.duckMusicDuringTTS,
-						});
+						try {
+							speakAnnouncement(text, langCode, {
+								volume: curSs.volume,
+								rate: speechRateToNumber(curSs.speechRate),
+								useApplicationAudioSession: curSs.duckMusicDuringTTS,
+							}, 'pace_hint');
+						} catch (err) {
+							console.warn('[RecordScreen] Pace hint announcement failed:', err);
+						}
 						lastPaceHintTimeRef.current = now;
 					}
 
@@ -3864,11 +3876,15 @@ export default function RecordScreen() {
 				announceHeartRate: curSs.announceHeartRate,
 			});
 			if (text.length > 0) {
-				speakAnnouncement(text, langCode, {
-					volume: curSs.volume,
-					rate: speechRateToNumber(curSs.speechRate),
-					useApplicationAudioSession: curSs.duckMusicDuringTTS,
-				});
+				try {
+					speakAnnouncement(text, langCode, {
+						volume: curSs.volume,
+						rate: speechRateToNumber(curSs.speechRate),
+						useApplicationAudioSession: curSs.duckMusicDuringTTS,
+					}, 'periodic');
+				} catch (err) {
+					console.warn('[RecordScreen] Periodic announcement failed:', err);
+				}
 			}
 		}, intervalSec * 1000);
 	}, [stopPeriodicAnnouncementTimer]);
@@ -4114,7 +4130,7 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
-		Speech.stop();
+		try { Speech.stop(); } catch (err) { console.warn('[RecordScreen] Speech.stop failed:', err); }
 		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
