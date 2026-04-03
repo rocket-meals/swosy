@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
@@ -7,36 +7,32 @@ import {
 	useTheme,
 } from 'repo-depkit-common-ui';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { SavedRoute, loadRoutes, deleteAllRoutes } from '../../helpers/RouteStorage';
-import { loadActivities } from '../../helpers/ActivityStorage';
 import SettingsListRoute from '../../components/SettingsListRoute';
 
 export default function RoutesScreen() {
 	const { theme } = useTheme();
 	const router = useRouter();
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
-	const [activityCountByRouteId, setActivityCountByRouteId] = useState<Record<string, number>>({});
 
 	const refreshRoutes = useCallback(async () => {
 		try {
-			const [loaded, activities] = await Promise.all([loadRoutes(), loadActivities()]);
+			const loaded = await loadRoutes();
 			setRoutes(loaded);
-			const countMap: Record<string, number> = {};
-			for (const activity of activities) {
-				if (activity.routeId) {
-					countMap[activity.routeId] = (countMap[activity.routeId] ?? 0) + 1;
-				}
-			}
-			setActivityCountByRouteId(countMap);
 		} catch {
 			setRoutes([]);
-			setActivityCountByRouteId({});
 		}
 	}, []);
 
-	useEffect(() => {
-		refreshRoutes();
-	}, [refreshRoutes]);
+	// Reload routes from disk every time this screen comes into focus so that
+	// activityIds (updated when activities are assigned in the activity screen)
+	// are always up to date.
+	useFocusEffect(
+		useCallback(() => {
+			refreshRoutes();
+		}, [refreshRoutes]),
+	);
 
 	const handleDeleteAll = useCallback(() => {
 		Alert.alert('Delete All Routes', 'Are you sure you want to delete all saved routes? This cannot be undone.', [
@@ -80,7 +76,6 @@ export default function RoutesScreen() {
 					<SettingsListRoute
 						key={route.id}
 						route={route}
-						activityCount={activityCountByRouteId[route.id] ?? 0}
 						groupPosition={groupPosition}
 						showSeparator={idx < routes.length - 1}
 						onPress={() => handleSelectRoute(route)}
