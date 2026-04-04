@@ -37,6 +37,8 @@ const REPLAY_COLOR = '#7c3aed';
 const REPLAY_SPEED_STEP = 0.5;
 const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
+// Base interval between hex-center waypoints at 1× speed (ms per hex cell).
+const HEX_REPLAY_MS_PER_CELL = 800;
 
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
@@ -594,6 +596,21 @@ const routeAssignStyles = StyleSheet.create({
 
 // ─── Activity Detail Screen ───────────────────────────────────────────────────
 
+/**
+ * Build a replay waypoint list from an ordered H3 hex-tile sequence.
+ * Each cell contributes one waypoint at its geographic center; waypoints are
+ * spaced HEX_REPLAY_MS_PER_CELL ms apart so the marker moves at a constant
+ * visual speed regardless of how GPS timestamps were recorded.
+ */
+function buildHexReplayPoints(
+	hexTilesOrdered: string[],
+): Array<{ lat: number; lng: number; timestamp: number }> {
+	return hexTilesOrdered.map((cellId, i) => {
+		const [lat, lng] = cellToLatLng(cellId);
+		return { lat, lng, timestamp: i * HEX_REPLAY_MS_PER_CELL };
+	});
+}
+
 const H3_GEOJSON_ORDER = true;
 const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 
@@ -965,12 +982,13 @@ export default function ActivityDetailScreen() {
 		});
 	}, [mapMounted, activity]);
 
-	// Rückblende: replay GPS route on the map.
-	// Sends the full route to the WebView which runs the animation loop internally
-	// with timestamp-based interpolation. The WebView also handles camera following
-	// at street-level zoom so the marker movement is clearly visible.
+	// Rückblende: replay the activity route on the map.
+	// Prefers hex-cell center points (constant-speed, no GPS-timestamp issues).
+	// Falls back to raw GPS points for activities that pre-date hexTilesOrdered.
+	// The WebView runs the animation loop and camera following internally so
+	// there is no React-Native bridge overhead per frame.
 	useEffect(() => {
-		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) {
+		if (replayIsDisabled || !mapMounted || !activity) {
 			if (mapRef.current && mapMounted) {
 				mapRef.current.sendToMap({ replayAnimation: null });
 			}
@@ -980,11 +998,19 @@ export default function ActivityDetailScreen() {
 		// Stop overview auto-rotate so it doesn't interfere with the replay camera.
 		mapRef.current?.sendToMap({ autoRotate: false });
 
-		const points = activity.routePoints;
+		// Use hex center points for constant-speed replay; fall back to GPS
+		// points for activities that pre-date hexTilesOrdered storage.
+		const hexTiles = activity.hexTilesOrdered;
+		const points =
+			hexTiles && hexTiles.length >= 2
+				? buildHexReplayPoints(hexTiles)
+				: activity.routePoints;
 
-		// Send the full route to the WebView; the animation loop and camera
-		// following both run inside the WebView so there is no React-Native
-		// bridge overhead per frame.
+		if (points.length < 2) {
+			mapRef.current?.sendToMap({ replayAnimation: null });
+			return;
+		}
+
 		mapRef.current?.sendToMap({ replayAnimation: { points, speed: replaySpeed } });
 
 		return () => {
