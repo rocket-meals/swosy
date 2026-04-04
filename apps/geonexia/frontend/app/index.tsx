@@ -1865,6 +1865,7 @@ type MapFeatureInfo = {
 	natural: string | null;
 	landuse: string | null;
 	amenity: string | null;
+	count: number;
 };
 
 function HexTileInfoContent({ h3Index }: { h3Index: string }) {
