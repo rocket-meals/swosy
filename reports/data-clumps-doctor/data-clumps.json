@@ -1,6 +1,6 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-04T07:15:54.480Z",
+  "report_timestamp": "2026-04-04T07:41:10.719Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
@@ -8,8 +8,8 @@
         "invertedFieldToClasses": {
           "median": 1,
           "maximum": 94,
-          "average": 1.6137959520859149,
-          "amountSavedValuesForKeys": 3907,
+          "average": 1.6137020222864218,
+          "amountSavedValuesForKeys": 3910,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -22,21 +22,21 @@
         "invertedParameterToClasses": {
           "median": 1,
           "maximum": 94,
-          "average": 1.6285952480200083,
-          "amountSavedValuesForKeys": 3907,
-          "amountKeys": 25
+          "average": 1.6284881299458558,
+          "amountSavedValuesForKeys": 3910,
+          "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4101,
-        "detection_time_ms": 85,
+        "ast_generation_time_ms": 4025,
+        "detection_time_ms": 78,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 111.81,
-          "os_memory_free": 14936498176,
+          "os_uptime": 172.48,
+          "os_memory_free": 14949380096,
           "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
@@ -55,17 +55,17 @@
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "53880f74fa637dd3faf6a4c21c9945bea8c828ea",
-    "project_commit_hash": "53880f74fa637dd3faf6a4c21c9945bea8c828ea",
+    "project_version": "18ae57031832c3089e661613ae39931fc53debfd",
+    "project_commit_hash": "18ae57031832c3089e661613ae39931fc53debfd",
     "project_tag": null,
-    "project_commit_date": "1775286856",
+    "project_commit_date": "1775288378",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 487,
-    "number_of_classes_or_interfaces": 992,
+    "number_of_files": 488,
+    "number_of_classes_or_interfaces": 994,
     "number_of_methods": 1327,
-    "number_of_data_fields": 3907,
+    "number_of_data_fields": 3910,
     "number_of_method_parameters": 1467
   },
   "detector": {
@@ -2497,9 +2497,9 @@
             }
           },
           "position": {
-            "startLine": 1858,
+            "startLine": 1859,
             "startColumn": 2,
-            "endLine": 1858,
+            "endLine": 1859,
             "endColumn": 25
           }
         },
@@ -2522,9 +2522,9 @@
             }
           },
           "position": {
-            "startLine": 1859,
+            "startLine": 1860,
             "startColumn": 2,
-            "endLine": 1859,
+            "endLine": 1860,
             "endColumn": 22
           }
         },
@@ -2547,9 +2547,9 @@
             }
           },
           "position": {
-            "startLine": 1860,
+            "startLine": 1861,
             "startColumn": 2,
-            "endLine": 1860,
+            "endLine": 1861,
             "endColumn": 23
           }
         },
@@ -2572,9 +2572,9 @@
             }
           },
           "position": {
-            "startLine": 1861,
+            "startLine": 1862,
             "startColumn": 2,
-            "endLine": 1861,
+            "endLine": 1862,
             "endColumn": 26
           }
         },
@@ -2597,9 +2597,9 @@
             }
           },
           "position": {
-            "startLine": 1862,
+            "startLine": 1863,
             "startColumn": 2,
-            "endLine": 1862,
+            "endLine": 1863,
             "endColumn": 25
           }
         },
@@ -2622,9 +2622,9 @@
             }
           },
           "position": {
-            "startLine": 1863,
+            "startLine": 1864,
             "startColumn": 2,
-            "endLine": 1863,
+            "endLine": 1864,
             "endColumn": 26
           }
         },
@@ -2647,9 +2647,9 @@
             }
           },
           "position": {
-            "startLine": 1864,
+            "startLine": 1865,
             "startColumn": 2,
-            "endLine": 1864,
+            "endLine": 1865,
             "endColumn": 26
           }
         },
@@ -2672,9 +2672,9 @@
             }
           },
           "position": {
-            "startLine": 1865,
+            "startLine": 1866,
             "startColumn": 2,
-            "endLine": 1865,
+            "endLine": 1866,
             "endColumn": 25
           }
         },
@@ -2697,9 +2697,9 @@
             }
           },
           "position": {
-            "startLine": 1866,
+            "startLine": 1867,
             "startColumn": 2,
-            "endLine": 1866,
+            "endLine": 1867,
             "endColumn": 25
           }
         },
@@ -2722,9 +2722,9 @@
             }
           },
           "position": {
-            "startLine": 1867,
+            "startLine": 1868,
             "startColumn": 2,
-            "endLine": 1867,
+            "endLine": 1868,
             "endColumn": 25
           }
         },
@@ -2747,9 +2747,9 @@
             }
           },
           "position": {
-            "startLine": 1868,
+            "startLine": 1869,
             "startColumn": 2,
-            "endLine": 1868,
+            "endLine": 1869,
             "endColumn": 16
           }
         }
@@ -2794,9 +2794,9 @@
             }
           },
           "position": {
-            "startLine": 1859,
+            "startLine": 1860,
             "startColumn": 2,
-            "endLine": 1859,
+            "endLine": 1860,
             "endColumn": 22
           }
         },
@@ -2819,9 +2819,9 @@
             }
           },
           "position": {
-            "startLine": 1860,
+            "startLine": 1861,
             "startColumn": 2,
-            "endLine": 1860,
+            "endLine": 1861,
             "endColumn": 23
           }
         },
@@ -2844,9 +2844,9 @@
             }
           },
           "position": {
-            "startLine": 1861,
+            "startLine": 1862,
             "startColumn": 2,
-            "endLine": 1861,
+            "endLine": 1862,
             "endColumn": 26
           }
         },
@@ -2869,9 +2869,9 @@
             }
           },
           "position": {
-            "startLine": 1862,
+            "startLine": 1863,
             "startColumn": 2,
-            "endLine": 1862,
+            "endLine": 1863,
             "endColumn": 25
           }
         },
@@ -2894,9 +2894,9 @@
             }
           },
           "position": {
-            "startLine": 1863,
+            "startLine": 1864,
             "startColumn": 2,
-            "endLine": 1863,
+            "endLine": 1864,
             "endColumn": 26
           }
         },
@@ -2919,9 +2919,9 @@
             }
           },
           "position": {
-            "startLine": 1864,
+            "startLine": 1865,
             "startColumn": 2,
-            "endLine": 1864,
+            "endLine": 1865,
             "endColumn": 26
           }
         },
@@ -2944,9 +2944,9 @@
             }
           },
           "position": {
-            "startLine": 1865,
+            "startLine": 1866,
             "startColumn": 2,
-            "endLine": 1865,
+            "endLine": 1866,
             "endColumn": 25
           }
         },
@@ -2969,9 +2969,9 @@
             }
           },
           "position": {
-            "startLine": 1866,
+            "startLine": 1867,
             "startColumn": 2,
-            "endLine": 1866,
+            "endLine": 1867,
             "endColumn": 25
           }
         },
@@ -2994,9 +2994,9 @@
             }
           },
           "position": {
-            "startLine": 1867,
+            "startLine": 1868,
             "startColumn": 2,
-            "endLine": 1867,
+            "endLine": 1868,
             "endColumn": 25
           }
         },
@@ -3019,9 +3019,9 @@
             }
           },
           "position": {
-            "startLine": 1868,
+            "startLine": 1869,
             "startColumn": 2,
-            "endLine": 1868,
+            "endLine": 1869,
             "endColumn": 16
           }
         }
@@ -5574,9 +5574,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1859,
+              "startLine": 1860,
               "startColumn": 2,
-              "endLine": 1859,
+              "endLine": 1860,
               "endColumn": 22
             }
           },
@@ -5599,9 +5599,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 1868,
+              "startLine": 1869,
               "startColumn": 2,
-              "endLine": 1868,
+              "endLine": 1869,
               "endColumn": 16
             }
           },
@@ -5624,9 +5624,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1860,
+              "startLine": 1861,
               "startColumn": 2,
-              "endLine": 1860,
+              "endLine": 1861,
               "endColumn": 23
             }
           },
@@ -5649,9 +5649,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1861,
+              "startLine": 1862,
               "startColumn": 2,
-              "endLine": 1861,
+              "endLine": 1862,
               "endColumn": 26
             }
           },
@@ -5674,9 +5674,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1862,
+              "startLine": 1863,
               "startColumn": 2,
-              "endLine": 1862,
+              "endLine": 1863,
               "endColumn": 25
             }
           },
@@ -5699,9 +5699,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1863,
+              "startLine": 1864,
               "startColumn": 2,
-              "endLine": 1863,
+              "endLine": 1864,
               "endColumn": 26
             }
           },
@@ -5724,9 +5724,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1864,
+              "startLine": 1865,
               "startColumn": 2,
-              "endLine": 1864,
+              "endLine": 1865,
               "endColumn": 26
             }
           },
@@ -5749,9 +5749,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1865,
+              "startLine": 1866,
               "startColumn": 2,
-              "endLine": 1865,
+              "endLine": 1866,
               "endColumn": 25
             }
           },
@@ -5774,9 +5774,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1866,
+              "startLine": 1867,
               "startColumn": 2,
-              "endLine": 1866,
+              "endLine": 1867,
               "endColumn": 25
             }
           },
@@ -5799,9 +5799,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1867,
+              "startLine": 1868,
               "startColumn": 2,
-              "endLine": 1867,
+              "endLine": 1868,
               "endColumn": 25
             }
           },
@@ -6118,9 +6118,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1858,
+              "startLine": 1859,
               "startColumn": 2,
-              "endLine": 1858,
+              "endLine": 1859,
               "endColumn": 25
             }
           },
@@ -6143,9 +6143,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1859,
+              "startLine": 1860,
               "startColumn": 2,
-              "endLine": 1859,
+              "endLine": 1860,
               "endColumn": 22
             }
           },
@@ -6168,9 +6168,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1860,
+              "startLine": 1861,
               "startColumn": 2,
-              "endLine": 1860,
+              "endLine": 1861,
               "endColumn": 23
             }
           },
@@ -6193,9 +6193,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1861,
+              "startLine": 1862,
               "startColumn": 2,
-              "endLine": 1861,
+              "endLine": 1862,
               "endColumn": 26
             }
           },
@@ -6218,9 +6218,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1862,
+              "startLine": 1863,
               "startColumn": 2,
-              "endLine": 1862,
+              "endLine": 1863,
               "endColumn": 25
             }
           },
@@ -6243,9 +6243,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1863,
+              "startLine": 1864,
               "startColumn": 2,
-              "endLine": 1863,
+              "endLine": 1864,
               "endColumn": 26
             }
           },
@@ -6268,9 +6268,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1864,
+              "startLine": 1865,
               "startColumn": 2,
-              "endLine": 1864,
+              "endLine": 1865,
               "endColumn": 26
             }
           },
@@ -6293,9 +6293,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1865,
+              "startLine": 1866,
               "startColumn": 2,
-              "endLine": 1865,
+              "endLine": 1866,
               "endColumn": 25
             }
           },
@@ -6318,9 +6318,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1866,
+              "startLine": 1867,
               "startColumn": 2,
-              "endLine": 1866,
+              "endLine": 1867,
               "endColumn": 25
             }
           },
@@ -6343,9 +6343,9 @@
             "type": "string | null",
             "modifiers": [],
             "position": {
-              "startLine": 1867,
+              "startLine": 1868,
               "startColumn": 2,
-              "endLine": 1867,
+              "endLine": 1868,
               "endColumn": 25
             }
           },
@@ -6368,9 +6368,9 @@
             "type": "number",
             "modifiers": [],
             "position": {
-              "startLine": 1868,
+              "startLine": 1869,
               "startColumn": 2,
-              "endLine": 1868,
+              "endLine": 1869,
               "endColumn": 16
             }
           },
