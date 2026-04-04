@@ -667,7 +667,7 @@ export const HEX_TILE_SCRIPT = `
       // Binary search for the segment containing replayTime
       var lo = 0, hi = pts.length - 2;
       while (lo < hi) {
-        var mid = (lo + hi + 1) >> 1;
+        var mid = Math.floor((lo + hi + 1) / 2);
         if (pts[mid].timestamp <= replayTime) { lo = mid; } else { hi = mid - 1; }
       }
       var p1 = pts[lo];
