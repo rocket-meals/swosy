@@ -704,15 +704,12 @@ export const HEX_TILE_SCRIPT = `
         },
       });
     }
-    // Fly camera to the first point at street-level zoom so the movement is clearly visible
-    var firstBearing = points.length > 1
-      ? replayBearingTo(points[0].lat, points[0].lng, points[1].lat, points[1].lng)
-      : 0;
+    // Fly camera to the first point at street-level zoom so the movement is clearly visible.
+    // Bearing is intentionally omitted so the existing overview auto-rotate keeps spinning.
     map.flyTo({
       center: [points[0].lng, points[0].lat],
       zoom: REPLAY_FOLLOW_ZOOM,
       pitch: REPLAY_CAMERA_PITCH,
-      bearing: firstBearing,
       duration: 800,
     });
     replayAnimInterval = setInterval(function () {
@@ -737,15 +734,10 @@ export const HEX_TILE_SCRIPT = `
       var lat = p1.lat + (p2.lat - p1.lat) * t;
       // Update marker position
       map.getSource(REPLAY_PLAYER_SOURCE).setData(replayPointToGeoJSON(lng, lat));
-      // Calculate bearing toward the next point for camera heading
-      var bearing = 0;
-      if (lo + 1 < pts.length) {
-        bearing = replayBearingTo(p1.lat, p1.lng, p2.lat, p2.lng);
-      }
-      // Follow the marker with the camera at street-level zoom
+      // Follow the marker with the camera. Bearing is omitted so the overview
+      // auto-rotate continues uninterrupted (map keeps its normal rotation).
       map.easeTo({
         center: [lng, lat],
-        bearing: bearing,
         duration: REPLAY_ANIM_MS,
         easing: function (t) { return t; }, // linear easing for smooth continuous movement
       });
