@@ -30,7 +30,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 4;
+export const WORLD_BUILDING_ID = 5;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -561,10 +561,8 @@ export function rebuildMapFromActivities(
 					const edgeIdx = getEdgeIndexTowardNeighbor(hexId, neighbor);
 					if (edgeIdx < 0 || edgeIdx >= EDGE_INDEX_TO_ANCHOR.length) continue;
 					const anchorPosition = EDGE_INDEX_TO_ANCHOR[edgeIdx];
-					if (!rec.billboards) rec.billboards = {};
-					rec.billboards[anchorPosition] = BILLBOARD_PATH_ROUNDED;
-					if (!rec.billboardsFlat) rec.billboardsFlat = {};
-					rec.billboardsFlat[anchorPosition] = true;
+					if (!rec.billboardsTexture) rec.billboardsTexture = {};
+					rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
 				}
 			}
 		} else if (rec.enclosedCount > 0) {
