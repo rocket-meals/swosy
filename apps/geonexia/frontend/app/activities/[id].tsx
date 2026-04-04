@@ -40,6 +40,8 @@ const REPLAY_SPEED_MAX = 20.0;
 const REPLAY_MIN_INTERVAL_MS = 50;
 const REPLAY_LOOP_PAUSE_MS = 1500;
 const REPLAY_FOLLOW_ZOOM = 16; // street-level zoom used while the camera follows the replay marker
+const REPLAY_CAMERA_PITCH = 45; // pitch angle for the tracking camera during replay
+const REPLAY_INITIAL_EASE_DURATION_MS = 600; // duration of the initial camera fly-in when replay starts
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -1007,9 +1009,9 @@ export default function ActivityDetailScreen() {
 			mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
 			zoom: REPLAY_FOLLOW_ZOOM,
 			bearing: firstHeading,
-			pitch: 45,
+			pitch: REPLAY_CAMERA_PITCH,
 			easeAnimation: true,
-			easeDuration: 600,
+			easeDuration: REPLAY_INITIAL_EASE_DURATION_MS,
 		});
 
 		const advance = () => {
