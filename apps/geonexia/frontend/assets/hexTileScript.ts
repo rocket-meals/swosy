@@ -591,6 +591,97 @@ export const HEX_TILE_SCRIPT = `
     if (map.getSource(HEX_SEARCH_HIGHLIGHT_SOURCE)) map.removeSource(HEX_SEARCH_HIGHLIGHT_SOURCE);
   }
 
+  // ── Replay Animation (Rückblenden-Modus) ─────────────────────────────────
+  // Animates the recorded GPS route internally inside the WebView, updating a
+  // GeoJSON source on every tick.  This mirrors the frontend map's simulated-
+  // car-driver approach (setInterval + source.setData) and avoids the
+  // React-Native ↔ WebView bridge overhead of the previous per-step approach.
+  var REPLAY_PLAYER_SOURCE = 'replay-player-source';
+  var REPLAY_PLAYER_LAYER = 'replay-player-layer';
+  var REPLAY_PLAYER_COLOR = '#7c3aed';
+  var REPLAY_PLAYER_RADIUS = 8;
+  var REPLAY_PLAYER_STROKE_COLOR = '#ffffff';
+  var REPLAY_PLAYER_STROKE_WIDTH = 2;
+  var REPLAY_ANIM_MS = 50; // ~20 fps
+
+  var replayAnimInterval = null;
+  var replayAnimState = null;
+
+  function replayPointToGeoJSON(lng, lat) {
+    return {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+        properties: {}
+      }]
+    };
+  }
+
+  function stopReplayAnimation() {
+    if (replayAnimInterval) { clearInterval(replayAnimInterval); replayAnimInterval = null; }
+    replayAnimState = null;
+    if (map) {
+      if (map.getLayer(REPLAY_PLAYER_LAYER)) map.removeLayer(REPLAY_PLAYER_LAYER);
+      if (map.getSource(REPLAY_PLAYER_SOURCE)) map.removeSource(REPLAY_PLAYER_SOURCE);
+    }
+  }
+
+  function startReplayAnimation(points, speed) {
+    stopReplayAnimation();
+    if (!points || points.length < 2 || !map) return;
+    var duration = points[points.length - 1].timestamp - points[0].timestamp;
+    if (duration <= 0) return;
+    replayAnimState = {
+      points: points,
+      speed: speed,
+      startWallTime: Date.now(),
+      startReplayTime: points[0].timestamp,
+      duration: duration,
+    };
+    var geojson = replayPointToGeoJSON(points[0].lng, points[0].lat);
+    if (map.getSource(REPLAY_PLAYER_SOURCE)) {
+      map.getSource(REPLAY_PLAYER_SOURCE).setData(geojson);
+    } else {
+      map.addSource(REPLAY_PLAYER_SOURCE, { type: 'geojson', data: geojson });
+      map.addLayer({
+        id: REPLAY_PLAYER_LAYER,
+        type: 'circle',
+        source: REPLAY_PLAYER_SOURCE,
+        paint: {
+          'circle-radius': REPLAY_PLAYER_RADIUS,
+          'circle-color': REPLAY_PLAYER_COLOR,
+          'circle-opacity': 0.9,
+          'circle-stroke-width': REPLAY_PLAYER_STROKE_WIDTH,
+          'circle-stroke-color': REPLAY_PLAYER_STROKE_COLOR,
+        },
+      });
+    }
+    replayAnimInterval = setInterval(function () {
+      if (!replayAnimState || !map || !map.getSource(REPLAY_PLAYER_SOURCE)) return;
+      var pts = replayAnimState.points;
+      var dur = replayAnimState.duration;
+      var elapsed = Date.now() - replayAnimState.startWallTime;
+      var replayOffset = (elapsed * replayAnimState.speed) % dur;
+      var replayTime = replayAnimState.startReplayTime + replayOffset;
+      // Binary search for the segment containing replayTime
+      var lo = 0, hi = pts.length - 2;
+      while (lo < hi) {
+        var mid = (lo + hi + 1) >> 1;
+        if (pts[mid].timestamp <= replayTime) { lo = mid; } else { hi = mid - 1; }
+      }
+      var p1 = pts[lo];
+      var p2 = pts[lo + 1] || p1;
+      var segDur = p2.timestamp - p1.timestamp;
+      var t = segDur > 0 ? (replayTime - p1.timestamp) / segDur : 0;
+      t = Math.max(0, Math.min(1, t));
+      var lng = p1.lng + (p2.lng - p1.lng) * t;
+      var lat = p1.lat + (p2.lat - p1.lat) * t;
+      map.getSource(REPLAY_PLAYER_SOURCE).setData(replayPointToGeoJSON(lng, lat));
+    }, REPLAY_ANIM_MS);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // ── Extension hooks ───────────────────────────────────────────────────────
   window._mapExtensions = window._mapExtensions || {};
 
@@ -789,6 +880,13 @@ export const HEX_TILE_SCRIPT = `
         result[tileId] = qFeatures;
       }
       sendToRN({ tag: 'TileFeaturesResult', requestId: requestId, features: result });
+    }
+    if (data.replayAnimation !== undefined) {
+      if (data.replayAnimation) {
+        startReplayAnimation(data.replayAnimation.points, data.replayAnimation.speed);
+      } else {
+        stopReplayAnimation();
+      }
     }
   };
 

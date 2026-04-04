@@ -37,8 +37,6 @@ const REPLAY_COLOR = '#7c3aed';
 const REPLAY_SPEED_STEP = 0.5;
 const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
-const REPLAY_MIN_INTERVAL_MS = 50;
-const REPLAY_LOOP_PAUSE_MS = 1500;
 const REPLAY_BOUNDS_PADDING_FACTOR = 0.25; // expand route bbox by 25 % on each side
 const REPLAY_FIT_BOUNDS_PADDING = 20; // pixel inset for fitBounds during replay
 
@@ -59,17 +57,6 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 		Math.sin(dLat / 2) ** 2 +
 		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-/** Returns the compass bearing in degrees (0–360, clockwise from North) from point A to point B. */
-function bearingTo(lat1: number, lng1: number, lat2: number, lng2: number): number {
-	const toRad = (d: number) => (d * Math.PI) / 180;
-	const φ1 = toRad(lat1);
-	const φ2 = toRad(lat2);
-	const Δλ = toRad(lng2 - lng1);
-	const y = Math.sin(Δλ) * Math.cos(φ2);
-	const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-	return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
 }
 
 /**
@@ -727,18 +714,13 @@ export default function ActivityDetailScreen() {
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 	const isDebugMode = useDebugMode();
 	const { show: showDebugModal } = useMyScrollViewModal();
-	const replayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-	const replayIndexRef = useRef<number>(0);
 
-	// Stop map-side auto-rotate on unmount
+	// Stop map-side auto-rotate and replay animation on unmount
 	useEffect(() => {
 		return () => {
 			if (mapRef.current) {
 				mapRef.current.sendToMap({ autoRotate: false });
-			}
-			if (replayTimerRef.current) {
-				clearTimeout(replayTimerRef.current);
-				replayTimerRef.current = null;
+				mapRef.current.sendToMap({ replayAnimation: null });
 			}
 		};
 	}, []);
@@ -984,18 +966,20 @@ export default function ActivityDetailScreen() {
 		});
 	}, [mapMounted, activity]);
 
-	// Rückblende: replay GPS route on the map
+	// Rückblende: replay GPS route on the map.
+	// Sends the full route to the WebView which runs the animation loop internally
+	// (same GeoJSON + setInterval approach as the frontend's simulated-car-driver).
 	useEffect(() => {
-		if (replayTimerRef.current) {
-			clearTimeout(replayTimerRef.current);
-			replayTimerRef.current = null;
+		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) {
+			if (mapRef.current && mapMounted) {
+				mapRef.current.sendToMap({ replayAnimation: null });
+			}
+			return;
 		}
-		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) return;
 
 		// Stop overview auto-rotate so it doesn't interfere with the replay view.
 		mapRef.current?.sendToMap({ autoRotate: false });
 
-		replayIndexRef.current = 0;
 		const points = activity.routePoints;
 
 		// Fit the camera to the full route so the replay marker is visibly moving
@@ -1013,44 +997,12 @@ export default function ActivityDetailScreen() {
 			});
 		}
 
-		const advance = () => {
-			const idx = replayIndexRef.current;
-			if (idx >= points.length) return;
-			const point = points[idx];
-			replayIndexRef.current++;
-			if (idx + 1 < points.length) {
-				const nextPoint = points[idx + 1];
-				// Point the marker cone toward the next recorded GPS point
-				const heading = bearingTo(point.lat, point.lng, nextPoint.lat, nextPoint.lng);
-				const realInterval = Math.max(0, nextPoint.timestamp - point.timestamp);
-				const animInterval = Math.max(REPLAY_MIN_INTERVAL_MS, realInterval / replaySpeed);
-				// Update marker position and heading; the camera stays fixed so the
-				// marker visibly moves along the route on screen.
-				mapRef.current?.sendToMap({
-					userLocation: { lat: point.lat, lng: point.lng, transitionDuration: animInterval },
-					userHeading: heading,
-				});
-				replayTimerRef.current = setTimeout(advance, animInterval);
-			} else {
-				// Last point – just update position without changing heading
-				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
-				// Loop back to start after a short pause
-				replayTimerRef.current = setTimeout(() => {
-					replayIndexRef.current = 0;
-					advance();
-				}, REPLAY_LOOP_PAUSE_MS);
-			}
-		};
-
-		advance();
+		// Send the full route to the WebView; the animation loop runs inside the
+		// WebView so there is no React-Native bridge overhead per frame.
+		mapRef.current?.sendToMap({ replayAnimation: { points, speed: replaySpeed } });
 
 		return () => {
-			if (replayTimerRef.current) {
-				clearTimeout(replayTimerRef.current);
-				replayTimerRef.current = null;
-			}
-			// Hide the replay marker when replay is stopped
-			mapRef.current?.sendToMap({ userLocation: null });
+			mapRef.current?.sendToMap({ replayAnimation: null });
 		};
 	}, [replayIsDisabled, replaySpeed, mapMounted, activity, computeRouteBounds]);
 
