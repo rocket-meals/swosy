@@ -5567,8 +5567,8 @@
             if (pts.length >= 2) {
               replayAnimationSpeed = data.replayAnimation.speed || 1.0;
               var route = [];
-              for (var ri = 0; ri < pts.length; ri++) {
-                route.push([pts[ri].lng, pts[ri].lat]);
+              for (var i = 0; i < pts.length; i++) {
+                route.push([pts[i].lng, pts[i].lat]);
               }
               replayParticle = { lng: route[0][0], lat: route[0][1], route: route, routeSegIdx: 0, routeFrac: 0 };
               replayAnimationActive = true;
