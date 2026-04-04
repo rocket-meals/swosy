@@ -9,6 +9,7 @@ import speechSettingsReducer from './speechSettingsSlice';
 import displaySettingsReducer from './displaySettingsSlice';
 import playerInformationReducer from './playerInformationSlice';
 import mapSearchReducer from './mapSearchSlice';
+import replaySettingsReducer from './replaySettingsSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
@@ -17,9 +18,11 @@ import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { saveDisplaySettings } from '../helpers/DisplaySettingsStorage';
+import { saveReplaySettings } from '../helpers/ReplaySettingsStorage';
 import { PlayerInformation, savePlayerInformation } from '../helpers/PlayerInformationStorage';
 import type { SpeechSettingsState } from './speechSettingsSlice';
 import type { DisplaySettingsState } from './displaySettingsSlice';
+import type { ReplaySettingsState } from './replaySettingsSlice';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
 import type { GpsIntervalMode } from './gpsIntervalSlice';
@@ -38,6 +41,7 @@ export const store = configureStore({
 		displaySettings: displaySettingsReducer,
 		playerInformation: playerInformationReducer,
 		mapSearch: mapSearchReducer,
+		replaySettings: replaySettingsReducer,
 	},
 });
 
@@ -71,6 +75,10 @@ let _lastSavedSpeechSettings: SpeechSettingsState | null = null;
 // Auto-persist display settings to disk whenever they change.
 let _displaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedDisplaySettings: DisplaySettingsState | null = null;
+
+// Auto-persist replay settings to disk whenever they change.
+let _replaySettingsTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedReplaySettings: ReplaySettingsState | null = null;
 
 // Auto-persist player information to disk whenever it changes.
 let _lastSavedPlayerInformation: PlayerInformation | null = null;
@@ -167,6 +175,16 @@ store.subscribe(() => {
 	if (state.playerInformation !== _lastSavedPlayerInformation) {
 		_lastSavedPlayerInformation = state.playerInformation;
 		savePlayerInformation({ homeHexTile });
+	}
+
+	const replaySettings = state.replaySettings;
+	if (replaySettings !== _lastSavedReplaySettings) {
+		_lastSavedReplaySettings = replaySettings;
+		if (_replaySettingsTimer) clearTimeout(_replaySettingsTimer);
+		_replaySettingsTimer = setTimeout(() => {
+			saveReplaySettings(replaySettings);
+			_replaySettingsTimer = null;
+		}, 500);
 	}
 });
 

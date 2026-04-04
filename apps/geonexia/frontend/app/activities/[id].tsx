@@ -12,9 +12,9 @@ import {
 
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
-import { useSelector } from 'react-redux';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { TimeHelper } from '../../helpers/TimeHelper';
@@ -25,12 +25,20 @@ import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
-import type { RootState } from '../../store/store';
+import type { RootState, AppDispatch } from '../../store/store';
+import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
 const PRIMARY_COLOR = '#2563eb';
+const REPLAY_COLOR = '#7c3aed';
+
+const REPLAY_SPEED_STEP = 0.5;
+const REPLAY_SPEED_MIN = 0.5;
+const REPLAY_SPEED_MAX = 20.0;
+const REPLAY_MIN_INTERVAL_MS = 50;
+const REPLAY_LOOP_PAUSE_MS = 1500;
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -699,16 +707,25 @@ export default function ActivityDetailScreen() {
 	const routeCenterRef = useRef<{ lat: number; lng: number } | null>(null);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const walkedEdges = useSelector((state: RootState) => state.hexTiles.walkedEdges);
+	const replayIsDisabled = useSelector((state: RootState) => state.replaySettings.isDisabled);
+	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
+	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 	const isDebugMode = useDebugMode();
 	const { show: showDebugModal } = useMyScrollViewModal();
+	const replayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const replayIndexRef = useRef<number>(0);
 
 	// Stop map-side auto-rotate on unmount
 	useEffect(() => {
 		return () => {
 			if (mapRef.current) {
 				mapRef.current.sendToMap({ autoRotate: false });
+			}
+			if (replayTimerRef.current) {
+				clearTimeout(replayTimerRef.current);
+				replayTimerRef.current = null;
 			}
 		};
 	}, []);
@@ -954,6 +971,61 @@ export default function ActivityDetailScreen() {
 		});
 	}, [mapMounted, activity]);
 
+	// Rückblende: replay GPS route on the map
+	useEffect(() => {
+		if (replayTimerRef.current) {
+			clearTimeout(replayTimerRef.current);
+			replayTimerRef.current = null;
+		}
+		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) return;
+
+		replayIndexRef.current = 0;
+		const points = activity.routePoints;
+
+		const advance = () => {
+			const idx = replayIndexRef.current;
+			if (idx >= points.length) return;
+			const point = points[idx];
+			mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
+			replayIndexRef.current++;
+			if (idx + 1 < points.length) {
+				const nextPoint = points[idx + 1];
+				const realInterval = Math.max(0, nextPoint.timestamp - point.timestamp);
+				const animInterval = Math.max(REPLAY_MIN_INTERVAL_MS, realInterval / replaySpeed);
+				replayTimerRef.current = setTimeout(advance, animInterval);
+			} else {
+				// Loop back to start after a short pause
+				replayTimerRef.current = setTimeout(() => {
+					replayIndexRef.current = 0;
+					advance();
+				}, REPLAY_LOOP_PAUSE_MS);
+			}
+		};
+
+		advance();
+
+		return () => {
+			if (replayTimerRef.current) {
+				clearTimeout(replayTimerRef.current);
+				replayTimerRef.current = null;
+			}
+		};
+	}, [replayIsDisabled, replaySpeed, mapMounted, activity]);
+
+	const handleReplaySpeedDown = useCallback(() => {
+		const next = Math.max(REPLAY_SPEED_MIN, Math.round((replaySpeed - REPLAY_SPEED_STEP) * 10) / 10);
+		dispatch(updateReplaySettings({ speed: next }));
+	}, [dispatch, replaySpeed]);
+
+	const handleReplaySpeedUp = useCallback(() => {
+		const next = Math.min(REPLAY_SPEED_MAX, Math.round((replaySpeed + REPLAY_SPEED_STEP) * 10) / 10);
+		dispatch(updateReplaySettings({ speed: next }));
+	}, [dispatch, replaySpeed]);
+
+	const handleReplayToggle = useCallback(() => {
+		dispatch(updateReplaySettings({ isDisabled: !replayIsDisabled }));
+	}, [dispatch, replayIsDisabled]);
+
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
 		if (msg.tag === 'MapComponentMounted') {
@@ -1129,6 +1201,36 @@ export default function ActivityDetailScreen() {
 
 			{/* Stats list */}
 			<View style={styles.statsContent}>
+				<SettingsListGroupTitle title="Rückblende Einstellungen" />
+				<SettingsListBoolean
+					iconBgColor={REPLAY_COLOR}
+					leftIcon={<MaterialIcons name="replay" size={22} color="#ffffff" />}
+					label="Rückblende ausschalten"
+					isEnabled={replayIsDisabled}
+					onToggle={handleReplayToggle}
+					valueActive="Ausgeschaltet"
+					valueInactive="Eingeschaltet"
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={REPLAY_COLOR}
+					leftIcon={<MaterialIcons name="speed" size={22} color="#ffffff" />}
+					label="Rückblende Geschwindigkeit"
+					value={`${replaySpeed.toFixed(1)}×`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleReplaySpeedDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={REPLAY_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleReplaySpeedUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={REPLAY_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="bottom"
+				/>
+
+				<SettingsListGroupTitle title="Aktivität Informationen" />
 				{/* Date row */}
 				<SettingsList
 					key={statsRows[0].label}
@@ -1422,5 +1524,18 @@ const styles = StyleSheet.create({
 	},
 	filterRow: {
 		marginTop: 16,
+	},
+	stepper: {
+		flexDirection: 'row',
+		gap: 4,
+	},
+	stepBtn: {
+		width: 32,
+		height: 32,
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: '#e5e7eb',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });
