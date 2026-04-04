@@ -39,6 +39,7 @@ const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
 const REPLAY_MIN_INTERVAL_MS = 50;
 const REPLAY_LOOP_PAUSE_MS = 1500;
+const REPLAY_FOLLOW_ZOOM = 16; // street-level zoom used while the camera follows the replay marker
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -990,8 +991,26 @@ export default function ActivityDetailScreen() {
 		}
 		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) return;
 
+		// Stop overview auto-rotate so the camera can smoothly follow the replay marker.
+		// (auto-rotate continuously calls setBearing which would cancel the camera-follow easeTo)
+		mapRef.current?.sendToMap({ autoRotate: false });
+
 		replayIndexRef.current = 0;
 		const points = activity.routePoints;
+
+		// Fly to the first point at tracking zoom so the marker movement is clearly visible
+		const firstHeading =
+			points.length > 1
+				? bearingTo(points[0].lat, points[0].lng, points[1].lat, points[1].lng)
+				: 0;
+		mapRef.current?.sendToMap({
+			mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
+			zoom: REPLAY_FOLLOW_ZOOM,
+			bearing: firstHeading,
+			pitch: 45,
+			easeAnimation: true,
+			easeDuration: 600,
+		});
 
 		const advance = () => {
 			const idx = replayIndexRef.current;
@@ -1002,9 +1021,17 @@ export default function ActivityDetailScreen() {
 				const nextPoint = points[idx + 1];
 				// Point the marker cone toward the next recorded GPS point
 				const heading = bearingTo(point.lat, point.lng, nextPoint.lat, nextPoint.lng);
-				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng }, userHeading: heading });
 				const realInterval = Math.max(0, nextPoint.timestamp - point.timestamp);
 				const animInterval = Math.max(REPLAY_MIN_INTERVAL_MS, realInterval / replaySpeed);
+				// Update marker position + heading, and follow with the camera in one message
+				mapRef.current?.sendToMap({
+					userLocation: { lat: point.lat, lng: point.lng },
+					userHeading: heading,
+					mapCenterPosition: { lat: point.lat, lng: point.lng },
+					bearing: heading,
+					easeAnimation: true,
+					easeDuration: animInterval,
+				});
 				replayTimerRef.current = setTimeout(advance, animInterval);
 			} else {
 				// Last point – just update position without changing heading
@@ -1024,6 +1051,8 @@ export default function ActivityDetailScreen() {
 				clearTimeout(replayTimerRef.current);
 				replayTimerRef.current = null;
 			}
+			// Hide the replay marker when replay is stopped
+			mapRef.current?.sendToMap({ userLocation: null });
 		};
 	}, [replayIsDisabled, replaySpeed, mapMounted, activity]);
 
