@@ -19,6 +19,7 @@ import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIn
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
+import { loadReplaySettings as loadReplaySettingsAction } from '../store/replaySettingsSlice';
 import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
 import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
@@ -28,6 +29,7 @@ import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
+import { loadReplaySettings } from '../helpers/ReplaySettingsStorage';
 import { loadPlayerInformation } from '../helpers/PlayerInformationStorage';
 import { WORLD_BUILDING_ID, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
 import { loadActivities } from '../helpers/ActivityStorage';
@@ -445,6 +447,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted display settings:', err);
+			});
+		loadReplaySettings()
+			.then((settings) => {
+				store.dispatch(loadReplaySettingsAction(settings));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted replay settings:', err);
 			});
 	}, []);
 

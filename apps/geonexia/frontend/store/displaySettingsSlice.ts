@@ -10,8 +10,8 @@ export type DisplaySettingsState = {
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
-	hexTileOpacity: 0.3,
-	objectOpacity: 0.9,
+	hexTileOpacity: 0.05,
+	objectOpacity: 0.35,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };
