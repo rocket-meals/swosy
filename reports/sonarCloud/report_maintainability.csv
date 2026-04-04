@@ -20,22 +20,21 @@ Key,Message,Component,Line
 "AZ1TeUktYOdke2T5UziN","'expo-router' imported multiple times.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",9
 "AZ1TeUktYOdke2T5UziO","'expo-router' imported multiple times.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/routes/index.tsx",10
 "AZ1TeUfJYOdke2T5UziM","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",587
-"AZ1TdZ_pIh8m09xZ03M8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",76
-"AZ1TdZ_pIh8m09xZ03NA","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",133
-"AZ1TdZ_pIh8m09xZ03M6","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",49
-"AZ1TdZ_pIh8m09xZ03M7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",67
-"AZ1TdZ_pIh8m09xZ03M9","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",80
-"AZ1TdZ_pIh8m09xZ03M-","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",82
-"AZ1TdZ_pIh8m09xZ03M_","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",124
-"AZ1TdZ_pIh8m09xZ03NB","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",137
-"AZ1TdZ_pIh8m09xZ03NC","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",139
-"AZ1TdZ_pIh8m09xZ03ND","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",178
-"AZ1TdZ_pIh8m09xZ03NE","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",220
-"AZ1TdZ_pIh8m09xZ03NF","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",299
-"AZ1TdZ_pIh8m09xZ03NG","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",374
-"AZ1TdZ_pIh8m09xZ03NH","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",446
-"AZ1TdZ_pIh8m09xZ03NI","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",471
-"AZ1TdZ_pIh8m09xZ03NJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",484
+"AZ1TdZ_pIh8m09xZ03M8","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",73
+"AZ1TdZ_pIh8m09xZ03NA","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",130
+"AZ1TdZ_pIh8m09xZ03M6","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",46
+"AZ1TdZ_pIh8m09xZ03M7","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",64
+"AZ1TdZ_pIh8m09xZ03M9","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",77
+"AZ1TdZ_pIh8m09xZ03M-","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",79
+"AZ1TdZ_pIh8m09xZ03M_","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",121
+"AZ1TdZ_pIh8m09xZ03NB","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",134
+"AZ1TdZ_pIh8m09xZ03NC","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",136
+"AZ1TdZ_pIh8m09xZ03ND","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",175
+"AZ1TdZ_pIh8m09xZ03NE","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",217
+"AZ1TdZ_pIh8m09xZ03NF","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",296
+"AZ1TdZ_pIh8m09xZ03NH","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",371
+"AZ1TdZ_pIh8m09xZ03NI","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",396
+"AZ1TdZ_pIh8m09xZ03NJ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/onboarding/index.tsx",409
 "AZ1S6EHxP7XVSqemBA4y","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2467
 "AZ1S6EHxP7XVSqemBA4z","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2501
 "AZ1S6EHxP7XVSqemBA40","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2507
@@ -9999,3 +9998,4 @@ Key,Message,Component,Line
 "AZkUSvC_S4VhJojFFARp","Use concise character class syntax '\d' instead of '[0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",76
 "AZkUSvC_S4VhJojFFARq","Use concise character class syntax '\d' instead of '[0-9]'.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",76
 "AZkUSvC_S4VhJojFFARt","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseBottomSheet.tsx",308
+"AZlyj_JR0YdgFOBafBLH","Prefer `Math.max()` to simplify ternary expressions.","rocket-meals_rocket-meals:apps/frontend/app/components/CourseTimeTable/CourseTimetable.tsx",46
