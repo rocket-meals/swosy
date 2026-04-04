@@ -30,6 +30,8 @@ export type MapFeatureInfo = {
 	natural: string | null;
 	landuse: string | null;
 	amenity: string | null;
+	/** Number of times this feature appeared in the source vector tiles (after deduplication by class|subclass|name). */
+	count: number;
 };
 
 /**

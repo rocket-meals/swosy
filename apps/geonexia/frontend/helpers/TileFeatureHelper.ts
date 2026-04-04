@@ -304,8 +304,9 @@ export async function fetchAndParseTile(
 
 	const tile = new VectorTile(new Pbf(buffer));
 
-	const features: MapFeatureInfo[] = [];
-	const seen = new Set<string>();
+	// Use a Map keyed by the synthetic feature ID (class|subclass|name) to
+	// deduplicate within the tile and accumulate occurrence counts.
+	const featureMap = new Map<string, MapFeatureInfo>();
 
 	for (const layerName of Object.keys(tile.layers)) {
 		if (SKIP_LAYERS.has(layerName)) continue;
@@ -346,17 +347,16 @@ export async function fetchAndParseTile(
 			const landuse = (props.landuse as string) || null;
 			const amenity = (props.amenity as string) || null;
 
-			// Deduplicate within a tile (same approach as hexTileScript.ts).
-			const key =
-				(name ?? '') + '|' + (cls ?? '') + '|' + (subclass ?? '') + '|' +
-				(highway ?? '') + '|' + (waterway ?? '') + '|' +
-				(building ?? '') + '|' + (natural ?? '') + '|' + (landuse ?? '') + '|' +
-				(amenity ?? '') + '|' + layerName;
+			// Deduplicate by synthetic feature ID: class|subclass|name.
+			// Duplicate occurrences increment the count instead of adding a new entry.
+			const featureId = (cls ?? '') + '|' + (subclass ?? '') + '|' + (name ?? '');
+			const existing = featureMap.get(featureId);
+			if (existing) {
+				existing.count += 1;
+				continue;
+			}
 
-			if (seen.has(key)) continue;
-			seen.add(key);
-
-			features.push({
+			featureMap.set(featureId, {
 				layerId: layerName,
 				name,
 				class: cls,
@@ -367,9 +367,12 @@ export async function fetchAndParseTile(
 				natural,
 				landuse,
 				amenity,
+				count: 1,
 			});
 		}
 	}
+
+	const features = Array.from(featureMap.values());
 
 	// Only cache when no filter was applied (unfiltered superset).
 	if (!filterBounds) {
@@ -458,7 +461,20 @@ export async function queryTileFeaturesForBounds(
 		tiles.map((t) => fetchAndParseTile(tileUrlTemplate, t.z, t.x, t.y, filterBounds)),
 	);
 
-	return applyNameFilter(results.flat(), filterOptions);
+	// Deduplicate across tiles by the same synthetic feature ID (class|subclass|name),
+	// summing counts so no feature appears twice in the final list.
+	const mergedMap = new Map<string, MapFeatureInfo>();
+	for (const f of results.flat()) {
+		const featureId = (f.class ?? '') + '|' + (f.subclass ?? '') + '|' + (f.name ?? '');
+		const existing = mergedMap.get(featureId);
+		if (existing) {
+			existing.count += f.count;
+		} else {
+			mergedMap.set(featureId, { ...f });
+		}
+	}
+
+	return applyNameFilter(Array.from(mergedMap.values()), filterOptions);
 }
 
 /**
