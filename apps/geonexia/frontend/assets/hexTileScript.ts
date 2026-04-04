@@ -625,10 +625,11 @@ export const HEX_TILE_SCRIPT = `
   // AKTUELLE LÖSUNG:
   //   - Der doppelte Replay-Code in index.html wurde entfernt (war toter Code).
   //   - Die Animation läuft nur hier in hexTileScript mit Timestamp-Interpolation.
-  //   - Die Kamera folgt dem Marker direkt im WebView per map.easeTo() pro Frame
-  //     bei Zoom 16 (Straßenebene), sodass die Bewegung klar sichtbar ist.
-  //   - [id].tsx sendet kein fitBounds mehr für Replay; die Kamera wird
-  //     vollständig vom WebView gesteuert.
+  //   - Die Kamera bleibt beim Replay-Start unverändert (kein flyTo/easeTo).
+  //     Der Marker bewegt sich auf der Karte, aber die Kamera dreht sich wie im
+  //     Übersichtsmodus weiterhin automatisch um die Route-Mitte (auto-rotate).
+  //   - [id].tsx sendet weiterhin fitBounds für die Übersicht; die Kamera
+  //     wird nach dem Replay-Start nicht vom WebView verändert.
   //
   var REPLAY_PLAYER_SOURCE = 'replay-player-source';
   var REPLAY_PLAYER_LAYER = 'replay-player-layer';
@@ -637,8 +638,6 @@ export const HEX_TILE_SCRIPT = `
   var REPLAY_PLAYER_STROKE_COLOR = '#ffffff';
   var REPLAY_PLAYER_STROKE_WIDTH = 2;
   var REPLAY_ANIM_MS = 50; // ~20 fps
-  var REPLAY_FOLLOW_ZOOM = 16; // street-level zoom for camera following
-  var REPLAY_CAMERA_PITCH = 45; // pitch angle while following the replay marker
 
   var replayAnimInterval = null;
   var replayAnimState = null;
@@ -704,14 +703,9 @@ export const HEX_TILE_SCRIPT = `
         },
       });
     }
-    // Fly camera to the first point at street-level zoom so the movement is clearly visible.
-    // Bearing is intentionally omitted so the existing overview auto-rotate keeps spinning.
-    map.flyTo({
-      center: [points[0].lng, points[0].lat],
-      zoom: REPLAY_FOLLOW_ZOOM,
-      pitch: REPLAY_CAMERA_PITCH,
-      duration: 800,
-    });
+    // Do not move the camera when replay starts. The map stays at the overview
+    // fitBounds position so the auto-rotate continues to spin around the route
+    // center, exactly as in the non-replay overview mode.
     replayAnimInterval = setInterval(function () {
       if (!replayAnimState || !map || !map.getSource(REPLAY_PLAYER_SOURCE)) return;
       var pts = replayAnimState.points;
@@ -732,15 +726,9 @@ export const HEX_TILE_SCRIPT = `
       t = Math.max(0, Math.min(1, t));
       var lng = p1.lng + (p2.lng - p1.lng) * t;
       var lat = p1.lat + (p2.lat - p1.lat) * t;
-      // Update marker position
+      // Only update the marker position. The camera is not moved so the
+      // auto-rotate keeps spinning around the map center (overview behaviour).
       map.getSource(REPLAY_PLAYER_SOURCE).setData(replayPointToGeoJSON(lng, lat));
-      // Follow the marker with the camera. Bearing is omitted so the overview
-      // auto-rotate continues uninterrupted (map keeps its normal rotation).
-      map.easeTo({
-        center: [lng, lat],
-        duration: REPLAY_ANIM_MS,
-        easing: function (t) { return t; }, // linear easing for smooth continuous movement
-      });
     }, REPLAY_ANIM_MS);
   }
   // ─────────────────────────────────────────────────────────────────────────
