@@ -75,6 +75,10 @@ export const HEX_TILE_SCRIPT = `
   // computed from tile count alone (outer-boundary only, ignoring level), and
   // the enclosed-area stroke is hidden.
   var routeOutlineMode = false;
+  // ── Search highlight: red border for tiles matching the active search ─────
+  var HEX_SEARCH_HIGHLIGHT_SOURCE = 'hex-search-highlight-source';
+  var HEX_SEARCH_HIGHLIGHT_LAYER = 'hex-search-highlight-layer';
+  var HEX_SEARCH_HIGHLIGHT_COLOR = '#ef4444'; // red
   // ── Route edit overlay: neighbor highlight + action labels ───────────────
   var ROUTE_EDIT_NEIGHBOR_SOURCE = 'route-edit-neighbor-source';
   var ROUTE_EDIT_NEIGHBOR_FILL_LAYER = 'route-edit-neighbor-fill';
@@ -529,6 +533,19 @@ export const HEX_TILE_SCRIPT = `
         'circle-opacity': 0.9,
       },
     });
+    // Search highlight: red border drawn on top of hex tiles for tiles matching
+    // the active debug search filter. Raised above hex layers but below routes.
+    map.addSource(HEX_SEARCH_HIGHLIGHT_SOURCE, { type: 'geojson', data: EMPTY_FC });
+    map.addLayer({
+      id: HEX_SEARCH_HIGHLIGHT_LAYER,
+      type: 'line',
+      source: HEX_SEARCH_HIGHLIGHT_SOURCE,
+      paint: {
+        'line-color': HEX_SEARCH_HIGHLIGHT_COLOR,
+        'line-width': 3,
+        'line-opacity': 0.9,
+      },
+    });
     // Raise any route track / segment layers above the hex tile layers so the
     // GPS route is always rendered on top of the hex grid.  These layers are
     // created lazily (only once the first routeCoordinates message arrives), so
@@ -570,6 +587,8 @@ export const HEX_TILE_SCRIPT = `
     if (map.getLayer(HEX_ENCLOSED_STROKE_LAYER)) map.removeLayer(HEX_ENCLOSED_STROKE_LAYER);
     if (map.getLayer(HEX_ENCLOSED_FILL_LAYER)) map.removeLayer(HEX_ENCLOSED_FILL_LAYER);
     if (map.getSource(HEX_ENCLOSED_SOURCE)) map.removeSource(HEX_ENCLOSED_SOURCE);
+    if (map.getLayer(HEX_SEARCH_HIGHLIGHT_LAYER)) map.removeLayer(HEX_SEARCH_HIGHLIGHT_LAYER);
+    if (map.getSource(HEX_SEARCH_HIGHLIGHT_SOURCE)) map.removeSource(HEX_SEARCH_HIGHLIGHT_SOURCE);
   }
 
   // ── Extension hooks ───────────────────────────────────────────────────────
@@ -655,6 +674,10 @@ export const HEX_TILE_SCRIPT = `
       if (!hexTileActive) return;
       var enclosedSrc = map && map.getSource(HEX_ENCLOSED_SOURCE);
       if (enclosedSrc) enclosedSrc.setData(data.hexEnclosedGeoJson || EMPTY_FC);
+    }
+    if (data.hexSearchHighlightGeoJson !== undefined) {
+      var searchSrc = map && map.getSource(HEX_SEARCH_HIGHLIGHT_SOURCE);
+      if (searchSrc) searchSrc.setData(data.hexSearchHighlightGeoJson || EMPTY_FC);
     }
     if (data.hexDebugPoints !== undefined) {
       hexDebugPointsVisible = data.hexDebugPoints;

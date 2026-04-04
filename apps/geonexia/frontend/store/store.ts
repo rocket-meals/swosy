@@ -8,6 +8,7 @@ import ttsReducer from './ttsSlice';
 import speechSettingsReducer from './speechSettingsSlice';
 import displaySettingsReducer from './displaySettingsSlice';
 import playerInformationReducer from './playerInformationSlice';
+import mapSearchReducer from './mapSearchSlice';
 import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
@@ -36,6 +37,7 @@ export const store = configureStore({
 		speechSettings: speechSettingsReducer,
 		displaySettings: displaySettingsReducer,
 		playerInformation: playerInformationReducer,
+		mapSearch: mapSearchReducer,
 	},
 });
 

@@ -34,7 +34,7 @@ import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
 import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../helpers/ActivityMapRebuildHelper';
-import { mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
+import { mergeHexTileFeatureCache, loadHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
@@ -42,6 +42,7 @@ import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillbo
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
+import { setMapSearchState, resetMapSearchState, setMapSearchName, toggleMapSearchKey, type MapSearchStateEntry } from '../store/mapSearchSlice';
 import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
@@ -2388,6 +2389,69 @@ const magnifyStyles = StyleSheet.create({
 	},
 });
 
+// ─── Map Search ───────────────────────────────────────────────────────────────
+
+/**
+ * Converts a MapFeatureInfo into a display key used for search filtering.
+ * Format: "class/subclass" when both are present, otherwise whichever is non-null.
+ */
+function featureToSearchKey(f: { class: string | null; subclass: string | null; layerId: string | null }): string {
+	const parts = [f.class, f.subclass].filter((v): v is string => v !== null && v.length > 0);
+	if (parts.length > 0) return parts.join('/');
+	return f.layerId ?? 'unknown';
+}
+
+function MapSearchModalContent({ availableKeys }: { availableKeys: string[] }) {
+	const dispatch = useDispatch();
+	const searchState = useSelector((state: RootState) => state.mapSearch.searchState);
+	const enabledKeys = searchState?.enabledKeys ?? [];
+
+	return (
+		<>
+			<SettingsListGroupTitle title="Suche zurücksetzen" />
+			<SettingsList
+				leftIcon={<MaterialIcons name="refresh" size={22} color="#ffffff" />}
+				iconBgColor="#ef4444"
+				label="Suche zurücksetzen"
+				groupPosition="single"
+				handleFunction={() => dispatch(resetMapSearchState())}
+			/>
+			<SettingsListGroupTitle title="Name der Suche" />
+			<SettingsListTextInput
+				title="Name"
+				placeholder="z.B. Parks & Grünflächen"
+				modalTitle="Suche benennen"
+				groupPosition="single"
+				value={searchState?.name ?? ''}
+				initialValue={searchState?.name ?? ''}
+				onSave={(name) => { dispatch(setMapSearchName(name.trim())); }}
+			/>
+			{availableKeys.length > 0 && (
+				<>
+					<SettingsListGroupTitle title="Map Features" />
+					{availableKeys.map((key, idx) => (
+						<SettingsListBoolean
+							key={key}
+							label={key}
+							isEnabled={enabledKeys.includes(key)}
+							onToggle={() => dispatch(toggleMapSearchKey(key))}
+							groupPosition={
+								availableKeys.length === 1
+									? 'single'
+									: idx === 0
+										? 'top'
+										: idx === availableKeys.length - 1
+											? 'bottom'
+											: 'middle'
+							}
+						/>
+					))}
+				</>
+			)}
+		</>
+	);
+}
+
 // ─── Interrupted Recording Reconstruction ────────────────────────────────────
 
 /**
@@ -2609,6 +2673,7 @@ export default function RecordScreen() {
 	const { show: showRouteModal, close: closeRouteModal } = useMyScrollViewModal();
 	const { show: showMagnifyModal, close: closeMagnifyModal } = useMyScrollViewModal();
 	const { show: showRecoveryModal, close: closeRecoveryModal } = useMyScrollViewModal();
+	const { show: showSearchModal, close: closeSearchModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
 	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
@@ -2629,6 +2694,7 @@ export default function RecordScreen() {
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
 	const homeHexTile = useSelector((state: RootState) => state.playerInformation.homeHexTile);
+	const searchState = useSelector((state: RootState) => state.mapSearch.searchState);
 	const prevResetTokenRef = useRef<number | null>(null);
 
 	const activeSport = useMemo(
@@ -2649,6 +2715,11 @@ export default function RecordScreen() {
 	// Magnify mode (debug only): show detailed map info when tapping a hex tile
 	const [isMagnifyMode, setIsMagnifyMode] = useState(false);
 	const isMagnifyModeRef = useRef(false);
+
+	// Search highlight (debug only): track viewport cells and cached features for red-border overlay
+	const currentViewportCellsRef = useRef<string[]>([]);
+	const searchFeatureCacheRef = useRef<Map<string, MapFeatureInfo[]>>(new Map());
+	const searchHighlightTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	// TTS: track the last whole-km milestone announced to avoid repeating.
 	// Reset to 0 when recording starts.
@@ -3201,6 +3272,45 @@ export default function RecordScreen() {
 		});
 	}, []);
 
+	const refreshSearchHighlight = useCallback((cells: string[]) => {
+		currentViewportCellsRef.current = cells;
+		if (searchHighlightTimerRef.current) clearTimeout(searchHighlightTimerRef.current);
+		searchHighlightTimerRef.current = setTimeout(async () => {
+			const enabledKeys = store.getState().mapSearch.searchState?.enabledKeys ?? [];
+			if (enabledKeys.length === 0) {
+				mapRef.current?.sendToMap({ hexSearchHighlightGeoJson: { type: 'FeatureCollection', features: [] } });
+				return;
+			}
+			const cache = searchFeatureCacheRef.current;
+			const uncachedCells = cells.filter((c) => !cache.has(c));
+			await Promise.all(
+				uncachedCells.map(async (cell) => {
+					try {
+						const features = await queryTileFeaturesForHexCell(cell);
+						cache.set(cell, features);
+					} catch {
+						cache.set(cell, []);
+					}
+				}),
+			);
+			const matchingCells = cells.filter((cell) => {
+				const features = cache.get(cell) ?? [];
+				return features.some((f) => enabledKeys.includes(featureToSearchKey(f)));
+			});
+			const highlightFeatures = matchingCells.map((h3Index) => {
+				const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER);
+				return {
+					type: 'Feature' as const,
+					geometry: { type: 'Polygon' as const, coordinates: [boundary] },
+					properties: { h3Index },
+				};
+			});
+			mapRef.current?.sendToMap({
+				hexSearchHighlightGeoJson: { type: 'FeatureCollection', features: highlightFeatures },
+			});
+		}, 400);
+	}, []);
+
 	/**
 	 * Rebuild and send the standard hex tile and walk path GeoJSON to the map
 	 * based on the current viewport. Used when restoring normal (non-route-preview)
@@ -3221,7 +3331,8 @@ export default function RecordScreen() {
 		const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 		mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 		mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
-	}, []);
+		refreshSearchHighlight(viewportCells);
+	}, [refreshSearchHighlight]);
 
 	// Load persisted OSM consent on mount
 	useEffect(() => {
@@ -3541,6 +3652,28 @@ export default function RecordScreen() {
 		setIsMagnifyMode(false);
 	}, []);
 
+	const openSearchModal = useCallback(async () => {
+		const featureCache = await loadHexTileFeatureCache();
+		const keySet = new Set<string>();
+		for (const features of Object.values(featureCache)) {
+			for (const f of features) {
+				const key = featureToSearchKey(f);
+				if (key !== 'unknown') keySet.add(key);
+			}
+		}
+		const availableKeys = Array.from(keySet).sort((a, b) => a.localeCompare(b));
+		showSearchModal({
+			title: 'Karten-Suche',
+			children: <MapSearchModalContent availableKeys={availableKeys} />,
+			onClose: closeSearchModal,
+		});
+	}, [showSearchModal, closeSearchModal]);
+
+	// Re-trigger search highlight whenever the active search state changes.
+	useEffect(() => {
+		refreshSearchHighlight(currentViewportCellsRef.current);
+	}, [searchState, refreshSearchHighlight]);
+
 	const undoMeasurePoint = useCallback(() => {
 		const prev = measureWaypointsRef.current.slice(0, -1);
 		measureWaypointsRef.current = prev;
@@ -3791,7 +3924,7 @@ export default function RecordScreen() {
 				mapRef.current?.sendToMap({ measurePoints: coords });
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch]);
+	}, [centerMapOnPosition, sendRouteToMap, setFollowMode, showHexTileModal, showMagnifyHexTileModal, loadAndSendCustomizations, dispatch, refreshNormalTileDisplay]);
 
 	const handleExportMapSettings = useCallback(async () => {
 		const exportData: Record<string, { tileImage?: string; billboards?: Record<string, string>; billboardsTexture?: Record<string, string> }> = {};
@@ -4163,6 +4296,7 @@ export default function RecordScreen() {
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+			refreshSearchHighlight(viewportCells);
 		}
 
 		// ── Periodically persist a recording snapshot for crash recovery ──
@@ -4184,7 +4318,7 @@ export default function RecordScreen() {
 				});
 			}
 		}
-	}, [centerMapOnPosition, sendRouteToMap, dispatch]);
+	}, [centerMapOnPosition, sendRouteToMap, dispatch, refreshSearchHighlight]);
 
 	// Moves the player to a new position (used by the debug gamepad).
 	// During recording the joystick acts as a GPS substitute: every movement is
@@ -4451,7 +4585,7 @@ export default function RecordScreen() {
 			}
 			stopPeriodicAnnouncementTimer();
 		}
-	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer, refreshSearchHighlight]);
 
 	// Show a modal to select a saved route before starting a recording.
 	const showRouteSelectionModal = useCallback(async () => {
@@ -4606,6 +4740,7 @@ export default function RecordScreen() {
 			const walkPathGeoJson = buildWalkPathGeoJson(viewportCells, store.getState().hexTiles.walkedEdges);
 			mapRef.current.sendToMap({ hexTileGeoJson: geoJson });
 			mapRef.current.sendToMap({ hexWalkPathGeoJson: walkPathGeoJson });
+			refreshSearchHighlight(viewportCells);
 		}
 
 		// Save activity to persistent storage (including ordered hex tiles for route matching)
@@ -4759,6 +4894,26 @@ export default function RecordScreen() {
 									name="home"
 									size={20}
 									color={isSettingHome ? '#ffffff' : homeHexTile !== null ? STATUS_SUCCESS_COLOR : '#555555'}
+								/>
+							</TouchableOpacity>
+							<View style={styles.buttonSpacer} />
+						</>
+					)}
+					{/* Search highlight button – visible during recording in debug mode */}
+					{isDebugMode && isRecording && (
+						<>
+							<TouchableOpacity
+								style={[
+									styles.debugButton,
+									searchState !== null && searchState.enabledKeys.length > 0 && { backgroundColor: '#ef4444' },
+								]}
+								onPress={() => { void openSearchModal(); }}
+								activeOpacity={0.8}
+							>
+								<MaterialIcons
+									name="search"
+									size={20}
+									color={searchState !== null && searchState.enabledKeys.length > 0 ? '#ffffff' : '#555555'}
 								/>
 							</TouchableOpacity>
 							<View style={styles.buttonSpacer} />
