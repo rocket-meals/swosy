@@ -17,8 +17,6 @@ import { useRouter } from 'expo-router';
 
 import { setTTSEnabled } from '../../../store/ttsSlice';
 import { updateSpeechSettings } from '../../../store/speechSettingsSlice';
-import { setThemeMode } from '../../../store/themeSlice';
-import type { ThemeMode } from '../../../store/themeSlice';
 import { setGpsIntervalMode } from '../../../store/gpsIntervalSlice';
 import type { GpsIntervalMode } from '../../../store/gpsIntervalSlice';
 import type { AppDispatch, RootState } from '../../../store/store';
@@ -37,7 +35,6 @@ type StepId =
 	| 'tts'
 	| 'tts_details'
 	| 'gps_precision'
-	| 'theme'
 	| 'finish';
 
 // ─── Permission status helper ─────────────────────────────────────────────────
@@ -369,78 +366,6 @@ function GpsPrecisionStep({
 	);
 }
 
-// ─── Step: Theme ─────────────────────────────────────────────────────────────
-
-function ThemeStep({
-	theme,
-	selected,
-	onSelect,
-}: {
-	theme: ReturnType<typeof useTheme>['theme'];
-	selected: ThemeMode;
-	onSelect: (mode: ThemeMode) => void;
-}) {
-	const options: { id: ThemeMode; label: string; description: string; emoji: string }[] = [
-		{
-			id: 'light',
-			label: 'Hell',
-			description: 'Helles Design – ideal für draußen bei Sonnenlicht.',
-			emoji: '☀️',
-		},
-		{
-			id: 'dark',
-			label: 'Dunkel',
-			description: 'Dunkles Design – schont die Augen bei wenig Licht.',
-			emoji: '🌙',
-		},
-		{
-			id: 'systematic',
-			label: 'System',
-			description: 'Folgt automatisch den Systemeinstellungen deines Geräts.',
-			emoji: '⚙️',
-		},
-	];
-
-	return (
-		<View style={styles.stepContent}>
-			<View style={[styles.iconCircle, { backgroundColor: COLOR_PRIMARY + '22' }]}>
-				<MaterialCommunityIcons name="theme-light-dark" size={56} color={COLOR_PRIMARY} />
-			</View>
-			<Text style={[styles.stepTitle, { color: theme.screen.text }]}>Erscheinungsbild 🎨</Text>
-			<Text style={[styles.stepDescription, { color: theme.screen.text + 'cc' }]}>
-				Wähle das Erscheinungsbild der App. Du kannst es jederzeit in den Einstellungen ändern.
-			</Text>
-			<View style={styles.optionList}>
-				{options.map((opt) => {
-					const isSelected = selected === opt.id;
-					return (
-						<TouchableOpacity
-							key={opt.id}
-							style={[
-								styles.optionCard,
-								{
-									backgroundColor: isSelected ? COLOR_PRIMARY + '18' : theme.screen.iconBg,
-									borderColor: isSelected ? COLOR_PRIMARY : 'transparent',
-									borderWidth: 2,
-								},
-							]}
-							onPress={() => onSelect(opt.id)}
-							activeOpacity={0.8}
-						>
-							<Text style={styles.optionEmoji}>{opt.emoji}</Text>
-							<View style={styles.optionText}>
-								<Text style={[styles.optionLabel, { color: theme.screen.text }]}>{opt.label}</Text>
-								<Text style={[styles.optionDesc, { color: theme.screen.text + '99' }]}>{opt.description}</Text>
-							</View>
-							{isSelected && <Ionicons name="checkmark-circle" size={24} color={COLOR_PRIMARY} />}
-						</TouchableOpacity>
-					);
-				})}
-			</View>
-		</View>
-	);
-}
-
 // ─── Step: Finish ─────────────────────────────────────────────────────────────
 
 function FinishStep({ theme }: { theme: ReturnType<typeof useTheme>['theme'] }) {
@@ -505,7 +430,6 @@ export default function OnboardingScreen() {
 	// ─── Redux state ──────────────────────────────────────────────────────────
 	const ttsEnabled = useSelector((s: RootState) => s.tts.ttsEnabled);
 	const speechSettings = useSelector((s: RootState) => s.speechSettings);
-	const selectedTheme = useSelector((s: RootState) => s.theme.selectedMode);
 	const selectedGpsMode = useSelector((s: RootState) => s.gpsInterval.selectedMode);
 
 	// ─── Step management ─────────────────────────────────────────────────────
@@ -517,7 +441,7 @@ export default function OnboardingScreen() {
 	const steps: StepId[] = React.useMemo(() => {
 		const base: StepId[] = ['welcome', 'gps', 'notifications', 'tts'];
 		if (ttsEnabled) base.push('tts_details');
-		base.push('gps_precision', 'theme', 'finish');
+		base.push('gps_precision', 'finish');
 		return base;
 	}, [ttsEnabled]);
 
@@ -571,11 +495,12 @@ export default function OnboardingScreen() {
 				}
 			}
 			setGpsStatus('granted');
+			handleNext();
 		} catch (err) {
 			console.warn('[Onboarding] GPS permission request failed:', err);
 			setGpsStatus('denied');
 		}
-	}, []);
+	}, [handleNext]);
 
 	// ─── Notification permission ──────────────────────────────────────────────
 	const handleRequestNotif = useCallback(async () => {
@@ -614,14 +539,13 @@ export default function OnboardingScreen() {
 		[dispatch],
 	);
 
-	// ─── Theme & GPS mode ─────────────────────────────────────────────────────
-	const handleSelectTheme = useCallback(
-		(mode: ThemeMode) => dispatch(setThemeMode(mode)),
-		[dispatch],
-	);
+	// ─── GPS mode ─────────────────────────────────────────────────────────────
 	const handleSelectGpsMode = useCallback(
-		(mode: GpsIntervalMode) => dispatch(setGpsIntervalMode(mode)),
-		[dispatch],
+		(mode: GpsIntervalMode) => {
+			dispatch(setGpsIntervalMode(mode));
+			handleNext();
+		},
+		[dispatch, handleNext],
 	);
 
 	// ─── Render step content ──────────────────────────────────────────────────
@@ -655,8 +579,6 @@ export default function OnboardingScreen() {
 				return (
 					<GpsPrecisionStep theme={theme} selected={selectedGpsMode} onSelect={handleSelectGpsMode} />
 				);
-			case 'theme':
-				return <ThemeStep theme={theme} selected={selectedTheme} onSelect={handleSelectTheme} />;
 			case 'finish':
 				return <FinishStep theme={theme} />;
 		}
