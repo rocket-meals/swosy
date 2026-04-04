@@ -39,9 +39,8 @@ const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
 const REPLAY_MIN_INTERVAL_MS = 50;
 const REPLAY_LOOP_PAUSE_MS = 1500;
-const REPLAY_FOLLOW_ZOOM = 16; // street-level zoom used while the camera follows the replay marker
-const REPLAY_CAMERA_PITCH = 45; // pitch angle for the tracking camera during replay
-const REPLAY_INITIAL_EASE_DURATION_MS = 600; // duration of the initial camera fly-in when replay starts
+const REPLAY_BOUNDS_PADDING_FACTOR = 0.25; // expand route bbox by 25 % on each side
+const REPLAY_FIT_BOUNDS_PADDING = 20; // pixel inset for fitBounds during replay
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -993,26 +992,26 @@ export default function ActivityDetailScreen() {
 		}
 		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) return;
 
-		// Stop overview auto-rotate so the camera can smoothly follow the replay marker.
-		// (auto-rotate continuously calls setBearing which would cancel the camera-follow easeTo)
+		// Stop overview auto-rotate so it doesn't interfere with the replay view.
 		mapRef.current?.sendToMap({ autoRotate: false });
 
 		replayIndexRef.current = 0;
 		const points = activity.routePoints;
 
-		// Fly to the first point at tracking zoom so the marker movement is clearly visible
-		const firstHeading =
-			points.length > 1
-				? bearingTo(points[0].lat, points[0].lng, points[1].lat, points[1].lng)
-				: 0;
-		mapRef.current?.sendToMap({
-			mapCenterPosition: { lat: points[0].lat, lng: points[0].lng },
-			zoom: REPLAY_FOLLOW_ZOOM,
-			bearing: firstHeading,
-			pitch: REPLAY_CAMERA_PITCH,
-			easeAnimation: true,
-			easeDuration: REPLAY_INITIAL_EASE_DURATION_MS,
-		});
+		// Fit the camera to the full route so the replay marker is visibly moving
+		// along the route (camera stays fixed at overview; marker traverses the path).
+		const bounds = computeRouteBounds(points);
+		if (bounds) {
+			const { minLat, maxLat, minLng, maxLng } = bounds;
+			const latPad = (maxLat - minLat) * REPLAY_BOUNDS_PADDING_FACTOR;
+			const lngPad = (maxLng - minLng) * REPLAY_BOUNDS_PADDING_FACTOR;
+			mapRef.current?.sendToMap({
+				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
+				fitBoundsPadding: REPLAY_FIT_BOUNDS_PADDING,
+				pitch: 0,
+				bearing: 0,
+			});
+		}
 
 		const advance = () => {
 			const idx = replayIndexRef.current;
@@ -1025,14 +1024,11 @@ export default function ActivityDetailScreen() {
 				const heading = bearingTo(point.lat, point.lng, nextPoint.lat, nextPoint.lng);
 				const realInterval = Math.max(0, nextPoint.timestamp - point.timestamp);
 				const animInterval = Math.max(REPLAY_MIN_INTERVAL_MS, realInterval / replaySpeed);
-				// Update marker position + heading, and follow with the camera in one message
+				// Update marker position and heading; the camera stays fixed so the
+				// marker visibly moves along the route on screen.
 				mapRef.current?.sendToMap({
-					userLocation: { lat: point.lat, lng: point.lng },
+					userLocation: { lat: point.lat, lng: point.lng, transitionDuration: animInterval },
 					userHeading: heading,
-					mapCenterPosition: { lat: point.lat, lng: point.lng },
-					bearing: heading,
-					easeAnimation: true,
-					easeDuration: animInterval,
 				});
 				replayTimerRef.current = setTimeout(advance, animInterval);
 			} else {
@@ -1056,7 +1052,7 @@ export default function ActivityDetailScreen() {
 			// Hide the replay marker when replay is stopped
 			mapRef.current?.sendToMap({ userLocation: null });
 		};
-	}, [replayIsDisabled, replaySpeed, mapMounted, activity]);
+	}, [replayIsDisabled, replaySpeed, mapMounted, activity, computeRouteBounds]);
 
 	const handleReplaySpeedDown = useCallback(() => {
 		const next = Math.max(REPLAY_SPEED_MIN, Math.round((replaySpeed - REPLAY_SPEED_STEP) * 10) / 10);
