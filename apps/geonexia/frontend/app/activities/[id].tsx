@@ -37,6 +37,8 @@ const REPLAY_COLOR = '#7c3aed';
 const REPLAY_SPEED_STEP = 0.5;
 const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
+const REPLAY_MIN_INTERVAL_MS = 50;
+const REPLAY_LOOP_PAUSE_MS = 1500;
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -975,7 +977,7 @@ export default function ActivityDetailScreen() {
 			clearTimeout(replayTimerRef.current);
 			replayTimerRef.current = null;
 		}
-		if (replayIsDisabled || !mapMounted || !activity || activity.routePoints.length === 0) return;
+		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) return;
 
 		replayIndexRef.current = 0;
 		const points = activity.routePoints;
@@ -989,14 +991,14 @@ export default function ActivityDetailScreen() {
 			if (idx + 1 < points.length) {
 				const nextPoint = points[idx + 1];
 				const realInterval = Math.max(0, nextPoint.timestamp - point.timestamp);
-				const animInterval = Math.max(50, realInterval / replaySpeed);
+				const animInterval = Math.max(REPLAY_MIN_INTERVAL_MS, realInterval / replaySpeed);
 				replayTimerRef.current = setTimeout(advance, animInterval);
 			} else {
 				// Loop back to start after a short pause
 				replayTimerRef.current = setTimeout(() => {
 					replayIndexRef.current = 0;
 					advance();
-				}, 1500);
+				}, REPLAY_LOOP_PAUSE_MS);
 			}
 		};
 
