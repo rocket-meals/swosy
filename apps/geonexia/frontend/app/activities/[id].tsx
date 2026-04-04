@@ -37,8 +37,7 @@ const REPLAY_COLOR = '#7c3aed';
 const REPLAY_SPEED_STEP = 0.5;
 const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
-const REPLAY_BOUNDS_PADDING_FACTOR = 0.25; // expand route bbox by 25 % on each side
-const REPLAY_FIT_BOUNDS_PADDING = 20; // pixel inset for fitBounds during replay
+
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
 
@@ -968,7 +967,8 @@ export default function ActivityDetailScreen() {
 
 	// Rückblende: replay GPS route on the map.
 	// Sends the full route to the WebView which runs the animation loop internally
-	// using the simulated-car-driver approach with the GPS coordinates as route.
+	// with timestamp-based interpolation. The WebView also handles camera following
+	// at street-level zoom so the marker movement is clearly visible.
 	useEffect(() => {
 		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) {
 			if (mapRef.current && mapMounted) {
@@ -977,34 +977,20 @@ export default function ActivityDetailScreen() {
 			return;
 		}
 
-		// Stop overview auto-rotate so it doesn't interfere with the replay view.
+		// Stop overview auto-rotate so it doesn't interfere with the replay camera.
 		mapRef.current?.sendToMap({ autoRotate: false });
 
 		const points = activity.routePoints;
 
-		// Fit the camera to the full route so the replay marker is visibly moving
-		// along the route (camera stays fixed at overview; marker traverses the path).
-		const bounds = computeRouteBounds(points);
-		if (bounds) {
-			const { minLat, maxLat, minLng, maxLng } = bounds;
-			const latPad = (maxLat - minLat) * REPLAY_BOUNDS_PADDING_FACTOR;
-			const lngPad = (maxLng - minLng) * REPLAY_BOUNDS_PADDING_FACTOR;
-			mapRef.current?.sendToMap({
-				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
-				fitBoundsPadding: REPLAY_FIT_BOUNDS_PADDING,
-				pitch: 0,
-				bearing: 0,
-			});
-		}
-
-		// Send the full route to the WebView; the animation loop runs inside the
-		// WebView so there is no React-Native bridge overhead per frame.
+		// Send the full route to the WebView; the animation loop and camera
+		// following both run inside the WebView so there is no React-Native
+		// bridge overhead per frame.
 		mapRef.current?.sendToMap({ replayAnimation: { points, speed: replaySpeed } });
 
 		return () => {
 			mapRef.current?.sendToMap({ replayAnimation: null });
 		};
-	}, [replayIsDisabled, replaySpeed, mapMounted, activity, computeRouteBounds]);
+	}, [replayIsDisabled, replaySpeed, mapMounted, activity]);
 
 	const handleReplaySpeedDown = useCallback(() => {
 		const next = Math.max(REPLAY_SPEED_MIN, Math.round((replaySpeed - REPLAY_SPEED_STEP) * 10) / 10);
