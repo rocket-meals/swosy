@@ -37,8 +37,6 @@ const REPLAY_COLOR = '#7c3aed';
 const REPLAY_SPEED_STEP = 0.5;
 const REPLAY_SPEED_MIN = 0.5;
 const REPLAY_SPEED_MAX = 20.0;
-// Base interval between hex-center waypoints at 1× speed (ms per hex cell).
-const HEX_REPLAY_MS_PER_CELL = 800;
 
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
@@ -596,21 +594,6 @@ const routeAssignStyles = StyleSheet.create({
 
 // ─── Activity Detail Screen ───────────────────────────────────────────────────
 
-/**
- * Build a replay waypoint list from an ordered H3 hex-tile sequence.
- * Each cell contributes one waypoint at its geographic center; waypoints are
- * spaced HEX_REPLAY_MS_PER_CELL ms apart so the marker moves at a constant
- * visual speed regardless of how GPS timestamps were recorded.
- */
-function buildHexReplayPoints(
-	hexTilesOrdered: string[],
-): Array<{ lat: number; lng: number; timestamp: number }> {
-	return hexTilesOrdered.map((cellId, i) => {
-		const [lat, lng] = cellToLatLng(cellId);
-		return { lat, lng, timestamp: i * HEX_REPLAY_MS_PER_CELL };
-	});
-}
-
 const H3_GEOJSON_ORDER = true;
 const ACTIVITY_GPS_PATH_INTERPOLATION_MAX_CELLS = 10;
 
@@ -982,11 +965,10 @@ export default function ActivityDetailScreen() {
 		});
 	}, [mapMounted, activity]);
 
-	// Rückblende: replay the activity route on the map.
-	// Prefers hex-cell center points (constant-speed, no GPS-timestamp issues).
-	// Falls back to raw GPS points for activities that pre-date hexTilesOrdered.
-	// The WebView runs the animation loop and camera following internally so
-	// there is no React-Native bridge overhead per frame.
+	// Replay: animate the activity route on the map using the raw GPS points so
+	// the marker moves at the speed the route was actually recorded.
+	// The WebView runs the animation loop internally; the overview auto-rotate
+	// continues uninterrupted so the map keeps its normal rotation behaviour.
 	useEffect(() => {
 		if (replayIsDisabled || !mapMounted || !activity) {
 			if (mapRef.current && mapMounted) {
@@ -995,16 +977,9 @@ export default function ActivityDetailScreen() {
 			return;
 		}
 
-		// Stop overview auto-rotate so it doesn't interfere with the replay camera.
-		mapRef.current?.sendToMap({ autoRotate: false });
-
-		// Use hex center points for constant-speed replay; fall back to GPS
-		// points for activities that pre-date hexTilesOrdered storage.
-		const hexTiles = activity.hexTilesOrdered;
-		const points =
-			hexTiles && hexTiles.length >= 2
-				? buildHexReplayPoints(hexTiles)
-				: activity.routePoints;
+		// Always use the raw GPS points so the marker follows the actual recorded
+		// path at the recorded speed (real timestamps).
+		const points = activity.routePoints;
 
 		if (points.length < 2) {
 			mapRef.current?.sendToMap({ replayAnimation: null });
@@ -1207,15 +1182,15 @@ export default function ActivityDetailScreen() {
 
 			{/* Stats list */}
 			<View style={styles.statsContent}>
-				<SettingsListGroupTitle title="Rückblende Einstellungen" />
+				<SettingsListGroupTitle title="Replay Einstellungen" />
 				<SettingsListBoolean
 					iconBgColor={REPLAY_COLOR}
 					leftIcon={<MaterialIcons name="replay" size={22} color="#ffffff" />}
-					label="Rückblende ausschalten"
-					isEnabled={replayIsDisabled}
+					label="Replay anzeigen"
+					isEnabled={!replayIsDisabled}
 					onToggle={handleReplayToggle}
-					valueActive="Ausgeschaltet"
-					valueInactive="Eingeschaltet"
+					valueActive="Eingeschaltet"
+					valueInactive="Ausgeschaltet"
 					groupPosition="top"
 				/>
 				<SettingsList
