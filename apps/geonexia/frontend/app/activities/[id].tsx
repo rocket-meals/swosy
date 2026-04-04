@@ -968,7 +968,7 @@ export default function ActivityDetailScreen() {
 
 	// Rückblende: replay GPS route on the map.
 	// Sends the full route to the WebView which runs the animation loop internally
-	// (same GeoJSON + setInterval approach as the frontend's simulated-car-driver).
+	// using the simulated-car-driver approach with the GPS coordinates as route.
 	useEffect(() => {
 		if (replayIsDisabled || !mapMounted || !activity || !activity.routePoints.length) {
 			if (mapRef.current && mapMounted) {
