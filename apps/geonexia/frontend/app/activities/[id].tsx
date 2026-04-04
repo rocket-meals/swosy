@@ -59,6 +59,17 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+/** Returns the compass bearing in degrees (0–360, clockwise from North) from point A to point B. */
+function bearingTo(lat1: number, lng1: number, lat2: number, lng2: number): number {
+	const toRad = (d: number) => (d * Math.PI) / 180;
+	const φ1 = toRad(lat1);
+	const φ2 = toRad(lat2);
+	const Δλ = toRad(lng2 - lng1);
+	const y = Math.sin(Δλ) * Math.cos(φ2);
+	const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+	return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
 /**
  * Remove GPS points that imply an unrealistic speed relative to the last
  * accepted point.  Only the offending candidate is dropped; the previous
@@ -986,14 +997,18 @@ export default function ActivityDetailScreen() {
 			const idx = replayIndexRef.current;
 			if (idx >= points.length) return;
 			const point = points[idx];
-			mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
 			replayIndexRef.current++;
 			if (idx + 1 < points.length) {
 				const nextPoint = points[idx + 1];
+				// Point the marker cone toward the next recorded GPS point
+				const heading = bearingTo(point.lat, point.lng, nextPoint.lat, nextPoint.lng);
+				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng }, userHeading: heading });
 				const realInterval = Math.max(0, nextPoint.timestamp - point.timestamp);
 				const animInterval = Math.max(REPLAY_MIN_INTERVAL_MS, realInterval / replaySpeed);
 				replayTimerRef.current = setTimeout(advance, animInterval);
 			} else {
+				// Last point – just update position without changing heading
+				mapRef.current?.sendToMap({ userLocation: { lat: point.lat, lng: point.lng } });
 				// Loop back to start after a short pause
 				replayTimerRef.current = setTimeout(() => {
 					replayIndexRef.current = 0;
