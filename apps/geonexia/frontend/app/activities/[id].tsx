@@ -983,7 +983,7 @@ export default function ActivityDetailScreen() {
 	}, [mapMounted, activity]);
 
 	// Rückblende: replay the activity route on the map.
-	// Prefers hex-cell centre points (constant-speed, no GPS-timestamp issues).
+	// Prefers hex-cell center points (constant-speed, no GPS-timestamp issues).
 	// Falls back to raw GPS points for activities that pre-date hexTilesOrdered.
 	// The WebView runs the animation loop and camera following internally so
 	// there is no React-Native bridge overhead per frame.
@@ -998,7 +998,7 @@ export default function ActivityDetailScreen() {
 		// Stop overview auto-rotate so it doesn't interfere with the replay camera.
 		mapRef.current?.sendToMap({ autoRotate: false });
 
-		// Use hex centre points for constant-speed replay; fall back to GPS
+		// Use hex center points for constant-speed replay; fall back to GPS
 		// points for activities that pre-date hexTilesOrdered storage.
 		const hexTiles = activity.hexTilesOrdered;
 		const points =
