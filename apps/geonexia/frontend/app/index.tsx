@@ -3283,18 +3283,19 @@ export default function RecordScreen() {
 			}
 			const cache = searchFeatureCacheRef.current;
 			const uncachedCells = cells.filter((c) => !cache.has(c));
-			for (const cell of uncachedCells) {
-				try {
-					const features = await queryTileFeaturesForHexCell(cell);
-					cache.set(cell, features);
-				} catch {
-					cache.set(cell, []);
-				}
-			}
-			const currentEnabledKeys = store.getState().mapSearch.searchState?.enabledKeys ?? [];
+			await Promise.all(
+				uncachedCells.map(async (cell) => {
+					try {
+						const features = await queryTileFeaturesForHexCell(cell);
+						cache.set(cell, features);
+					} catch {
+						cache.set(cell, []);
+					}
+				}),
+			);
 			const matchingCells = cells.filter((cell) => {
 				const features = cache.get(cell) ?? [];
-				return features.some((f) => currentEnabledKeys.includes(featureToSearchKey(f)));
+				return features.some((f) => enabledKeys.includes(featureToSearchKey(f)));
 			});
 			const highlightFeatures = matchingCells.map((h3Index) => {
 				const boundary = cellToBoundary(h3Index, H3_GEOJSON_ORDER);
