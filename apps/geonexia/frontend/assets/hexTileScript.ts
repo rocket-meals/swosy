@@ -592,10 +592,44 @@ export const HEX_TILE_SCRIPT = `
   }
 
   // ── Replay Animation (Rückblenden-Modus) ─────────────────────────────────
-  // Animates the recorded GPS route internally inside the WebView, updating a
-  // GeoJSON source on every tick.  This mirrors the frontend map's simulated-
-  // car-driver approach (setInterval + source.setData) and avoids the
-  // React-Native ↔ WebView bridge overhead of the previous per-step approach.
+  //
+  // ZUSAMMENFASSUNG DER BISHERIGEN VERSUCHE (warum der Marker sich nicht bewegt hat):
+  //
+  // Versuch 1 (PR #2457, #2460): Die Animation lief auf der React-Native-Seite
+  //   per setTimeout-Kette. Jedes Frame sendete einzeln userLocation + userHeading
+  //   über die React-Native ↔ WebView-Bridge. Die Kamera folgte per easeTo.
+  //   Problem: Die auto-rotate Funktion (setBearing in einer Schleife) hat die
+  //   camera-follow easeTo-Animationen kontinuierlich abgebrochen, sodass der
+  //   Marker optisch stehen blieb.
+  //
+  // Versuch 2 (PR #2463): Die Kamera wurde auf fitBounds (Übersicht der ganzen
+  //   Route) umgestellt, statt der Kamera dem Marker zu folgen. Die Animation
+  //   lief weiterhin per React-Native setTimeout + userLocation-Messages.
+  //   Problem: Bei Overview-Zoom (fitBounds) ist die Positionsänderung pro Frame
+  //   sub-pixel (<0.03 px/Frame), sodass der Marker visuell stehen bleibt.
+  //
+  // Versuch 3 (PR #2466): Die Animation wurde in die WebView verschoben
+  //   (hexTileScript, setInterval + source.setData, Timestamp-basiert). Dazu
+  //   wurde auch in index.html eine zweite Replay-Animation mit
+  //   CAR_SPEED_DEG_PER_FRAME (räumliche Geschwindigkeit) eingebaut.
+  //   Problem: Die index.html-Version hatte einen Bug (replayParticle wurde durch
+  //   removeReplayLayer() auf null gesetzt bevor addReplayLayer() aufgerufen
+  //   wurde), sodass sie nie gerendert wurde. Die hexTileScript-Version war
+  //   korrekt, aber die [id].tsx-Seite sendete fitBounds (Overview-Zoom) → wieder
+  //   sub-pixel Bewegung, visuell unsichtbar.
+  //
+  // Versuch 4 (PR #2469): Weitere Duplicate-Replay-Code in index.html mit
+  //   falschem Algorithmus (CAR_SPEED_DEG_PER_FRAME statt Zeitstempel).
+  //   Gleicher Bug: replayParticle = null vor addReplayLayer. Gleiche Konsequenz.
+  //
+  // AKTUELLE LÖSUNG:
+  //   - Der doppelte Replay-Code in index.html wurde entfernt (war toter Code).
+  //   - Die Animation läuft nur hier in hexTileScript mit Timestamp-Interpolation.
+  //   - Die Kamera folgt dem Marker direkt im WebView per map.easeTo() pro Frame
+  //     bei Zoom 16 (Straßenebene), sodass die Bewegung klar sichtbar ist.
+  //   - [id].tsx sendet kein fitBounds mehr für Replay; die Kamera wird
+  //     vollständig vom WebView gesteuert.
+  //
   var REPLAY_PLAYER_SOURCE = 'replay-player-source';
   var REPLAY_PLAYER_LAYER = 'replay-player-layer';
   var REPLAY_PLAYER_COLOR = '#7c3aed';
@@ -603,6 +637,8 @@ export const HEX_TILE_SCRIPT = `
   var REPLAY_PLAYER_STROKE_COLOR = '#ffffff';
   var REPLAY_PLAYER_STROKE_WIDTH = 2;
   var REPLAY_ANIM_MS = 50; // ~20 fps
+  var REPLAY_FOLLOW_ZOOM = 16; // street-level zoom for camera following
+  var REPLAY_CAMERA_PITCH = 45; // pitch angle while following the replay marker
 
   var replayAnimInterval = null;
   var replayAnimState = null;
@@ -616,6 +652,17 @@ export const HEX_TILE_SCRIPT = `
         properties: {}
       }]
     };
+  }
+
+  /** Returns compass bearing in degrees (0-360) from point A to point B. */
+  function replayBearingTo(lat1, lng1, lat2, lng2) {
+    var toRad = Math.PI / 180;
+    var phi1 = lat1 * toRad;
+    var phi2 = lat2 * toRad;
+    var dLambda = (lng2 - lng1) * toRad;
+    var y = Math.sin(dLambda) * Math.cos(phi2);
+    var x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLambda);
+    return ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360;
   }
 
   function stopReplayAnimation() {
@@ -657,6 +704,17 @@ export const HEX_TILE_SCRIPT = `
         },
       });
     }
+    // Fly camera to the first point at street-level zoom so the movement is clearly visible
+    var firstBearing = points.length > 1
+      ? replayBearingTo(points[0].lat, points[0].lng, points[1].lat, points[1].lng)
+      : 0;
+    map.flyTo({
+      center: [points[0].lng, points[0].lat],
+      zoom: REPLAY_FOLLOW_ZOOM,
+      pitch: REPLAY_CAMERA_PITCH,
+      bearing: firstBearing,
+      duration: 800,
+    });
     replayAnimInterval = setInterval(function () {
       if (!replayAnimState || !map || !map.getSource(REPLAY_PLAYER_SOURCE)) return;
       var pts = replayAnimState.points;
@@ -677,7 +735,20 @@ export const HEX_TILE_SCRIPT = `
       t = Math.max(0, Math.min(1, t));
       var lng = p1.lng + (p2.lng - p1.lng) * t;
       var lat = p1.lat + (p2.lat - p1.lat) * t;
+      // Update marker position
       map.getSource(REPLAY_PLAYER_SOURCE).setData(replayPointToGeoJSON(lng, lat));
+      // Calculate bearing toward the next point for camera heading
+      var bearing = 0;
+      if (lo + 1 < pts.length) {
+        bearing = replayBearingTo(p1.lat, p1.lng, p2.lat, p2.lng);
+      }
+      // Follow the marker with the camera at street-level zoom
+      map.easeTo({
+        center: [lng, lat],
+        bearing: bearing,
+        duration: REPLAY_ANIM_MS,
+        easing: function (t) { return t; }, // linear easing for smooth continuous movement
+      });
     }, REPLAY_ANIM_MS);
   }
   // ─────────────────────────────────────────────────────────────────────────
