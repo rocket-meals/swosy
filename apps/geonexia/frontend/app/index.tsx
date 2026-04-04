@@ -4899,8 +4899,8 @@ export default function RecordScreen() {
 							<View style={styles.buttonSpacer} />
 						</>
 					)}
-					{/* Search highlight button – visible during recording in debug mode */}
-					{isDebugMode && isRecording && (
+					{/* Search highlight button – visible during recording */}
+					{isRecording && (
 						<>
 							<TouchableOpacity
 								style={[
