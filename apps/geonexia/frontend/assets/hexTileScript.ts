@@ -458,7 +458,7 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'line-color': hexTileStrokeColor,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4 * HEX_LINE_WIDTH_SCALE, 12, 1.0 * HEX_LINE_WIDTH_SCALE, 15, 0.7 * HEX_LINE_WIDTH_SCALE],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4 * HEX_LINE_WIDTH_SCALE, 12, HEX_LINE_WIDTH_SCALE, 15, 0.7 * HEX_LINE_WIDTH_SCALE],
         'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5 * HEX_LINE_OPACITY_SCALE, 12, 0.4 * HEX_LINE_OPACITY_SCALE, 15, 0.3 * HEX_LINE_OPACITY_SCALE],
       },
     });
