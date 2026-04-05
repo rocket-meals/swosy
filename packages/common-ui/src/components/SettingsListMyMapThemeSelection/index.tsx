@@ -34,8 +34,8 @@ const SettingsListMyMapThemeSelection: React.FC<SettingsListMyMapThemeSelectionP
 	groupPosition = 'single',
 	mapPreviewCenter = DEFAULT_MAP_PREVIEW_CENTER,
 	mapPreviewZoom = DEFAULT_MAP_PREVIEW_ZOOM,
-	label = 'Karten Material',
-	modalTitle = '🗺️ Karten Material',
+	label = 'Map Style',
+	modalTitle = '🗺️ Map Style',
 	leftIcon,
 	iconBgColor,
 }) => {

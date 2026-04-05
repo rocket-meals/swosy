@@ -504,6 +504,8 @@ const Settings = () => {
 							onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
+							label="Karten Material"
+							modalTitle="🗺️ Karten Material"
 							groupPosition="single"
 						/>
 					</View>

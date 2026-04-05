@@ -429,6 +429,8 @@ export default function SettingsScreen() {
 					accentColor={MAP_COLOR}
 					iconBgColor={MAP_COLOR}
 					leftIcon={<MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />}
+					label="Karten Material"
+					modalTitle="🗺️ Karten Material"
 					groupPosition="single"
 				/>
 
