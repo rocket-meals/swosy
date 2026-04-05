@@ -19,7 +19,6 @@ import MapHeader from '@/app/(app)/map/components/MapHeader';
 import DebugView from '@/components/DebugView';
 import SettingsList from '@/components/SettingsList/SettingsList';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import SettingsListOrganisationFast from '@/components/SettingsListOrganisationFast';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -28,22 +27,10 @@ import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icon
 import * as Location from 'expo-location';
 import MyMap from '@/components/MyMap';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
+import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
 import JoggingOverlay from '@/app/(app)/map/components/JoggingOverlay';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
-
-type OsmStyleVariant = {
-	key: string;
-	label: string;
-	url: string;
-};
-
-const OSM_STYLE_VARIANTS: OsmStyleVariant[] = [
-	{ key: 'liberty', label: 'Liberty (Standard)', url: 'https://tiles.openfreemap.org/styles/liberty' },
-	{ key: 'bright', label: 'Bright', url: 'https://tiles.openfreemap.org/styles/bright' },
-	{ key: 'positron', label: 'Positron (Hell)', url: 'https://tiles.openfreemap.org/styles/positron' },
-	{ key: 'dark-matter', label: 'Dark Matter (Dunkel)', url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json' },
-];
 
 // MapLibre pitch value for 70° viewing angle (pitch = degrees from vertical)
 const INITIAL_PITCH = 20;
@@ -179,7 +166,7 @@ const gameModeStyles = StyleSheet.create({
 });
 
 type OsmSettingsContentProps = {
-	initialSelectedStyleKey: string;
+	initialSelectedStyleKey: MapStyleKey;
 	initialUseFlyAnimation: boolean;
 	initialClusterDistance: number;
 	initialGameMode: boolean;
@@ -189,7 +176,7 @@ type OsmSettingsContentProps = {
 	initialPeopleCount: number;
 	initialCarMode: boolean;
 	isFullscreen: boolean;
-	onSelectedStyleChange: (key: string) => void;
+	onSelectedStyleChange: (key: MapStyleKey) => void;
 	onFlyAnimationChange: (value: boolean) => void;
 	onClusterDistanceChange: (value: number) => void;
 	onGameModeChange: (value: boolean) => void;
@@ -238,32 +225,17 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	const [localIntelligentMovement, setLocalIntelligentMovement] = useState(initialIntelligentMovement);
 	const [localPeopleCount, setLocalPeopleCount] = useState(String(initialPeopleCount));
 	const [localCarMode, setLocalCarMode] = useState(initialCarMode);
-	const [showingStyleSelector, setShowingStyleSelector] = useState(false);
-
-	if (showingStyleSelector) {
-		return (
-			<SettingsListSelectOption
-				options={OSM_STYLE_VARIANTS.map((v) => ({ id: v.key, label: v.label }))}
-				selectedOption={selectedStyleKey}
-				onSelect={(option) => {
-					setSelectedStyleKey(option.id);
-					onSelectedStyleChange(option.id);
-					setShowingStyleSelector(false);
-				}}
-				noIconIndent
-			/>
-		);
-	}
 
 	return (
 		<>
 			<SettingsGroupTitle>Karten Einstellungen</SettingsGroupTitle>
-			<SettingsList
-				title="Kartenstil"
-				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
+			<SettingsListMyMapThemeSelection
+				selectedMapStyleKey={selectedStyleKey}
+				onMapStyleKeyChange={(key) => {
+					setSelectedStyleKey(key);
+					onSelectedStyleChange(key);
+				}}
 				leftIcon={<MaterialIcons name="layers" size={20} color={theme.screen.icon} />}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-				onPress={() => setShowingStyleSelector(true)}
 				groupPosition="top"
 			/>
 			<SettingsList
@@ -702,7 +674,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const buildings = useMemo(() => Object.values(buildingsDict ?? {}), [buildingsDict]);
 	const primaryColor = useAppSelector((state) => state.settings.primaryColor);
 	const drawerPosition = useAppSelector((state) => state.settings.drawerPosition);
-	const selectedStyleKey = useAppSelector((state) => (state.settings as any).osmVectorMapStyleKey ?? 'liberty');
+	const selectedStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
 	const useFlyAnimation = useAppSelector((state) => (state.settings as any).osmVectorMapUseFlyAnimation ?? true);
 	const clusterDistance = useAppSelector((state) => (state.settings as any).osmVectorMapClusterDistance ?? 30);
 	const showControlsHint = useAppSelector((state) => (state.settings as any).osmVectorMapShowControlsHint ?? true);
@@ -848,7 +820,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	}, []);
 
 	const setSelectedStyleKey = useCallback(
-		(key: string) => {
+		(key: MapStyleKey) => {
 			dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key });
 		},
 		[dispatch],
@@ -1024,11 +996,6 @@ const OsmVectorMapScreen: React.FC = () => {
 		Keyboard.dismiss();
 	}, []);
 
-	const selectedStyleUrl = useMemo(
-		() => (OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).url,
-		[selectedStyleKey],
-	);
-
 	const sendMapData = useCallback(() => {
 		if (gameModeRef.current) return; // game loop handles map updates in game mode
 		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
@@ -1036,7 +1003,6 @@ const OsmVectorMapScreen: React.FC = () => {
 
 		const message: Record<string, unknown> = {
 			mapMarkers: allMarkers,
-			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
 		};
 
@@ -1049,7 +1015,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 
 		myMapRef.current?.sendToMap(message);
-	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, selectedStyleUrl, useFlyAnimation]);
+	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
@@ -1077,10 +1043,9 @@ const OsmVectorMapScreen: React.FC = () => {
 			useFlyAnimation: false,
 			mapMarkers: buildingMarkersRef.current,
 			vehicleMarker: null,
-			mapStyle: selectedStyleUrl,
 			disableInteraction: true,
 		});
-	}, [sendToMap, selectedStyleUrl]);
+	}, [sendToMap]);
 
 	const sendGameInitDataRef = useRef(sendGameInitData);
 	sendGameInitDataRef.current = sendGameInitData;
@@ -1545,6 +1510,7 @@ const OsmVectorMapScreen: React.FC = () => {
 							initialCenter={centerPosition}
 							initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
 							loadingText={translate(TranslationKeys.loading_vector_map)}
+							mapStyleKey={selectedStyleKey}
 							onMessage={handleMessage}
 						/>
 					) : (

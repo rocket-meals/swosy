@@ -90,3 +90,6 @@ export type { ScreenHeaderProps } from './src/components/ScreenHeader';
 
 export { default as CardWithText } from './src/components/CardWithText';
 export type { CardWithTextProps } from './src/components/CardWithText';
+
+export { default as SettingsListMyMapThemeSelection } from './src/components/SettingsListMyMapThemeSelection';
+export type { SettingsListMyMapThemeSelectionProps } from './src/components/SettingsListMyMapThemeSelection';

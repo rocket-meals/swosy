@@ -19,7 +19,7 @@ import { useAppSelector } from '@/redux/hooks';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE, SET_OSM_VECTOR_MAP_STYLE_KEY } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -53,6 +53,7 @@ import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 import useMyScrollviewModalChangeMyCanteenSelection from '@/hooks/useMyScrollviewModalChangeMyCanteenSelection';
 import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
+import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -83,6 +84,7 @@ const Settings = () => {
         const { openChangeMyCanteenSelectionModal } = useMyScrollviewModalChangeMyCanteenSelection();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useAppSelector((state) => state.settings);
+        const osmVectorMapStyleKey = useAppSelector((state) => ((state.settings as any).osmVectorMapStyleKey ?? MapStyleKey.DEFAULT) as MapStyleKey);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -490,6 +492,25 @@ const Settings = () => {
 			),
 		});
 
+		// === Map settings ===
+		rows.push({
+			key: 'section-map-settings',
+			element: (
+				<View style={sectionStyle}>
+					<SettingsGroupTitle>Karte</SettingsGroupTitle>
+					<View style={groupStyle}>
+						<SettingsListMyMapThemeSelection
+							selectedMapStyleKey={osmVectorMapStyleKey}
+							onMapStyleKeyChange={(key) => dispatch({ type: SET_OSM_VECTOR_MAP_STYLE_KEY, payload: key })}
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="map-outline" size={24} color={theme.screen.icon} />}
+							groupPosition="single"
+						/>
+					</View>
+				</View>
+			),
+		});
+
 		// === Housing (conditional) ===
 		if (appSettings?.housing_enabled) {
 			rows.push({
@@ -673,7 +694,7 @@ const Settings = () => {
 		termsAndPrivacyConsentAcceptedDate, isManagement, dispatch, serverInfo, selectedCustomerDisplayName,
 		foodOffersNextDayThreshold, useWebpForAssets, debugMode, simulateExpoUpdateAvailable,
 		openServerSheet, openFoodOffersTimeSheet, toggleWebpForAssets, toggleDebugMode,
-		toggleSimulateExpoUpdate,
+		toggleSimulateExpoUpdate, osmVectorMapStyleKey,
 	]);
 
 	return (
