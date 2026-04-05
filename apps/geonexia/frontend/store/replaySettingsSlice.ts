@@ -11,7 +11,7 @@ export type ReplaySettingsState = {
 
 export const REPLAY_SETTINGS_DEFAULTS: ReplaySettingsState = {
 	isDisabled: false,
-	speed: 3.0,
+	speed: 15.0,
 };
 
 const initialState: ReplaySettingsState = { ...REPLAY_SETTINGS_DEFAULTS };

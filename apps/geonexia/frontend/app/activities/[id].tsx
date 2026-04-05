@@ -36,7 +36,7 @@ const REPLAY_COLOR = '#7c3aed';
 
 const REPLAY_SPEED_STEP = 0.5;
 const REPLAY_SPEED_MIN = 0.5;
-const REPLAY_SPEED_MAX = 20.0;
+const REPLAY_SPEED_MAX = 100.0;
 
 
 // ─── Stats / filter helpers ───────────────────────────────────────────────────
