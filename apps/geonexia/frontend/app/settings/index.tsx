@@ -85,7 +85,7 @@ function themeModeLabel(mode: ThemeMode): string {
 
 // Preview center: Osnabrück/Lower Saxony (52° 39' 44.03" N, 8° 07' 27.84" E)
 const MAP_PREVIEW_CENTER = { lat: 52.662231, lng: 8.124400 };
-const MAP_PREVIEW_ZOOM = 11;
+const MAP_PREVIEW_ZOOM = 14;
 
 // No-op message handler for read-only map previews
 const _noop = () => {};
