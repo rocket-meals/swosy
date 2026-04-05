@@ -7,7 +7,7 @@ import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 const DEFAULT_ZOOM = 16;
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap, mapStyleKey }, ref) => {
+	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap, mapStyleKey, hideLegalInfo }, ref) => {
 		const iframeRef = useRef<HTMLIFrameElement>(null);
 		const htmlBase = require('../../../assets/maplibre/index.html') as string;
 
@@ -40,6 +40,9 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				}
 				if (loadingText) {
 					queryParts.push(`loadingText=${encodeURIComponent(loadingText)}`);
+				}
+				if (hideLegalInfo) {
+					queryParts.push('hideLegal=1');
 				}
 				const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
 				return `${htmlBase}${query}`;
