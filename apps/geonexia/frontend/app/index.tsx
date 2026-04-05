@@ -4909,26 +4909,22 @@ export default function RecordScreen() {
 							<View style={styles.buttonSpacer} />
 						</>
 					)}
-					{/* Search highlight button – visible during recording */}
-					{isRecording && (
-						<>
-							<TouchableOpacity
-								style={[
-									styles.debugButton,
-									searchState !== null && searchState.enabledKeys.length > 0 && { backgroundColor: '#ef4444' },
-								]}
-								onPress={() => { void openSearchModal(); }}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons
-									name="search"
-									size={20}
-									color={searchState !== null && searchState.enabledKeys.length > 0 ? '#ffffff' : '#555555'}
-								/>
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-						</>
-					)}
+					{/* Search highlight button – always visible in RecordScreen */}
+					<TouchableOpacity
+						style={[
+							styles.debugButton,
+							searchState !== null && searchState.enabledKeys.length > 0 && { backgroundColor: '#ef4444' },
+						]}
+						onPress={() => { void openSearchModal(); }}
+						activeOpacity={0.8}
+					>
+						<MaterialIcons
+							name="search"
+							size={20}
+							color={searchState !== null && searchState.enabledKeys.length > 0 ? '#ffffff' : '#555555'}
+						/>
+					</TouchableOpacity>
+					<View style={styles.buttonSpacer} />
 					{isDebugMode && !isRecording && (
 						<>
 							<TouchableOpacity
@@ -4963,17 +4959,6 @@ export default function RecordScreen() {
 								activeOpacity={0.8}
 							>
 								<MaterialIcons name="bug-report" size={20} color="#555555" />
-							</TouchableOpacity>
-							<View style={styles.buttonSpacer} />
-							<TouchableOpacity
-								style={[
-									styles.debugButton,
-									isMagnifyMode && { backgroundColor: '#3b82f6' },
-								]}
-								onPress={isMagnifyMode ? cancelMagnifyMode : startMagnifyMode}
-								activeOpacity={0.8}
-							>
-								<MaterialIcons name="search" size={20} color={isMagnifyMode ? '#ffffff' : '#555555'} />
 							</TouchableOpacity>
 						</>
 					)}
