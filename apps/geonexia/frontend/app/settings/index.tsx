@@ -315,6 +315,7 @@ export default function SettingsScreen() {
 								key={key}
 								containerStyle={[
 									styles.mapThemeCard,
+									{ backgroundColor: theme?.card?.background },
 									isSelected ? styles.mapThemeCardSelected : styles.mapThemeCardUnselected,
 								]}
 								onPress={() => {
