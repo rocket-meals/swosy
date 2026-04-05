@@ -49,13 +49,27 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				let htmlContent = await FileSystem.readAsStringAsync(htmlAsset.localUri!);
 				if (initialCenter) {
 					const zoomArg = initialZoom !== undefined ? `${initialZoom}` : 'null';
-					const pitch = initialPitch !== undefined ? `, ${initialPitch}` : '';
+					const pitchArg = initialPitch !== undefined ? `${initialPitch}` : 'null';
+					const pitchSuffix = initialPitch !== undefined ? `, ${initialPitch}` : '';
+					// Replace the try/else branch (native path: no URL query params present)
+					htmlContent = StringHelper.replaceAllLiteralWithOptions({
+						str: htmlContent,
+						find: 'initMap(null, null, null, styleParam);',
+						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}, ${pitchArg}, styleParam);`,
+					});
+					// Also replace the catch-block fallback (defensive)
 					htmlContent = StringHelper.replaceAllLiteralWithOptions({
 						str: htmlContent,
 						find: 'initMap(null, null);',
-						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}${pitch});`,
+						replace: `initMap([${initialCenter.lng}, ${initialCenter.lat}], ${zoomArg}${pitchSuffix});`,
 					});
 				} else if (initialZoom !== undefined) {
+					// Replace both the try/else branch and catch fallback
+					htmlContent = StringHelper.replaceAllLiteralWithOptions({
+						str: htmlContent,
+						find: 'initMap(null, null, null, styleParam);',
+						replace: `initMap(null, ${initialZoom}, null, styleParam);`,
+					});
 					htmlContent = StringHelper.replaceAllLiteralWithOptions({
 						str: htmlContent,
 						find: 'initMap(null, null);',
