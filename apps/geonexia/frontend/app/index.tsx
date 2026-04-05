@@ -3263,11 +3263,12 @@ export default function RecordScreen() {
 	// Timestamp of the last recording snapshot persisted to disk (crash recovery).
 	const lastSnapshotSaveRef = useRef(0);
 
-	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }) => {
+	const centerMapOnPosition = useCallback((pos: { lat: number; lng: number }, zoom?: number) => {
 		if (!mapRef.current) return;
 		mapRef.current.sendToMap({ userLocation: { lat: pos.lat, lng: pos.lng } });
 		mapRef.current.sendToMap({
 			mapCenterPosition: { lat: pos.lat, lng: pos.lng },
+			...(zoom != null ? { zoom } : {}),
 			easeAnimation: true,
 			easeDuration: 800,
 		});
@@ -4892,7 +4893,7 @@ export default function RecordScreen() {
 								onPress={() => {
 									if (!isSettingHome && homeHexTile !== null) {
 										const [lat, lng] = cellToLatLng(homeHexTile);
-										centerMapOnPosition({ lat, lng });
+										centerMapOnPosition({ lat, lng }, 17);
 									} else {
 										isSettingHomeRef.current = !isSettingHome;
 										setIsSettingHome(!isSettingHome);
