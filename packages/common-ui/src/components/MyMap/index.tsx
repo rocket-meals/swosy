@@ -19,7 +19,7 @@ function escapeHtml(text: string): string {
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap, mapStyleKey }, ref) => {
+	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap, mapStyleKey, hideLegalInfo }, ref) => {
 		const webViewRef = useRef<WebView>(null);
 		// The HTML is written to a local cache file and loaded via a file:// URI so that the WebView
 		// has a proper file:// origin and can fetch sibling local assets (e.g. GLB models, PNG tiles)
@@ -101,6 +101,13 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 						str: htmlContent,
 						find: '// INJECT_SCRIPT_HERE',
 						replace: injectScript,
+					});
+				}
+				if (hideLegalInfo) {
+					htmlContent = StringHelper.replaceAllLiteralWithOptions({
+						str: htmlContent,
+						find: '/* INJECT_STYLE_HERE */',
+						replace: '.maplibregl-ctrl-attrib { display: none !important; }',
 					});
 				}
 				if (isMounted) {

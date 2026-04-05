@@ -125,4 +125,9 @@ export interface MyMapProps {
 	 * Changes to this prop switch the live map to the new style without reloading the page.
 	 */
 	mapStyleKey?: MapStyleKey;
+	/**
+	 * When true, hides the MapLibre attribution / legal-information control (the ⓘ button).
+	 * Useful for decorative map previews where the legal notice is not required.
+	 */
+	hideLegalInfo?: boolean;
 }
