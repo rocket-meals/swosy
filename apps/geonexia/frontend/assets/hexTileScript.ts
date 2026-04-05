@@ -33,6 +33,9 @@ export const HEX_TILE_SCRIPT = `
   var HEX_COLOR_LEVEL_MAX = '#15803d'; // level 10 – dark forest green
   var HEX_OPACITY_LEVEL_MIN = 0.21;   // level  1  (default: 70 % of HEX_OPACITY_LEVEL_MAX)
   var HEX_OPACITY_LEVEL_MAX = 0.30;   // level 10  (default: 0.30, user-adjustable)
+  // Hex grid line appearance (user-adjustable via hexLineOpacity / hexLineWidth messages)
+  var HEX_LINE_OPACITY_SCALE = 1.0;  // multiplier applied to the zoom-dependent base opacity
+  var HEX_LINE_WIDTH_SCALE = 1.0;    // multiplier applied to the zoom-dependent base width
   // Territory border: thick, dark line between level-0 and level>0 tiles
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
@@ -455,8 +458,8 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'line-color': hexTileStrokeColor,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 12, 1.0, 15, 0.7],
-        'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 0.4, 15, 0.3],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4 * HEX_LINE_WIDTH_SCALE, 12, 1.0 * HEX_LINE_WIDTH_SCALE, 15, 0.7 * HEX_LINE_WIDTH_SCALE],
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5 * HEX_LINE_OPACITY_SCALE, 12, 0.4 * HEX_LINE_OPACITY_SCALE, 15, 0.3 * HEX_LINE_OPACITY_SCALE],
       },
     });
     // Territory border: separate source/layer for thick dark boundary lines
@@ -754,6 +757,12 @@ export const HEX_TILE_SCRIPT = `
           HEX_OPACITY_LEVEL_MAX = data.hexTileLayer.opacityMax;
           HEX_OPACITY_LEVEL_MIN = data.hexTileLayer.opacityMax * 0.7;
         }
+        if (typeof data.hexTileLayer.lineOpacity === 'number') {
+          HEX_LINE_OPACITY_SCALE = Math.min(1, Math.max(0, data.hexTileLayer.lineOpacity));
+        }
+        if (typeof data.hexTileLayer.lineWidth === 'number') {
+          HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0.1, data.hexTileLayer.lineWidth));
+        }
         hexTileActive = true;
         removeHexTileLayer();
         addHexTileLayer();
@@ -778,6 +787,28 @@ export const HEX_TILE_SCRIPT = `
               10, HEX_OPACITY_LEVEL_MAX
             ]
           ]
+        ]);
+      }
+      return;
+    }
+    if (data.hexLineOpacity !== undefined) {
+      HEX_LINE_OPACITY_SCALE = Math.min(1, Math.max(0, data.hexLineOpacity));
+      if (map && map.getLayer(HEX_TILE_STROKE_LAYER)) {
+        map.setPaintProperty(HEX_TILE_STROKE_LAYER, 'line-opacity', ['interpolate', ['linear'], ['zoom'],
+          9, 0.5 * HEX_LINE_OPACITY_SCALE,
+          12, 0.4 * HEX_LINE_OPACITY_SCALE,
+          15, 0.3 * HEX_LINE_OPACITY_SCALE
+        ]);
+      }
+      return;
+    }
+    if (data.hexLineWidth !== undefined) {
+      HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0.1, data.hexLineWidth));
+      if (map && map.getLayer(HEX_TILE_STROKE_LAYER)) {
+        map.setPaintProperty(HEX_TILE_STROKE_LAYER, 'line-width', ['interpolate', ['linear'], ['zoom'],
+          9, 1.4 * HEX_LINE_WIDTH_SCALE,
+          12, 1.0 * HEX_LINE_WIDTH_SCALE,
+          15, 0.7 * HEX_LINE_WIDTH_SCALE
         ]);
       }
       return;
