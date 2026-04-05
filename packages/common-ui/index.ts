@@ -61,6 +61,8 @@ export type { AppDrawerProps, DrawerItem } from './src/components/AppDrawer';
 
 export { default as MyMap } from './src/components/MyMap';
 export type { MyMapHandle, MyMapProps } from './src/components/MyMap';
+export { MapColorKey } from './src/components/MyMap/MyMapHelper';
+export type { MapColorMap } from './src/components/MyMap/MyMapHelper';
 
 export { MapNorthButton, MapLocationButton } from './src/components/MapOverlayButtons';
 export type { MapNorthButtonProps, MapLocationButtonProps } from './src/components/MapOverlayButtons';

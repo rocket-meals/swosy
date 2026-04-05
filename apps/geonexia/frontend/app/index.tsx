@@ -24,7 +24,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, MapColorKey, MapColorMap } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
@@ -104,6 +104,18 @@ function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<stri
 }
 
 const PRIMARY_COLOR = '#2563eb';
+
+/** Color maps for map themes. 'default' uses no overrides (standard map style). */
+const MAP_THEME_COLOR_MAPS: Record<string, MapColorMap | undefined> = {
+	default: undefined,
+	kartografisch: {
+		[MapColorKey.BACKGROUND]: '#f5ead0',
+		[MapColorKey.GRASS]: '#cde4b0',
+		[MapColorKey.WATER]: '#a8d0e6',
+		[MapColorKey.ROAD]: '#f0ddb0',
+		[MapColorKey.BUILDING]: '#d4b896',
+	},
+};
 
 /** Billboard key for the castle2 sprite. Used to mark the player's home tile. */
 const BILLBOARD_CASTLE2_KEY = 'objects:12';
@@ -2690,6 +2702,7 @@ export default function RecordScreen() {
 	const speechSettings = useSelector((state: RootState) => state.speechSettings);
 	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
 	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
+	const mapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -4836,7 +4849,7 @@ export default function RecordScreen() {
 			{/* Map fills remaining space above the panel */}
 			<View style={styles.mapWrapper}>
 				{mapCanRender && (
-					<MyMap ref={mapRef} initialZoom={17} initialCenter={mapInitialCenter} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} loadingOverlay={<MapLoadingOverlay />} />
+					<MyMap ref={mapRef} initialZoom={17} initialCenter={mapInitialCenter} onMessage={handleMapMessage} injectScript={HEX_TILE_SCRIPT} loadingOverlay={<MapLoadingOverlay />} colorMap={MAP_THEME_COLOR_MAPS[mapTheme]} />
 				)}
 
 				{/* Map overlay buttons – top-right */}

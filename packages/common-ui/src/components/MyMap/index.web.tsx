@@ -6,7 +6,7 @@ import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 const DEFAULT_ZOOM = 16;
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
+	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap }, ref) => {
 		const iframeRef = useRef<HTMLIFrameElement>(null);
 		const htmlBase = require('../../../assets/maplibre/index.html') as string;
 
@@ -14,6 +14,8 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
 		const mapReadyRef = useRef(false);
 		const initCenterSentRef = useRef(false);
+		// Keep the latest colorMap value accessible inside the message handler.
+		const colorMapRef = useRef(colorMap);
 
 		// Overlay state: visible until MapComponentMounted fires.
 		const [overlayVisible, setOverlayVisible] = useState(true);
@@ -48,6 +50,14 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		}, []);
 
 		useImperativeHandle(ref, () => ({ sendToMap }), [sendToMap]);
+
+		// When the colorMap prop changes, keep the ref up to date and apply the new colors.
+		useEffect(() => {
+			colorMapRef.current = colorMap;
+			if (mapReadyRef.current) {
+				sendToMap({ colorMap: colorMap ?? null });
+			}
+		}, [colorMap, sendToMap]);
 
 		// When no initialCenter is provided and auto-center is enabled, request location on mount.
 		useEffect(() => {
@@ -86,7 +96,12 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					}
 					// Hide the loading overlay when the map is ready.
 					if (data.tag === 'MapComponentMounted') {
+						mapReadyRef.current = true;
 						setOverlayVisible(false);
+						// Apply initial color map (if any) once the style is fully loaded.
+						if (colorMapRef.current) {
+							sendToMap({ colorMap: colorMapRef.current });
+						}
 					}
 					onMessage(data);
 				} catch {

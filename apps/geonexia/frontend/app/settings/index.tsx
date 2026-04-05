@@ -22,6 +22,7 @@ import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
 import { updateDisplaySettings } from '../../store/displaySettingsSlice';
+import type { MapTheme } from '../../store/displaySettingsSlice';
 import {
 	saveDebugModeFlag,
 	saveDevModeFlag,
@@ -76,6 +77,18 @@ function themeModeLabel(mode: ThemeMode): string {
 		case 'light': return 'Light';
 		case 'dark': return 'Dark';
 		case 'systematic': return 'System';
+	}
+}
+
+const MAP_THEME_OPTIONS: { id: MapTheme; label: string; icon: React.ReactNode }[] = [
+	{ id: 'default', label: 'Standard', icon: <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" /> },
+	{ id: 'kartografisch', label: 'Kartografisch', icon: <MaterialCommunityIcons name="map" size={22} color="#ffffff" /> },
+];
+
+function mapThemeLabel(mode: MapTheme): string {
+	switch (mode) {
+		case 'default': return 'Standard';
+		case 'kartografisch': return 'Kartografisch';
 	}
 }
 
@@ -203,11 +216,13 @@ export default function SettingsScreen() {
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
 	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
 	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
+	const selectedMapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
 	const { show: showSpeechModal } = useMyScrollViewModal();
 	const { show: showTTSLogModal, close: closeTTSLogModal } = useMyScrollViewModal();
+	const { show: showMapThemeModal, close: closeMapThemeModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
@@ -244,6 +259,23 @@ export default function SettingsScreen() {
 			),
 		});
 	}, [showGpsModal, closeGpsModal, dispatch, selectedGpsInterval]);
+
+	const handleOpenMapThemeSelection = useCallback(() => {
+		showMapThemeModal({
+			title: '🗺️ Karten Theme',
+			children: (
+				<SettingsListSelectOption
+					options={MAP_THEME_OPTIONS}
+					selectedOption={selectedMapTheme}
+					onSelect={(option) => {
+						dispatch(updateDisplaySettings({ mapTheme: option.id }));
+						closeMapThemeModal();
+					}}
+					iconBgColor={MAP_COLOR}
+				/>
+			),
+		});
+	}, [showMapThemeModal, closeMapThemeModal, dispatch, selectedMapTheme]);
 
 	const handleResetAllData = useCallback(() => {
 		showResetModal({
@@ -417,6 +449,15 @@ export default function SettingsScreen() {
 							</TouchableOpacity>
 						</View>
 					}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialCommunityIcons name="map" size={22} color="#ffffff" />}
+					label="Karten Theme"
+					value={mapThemeLabel(selectedMapTheme)}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleOpenMapThemeSelection}
 					groupPosition="bottom"
 				/>
 

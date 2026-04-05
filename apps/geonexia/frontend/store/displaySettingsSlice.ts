@@ -2,16 +2,22 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
+/** Visual theme for the base map. */
+export type MapTheme = 'default' | 'kartografisch';
+
 export type DisplaySettingsState = {
 	/** Fill opacity for hex tiles on the map (0.0 – 1.0). Applied as the max level opacity; level-1 tiles use 70 % of this value. */
 	hexTileOpacity: number;
 	/** Opacity for objects placed on hex tiles – terrain images and billboard icons (0.0 – 1.0). */
 	objectOpacity: number;
+	/** Color theme applied to the base map. */
+	mapTheme: MapTheme;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexTileOpacity: 0.05,
 	objectOpacity: 0.35,
+	mapTheme: 'default',
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };

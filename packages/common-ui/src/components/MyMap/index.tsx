@@ -18,7 +18,7 @@ function escapeHtml(text: string): string {
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript }, ref) => {
+	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap }, ref) => {
 		const webViewRef = useRef<WebView>(null);
 		// The HTML is written to a local cache file and loaded via a file:// URI so that the WebView
 		// has a proper file:// origin and can fetch sibling local assets (e.g. GLB models, PNG tiles)
@@ -36,6 +36,8 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
 		const mapReadyRef = useRef(false);
 		const initCenterSentRef = useRef(false);
+		// Keep the latest colorMap value accessible inside the handleMessage callback.
+		const colorMapRef = useRef(colorMap);
 
 		useEffect(() => {
 			let isMounted = true;
@@ -101,6 +103,15 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 
 		useImperativeHandle(ref, () => ({ sendToMap }), [sendToMap]);
 
+		// When the colorMap prop changes, keep the ref up to date and apply the new colors
+		// to the live map (if the map is already ready).
+		useEffect(() => {
+			colorMapRef.current = colorMap;
+			if (mapReadyRef.current) {
+				sendToMap({ colorMap: colorMap ?? null });
+			}
+		}, [colorMap, sendToMap]);
+
 		// When no initialCenter is provided and auto-center is enabled, request location on mount.
 		useEffect(() => {
 			if (initialCenter || centerAtUserLocationIfNoInitialPosition === false) return;
@@ -140,11 +151,16 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					}
 					// Fade out and remove the loading overlay when the map is ready.
 					if (data.tag === 'MapComponentMounted') {
+						mapReadyRef.current = true;
 						Animated.timing(overlayOpacity, {
 							toValue: 0,
 							duration: 600,
 							useNativeDriver: true,
 						}).start(() => setOverlayVisible(false));
+						// Apply initial color map (if any) once the style is fully loaded.
+						if (colorMapRef.current) {
+							sendToMap({ colorMap: colorMapRef.current });
+						}
 					}
 					onMessage(data);
 				} catch {

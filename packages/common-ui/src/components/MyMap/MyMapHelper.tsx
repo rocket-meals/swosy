@@ -1,5 +1,17 @@
 import type React from 'react';
 
+/** Keys for map color customization passed via the `colorMap` prop. */
+export enum MapColorKey {
+	BACKGROUND = 'background',
+	GRASS = 'grass',
+	WATER = 'water',
+	ROAD = 'road',
+	BUILDING = 'building',
+}
+
+/** Partial color overrides for map layers, keyed by {@link MapColorKey}. */
+export type MapColorMap = Partial<Record<MapColorKey, string>>;
+
 export interface MyMapHandle {
 	sendToMap: (data: object) => void;
 }
@@ -28,4 +40,10 @@ export interface MyMapProps {
 	 * results in arbitrary code execution inside the map WebView.
 	 */
 	injectScript?: string;
+	/**
+	 * Optional color overrides for map layer categories (grass, water, road, building, background).
+	 * Pass `undefined` or omit to use the default map style colors.
+	 * Changes to this prop are applied to the live map without reloading.
+	 */
+	colorMap?: MapColorMap;
 }
