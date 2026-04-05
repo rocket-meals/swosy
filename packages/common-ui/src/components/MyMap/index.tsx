@@ -6,6 +6,7 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Location from 'expo-location';
 import { StringHelper } from 'repo-depkit-common';
+import { LIBERTY_STYLE_URL, MAP_STYLE_DEFINITIONS } from './MyMapHelper';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
 function escapeHtml(text: string): string {
@@ -18,7 +19,7 @@ function escapeHtml(text: string): string {
 }
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap }, ref) => {
+	({ initialCenter, initialZoom, initialPitch, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap, mapStyleKey }, ref) => {
 		const webViewRef = useRef<WebView>(null);
 		// The HTML is written to a local cache file and loaded via a file:// URI so that the WebView
 		// has a proper file:// origin and can fetch sibling local assets (e.g. GLB models, PNG tiles)
@@ -36,8 +37,9 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
 		const mapReadyRef = useRef(false);
 		const initCenterSentRef = useRef(false);
-		// Keep the latest colorMap value accessible inside the handleMessage callback.
+		// Keep the latest colorMap and mapStyleKey values accessible inside callbacks.
 		const colorMapRef = useRef(colorMap);
+		const mapStyleKeyRef = useRef(mapStyleKey);
 
 		useEffect(() => {
 			let isMounted = true;
@@ -59,6 +61,19 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 						find: 'initMap(null, null);',
 						replace: `initMap(null, ${initialZoom});`,
 					});
+				}
+				// Inject the initial map style URL so the first tile load uses the correct style
+				// without a visible switch after MapComponentMounted.
+				const initialStyleKey = mapStyleKeyRef.current;
+				if (initialStyleKey) {
+					const def = MAP_STYLE_DEFINITIONS[initialStyleKey];
+					if (def && def.styleUrl !== LIBERTY_STYLE_URL) {
+						htmlContent = StringHelper.replaceAllLiteralWithOptions({
+							str: htmlContent,
+							find: `'${LIBERTY_STYLE_URL}'`,
+							replace: `'${def.styleUrl}'`,
+						});
+					}
 				}
 				if (loadingText) {
 					htmlContent = StringHelper.replaceAllLiteralWithOptions({
@@ -90,8 +105,8 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			return () => {
 				isMounted = false;
 			};
-			// initialCenter, initialPitch, and centerAtUserLocationIfNoInitialPosition are intentionally
-			// excluded: the HTML is loaded only once on mount. Subsequent updates go via sendToMap().
+			// initialCenter, initialPitch, centerAtUserLocationIfNoInitialPosition, and mapStyleKey are
+			// intentionally excluded: the HTML is loaded only once on mount. Subsequent updates go via sendToMap().
 		}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 		const sendToMap = useCallback((data: object) => {
@@ -111,6 +126,21 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				sendToMap({ colorMap: colorMap ?? null });
 			}
 		}, [colorMap, sendToMap]);
+
+		// When the mapStyleKey prop changes, switch the map style and apply the associated colorMap.
+		useEffect(() => {
+			mapStyleKeyRef.current = mapStyleKey;
+			if (mapReadyRef.current) {
+				if (mapStyleKey) {
+					const def = MAP_STYLE_DEFINITIONS[mapStyleKey];
+					if (def) {
+						sendToMap({ mapStyle: def.styleUrl, colorMap: def.colorMap ?? null });
+					}
+				} else {
+					sendToMap({ mapStyle: LIBERTY_STYLE_URL, colorMap: null });
+				}
+			}
+		}, [mapStyleKey, sendToMap]);
 
 		// When no initialCenter is provided and auto-center is enabled, request location on mount.
 		useEffect(() => {
@@ -157,8 +187,15 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 							duration: 600,
 							useNativeDriver: true,
 						}).start(() => setOverlayVisible(false));
-						// Apply initial color map (if any) once the style is fully loaded.
-						if (colorMapRef.current) {
+						// Apply the initial color map once the style is fully loaded.
+						// mapStyleKey takes priority: use its definition's colorMap; otherwise fall back to the colorMap prop.
+						const currentStyleKey = mapStyleKeyRef.current;
+						if (currentStyleKey) {
+							const def = MAP_STYLE_DEFINITIONS[currentStyleKey];
+							if (def?.colorMap) {
+								sendToMap({ colorMap: def.colorMap });
+							}
+						} else if (colorMapRef.current) {
 							sendToMap({ colorMap: colorMapRef.current });
 						}
 					}
