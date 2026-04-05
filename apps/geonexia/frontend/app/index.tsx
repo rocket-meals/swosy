@@ -4893,7 +4893,11 @@ export default function RecordScreen() {
 								onPress={() => {
 									if (!isSettingHome && homeHexTile !== null) {
 										const [lat, lng] = cellToLatLng(homeHexTile);
-										centerMapOnPosition({ lat, lng }, 17);
+										mapRef.current?.sendToMap({ userLocation: { lat, lng } });
+										mapRef.current?.sendToMap({
+											mapCenterPosition: { lat, lng },
+											zoom: 17,
+										});
 									} else {
 										isSettingHomeRef.current = !isSettingHome;
 										setIsSettingHome(!isSettingHome);
