@@ -27,7 +27,7 @@ import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icon
 import * as Location from 'expo-location';
 import MyMap from '@/components/MyMap';
 import type { MyMapHandle } from '@/components/MyMap/MyMapHelper';
-import { MapStyleKey, SettingsListMyMapThemeSelection } from 'repo-depkit-common-ui';
+import { MapStyleKey, SettingsListMyMapThemeSelection, MAP_STYLE_DEFINITIONS } from 'repo-depkit-common-ui';
 import JoggingOverlay from '@/app/(app)/map/components/JoggingOverlay';
 
 type BuildingCoordinates = { coordinates?: [number, number] } | null;
@@ -996,6 +996,8 @@ const OsmVectorMapScreen: React.FC = () => {
 		Keyboard.dismiss();
 	}, []);
 
+	const selectedStyleUrl = MAP_STYLE_DEFINITIONS[selectedStyleKey]?.styleUrl ?? MAP_STYLE_DEFINITIONS[MapStyleKey.DEFAULT].styleUrl;
+
 	const sendMapData = useCallback(() => {
 		if (gameModeRef.current) return; // game loop handles map updates in game mode
 		const shouldNavigate = mapCenterOverride !== null || pendingNavigateRef.current;
@@ -1003,6 +1005,7 @@ const OsmVectorMapScreen: React.FC = () => {
 
 		const message: Record<string, unknown> = {
 			mapMarkers: allMarkers,
+			mapStyle: selectedStyleUrl,
 			useFlyAnimation,
 		};
 
@@ -1015,7 +1018,7 @@ const OsmVectorMapScreen: React.FC = () => {
 		}
 
 		myMapRef.current?.sendToMap(message);
-	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, useFlyAnimation]);
+	}, [mapCenterOverride, centerPosition, mapZoom, allMarkers, selectedStyleUrl, useFlyAnimation]);
 
 	useEffect(() => {
 		sendMapData();
@@ -1043,9 +1046,10 @@ const OsmVectorMapScreen: React.FC = () => {
 			useFlyAnimation: false,
 			mapMarkers: buildingMarkersRef.current,
 			vehicleMarker: null,
+			mapStyle: selectedStyleUrl,
 			disableInteraction: true,
 		});
-	}, [sendToMap]);
+	}, [sendToMap, selectedStyleUrl]);
 
 	const sendGameInitDataRef = useRef(sendGameInitData);
 	sendGameInitDataRef.current = sendGameInitData;
@@ -1510,7 +1514,6 @@ const OsmVectorMapScreen: React.FC = () => {
 							initialCenter={centerPosition}
 							initialPitch={gameMode ? GAME_MODE_PITCH : INITIAL_PITCH}
 							loadingText={translate(TranslationKeys.loading_vector_map)}
-							mapStyleKey={selectedStyleKey}
 							onMessage={handleMessage}
 						/>
 					) : (
