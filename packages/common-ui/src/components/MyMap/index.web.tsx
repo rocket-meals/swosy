@@ -1,12 +1,13 @@
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as Location from 'expo-location';
+import { LIBERTY_STYLE_URL, MAP_STYLE_DEFINITIONS } from './MyMapHelper';
 import type { MyMapHandle, MyMapProps } from './MyMapHelper';
 
 const DEFAULT_ZOOM = 16;
 
 const MyMap = forwardRef<MyMapHandle, MyMapProps>(
-	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap }, ref) => {
+	({ initialCenter, loadingText, loadingOverlay, onMessage, centerAtUserLocationIfNoInitialPosition = true, injectScript, colorMap, mapStyleKey }, ref) => {
 		const iframeRef = useRef<HTMLIFrameElement>(null);
 		const htmlBase = require('../../../assets/maplibre/index.html') as string;
 
@@ -14,8 +15,9 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 		const locationForInitRef = useRef<{ lat: number; lng: number } | null>(null);
 		const mapReadyRef = useRef(false);
 		const initCenterSentRef = useRef(false);
-		// Keep the latest colorMap value accessible inside the message handler.
+		// Keep the latest colorMap and mapStyleKey values accessible inside the message handler.
 		const colorMapRef = useRef(colorMap);
+		const mapStyleKeyRef = useRef(mapStyleKey);
 
 		// Overlay state: visible until MapComponentMounted fires.
 		const [overlayVisible, setOverlayVisible] = useState(true);
@@ -25,19 +27,22 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			// Subsequent position/marker updates are sent via sendToMap() messages so the iframe
 			// doesn't reload.
 			() => {
+				const initialStyleKey = mapStyleKeyRef.current;
+				const initialStyleUrl = initialStyleKey ? MAP_STYLE_DEFINITIONS[initialStyleKey]?.styleUrl : undefined;
+
+				// Build query params systematically to avoid fragile string concatenation.
+				const queryParts: string[] = [];
 				if (initialCenter) {
-					let src = `${htmlBase}?lat=${initialCenter.lat}&lng=${initialCenter.lng}&zoom=${DEFAULT_ZOOM}`;
-					if (loadingText) {
-						src += `&loadingText=${encodeURIComponent(loadingText)}`;
-					}
-					return src;
+					queryParts.push(`lat=${initialCenter.lat}`, `lng=${initialCenter.lng}`, `zoom=${DEFAULT_ZOOM}`);
 				}
-				// No initialCenter – load with default position; auto-center will be sent after the map is ready.
-				let src = htmlBase as string;
+				if (initialStyleUrl && initialStyleUrl !== LIBERTY_STYLE_URL) {
+					queryParts.push(`style=${encodeURIComponent(initialStyleUrl)}`);
+				}
 				if (loadingText) {
-					src += `?loadingText=${encodeURIComponent(loadingText)}`;
+					queryParts.push(`loadingText=${encodeURIComponent(loadingText)}`);
 				}
-				return src;
+				const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+				return `${htmlBase}${query}`;
 			},
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 			[],
@@ -58,6 +63,21 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 				sendToMap({ colorMap: colorMap ?? null });
 			}
 		}, [colorMap, sendToMap]);
+
+		// When the mapStyleKey prop changes, switch the map style and apply the associated colorMap.
+		useEffect(() => {
+			mapStyleKeyRef.current = mapStyleKey;
+			if (mapReadyRef.current) {
+				if (mapStyleKey) {
+					const def = MAP_STYLE_DEFINITIONS[mapStyleKey];
+					if (def) {
+						sendToMap({ mapStyle: def.styleUrl, colorMap: def.colorMap ?? null });
+					}
+				} else {
+					sendToMap({ mapStyle: LIBERTY_STYLE_URL, colorMap: null });
+				}
+			}
+		}, [mapStyleKey, sendToMap]);
 
 		// When no initialCenter is provided and auto-center is enabled, request location on mount.
 		useEffect(() => {
@@ -98,8 +118,15 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 					if (data.tag === 'MapComponentMounted') {
 						mapReadyRef.current = true;
 						setOverlayVisible(false);
-						// Apply initial color map (if any) once the style is fully loaded.
-						if (colorMapRef.current) {
+						// Apply the initial color map once the style is fully loaded.
+						// mapStyleKey takes priority: use its definition's colorMap; otherwise fall back to the colorMap prop.
+						const currentStyleKey = mapStyleKeyRef.current;
+						if (currentStyleKey) {
+							const def = MAP_STYLE_DEFINITIONS[currentStyleKey];
+							if (def?.colorMap) {
+								sendToMap({ colorMap: def.colorMap });
+							}
+						} else if (colorMapRef.current) {
 							sendToMap({ colorMap: colorMapRef.current });
 						}
 					}

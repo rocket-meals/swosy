@@ -8,6 +8,8 @@ import {
 	SettingsListSelectOption,
 	useMyScrollViewModal,
 	useTheme,
+	MapStyleKey,
+	MAP_STYLE_DEFINITIONS,
 } from 'repo-depkit-common-ui';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +24,6 @@ import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
 import { updateDisplaySettings } from '../../store/displaySettingsSlice';
-import type { MapTheme } from '../../store/displaySettingsSlice';
 import {
 	saveDebugModeFlag,
 	saveDevModeFlag,
@@ -80,16 +81,24 @@ function themeModeLabel(mode: ThemeMode): string {
 	}
 }
 
-const MAP_THEME_OPTIONS: { id: MapTheme; label: string; icon: React.ReactNode }[] = [
-	{ id: 'default', label: 'Standard', icon: <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" /> },
-	{ id: 'kartografisch', label: 'Kartografisch', icon: <MaterialCommunityIcons name="map" size={22} color="#ffffff" /> },
-];
+const MAP_STYLE_ICONS: Record<MapStyleKey, React.ReactNode> = {
+	[MapStyleKey.DEFAULT]: <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />,
+	[MapStyleKey.BRIGHT]: <MaterialCommunityIcons name="weather-sunny" size={22} color="#ffffff" />,
+	[MapStyleKey.POSITRON]: <MaterialCommunityIcons name="map-search-outline" size={22} color="#ffffff" />,
+	[MapStyleKey.DARK]: <MaterialCommunityIcons name="moon-waning-crescent" size={22} color="#ffffff" />,
+	[MapStyleKey.KARTOGRAFISCH]: <MaterialCommunityIcons name="map" size={22} color="#ffffff" />,
+};
 
-function mapThemeLabel(mode: MapTheme): string {
-	switch (mode) {
-		case 'default': return 'Standard';
-		case 'kartografisch': return 'Kartografisch';
-	}
+const MAP_THEME_OPTIONS: { id: MapStyleKey; label: string; icon: React.ReactNode }[] = (
+	Object.values(MapStyleKey) as MapStyleKey[]
+).map((key) => ({
+	id: key,
+	label: MAP_STYLE_DEFINITIONS[key].label,
+	icon: MAP_STYLE_ICONS[key] ?? <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />,
+}));
+
+function mapThemeLabel(mode: MapStyleKey): string {
+	return MAP_STYLE_DEFINITIONS[mode]?.label ?? mode;
 }
 
 // ─── Reset Confirm Content ────────────────────────────────────────────────────
