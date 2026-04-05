@@ -87,3 +87,6 @@ export type { FeatureWishesScreenProps, FeatureWishesScreenTexts, FeatureWishIte
 
 export { default as ScreenHeader } from './src/components/ScreenHeader';
 export type { ScreenHeaderProps } from './src/components/ScreenHeader';
+
+export { default as CardWithText } from './src/components/CardWithText';
+export type { CardWithTextProps } from './src/components/CardWithText';
