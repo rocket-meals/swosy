@@ -3436,7 +3436,8 @@ export default function RecordScreen() {
 	// ── Refresh map display when returning from background during a recording ──
 	// While the screen is off the WebView may not process messages, so hex tiles,
 	// walk paths and the route line can be stale.  Re-send them once the app
-	// becomes active again.
+	// becomes active again.  Also re-centre the camera on the current player
+	// position so the map snaps back to the user after the screen was off.
 	useEffect(() => {
 		const subscription = AppState.addEventListener('change', (nextAppState) => {
 			if (nextAppState === 'active' && isRecordingRef.current && mapRef.current) {
@@ -3449,10 +3450,18 @@ export default function RecordScreen() {
 				if (vp) {
 					refreshNormalTileDisplay(vp);
 				}
+				// Re-centre the map on the current player position
+				const pos = debugPlayerPositionRef.current
+					?? (routePointsRef.current.length > 0
+						? routePointsRef.current[routePointsRef.current.length - 1]
+						: null);
+				if (pos) {
+					centerMapOnPosition({ lat: pos.lat, lng: pos.lng });
+				}
 			}
 		});
 		return () => subscription.remove();
-	}, [sendRouteToMap, refreshNormalTileDisplay]);
+	}, [sendRouteToMap, refreshNormalTileDisplay, centerMapOnPosition]);
 
 	// ── Route preview: when a route is selected before recording, show only the
 	// route's hex tiles and walk path on the map (hiding all other visited tiles).
