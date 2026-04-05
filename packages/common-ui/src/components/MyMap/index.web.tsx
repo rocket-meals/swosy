@@ -29,23 +29,20 @@ const MyMap = forwardRef<MyMapHandle, MyMapProps>(
 			() => {
 				const initialStyleKey = mapStyleKeyRef.current;
 				const initialStyleUrl = initialStyleKey ? MAP_STYLE_DEFINITIONS[initialStyleKey]?.styleUrl : undefined;
-				const styleParam = initialStyleUrl && initialStyleUrl !== LIBERTY_STYLE_URL
-					? `&style=${encodeURIComponent(initialStyleUrl)}`
-					: '';
+
+				// Build query params systematically to avoid fragile string concatenation.
+				const queryParts: string[] = [];
 				if (initialCenter) {
-					let src = `${htmlBase}?lat=${initialCenter.lat}&lng=${initialCenter.lng}&zoom=${DEFAULT_ZOOM}${styleParam}`;
-					if (loadingText) {
-						src += `&loadingText=${encodeURIComponent(loadingText)}`;
-					}
-					return src;
+					queryParts.push(`lat=${initialCenter.lat}`, `lng=${initialCenter.lng}`, `zoom=${DEFAULT_ZOOM}`);
 				}
-				// No initialCenter – load with default position; auto-center will be sent after the map is ready.
-				const sep = styleParam ? `?${styleParam.slice(1)}` : '';
-				let src = `${htmlBase}${sep}`;
+				if (initialStyleUrl && initialStyleUrl !== LIBERTY_STYLE_URL) {
+					queryParts.push(`style=${encodeURIComponent(initialStyleUrl)}`);
+				}
 				if (loadingText) {
-					src += `${sep ? '&' : '?'}loadingText=${encodeURIComponent(loadingText)}`;
+					queryParts.push(`loadingText=${encodeURIComponent(loadingText)}`);
 				}
-				return src;
+				const query = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+				return `${htmlBase}${query}`;
 			},
 			// eslint-disable-next-line react-hooks/exhaustive-deps
 			[],

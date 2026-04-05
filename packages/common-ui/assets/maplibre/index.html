@@ -5851,10 +5851,11 @@
           var zoom = parseFloat(params.get('zoom'));
           if (!isNaN(lat) && !isNaN(lng)) {
             initMap([lng, lat], !isNaN(zoom) ? zoom : null, null, styleParam);
+            return;
           } else {
             initMap(null, null, null, styleParam);
+            return;
           }
-          return;
         } catch (e) {}
         initMap(null, null);
       })();

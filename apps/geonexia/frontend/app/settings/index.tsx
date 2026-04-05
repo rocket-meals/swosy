@@ -94,7 +94,7 @@ const MAP_THEME_OPTIONS: { id: MapStyleKey; label: string; icon: React.ReactNode
 ).map((key) => ({
 	id: key,
 	label: MAP_STYLE_DEFINITIONS[key].label,
-	icon: MAP_STYLE_ICONS[key],
+	icon: MAP_STYLE_ICONS[key] ?? <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />,
 }));
 
 function mapThemeLabel(mode: MapStyleKey): string {
