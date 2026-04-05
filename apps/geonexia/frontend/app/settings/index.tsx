@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
+	CardWithText,
+	MyMap,
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
@@ -81,25 +83,12 @@ function themeModeLabel(mode: ThemeMode): string {
 	}
 }
 
-const MAP_STYLE_ICONS: Record<MapStyleKey, React.ReactNode> = {
-	[MapStyleKey.DEFAULT]: <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />,
-	[MapStyleKey.BRIGHT]: <MaterialCommunityIcons name="weather-sunny" size={22} color="#ffffff" />,
-	[MapStyleKey.POSITRON]: <MaterialCommunityIcons name="map-search-outline" size={22} color="#ffffff" />,
-	[MapStyleKey.DARK]: <MaterialCommunityIcons name="moon-waning-crescent" size={22} color="#ffffff" />,
-	[MapStyleKey.KARTOGRAFISCH]: <MaterialCommunityIcons name="map" size={22} color="#ffffff" />,
-};
+// Center of Germany used for map style preview cards
+const MAP_PREVIEW_CENTER = { lat: 51.1657, lng: 10.4515 };
+const MAP_PREVIEW_ZOOM = 11;
 
-const MAP_THEME_OPTIONS: { id: MapStyleKey; label: string; icon: React.ReactNode }[] = (
-	Object.values(MapStyleKey) as MapStyleKey[]
-).map((key) => ({
-	id: key,
-	label: MAP_STYLE_DEFINITIONS[key].label,
-	icon: MAP_STYLE_ICONS[key] ?? <MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />,
-}));
-
-function mapThemeLabel(mode: MapStyleKey): string {
-	return MAP_STYLE_DEFINITIONS[mode]?.label ?? mode;
-}
+// No-op message handler for read-only map previews
+const _noop = () => {};
 
 // ─── Reset Confirm Content ────────────────────────────────────────────────────
 
@@ -231,7 +220,6 @@ export default function SettingsScreen() {
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
 	const { show: showSpeechModal } = useMyScrollViewModal();
 	const { show: showTTSLogModal, close: closeTTSLogModal } = useMyScrollViewModal();
-	const { show: showMapThemeModal, close: closeMapThemeModal } = useMyScrollViewModal();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
@@ -268,23 +256,6 @@ export default function SettingsScreen() {
 			),
 		});
 	}, [showGpsModal, closeGpsModal, dispatch, selectedGpsInterval]);
-
-	const handleOpenMapThemeSelection = useCallback(() => {
-		showMapThemeModal({
-			title: '🗺️ Karten Theme',
-			children: (
-				<SettingsListSelectOption
-					options={MAP_THEME_OPTIONS}
-					selectedOption={selectedMapTheme}
-					onSelect={(option) => {
-						dispatch(updateDisplaySettings({ mapTheme: option.id }));
-						closeMapThemeModal();
-					}}
-					iconBgColor={MAP_COLOR}
-				/>
-			),
-		});
-	}, [showMapThemeModal, closeMapThemeModal, dispatch, selectedMapTheme]);
 
 	const handleResetAllData = useCallback(() => {
 		showResetModal({
@@ -458,17 +429,47 @@ export default function SettingsScreen() {
 							</TouchableOpacity>
 						</View>
 					}
-					groupPosition="middle"
-				/>
-				<SettingsList
-					iconBgColor={MAP_COLOR}
-					leftIcon={<MaterialCommunityIcons name="map" size={22} color="#ffffff" />}
-					label="Karten Theme"
-					value={mapThemeLabel(selectedMapTheme)}
-					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={handleOpenMapThemeSelection}
 					groupPosition="bottom"
 				/>
+
+				<SettingsListGroupTitle title="Karten Theme" />
+				<View style={styles.mapThemeGrid}>
+					{(Object.values(MapStyleKey) as MapStyleKey[]).map((key) => {
+						const def = MAP_STYLE_DEFINITIONS[key];
+						const isSelected = selectedMapTheme === key;
+						return (
+							<CardWithText
+								key={key}
+								containerStyle={[
+									styles.mapThemeCard,
+									isSelected ? styles.mapThemeCardSelected : styles.mapThemeCardUnselected,
+								]}
+								onPress={() => dispatch(updateDisplaySettings({ mapTheme: key }))}
+								imageChildren={
+									<View style={styles.mapPreviewWrapper} pointerEvents="none">
+										<MyMap
+											mapStyleKey={key}
+											centerAtUserLocationIfNoInitialPosition={false}
+											initialCenter={MAP_PREVIEW_CENTER}
+											initialZoom={MAP_PREVIEW_ZOOM}
+											onMessage={_noop}
+										/>
+									</View>
+								}
+								bottomContent={
+									<View style={styles.mapThemeCardLabel}>
+										{isSelected ? (
+											<Ionicons name="checkmark-circle" size={16} color={MAP_COLOR} style={styles.mapThemeCheckIcon} />
+										) : null}
+										<Text style={[styles.mapThemeCardText, { color: theme.screen.text }]} numberOfLines={1}>
+											{def.label}
+										</Text>
+									</View>
+								}
+							/>
+						);
+					})}
+				</View>
 
 				<SettingsListGroupTitle title="Daten Verwaltung" />
 				<SettingsList
@@ -636,5 +637,39 @@ const styles = StyleSheet.create({
 	ttsLogError: {
 		fontSize: 12,
 		fontStyle: 'italic',
+	},
+	mapThemeGrid: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 12,
+		paddingHorizontal: 16,
+		paddingBottom: 8,
+	},
+	mapThemeCard: {
+		width: '47%',
+	},
+	mapThemeCardSelected: {
+		borderWidth: 2,
+		borderColor: MAP_COLOR,
+	},
+	mapThemeCardUnselected: {
+		borderWidth: 2,
+		borderColor: 'transparent',
+	},
+	mapPreviewWrapper: {
+		flex: 1,
+	},
+	mapThemeCardLabel: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
+	mapThemeCheckIcon: {
+		flexShrink: 0,
+	},
+	mapThemeCardText: {
+		fontSize: 13,
+		fontWeight: '600',
+		flexShrink: 1,
 	},
 });
