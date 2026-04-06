@@ -282,7 +282,7 @@ function ThemedDrawerNavigator() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const activeKey = props.state.routes[props.state.index].name;
-	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
+	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 
 	const items: DrawerItem[] = [
 		{
@@ -321,7 +321,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			renderIcon: (_, color) => <Ionicons name="bulb-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('feature-wishes/index'),
 		},
-		...(isDevMode ? [
+		...(isDebugMode ? [
 			{
 				key: 'billboard-config/index',
 				label: 'Billboard Config',
