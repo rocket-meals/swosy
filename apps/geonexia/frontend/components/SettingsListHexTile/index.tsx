@@ -68,7 +68,7 @@ const SettingsListHexTile: React.FC<Props> = ({
 						encoding: FileSystem.EncodingType.Base64,
 					});
 					if (cancelled) return;
-					setSvgUri(`data:image/svg+xml;base64,${base64}`);
+					setSvgUri(`data:${entry.mimeType ?? 'image/svg+xml'};base64,${base64}`);
 				}
 			} catch {
 				if (!cancelled) setSvgUri(null);
