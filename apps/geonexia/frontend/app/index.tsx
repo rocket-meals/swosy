@@ -2825,9 +2825,9 @@ export default function RecordScreen() {
 	);
 
 	// Stable key for billboard anchor config changes so the map is updated when
-	// anchor overrides are adjusted in the Billboard Config screen.
+	// anchor overrides are adjusted in the Billboard Config or Hex Texture Config screens.
 	const billboardConfigKey = useSelector((state: RootState) =>
-		JSON.stringify(state.billboardConfig.spriteAnchors),
+		JSON.stringify(state.billboardConfig.spriteAnchors) + '|' + JSON.stringify(state.hexTextureConfig.spriteAnchors),
 	);
 
 	// Load a bundled asset (PNG) and return a base64 data URI (native) or the bundled
@@ -2866,6 +2866,7 @@ export default function RecordScreen() {
 
 		const records = store.getState().hexTiles.records;
 		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
+		const textureAnchors = store.getState().hexTextureConfig.spriteAnchors;
 		const currentObjectOpacity = store.getState().displaySettings.objectOpacity;
 
 		// Flat lookup: terrain asset key → { moduleId, mimeType }
@@ -3096,7 +3097,7 @@ export default function RecordScreen() {
 				if (!url) continue;
 
 				const iconKey = `billboard-${billboardKey}`;
-				const anchorOverride = spriteAnchors[idx];
+				const anchorOverride = textureAnchors[idx];
 				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
 				const [lng, lat] = resolveAnchorPosition(anchorColor);

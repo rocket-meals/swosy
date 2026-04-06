@@ -3,6 +3,7 @@ import hexTileReducer from './hexTileSlice';
 import sportTypeReducer from './sportTypeSlice';
 import themeReducer from './themeSlice';
 import billboardConfigReducer from './billboardConfigSlice';
+import hexTextureConfigReducer from './hexTextureConfigSlice';
 import gpsIntervalReducer from './gpsIntervalSlice';
 import ttsReducer from './ttsSlice';
 import speechSettingsReducer from './speechSettingsSlice';
@@ -14,6 +15,7 @@ import { HexTileRecord, saveHexTileState, saveDevHexTileState, saveWalkedEdges, 
 import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
+import { HexTextureConfigState, saveHexTextureConfig } from '../helpers/HexTextureConfigStorage';
 import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
@@ -35,6 +37,7 @@ export const store = configureStore({
 		sportType: sportTypeReducer,
 		theme: themeReducer,
 		billboardConfig: billboardConfigReducer,
+		hexTextureConfig: hexTextureConfigReducer,
 		gpsInterval: gpsIntervalReducer,
 		tts: ttsReducer,
 		speechSettings: speechSettingsReducer,
@@ -61,6 +64,10 @@ let _lastSavedThemeMode: ThemeMode | null = null;
 // Auto-persist billboard config to disk whenever anchor overrides change.
 let _bbConfigTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedBbConfig: BillboardConfigState | null = null;
+
+// Auto-persist hex texture config to disk whenever anchor overrides change.
+let _hexTextureConfigTimer: ReturnType<typeof setTimeout> | null = null;
+let _lastSavedHexTextureConfig: HexTextureConfigState | null = null;
 
 // Auto-persist GPS interval mode to disk whenever it changes.
 let _lastSavedGpsIntervalMode: GpsIntervalMode | null = null;
@@ -136,6 +143,16 @@ store.subscribe(() => {
 		_bbConfigTimer = setTimeout(() => {
 			saveBillboardConfig(spriteAnchors);
 			_bbConfigTimer = null;
+		}, 500);
+	}
+
+	const { spriteAnchors: textureAnchors } = state.hexTextureConfig;
+	if (textureAnchors !== _lastSavedHexTextureConfig) {
+		_lastSavedHexTextureConfig = textureAnchors;
+		if (_hexTextureConfigTimer) clearTimeout(_hexTextureConfigTimer);
+		_hexTextureConfigTimer = setTimeout(() => {
+			saveHexTextureConfig(textureAnchors);
+			_hexTextureConfigTimer = null;
 		}, 500);
 	}
 

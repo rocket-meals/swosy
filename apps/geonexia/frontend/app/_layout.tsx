@@ -15,6 +15,7 @@ import { setDevMode, setDebugMode, loadWalkedEdgesState } from '../store/hexTile
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
+import { loadPersistedHexTextureConfig } from '../store/hexTextureConfigSlice';
 import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
@@ -25,6 +26,7 @@ import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFl
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
+import { loadHexTextureConfig } from '../helpers/HexTextureConfigStorage';
 import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
@@ -212,6 +214,15 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="hex-texture-config/index"
+				options={{
+					title: 'Hex Texture Config',
+					drawerIcon: ({ color, size }) => (
+						<Ionicons name="grid-outline" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
 				name="experimental/index"
 				options={{
 					title: 'Experimental',
@@ -318,6 +329,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 				onPress: () => props.navigation.navigate('billboard-config/index'),
 			},
 			{
+				key: 'hex-texture-config/index',
+				label: 'Hex Texture Config',
+				renderIcon: (_, color) => <Ionicons name="grid-outline" size={24} color={color} />,
+				onPress: () => props.navigation.navigate('hex-texture-config/index'),
+			},
+			{
 				key: 'experimental/index',
 				label: 'Experimental',
 				renderIcon: (_, color) => <Ionicons name="flask-outline" size={24} color={color} />,
@@ -419,6 +436,13 @@ export default function Layout() {
 			})
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted billboard config:', err);
+			});
+		loadHexTextureConfig()
+			.then((config) => {
+				store.dispatch(loadPersistedHexTextureConfig(config));
+			})
+			.catch((err) => {
+				console.warn('[Layout] Failed to load persisted hex texture config:', err);
 			});
 		loadGpsIntervalMode()
 			.then((mode) => {
