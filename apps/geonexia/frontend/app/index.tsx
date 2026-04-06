@@ -4910,7 +4910,6 @@ export default function RecordScreen() {
 								onPress={() => {
 									if (!isSettingHome && homeHexTile !== null) {
 										const [lat, lng] = cellToLatLng(homeHexTile);
-										mapRef.current?.sendToMap({ userLocation: { lat, lng } });
 										mapRef.current?.sendToMap({
 											mapCenterPosition: { lat, lng },
 											zoom: 17,
