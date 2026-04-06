@@ -28,6 +28,7 @@ import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
+import { computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -1088,6 +1089,42 @@ export default function ActivityDetailScreen() {
 		);
 	}, [activity]);
 
+	const handleRecalculateComputedValues = useCallback(() => {
+		if (!activity) return;
+		Alert.alert(
+			'Berechnete Werte neu berechnen',
+			'Die berechneten Werte dieser Aktivität werden neu berechnet. Fortfahren?',
+			[
+				{ text: 'Abbrechen', style: 'cancel' },
+				{
+					text: 'Neu berechnen',
+					onPress: () => {
+						if (!isH3Available()) {
+							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							return;
+						}
+						let enclosedTiles: string[] =
+							activity.computed?.enclosedHexTiles ??
+							activity.enclosedHexTiles ??
+							activity.hexTilesEnclosed ??
+							[];
+						if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+							enclosedTiles = findEnclosedCellsFromHexTiles(
+								activity.hexTilesOrdered,
+								activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+							);
+						}
+						const newComputed = computeActivityData(activity, enclosedTiles);
+						const updated: SavedActivity = { ...activity, computed: newComputed };
+						saveActivity(updated);
+						setActivity(updated);
+						Alert.alert('Fertig', 'Berechnete Werte wurden neu berechnet.');
+					},
+				},
+			],
+		);
+	}, [activity]);
+
 	const handleShare = useCallback(() => {
 		if (!activity) return;
 		showShareModal({
@@ -1254,8 +1291,16 @@ export default function ActivityDetailScreen() {
 						leftIcon={<MaterialIcons name="filter-list" size={20} color="#ffffff" />}
 						iconBackgroundColor="#f59e0b"
 						title="Filter unrealistic Points"
-						groupPosition="single"
+						groupPosition="top"
+						showSeparator
 						onPress={handleFilterUnrealisticPoints}
+					/>
+					<SettingsList
+						leftIcon={<MaterialIcons name="calculate" size={20} color="#ffffff" />}
+						iconBackgroundColor="#7c3aed"
+						title="Berechnete Werte neu berechnen"
+						groupPosition="bottom"
+						onPress={handleRecalculateComputedValues}
 					/>
 				</View>
 				<SettingsListGroupTitle title="Routen Information" />
