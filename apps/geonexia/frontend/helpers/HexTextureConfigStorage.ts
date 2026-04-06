@@ -17,7 +17,7 @@ export type TextureSpriteAnchorOverride = {
 	scaleMultiplier?: number;
 };
 
-export type HexTextureConfigState = Record<number, TextureSpriteAnchorOverride>;
+export type HexTextureConfigState = Record<string, TextureSpriteAnchorOverride>;
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
 

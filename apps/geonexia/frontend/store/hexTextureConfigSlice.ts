@@ -19,16 +19,16 @@ const hexTextureConfigSlice = createSlice({
 	initialState,
 	reducers: {
 		/**
-		 * Set the anchor override for a single sprite type in the hex texture layer.
+		 * Set the anchor override for a single terrain texture type in the hex texture layer.
 		 * Preserves any existing scaleMultiplier override.
 		 */
 		setTextureSpriteAnchor(
 			state,
-			action: PayloadAction<{ spriteIndex: number; anchorX: number; anchorY: number }>,
+			action: PayloadAction<{ terrainKey: string; anchorX: number; anchorY: number }>,
 		) {
-			const { spriteIndex, anchorX, anchorY } = action.payload;
-			const existing = state.spriteAnchors[spriteIndex];
-			state.spriteAnchors[spriteIndex] = {
+			const { terrainKey, anchorX, anchorY } = action.payload;
+			const existing = state.spriteAnchors[terrainKey];
+			state.spriteAnchors[terrainKey] = {
 				...existing,
 				anchorX,
 				anchorY,
@@ -36,27 +36,27 @@ const hexTextureConfigSlice = createSlice({
 		},
 
 		/**
-		 * Set the per-sprite scale multiplier for a single sprite type in the hex texture layer.
+		 * Set the per-terrain scale multiplier for a single terrain texture type in the hex texture layer.
 		 * Preserves any existing anchor overrides.
 		 */
 		setTextureSpriteScale(
 			state,
-			action: PayloadAction<{ spriteIndex: number; scaleMultiplier: number }>,
+			action: PayloadAction<{ terrainKey: string; scaleMultiplier: number }>,
 		) {
-			const { spriteIndex, scaleMultiplier } = action.payload;
-			const existing = state.spriteAnchors[spriteIndex];
-			state.spriteAnchors[spriteIndex] = {
+			const { terrainKey, scaleMultiplier } = action.payload;
+			const existing = state.spriteAnchors[terrainKey];
+			state.spriteAnchors[terrainKey] = {
 				...existing,
 				scaleMultiplier,
 			};
 		},
 
 		/**
-		 * Reset a sprite's anchor and scale overrides for the hex texture layer
-		 * (removes the entry entirely, reverting to sprite defaults).
+		 * Reset a terrain texture's anchor and scale overrides for the hex texture layer
+		 * (removes the entry entirely, reverting to defaults).
 		 */
-		resetTextureSpriteAnchor(state, action: PayloadAction<{ spriteIndex: number }>) {
-			delete state.spriteAnchors[action.payload.spriteIndex];
+		resetTextureSpriteAnchor(state, action: PayloadAction<{ terrainKey: string }>) {
+			delete state.spriteAnchors[action.payload.terrainKey];
 		},
 
 		/**

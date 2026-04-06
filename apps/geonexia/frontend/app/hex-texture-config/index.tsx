@@ -8,11 +8,12 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { WebView } from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { OBJECT_SPRITES } from '../../assets/objects/objectSprites';
+import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../../assets/terrainAssets';
+import type { TerrainAssetEntry } from '../../assets/terrainAssets';
 import { setTextureSpriteAnchor, setTextureSpriteScale, resetTextureSpriteAnchor } from '../../store/hexTextureConfigSlice';
 import type { RootState, AppDispatch } from '../../store/store';
 import type { HexTileRecord } from '../../helpers/HexTileStorage';
-import SettingsListBillboard from '../../components/SettingsListBillboard';
+import SettingsListHexTile from '../../components/SettingsListHexTile';
 
 const PRIMARY_COLOR = '#7c3aed';
 const ANCHOR_STEP = 0.05;
@@ -22,11 +23,17 @@ const SCALE_MIN = 0.1;
 const SCALE_MAX = 5.0;
 const SCALE_PRECISION = 10; // 1 decimal place
 const SCALE_DEFAULT = 1.0;
+const ANCHOR_DEFAULT = 0.5;
 
 const PREVIEW_HEIGHT = 160;
 const ANCHOR_DOT_SIZE = 12;
 const MODAL_THUMB_SIZE = 32;
-const NONE_OPTION_ID = -1;
+const NONE_OPTION_ID = '';
+
+/** All terrain asset entries flattened in category order. */
+const ALL_TERRAIN_ENTRIES: TerrainAssetEntry[] = TERRAIN_CATEGORIES.flatMap(
+	(cat) => TERRAIN_ASSETS[cat],
+);
 
 /** Clamp a value between 0 and 1, rounded to 2 decimal places. */
 function clampAnchor(value: number): number {
@@ -48,34 +55,25 @@ function getContainBounds(
 	return { displayW, displayH, offsetX, offsetY };
 }
 
-/** Count of placed hex texture sprites per sprite index (from hex tile records). */
-function buildPlacedCountMap(records: Record<string, HexTileRecord>): Map<number, number> {
-	const countMap = new Map<number, number>();
+/** Count of hex tiles using each terrain key (from tileImage field). */
+function buildPlacedCountMap(records: Record<string, HexTileRecord>): Map<string, number> {
+	const countMap = new Map<string, number>();
 	for (const record of Object.values(records)) {
-		if (!record.billboardsTexture) continue;
-		for (const bk of Object.values(record.billboardsTexture)) {
-			if (!bk) continue;
-			const colonIdx = bk.indexOf(':');
-			if (colonIdx < 0 || bk.slice(0, colonIdx) !== 'objects') continue;
-			const idx = parseInt(bk.slice(colonIdx + 1), 10);
-			if (!OBJECT_SPRITES[idx]) continue;
-			countMap.set(idx, (countMap.get(idx) ?? 0) + 1);
-		}
+		if (!record.tileImage) continue;
+		countMap.set(record.tileImage, (countMap.get(record.tileImage) ?? 0) + 1);
 	}
 	return countMap;
 }
 
-/** Small SVG thumbnail used as an icon inside the selection modal. */
-function SpriteThumbnailIcon({ spriteIndex }: { spriteIndex: number }) {
-	const [svgUri, setSvgUri] = useState<string | null>(null);
+/** Small thumbnail used as an icon inside the selection modal. */
+function TerrainThumbnailIcon({ terrainEntry }: { terrainEntry: TerrainAssetEntry }) {
+	const [imgUri, setImgUri] = useState<string | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
-		const sprite = OBJECT_SPRITES[spriteIndex];
-		if (!sprite) return;
 		(async () => {
 			try {
-				const asset = Asset.fromModule(sprite.source as number);
+				const asset = Asset.fromModule(terrainEntry.source as number);
 				await asset.downloadAsync();
 				if (cancelled) return;
 				let uri: string;
@@ -87,23 +85,23 @@ function SpriteThumbnailIcon({ spriteIndex }: { spriteIndex: number }) {
 						encoding: FileSystem.EncodingType.Base64,
 					});
 					if (cancelled) return;
-					uri = `data:image/svg+xml;base64,${base64}`;
+					uri = `data:${terrainEntry.mimeType ?? 'image/svg+xml'};base64,${base64}`;
 				}
-				setSvgUri(uri);
+				setImgUri(uri);
 			} catch {
 				// ignore load failures
 			}
 		})();
 		return () => { cancelled = true; };
-	}, [spriteIndex]);
+	}, [terrainEntry]);
 
-	if (!svgUri) {
+	if (!imgUri) {
 		return <View style={modalStyles.thumbPlaceholder} />;
 	}
 
 	return (
 		<WebView
-			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${MODAL_THUMB_SIZE}px;height:${MODAL_THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}"/></body></html>` }}
+			source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${MODAL_THUMB_SIZE}px;height:${MODAL_THUMB_SIZE}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:cover}</style></head><body><img src="${imgUri.replace(/"/g, '&quot;')}"/></body></html>` }}
 			style={modalStyles.thumb}
 			originWhitelist={['*']}
 			scrollEnabled={false}
@@ -129,35 +127,29 @@ const modalStyles = StyleSheet.create({
 
 const HEX_FIELD_PREVIEW_HEIGHT = 240;
 
-// Same proportionality constant as billboard-config (BILLBOARD_PREVIEW_K).
-// Ratio of sprite width to hex vertex-to-vertex diameter at the reference zoom.
-const TEXTURE_PREVIEW_K = 0.199;
+// Ratio of texture size to hex vertex-to-vertex diameter at the reference zoom.
+const TEXTURE_PREVIEW_K = 1.0;
 
 /**
- * Preview that renders a field of hex tiles (3×3 grid) with the texture SVG
+ * Preview that renders a field of hex tiles (3×3 grid) with the terrain texture
  * placed flat on each hex, sized and positioned according to the configured
- * anchor and scale — approximating how the flat texture will look on the map.
- *
- * Unlike the billboard preview, this view is top-down and shows multiple hexes
- * to give context for how the texture tiles across the hex field.
+ * anchor and scale — approximating how the terrain texture will look on the map.
  */
 function HexFieldPreview({
-	svgUri,
-	spriteIndex,
-	scaleFactor,
+	imgUri,
+	terrainKey,
 	perSpriteScale,
 	anchorX,
 	anchorY,
 }: {
-	svgUri: string;
-	spriteIndex: number;
-	scaleFactor: number;
+	imgUri: string;
+	terrainKey: string;
 	perSpriteScale: number;
 	anchorX: number;
 	anchorY: number;
 }) {
-	const textureFraction = TEXTURE_PREVIEW_K * scaleFactor * perSpriteScale;
-	const escapedSrc = JSON.stringify(svgUri);
+	const textureFraction = TEXTURE_PREVIEW_K / perSpriteScale;
+	const escapedSrc = JSON.stringify(imgUri);
 
 	const html = `<!DOCTYPE html>
 <html>
@@ -249,7 +241,7 @@ var texH=texW;
 var anchorX=${anchorX.toFixed(4)};
 var anchorY=${anchorY.toFixed(4)};
 
-// Load and draw the texture SVG on every hex, clipped to the hex boundary
+// Load and draw the terrain texture on every hex, clipped to the hex boundary
 var img=new Image();
 img.onload=function(){
   for(var i=0;i<centers.length;i++){
@@ -281,7 +273,7 @@ img.src=${escapedSrc};
 
 	return (
 		<WebView
-			key={`hex-field-${spriteIndex}-${anchorX.toFixed(2)}-${anchorY.toFixed(2)}-${perSpriteScale.toFixed(2)}`}
+			key={`hex-field-${terrainKey}-${anchorX.toFixed(2)}-${anchorY.toFixed(2)}-${perSpriteScale.toFixed(2)}`}
 			source={{ html }}
 			style={previewStyles.canvas}
 			originWhitelist={['*']}
@@ -309,27 +301,28 @@ export default function HexTextureConfigScreen() {
 	const records = useSelector((state: RootState) => state.hexTiles.records);
 	const spriteAnchors = useSelector((state: RootState) => state.hexTextureConfig.spriteAnchors);
 
-	// Count placed hex texture sprites per sprite index.
+	// Count placed terrain textures per terrain key.
 	const placedCountMap = useMemo(() => buildPlacedCountMap(records), [records]);
 
-	// Currently selected sprite index; null = "Keines" (no sprite).
-	const [selectedSpriteIndex, setSelectedSpriteIndex] = useState<number | null>(null);
+	// Currently selected terrain key; empty string = "Keines" (none selected).
+	const [selectedTerrainKey, setSelectedTerrainKey] = useState<string | null>(null);
 
-	// SVG data URI cache per sprite index (loaded on demand for selected sprite only).
-	const [svgUris, setSvgUris] = useState<Record<number, string>>({});
+	// Image data URI cache per terrain key (loaded on demand for selected entry only).
+	const [imgUris, setImgUris] = useState<Record<string, string>>({});
 
-	// Natural image dimensions per sprite index (for correct anchor overlay positioning).
-	const [imageDims, setImageDims] = useState<Record<number, { width: number; height: number }>>({});
+	// Natural image dimensions per terrain key (for correct anchor overlay positioning).
+	const [imageDims, setImageDims] = useState<Record<string, { width: number; height: number }>>({});
 
-	// Load SVG for the currently selected sprite.
+	// Load image for the currently selected terrain entry.
 	useEffect(() => {
-		if (selectedSpriteIndex === null || !OBJECT_SPRITES[selectedSpriteIndex]) return;
-		const sprite = OBJECT_SPRITES[selectedSpriteIndex];
-		const idx = selectedSpriteIndex;
+		if (!selectedTerrainKey) return;
+		const entry = ALL_TERRAIN_ENTRIES.find((e) => e.key === selectedTerrainKey);
+		if (!entry) return;
+		const key = selectedTerrainKey;
 		let cancelled = false;
 		(async () => {
 			try {
-				const asset = Asset.fromModule(sprite.source as number);
+				const asset = Asset.fromModule(entry.source as number);
 				await asset.downloadAsync();
 				if (cancelled) return;
 				let uri: string;
@@ -341,48 +334,48 @@ export default function HexTextureConfigScreen() {
 						encoding: FileSystem.EncodingType.Base64,
 					});
 					if (cancelled) return;
-					uri = `data:image/svg+xml;base64,${base64}`;
+					uri = `data:${entry.mimeType ?? 'image/svg+xml'};base64,${base64}`;
 				}
-				setSvgUris((prev) => (prev[idx] ? prev : { ...prev, [idx]: uri }));
+				setImgUris((prev) => (prev[key] ? prev : { ...prev, [key]: uri }));
 			} catch {
 				// Ignore load failures.
 			}
 		})();
 		return () => { cancelled = true; };
-	}, [selectedSpriteIndex]);
+	}, [selectedTerrainKey]);
 
-	const getAnchorX = useCallback((spriteIndex: number) => {
-		return spriteAnchors[spriteIndex]?.anchorX ?? OBJECT_SPRITES[spriteIndex].anchorX;
+	const getAnchorX = useCallback((terrainKey: string) => {
+		return spriteAnchors[terrainKey]?.anchorX ?? ANCHOR_DEFAULT;
 	}, [spriteAnchors]);
 
-	const getAnchorY = useCallback((spriteIndex: number) => {
-		return spriteAnchors[spriteIndex]?.anchorY ?? OBJECT_SPRITES[spriteIndex].anchorY;
+	const getAnchorY = useCallback((terrainKey: string) => {
+		return spriteAnchors[terrainKey]?.anchorY ?? ANCHOR_DEFAULT;
 	}, [spriteAnchors]);
 
-	const getScale = useCallback((spriteIndex: number) => {
-		return spriteAnchors[spriteIndex]?.scaleMultiplier ?? SCALE_DEFAULT;
+	const getScale = useCallback((terrainKey: string) => {
+		return spriteAnchors[terrainKey]?.scaleMultiplier ?? SCALE_DEFAULT;
 	}, [spriteAnchors]);
 
-	const adjustAnchor = useCallback((spriteIndex: number, deltaX: number, deltaY: number) => {
-		const currentX = getAnchorX(spriteIndex);
-		const currentY = getAnchorY(spriteIndex);
+	const adjustAnchor = useCallback((terrainKey: string, deltaX: number, deltaY: number) => {
+		const currentX = getAnchorX(terrainKey);
+		const currentY = getAnchorY(terrainKey);
 		dispatch(setTextureSpriteAnchor({
-			spriteIndex,
+			terrainKey,
 			anchorX: clampAnchor(currentX + deltaX),
 			anchorY: clampAnchor(currentY + deltaY),
 		}));
 	}, [dispatch, getAnchorX, getAnchorY]);
 
-	const adjustScale = useCallback((spriteIndex: number, delta: number) => {
-		const current = getScale(spriteIndex);
+	const adjustScale = useCallback((terrainKey: string, delta: number) => {
+		const current = getScale(terrainKey);
 		const next = Math.max(SCALE_MIN, Math.min(SCALE_MAX,
 			Math.round((current + delta) * SCALE_PRECISION) / SCALE_PRECISION,
 		));
-		dispatch(setTextureSpriteScale({ spriteIndex, scaleMultiplier: next }));
+		dispatch(setTextureSpriteScale({ terrainKey, scaleMultiplier: next }));
 	}, [dispatch, getScale]);
 
-	const handleReset = useCallback((spriteIndex: number) => {
-		dispatch(resetTextureSpriteAnchor({ spriteIndex }));
+	const handleReset = useCallback((terrainKey: string) => {
+		dispatch(resetTextureSpriteAnchor({ terrainKey }));
 	}, [dispatch]);
 
 	const handleCopyConfig = useCallback(async () => {
@@ -393,49 +386,49 @@ export default function HexTextureConfigScreen() {
 
 	const selectionOptions = useMemo(() => {
 		const none = { id: NONE_OPTION_ID, label: 'Keines' };
-		const sprites = OBJECT_SPRITES.map((sprite, idx) => {
-			const count = placedCountMap.get(idx) ?? 0;
-			const label = count > 0 ? `${sprite.name} (${count})` : sprite.name;
+		const entries = ALL_TERRAIN_ENTRIES.map((entry) => {
+			const count = placedCountMap.get(entry.key) ?? 0;
+			const label = count > 0 ? `${entry.key} (${count})` : entry.key;
 			return {
-				id: idx,
+				id: entry.key,
 				label,
-				icon: <SpriteThumbnailIcon spriteIndex={idx} />,
+				icon: <TerrainThumbnailIcon terrainEntry={entry} />,
 			};
 		});
-		return [none, ...sprites];
+		return [none, ...entries];
 	}, [placedCountMap]);
 
-	const openSpriteSelection = useCallback(() => {
-		const currentId = selectedSpriteIndex ?? NONE_OPTION_ID;
+	const openTerrainSelection = useCallback(() => {
+		const currentId = selectedTerrainKey ?? NONE_OPTION_ID;
 		showModal({
-			title: '🎨 Select Hex Texture Sprite',
+			title: '🌍 Hex Textur auswählen',
 			onClose: closeModal,
 			children: (
 				<SettingsListSelectOption
 					options={selectionOptions}
 					selectedOption={currentId}
 					onSelect={(option) => {
-						setSelectedSpriteIndex(option.id === NONE_OPTION_ID ? null : option.id);
+						setSelectedTerrainKey(option.id === NONE_OPTION_ID ? null : option.id as string);
 						closeModal();
 					}}
 				/>
 			),
 		});
-	}, [showModal, closeModal, selectedSpriteIndex, selectionOptions]);
+	}, [showModal, closeModal, selectedTerrainKey, selectionOptions]);
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
-			<SettingsListGroupTitle title="Hex Texture Anchor Points" />
+			<SettingsListGroupTitle title="Hex Texture Ankerpunkte" />
 
 			<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
-				Adjust the anchor point and scale for each flat hex texture sprite. Changes apply independently from billboard settings for the same sprite type.
+				Ankerpunkt und Skalierung für jede Hex-Terrain-Textur anpassen. Änderungen gelten unabhängig von den Billboard-Einstellungen.
 			</Text>
 
-			{/* Sprite selector row */}
-			<SettingsListBillboard
-				spriteIndex={selectedSpriteIndex}
-				title="Texture Sprite"
-				onPress={openSpriteSelection}
+			{/* Terrain selector row */}
+			<SettingsListHexTile
+				tileImageKey={selectedTerrainKey}
+				title="Hex Textur"
+				onPress={openTerrainSelection}
 				groupPosition="single"
 			/>
 
@@ -445,21 +438,21 @@ export default function HexTextureConfigScreen() {
 				onPress={handleCopyConfig}
 			>
 				<Ionicons name="copy-outline" size={18} color="#fff" />
-				<Text style={styles.copyButtonText}>Copy Config JSON</Text>
+				<Text style={styles.copyButtonText}>Config JSON kopieren</Text>
 			</TouchableOpacity>
 
-			{/* Settings for selected sprite type */}
-			{selectedSpriteIndex !== null && (() => {
-				const spriteIndex = selectedSpriteIndex;
-				const sprite = OBJECT_SPRITES[spriteIndex];
-				if (!sprite) return null;
-				const anchorX = getAnchorX(spriteIndex);
-				const anchorY = getAnchorY(spriteIndex);
-				const scale = getScale(spriteIndex);
-				const svgUri = svgUris[spriteIndex];
-				const isDefault = !spriteAnchors[spriteIndex];
-				const dims = imageDims[spriteIndex];
-				const count = placedCountMap.get(spriteIndex) ?? 0;
+			{/* Settings for selected terrain type */}
+			{selectedTerrainKey !== null && (() => {
+				const terrainKey = selectedTerrainKey;
+				const entry = ALL_TERRAIN_ENTRIES.find((e) => e.key === terrainKey);
+				if (!entry) return null;
+				const anchorX = getAnchorX(terrainKey);
+				const anchorY = getAnchorY(terrainKey);
+				const scale = getScale(terrainKey);
+				const imgUri = imgUris[terrainKey];
+				const isDefault = !spriteAnchors[terrainKey];
+				const dims = imageDims[terrainKey];
+				const count = placedCountMap.get(terrainKey) ?? 0;
 				// Compute actual image bounds within the square preview container for overlay positioning.
 				const bounds = dims
 					? getContainBounds(dims.width, dims.height, PREVIEW_HEIGHT, PREVIEW_HEIGHT)
@@ -482,21 +475,21 @@ export default function HexTextureConfigScreen() {
 						<View style={[styles.typeCard, { borderColor: theme.screen.text + '18' }]}>
 							{/* Header */}
 							<View style={styles.cardHeader}>
-								<Text style={[styles.spriteName, { color: theme.screen.text }]}>{sprite.name}</Text>
+								<Text style={[styles.spriteName, { color: theme.screen.text }]}>{terrainKey}</Text>
 								{count > 0 && (
 									<Text style={[styles.spriteCount, { color: theme.screen.text + '80' }]}>
-										{count} placed
+										{count} platziert
 									</Text>
 								)}
 							</View>
 
 							{/* Preview + Controls row */}
 							<View style={styles.previewRow}>
-								{/* SVG Preview with anchor dot overlay */}
+								{/* Image Preview with anchor dot overlay */}
 								<View style={[styles.previewContainer, { backgroundColor: theme.screen.text + '08' }]}>
-									{svgUri ? (
+									{imgUri ? (
 										<WebView
-											source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${PREVIEW_HEIGHT}px;height:${PREVIEW_HEIGHT}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${svgUri.replace(/"/g, '&quot;')}" onload="window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(this.naturalWidth+','+this.naturalHeight)"/></body></html>` }}
+											source={{ html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0}html,body{width:${PREVIEW_HEIGHT}px;height:${PREVIEW_HEIGHT}px;overflow:hidden;background:transparent}img{width:100%;height:100%;object-fit:contain}</style></head><body><img src="${imgUri.replace(/"/g, '&quot;')}" onload="window.ReactNativeWebView&&window.ReactNativeWebView.postMessage(this.naturalWidth+','+this.naturalHeight)"/></body></html>` }}
 											style={[styles.previewImage, { backgroundColor: 'transparent' }]}
 											originWhitelist={['*']}
 											scrollEnabled={false}
@@ -507,7 +500,7 @@ export default function HexTextureConfigScreen() {
 												const w = parseInt(parts[0], 10);
 												const h = parseInt(parts[1], 10);
 												if (w > 0 && h > 0) {
-													setImageDims((prev) => ({ ...prev, [spriteIndex]: { width: w, height: h } }));
+													setImageDims((prev) => ({ ...prev, [terrainKey]: { width: w, height: h } }));
 												}
 											}}
 										/>
@@ -534,7 +527,7 @@ export default function HexTextureConfigScreen() {
 									<View style={styles.dpadRow}>
 										<TouchableOpacity
 											style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-											onPress={() => adjustAnchor(spriteIndex, 0, -ANCHOR_STEP)}
+											onPress={() => adjustAnchor(terrainKey, 0, -ANCHOR_STEP)}
 											disabled={anchorY <= 0}
 										>
 											<Ionicons name="arrow-up" size={20} color={anchorY <= 0 ? theme.screen.text + '30' : theme.screen.text} />
@@ -544,7 +537,7 @@ export default function HexTextureConfigScreen() {
 									<View style={styles.dpadRow}>
 										<TouchableOpacity
 											style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-											onPress={() => adjustAnchor(spriteIndex, -ANCHOR_STEP, 0)}
+											onPress={() => adjustAnchor(terrainKey, -ANCHOR_STEP, 0)}
 											disabled={anchorX <= 0}
 										>
 											<Ionicons name="arrow-back" size={20} color={anchorX <= 0 ? theme.screen.text + '30' : theme.screen.text} />
@@ -554,13 +547,13 @@ export default function HexTextureConfigScreen() {
 												styles.dpadCenter,
 												{ backgroundColor: isDefault ? theme.screen.text + '12' : PRIMARY_COLOR + '20' },
 											]}
-											onPress={() => handleReset(spriteIndex)}
+											onPress={() => handleReset(terrainKey)}
 										>
 											<Ionicons name="refresh" size={16} color={isDefault ? theme.screen.text + '40' : PRIMARY_COLOR} />
 										</TouchableOpacity>
 										<TouchableOpacity
 											style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-											onPress={() => adjustAnchor(spriteIndex, ANCHOR_STEP, 0)}
+											onPress={() => adjustAnchor(terrainKey, ANCHOR_STEP, 0)}
 											disabled={anchorX >= 1}
 										>
 											<Ionicons name="arrow-forward" size={20} color={anchorX >= 1 ? theme.screen.text + '30' : theme.screen.text} />
@@ -570,7 +563,7 @@ export default function HexTextureConfigScreen() {
 									<View style={styles.dpadRow}>
 										<TouchableOpacity
 											style={[styles.dpadButton, { backgroundColor: theme.screen.text + '12' }]}
-											onPress={() => adjustAnchor(spriteIndex, 0, ANCHOR_STEP)}
+											onPress={() => adjustAnchor(terrainKey, 0, ANCHOR_STEP)}
 											disabled={anchorY >= 1}
 										>
 											<Ionicons name="arrow-down" size={20} color={anchorY >= 1 ? theme.screen.text + '30' : theme.screen.text} />
@@ -592,11 +585,11 @@ export default function HexTextureConfigScreen() {
 							{/* Scale stepper row */}
 							<View style={[styles.scaleSeparator, { borderColor: theme.screen.text + '12' }]} />
 							<View style={styles.scaleRow}>
-								<Text style={[styles.scaleLabel, { color: theme.screen.text + '80' }]}>Scale</Text>
+								<Text style={[styles.scaleLabel, { color: theme.screen.text + '80' }]}>Skalierung</Text>
 								<View style={styles.scaleControls}>
 									<TouchableOpacity
 										style={[styles.scaleButton, { backgroundColor: theme.screen.text + '12' }]}
-										onPress={() => adjustScale(spriteIndex, -SCALE_STEP)}
+										onPress={() => adjustScale(terrainKey, -SCALE_STEP)}
 										disabled={scale <= SCALE_MIN}
 									>
 										<Ionicons name="remove" size={18} color={scale <= SCALE_MIN ? theme.screen.text + '30' : theme.screen.text} />
@@ -606,7 +599,7 @@ export default function HexTextureConfigScreen() {
 									</Text>
 									<TouchableOpacity
 										style={[styles.scaleButton, { backgroundColor: theme.screen.text + '12' }]}
-										onPress={() => adjustScale(spriteIndex, SCALE_STEP)}
+										onPress={() => adjustScale(terrainKey, SCALE_STEP)}
 										disabled={scale >= SCALE_MAX}
 									>
 										<Ionicons name="add" size={18} color={scale >= SCALE_MAX ? theme.screen.text + '30' : theme.screen.text} />
@@ -616,17 +609,16 @@ export default function HexTextureConfigScreen() {
 						</View>
 
 						{/* Hex field preview */}
-						{svgUri && (
+						{imgUri && (
 							<>
-								<SettingsListGroupTitle title="Hex Field Preview" />
+								<SettingsListGroupTitle title="Hex Feld Vorschau" />
 								<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
-									Approximate in-game appearance showing the texture placed flat across a hex field. The red dot marks the placement point on the center hex.
+									Ungefähre Darstellung der Textur auf dem Hex-Feld. Der rote Punkt markiert den Ankerpunkt.
 								</Text>
 								<View style={[styles.hexPreviewWrapper, { borderColor: theme.screen.text + '18' }]}>
 									<HexFieldPreview
-										svgUri={svgUri}
-										spriteIndex={spriteIndex}
-										scaleFactor={sprite.scaleFactor}
+										imgUri={imgUri}
+										terrainKey={terrainKey}
 										perSpriteScale={scale}
 										anchorX={anchorX}
 										anchorY={anchorY}
@@ -815,3 +807,4 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 });
+
