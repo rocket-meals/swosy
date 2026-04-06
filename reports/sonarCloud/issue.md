@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6834 | 46 |
+| 🐛 Reliability | 6833 | 46 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16838 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16837 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,7 +30,7 @@
   .github/actions/geonexia-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L184
 
-## 🐛 Reliability (46/6834)
+## 🐛 Reliability (46/6833)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -80,49 +80,45 @@
   apps/geonexia/frontend/app/billboard-config/index.tsx:494
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/billboard-config/index.tsx#L494
 
-- **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:60
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L60
+- **Prefer `String#replaceAll()` over `String#replace()`.**
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:104
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L104
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:106
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L106
-
-- **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:499
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L499
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:492
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L492
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:507
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L507
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:500
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L500
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:508
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L508
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:501
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L501
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:757
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L757
+  apps/geonexia/frontend/app/index.tsx:758
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L758
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/index.tsx:62
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L62
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2766
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2766
+  apps/geonexia/frontend/app/index.tsx:2767
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2767
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:1032
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1032
-
-- **Prefer `Number.isNaN` over `isNaN`.**
   apps/geonexia/frontend/app/index.tsx:1033
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1033
 
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/app/index.tsx:1034
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1034
+
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:907
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L907
+  apps/geonexia/frontend/app/index.tsx:908
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L908
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/statistics/index.tsx:44
@@ -215,4 +211,8 @@
 - **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:317
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L317
+
+- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
+  apps/geonexia/frontend/helpers/h3/libh3.js:327
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L327
 
