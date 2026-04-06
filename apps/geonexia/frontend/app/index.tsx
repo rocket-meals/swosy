@@ -2868,11 +2868,11 @@ export default function RecordScreen() {
 		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
 		const currentObjectOpacity = store.getState().displaySettings.objectOpacity;
 
-		// Flat lookup: terrain asset key → module ID
-		const terrainLookup = new Map<string, number>();
+		// Flat lookup: terrain asset key → { moduleId, mimeType }
+		const terrainLookup = new Map<string, { moduleId: number; mimeType: string }>();
 		for (const assets of Object.values(TERRAIN_ASSETS)) {
 			for (const entry of assets) {
-				terrainLookup.set(entry.key, entry.source as number);
+				terrainLookup.set(entry.key, { moduleId: entry.source as number, mimeType: entry.mimeType ?? 'image/svg+xml' });
 			}
 		}
 
@@ -2893,9 +2893,9 @@ export default function RecordScreen() {
 		for (const [h3Index, record] of Object.entries(records)) {
 			// ── Tile image overlay ──────────────────────────────────────────────
 			if (record.tileImage) {
-				const moduleId = terrainLookup.get(record.tileImage);
-				if (moduleId !== undefined) {
-					const url = await loadAssetUrl(`terrain:${record.tileImage}`, moduleId, 'image/svg+xml');
+				const terrainEntry = terrainLookup.get(record.tileImage);
+				if (terrainEntry !== undefined) {
+					const url = await loadAssetUrl(`terrain:${record.tileImage}`, terrainEntry.moduleId, terrainEntry.mimeType);
 					if (url) {
 						// Compute the bounding box of the hexagon in [lng, lat] GeoJSON order.
 						const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
