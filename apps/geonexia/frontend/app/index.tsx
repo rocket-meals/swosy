@@ -659,12 +659,13 @@ function findEnclosedCells(routePoints: RoutePoint[], resolution: number): strin
 
 	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
 
-	// Check loop closure: first and last GPS points must map to adjacent hex tiles.
+	// Check loop closure: first and last GPS points must map to the same hex tile
+	// or to adjacent hex tiles.
 	const first = routePoints[0];
 	const last = routePoints[routePoints.length - 1];
 	const firstCell = latLngToCell(first.lat, first.lng, h3Res);
 	const lastCell = latLngToCell(last.lat, last.lng, h3Res);
-	if (!areNeighborCells(firstCell, lastCell)) return [];
+	if (firstCell !== lastCell && !areNeighborCells(firstCell, lastCell)) return [];
 
 	// Route polygon in [lng, lat] order (same as GeoJSON).
 	const polygon: Array<[number, number]> = routePoints.map((p) => [p.lng, p.lat]);

@@ -30,7 +30,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 5;
+export const WORLD_BUILDING_ID = 6;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -461,11 +461,21 @@ export function rebuildMapFromActivities(
 
 		// Prefer computed.enclosedHexTiles (the canonical field); fall back to the
 		// legacy top-level fields for activities saved by older app versions.
-		const enclosedHexTiles: string[] =
+		let enclosedHexTiles: string[] =
 			activity.computed?.enclosedHexTiles ??
 			activity.enclosedHexTiles ??
 			activity.hexTilesEnclosed ??
 			[];
+
+		// If enclosed tiles are absent (either never computed, or incorrectly
+		// skipped by the old same-cell loop-closure bug), try to recompute them
+		// from the ordered hex tiles so that existing activities benefit from the
+		// fix without requiring a new recording.
+		if (enclosedHexTiles.length === 0 && (activity.hexTilesOrdered?.length ?? 0) >= 3) {
+			const visitedIds = activity.hexTilesOrdered ?? [];
+			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+			enclosedHexTiles = findEnclosedCellsFromHexTiles(visitedIds, h3Res);
+		}
 
 		// ── Process visited (walked) tiles ────────────────────────────────────
 		// Pre-build a map for O(1) lookup of existing references for this activity.
