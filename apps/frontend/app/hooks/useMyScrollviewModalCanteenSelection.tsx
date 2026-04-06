@@ -87,12 +87,15 @@ interface OpenCanteenSelectionModalParams {
 
 export const useMyScrollviewModalCanteenSelection = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 
 	const openCanteenSelectionModal = useCallback(
 		({ onSelectCanteen, title, children }: OpenCanteenSelectionModalParams) => {
 			showScrollViewModal({
 				title: title ?? translate(TranslationKeys.canteen),
+				titleTextAlign: isRtl ? 'right' : 'left',
+				titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 				onClose: closeScrollViewModal,
 				children: (
 					<CanteenSelectionContent onSelectCanteen={onSelectCanteen}>
@@ -101,7 +104,7 @@ export const useMyScrollviewModalCanteenSelection = () => {
 				),
 			});
 		},
-		[closeScrollViewModal, showScrollViewModal, translate]
+		[closeScrollViewModal, isRtl, showScrollViewModal, translate]
 	);
 
 	return { openCanteenSelectionModal, closeCanteenSelectionModal: closeScrollViewModal };

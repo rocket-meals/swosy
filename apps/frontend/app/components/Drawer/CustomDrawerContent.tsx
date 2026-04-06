@@ -248,7 +248,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		if (wikis) {
 			const wikiMenuItems = wikis
 				.filter((wiki: any) => wiki.show_in_drawer) // Only show relevant wikis
-				.map((wiki: any) => {
+				.map((wiki: any, index: number) => {
 					let iconLib: any = Entypo;
 					let iconName = 'home';
 
@@ -260,11 +260,13 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						}
 					}
 
+					const wikiKey = wiki?.custom_id ? `wikis:${wiki.custom_id}` : wiki?.id ? `wikis:${wiki.id}` : `wikis:pos:${wiki.position ?? index}`;
+
 					return {
 						label: translateDynamic(getTitleFromTranslation(wiki?.translations, language)),
 						iconName,
 						iconLibName: iconLib,
-						activeKey: 'faq-food/index',
+						activeKey: wikiKey,
 						position: wiki.position ?? Number.MAX_SAFE_INTEGER,
 						action: wiki.url
 							? () => openInBrowser(wiki?.url)

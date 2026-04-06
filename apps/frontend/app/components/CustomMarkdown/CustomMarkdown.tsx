@@ -205,8 +205,10 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 						fontSize: 16,
 						fontFamily: 'Poppins_400Regular',
 						color: theme.screen.text,
-						marginLeft: calculateMarginLeft(level, indent),
-						lineHeight: 24,
+						...(isArabic
+							? { marginLeft: 0, marginRight: 0, textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' }
+							: { marginLeft: calculateMarginLeft(level, indent) }),
+						lineHeight: 34,
 					}}
 				>
 					{text}
@@ -289,7 +291,9 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 									color: theme.screen.text,
 									marginTop: level === 0 ? 0 : 12,
 									marginBottom: 12,
-									marginLeft: calculateMarginLeft(level, 0),
+									...(isArabic
+										? { marginLeft: 0, marginRight: 0, textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' }
+										: { marginLeft: calculateMarginLeft(level, 0) }),
 								}}
 							>
 								{item.content}
@@ -297,7 +301,7 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({ content, backgroundColo
 						);
 
 					case 'emptyLine':
-						return <View key={`empty-${level}-${index}`} style={{ height: 16 }} />;
+						return <View key={`empty-${level}-${index}`} />;
 
 					case 'text':
 						return <TextContent key={`text-${level}-${index}`} text={item.content} level={level} indent={item.indent || 0} />;

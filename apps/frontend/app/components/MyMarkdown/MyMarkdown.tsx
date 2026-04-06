@@ -31,7 +31,8 @@ export const replaceLinebreaks = (sourceContent: string) => {
 };
 
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
-	const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+	const { primaryColor, selectedTheme, language } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 
 	const colorScheme = Appearance.getColorScheme();
 	const theme = selectedTheme === 'systematic' ? (colorScheme === 'dark' ? darkTheme : lightTheme) : selectedTheme === 'dark' ? darkTheme : lightTheme;
@@ -67,7 +68,8 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		color: textColor,
 		fontSize,
 		fontStyle: 'normal' as const,
-	}), [textColor, fontSize]);
+		...(isArabic ? { textAlign: 'right' as const, writingDirection: 'rtl' as const } : { textAlign: 'left' as const, writingDirection: 'ltr' as const }),
+	}), [isArabic, textColor, fontSize]);
 
 	const defaultTextProps = React.useMemo(() => ({
 		selectable: true,
@@ -78,7 +80,15 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 		td: { borderColor: 'gray', borderWidth: 1 } as const,
 		th: { borderColor: 'gray', borderWidth: 1 } as const,
 		a: { color: textColor } as const,
-	}), [textColor]);
+		p: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		li: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h1: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h2: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h3: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h4: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h5: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+		h6: isArabic ? ({ textAlign: 'right', writingDirection: 'rtl' } as const) : ({ textAlign: 'left', writingDirection: 'ltr' } as const),
+	}), [isArabic, textColor]);
 
 	const customRenderers = React.useMemo(() => {
 		const renderers: Record<string, CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer> = {

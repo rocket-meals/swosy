@@ -73,13 +73,13 @@ const DebugView: React.FC<DebugViewProps> = ({
                                 styles.container,
                         ]}
                 >
-                        <View style={[styles.header, language === 'ar' ? { flexDirection: 'row-reverse', marginRight: 20 } : undefined]}>
+                        <View style={[styles.header, language === 'ar' ? { flexDirection: 'row-reverse' } : undefined]}>
                                 <MaterialCommunityIcons name="bug-outline" size={18} color={theme.screen.icon} />
                                 <Text style={{ ...styles.title, color: theme.screen.text }}>{title}</Text>
                         </View>
 
                         {actions.length ? (
-                                <View style={styles.actionsContainer}>
+                                <View style={[styles.actionsContainer, language === 'ar' ? { justifyContent: 'flex-end' } : undefined]}>
                                         {actions.map((action, index) => (
                                                 <TouchableOpacity
                                                         key={`${action.label}-${index}`}

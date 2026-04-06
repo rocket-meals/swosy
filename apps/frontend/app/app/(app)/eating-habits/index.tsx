@@ -61,7 +61,6 @@ const Index = () => {
 						dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
 					}
 				}).catch((error) => {
-					console.error('Error fetching profile on focus:', error);
 				});
 			}
 
@@ -131,7 +130,15 @@ const Index = () => {
 				alignSelf: 'center',
 			}}
 		>
-			<Text style={{ ...styles.body1, color: theme.screen.text }}>{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}</Text>
+			<Text
+				style={{
+					...styles.body1,
+					color: theme.screen.text,
+					...(language === 'ar' ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : {}),
+				}}
+			>
+				{readMore ? translate(TranslationKeys.eatinghabits_introduction) : excerpt(translate(TranslationKeys.eatinghabits_introduction), 120)}
+			</Text>
 			{readMore && <FoodLabelingInfo textStyle={styles.body2} backgroundColor={primaryColor} />}
 			<View style={[styles.readMoreContainer, language === 'ar' ? { alignItems: 'flex-end' } : undefined]}>
 				<AppButton
@@ -141,8 +148,13 @@ const Index = () => {
 						...styles.readMoreButton,
 						backgroundColor: theme.primary,
 						marginVertical: 0,
+						...(language === 'ar' ? { height: 60 } : {}),
 					}}
-					textStyle={{ ...styles.readMore, color: contrastColor, ...(language === 'ar' ? { textAlign: 'right' } : {}) }}
+					textStyle={{
+						...styles.readMore,
+						color: contrastColor,
+						...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : {}),
+					}}
 				/>
 			</View>
 			<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>

@@ -31,7 +31,16 @@ const FoodLabelingInfo: React.FC<FoodLabelingInfoProps> = ({ textStyle, containe
 
 	return (
 		<View style={containerStyle}>
-			<Text style={[styles.text, { color: theme.screen.text }, textStyle]}>{translate(TranslationKeys.FOOD_LABELING_INFO)}</Text>
+			<Text
+				style={[
+					styles.text,
+					{ color: theme.screen.text },
+					language === 'ar' ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : undefined,
+					textStyle,
+				]}
+			>
+				{translate(TranslationKeys.FOOD_LABELING_INFO)}
+			</Text>
 			<View style={language === 'ar' ? { alignItems: 'flex-end', marginTop: 20, marginBottom: 20 } : undefined}>
 				<RedirectButton type="link" onClick={handleRedirect} label={food_responsible_organization_name} backgroundColor={foods_area_color} />
 			</View>

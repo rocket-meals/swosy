@@ -173,7 +173,6 @@ export default function Layout() {
 				fetchChats();
 			}
 		} catch (error) {
-			console.error('Error fetching profiles:', error);
 		}
 	};
 

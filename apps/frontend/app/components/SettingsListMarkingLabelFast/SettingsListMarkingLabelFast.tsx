@@ -74,7 +74,6 @@ const SettingsListMarkingLabelFast: React.FC<SettingsListMarkingLabelFastProps> 
 				dispatch({ type: UPDATE_PROFILE, payload: fetchedProfile });
 			}
 		} catch (error) {
-			console.error('Error fetching profiles:', error);
 		}
 	}, [profileHelper, user?.profile, dispatch]);
 

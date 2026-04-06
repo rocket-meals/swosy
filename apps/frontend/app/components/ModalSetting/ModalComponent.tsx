@@ -39,6 +39,9 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isVisible, title = 'Mod
 		};
 	}, []);
 
+	const closeButtonSize = isLargeScreen < 500 ? 40 : 36;
+	const closeIconSize = isLargeScreen < 500 ? 26 : 20;
+
 	return (
 		<Modal
 			isVisible={isVisible}
@@ -60,7 +63,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isVisible, title = 'Mod
 			>
 				{/* Title */}
 				<View style={styles.modalHeader}>
-					<View />
+					<View style={{ width: closeButtonSize, height: closeButtonSize }} />
 					<Text
 						style={{
 							...styles.modalHeading,
@@ -74,12 +77,12 @@ const ModalComponent: React.FC<ModalComponentProps> = ({ isVisible, title = 'Mod
 						style={{
 							...styles.closeButton,
 							backgroundColor: theme.modal.closeBg,
-							height: isLargeScreen ? 36 : 40,
-							width: isLargeScreen ? 36 : 40,
+							height: closeButtonSize,
+							width: closeButtonSize,
 						}}
 						onPress={onClose}
 					>
-						<AntDesign name="close" size={isLargeScreen ? 20 : 26} color={theme.modal.closeIcon} />
+						<AntDesign name="close" size={closeIconSize} color={theme.modal.closeIcon} />
 					</TouchableOpacity>
 				</View>
 

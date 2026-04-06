@@ -16,9 +16,10 @@ const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
         const dispatch = useDispatch();
         const router = useRouter();
-        const { translate } = useLanguage();
+        const { translate, language } = useLanguage();
         const { theme } = useTheme();
         const { buttonLabel, modalDescription } = useLogoutButtonTranslation();
+        const isRtl = language === 'ar';
 
         const openConfirmLogoutModal = useCallback(
                 () => {
@@ -36,11 +37,14 @@ const useConfirmLogoutModal = () => {
                                                                         fontSize: 18,
                                                                         fontWeight: '600',
                                                                         color: theme.screen.text,
+                                                                        textAlign: isRtl ? 'right' : 'left',
+                                                                        alignSelf: isRtl ? 'flex-end' : 'flex-start',
+                                                                        writingDirection: isRtl ? 'rtl' : 'ltr',
                                                                 }}
                                                         >
                                                                 {buttonLabel}
                                                         </Text>
-                                                        <Text style={{ color: theme.screen.text }}>
+                                                        <Text style={{ color: theme.screen.text, textAlign: isRtl ? 'right' : 'left', alignSelf: isRtl ? 'flex-end' : 'flex-start', writingDirection: isRtl ? 'rtl' : 'ltr' }}>
                                                                 {modalDescription}
                                                         </Text>
                                                         <AppButton
@@ -62,7 +66,7 @@ const useConfirmLogoutModal = () => {
                                 {}
                         );
                 },
-                [buttonLabel, close, dispatch, modalDescription, router, show, theme.screen.text, translate]
+                [buttonLabel, close, dispatch, isRtl, modalDescription, router, show, theme.screen.text, translate]
         );
 
         return { openConfirmLogoutModal, closeConfirmLogoutModal: close };

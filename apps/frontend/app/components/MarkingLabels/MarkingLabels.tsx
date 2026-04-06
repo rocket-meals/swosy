@@ -89,7 +89,6 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({ markingId, handleMenuSheet
 				dispatch({ type: UPDATE_PROFILE, payload: profile });
 			}
 		} catch (error) {
-			console.error('Error fetching profiles:', error);
 		}
 	};
 

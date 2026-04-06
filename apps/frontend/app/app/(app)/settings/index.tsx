@@ -607,7 +607,14 @@ const Settings = () => {
 					title={translate(TranslationKeys.debug_mode)}
 					showInDevMode={true}
 				>
-					<Text style={[{...styles.devModeText, color: theme.screen.text}, language === 'ar' ? { marginRight: 20, marginBottom: 10 } : undefined]}>{translate(TranslationKeys.developerModeActive)}</Text>
+					<Text
+						style={[
+							{ ...styles.devModeText, color: theme.screen.text, marginBottom: 10, marginHorizontal: 20 },
+							language === 'ar' ? { textAlign: 'right', alignSelf: 'flex-end', writingDirection: 'rtl' } : undefined,
+						]}
+					>
+						{translate(TranslationKeys.developerModeActive)}
+					</Text>
 					<View style={groupStyle}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name={language === 'ar' ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />

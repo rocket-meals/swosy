@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface MyScrollViewModalProps {
   title?: string;
+  titleTextAlign?: 'left' | 'right' | 'center';
+  titleWritingDirection?: 'ltr' | 'rtl';
   closeSheet?: () => void;
   backgroundColor?: string;
   children?: ReactNode;
@@ -25,6 +27,8 @@ export interface MyScrollViewModalProps {
 
 const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   title,
+  titleTextAlign = 'left',
+  titleWritingDirection,
   children,
   useFlatList = false,
   backgroundColor,
@@ -58,7 +62,18 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
         <View
           style={{ backgroundColor: resolvedBackgroundColor, paddingHorizontal: 20, paddingTop: 6, paddingBottom: 4 }}
         >
-          <Text style={{ fontSize: 16, fontWeight: '600', color: theme.sheet.text }}>{title}</Text>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '600',
+              color: theme.sheet.text,
+              textAlign: titleTextAlign,
+              alignSelf: titleTextAlign === 'right' ? 'flex-end' : titleTextAlign === 'center' ? 'center' : 'flex-start',
+              ...(titleWritingDirection ? { writingDirection: titleWritingDirection } : {}),
+            }}
+          >
+            {title}
+          </Text>
         </View>
       )}
       {ListHeaderComponent}

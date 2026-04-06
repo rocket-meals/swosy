@@ -71,6 +71,7 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		marginVertical: 15,
+		alignItems: 'center',
 	},
 	label: {
 		fontSize: 16,
