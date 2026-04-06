@@ -2864,15 +2864,32 @@ export default function RecordScreen() {
 							const dlat = v0[0] - centerLat;
 							const dlng = (v0[1] - centerLng) * Math.cos(centerLat * Math.PI / 180);
 							const rotation = Math.atan2(dlng, dlat); // radians CW from North
+
+							// Apply per-terrain anchor/scale overrides from hex texture config.
+							const terrainOverride = textureAnchors[record.tileImage];
+							const texAnchorX = terrainOverride?.anchorX ?? 0.5;
+							const texAnchorY = terrainOverride?.anchorY ?? 0.5;
+							const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
+							const bboxW = maxLng - minLng;
+							const bboxH = maxLat - minLat;
+							const scaledW = bboxW / texScale;
+							const scaledH = bboxH / texScale;
+							const anchorLng = minLng + texAnchorX * bboxW;
+							const anchorLat = minLat + texAnchorY * bboxH;
+							const adjMinLng = anchorLng - texAnchorX * scaledW;
+							const adjMaxLng = anchorLng + (1 - texAnchorX) * scaledW;
+							const adjMinLat = anchorLat - texAnchorY * scaledH;
+							const adjMaxLat = anchorLat + (1 - texAnchorY) * scaledH;
+
 							imageOverlays.push({
 								id: `tile-img-${h3Index}`,
 								url,
 								// MapLibre image source format: top-left, top-right, bottom-right, bottom-left
 								coordinates: [
-									[minLng, maxLat],
-									[maxLng, maxLat],
-									[maxLng, minLat],
-									[minLng, minLat],
+									[adjMinLng, adjMaxLat],
+									[adjMaxLng, adjMaxLat],
+									[adjMaxLng, adjMinLat],
+									[adjMinLng, adjMinLat],
 								],
 								opacity: currentObjectOpacity,
 								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
