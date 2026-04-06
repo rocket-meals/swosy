@@ -561,7 +561,7 @@ export default function HexTextureConfigScreen() {
 						{/* Hex map preview */}
 						{imgUri && (
 							<>
-								<SettingsListGroupTitle title="Hex Field Preview" />
+								<SettingsListGroupTitle title="Hex Map Preview" />
 								<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
 									Live map preview showing the texture placed on real H3 hex tiles. The center and surrounding tiles are shown with the current anchor and scale.
 								</Text>
