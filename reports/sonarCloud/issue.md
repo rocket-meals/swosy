@@ -85,16 +85,16 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L104
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:492
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L492
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:494
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L494
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:500
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L500
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:502
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L502
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/hex-texture-config/index.tsx:501
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L501
+  apps/geonexia/frontend/app/hex-texture-config/index.tsx:503
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L503
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/index.tsx:758
