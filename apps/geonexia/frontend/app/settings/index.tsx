@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -13,8 +13,19 @@ import {
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteAllActivities } from '../../helpers/ActivityStorage';
-import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState } from '../../store/hexTileSlice';
+import { deleteAllActivities, loadActivities, saveActivity } from '../../helpers/ActivityStorage';
+import { isAvailable as isH3Available } from '../../helpers/H3Helper';
+import {
+	computeActivityData,
+	findEnclosedCellsFromHexTiles,
+	H3_RESOLUTION_FALLBACK,
+	rebuildMapFromActivities,
+	hasForestFeature,
+	BILLBOARD_PINE_TREE_LARGE,
+} from '../../helpers/ActivityMapRebuildHelper';
+import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
+import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
+import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
@@ -24,6 +35,7 @@ import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
 import { updateDisplaySettings } from '../../store/displaySettingsSlice';
 import {
+	BillboardAnchorPosition,
 	saveDebugModeFlag,
 	saveDevModeFlag,
 	saveHexTileState,
@@ -47,6 +59,7 @@ const TTS_COLOR = '#0369a1';
 const DEBUG_COLOR = '#0f766e';
 const DEV_COLOR = '#f59e0b';
 const MAP_COLOR = '#0891b2';
+const REBUILD_COLOR = '#7c3aed';
 
 const OPACITY_STEP = 0.05;
 const OPACITY_MIN = 0.05;
@@ -353,6 +366,153 @@ export default function SettingsScreen() {
 		dispatch(updateDisplaySettings({ hexLineWidth: next }));
 	}, [dispatch, hexLineWidth]);
 
+	const handleRecalculateAllComputedValues = useCallback(() => {
+		Alert.alert(
+			'Berechnete Werte neu berechnen',
+			'Die berechneten Werte aller Aktivitäten werden neu berechnet. Fortfahren?',
+			[
+				{ text: 'Abbrechen', style: 'cancel' },
+				{
+					text: 'Neu berechnen',
+					onPress: async () => {
+						if (!isH3Available()) {
+							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							return;
+						}
+						const allActivities = await loadActivities();
+						if (allActivities.length === 0) {
+							Alert.alert('Keine Aktivitäten', 'Es sind keine Aktivitäten vorhanden.');
+							return;
+						}
+						let updatedCount = 0;
+						for (const activity of allActivities) {
+							let enclosedTiles: string[] =
+								activity.computed?.enclosedHexTiles ??
+								activity.enclosedHexTiles ??
+								activity.hexTilesEnclosed ??
+								[];
+							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								enclosedTiles = findEnclosedCellsFromHexTiles(
+									activity.hexTilesOrdered,
+									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+								);
+							}
+							const newComputed = computeActivityData(activity, enclosedTiles);
+							try {
+								saveActivity({ ...activity, computed: newComputed });
+								updatedCount++;
+							} catch (err) {
+								console.warn('[Recalculate] Failed to save activity:', activity.id, err);
+							}
+						}
+						Alert.alert('Fertig', `${updatedCount} ${updatedCount === 1 ? 'Aktivität' : 'Aktivitäten'} neu berechnet.`);
+					},
+				},
+			],
+		);
+	}, []);
+
+	const handleRebuildWorld = useCallback(() => {
+		Alert.alert(
+			'Welt neu aufbauen',
+			'Die Karte wird aus allen gespeicherten Aktivitäten neu berechnet. Alle Karten-Anpassungen (einschließlich manuell gesetzter Felder) werden zurückgesetzt. Fortfahren?',
+			[
+				{ text: 'Abbrechen', style: 'cancel' },
+				{
+					text: 'Neu aufbauen',
+					style: 'destructive',
+					onPress: async () => {
+						if (!isH3Available()) {
+							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							return;
+						}
+						const allActivities = await loadActivities();
+						if (allActivities.length === 0) {
+							Alert.alert('Keine Aktivitäten', 'Es sind keine Aktivitäten vorhanden.');
+							return;
+						}
+
+						for (const activity of allActivities) {
+							let updated = false;
+							let enclosedTiles: string[] =
+								activity.computed?.enclosedHexTiles ??
+								activity.enclosedHexTiles ??
+								activity.hexTilesEnclosed ??
+								[];
+							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								enclosedTiles = findEnclosedCellsFromHexTiles(
+									activity.hexTilesOrdered,
+									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+								);
+							}
+							if (!activity.computed) {
+								activity.computed = computeActivityData(activity, enclosedTiles);
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
+								}
+								updated = true;
+							} else if (
+								!Array.isArray(activity.computed.enclosedHexTiles) ||
+								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+							) {
+								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
+								if (activity.enclosedTileCount == null) {
+									activity.enclosedTileCount = enclosedTiles.length;
+								}
+								updated = true;
+							}
+							if (updated) {
+								try {
+									saveActivity(activity);
+								} catch (err) {
+									console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err);
+								}
+							}
+						}
+
+						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
+						const hexTileFeatureCache = await loadHexTileFeatureCache();
+						const homeHexTile = store.getState().playerInformation.homeHexTile;
+						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						dispatch(loadPersistedState(records));
+						dispatch(loadWalkedEdgesState(walkedEdges));
+
+						void (async () => {
+							try {
+								const enclosedWithoutCache = Object.entries(records)
+									.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
+									.map(([hexId]) => hexId);
+								if (enclosedWithoutCache.length === 0) return;
+								const newEntries: HexTileFeatureCache = {};
+								for (const hexId of enclosedWithoutCache) {
+									try {
+										const features = await queryTileFeaturesForHexCell(hexId);
+										newEntries[hexId] = features;
+										if (hasForestFeature(features)) {
+											dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: BillboardAnchorPosition.CENTER,
+												billboard: BILLBOARD_PINE_TREE_LARGE,
+											}));
+										}
+									} catch {
+										// ignore per-cell errors
+									}
+								}
+								await mergeHexTileFeatureCache(newEntries);
+							} catch (err) {
+								console.warn('[Rebuild] Feature cache update failed:', err);
+							}
+						})();
+
+						const count = allActivities.length;
+						Alert.alert('Welt neu aufgebaut', `Karte aus ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'} neu aufgebaut.`);
+					},
+				},
+			],
+		);
+	}, [dispatch]);
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView contentContainerStyle={styles.listContent}>
@@ -496,12 +656,28 @@ export default function SettingsScreen() {
 
 				<SettingsListGroupTitle title="Daten Verwaltung" />
 				<SettingsList
+					iconBgColor={REBUILD_COLOR}
+					leftIcon={<MaterialIcons name="calculate" size={22} color="#ffffff" />}
+					label="Berechnete Werte neu berechnen"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleRecalculateAllComputedValues}
+					groupPosition="top"
+				/>
+				<SettingsList
+					iconBgColor={REBUILD_COLOR}
+					leftIcon={<MaterialIcons name="refresh" size={22} color="#ffffff" />}
+					label="Welt neu aufbauen"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleRebuildWorld}
+					groupPosition="middle"
+				/>
+				<SettingsList
 					iconBgColor={DANGER_COLOR}
 					leftIcon={<MaterialIcons name="delete-forever" size={22} color="#ffffff" />}
 					label="Alle Daten zurücksetzen"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={handleResetAllData}
-					groupPosition="single"
+					groupPosition="bottom"
 				/>
 
 				<SettingsListGroupTitle title="About" />
