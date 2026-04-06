@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-06T06:44:25.263Z",
+  "report_timestamp": "2026-04-06T12:54:24.948Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.6126384899466557,
-          "amountSavedValuesForKeys": 3930,
+          "average": 1.6136177194421657,
+          "amountSavedValuesForKeys": 3934,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1,
+          "median": 1.5,
           "maximum": 94,
-          "average": 1.6273291925465838,
-          "amountSavedValuesForKeys": 3930,
+          "average": 1.6283112582781456,
+          "amountSavedValuesForKeys": 3934,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4105,
-        "detection_time_ms": 83,
+        "ast_generation_time_ms": 4322,
+        "detection_time_ms": 81,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1008-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 122.41,
-          "os_memory_free": 14938734592,
-          "os_memory_total": 16766443520,
+          "os_uptime": 108.23,
+          "os_memory_free": 14984548352,
+          "os_memory_total": 16770777088,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 47,
-    "amount_files_with_data_clumps": 37,
+    "amount_classes_or_interfaces_with_data_clumps": 49,
+    "amount_files_with_data_clumps": 39,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 68,
+    "fields_to_fields_data_clump": 70,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 76
+    "amount_data_clumps": 78
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "04930e7430a4f522bd17eb824ae570337992d6ba",
-    "project_commit_hash": "04930e7430a4f522bd17eb824ae570337992d6ba",
+    "project_version": "5a317473535393017665fb51723b03c62f26f900",
+    "project_commit_hash": "5a317473535393017665fb51723b03c62f26f900",
     "project_tag": null,
-    "project_commit_date": "1775457758",
+    "project_commit_date": "1775479971",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
-    "number_of_files": 489,
-    "number_of_classes_or_interfaces": 995,
+    "number_of_files": 491,
+    "number_of_classes_or_interfaces": 998,
     "number_of_methods": 1327,
-    "number_of_data_fields": 3930,
+    "number_of_data_fields": 3934,
     "number_of_method_parameters": 1467
   },
   "detector": {
@@ -5324,6 +5324,200 @@
         "cluster_type": 3
       }
     },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-anchorXanchorYscaleMultiplier": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-anchorXanchorYscaleMultiplier",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride",
+      "from_class_or_interface_name": "SpriteAnchorOverride",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride",
+      "to_class_or_interface_name": "TextureSpriteAnchorOverride",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorX": {
+          "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorX",
+          "name": "anchorX",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorX",
+            "name": "anchorX",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorY": {
+          "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorY",
+          "name": "anchorY",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorY",
+            "name": "anchorY",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/scaleMultiplier": {
+          "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/scaleMultiplier",
+          "name": "scaleMultiplier",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/scaleMultiplier",
+            "name": "scaleMultiplier",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 27
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 2
+      }
+    },
+    "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-anchorXanchorYscaleMultiplier": {
+      "type": "data_clump",
+      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts-apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride-apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride-anchorXanchorYscaleMultiplier",
+      "probability": 1,
+      "from_file_path": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts",
+      "from_class_or_interface_key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride",
+      "from_class_or_interface_name": "TextureSpriteAnchorOverride",
+      "from_method_name": null,
+      "from_method_key": null,
+      "to_file_path": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts",
+      "to_class_or_interface_key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride",
+      "to_class_or_interface_name": "SpriteAnchorOverride",
+      "to_method_key": null,
+      "to_method_name": null,
+      "data_clump_type": "fields_to_fields_data_clump",
+      "data_clump_data": {
+        "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorX": {
+          "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorX",
+          "name": "anchorX",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorX",
+            "name": "anchorX",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 10,
+              "startColumn": 2,
+              "endLine": 10,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 10,
+            "startColumn": 2,
+            "endLine": 10,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorY": {
+          "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/anchorY",
+          "name": "anchorY",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/anchorY",
+            "name": "anchorY",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 15,
+              "startColumn": 2,
+              "endLine": 15,
+              "endColumn": 19
+            }
+          },
+          "position": {
+            "startLine": 15,
+            "startColumn": 2,
+            "endLine": 15,
+            "endColumn": 19
+          }
+        },
+        "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/scaleMultiplier": {
+          "key": "apps/geonexia/frontend/helpers/HexTextureConfigStorage.ts/interface/TextureSpriteAnchorOverride/memberField/scaleMultiplier",
+          "name": "scaleMultiplier",
+          "type": "number",
+          "probability": 1,
+          "modifiers": [],
+          "to_variable": {
+            "key": "apps/geonexia/frontend/helpers/BillboardConfigStorage.ts/interface/SpriteAnchorOverride/memberField/scaleMultiplier",
+            "name": "scaleMultiplier",
+            "type": "number",
+            "modifiers": [],
+            "position": {
+              "startLine": 17,
+              "startColumn": 2,
+              "endLine": 17,
+              "endColumn": 27
+            }
+          },
+          "position": {
+            "startLine": 17,
+            "startColumn": 2,
+            "endLine": 17,
+            "endColumn": 27
+          }
+        }
+      },
+      "data_clump_type_additional": {
+        "cluster_id": 15,
+        "cluster_type": 2
+      }
+    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTileStorage.ts-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/helpers/HexTileStorage.ts-apps/geonexia/frontend/helpers/HexTileStorage.ts/interface/HexTileRecord-apps/geonexia/frontend/store/hexTileSlice.ts/interface/HexTileCustomizationPayload-tileImagebillboardbillboardAnchorColorbillboardsbillboardsFlatbillboardsTexture",
@@ -5492,7 +5686,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -7046,7 +7240,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -7168,7 +7362,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 3
       }
     },
@@ -7340,7 +7534,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 3
       }
     },
@@ -7462,7 +7656,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 3
       }
     },
@@ -7584,7 +7778,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 3
       }
     },
@@ -7756,7 +7950,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 3
       }
     },
@@ -7878,7 +8072,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 18,
         "cluster_type": 3
       }
     },
@@ -8050,7 +8244,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -8222,7 +8416,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -8416,7 +8610,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
@@ -8513,7 +8707,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 19,
         "cluster_type": 2
       }
     },
