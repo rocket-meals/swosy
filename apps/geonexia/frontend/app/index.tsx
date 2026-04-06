@@ -2691,6 +2691,8 @@ export default function RecordScreen() {
 	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
 	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
 	const mapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
+	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
+	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -3175,6 +3177,18 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexTileOpacity });
 	}, [hexTileOpacity]);
 
+	// Send updated hex grid line opacity to the map whenever the setting changes.
+	useEffect(() => {
+		if (!mapWebViewReadyRef.current) return;
+		mapRef.current?.sendToMap({ hexLineOpacity });
+	}, [hexLineOpacity]);
+
+	// Send updated hex grid line width to the map whenever the setting changes.
+	useEffect(() => {
+		if (!mapWebViewReadyRef.current) return;
+		mapRef.current?.sendToMap({ hexLineWidth });
+	}, [hexLineWidth]);
+
 	// Re-send object customizations (terrain images) when object opacity changes.
 	useEffect(() => {
 		loadAndSendCustomizations();
@@ -3190,8 +3204,10 @@ export default function RecordScreen() {
 	useFocusEffect(
 		useCallback(() => {
 			if (!mapWebViewReadyRef.current) return;
-			const { hexTileOpacity: currentHexTileOpacity } = store.getState().displaySettings;
+			const { hexTileOpacity: currentHexTileOpacity, hexLineOpacity: currentHexLineOpacity, hexLineWidth: currentHexLineWidth } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({ hexTileOpacity: currentHexTileOpacity });
+			mapRef.current?.sendToMap({ hexLineOpacity: currentHexLineOpacity });
+			mapRef.current?.sendToMap({ hexLineWidth: currentHexLineWidth });
 			loadAndSendCustomizations();
 		}, [loadAndSendCustomizations]),
 	);
@@ -3865,8 +3881,9 @@ export default function RecordScreen() {
 			mapWebViewReadyRef.current = true;
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
+			const { hexTileOpacity: initHexTileOpacity, hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({
-				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: store.getState().displaySettings.hexTileOpacity },
+				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: initHexTileOpacity, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);

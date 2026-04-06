@@ -52,6 +52,10 @@ const OPACITY_STEP = 0.05;
 const OPACITY_MIN = 0.05;
 const OPACITY_MAX = 1.0;
 
+const LINE_WIDTH_STEP = 0.25;
+const LINE_WIDTH_MIN = 0.25;
+const LINE_WIDTH_MAX = 3.0;
+
 const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
 	{ id: 'light', label: 'Light', icon: <MaterialCommunityIcons name="white-balance-sunny" size={22} color="#ffffff" /> },
 	{ id: 'dark', label: 'Dark', icon: <MaterialCommunityIcons name="moon-waning-crescent" size={22} color="#ffffff" /> },
@@ -205,6 +209,8 @@ export default function SettingsScreen() {
 	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
 	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
 	const selectedMapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
+	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
+	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
@@ -327,6 +333,26 @@ export default function SettingsScreen() {
 		dispatch(updateDisplaySettings({ objectOpacity: next }));
 	}, [dispatch, objectOpacity]);
 
+	const handleHexLineOpacityDown = useCallback(() => {
+		const next = Math.max(OPACITY_MIN, Math.round((hexLineOpacity - OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexLineOpacity: next }));
+	}, [dispatch, hexLineOpacity]);
+
+	const handleHexLineOpacityUp = useCallback(() => {
+		const next = Math.min(OPACITY_MAX, Math.round((hexLineOpacity + OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexLineOpacity: next }));
+	}, [dispatch, hexLineOpacity]);
+
+	const handleHexLineWidthDown = useCallback(() => {
+		const next = Math.max(LINE_WIDTH_MIN, Math.round((hexLineWidth - LINE_WIDTH_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexLineWidth: next }));
+	}, [dispatch, hexLineWidth]);
+
+	const handleHexLineWidthUp = useCallback(() => {
+		const next = Math.min(LINE_WIDTH_MAX, Math.round((hexLineWidth + LINE_WIDTH_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexLineWidth: next }));
+	}, [dispatch, hexLineWidth]);
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView contentContainerStyle={styles.listContent}>
@@ -415,6 +441,40 @@ export default function SettingsScreen() {
 								<Ionicons name="remove" size={18} color={MAP_COLOR} />
 							</TouchableOpacity>
 							<TouchableOpacity style={styles.stepBtn} onPress={handleObjectOpacityUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialCommunityIcons name="hexagon-slice-1" size={22} color="#ffffff" />}
+					label="Hex-Linien Deckkraft"
+					value={`${Math.round(hexLineOpacity * 100)}%`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexLineOpacityDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexLineOpacityUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialCommunityIcons name="hexagon-slice-3" size={22} color="#ffffff" />}
+					label="Hex-Linien Stärke"
+					value={`${hexLineWidth.toFixed(2)}x`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexLineWidthDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexLineWidthUp} activeOpacity={0.7}>
 								<Ionicons name="add" size={18} color={MAP_COLOR} />
 							</TouchableOpacity>
 						</View>

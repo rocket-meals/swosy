@@ -10,12 +10,18 @@ export type DisplaySettingsState = {
 	objectOpacity: number;
 	/** Visual style for the base map. */
 	mapTheme: MapStyleKey;
+	/** Opacity of the hex grid lines (0.0 – 1.0). Scales the base zoom-dependent opacity of the stroke layer. */
+	hexLineOpacity: number;
+	/** Width multiplier for the hex grid lines (0.1 – 3.0). Scales the base zoom-dependent width of the stroke layer. */
+	hexLineWidth: number;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexTileOpacity: 0.05,
 	objectOpacity: 0.35,
 	mapTheme: MapStyleKey.DEFAULT,
+	hexLineOpacity: 1.0,
+	hexLineWidth: 1.0,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };
