@@ -462,7 +462,11 @@ export default function SettingsScreen() {
 								updated = true;
 							}
 							if (updated) {
-								try { saveActivity(activity); } catch (err) { console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err); }
+								try {
+									saveActivity(activity);
+								} catch (err) {
+									console.warn('[Rebuild] Failed to save migrated activity:', activity.id, err);
+								}
 							}
 						}
 
