@@ -2451,9 +2451,10 @@ function reconstructInterruptedRoute(
 	const totalRecordedDistanceKm = computeRoutePointsDistance(snapshot.routePoints);
 	const totalElapsedSec = (nowMs - firstGpsTimestamp) / 1000;
 	if (totalElapsedSec <= 0) return null;
+	// Fall back to a typical walking pace if no distance was recorded.
 	const avgSpeedMs = totalRecordedDistanceKm > 0
 		? (totalRecordedDistanceKm * 1000) / totalElapsedSec
-		: 1;
+		: 1.4; // ~5 km/h walking pace
 
 	// Pre-pass: resolve hex-center coordinates and total gap distance so the
 	// remaining time budget (lastRecordedPoint → nowMs) can be distributed
@@ -2497,7 +2498,7 @@ function reconstructInterruptedRoute(
 			lat,
 			lng,
 			altitude: null,
-			speed: avgSpeedMs,
+			speed: avgSpeedMs, // m/s, as per the Location API convention
 			timestamp: currentTimestamp,
 			interpolated: true,
 		});
