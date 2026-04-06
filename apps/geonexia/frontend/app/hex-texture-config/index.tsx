@@ -148,7 +148,7 @@ function HexFieldPreview({
 	anchorX: number;
 	anchorY: number;
 }) {
-	const textureFraction = TEXTURE_PREVIEW_K / perSpriteScale;
+	const textureFraction = TEXTURE_PREVIEW_K * perSpriteScale;
 	const escapedSrc = JSON.stringify(imgUri);
 
 	const html = `<!DOCTYPE html>
@@ -401,7 +401,7 @@ export default function HexTextureConfigScreen() {
 	const openTerrainSelection = useCallback(() => {
 		const currentId = selectedTerrainKey ?? NONE_OPTION_ID;
 		showModal({
-			title: '🌍 Hex Textur auswählen',
+			title: '🌍 Select Hex Texture',
 			onClose: closeModal,
 			children: (
 				<SettingsListSelectOption
@@ -418,16 +418,16 @@ export default function HexTextureConfigScreen() {
 
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]} contentContainerStyle={styles.content}>
-			<SettingsListGroupTitle title="Hex Texture Ankerpunkte" />
+			<SettingsListGroupTitle title="Hex Texture Anchor Points" />
 
 			<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
-				Ankerpunkt und Skalierung für jede Hex-Terrain-Textur anpassen. Änderungen gelten unabhängig von den Billboard-Einstellungen.
+				Adjust the anchor point and scale for each hex terrain texture. Changes apply independently from billboard settings.
 			</Text>
 
 			{/* Terrain selector row */}
 			<SettingsListHexTile
 				tileImageKey={selectedTerrainKey}
-				title="Hex Textur"
+				title="Texture"
 				onPress={openTerrainSelection}
 				groupPosition="single"
 			/>
@@ -438,7 +438,7 @@ export default function HexTextureConfigScreen() {
 				onPress={handleCopyConfig}
 			>
 				<Ionicons name="copy-outline" size={18} color="#fff" />
-				<Text style={styles.copyButtonText}>Config JSON kopieren</Text>
+				<Text style={styles.copyButtonText}>Copy Config JSON</Text>
 			</TouchableOpacity>
 
 			{/* Settings for selected terrain type */}
@@ -478,7 +478,7 @@ export default function HexTextureConfigScreen() {
 								<Text style={[styles.spriteName, { color: theme.screen.text }]}>{terrainKey}</Text>
 								{count > 0 && (
 									<Text style={[styles.spriteCount, { color: theme.screen.text + '80' }]}>
-										{count} platziert
+										{count} placed
 									</Text>
 								)}
 							</View>
@@ -585,7 +585,7 @@ export default function HexTextureConfigScreen() {
 							{/* Scale stepper row */}
 							<View style={[styles.scaleSeparator, { borderColor: theme.screen.text + '12' }]} />
 							<View style={styles.scaleRow}>
-								<Text style={[styles.scaleLabel, { color: theme.screen.text + '80' }]}>Skalierung</Text>
+								<Text style={[styles.scaleLabel, { color: theme.screen.text + '80' }]}>Scale</Text>
 								<View style={styles.scaleControls}>
 									<TouchableOpacity
 										style={[styles.scaleButton, { backgroundColor: theme.screen.text + '12' }]}
@@ -611,9 +611,9 @@ export default function HexTextureConfigScreen() {
 						{/* Hex field preview */}
 						{imgUri && (
 							<>
-								<SettingsListGroupTitle title="Hex Feld Vorschau" />
+								<SettingsListGroupTitle title="Hex Field Preview" />
 								<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
-									Ungefähre Darstellung der Textur auf dem Hex-Feld. Der rote Punkt markiert den Ankerpunkt.
+									Approximate in-game appearance showing the texture placed flat across a hex field. The red dot marks the anchor point on the center hex.
 								</Text>
 								<View style={[styles.hexPreviewWrapper, { borderColor: theme.screen.text + '18' }]}>
 									<HexFieldPreview
