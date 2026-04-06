@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
+import { MyMap, MyMapHandle, SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { Asset } from 'expo-asset';
 import * as Clipboard from 'expo-clipboard';
 import * as FileSystem from 'expo-file-system/legacy';
 import { WebView } from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { latLngToCell, gridDisk, cellToBoundary, isAvailable as isH3Available } from '../../helpers/H3Helper';
 
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../../assets/terrainAssets';
 import type { TerrainAssetEntry } from '../../assets/terrainAssets';
@@ -123,19 +125,62 @@ const modalStyles = StyleSheet.create({
 	},
 });
 
-// ─── Hex Field Preview ────────────────────────────────────────────────────────
+// ─── Hex Map Preview ─────────────────────────────────────────────────────────
 
-const HEX_FIELD_PREVIEW_HEIGHT = 240;
+const HEX_MAP_PREVIEW_HEIGHT = 280;
 
-// Ratio of texture size to hex vertex-to-vertex diameter at the reference zoom.
-const TEXTURE_PREVIEW_K = 1.0;
+// Fixed preview center: Munich, Germany — a representative Central-European location.
+const PREVIEW_CENTER_LAT = 48.1351;
+const PREVIEW_CENTER_LNG = 11.5820;
+const PREVIEW_H3_RESOLUTION = 10;
+const PREVIEW_MAP_ZOOM = 15;
+
+/** Build image overlay descriptors for the given H3 cells with the current texture config. */
+function buildPreviewOverlays(
+	imgUri: string,
+	cells: string[],
+	anchorX: number,
+	anchorY: number,
+	scale: number,
+): object[] {
+	const overlays: object[] = [];
+	for (const h3Index of cells) {
+		const boundary = cellToBoundary(h3Index); // [[lat, lng], ...]
+		if (boundary.length < 3) continue;
+		let minLat = Infinity, maxLat = -Infinity;
+		let minLng = Infinity, maxLng = -Infinity;
+		for (const [lat, lng] of boundary) {
+			if (lat < minLat) minLat = lat;
+			if (lat > maxLat) maxLat = lat;
+			if (lng < minLng) minLng = lng;
+			if (lng > maxLng) maxLng = lng;
+		}
+		const centerLat = (minLat + maxLat) / 2;
+		const centerLng = (minLng + maxLng) / 2;
+		const scaledW = (maxLng - minLng) * scale;
+		const scaledH = (maxLat - minLat) * scale;
+		overlays.push({
+			id: `preview-${h3Index}`,
+			url: imgUri,
+			coordinates: [
+				[centerLng - anchorX * scaledW, centerLat + (1 - anchorY) * scaledH],
+				[centerLng + (1 - anchorX) * scaledW, centerLat + (1 - anchorY) * scaledH],
+				[centerLng + (1 - anchorX) * scaledW, centerLat - anchorY * scaledH],
+				[centerLng - anchorX * scaledW, centerLat - anchorY * scaledH],
+			],
+			opacity: 0.9,
+			polygonCoords: boundary.map(([lat, lng]) => [lng, lat]),
+			rotation: 0,
+		});
+	}
+	return overlays;
+}
 
 /**
- * Preview that renders a field of hex tiles (3×3 grid) with the terrain texture
- * placed flat on each hex, sized and positioned according to the configured
- * anchor and scale — approximating how the terrain texture will look on the map.
+ * Map-based preview that renders the terrain texture on a ring of real H3 hex cells
+ * centred on a fixed European location. Updates live as anchor / scale change.
  */
-function HexFieldPreview({
+function HexMapPreview({
 	imgUri,
 	terrainKey,
 	perSpriteScale,
@@ -148,150 +193,53 @@ function HexFieldPreview({
 	anchorX: number;
 	anchorY: number;
 }) {
-	const textureFraction = TEXTURE_PREVIEW_K * perSpriteScale;
-	const escapedSrc = JSON.stringify(imgUri);
+	const mapRef = useRef<MyMapHandle>(null);
+	const [mapReady, setMapReady] = useState(false);
 
-	const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:100%;height:100%;background:#1e293b;overflow:hidden}
-    canvas{display:block}
-  </style>
-</head>
-<body>
-<canvas id="c"></canvas>
-<script>
-var canvas=document.getElementById('c');
-var ctx=canvas.getContext('2d');
-var W=window.innerWidth;
-var H=window.innerHeight;
-canvas.width=W;
-canvas.height=H;
+	// Compute preview cells once: centre hex + ring-1 neighbours (7 total).
+	const previewCells = useMemo(() => {
+		if (!isH3Available()) return [];
+		const center = latLngToCell(PREVIEW_CENTER_LAT, PREVIEW_CENTER_LNG, PREVIEW_H3_RESOLUTION);
+		if (!center) return [];
+		return gridDisk(center, 1);
+	}, []);
 
-// Flat-top hex geometry: radius such that a 3-column grid fits comfortably
-var hexR=Math.min(W,H)*0.17;
-// Flat-top hex column/row offsets
-var hexW=hexR*2;          // vertex-to-vertex width
-var hexH=hexR*Math.sqrt(3); // flat-top height (edge-to-edge)
-var colStep=hexW*0.75;    // horizontal distance between hex centers in adjacent columns
-var rowStep=hexH;          // vertical distance between hex centers in same column
+	// Send overlays to the map whenever the texture or config changes.
+	useEffect(() => {
+		if (!mapReady || !mapRef.current || !previewCells.length) return;
+		const overlays = buildPreviewOverlays(imgUri, previewCells, anchorX, anchorY, perSpriteScale);
+		mapRef.current.sendToMap({ imageOverlays: overlays });
+	}, [mapReady, imgUri, anchorX, anchorY, perSpriteScale, previewCells]);
 
-// Center the grid in the canvas
-var cols=3;
-var rows=3;
-var gridW=(cols-1)*colStep+hexW;
-var gridH=(rows-1)*rowStep+hexH;
-var startX=(W-gridW)/2+hexR;
-var startY=(H-gridH)/2+hexR;
-
-function hexCenters(){
-  var centers=[];
-  for(var col=0;col<cols;col++){
-    for(var row=0;row<rows;row++){
-      var cx=startX+col*colStep;
-      var cy=startY+row*rowStep+(col%2===1?rowStep/2:0);
-      centers.push([cx,cy]);
-    }
-  }
-  return centers;
-}
-
-// Draw a flat-top regular hexagon
-function drawHex(cx,cy,r){
-  ctx.beginPath();
-  for(var i=0;i<6;i++){
-    var a=Math.PI/3*i;
-    var x=cx+r*Math.cos(a);
-    var y=cy+r*Math.sin(a);
-    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-  }
-  ctx.closePath();
-}
-
-// Background
-ctx.fillStyle='#1e293b';
-ctx.fillRect(0,0,W,H);
-
-// Subtle grid
-ctx.strokeStyle='rgba(255,255,255,0.04)';
-ctx.lineWidth=1;
-for(var gx=0;gx<W;gx+=20){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
-for(var gy=0;gy<H;gy+=20){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
-
-var centers=hexCenters();
-
-// Hex fills and strokes
-for(var i=0;i<centers.length;i++){
-  var isCenter=(i===4); // middle hex of 3×3 grid
-  drawHex(centers[i][0],centers[i][1],hexR);
-  ctx.fillStyle=isCenter?'rgba(124,58,237,0.22)':'rgba(34,197,94,0.12)';
-  ctx.fill();
-  ctx.strokeStyle=isCenter?'rgba(124,58,237,0.9)':'rgba(34,197,94,0.5)';
-  ctx.lineWidth=isCenter?2:1;
-  ctx.stroke();
-}
-
-// Texture proportions (relative to hex vertex-to-vertex diameter)
-var texFraction=${textureFraction.toFixed(4)};
-var texW=hexR*2*texFraction;
-// Use the actual flat-top hex aspect ratio (W:H = 2:√3) so the preview
-// texture matches the proportions of the geographic image overlay on the map.
-var texH=hexR*Math.sqrt(3)*texFraction;
-var anchorX=${anchorX.toFixed(4)};
-var anchorY=${anchorY.toFixed(4)};
-
-// Load and draw the terrain texture on every hex, clipped to the hex boundary
-var img=new Image();
-img.onload=function(){
-  for(var i=0;i<centers.length;i++){
-    var cx=centers[i][0];
-    var cy=centers[i][1];
-    // Clip to hex shape
-    ctx.save();
-    drawHex(cx,cy,hexR-0.5);
-    ctx.clip();
-    var bX=cx-anchorX*texW;
-    var bY=cy-anchorY*texH;
-    ctx.drawImage(img,bX,bY,texW,texH);
-    ctx.restore();
-  }
-  // Anchor point indicator on center hex only
-  var cc=centers[4];
-  ctx.beginPath();
-  ctx.arc(cc[0],cc[1],5,0,Math.PI*2);
-  ctx.fillStyle='#ef4444';
-  ctx.fill();
-  ctx.strokeStyle='#ffffff';
-  ctx.lineWidth=2;
-  ctx.stroke();
-};
-img.src=${escapedSrc};
-</script>
-</body>
-</html>`;
+	const handleMessage = useCallback((data: object) => {
+		const msg = data as { tag?: string };
+		if (msg.tag === 'MapComponentMounted') {
+			setMapReady(true);
+		}
+	}, []);
 
 	return (
-		<WebView
-			key={`hex-field-${terrainKey}-${anchorX.toFixed(2)}-${anchorY.toFixed(2)}-${perSpriteScale.toFixed(2)}`}
-			source={{ html }}
-			style={previewStyles.canvas}
-			originWhitelist={['*']}
-			scrollEnabled={false}
-			javaScriptEnabled={true}
-			pointerEvents="none"
-		/>
+		<View style={mapPreviewStyles.container} pointerEvents="none">
+			<MyMap
+				key={terrainKey}
+				ref={mapRef}
+				initialCenter={{ lat: PREVIEW_CENTER_LAT, lng: PREVIEW_CENTER_LNG }}
+				initialZoom={PREVIEW_MAP_ZOOM}
+				initialPitch={0}
+				centerAtUserLocationIfNoInitialPosition={false}
+				hideLegalInfo={true}
+				onMessage={handleMessage}
+			/>
+		</View>
 	);
 }
 
-const previewStyles = StyleSheet.create({
-	canvas: {
+const mapPreviewStyles = StyleSheet.create({
+	container: {
 		width: '100%',
-		height: HEX_FIELD_PREVIEW_HEIGHT,
-		backgroundColor: '#1e293b',
+		height: HEX_MAP_PREVIEW_HEIGHT,
 		borderRadius: 12,
+		overflow: 'hidden',
 	},
 });
 
@@ -610,15 +558,15 @@ export default function HexTextureConfigScreen() {
 							</View>
 						</View>
 
-						{/* Hex field preview */}
+						{/* Hex map preview */}
 						{imgUri && (
 							<>
 								<SettingsListGroupTitle title="Hex Field Preview" />
 								<Text style={[styles.description, { color: theme.screen.text + '99' }]}>
-									Approximate in-game appearance showing the texture placed flat across a hex field. The red dot marks the anchor point on the center hex.
+									Live map preview showing the texture placed on real H3 hex tiles. The center and surrounding tiles are shown with the current anchor and scale.
 								</Text>
 								<View style={[styles.hexPreviewWrapper, { borderColor: theme.screen.text + '18' }]}>
-									<HexFieldPreview
+									<HexMapPreview
 										imgUri={imgUri}
 										terrainKey={terrainKey}
 										perSpriteScale={scale}
