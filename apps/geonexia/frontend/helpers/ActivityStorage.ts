@@ -48,6 +48,12 @@ export type RoutePoint = {
 	altitude: number | null;
 	speed: number | null;
 	timestamp: number;
+	/**
+	 * True when this point was synthetically generated to fill a gap in the
+	 * recorded GPS track (e.g. after a crash recovery), rather than being
+	 * measured directly by the device's location hardware.
+	 */
+	interpolated?: boolean;
 };
 
 export type RunStats = {

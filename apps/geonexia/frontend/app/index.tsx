@@ -2440,33 +2440,67 @@ function reconstructInterruptedRoute(
 
 	if (gapTiles.length === 0) return null; // Route was fully covered
 
-	// Compute average pace from the recorded portion.
-	const totalDistanceKm = computeRoutePointsDistance(snapshot.routePoints);
-	const totalSec = snapshot.accumulatedSeconds +
-		(snapshot.routePoints[snapshot.routePoints.length - 1].timestamp - snapshot.routePoints[0].timestamp) / 1000;
-	if (totalDistanceKm <= 0 || totalSec <= 0) return null;
-	const avgSpeedKmPerSec = totalDistanceKm / totalSec;
-
-	// Generate synthetic GPS points along the gap tiles using their center
-	// coordinates and the average speed to compute timestamps.
+	// Use current time as the end timestamp for the reconstructed activity so
+	// that the saved activity reflects when the user performed the recovery.
+	const nowMs = Date.now();
 	const lastRecordedPoint = snapshot.routePoints[snapshot.routePoints.length - 1];
+	const firstGpsTimestamp = snapshot.routePoints[0].timestamp;
+
+	// Average speed (m/s) = total recorded distance / elapsed time from the
+	// first GPS point to now (the moment the user assigns the route).
+	const totalRecordedDistanceKm = computeRoutePointsDistance(snapshot.routePoints);
+	const totalElapsedSec = (nowMs - firstGpsTimestamp) / 1000;
+	if (totalElapsedSec <= 0) return null;
+	// Fall back to a typical walking pace if no distance was recorded.
+	const avgSpeedMs = totalRecordedDistanceKm > 0
+		? (totalRecordedDistanceKm * 1000) / totalElapsedSec
+		: 1.4; // ~5 km/h walking pace
+
+	// Pre-pass: resolve hex-center coordinates and total gap distance so the
+	// remaining time budget (lastRecordedPoint → nowMs) can be distributed
+	// proportionally to distance across the synthetic points.
+	const gapCoords: Array<[number, number]> = [];
 	let prevLat = lastRecordedPoint.lat;
 	let prevLng = lastRecordedPoint.lng;
+	let totalGapKm = 0;
+	for (const hexId of gapTiles) {
+		const [lat, lng] = cellToLatLng(hexId);
+		gapCoords.push([lat, lng]);
+		if (lat !== 0 || lng !== 0) {
+			totalGapKm += haversineKm(prevLat, prevLng, lat, lng);
+			prevLat = lat;
+			prevLng = lng;
+		}
+	}
+
+	// Time budget available for the interpolated section.
+	const gapMs = nowMs - lastRecordedPoint.timestamp;
+
+	// Generate interpolated GPS points along the gap tiles using their hex
+	// center coordinates. Each point is flagged as `interpolated: true` to
+	// indicate it was synthetically created to compensate for the GPS gap.
+	prevLat = lastRecordedPoint.lat;
+	prevLng = lastRecordedPoint.lng;
 	let currentTimestamp = lastRecordedPoint.timestamp;
 	const syntheticPoints: RoutePoint[] = [];
 
-	for (const hexId of gapTiles) {
-		const [lat, lng] = cellToLatLng(hexId);
+	for (let i = 0; i < gapTiles.length; i++) {
+		const [lat, lng] = gapCoords[i];
 		if (lat === 0 && lng === 0) continue;
 		const segmentKm = haversineKm(prevLat, prevLng, lat, lng);
-		const segmentSec = avgSpeedKmPerSec > 0 ? segmentKm / avgSpeedKmPerSec : 1;
-		currentTimestamp += segmentSec * 1000;
+		// Distribute timestamps proportionally to distance so the last synthetic
+		// point lands exactly at nowMs.
+		const segmentMs = totalGapKm > 0
+			? (segmentKm / totalGapKm) * gapMs
+			: gapMs / gapTiles.length;
+		currentTimestamp += segmentMs;
 		syntheticPoints.push({
 			lat,
 			lng,
 			altitude: null,
-			speed: avgSpeedKmPerSec * 3600, // m/s → km/h? no: speed field is m/s in Location API
+			speed: avgSpeedMs, // m/s, as per the Location API convention
 			timestamp: currentTimestamp,
+			interpolated: true,
 		});
 		prevLat = lat;
 		prevLng = lng;
@@ -2542,7 +2576,7 @@ function InterruptedRecoveryContent({
 		const activity: SavedActivity = {
 			id: String(snapshot.startedAt),
 			startedAt: snapshot.startedAt,
-			endedAt: snapshot.savedAt,
+			endedAt: Date.now(),
 			routePoints: points,
 			stats,
 			sportType: snapshot.sportType,
