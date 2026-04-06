@@ -237,7 +237,9 @@ for(var i=0;i<centers.length;i++){
 // Texture proportions (relative to hex vertex-to-vertex diameter)
 var texFraction=${textureFraction.toFixed(4)};
 var texW=hexR*2*texFraction;
-var texH=texW;
+// Use the actual flat-top hex aspect ratio (W:H = 2:√3) so the preview
+// texture matches the proportions of the geographic image overlay on the map.
+var texH=hexR*Math.sqrt(3)*texFraction;
 var anchorX=${anchorX.toFixed(4)};
 var anchorY=${anchorY.toFixed(4)};
 

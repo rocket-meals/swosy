@@ -2906,14 +2906,18 @@ export default function RecordScreen() {
 							const texScale = terrainOverride?.scaleMultiplier ?? 1.0;
 							const bboxW = maxLng - minLng;
 							const bboxH = maxLat - minLat;
-							const scaledW = bboxW / texScale;
-							const scaledH = bboxH / texScale;
-							const anchorLng = minLng + texAnchorX * bboxW;
-							const anchorLat = minLat + texAnchorY * bboxH;
-							const adjMinLng = anchorLng - texAnchorX * scaledW;
-							const adjMaxLng = anchorLng + (1 - texAnchorX) * scaledW;
-							const adjMinLat = anchorLat - texAnchorY * scaledH;
-							const adjMaxLat = anchorLat + (1 - texAnchorY) * scaledH;
+							// Scale > 1 enlarges the image overlay so the hex clips a zoomed-in
+							// portion of the texture (matching the HexFieldPreview behaviour).
+							const scaledW = bboxW * texScale;
+							const scaledH = bboxH * texScale;
+							// Pin the anchor fraction of the image to the hex center.
+							// This keeps the texture centred at scale 1 and lets the anchor
+							// shift which part of the image is visible at other scales.
+							// centerLng/centerLat are already computed above for the rotation calc.
+							const adjMinLng = centerLng - texAnchorX * scaledW;
+							const adjMaxLng = centerLng + (1 - texAnchorX) * scaledW;
+							const adjMinLat = centerLat - texAnchorY * scaledH;
+							const adjMaxLat = centerLat + (1 - texAnchorY) * scaledH;
 
 							imageOverlays.push({
 								id: `tile-img-${h3Index}`,
