@@ -98,6 +98,12 @@ function themeModeLabel(mode: ThemeMode): string {
 
 // ─── GPS Custom Input Content ─────────────────────────────────────────────────
 
+function parseGpsInputSeconds(text: string): number | null {
+	const normalized = StringHelper.replaceAllLiteralWithOptions({ str: text, find: ',', replace: '.' });
+	const parsed = parseFloat(normalized);
+	return !isNaN(parsed) && parsed > 0 ? parsed : null;
+}
+
 function GpsCustomInputContent({
 	initialValue,
 	theme,
@@ -111,19 +117,14 @@ function GpsCustomInputContent({
 }) {
 	const [inputText, setInputText] = useState(initialValue);
 
-	const handleConfirm = useCallback(() => {
-		const normalized = StringHelper.replaceAllLiteralWithOptions({ str: inputText, find: ',', replace: '.' });
-		const parsed = parseFloat(normalized);
-		if (!isNaN(parsed) && parsed > 0) {
-			onConfirm(parsed);
-		}
-	}, [inputText, onConfirm]);
+	const parsedValue = parseGpsInputSeconds(inputText);
+	const isValid = parsedValue !== null;
 
-	const isValid = (() => {
-		const normalized = StringHelper.replaceAllLiteralWithOptions({ str: inputText, find: ',', replace: '.' });
-		const parsed = parseFloat(normalized);
-		return !isNaN(parsed) && parsed > 0;
-	})();
+	const handleConfirm = useCallback(() => {
+		if (parsedValue !== null) {
+			onConfirm(parsedValue);
+		}
+	}, [parsedValue, onConfirm]);
 
 	return (
 		<View style={styles.gpsCustomContainer}>
@@ -146,7 +147,7 @@ function GpsCustomInputContent({
 				activeOpacity={0.8}
 			>
 				<Ionicons name="checkmark" size={18} color="#ffffff" />
-				<Text style={styles.resetConfirmButtonText}>Bestätigen</Text>
+				<Text style={styles.confirmButtonText}>Bestätigen</Text>
 			</TouchableOpacity>
 			<TouchableOpacity style={styles.resetCancelButton} onPress={onCancel} activeOpacity={0.8}>
 				<Text style={[styles.resetCancelButtonText, { color: theme.screen.text }]}>Abbrechen</Text>
@@ -915,6 +916,11 @@ const styles = StyleSheet.create({
 		paddingVertical: 12,
 		borderRadius: 10,
 		gap: 8,
+	},
+	confirmButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
 	},
 	resetConfirmButtonText: {
 		color: '#ffffff',

@@ -318,7 +318,7 @@ function GpsPrecisionStep({
 			id: 30,
 			label: '30s',
 			description: 'Spart Akku – geringfügig weniger präzise Aufzeichnung.',
-			icon: 'radar',
+			icon: 'battery-heart-outline',
 		},
 	];
 
