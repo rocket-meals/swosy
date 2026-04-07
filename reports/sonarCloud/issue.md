@@ -105,8 +105,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L62
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2801
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2801
+  apps/geonexia/frontend/app/index.tsx:2802
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2802
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
   apps/geonexia/frontend/app/index.tsx:1033
