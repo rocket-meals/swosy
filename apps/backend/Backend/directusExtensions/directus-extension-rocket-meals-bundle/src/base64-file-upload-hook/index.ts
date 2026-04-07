@@ -1,4 +1,4 @@
-import { CollectionNames, DatabaseTypes } from 'repo-depkit-common';
+import { CollectionNames } from 'repo-depkit-common';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { MyDefineHook } from '../helpers/MyDefineHook';
 import { RegisterFunctions } from '@directus/extensions';

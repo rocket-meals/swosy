@@ -1,7 +1,6 @@
 import { CollectionNames } from 'repo-depkit-common';
 import { FilesServiceHelper, MyFileTypes } from '../helpers/FilesServiceHelper';
 import { Buffer } from 'node:buffer';
-import { MyDatabaseHelperInterface } from '../helpers/MyDatabaseHelperInterface';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
 import { DirectusFieldsServiceHelper } from '../helpers/DirectusFieldsServiceHelper';
 
@@ -19,6 +18,16 @@ export function isBase64DataUri(value: unknown): value is string {
 }
 
 /**
+ * Known MIME-subtype to file-extension overrides for subtypes that are
+ * not directly usable as filename extensions (e.g. "svg+xml" → "svg").
+ */
+const MIME_EXTENSION_MAP: Record<string, string> = {
+  'svg+xml': 'svg',
+  'x-icon': 'ico',
+  'vnd.microsoft.icon': 'ico',
+};
+
+/**
  * Decode a base64 data URI string into its components.
  * @param dataString A data URI like "data:image/png;base64,iVBOR..."
  * @returns The decoded MIME type, raw buffer, and file extension.
@@ -31,7 +40,8 @@ export function decodeBase64DataUri(dataString: string): Base64DecodedFile {
 
   const mimeType: string = matches[1];
   // Extract extension from MIME type (e.g. "image/png" → "png")
-  const extension: string = mimeType.includes('/') ? mimeType.split('/')[1]! : mimeType;
+  const rawSubtype: string = mimeType.includes('/') ? mimeType.split('/')[1]! : mimeType;
+  const extension: string = MIME_EXTENSION_MAP[rawSubtype] ?? rawSubtype;
 
   return {
     type: mimeType,
@@ -69,7 +79,7 @@ export async function processBase64FileField(
 
   // Upload the file using admin accountability so the upload always succeeds
   const filesHelper = new FilesServiceHelper(myDatabaseHelper, true);
-  const filename = `upload_${Date.now()}.${decoded.extension}`;
+  const filename = `${collectionName}_${fieldName}_${Date.now()}.${decoded.extension}`;
   const fileId = await filesHelper.uploadOneFromBuffer(
     decoded.data,
     filename,
