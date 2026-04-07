@@ -16,6 +16,7 @@ import { setTextureSpriteAnchor, setTextureSpriteScale, resetTextureSpriteAnchor
 import type { RootState, AppDispatch } from '../../store/store';
 import type { HexTileRecord } from '../../helpers/HexTileStorage';
 import SettingsListHexTile from '../../components/SettingsListHexTile';
+import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 
 const PRIMARY_COLOR = '#7c3aed';
 const ANCHOR_STEP = 0.05;
@@ -186,15 +187,25 @@ function HexMapPreview({
 	perSpriteScale,
 	anchorX,
 	anchorY,
+	hexLineOpacity,
+	hexLineWidth,
 }: {
 	imgUri: string;
 	terrainKey: string;
 	perSpriteScale: number;
 	anchorX: number;
 	anchorY: number;
+	hexLineOpacity: number;
+	hexLineWidth: number;
 }) {
 	const mapRef = useRef<MyMapHandle>(null);
 	const [mapReady, setMapReady] = useState(false);
+
+	// Refs to always have the latest values available when the init effect fires.
+	const hexLineOpacityRef = useRef(hexLineOpacity);
+	const hexLineWidthRef = useRef(hexLineWidth);
+	hexLineOpacityRef.current = hexLineOpacity;
+	hexLineWidthRef.current = hexLineWidth;
 
 	// Compute preview cells once: centre hex + ring-1 neighbours (7 total).
 	const previewCells = useMemo(() => {
@@ -203,6 +214,46 @@ function HexMapPreview({
 		if (!center) return [];
 		return gridDisk(center, 1);
 	}, []);
+
+	// Build hex tile GeoJSON for preview cells (provides geometry for the hex grid stroke layer).
+	const previewHexGeoJson = useMemo(() => {
+		const features = previewCells.map((h3Index) => {
+			const boundary = cellToBoundary(h3Index, true); // GeoJSON [lng, lat] order
+			return {
+				type: 'Feature',
+				geometry: { type: 'Polygon', coordinates: [boundary as number[][]] },
+				properties: { h3Index, level: 0 },
+			};
+		});
+		return { type: 'FeatureCollection', features };
+	}, [previewCells]);
+
+	// Initialise hex tile layer (for hex grid lines) once the map is ready.
+	useEffect(() => {
+		if (!mapReady || !mapRef.current || !previewCells.length) return;
+		mapRef.current.sendToMap({
+			hexTileLayer: {
+				color: 'rgba(0, 0, 0, 0)',
+				opacityMax: 0,
+				lineOpacity: hexLineOpacityRef.current,
+				lineWidth: hexLineWidthRef.current,
+			},
+		});
+		mapRef.current.sendToMap({ hexTileGeoJson: previewHexGeoJson });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [mapReady, previewCells, previewHexGeoJson]);
+
+	// Sync hex line opacity updates to the map.
+	useEffect(() => {
+		if (!mapReady || !mapRef.current) return;
+		mapRef.current.sendToMap({ hexLineOpacity });
+	}, [mapReady, hexLineOpacity]);
+
+	// Sync hex line width updates to the map.
+	useEffect(() => {
+		if (!mapReady || !mapRef.current) return;
+		mapRef.current.sendToMap({ hexLineWidth });
+	}, [mapReady, hexLineWidth]);
 
 	// Send overlays to the map whenever the texture or config changes.
 	useEffect(() => {
@@ -229,6 +280,7 @@ function HexMapPreview({
 				centerAtUserLocationIfNoInitialPosition={false}
 				hideLegalInfo={true}
 				onMessage={handleMessage}
+				injectScript={HEX_TILE_SCRIPT}
 			/>
 		</View>
 	);
@@ -250,6 +302,8 @@ export default function HexTextureConfigScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const records = useSelector((state: RootState) => state.hexTiles.records);
 	const spriteAnchors = useSelector((state: RootState) => state.hexTextureConfig.spriteAnchors);
+	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
+	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
 
 	// Count placed terrain textures per terrain key.
 	const placedCountMap = useMemo(() => buildPlacedCountMap(records), [records]);
@@ -572,6 +626,8 @@ export default function HexTextureConfigScreen() {
 										perSpriteScale={scale}
 										anchorX={anchorX}
 										anchorY={anchorY}
+										hexLineOpacity={hexLineOpacity}
+										hexLineWidth={hexLineWidth}
 									/>
 								</View>
 							</>

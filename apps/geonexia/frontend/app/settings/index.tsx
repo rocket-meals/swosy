@@ -66,7 +66,7 @@ const OPACITY_MIN = 0.05;
 const OPACITY_MAX = 1.0;
 
 const LINE_WIDTH_STEP = 0.25;
-const LINE_WIDTH_MIN = 0.25;
+const LINE_WIDTH_MIN = 0.0;
 const LINE_WIDTH_MAX = 3.0;
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [

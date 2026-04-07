@@ -458,7 +458,7 @@ export const HEX_TILE_SCRIPT = `
       source: HEX_TILE_SOURCE,
       paint: {
         'line-color': hexTileStrokeColor,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4 * HEX_LINE_WIDTH_SCALE, 12, HEX_LINE_WIDTH_SCALE, 15, 0.7 * HEX_LINE_WIDTH_SCALE],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.8 * HEX_LINE_WIDTH_SCALE, 12, 2.0 * HEX_LINE_WIDTH_SCALE, 15, 1.4 * HEX_LINE_WIDTH_SCALE],
         'line-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.5 * HEX_LINE_OPACITY_SCALE, 12, 0.4 * HEX_LINE_OPACITY_SCALE, 15, 0.3 * HEX_LINE_OPACITY_SCALE],
       },
     });
@@ -761,7 +761,7 @@ export const HEX_TILE_SCRIPT = `
           HEX_LINE_OPACITY_SCALE = Math.min(1, Math.max(0, data.hexTileLayer.lineOpacity));
         }
         if (typeof data.hexTileLayer.lineWidth === 'number') {
-          HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0.1, data.hexTileLayer.lineWidth));
+          HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0, data.hexTileLayer.lineWidth));
         }
         hexTileActive = true;
         removeHexTileLayer();
@@ -803,12 +803,12 @@ export const HEX_TILE_SCRIPT = `
       return;
     }
     if (data.hexLineWidth !== undefined) {
-      HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0.1, data.hexLineWidth));
+      HEX_LINE_WIDTH_SCALE = Math.min(3, Math.max(0, data.hexLineWidth));
       if (map && map.getLayer(HEX_TILE_STROKE_LAYER)) {
         map.setPaintProperty(HEX_TILE_STROKE_LAYER, 'line-width', ['interpolate', ['linear'], ['zoom'],
-          9, 1.4 * HEX_LINE_WIDTH_SCALE,
-          12, 1.0 * HEX_LINE_WIDTH_SCALE,
-          15, 0.7 * HEX_LINE_WIDTH_SCALE
+          9, 2.8 * HEX_LINE_WIDTH_SCALE,
+          12, 2.0 * HEX_LINE_WIDTH_SCALE,
+          15, 1.4 * HEX_LINE_WIDTH_SCALE
         ]);
       }
       return;
