@@ -1904,8 +1904,8 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
-	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
-	const currentObjectAnchorBillboard = effectiveBillboards[selectedObjectAnchor] ?? null;
+	const effectiveBillboardsObjects = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
+	const currentObjectAnchorBillboard = effectiveBillboardsObjects[selectedObjectAnchor] ?? null;
 	const parsedCurrentObjectBillboard = currentObjectAnchorBillboard ? parseBillboardKey(currentObjectAnchorBillboard) : null;
 	const effectiveBillboardsTexture = record ? getEffectiveBillboardsTexture(record) : {} as Record<BillboardAnchorPosition, string>;
 	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAdaptionAnchor] ?? null;
@@ -2089,7 +2089,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			<HexAnchorPicker
 				selected={selectedObjectAnchor}
 				onSelect={setSelectedObjectAnchor}
-				occupiedAnchors={effectiveBillboards}
+				occupiedAnchors={effectiveBillboardsObjects}
 			/>
 			<SettingsListBillboard
 				spriteIndex={parsedCurrentObjectBillboard?.idx ?? null}
