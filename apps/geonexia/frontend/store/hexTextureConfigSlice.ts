@@ -9,7 +9,11 @@ export type HexTextureConfigSliceState = {
 };
 
 const initialState: HexTextureConfigSliceState = {
-	spriteAnchors: {},
+	spriteAnchors: {
+		'Plains/hexPlains00': { scaleMultiplier: 1.6, anchorX: 0.45, anchorY: 0.35 },
+		'Grass/grass': { scaleMultiplier: 1.2 },
+		'Dirt/dirt': { scaleMultiplier: 1.2 },
+	},
 };
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
