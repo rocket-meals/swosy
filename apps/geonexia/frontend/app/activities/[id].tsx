@@ -1215,14 +1215,14 @@ export default function ActivityDetailScreen() {
 			const secPerTile = stats.durationSeconds / hexCount;
 			const m = Math.floor(secPerTile / 60);
 			const s = Math.round(secPerTile % 60);
-			return [{ icon: 'schedule' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Zeit pro Hex Tile', value: `${m}:${String(s).padStart(2, '0')} mm:ss` }];
+			return [{ icon: 'schedule' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Time per Hex Tile', value: `${m}:${String(s).padStart(2, '0')} mm:ss` }];
 		})()),
 		...((() => {
 			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 			const edgeLengthM = getHexagonEdgeLengthAvg(h3Res, UNITS?.m ?? 'm');
 			if (edgeLengthM <= 0) return [];
 			const diameterM = Math.round(2 * edgeLengthM);
-			return [{ icon: 'crop-square' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Hex Durchmesser', value: `${diameterM} m` }];
+			return [{ icon: 'crop-square' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Hex Diameter', value: `${diameterM} m` }];
 		})()),
 	];
 
