@@ -224,7 +224,6 @@ export default function SettingsScreen() {
 	const selectedMapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
 	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
-	const normalizeHexShape = useSelector((state: RootState) => state.displaySettings.normalizeHexShape);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
@@ -366,10 +365,6 @@ export default function SettingsScreen() {
 		const next = Math.min(LINE_WIDTH_MAX, Math.round((hexLineWidth + LINE_WIDTH_STEP) * 100) / 100);
 		dispatch(updateDisplaySettings({ hexLineWidth: next }));
 	}, [dispatch, hexLineWidth]);
-
-	const handleToggleNormalizeHexShape = useCallback(() => {
-		dispatch(updateDisplaySettings({ normalizeHexShape: !normalizeHexShape }));
-	}, [dispatch, normalizeHexShape]);
 
 	const handleRecalculateAllComputedValues = useCallback(() => {
 		Alert.alert(
@@ -644,16 +639,6 @@ export default function SettingsScreen() {
 							</TouchableOpacity>
 						</View>
 					}
-					groupPosition="middle"
-				/>
-				<SettingsListBoolean
-					iconBgColor={MAP_COLOR}
-					leftIcon={<MaterialCommunityIcons name="hexagon-multiple-outline" size={22} color="#ffffff" />}
-					label="Gleichmäßige Hex-Formen"
-					isEnabled={normalizeHexShape}
-					onToggle={handleToggleNormalizeHexShape}
-					valueActive="Aktiv"
-					valueInactive="Inaktiv"
 					groupPosition="bottom"
 				/>
 

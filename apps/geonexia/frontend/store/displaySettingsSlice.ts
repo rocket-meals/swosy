@@ -14,8 +14,6 @@ export type DisplaySettingsState = {
 	hexLineOpacity: number;
 	/** Width multiplier for the hex grid lines (0.1 – 3.0). Scales the base zoom-dependent width of the stroke layer. */
 	hexLineWidth: number;
-	/** When true, H3 hex cells are rendered as visually regular hexagons in screen space, compensating for Mercator distortion. */
-	normalizeHexShape: boolean;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
@@ -24,7 +22,6 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	mapTheme: MapStyleKey.DEFAULT,
 	hexLineOpacity: 1.0,
 	hexLineWidth: 1.0,
-	normalizeHexShape: false,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };
