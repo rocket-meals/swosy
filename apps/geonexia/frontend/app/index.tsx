@@ -1882,6 +1882,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const dispatch = useDispatch();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const record = useSelector((state: RootState) => state.hexTiles.records[h3Index] ?? null);
+	const [selectedObjectAnchor, setSelectedObjectAnchor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [selectedTextureAdaptionAnchor, setSelectedTextureAdaptionAnchor] = useState<BillboardAnchorPosition>(BillboardAnchorPosition.CENTER);
 	const [mapFeatures, setMapFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [featuresLoading, setFeaturesLoading] = useState(false);
@@ -1903,6 +1904,9 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	}, [h3Index]);
 
 	const currentTileImage = record?.tileImage ?? null;
+	const effectiveBillboards = record ? getEffectiveBillboards(record) : {} as Record<BillboardAnchorPosition, string>;
+	const currentObjectAnchorBillboard = effectiveBillboards[selectedObjectAnchor] ?? null;
+	const parsedCurrentObjectBillboard = currentObjectAnchorBillboard ? parseBillboardKey(currentObjectAnchorBillboard) : null;
 	const effectiveBillboardsTexture = record ? getEffectiveBillboardsTexture(record) : {} as Record<BillboardAnchorPosition, string>;
 	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAdaptionAnchor] ?? null;
 	const parsedCurrentTextureBillboard = currentTextureAnchorBillboard ? parseBillboardKey(currentTextureAnchorBillboard) : null;
@@ -1955,6 +1959,48 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 			),
 		});
 	}, [showModal, closeModal, currentTileImage, h3Index, dispatch]);
+
+	const openObjectSelection = useCallback(() => {
+		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedObjectAnchor)?.label ?? selectedObjectAnchor;
+		showModal({
+			title: `🏠 Select Hex Object — ${anchorLabel}`,
+			onClose: closeModal,
+			children: (
+				<View style={{ paddingBottom: 20 }}>
+					<SettingsListSelectOptionSingle
+						key="none"
+						label="None (clear)"
+						isSelected={!currentObjectAnchorBillboard}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedObjectAnchor, billboard: null }));
+							closeModal();
+						}}
+						groupPosition={OBJECT_SPRITES.length > 0 ? 'top' : 'single'}
+					/>
+					{OBJECT_SPRITES.map((sprite, idx) => {
+						const key = `objects:${idx}`;
+						const isSelected = currentObjectAnchorBillboard === key;
+						const position = idx === OBJECT_SPRITES.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListBillboard
+								key={key}
+								spriteIndex={idx}
+								title={sprite.name}
+								isSelected={isSelected}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									dispatch(setBillboardAtAnchor({ h3Index, anchorColor: selectedObjectAnchor, billboard: key }));
+									closeModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showModal, closeModal, currentObjectAnchorBillboard, h3Index, dispatch, selectedObjectAnchor]);
 
 	const openTextureAdaptionSelection = useCallback(() => {
 		const anchorLabel = BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAdaptionAnchor)?.label ?? selectedTextureAdaptionAnchor;
@@ -2035,6 +2081,20 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 				spriteIndex={parsedCurrentTextureBillboard?.idx ?? null}
 				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedTextureAdaptionAnchor)?.label ?? selectedTextureAdaptionAnchor}
 				onPress={openTextureAdaptionSelection}
+				groupPosition="single"
+			/>
+
+			{/* ── Hex Feld Object Set section (face-camera objects at anchor positions) ── */}
+			<SettingsListGroupTitle title="Hex Feld Object Set" />
+			<HexAnchorPicker
+				selected={selectedObjectAnchor}
+				onSelect={setSelectedObjectAnchor}
+				occupiedAnchors={effectiveBillboards}
+			/>
+			<SettingsListBillboard
+				spriteIndex={parsedCurrentObjectBillboard?.idx ?? null}
+				title={BILLBOARD_ANCHOR_COLORS.find((c) => c.id === selectedObjectAnchor)?.label ?? selectedObjectAnchor}
+				onPress={openObjectSelection}
 				groupPosition="single"
 			/>
 
