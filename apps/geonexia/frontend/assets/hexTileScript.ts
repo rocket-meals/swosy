@@ -36,6 +36,12 @@ export const HEX_TILE_SCRIPT = `
   // Hex grid line appearance (user-adjustable via hexLineOpacity / hexLineWidth messages)
   var HEX_LINE_OPACITY_SCALE = 1.0;  // multiplier applied to the zoom-dependent base opacity
   var HEX_LINE_WIDTH_SCALE = 1.0;    // multiplier applied to the zoom-dependent base width
+  // Normalize hex shapes to visually regular hexagons in screen space (latitude-independent)
+  var hexNormalizeShape = false;
+  // Last received raw hexTileGeoJson FeatureCollection (stored for re-normalization on map move)
+  var currentRawHexGeoJson = null;
+  // requestAnimationFrame pending flag for normalise updates during pan/zoom
+  var normalizeRafPending = false;
   // Territory border: thick, dark line between level-0 and level>0 tiles
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
@@ -263,6 +269,114 @@ export const HEX_TILE_SCRIPT = `
       }
     }
     return { type: 'FeatureCollection', features: points };
+  }
+
+  // ── Normalise hex features to regular hexagons in screen space ───────────
+  // For each polygon feature, computes the geographic centroid, projects it to
+  // screen pixels, derives the average pixel radius from the projected vertices,
+  // and regenerates 6 vertices as a regular hexagon with the same size and
+  // orientation as the original cell. Returns modified features with all
+  // properties preserved.
+  // Raw H3 boundary features are intentionally kept for border-edge computation
+  // so that shared edges between neighbouring tiles still match exactly.
+  function normalizeHexFeatures(features) {
+    if (!map) return features;
+    var normalized = [];
+    for (var i = 0; i < features.length; i++) {
+      var feature = features[i];
+      var ring = feature.geometry && feature.geometry.coordinates && feature.geometry.coordinates[0];
+      // GeoJSON polygon rings need ≥ 3 unique vertices plus the closing vertex = 4 points minimum
+      if (!ring || ring.length < 4) { normalized.push(feature); continue; }
+      // Polygon rings are closed (last === first); work with n unique vertices
+      var n = ring.length - 1;
+      // 1. Compute geographic centroid (average of unique vertices)
+      var sumLng = 0, sumLat = 0;
+      for (var j = 0; j < n; j++) { sumLng += ring[j][0]; sumLat += ring[j][1]; }
+      var centerLng = sumLng / n;
+      var centerLat = sumLat / n;
+      // 2. Project centroid to screen pixels
+      var centerPx = map.project([centerLng, centerLat]);
+      // 3. Compute average pixel radius from projected vertices
+      var totalR = 0;
+      for (var j = 0; j < n; j++) {
+        var vPx = map.project([ring[j][0], ring[j][1]]);
+        var dx = vPx.x - centerPx.x;
+        var dy = vPx.y - centerPx.y;
+        totalR += Math.sqrt(dx * dx + dy * dy);
+      }
+      var r = totalR / n;
+      // Skip degenerate tiles (would produce invisible or malformed polygons)
+      if (r < 0.5) { normalized.push(feature); continue; }
+      // 4. Determine rotation from the angle of the first vertex so the
+      //    normalised hexagon keeps the same orientation as the H3 cell
+      var firstPx = map.project([ring[0][0], ring[0][1]]);
+      var angleOffset = Math.atan2(firstPx.y - centerPx.y, firstPx.x - centerPx.x);
+      // 5. Generate 6 regular hexagon vertices and unproject back to geo coords
+      var newRing = [];
+      for (var j = 0; j < 6; j++) {
+        var angle = angleOffset + (j * 2 * Math.PI / 6);
+        var px = centerPx.x + r * Math.cos(angle);
+        var py = centerPx.y + r * Math.sin(angle);
+        var geo = map.unproject([px, py]);
+        newRing.push([geo.lng, geo.lat]);
+      }
+      newRing.push(newRing[0]); // close the ring
+      normalized.push({
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [newRing] },
+        properties: feature.properties,
+      });
+    }
+    return normalized;
+  }
+
+  // ── Apply hexTileGeoJson to all sources ───────────────────────────────────
+  // Raw features are always used for border edges and debug layers so that
+  // shared H3 boundary edges match exactly between neighbouring tiles.
+  // When hexNormalizeShape is enabled, the fill/stroke source receives regular
+  // hexagons projected through screen space instead of the raw H3 polygons.
+  function applyHexGeoJson(fc) {
+    if (!hexTileActive || !map) return;
+    var rawFeatures = (fc && fc.features) || [];
+    var src = map.getSource(HEX_TILE_SOURCE);
+    if (src) {
+      if (hexNormalizeShape && rawFeatures.length > 0) {
+        src.setData({ type: 'FeatureCollection', features: normalizeHexFeatures(rawFeatures) });
+      } else {
+        src.setData(fc || EMPTY_FC);
+      }
+    }
+    // Border edges always use raw H3 boundaries so shared edges match exactly
+    var borderSrc = map.getSource(HEX_BORDER_SOURCE);
+    if (borderSrc) borderSrc.setData(routeOutlineMode ? buildRouteBorderEdges(rawFeatures) : buildBorderEdges(rawFeatures));
+    // Debug layers also use raw features
+    var verticesSrc = map.getSource(HEX_VERTICES_SOURCE);
+    if (verticesSrc) verticesSrc.setData(buildVerticesGeoJson(rawFeatures));
+    var centersSrc = map.getSource(HEX_CENTERS_SOURCE);
+    if (centersSrc) centersSrc.setData(buildCentersGeoJson(rawFeatures));
+    var midpointsSrc = map.getSource(HEX_MIDPOINTS_SOURCE);
+    if (midpointsSrc) midpointsSrc.setData(buildMidpointsGeoJson(rawFeatures));
+  }
+
+  // ── Re-normalise hex shapes on map move (throttled via rAF) ─────────────
+  // When hexNormalizeShape is enabled, the projected pixel positions of hex
+  // vertices change with every camera movement, so we must recompute the
+  // regular hexagon polygons to keep them aligned with the map.
+  // The normalizeRafPending flag ensures at most one animation frame callback
+  // is ever queued at once, coalescing all move events within a single frame
+  // into a single update and keeping overhead negligible.
+  function scheduleNormalizeUpdate() {
+    if (!hexNormalizeShape || !currentRawHexGeoJson || normalizeRafPending) return;
+    normalizeRafPending = true;
+    requestAnimationFrame(function() {
+      normalizeRafPending = false;
+      if (!hexNormalizeShape || !currentRawHexGeoJson || !hexTileActive || !map) return;
+      var src = map.getSource(HEX_TILE_SOURCE);
+      if (!src) return;
+      var rawFeatures = (currentRawHexGeoJson.features) || [];
+      if (rawFeatures.length === 0) return;
+      src.setData({ type: 'FeatureCollection', features: normalizeHexFeatures(rawFeatures) });
+    });
   }
 
   // ── Measure route layer ───────────────────────────────────────────────────
@@ -743,6 +857,7 @@ export const HEX_TILE_SCRIPT = `
     addHexTileLayer();
     m.on('moveend', notifyViewport);
     m.on('zoomend', notifyViewport);
+    m.on('move', scheduleNormalizeUpdate);
     m.on('styledata', function () {
       if (hexTileActive && !m.getSource(HEX_TILE_SOURCE)) addHexTileLayer();
     });
@@ -820,23 +935,15 @@ export const HEX_TILE_SCRIPT = `
       }
       return;
     }
+    if (data.hexNormalizeShape !== undefined) {
+      hexNormalizeShape = !!data.hexNormalizeShape;
+      if (currentRawHexGeoJson) applyHexGeoJson(currentRawHexGeoJson);
+      return;
+    }
     if (data.hexTileGeoJson !== undefined) {
       if (!hexTileActive) return;
-      var src = map && map.getSource(HEX_TILE_SOURCE);
-      var fc = data.hexTileGeoJson || EMPTY_FC;
-      if (src) src.setData(fc);
-      // Recompute territory border edges whenever tile data changes
-      var borderSrc = map && map.getSource(HEX_BORDER_SOURCE);
-      if (borderSrc) borderSrc.setData(routeOutlineMode ? buildRouteBorderEdges(fc.features || []) : buildBorderEdges(fc.features || []));
-      // Update green corner-vertex dots
-      var verticesSrc = map && map.getSource(HEX_VERTICES_SOURCE);
-      if (verticesSrc) verticesSrc.setData(buildVerticesGeoJson(fc.features || []));
-      // Update purple centre dots
-      var centersSrc = map && map.getSource(HEX_CENTERS_SOURCE);
-      if (centersSrc) centersSrc.setData(buildCentersGeoJson(fc.features || []));
-      // Update midpoint dots between centre and each corner
-      var midpointsSrc = map && map.getSource(HEX_MIDPOINTS_SOURCE);
-      if (midpointsSrc) midpointsSrc.setData(buildMidpointsGeoJson(fc.features || []));
+      currentRawHexGeoJson = data.hexTileGeoJson || EMPTY_FC;
+      applyHexGeoJson(currentRawHexGeoJson);
     }
     if (data.hexWalkPathGeoJson !== undefined) {
       if (!hexTileActive) return;

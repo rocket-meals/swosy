@@ -2671,6 +2671,7 @@ export default function RecordScreen() {
 	const mapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
 	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
+	const normalizeHexShape = useSelector((state: RootState) => state.displaySettings.normalizeHexShape);
 	const activeTileCount = useSelector((state: RootState) =>
 		Object.values(state.hexTiles.records).filter((r) => r.level > 0).length,
 	);
@@ -3189,6 +3190,12 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexLineWidth });
 	}, [hexLineWidth]);
 
+	// Send updated hex shape normalisation flag to the map whenever it changes.
+	useEffect(() => {
+		if (!mapWebViewReadyRef.current) return;
+		mapRef.current?.sendToMap({ hexNormalizeShape });
+	}, [normalizeHexShape]);
+
 	// Re-send object customizations (terrain images) when object opacity changes.
 	useEffect(() => {
 		loadAndSendCustomizations();
@@ -3204,10 +3211,11 @@ export default function RecordScreen() {
 	useFocusEffect(
 		useCallback(() => {
 			if (!mapWebViewReadyRef.current) return;
-			const { hexTileOpacity: currentHexTileOpacity, hexLineOpacity: currentHexLineOpacity, hexLineWidth: currentHexLineWidth } = store.getState().displaySettings;
+			const { hexTileOpacity: currentHexTileOpacity, hexLineOpacity: currentHexLineOpacity, hexLineWidth: currentHexLineWidth, normalizeHexShape: currentNormalizeHexShape } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({ hexTileOpacity: currentHexTileOpacity });
 			mapRef.current?.sendToMap({ hexLineOpacity: currentHexLineOpacity });
 			mapRef.current?.sendToMap({ hexLineWidth: currentHexLineWidth });
+			mapRef.current?.sendToMap({ hexNormalizeShape: currentNormalizeHexShape });
 			loadAndSendCustomizations();
 		}, [loadAndSendCustomizations]),
 	);
@@ -3881,10 +3889,11 @@ export default function RecordScreen() {
 			mapWebViewReadyRef.current = true;
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
-			const { hexTileOpacity: initHexTileOpacity, hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
+			const { hexTileOpacity: initHexTileOpacity, hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth, normalizeHexShape: initNormalizeHexShape } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({
 				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: initHexTileOpacity, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
 			});
+			mapRef.current?.sendToMap({ hexNormalizeShape: initNormalizeHexShape });
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
 			}
