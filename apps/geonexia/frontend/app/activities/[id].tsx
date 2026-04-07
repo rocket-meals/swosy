@@ -22,7 +22,7 @@ import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/Rout
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { SPORT_TYPES } from '../../store/sportTypeSlice';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells } from '../../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState, AppDispatch } from '../../store/store';
@@ -1209,6 +1209,21 @@ export default function ActivityDetailScreen() {
 		...(activity.enclosedTileCount != null
 			? [{ icon: 'format-shapes' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Tiles Enclosed', value: String(activity.enclosedTileCount) }]
 			: []),
+		...((() => {
+			const hexCount = activity.computed?.hexTilesVisited.length ?? activity.hexTilesOrdered?.length ?? 0;
+			if (hexCount <= 0) return [];
+			const secPerTile = stats.durationSeconds / hexCount;
+			const m = Math.floor(secPerTile / 60);
+			const s = Math.round(secPerTile % 60);
+			return [{ icon: 'schedule' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Zeit pro Hex Tile', value: `${m}:${String(s).padStart(2, '0')} mm:ss` }];
+		})()),
+		...((() => {
+			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+			const edgeLengthM = getHexagonEdgeLengthAvg(h3Res, UNITS?.m ?? 'm');
+			if (edgeLengthM <= 0) return [];
+			const diameterM = Math.round(2 * edgeLengthM);
+			return [{ icon: 'crop-square' as React.ComponentProps<typeof MaterialIcons>['name'], label: 'Hex Durchmesser', value: `${diameterM} m` }];
+		})()),
 	];
 
 	// Render: statsRows[0] (Date) at 'top', then SpeedRangeItem, then statsRows.slice(1) at
