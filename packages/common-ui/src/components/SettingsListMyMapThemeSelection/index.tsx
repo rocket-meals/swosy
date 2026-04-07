@@ -120,12 +120,12 @@ const styles = StyleSheet.create({
 	mapThemeGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 12,
+		gap: 8,
 		paddingHorizontal: 16,
 		paddingBottom: 8,
 	},
 	mapThemeCard: {
-		width: '47%',
+		width: '30%',
 	},
 	mapThemeCardSelected: {
 		borderWidth: 2,
