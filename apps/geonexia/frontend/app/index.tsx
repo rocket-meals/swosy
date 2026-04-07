@@ -43,7 +43,6 @@ import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
 import { setMapSearchState, resetMapSearchState, setMapSearchName, toggleMapSearchKey, type MapSearchStateEntry } from '../store/mapSearchSlice';
-import { GPS_INTERVAL_MS } from '../helpers/GpsIntervalStorage';
 import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
 import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
@@ -4455,7 +4454,7 @@ export default function RecordScreen() {
 
 	const startRecording = useCallback(async () => {
 		const expoGo = isRunningInExpoGo();
-		const gpsTimeIntervalMs = GPS_INTERVAL_MS[store.getState().gpsInterval.selectedMode];
+		const gpsTimeIntervalMs = store.getState().gpsInterval.intervalSeconds * 1000;
 		console.log('[RecordScreen] startRecording called. isRunningInExpoGo:', expoGo);
 
 		// Cancel measure mode before starting a recording

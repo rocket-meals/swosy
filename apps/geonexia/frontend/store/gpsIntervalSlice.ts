@@ -1,15 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { GpsIntervalMode } from '../helpers/GpsIntervalStorage';
-export type { GpsIntervalMode };
+import { GPS_INTERVAL_DEFAULT_SECONDS } from '../helpers/GpsIntervalStorage';
 
 // ─── State type ───────────────────────────────────────────────────────────────
 
 export type GpsIntervalSliceState = {
-	selectedMode: GpsIntervalMode;
+	intervalSeconds: number;
 };
 
 const initialState: GpsIntervalSliceState = {
-	selectedMode: 'default',
+	intervalSeconds: GPS_INTERVAL_DEFAULT_SECONDS,
 };
 
 // ─── Slice ────────────────────────────────────────────────────────────────────
@@ -19,20 +18,20 @@ const gpsIntervalSlice = createSlice({
 	initialState,
 	reducers: {
 		/**
-		 * Set the active GPS interval mode. Persisted to disk by the store subscriber.
+		 * Set the GPS poll interval in seconds. Persisted to disk by the store subscriber.
 		 */
-		setGpsIntervalMode(state, action: PayloadAction<GpsIntervalMode>) {
-			state.selectedMode = action.payload;
+		setGpsIntervalSeconds(state, action: PayloadAction<number>) {
+			state.intervalSeconds = action.payload;
 		},
 
 		/**
-		 * Load the persisted GPS interval mode from disk. Called once at app startup.
+		 * Load the persisted GPS interval in seconds from disk. Called once at app startup.
 		 */
-		loadGpsIntervalMode(state, action: PayloadAction<GpsIntervalMode>) {
-			state.selectedMode = action.payload;
+		loadGpsIntervalSeconds(state, action: PayloadAction<number>) {
+			state.intervalSeconds = action.payload;
 		},
 	},
 });
 
-export const { setGpsIntervalMode, loadGpsIntervalMode } = gpsIntervalSlice.actions;
+export const { setGpsIntervalSeconds, loadGpsIntervalSeconds } = gpsIntervalSlice.actions;
 export default gpsIntervalSlice.reducer;

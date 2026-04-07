@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -10,6 +10,7 @@ import {
 	useMyScrollViewModal,
 	useTheme,
 } from 'repo-depkit-common-ui';
+import { StringHelper } from 'repo-depkit-common';
 import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,8 +29,7 @@ import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState, set
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { setThemeMode } from '../../store/themeSlice';
 import type { ThemeMode } from '../../store/themeSlice';
-import { setGpsIntervalMode } from '../../store/gpsIntervalSlice';
-import type { GpsIntervalMode } from '../../store/gpsIntervalSlice';
+import { setGpsIntervalSeconds } from '../../store/gpsIntervalSlice';
 import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
 import { AppDispatch, RootState, store } from '../../store/store';
@@ -75,18 +75,17 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; icon: React.ReactNode }[] =
 	{ id: 'systematic', label: 'System', icon: <MaterialCommunityIcons name="theme-light-dark" size={22} color="#ffffff" /> },
 ];
 
-const GPS_INTERVAL_OPTIONS: { id: GpsIntervalMode; label: string; icon: React.ReactNode }[] = [
-	{ id: 'default', label: 'Standard (1s)', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
-	{ id: 'energy_saving', label: 'Energie sparen (4s)', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
-	{ id: 'high_precision', label: 'Hohe Präzision (0.5s)', icon: <MaterialCommunityIcons name="radar" size={22} color="#ffffff" /> },
+const GPS_PRESET_SECONDS = [1, 10, 30];
+
+const GPS_PRESET_OPTIONS: { id: number; label: string; icon: React.ReactNode }[] = [
+	{ id: 1, label: '1s', icon: <MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" /> },
+	{ id: 10, label: '10s', icon: <MaterialCommunityIcons name="timer-outline" size={22} color="#ffffff" /> },
+	{ id: 30, label: '30s', icon: <MaterialCommunityIcons name="battery-heart-outline" size={22} color="#ffffff" /> },
 ];
 
-function gpsIntervalModeLabel(mode: GpsIntervalMode): string {
-	switch (mode) {
-		case 'default': return 'Standard (1s)';
-		case 'energy_saving': return 'Energie sparen (4s)';
-		case 'high_precision': return 'Hohe Präzision (0.5s)';
-	}
+function gpsIntervalLabel(seconds: number): string {
+	if (GPS_PRESET_SECONDS.includes(seconds)) return `${seconds}s`;
+	return `Custom (${seconds}s)`;
 }
 
 function themeModeLabel(mode: ThemeMode): string {
@@ -95,6 +94,118 @@ function themeModeLabel(mode: ThemeMode): string {
 		case 'dark': return 'Dark';
 		case 'systematic': return 'System';
 	}
+}
+
+// ─── GPS Custom Input Content ─────────────────────────────────────────────────
+
+function parseGpsInputSeconds(text: string): number | null {
+	const normalized = StringHelper.replaceAllLiteralWithOptions({ str: text, find: ',', replace: '.' });
+	const parsed = parseFloat(normalized);
+	return !isNaN(parsed) && parsed > 0 ? parsed : null;
+}
+
+function GpsCustomInputContent({
+	initialValue,
+	theme,
+	onConfirm,
+	onCancel,
+}: {
+	initialValue: string;
+	theme: ReturnType<typeof useTheme>['theme'];
+	onConfirm: (seconds: number) => void;
+	onCancel: () => void;
+}) {
+	const [inputText, setInputText] = useState(initialValue);
+
+	const parsedValue = parseGpsInputSeconds(inputText);
+	const isValid = parsedValue !== null;
+
+	const handleConfirm = useCallback(() => {
+		if (parsedValue !== null) {
+			onConfirm(parsedValue);
+		}
+	}, [parsedValue, onConfirm]);
+
+	return (
+		<View style={styles.gpsCustomContainer}>
+			<Text style={[styles.gpsCustomLabel, { color: theme.screen.text }]}>
+				GPS-Frequenz in Sekunden
+			</Text>
+			<TextInput
+				style={[styles.gpsCustomInput, { color: theme.screen.text, borderColor: isValid ? GPS_COLOR : DANGER_COLOR, backgroundColor: theme.screen.iconBg }]}
+				value={inputText}
+				onChangeText={setInputText}
+				keyboardType="phone-pad"
+				placeholder="z.B. 5 oder 2,5"
+				placeholderTextColor={theme.screen.text + '66'}
+				autoFocus
+			/>
+			<TouchableOpacity
+				style={[styles.gpsCustomConfirmButton, { backgroundColor: isValid ? GPS_COLOR : NEUTRAL_COLOR }]}
+				onPress={handleConfirm}
+				disabled={!isValid}
+				activeOpacity={0.8}
+			>
+				<Ionicons name="checkmark" size={18} color="#ffffff" />
+				<Text style={styles.confirmButtonText}>Bestätigen</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.resetCancelButton} onPress={onCancel} activeOpacity={0.8}>
+				<Text style={[styles.resetCancelButtonText, { color: theme.screen.text }]}>Abbrechen</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+// ─── GPS Interval Content ─────────────────────────────────────────────────────
+
+function GpsIntervalContent({
+	selectedSeconds,
+	theme,
+	onSelect,
+}: {
+	selectedSeconds: number;
+	theme: ReturnType<typeof useTheme>['theme'];
+	onSelect: (seconds: number) => void;
+}) {
+	const { show: showCustomModal, close: closeCustomModal } = useMyScrollViewModal();
+	const isPreset = GPS_PRESET_SECONDS.includes(selectedSeconds);
+
+	const handleOpenCustomInput = useCallback(() => {
+		showCustomModal({
+			title: '📡 Custom GPS Frequenz',
+			children: (
+				<GpsCustomInputContent
+					initialValue={isPreset ? '' : String(selectedSeconds)}
+					theme={theme}
+					onConfirm={(seconds) => {
+						onSelect(seconds);
+						closeCustomModal();
+					}}
+					onCancel={closeCustomModal}
+				/>
+			),
+		});
+	}, [showCustomModal, closeCustomModal, selectedSeconds, isPreset, theme, onSelect]);
+
+	return (
+		<>
+			<SettingsListSelectOption
+				options={GPS_PRESET_OPTIONS}
+				selectedOption={isPreset ? selectedSeconds : -1}
+				onSelect={(opt) => onSelect(opt.id)}
+				iconBgColor={GPS_COLOR}
+			/>
+			<SettingsList
+				leftIcon={<MaterialCommunityIcons name="pencil-outline" size={22} color="#ffffff" />}
+				iconBgColor={GPS_COLOR}
+				label="Custom"
+				value={!isPreset ? `${selectedSeconds}s` : undefined}
+				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+				handleFunction={handleOpenCustomInput}
+				groupPosition="single"
+			/>
+		</>
+	);
 }
 
 // ─── Reset Confirm Content ────────────────────────────────────────────────────
@@ -214,7 +325,7 @@ export default function SettingsScreen() {
 	const { theme } = useTheme();
 	const dispatch = useDispatch<AppDispatch>();
 	const selectedTheme = useSelector((state: RootState) => state.theme.selectedMode);
-	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.selectedMode);
+	const selectedGpsInterval = useSelector((state: RootState) => state.gpsInterval.intervalSeconds);
 	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const speechEnabled = useSelector((state: RootState) => state.speechSettings.enabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
@@ -251,20 +362,19 @@ export default function SettingsScreen() {
 
 	const handleOpenGpsIntervalSelection = useCallback(() => {
 		showGpsModal({
-			title: '📡 GPS Frequency',
+			title: '📡 GPS Frequenz',
 			children: (
-				<SettingsListSelectOption
-					options={GPS_INTERVAL_OPTIONS}
-					selectedOption={selectedGpsInterval}
-					onSelect={(option) => {
-						dispatch(setGpsIntervalMode(option.id));
+				<GpsIntervalContent
+					selectedSeconds={selectedGpsInterval}
+					theme={theme}
+					onSelect={(seconds) => {
+						dispatch(setGpsIntervalSeconds(seconds));
 						closeGpsModal();
 					}}
-					iconBgColor={PRIMARY_COLOR}
 				/>
 			),
 		});
-	}, [showGpsModal, closeGpsModal, dispatch, selectedGpsInterval]);
+	}, [showGpsModal, closeGpsModal, dispatch, selectedGpsInterval, theme]);
 
 	const handleResetAllData = useCallback(() => {
 		showResetModal({
@@ -531,10 +641,10 @@ export default function SettingsScreen() {
 
 			<SettingsListGroupTitle title="GPS" />
 			<SettingsList
-				iconBgColor={PRIMARY_COLOR}
+				iconBgColor={GPS_COLOR}
 				leftIcon={<MaterialCommunityIcons name="crosshairs-gps" size={22} color="#ffffff" />}
-				label="GPS Frequency"
-				value={gpsIntervalModeLabel(selectedGpsInterval)}
+				label="GPS Frequenz"
+				value={gpsIntervalLabel(selectedGpsInterval)}
 				rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 				handleFunction={handleOpenGpsIntervalSelection}
 				groupPosition="single"
@@ -754,6 +864,31 @@ const styles = StyleSheet.create({
 		paddingTop: 8,
 		gap: 4,
 	},
+	gpsCustomContainer: {
+		paddingTop: 8,
+		gap: 12,
+	},
+	gpsCustomLabel: {
+		fontSize: 15,
+		lineHeight: 22,
+		marginBottom: 4,
+	},
+	gpsCustomInput: {
+		fontSize: 20,
+		borderWidth: 2,
+		borderRadius: 10,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		textAlign: 'center',
+	},
+	gpsCustomConfirmButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 12,
+		borderRadius: 10,
+		gap: 8,
+	},
 	resetConfirmText: {
 		fontSize: 15,
 		lineHeight: 22,
@@ -766,6 +901,11 @@ const styles = StyleSheet.create({
 		paddingVertical: 12,
 		borderRadius: 10,
 		gap: 8,
+	},
+	confirmButtonText: {
+		color: '#ffffff',
+		fontSize: 15,
+		fontWeight: '600',
 	},
 	resetConfirmButtonText: {
 		color: '#ffffff',

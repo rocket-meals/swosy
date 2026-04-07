@@ -17,8 +17,7 @@ import { useRouter } from 'expo-router';
 
 import { setTTSEnabled } from '../../../store/ttsSlice';
 import { updateSpeechSettings } from '../../../store/speechSettingsSlice';
-import { setGpsIntervalMode } from '../../../store/gpsIntervalSlice';
-import type { GpsIntervalMode } from '../../../store/gpsIntervalSlice';
+import { setGpsIntervalSeconds } from '../../../store/gpsIntervalSlice';
 import type { AppDispatch, RootState } from '../../../store/store';
 
 // ─── Colors ───────────────────────────────────────────────────────────────────
@@ -299,27 +298,27 @@ function GpsPrecisionStep({
 	onSelect,
 }: {
 	theme: ReturnType<typeof useTheme>['theme'];
-	selected: GpsIntervalMode;
-	onSelect: (mode: GpsIntervalMode) => void;
+	selected: number;
+	onSelect: (seconds: number) => void;
 }) {
-	const options: { id: GpsIntervalMode; label: string; description: string; icon: string }[] = [
+	const options: { id: number; label: string; description: string; icon: string }[] = [
 		{
-			id: 'default',
-			label: 'Standard (1s)',
+			id: 1,
+			label: '1s',
 			description: 'Gutes Gleichgewicht zwischen Genauigkeit und Akkulaufzeit.',
 			icon: 'crosshairs-gps',
 		},
 		{
-			id: 'energy_saving',
-			label: 'Energie sparen (4s)',
-			description: 'Spart Akku – geringfügig weniger präzise Aufzeichnung.',
+			id: 10,
+			label: '10s',
+			description: 'Standardwert – empfohlen für die meisten Aktivitäten.',
 			icon: 'battery-heart-outline',
 		},
 		{
-			id: 'high_precision',
-			label: 'Hohe Präzision (0.5s)',
-			description: 'Maximale Genauigkeit für intensive Aktivitäten – höherer Akkuverbrauch.',
-			icon: 'radar',
+			id: 30,
+			label: '30s',
+			description: 'Spart Akku – geringfügig weniger präzise Aufzeichnung.',
+			icon: 'battery-heart-outline',
 		},
 	];
 
@@ -430,7 +429,7 @@ export default function OnboardingScreen() {
 	// ─── Redux state ──────────────────────────────────────────────────────────
 	const ttsEnabled = useSelector((s: RootState) => s.tts.ttsEnabled);
 	const speechSettings = useSelector((s: RootState) => s.speechSettings);
-	const selectedGpsMode = useSelector((s: RootState) => s.gpsInterval.selectedMode);
+	const selectedGpsSeconds = useSelector((s: RootState) => s.gpsInterval.intervalSeconds);
 
 	// ─── Step management ─────────────────────────────────────────────────────
 	const [stepIndex, setStepIndex] = useState(0);
@@ -541,8 +540,8 @@ export default function OnboardingScreen() {
 
 	// ─── GPS mode ─────────────────────────────────────────────────────────────
 	const handleSelectGpsMode = useCallback(
-		(mode: GpsIntervalMode) => {
-			dispatch(setGpsIntervalMode(mode));
+		(seconds: number) => {
+			dispatch(setGpsIntervalSeconds(seconds));
 			handleNext();
 		},
 		[dispatch, handleNext],
@@ -577,7 +576,7 @@ export default function OnboardingScreen() {
 				);
 			case 'gps_precision':
 				return (
-					<GpsPrecisionStep theme={theme} selected={selectedGpsMode} onSelect={handleSelectGpsMode} />
+					<GpsPrecisionStep theme={theme} selected={selectedGpsSeconds} onSelect={handleSelectGpsMode} />
 				);
 			case 'finish':
 				return <FinishStep theme={theme} />;
