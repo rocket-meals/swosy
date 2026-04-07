@@ -25,7 +25,8 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
 const FeedbackScreen = () => {
 	useSetPageTitle(TranslationKeys.feedback_and_support);
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 	const { theme } = useTheme();
 	const toast = useToast();
 	const appFeedback = new AppFeedback();
@@ -294,6 +295,8 @@ const FeedbackScreen = () => {
 								fontSize: windowWidth > 600 ? (isWeb ? 20 : 24) : 24,
 								color: theme.screen.text,
 								padding: 15,
+								textAlign: isRtl ? 'right' : 'left',
+								writingDirection: isRtl ? 'rtl' : 'ltr',
 							}}
 						>
 							{translate(TranslationKeys.your_request)}
@@ -366,6 +369,7 @@ const FeedbackScreen = () => {
 									borderRadius: 10,
 									backgroundColor: primaryColor,
 									opacity: inputValues?.title?.length === 0 || inputValues?.content?.length === 0 ? 0.5 : 1,
+									flexDirection: isRtl ? 'row-reverse' : 'row',
 								},
 							]}
 							onPress={() => {
@@ -383,13 +387,17 @@ const FeedbackScreen = () => {
 								</View>
 							) : (
 								<>
-									<View style={styles.leftView}>
+									<View style={[styles.leftView, { flex: 1, justifyContent: isRtl ? 'flex-end' : 'flex-start' }]}>
 										<Text
 											style={[
 												styles.linkText,
 												{
 													color: contrastColor,
 													fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
+													textAlign: isRtl ? 'right' : 'left',
+													writingDirection: isRtl ? 'rtl' : 'ltr',
+													marginLeft: isRtl ? 0 : 10,
+													marginRight: isRtl ? 10 : 0,
 												},
 											]}
 										>
@@ -499,6 +507,8 @@ const FeedbackScreen = () => {
 								}}
 								groupPosition={index === 0 ? 'top' : index === deviceSettingsItems.length - 1 ? 'bottom' : 'middle'}
 								noIconIndent
+								reverseLayout={false}
+								titleTextAlign="left"
 							/>
 						))}
 

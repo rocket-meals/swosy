@@ -51,15 +51,18 @@ const MenuPositionSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet })
 
 export const useMenuPositionModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 
 	const openMenuPositionModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.drawer_config_position),
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			onClose: closeScrollViewModal,
 			children: <MenuPositionSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openMenuPositionModal };
 };

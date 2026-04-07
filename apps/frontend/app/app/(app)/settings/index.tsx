@@ -348,6 +348,8 @@ const Settings = () => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.collectible_event_item_size),
+								titleTextAlign: language === 'ar' ? 'right' : 'left',
+								titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
                                 onClose: () => {
                                         if (isOpeningNestedCollectibleModal.current) {
                                                 isOpeningNestedCollectibleModal.current = false;
@@ -380,12 +382,14 @@ const Settings = () => {
                         },
                         {}
                 );
-        }, [collectibleSizeLabel, collectibleSizeOptions, handleSelectCollectibleSize, showScrollViewModal, translate]);
+        }, [collectibleSizeLabel, collectibleSizeOptions, handleSelectCollectibleSize, language, showScrollViewModal, translate]);
 
         const openCollectibleSettingsModal = useCallback(() => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.collectible_event_settings),
+								titleTextAlign: language === 'ar' ? 'right' : 'left',
+								titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
                                 children: (
                                         <View style={{ gap: 0 }}>
                                                 <SettingsList
@@ -418,7 +422,7 @@ const Settings = () => {
                         },
                         {}
                 );
-        }, [collectibleRandomPosition, collectibleSizeLabel, handleResetCollectibles, openCollectibleSizeModal, primaryColor, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, translate, toggleCollectibleRandomPosition]);
+        }, [collectibleRandomPosition, collectibleSizeLabel, handleResetCollectibles, language, openCollectibleSizeModal, primaryColor, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, translate, toggleCollectibleRandomPosition]);
 
         useEffect(() => {
                 collectibleSettingsModalRef.current = openCollectibleSettingsModal;

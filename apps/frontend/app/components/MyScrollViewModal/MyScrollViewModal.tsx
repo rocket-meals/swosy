@@ -60,7 +60,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
     <>
       {title && (
         <View
-          style={{ backgroundColor: resolvedBackgroundColor, paddingHorizontal: 20, paddingTop: 6, paddingBottom: 4 }}
+          style={{ backgroundColor: resolvedBackgroundColor, paddingHorizontal: 20, paddingTop: 6, paddingBottom: 12 }}
         >
           <Text
             style={{

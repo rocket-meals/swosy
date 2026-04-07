@@ -76,15 +76,18 @@ const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 
 export const useHousingSortingModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 
 	const openHousingSortingModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.sort),
 			onClose: closeScrollViewModal,
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <HousingSortSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openHousingSortingModal };
 };

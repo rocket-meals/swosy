@@ -29,6 +29,7 @@ const NotificationScreen = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { language, primaryColor, appSettings } = useAppSelector((state) => state.settings);
+	const isRtl = language === 'ar';
 	const { profile } = useAppSelector((state) => state.authReducer);
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 	const [foodWithFeedback, setFoodWithFeedback] = useState<any[]>([]);
@@ -150,6 +151,9 @@ const NotificationScreen = () => {
 							...styles.label,
 							color: theme.header.text,
 							fontSize: windowWidth < 500 ? 16 : 18,
+							textAlign: isRtl ? 'right' : 'left',
+							writingDirection: isRtl ? 'rtl' : 'ltr',
+							alignSelf: 'stretch',
 						}}
 					>
 						{translate(TranslationKeys.notification_index_introduction)}
@@ -160,6 +164,9 @@ const NotificationScreen = () => {
 							...styles.value,
 							color: theme.header.text,
 							fontSize: windowWidth < 500 ? 16 : 18,
+							textAlign: isRtl ? 'right' : 'left',
+							writingDirection: isRtl ? 'rtl' : 'ltr',
+							alignSelf: 'stretch',
 						}}
 					>
 						{translate(TranslationKeys.foods)}
@@ -170,15 +177,19 @@ const NotificationScreen = () => {
 								style={{
 									...styles.infoRow,
 									backgroundColor: theme.screen.iconBg,
+									...(isRtl ? { flexDirection: 'row-reverse' } : null),
 								}}
 								key={index}
 							>
-								<View style={styles.iconLabelContainer}>
+								<View style={[styles.iconLabelContainer, isRtl ? { flexDirection: 'row-reverse', justifyContent: 'flex-end' } : null]}>
 									<Text
 										style={{
 											...styles.label,
 											color: theme.screen.text,
 											fontSize: windowWidth < 500 ? 16 : 18,
+											textAlign: isRtl ? 'right' : 'left',
+											writingDirection: isRtl ? 'rtl' : 'ltr',
+											alignSelf: 'stretch',
 										}}
 									>
 										{excerpt(getTextFromTranslation(item.data?.translations, language), 90)}

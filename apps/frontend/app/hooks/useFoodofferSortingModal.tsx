@@ -19,10 +19,10 @@ import { useAppSelector } from '@/redux/hooks';
 
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
+import SettingsList from '@/components/SettingsList';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import { SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SORTING } from '@/redux/Types/types';
 
 interface SortSheetProps {
@@ -33,12 +33,13 @@ const styles = StyleSheet.create({
         sortingListContainer: {
                 width: '100%',
                 paddingHorizontal: 10,
-                marginTop: 12,
+                marginTop: 6,
         },
 });
 
 export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         const { translate } = useLanguage();
+        const { theme } = useTheme();
 
         const dispatch = useDispatch();
         const { canteenFoodOffersDict } = useAppSelector((state) => state.canteenReducer);
@@ -166,15 +167,36 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
                 <View style={{ width: '100%', gap: 12 }}>
                         <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         <View style={styles.sortingListContainer}>
-                                <SettingsListSelectOption
-                                        options={sortingOptions.map((option) => ({
-                                                ...option,
-                                                label: translate(option.label),
-                                        }))}
-                                        selectedOption={selectedOption}
-                                        onSelect={updateSort}
-                                        iconBgColor={foods_area_color}
-                                />
+                                {sortingOptions.map((option, index) => {
+                                        const groupPosition =
+                                                sortingOptions.length === 1
+                                                        ? 'single'
+                                                        : index === 0
+                                                                ? 'top'
+                                                                : index === sortingOptions.length - 1
+                                                                        ? 'bottom'
+                                                                        : 'middle';
+                                        const isSelected = selectedOption === option.id;
+
+                                        return (
+                                                <SettingsList
+                                                        key={String(option.id)}
+                                                        label={translate(option.label)}
+                                                        leftIcon={option.icon}
+                                                        iconBgColor={foods_area_color}
+                                                        groupPosition={groupPosition}
+                                                        showSeparator={index !== sortingOptions.length - 1}
+                                                        rightIcon={
+                                                                <MaterialCommunityIcons
+                                                                        name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
+                                                                        size={24}
+                                                                        color={isSelected ? foods_area_color : theme.screen.icon}
+                                                                />
+                                                        }
+                                                        handleFunction={() => updateSort(option)}
+                                                />
+                                        );
+                                })}
                         </View>
                 </View>
         );
@@ -182,16 +204,19 @@ export const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
 
 export const useFoodofferSortingModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-        const { translate } = useLanguage();
+        const { translate, language } = useLanguage();
+        const isRtl = language === 'ar';
         const openFoodofferSortingModal = useCallback(() => {
                 showScrollViewModal(
                         {
                                 title: translate(TranslationKeys.sort),
+                                titleTextAlign: isRtl ? 'right' : 'left',
+                                titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                 onClose: closeScrollViewModal,
                                 children: <SortSheet closeSheet={closeScrollViewModal} />,
                         }
                 );
-        }, [closeScrollViewModal, showScrollViewModal, translate]);
+        }, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
         return { openFoodofferSortingModal };
 };

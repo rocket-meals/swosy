@@ -53,15 +53,18 @@ const FirstDayOfWeekSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet 
 
 export const useFirstDayOfWeekModal = () => {
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 
 	const openFirstDayOfWeekModal = useCallback(() => {
 		showScrollViewModal({
 			title: translate(TranslationKeys.first_day_of_week),
 			onClose: closeScrollViewModal,
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: <FirstDayOfWeekSheet closeSheet={closeScrollViewModal} />,
 		});
-	}, [closeScrollViewModal, showScrollViewModal, translate]);
+	}, [closeScrollViewModal, isRtl, showScrollViewModal, translate]);
 
 	return { openFirstDayOfWeekModal };
 };

@@ -36,7 +36,8 @@ const ensureStringArray = (options: string[]): string[] => {
 
 const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allowCustomValues, value, onSelectOption, onSelectCustom, onDeselect, isDisabled, prefix, suffix, error }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { translate, language } = useLanguage();
+  const isRtl = language === 'ar';
   const { primaryColor } = useAppSelector(state => state.settings);
 
   const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);
@@ -105,9 +106,13 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
               text={translate(TranslationKeys.deselect)}
               style={[
                 styles.optionRow,
+                { flexDirection: isRtl ? 'row-reverse' : 'row' },
                 { backgroundColor: active ? primaryColor : theme.screen.iconBg, marginVertical: 0 },
               ]}
-              textStyle={[styles.optionLabel, { color: active ? theme.activeText : theme.screen.text }]}
+              textStyle={[
+                styles.optionLabel,
+                { color: active ? theme.activeText : theme.screen.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' },
+              ]}
               iconRight={
                 <MaterialCommunityIcons
                   name={active ? 'checkbox-marked' : 'checkbox-blank-outline'}
@@ -129,13 +134,17 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
               text={translate(TranslationKeys.enter_custom_value)}
               style={[
                 styles.optionRow,
+                { flexDirection: isRtl ? 'row-reverse' : 'row' },
                 {
                   backgroundColor: customSelected ? primaryColor : theme.screen.iconBg,
                   marginVertical: 0,
                   opacity: 1,
                 },
               ]}
-              textStyle={[styles.optionLabel, { color: customSelected ? theme.activeText : theme.screen.text }]}
+              textStyle={[
+                styles.optionLabel,
+                { color: customSelected ? theme.activeText : theme.screen.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' },
+              ]}
               iconRight={
                 <MaterialCommunityIcons
                   name={customSelected ? 'checkbox-marked' : 'checkbox-blank-outline'}
@@ -182,13 +191,17 @@ const DropdownSheet: React.FC<DropdownSheetProps> = ({ closeSheet, options, allo
             text={item.value}
             style={[
               styles.optionRow,
+              { flexDirection: isRtl ? 'row-reverse' : 'row' },
               {
                 backgroundColor: isSelected ? primaryColor : theme.screen.iconBg,
                 marginVertical: 0,
                 opacity: 1,
               },
             ]}
-            textStyle={[styles.optionLabel, { color: isSelected ? theme.activeText : theme.screen.text }]}
+            textStyle={[
+              styles.optionLabel,
+              { color: isSelected ? theme.activeText : theme.screen.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' },
+            ]}
             iconRight={
               <MaterialCommunityIcons
                 name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'}

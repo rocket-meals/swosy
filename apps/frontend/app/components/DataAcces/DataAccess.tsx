@@ -12,23 +12,41 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
-const parseMarkdown = (text: string, theme: any) => {
+const parseMarkdown = (text: string, theme: any, isRtl: boolean) => {
 	return text.split('\n').map((line, index) => {
 		if (line.startsWith('## ')) {
 			return (
-				<Text key={index} style={[styles.value, { color: theme.header.text }]}>
+				<Text
+					key={index}
+					style={[
+						styles.value,
+						{ color: theme.header.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' },
+					]}
+				>
 					{line.replace('## ', '')}
 				</Text>
 			);
 		} else if (line.startsWith('### ')) {
 			return (
-				<Text key={index} style={[styles.labelParagraph, { color: theme.header.text }]}>
+				<Text
+					key={index}
+					style={[
+						styles.labelParagraph,
+						{ color: theme.header.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' },
+					]}
+				>
 					{line.replace('### ', '')}
 				</Text>
 			);
 		} else {
 			return (
-				<Text key={index} style={[styles.titleHeading, { color: theme.header.text }]}>
+				<Text
+					key={index}
+					style={[
+						styles.titleHeading,
+						{ color: theme.header.text, textAlign: isRtl ? 'right' : 'left', writingDirection: isRtl ? 'rtl' : 'ltr' },
+					]}
+				>
 					{line}
 				</Text>
 			);
@@ -38,15 +56,41 @@ const parseMarkdown = (text: string, theme: any) => {
 
 const DataAccess = ({ onOpenBottomSheet }: any) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
-  const { user, profile } = useAppSelector(state => state.authReducer);
-  const { primaryColor } = useAppSelector(state => state.settings);
-  const { collectibleEventsItemsDict } = useAppSelector(state => state.collectibleEvents ?? {});
-  const collectibleEvents = useMemo(() => Object.values(collectibleEventsItemsDict || {}), [collectibleEventsItemsDict]);
-  const { canteensDict, buildingsDict, buildingsOrganizationsDict, organisationsDict, selectedCanteenFoodOffersDict, canteenFoodOffersDict, businessHoursDict, businessHoursGroupsDict, canteenFeedbackLabelsDict, ownCanteenFeedBackLabelEntriesDict } = useAppSelector(state => state.canteenReducer);
-  
-  const { foodFeedbackLabelsDict, ownFoodFeedbacksDict, ownfoodFeedbackLabelEntriesDict, markingsDict, markingGroupsDict, selectedFoodMarkingsDict, foodCategoriesDict, foodOfferCategoriesDict, foodOffersInfoItemsDict, mostLikedFoodsDict, mostDislikedFoodsDict, popupEventsDict, markingDetails } = useAppSelector(state => state.food);
-  const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
+	const { user, profile } = useAppSelector(state => state.authReducer);
+	const { primaryColor } = useAppSelector(state => state.settings);
+	const { collectibleEventsItemsDict } = useAppSelector(state => state.collectibleEvents ?? {});
+	const collectibleEvents = useMemo(() => Object.values(collectibleEventsItemsDict || {}), [collectibleEventsItemsDict]);
+	const {
+		canteensDict,
+		buildingsDict,
+		buildingsOrganizationsDict,
+		organisationsDict,
+		selectedCanteenFoodOffersDict,
+		canteenFoodOffersDict,
+		businessHoursDict,
+		businessHoursGroupsDict,
+		canteenFeedbackLabelsDict,
+		ownCanteenFeedBackLabelEntriesDict,
+	} = useAppSelector(state => state.canteenReducer);
+
+	const {
+		foodFeedbackLabelsDict,
+		ownFoodFeedbacksDict,
+		ownfoodFeedbackLabelEntriesDict,
+		markingsDict,
+		markingGroupsDict,
+		selectedFoodMarkingsDict,
+		foodCategoriesDict,
+		foodOfferCategoriesDict,
+		foodOffersInfoItemsDict,
+		mostLikedFoodsDict,
+		mostDislikedFoodsDict,
+		popupEventsDict,
+		markingDetails,
+	} = useAppSelector(state => state.food);
+	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 
@@ -111,7 +155,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 					<View style={styles.imageContainer}>
 						<Image source={require('../../assets/images/dataAccess.png')} style={styles.image} />
 					</View>
-					<View>{parseMarkdown(dataAccessText, theme)}</View>
+					<View style={{ width: '100%' }}>{parseMarkdown(dataAccessText, theme, isRtl)}</View>
 				</View>
 				<SettingsGroupTitle>{translate(TranslationKeys.your_data_which_we_know_if_you_have_a_profile)}</SettingsGroupTitle>
 				{/* Info Items List */}
@@ -125,22 +169,42 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
 						const last = index === infoItems.length - 1;
 						const first = index === 0;
 						const groupPosition = infoItems.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
-						return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={item.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(item)} groupPosition={groupPosition as any} />;
+						return (
+							<SettingsList
+								key={index}
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />}
+								label={item.label}
+								rightIcon={<Entypo name={isRtl ? 'chevron-small-left' : 'chevron-small-right'} size={24} color={theme.screen.icon} />}
+								handleFunction={() => onOpenBottomSheet(item)}
+								groupPosition={groupPosition as any}
+							/>
+						);
 					})}
 
 					{/* Device Data List */}
 					<SettingsGroupTitle>{translate(TranslationKeys.translation_all_on_device_saved_data)}</SettingsGroupTitle>
-                                        {dataDevice.map((data, index) => {
-                                                if (!data?.value) return null;
-                                                const last = index === dataDevice.length - 1;
-                                                const first = index === 0;
-                                                const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
-                                                return <SettingsList key={index} iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />} label={data.label} rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />} handleFunction={() => onOpenBottomSheet(data)} groupPosition={groupPosition as any} />;
-                                        })}
-                                </View>
-                        </ScrollView>
-                </View>
-        );
+					{dataDevice.map((data, index) => {
+						if (!data?.value) return null;
+						const last = index === dataDevice.length - 1;
+						const first = index === 0;
+						const groupPosition = dataDevice.length === 1 ? 'single' : first ? 'top' : last ? 'bottom' : 'middle';
+						return (
+							<SettingsList
+								key={index}
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="database-eye" size={24} color={theme.screen.icon} />}
+								label={data.label}
+								rightIcon={<Entypo name={isRtl ? 'chevron-small-left' : 'chevron-small-right'} size={24} color={theme.screen.icon} />}
+								handleFunction={() => onOpenBottomSheet(data)}
+								groupPosition={groupPosition as any}
+							/>
+						);
+					})}
+				</View>
+			</ScrollView>
+		</View>
+	);
 };
 
 export default DataAccess;

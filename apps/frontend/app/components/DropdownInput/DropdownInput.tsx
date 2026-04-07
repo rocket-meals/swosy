@@ -32,7 +32,8 @@ type DropdownInputProps = Omit<FormInputBaseProps, 'isDisabled'> & {
 
 const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, options = [], prefix, suffix, allowCustomValues = true, onOpenSheet, onCloseSheet }: DropdownInputProps) => {
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 	const { primaryColor } = useAppSelector(state => state.settings);
 
 	const normalizedOptions = useMemo(() => ensureStringArray(options), [options]);
@@ -63,6 +64,8 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
                 show(
                         {
                                 title: translate(TranslationKeys.select),
+								titleTextAlign: isRtl ? 'right' : 'left',
+								titleWritingDirection: isRtl ? 'rtl' : 'ltr',
                                 onClose: onCloseSheet,
                                 children: (
                                         <DropdownSheet
@@ -84,6 +87,7 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
                 );
         }, [
                 isDisabled,
+				isRtl,
                 normalizedOptions,
                 allowCustomValues,
                 currentValue,
@@ -128,6 +132,7 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 						},
 						prefix && styles.selectorButtonWithPrefix,
 						suffix && styles.selectorButtonWithSuffix,
+						isRtl ? { flexDirection: 'row-reverse' } : null,
 					]}
 					textStyle={{ width: 0, height: 0 }}
 					onPress={openSheet}
@@ -139,6 +144,8 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 									styles.selectorText,
 									{
 										color: isPlaceholderDisplay ? theme.screen.placeholder : theme.screen.text,
+										textAlign: isRtl ? 'right' : 'left',
+										writingDirection: isRtl ? 'rtl' : 'ltr',
 									},
 									isPlaceholderDisplay && styles.placeholderText,
 								]}
@@ -149,7 +156,14 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
 							</Text>
 						</View>
 					}
-					iconRight={<MaterialCommunityIcons name="chevron-down" size={22} color={theme.screen.icon} style={styles.chevronIcon} />}
+					iconRight={
+						<MaterialCommunityIcons
+							name="chevron-down"
+							size={22}
+							color={theme.screen.icon}
+							style={[styles.chevronIcon, isRtl ? { marginLeft: 0, marginRight: 12 } : null]}
+						/>
+					}
 				/>
 				{suffix && (
 					<View style={[styles.prefixSuffix, styles.prefixSuffixRight, { backgroundColor: theme.screen.iconBg, borderColor: theme.screen.iconBg }]}>
