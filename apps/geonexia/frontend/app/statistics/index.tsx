@@ -240,7 +240,7 @@ export default function StatisticsScreen() {
 				<SettingsList
 					iconBgColor={PRIMARY_COLOR}
 					leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
-					label="Ø Geschwindigkeit"
+					label="Durchschnittliche Geschwindigkeit"
 					value={stats.count > 0 ? formatSpeed(avgSpeed) : '—'}
 					groupPosition="middle"
 				/>

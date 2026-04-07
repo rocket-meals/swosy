@@ -204,7 +204,7 @@ export interface PeriodicAnnouncementContent {
  * Format pace (min/km) as a localised speech string fragment.
  * @param paceMinPerKm  Pace value in minutes per km
  * @param langCode      Primary language code (e.g. "de", "en")
- * @param prefix        Label prefix to prepend (e.g. "Pace" or "Ø Pace")
+ * @param prefix        Label prefix to prepend (e.g. "Pace" or "Durchschnittliche Pace:")
  * @param prefixEn      English label prefix
  */
 function formatPaceForSpeech(
@@ -257,7 +257,7 @@ export function buildPeriodicAnnouncement(
 	}
 
 	if (content.announcePaceAvg && stats.paceMinPerKm != null) {
-		parts.push(formatPaceForSpeech(stats.paceMinPerKm, langCode, 'Ø Pace', 'Average pace'));
+		parts.push(formatPaceForSpeech(stats.paceMinPerKm, langCode, 'Durchschnittliche Pace:', 'Average pace:'));
 	}
 
 	if (content.announceDuration) {
@@ -299,9 +299,9 @@ export function buildPeriodicAnnouncement(
 		if (avgKmh != null) {
 			const sp = formatSpeedForSpeech(avgKmh);
 			if (langCode === 'de') {
-				parts.push(`Ø ${sp} Kilometer pro Stunde`);
+				parts.push(`Durchschnittliche Geschwindigkeit: ${sp} Kilometer pro Stunde`);
 			} else {
-				parts.push(`Average ${sp} kilometers per hour`);
+				parts.push(`Average speed: ${sp} kilometers per hour`);
 			}
 		}
 	}
