@@ -130,9 +130,9 @@ const modalStyles = StyleSheet.create({
 
 const HEX_MAP_PREVIEW_HEIGHT = 280;
 
-// Fixed preview center: Munich, Germany — a representative Central-European location.
-const PREVIEW_CENTER_LAT = 48.1351;
-const PREVIEW_CENTER_LNG = 11.5820;
+// Fixed preview center: Diepholz, Germany.
+const PREVIEW_CENTER_LAT = 52.6577210;
+const PREVIEW_CENTER_LNG = 8.1421113;
 const PREVIEW_H3_RESOLUTION = 10;
 const PREVIEW_MAP_ZOOM = 15;
 
@@ -160,6 +160,18 @@ function buildPreviewOverlays(
 		const centerLng = (minLng + maxLng) / 2;
 		const scaledW = (maxLng - minLng) * scale;
 		const scaledH = (maxLat - minLat) * scale;
+
+		// Compute bearing (degrees clockwise from north) from cell center to its
+		// northernmost vertex so the texture top always aligns with the hex north tip.
+		const northVertex = boundary.reduce(
+			(best, vertex) => (vertex[0] > best[0] ? vertex : best),
+			boundary[0],
+		);
+		const dLat = northVertex[0] - centerLat;
+		const dLng = northVertex[1] - centerLng;
+		const cosLat = Math.cos(centerLat * (Math.PI / 180));
+		const rotation = Math.atan2(dLng * cosLat, dLat) * (180 / Math.PI);
+
 		overlays.push({
 			id: `preview-${h3Index}`,
 			url: imgUri,
@@ -171,7 +183,7 @@ function buildPreviewOverlays(
 			],
 			opacity: 0.9,
 			polygonCoords: boundary.map(([lat, lng]) => [lng, lat]),
-			rotation: 0,
+			rotation,
 		});
 	}
 	return overlays;
