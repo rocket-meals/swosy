@@ -1,4 +1,7 @@
 Key,Message,Component,Line
+"AZ1naL8FjzYpj6l1m2hi","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",134
+"AZ1naL8FjzYpj6l1m2hj","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",139
+"AZ1naL8FjzYpj6l1m2hk","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",183
 "AZ1kvhY4tUR0f1ZqLdjk","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",392
 "AZ1kvhY4tUR0f1ZqLdjl","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",424
 "AZ1kvhY4tUR0f1ZqLdjm","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",440
@@ -6,18 +9,16 @@ Key,Message,Component,Line
 "AZ1kvhY4tUR0f1ZqLdjo","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",459
 "AZ1kvhY4tUR0f1ZqLdjp","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",483
 "AZ1kvhY4tUR0f1ZqLdjq","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",484
-"AZ1ktpGRkZOia24LO87k","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",104
-"AZ1ktpGRkZOia24LO87l","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",131
-"AZ1ktpGRkZOia24LO87m","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",447
-"AZ1ktpGRkZOia24LO87n","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",494
+"AZ1ktpGRkZOia24LO87k","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",106
+"AZ1ktpGRkZOia24LO87m","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",395
+"AZ1ktpGRkZOia24LO87n","Prefer `String#replaceAll()` over `String#replace()`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",442
 "AZ1ktpKMkZOia24LO87o","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",2906
 "AZ1i3i6ce2doo3owMrMQ","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",220
-"AZ1i3i4Oe2doo3owMrMG","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",23
-"AZ1i3i4Oe2doo3owMrMH","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",25
-"AZ1i3i4Oe2doo3owMrMJ","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",69
-"AZ1i3i4Oe2doo3owMrML","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",138
-"AZ1i3i4Oe2doo3owMrMO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",502
-"AZ1i3i4Oe2doo3owMrMP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",503
+"AZ1i3i4Oe2doo3owMrMG","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",25
+"AZ1i3i4Oe2doo3owMrMH","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",27
+"AZ1i3i4Oe2doo3owMrMJ","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",71
+"AZ1i3i4Oe2doo3owMrMO","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",450
+"AZ1i3i4Oe2doo3owMrMP","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",451
 "AZ1i3i9ye2doo3owMrMR","Remove this unused import of 'TextureSpriteAnchorOverride'.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/hexTextureConfigSlice.ts",2
 "AZ1hGckq7Pzve-iuEU7H","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",70
 "AZ1hGcd97Pzve-iuEU7F","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/store/displaySettingsSlice.ts",23
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvSGS4VhJojFFAfD","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/bigScreen/index.tsx",226
 "AZkUSvS3S4VhJojFFAge","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",83
 "AZkUSvS3S4VhJojFFAgf","Unnecessary use of boolean literals in conditional expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",86
-"AZkUSvS3S4VhJojFFAgh","Unnecessary use of boolean literals in conditional expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(monitor)/foodPlanList/index.tsx",284
