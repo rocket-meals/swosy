@@ -5,10 +5,10 @@
 | Category | Total Issues | Shown |
 |----------|-------------|-------|
 | 🔒 Security | 4 | 4 |
-| 🐛 Reliability | 6833 | 46 |
+| 🐛 Reliability | 6835 | 46 |
 | 🔧 Maintainability | 10000 | 0 |
 
-**Total issues:** 16837 (showing top 50 prioritized by: Security > Reliability > Maintainability)
+**Total issues:** 16839 (showing top 50 prioritized by: Security > Reliability > Maintainability)
 
 ---
 
@@ -30,7 +30,7 @@
   .github/actions/geonexia-expo-update/action.yml:184
   https://github.com/rocket-meals/rocket-meals/blob/master/.github/actions/geonexia-expo-update/action.yml#L184
 
-## 🐛 Reliability (46/6833)
+## 🐛 Reliability (46/6835)
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/frontend/app/app/(app)/map/components/JoggingOverlay.tsx:140
@@ -97,28 +97,36 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L517
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:758
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L758
+  apps/geonexia/frontend/app/index.tsx:757
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L757
 
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:62
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L62
+  apps/geonexia/frontend/app/index.tsx:61
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L61
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2802
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2802
+  apps/geonexia/frontend/app/index.tsx:2800
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2800
 
 - **Prefer `Number.parseFloat` over `parseFloat`.**
+  apps/geonexia/frontend/app/index.tsx:1032
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1032
+
+- **Prefer `Number.isNaN` over `isNaN`.**
   apps/geonexia/frontend/app/index.tsx:1033
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1033
 
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/app/index.tsx:1034
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1034
-
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:908
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L908
+  apps/geonexia/frontend/app/index.tsx:907
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L907
+
+- **Prefer `Number.parseFloat` over `parseFloat`.**
+  apps/geonexia/frontend/app/settings/index.tsx:103
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L103
+
+- **Prefer `Number.isNaN` over `isNaN`.**
+  apps/geonexia/frontend/app/settings/index.tsx:104
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/settings/index.tsx#L104
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/statistics/index.tsx:44
@@ -207,12 +215,4 @@
 - **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
   apps/geonexia/frontend/helpers/h3/libh3.js:312
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L312
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:317
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L317
-
-- **Prefer `String.fromCodePoint()` over `String.fromCharCode()`.**
-  apps/geonexia/frontend/helpers/h3/libh3.js:327
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/h3/libh3.js#L327
 
