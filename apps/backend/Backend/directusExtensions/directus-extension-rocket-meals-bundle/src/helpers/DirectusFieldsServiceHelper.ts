@@ -22,9 +22,9 @@ export class DirectusFieldsServiceHelper {
     });
   }
 
-  public async getFieldsForCollection(collectionName: CollectionNames){
+  public async getFieldsForCollection(collectionName: CollectionNames | string){
     const fieldsService =  await this.getFieldsService();
-    return await fieldsService.readAll(collectionName);
+    return await fieldsService.readAll(collectionName as CollectionNames);
   }
 
 
@@ -82,12 +82,12 @@ export class DirectusFieldsServiceHelper {
    *   }
    * }
    */
-  public async getFieldForCollectionByFieldName(collectionName: CollectionNames, fieldName: string){
+  public async getFieldForCollectionByFieldName(collectionName: CollectionNames | string, fieldName: string){
     const fields = await this.getFieldsForCollection(collectionName);
     return fields.find(field => field.field === fieldName);
   }
 
-  public async getFolderIdForFileFieldInCollection(collectionName: CollectionNames, fieldName: string): Promise<string | null> {
+  public async getFolderIdForFileFieldInCollection(collectionName: CollectionNames | string, fieldName: string): Promise<string | null> {
     const imageFieldMeta = await this.getFieldForCollectionByFieldName(collectionName, fieldName);
     return imageFieldMeta?.meta?.options?.folder;
   }

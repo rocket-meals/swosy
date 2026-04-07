@@ -1,4 +1,3 @@
-import { CollectionNames } from 'repo-depkit-common';
 import { FilesServiceHelper, MyFileTypes } from '../helpers/FilesServiceHelper';
 import { Buffer } from 'node:buffer';
 import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
@@ -62,7 +61,7 @@ export function decodeBase64DataUri(dataString: string): Base64DecodedFile {
 export async function processBase64FileField(
   input: Record<string, any>,
   fieldName: string,
-  collectionName: CollectionNames,
+  collectionName: string,
   myDatabaseHelper: MyDatabaseHelper
 ): Promise<void> {
   const value = input[fieldName];
