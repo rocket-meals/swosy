@@ -19,7 +19,8 @@ let _isPlaying = false;
 
 function processNext(): void {
 	if (_isPlaying || _queue.length === 0) return;
-	const item = _queue.shift()!;
+	const item = _queue.shift();
+	if (item == null) return;
 	_isPlaying = true;
 
 	// Log intent before speaking.

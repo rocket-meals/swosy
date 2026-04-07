@@ -138,7 +138,9 @@ export function speakAnnouncement(
 	options?: Omit<Speech.SpeechOptions, 'language'>,
 	source: string = 'unknown',
 ): void {
-	enqueueAnnouncement(text, languageCode, options as Omit<Speech.SpeechOptions, 'language' | 'onDone' | 'onError' | 'onStopped'>, source);
+	// Strip the callback keys that AudioQueueHelper manages internally.
+	const { onDone: _d, onError: _e, onStopped: _s, ...forwardedOptions } = (options ?? {}) as Speech.SpeechOptions;
+	enqueueAnnouncement(text, languageCode, forwardedOptions, source);
 }
 
 // ─── Distance / speed formatting helpers ─────────────────────────────────────
@@ -199,6 +201,27 @@ export interface PeriodicAnnouncementContent {
 }
 
 /**
+ * Format pace (min/km) as a localised speech string fragment.
+ * @param paceMinPerKm  Pace value in minutes per km
+ * @param langCode      Primary language code (e.g. "de", "en")
+ * @param prefix        Label prefix to prepend (e.g. "Pace" or "Ø Pace")
+ * @param prefixEn      English label prefix
+ */
+function formatPaceForSpeech(
+	paceMinPerKm: number,
+	langCode: string,
+	prefix: string,
+	prefixEn: string,
+): string {
+	const pm = Math.floor(paceMinPerKm);
+	const ps = Math.round((paceMinPerKm - pm) * 60);
+	if (langCode === 'de') {
+		return `${prefix} ${pm} Minuten ${ps} Sekunden`;
+	}
+	return `${prefixEn} ${pm} minutes ${ps} seconds`;
+}
+
+/**
  * Build a localised TTS announcement for periodic (time-based) updates during
  * recording.  Only the content toggles that are enabled are included.
  *
@@ -230,23 +253,11 @@ export function buildPeriodicAnnouncement(
 	}
 
 	if (content.announcePace && stats.paceMinPerKm != null) {
-		const pm = Math.floor(stats.paceMinPerKm);
-		const ps = Math.round((stats.paceMinPerKm - pm) * 60);
-		if (langCode === 'de') {
-			parts.push(`Pace ${pm} Minuten ${ps} Sekunden`);
-		} else {
-			parts.push(`Pace ${pm} minutes ${ps} seconds`);
-		}
+		parts.push(formatPaceForSpeech(stats.paceMinPerKm, langCode, 'Pace', 'Pace'));
 	}
 
 	if (content.announcePaceAvg && stats.paceMinPerKm != null) {
-		const pm = Math.floor(stats.paceMinPerKm);
-		const ps = Math.round((stats.paceMinPerKm - pm) * 60);
-		if (langCode === 'de') {
-			parts.push(`Ø Pace ${pm} Minuten ${ps} Sekunden`);
-		} else {
-			parts.push(`Average pace ${pm} minutes ${ps} seconds`);
-		}
+		parts.push(formatPaceForSpeech(stats.paceMinPerKm, langCode, 'Ø Pace', 'Average pace'));
 	}
 
 	if (content.announceDuration) {
