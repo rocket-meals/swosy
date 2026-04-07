@@ -293,6 +293,8 @@ export default function SpeechSettingsContent() {
 				announceSpeed: settings.announceSpeed,
 				announceCalories: settings.announceCalories,
 				announceHeartRate: settings.announceHeartRate,
+				announcePaceAvg: settings.announcePaceAvg,
+				announceSpeedAvg: settings.announceSpeedAvg,
 			},
 		);
 		if (!text) return;
@@ -554,16 +556,6 @@ export default function SpeechSettingsContent() {
 
 			{/* ── Information intervals ──────────────────────────────── */}
 			<SettingsListGroupTitle title="Information im Intervall von" />
-			<SettingsListBoolean
-				iconBgColor={CONTENT_COLOR}
-				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
-				label="Distanz"
-				isEnabled={settings.announceDistance}
-				onToggle={() => update({ announceDistance: !settings.announceDistance })}
-				valueActive="Wird angesagt"
-				valueInactive="Deaktiviert"
-				groupPosition="top"
-			/>
 			<PaceMinSecInput
 				iconBgColor={INTERVAL_COLOR}
 				leftIcon={<MaterialCommunityIcons name="clock-outline" size={22} color="#ffffff" />}
@@ -572,7 +564,7 @@ export default function SpeechSettingsContent() {
 				minutes={settings.intervalTimeMinutes}
 				seconds={settings.intervalTimeSeconds}
 				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
-				groupPosition="middle"
+				groupPosition="top"
 				primaryColor={INTERVAL_COLOR}
 			/>
 			<SettingsListNumberInput
@@ -596,13 +588,33 @@ export default function SpeechSettingsContent() {
 			<SettingsListGroupTitle title="Sprachansagen Inhalte" />
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
+				label="Distanz"
+				isEnabled={settings.announceDistance}
+				onToggle={() => update({ announceDistance: !settings.announceDistance })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="top"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
 				label="Pace (min/km)"
 				isEnabled={settings.announcePace}
 				onToggle={() => update({ announcePace: !settings.announcePace })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
-				groupPosition="top"
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
+				label="Pace Ø (avg, min/km)"
+				isEnabled={settings.announcePaceAvg}
+				onToggle={() => update({ announcePaceAvg: !settings.announcePaceAvg })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="middle"
 			/>
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
@@ -610,6 +622,16 @@ export default function SpeechSettingsContent() {
 				label="Geschwindigkeit (km/h)"
 				isEnabled={settings.announceSpeed}
 				onToggle={() => update({ announceSpeed: !settings.announceSpeed })}
+				valueActive="Wird angesagt"
+				valueInactive="Deaktiviert"
+				groupPosition="middle"
+			/>
+			<SettingsListBoolean
+				iconBgColor={CONTENT_COLOR}
+				leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
+				label="Geschwindigkeit Ø (avg, km/h)"
+				isEnabled={settings.announceSpeedAvg}
+				onToggle={() => update({ announceSpeedAvg: !settings.announceSpeedAvg })}
 				valueActive="Wird angesagt"
 				valueInactive="Deaktiviert"
 				groupPosition="middle"

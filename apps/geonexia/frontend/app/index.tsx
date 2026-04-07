@@ -43,9 +43,9 @@ import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
 import { setMapSearchState, resetMapSearchState, setMapSearchName, toggleMapSearchKey, type MapSearchStateEntry } from '../store/mapSearchSlice';
-import * as Speech from 'expo-speech';
 import { getLocales } from 'expo-localization';
-import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { buildKmAnnouncement, speakAnnouncement, buildBackgroundAnnouncement, buildPeriodicAnnouncement, buildPaceHintAnnouncement, buildOnTargetAnnouncement, speechRateToNumber, enableBackgroundAudio, disableBackgroundAudio } from '../helpers/TTSHelper';
+import { clearAudioQueue } from '../helpers/AudioQueueHelper';
 import { findMatchingRoutes } from '../helpers/RouteMatchingHelper';
 import { saveRecordingSnapshot, loadRecordingSnapshot, clearRecordingSnapshot, type InterruptedRecordingSnapshot } from '../helpers/InterruptedRecordingStorage';
 import type { PaceHintState } from '../helpers/TTSHelper';
@@ -4328,16 +4328,16 @@ export default function RecordScreen() {
 						next = 'too_slow';
 					}
 
-					// Announce only on a *transition* into a warning state from on_target
-					// and only if the cooldown has elapsed.
 					const now = Date.now();
+					const locale = getLocales()[0]?.languageTag ?? 'en-US';
+					const langCode = locale.split('-')[0].toLowerCase();
+
+					// Announce "too fast" / "too slow" only on transition from on_target.
 					if (
 						next !== 'on_target' &&
 						prev === 'on_target' &&
 						now - lastPaceHintTimeRef.current >= PACE_HINT_COOLDOWN_MS
 					) {
-						const locale = getLocales()[0]?.languageTag ?? 'en-US';
-						const langCode = locale.split('-')[0].toLowerCase();
 						const text = buildPaceHintAnnouncement(next, currentPace, targetPace, locale);
 						try {
 							speakAnnouncement(text, langCode, {
@@ -4349,6 +4349,21 @@ export default function RecordScreen() {
 							console.warn('[RecordScreen] Pace hint announcement failed:', err);
 						}
 						lastPaceHintTimeRef.current = now;
+					}
+
+					// Announce "Zielgeschwindigkeit erreicht" when returning to on_target
+					// after a warning state.
+					if (next === 'on_target' && prev !== 'on_target') {
+						const text = buildOnTargetAnnouncement(locale);
+						try {
+							speakAnnouncement(text, langCode, {
+								volume: curSs.volume,
+								rate: speechRateToNumber(curSs.speechRate),
+								useApplicationAudioSession: curSs.duckMusicDuringTTS,
+							}, 'pace_hint_on_target');
+						} catch (err) {
+							console.warn('[RecordScreen] On-target announcement failed:', err);
+						}
 					}
 
 					paceHintStateRef.current = next;
@@ -4497,6 +4512,8 @@ export default function RecordScreen() {
 				announceSpeed: curSs.announceSpeed,
 				announceCalories: curSs.announceCalories,
 				announceHeartRate: curSs.announceHeartRate,
+				announcePaceAvg: curSs.announcePaceAvg,
+				announceSpeedAvg: curSs.announceSpeedAvg,
 			});
 			if (text.length > 0) {
 				try {
@@ -4757,7 +4774,7 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		accumulatedSecondsRef.current = 0;
 		movedPlayerManuallyRef.current = false;
-		try { Speech.stop(); } catch (err) { console.warn('[RecordScreen] Speech.stop failed:', err); }
+		clearAudioQueue();
 		await disableBackgroundAudio();
 
 		// Exit heading mode and restore default pitch/bearing
