@@ -48,6 +48,10 @@ export type SpeechSettingsState = {
 	announceSpeed: boolean;
 	announceCalories: boolean;
 	announceHeartRate: boolean;
+	/** Announce average pace (min/km) in periodic updates */
+	announcePaceAvg: boolean;
+	/** Announce average speed (km/h, derived from avg pace) in periodic updates */
+	announceSpeedAvg: boolean;
 	/** Announce when the app moves to the background during a recording */
 	announceAppInBackground: boolean;
 };
@@ -77,6 +81,8 @@ export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	announceSpeed: false,
 	announceCalories: false,
 	announceHeartRate: false,
+	announcePaceAvg: false,
+	announceSpeedAvg: false,
 	announceAppInBackground: true,
 };
 
