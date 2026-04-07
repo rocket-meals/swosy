@@ -285,6 +285,7 @@ export const HEX_TILE_SCRIPT = `
     for (var i = 0; i < features.length; i++) {
       var feature = features[i];
       var ring = feature.geometry && feature.geometry.coordinates && feature.geometry.coordinates[0];
+      // GeoJSON polygon rings need ≥ 3 unique vertices plus the closing vertex = 4 points minimum
       if (!ring || ring.length < 4) { normalized.push(feature); continue; }
       // Polygon rings are closed (last === first); work with n unique vertices
       var n = ring.length - 1;
@@ -361,6 +362,9 @@ export const HEX_TILE_SCRIPT = `
   // When hexNormalizeShape is enabled, the projected pixel positions of hex
   // vertices change with every camera movement, so we must recompute the
   // regular hexagon polygons to keep them aligned with the map.
+  // The normalizeRafPending flag ensures at most one animation frame callback
+  // is ever queued at once, coalescing all move events within a single frame
+  // into a single update and keeping overhead negligible.
   function scheduleNormalizeUpdate() {
     if (!hexNormalizeShape || !currentRawHexGeoJson || normalizeRafPending) return;
     normalizeRafPending = true;
