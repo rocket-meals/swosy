@@ -4459,11 +4459,11 @@
                   // This ensures tall (portrait) textures are never clipped at the top or bottom.
                   var drawW, drawH;
                   if (targetCanvasRatio >= 1) {
-                    // Image is relatively wider: fit width to canvas, scale height accordingly.
+                    // Image is relatively wider: constrain width to canvas, derive height from aspect ratio.
                     drawW = size;
                     drawH = size / targetCanvasRatio;
                   } else {
-                    // Image is relatively taller: fit height to canvas, scale width accordingly.
+                    // Image is relatively taller: constrain height to canvas, derive width from aspect ratio.
                     drawH = size;
                     drawW = size * targetCanvasRatio;
                   }
