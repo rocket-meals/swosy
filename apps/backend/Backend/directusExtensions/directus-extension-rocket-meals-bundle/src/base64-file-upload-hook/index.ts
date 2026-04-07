@@ -3,7 +3,6 @@ import { MyDefineHook } from '../helpers/MyDefineHook';
 import { RegisterFunctions } from '@directus/extensions';
 import { ApiContext } from '../helpers/ApiContext';
 import { processBase64FileField } from './Base64FileUploadHelper';
-import { CollectionNames } from 'repo-depkit-common';
 
 const HOOK_NAME = 'base64-file-upload-hook';
 
@@ -58,7 +57,7 @@ export default MyDefineHook.defineHookWithAllTablesExisting(
     for (const collectionName of collectionNames) {
       let fields;
       try {
-        fields = await fieldsHelper.getFieldsForCollection(collectionName as CollectionNames);
+        fields = await fieldsHelper.getFieldsForCollection(collectionName);
       } catch (error) {
         console.warn(`${HOOK_NAME}: Failed to get fields for collection "${collectionName}"`, error);
         continue;

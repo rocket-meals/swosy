@@ -24,7 +24,7 @@ export class DirectusFieldsServiceHelper {
 
   public async getFieldsForCollection(collectionName: CollectionNames | string){
     const fieldsService =  await this.getFieldsService();
-    return await fieldsService.readAll(collectionName as CollectionNames);
+    return await fieldsService.readAll(collectionName as any);
   }
 
 
