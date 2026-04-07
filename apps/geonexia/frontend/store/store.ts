@@ -16,7 +16,7 @@ import { saveSportType } from '../helpers/SportTypeStorage';
 import { saveThemeMode } from '../helpers/ThemeStorage';
 import { BillboardConfigState, saveBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { HexTextureConfigState, saveHexTextureConfig } from '../helpers/HexTextureConfigStorage';
-import { saveGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { saveGpsIntervalSeconds } from '../helpers/GpsIntervalStorage';
 import { saveTTSEnabled } from '../helpers/TTSStorage';
 import { saveSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { saveDisplaySettings } from '../helpers/DisplaySettingsStorage';
@@ -27,7 +27,6 @@ import type { DisplaySettingsState } from './displaySettingsSlice';
 import type { ReplaySettingsState } from './replaySettingsSlice';
 import type { SportType } from './sportTypeSlice';
 import type { ThemeMode } from './themeSlice';
-import type { GpsIntervalMode } from './gpsIntervalSlice';
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -69,8 +68,8 @@ let _lastSavedBbConfig: BillboardConfigState | null = null;
 let _hexTextureConfigTimer: ReturnType<typeof setTimeout> | null = null;
 let _lastSavedHexTextureConfig: HexTextureConfigState | null = null;
 
-// Auto-persist GPS interval mode to disk whenever it changes.
-let _lastSavedGpsIntervalMode: GpsIntervalMode | null = null;
+// Auto-persist GPS interval seconds to disk whenever it changes.
+let _lastSavedGpsIntervalSeconds: number | null = null;
 
 // Auto-persist TTS enabled flag to disk whenever it changes.
 let _lastSavedTTSEnabled: boolean | null = null;
@@ -156,10 +155,10 @@ store.subscribe(() => {
 		}, 500);
 	}
 
-	const { selectedMode: gpsMode } = state.gpsInterval;
-	if (gpsMode !== _lastSavedGpsIntervalMode) {
-		_lastSavedGpsIntervalMode = gpsMode;
-		saveGpsIntervalMode(gpsMode);
+	const { intervalSeconds: gpsSeconds } = state.gpsInterval;
+	if (gpsSeconds !== _lastSavedGpsIntervalSeconds) {
+		_lastSavedGpsIntervalSeconds = gpsSeconds;
+		saveGpsIntervalSeconds(gpsSeconds);
 	}
 
 	const { ttsEnabled } = state.tts;

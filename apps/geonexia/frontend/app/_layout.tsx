@@ -16,7 +16,7 @@ import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
 import { loadPersistedHexTextureConfig } from '../store/hexTextureConfigSlice';
-import { loadGpsIntervalMode as loadGpsIntervalModeAction } from '../store/gpsIntervalSlice';
+import { loadGpsIntervalSeconds as loadGpsIntervalSecondsAction } from '../store/gpsIntervalSlice';
 import { loadTTSEnabled as loadTTSEnabledAction } from '../store/ttsSlice';
 import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechSettingsSlice';
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
@@ -27,7 +27,7 @@ import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
 import { loadHexTextureConfig } from '../helpers/HexTextureConfigStorage';
-import { loadGpsIntervalMode } from '../helpers/GpsIntervalStorage';
+import { loadGpsIntervalSeconds } from '../helpers/GpsIntervalStorage';
 import { loadTTSEnabled } from '../helpers/TTSStorage';
 import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
@@ -444,12 +444,12 @@ export default function Layout() {
 			.catch((err) => {
 				console.warn('[Layout] Failed to load persisted hex texture config:', err);
 			});
-		loadGpsIntervalMode()
-			.then((mode) => {
-				store.dispatch(loadGpsIntervalModeAction(mode));
+		loadGpsIntervalSeconds()
+			.then((seconds) => {
+				store.dispatch(loadGpsIntervalSecondsAction(seconds));
 			})
 			.catch((err) => {
-				console.warn('[Layout] Failed to load persisted GPS interval mode:', err);
+				console.warn('[Layout] Failed to load persisted GPS interval seconds:', err);
 			});
 		loadTTSEnabled()
 			.then((enabled) => {
