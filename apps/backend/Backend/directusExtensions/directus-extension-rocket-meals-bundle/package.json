@@ -55,6 +55,11 @@
       },
       {
         "type": "hook",
+        "name": "base64-file-upload-hook",
+        "source": "src/base64-file-upload-hook/index.ts"
+      },
+      {
+        "type": "hook",
         "name": "chat-conversation-state-hook",
         "source": "src/chat-conversation-state-hook/index.ts"
       },
