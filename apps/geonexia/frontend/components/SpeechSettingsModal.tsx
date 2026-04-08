@@ -609,7 +609,7 @@ export default function SpeechSettingsContent() {
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="speedometer-medium" size={22} color="#ffffff" />}
-				label="Pace Ø (avg, min/km)"
+				label="Durchschnittliche Pace (min/km)"
 				isEnabled={settings.announcePaceAvg}
 				onToggle={() => update({ announcePaceAvg: !settings.announcePaceAvg })}
 				valueActive="Wird angesagt"
@@ -629,7 +629,7 @@ export default function SpeechSettingsContent() {
 			<SettingsListBoolean
 				iconBgColor={CONTENT_COLOR}
 				leftIcon={<MaterialCommunityIcons name="speedometer" size={22} color="#ffffff" />}
-				label="Geschwindigkeit Ø (avg, km/h)"
+				label="Durchschnittliche Geschwindigkeit (km/h)"
 				isEnabled={settings.announceSpeedAvg}
 				onToggle={() => update({ announceSpeedAvg: !settings.announceSpeedAvg })}
 				valueActive="Wird angesagt"
