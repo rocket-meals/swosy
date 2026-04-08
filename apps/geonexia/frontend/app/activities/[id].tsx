@@ -16,7 +16,7 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, QrCode, SettingsList, SettingsListBoolean, SettingsListGroupTitle, SettingsListSelectOption, SettingsListSelectOptionItem, SettingsListSelectOptionSingle, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteActivity, loadActivity, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
+import { deleteActivity, loadActivity, loadActivities, RoutePoint, RunStats, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { TimeHelper } from '../../helpers/TimeHelper';
 import { SavedRoute, loadRoute, loadRoutes, saveRoute } from '../../helpers/RouteStorage';
 import { RouteMatchResult, findMatchingRoutes } from '../../helpers/RouteMatchingHelper';
@@ -25,6 +25,7 @@ import { SPORT_TYPES } from '../../store/sportTypeSlice';
 import { isAvailable as isH3Available, latLngToCell, cellToLatLng, cellToBoundary, gridPathCells, getHexagonEdgeLengthAvg, UNITS } from '../../helpers/H3Helper';
 import { HexTileRecord } from '../../helpers/HexTileStorage';
 import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
+import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
@@ -722,6 +723,7 @@ export default function ActivityDetailScreen() {
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 	const isDebugMode = useDebugMode();
 	const { show: showDebugModal } = useMyScrollViewModal();
+	const [routeSiblingActivities, setRouteSiblingActivities] = useState<SavedActivity[]>([]);
 
 	// Stop map-side auto-rotate and replay animation on unmount
 	useEffect(() => {
@@ -750,6 +752,22 @@ export default function ActivityDetailScreen() {
 	useEffect(() => {
 		loadRoutes().then(setSavedRoutes).catch(() => setSavedRoutes([]));
 	}, []);
+
+	// Load all activities belonging to the same route as this activity
+	useEffect(() => {
+		if (!activity || typeof activity.routeId !== 'string') {
+			setRouteSiblingActivities([]);
+			return;
+		}
+		const routeId = activity.routeId;
+		loadActivities()
+			.then((all) => {
+				const siblings = all.filter((a) => a.routeId === routeId);
+				siblings.sort((a, b) => b.startedAt - a.startedAt);
+				setRouteSiblingActivities(siblings);
+			})
+			.catch(() => setRouteSiblingActivities([]));
+	}, [activity?.routeId ?? null]);
 
 	// Show back arrow instead of drawer hamburger; use theme colors so it stays
 	// visible in both light and dark mode.
@@ -1356,6 +1374,13 @@ export default function ActivityDetailScreen() {
 						groupPosition="bottom"
 					onPress={() => router.navigate(`/routes/${assignedRoute.id}`)}
 					/>
+				)}
+				{/* ── Route statistics (only when a route is assigned) ──── */}
+				{routeSiblingActivities.length > 0 && (
+					<>
+						<SettingsListGroupTitle title="Routen Statistiken" />
+						<ActivityAggregateStatsSection activities={routeSiblingActivities} />
+					</>
 				)}
 				<TouchableOpacity style={[styles.shareButton, { backgroundColor: PRIMARY_COLOR }]} onPress={handleShare} activeOpacity={0.8}>
 					<MaterialIcons name="share" size={18} color="#ffffff" />
