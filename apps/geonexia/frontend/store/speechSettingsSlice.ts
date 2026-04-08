@@ -34,8 +34,6 @@ export type SpeechSettingsState = {
 	intervalTimeMinutes: number;
 	/** Time interval for periodic announcements – seconds component. */
 	intervalTimeSeconds: number;
-	/** Distance interval for periodic announcements (meters). 0 = disabled. */
-	intervalDistanceMeters: number;
 	/** Play a tone at the specified distance interval */
 	toneAtDistance: boolean;
 	/** Vibrate at the specified distance interval */
@@ -72,7 +70,6 @@ export const SPEECH_SETTINGS_DEFAULTS: SpeechSettingsState = {
 	paceHintSlowerSeconds: 30,
 	intervalTimeMinutes: 5,
 	intervalTimeSeconds: 0,
-	intervalDistanceMeters: 1000,
 	toneAtDistance: false,
 	vibrationAtDistance: false,
 	announceDistance: true,
