@@ -4800,10 +4800,10 @@ export default function RecordScreen() {
 			onClose: closeDebugReplayModal,
 			children: (
 				<View>
-					<SettingsListGroupTitle title="Wähle eine aufgezeichnete Aktivität" />
+					<SettingsListGroupTitle title="Select a recorded activity" />
 					<SettingsListSelectOptionSingle
 						key="__none__"
-						label="Kein Replay (normales GPS)"
+						label="No Replay (Normal GPS)"
 						isSelected={debugReplayActivityRef.current === null}
 						selectionColor={PRIMARY_COLOR}
 						onPress={() => {
@@ -4814,7 +4814,7 @@ export default function RecordScreen() {
 					/>
 					{activities.map((activity, i) => {
 						const date = new Date(activity.startedAt);
-						const label = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${activity.stats.distanceKm.toFixed(2)} km · ${activity.routePoints.length} Punkte`;
+						const label = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${activity.stats.distanceKm.toFixed(2)} km · ${activity.routePoints.length} Points`;
 						const position = i === activities.length - 1 ? 'bottom' : 'middle';
 						return (
 							<SettingsListSelectOptionSingle
