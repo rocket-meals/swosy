@@ -183,29 +183,33 @@ export default function ActivitiesScreen() {
 							return;
 						}
 
-						// Migrate activities that are missing computed.enclosedHexTiles.
+						// Recompute enclosed tiles for every activity that has enough walked tiles.
+						// This corrects stale stored values (e.g. open-route activities that were
+						// previously recorded with a closed loop) and fills in missing data for
+						// activities saved before the computed field was introduced.
 						// The canonical home for enclosed-tile data is computed.enclosedHexTiles.
 						// The top-level fields enclosedHexTiles / hexTilesEnclosed are legacy and
 						// must never be written; they are only kept for reading old activity files.
 						for (const activity of allActivities) {
 							let updated = false;
 
-							// Determine enclosed tiles: prefer computed, then fall back to legacy fields.
-							let enclosedTiles: string[] =
-								activity.computed?.enclosedHexTiles ??
-								activity.enclosedHexTiles ??
-								activity.hexTilesEnclosed ??
-								[];
-
-							// Recompute from visited hex tiles when enclosed tiles are still unavailable.
+							// Always recompute from the route when enough walked tiles are available.
 							// Include interpolated GPS point tiles so routes closed via route
 							// interpolation also form a proper closed loop for the polygon check.
-							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+							// Fall back to stored values only for legacy activities without hexTilesOrdered.
+							let enclosedTiles: string[];
+							if (activity.hexTilesOrdered?.length) {
 								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(
 									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
 									h3Res,
 								);
+							} else {
+								enclosedTiles =
+									activity.computed?.enclosedHexTiles ??
+									activity.enclosedHexTiles ??
+									activity.hexTilesEnclosed ??
+									[];
 							}
 
 							if (!activity.computed) {
@@ -216,12 +220,11 @@ export default function ActivitiesScreen() {
 								updated = true;
 							} else if (
 								!Array.isArray(activity.computed.enclosedHexTiles) ||
-								(activity.computed.enclosedHexTiles.length === 0 && enclosedTiles.length > 0)
+								activity.computed.enclosedHexTiles.length !== enclosedTiles.length ||
+								activity.computed.enclosedHexTiles.some((id, i) => id !== enclosedTiles[i])
 							) {
 								activity.computed = { ...activity.computed, enclosedHexTiles: enclosedTiles };
-								if (activity.enclosedTileCount == null) {
-									activity.enclosedTileCount = enclosedTiles.length;
-								}
+								activity.enclosedTileCount = enclosedTiles.length;
 								updated = true;
 							}
 
