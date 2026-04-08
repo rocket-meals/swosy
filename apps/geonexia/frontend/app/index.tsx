@@ -4167,9 +4167,24 @@ export default function RecordScreen() {
 
 			const lastAccepted = lastAcceptedGpsPointRef.current;
 			if (lastAccepted) {
-				const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
 				const dtSec = (point.timestamp - lastAccepted.timestamp) / 1000;
+
+				// ── GPS time-interval filter ──────────────────────────────────────────
+				// During recording, skip this point if the elapsed time since the last
+				// accepted GPS fix is less than 95 % of the configured GPS interval.
+				// This prevents the platform from delivering points more frequently than
+				// the user-selected accuracy setting, which would result in too many
+				// recorded GPS points.
+				if (isRecordingRef.current) {
+					const gpsIntervalSeconds = store.getState().gpsInterval.intervalSeconds;
+					const minElapsedSec = gpsIntervalSeconds * 0.95;
+					if (dtSec < minElapsedSec) {
+						return;
+					}
+				}
+
 				if (dtSec > 0) {
+					const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, point.lat, point.lng);
 					const impliedSpeedKmh = (distKm / dtSec) * 3600;
 					const activeSportDef = SPORT_TYPES.find((s) => s.type === selectedSportTypeRef.current);
 					const maxSpeedKmh = activeSportDef?.maxSpeedKmh ?? 250;
