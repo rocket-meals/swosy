@@ -4344,10 +4344,16 @@ export default function RecordScreen() {
 		if (speechSettingsRef.current.enabled && d > 0) {
 			const curSs = speechSettingsRef.current;
 			if (curSs.paceTargetEnabled) {
+				// Use instantaneous GPS speed for comparison so the hint reflects
+				// the runner's current speed rather than the session average.
+				// Fall back to the average pace when GPS speed is unavailable.
 				const elapsedSec = startTimeRef.current > 0
 					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 					: accumulatedSecondsRef.current;
-				const currentPace = elapsedSec > 0 ? elapsedSec / 60 / d : null;
+				const currentPace =
+					point.speed != null && point.speed > 0.5
+						? 1000 / (point.speed * 60) // instantaneous pace: min/km from m/s
+						: elapsedSec > 0 ? elapsedSec / 60 / d : null; // average fallback
 				if (currentPace != null) {
 					const targetPace = curSs.paceTargetMinutes + curSs.paceTargetSeconds / 60;
 					const fasterThreshold = curSs.paceHintFasterMinutes + curSs.paceHintFasterSeconds / 60;

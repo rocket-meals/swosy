@@ -15,7 +15,6 @@ import {
 	SettingsList,
 	SettingsListBoolean,
 	SettingsListGroupTitle,
-	SettingsListNumberInput,
 	SettingsListSelectOption,
 	useMyScrollViewModal,
 	useTheme,
@@ -564,24 +563,8 @@ export default function SpeechSettingsContent() {
 				minutes={settings.intervalTimeMinutes}
 				seconds={settings.intervalTimeSeconds}
 				onSave={(m, s) => update({ intervalTimeMinutes: m, intervalTimeSeconds: s })}
-				groupPosition="top"
+				groupPosition="single"
 				primaryColor={INTERVAL_COLOR}
-			/>
-			<SettingsListNumberInput
-				iconBgColor={INTERVAL_COLOR}
-				leftIcon={<MaterialCommunityIcons name="map-marker-distance" size={22} color="#ffffff" />}
-				label="Distanz"
-				value={settings.intervalDistanceMeters > 0 ? `Alle ${settings.intervalDistanceMeters} m` : 'Deaktiviert'}
-				modalTitle="Distanzintervall"
-				initialValue={settings.intervalDistanceMeters > 0 ? settings.intervalDistanceMeters : SPEECH_SETTINGS_DEFAULTS.intervalDistanceMeters}
-				min={100}
-				max={10000}
-				step={100}
-				suffix="m"
-				onSave={(val: number) => update({ intervalDistanceMeters: val })}
-				allowDisable
-				onDisable={() => update({ intervalDistanceMeters: 0 })}
-				groupPosition="bottom"
 			/>
 
 			{/* ── Announcement content toggles ───────────────────────── */}
