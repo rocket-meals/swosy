@@ -15,7 +15,7 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
+import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, isAvailable as isH3Available } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
@@ -42,6 +42,17 @@ const BBOX_PADDING_DEG = 0.001;
 
 /** Safety cap on the grid-disk radius used to enumerate candidate cells. */
 const MAX_GRID_DISK_RADIUS = 30;
+
+/**
+ * Maximum grid-distance (in H3 grid steps) between the first and last hex tiles
+ * for a route to be considered a closed loop for enclosed-tile calculation.
+ *
+ * Relaxed from 1 (immediate neighbours only) to allow routes where the runner
+ * did not return exactly to the starting tile, but GPS interpolation bridges
+ * the remaining gap.  At resolution 10 (edge ≈ 66 m) a distance of 10 allows
+ * a gap of up to ~660 m between start and end without discarding the enclosed area.
+ */
+const MAX_LOOP_CLOSURE_GRID_DISTANCE = 10;
 
 /**
  * Billboard key for the treePineLarge sprite (index 50 in OBJECT_SPRITES).
@@ -200,10 +211,22 @@ export function findEnclosedCellsFromHexTiles(
 	}
 	if (polygon.length < 3) return [];
 
-	// Check loop closure: first and last hex tiles must be the same cell or adjacent neighbors.
+	// Check loop closure: first and last hex tiles must be within MAX_LOOP_CLOSURE_GRID_DISTANCE
+	// grid steps of each other.  Immediate adjacency (distance = 1) is the ideal case, but
+	// routes where the runner stopped short and GPS interpolation fills the remaining gap may
+	// end with a tile that is a few cells away from the start – still close enough to treat
+	// the route as a closed loop.
 	const firstHex = visitedHexIds[0];
 	const lastHex = visitedHexIds[visitedHexIds.length - 1];
-	if (firstHex !== lastHex && !areNeighborCells(firstHex, lastHex)) return [];
+	if (firstHex !== lastHex) {
+		try {
+			const closureDistance = gridDistance(firstHex, lastHex);
+			if (closureDistance > MAX_LOOP_CLOSURE_GRID_DISTANCE) return [];
+		} catch {
+			// gridDistance can throw across icosahedron faces; treat as open route.
+			return [];
+		}
+	}
 
 	// Bounding box with small padding.
 	const lngs = polygon.map(([lng]) => lng);
