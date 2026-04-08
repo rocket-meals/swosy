@@ -767,7 +767,7 @@ export default function ActivityDetailScreen() {
 				setRouteSiblingActivities(siblings);
 			})
 			.catch(() => setRouteSiblingActivities([]));
-	}, [activity?.routeId]);
+	}, [activity?.routeId ?? null]);
 
 	// Show back arrow instead of drawer hamburger; use theme colors so it stays
 	// visible in both light and dark mode.

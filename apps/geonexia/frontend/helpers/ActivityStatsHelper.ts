@@ -51,8 +51,10 @@ export type AggregateStats = {
 
 /**
  * Compute aggregate statistics over a list of activities.
- * Activities are expected to be sorted newest-first (by startedAt desc)
- * so that `activities[0]` is the most recent.
+ *
+ * The caller is responsible for ensuring activities are sorted newest-first
+ * (by startedAt desc) so that `activities[0]` is the most recent activity,
+ * which is used to derive `lastPaceMinPerKm`.
  */
 export function computeStats(activities: SavedActivity[]): AggregateStats {
 	const result: AggregateStats = {
