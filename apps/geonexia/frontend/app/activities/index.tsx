@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { loadActivities, saveActivity, SavedActivity } from '../../helpers/ActivityStorage';
 import { loadRoutes, SavedRoute } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available, latLngToCell } from '../../helpers/H3Helper';
-import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../../helpers/ActivityMapRebuildHelper';
+import { rebuildMapFromActivities, computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
 import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
@@ -198,11 +198,13 @@ export default function ActivitiesScreen() {
 								[];
 
 							// Recompute from visited hex tiles when enclosed tiles are still unavailable.
-							// Using hex-tile centroids is faster than raw GPS points (fewer vertices).
+							// Include interpolated GPS point tiles so routes closed via route
+							// interpolation also form a proper closed loop for the polygon check.
 							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(
-									activity.hexTilesOrdered,
-									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+									h3Res,
 								);
 							}
 

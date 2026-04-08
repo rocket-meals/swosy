@@ -19,6 +19,7 @@ import { isAvailable as isH3Available } from '../../helpers/H3Helper';
 import {
 	computeActivityData,
 	findEnclosedCellsFromHexTiles,
+	buildFullRouteTileIds,
 	H3_RESOLUTION_FALLBACK,
 	rebuildMapFromActivities,
 	hasForestFeature,
@@ -428,9 +429,10 @@ export default function SettingsScreen() {
 								activity.hexTilesEnclosed ??
 								[];
 							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(
-									activity.hexTilesOrdered,
-									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+									h3Res,
 								);
 							}
 							const newComputed = computeActivityData(activity, enclosedTiles);
@@ -476,9 +478,10 @@ export default function SettingsScreen() {
 								activity.hexTilesEnclosed ??
 								[];
 							if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+								const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 								enclosedTiles = findEnclosedCellsFromHexTiles(
-									activity.hexTilesOrdered,
-									activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+									buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+									h3Res,
 								);
 							}
 							if (!activity.computed) {
