@@ -229,6 +229,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 	onRevokeConsent,
 	theme,
 }) => {
+	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
 	const [selectedStyleKey, setSelectedStyleKey] = useState(initialSelectedStyleKey);
 	const [localFlyAnimation, setLocalFlyAnimation] = useState(initialUseFlyAnimation);
 	const [localClusterDistance, setLocalClusterDistance] = useState(String(initialClusterDistance));
@@ -262,7 +263,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				title="Kartenstil"
 				value={(OSM_STYLE_VARIANTS.find((v) => v.key === selectedStyleKey) ?? OSM_STYLE_VARIANTS[0]).label}
 				leftIcon={<MaterialIcons name="layers" size={20} color={theme.screen.icon} />}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={24} color={theme.screen.icon} />}
 				onPress={() => setShowingStyleSelector(true)}
 				groupPosition="top"
 			/>
@@ -315,7 +316,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 			<SettingsList
 				title="Kartensteuerung"
 				leftIcon={<MaterialIcons name="touch-app" size={20} color={theme.screen.icon} />}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={24} color={theme.screen.icon} />}
 				onPress={onShowControlsHint}
 				groupPosition="bottom"
 				showSeparator={false}
@@ -326,7 +327,7 @@ const OsmSettingsContent: React.FC<OsmSettingsContentProps> = ({
 				title="OpenStreetMap-Zustimmung widerrufen"
 				value="Karte wird danach nicht mehr geladen"
 				leftIcon={<MaterialCommunityIcons name="map-marker-off-outline" size={20} color={theme.screen.icon} />}
-				rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
+				rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={24} color={theme.screen.icon} />}
 				onPress={onRevokeConsent}
 				groupPosition="single"
 			/>
@@ -441,34 +442,48 @@ type OsmControlsHintContentProps = {
 
 const OsmControlsHintContent: React.FC<OsmControlsHintContentProps> = ({ onDontShowAgain, theme }) => {
 	const isWeb = Platform.OS === 'web';
+	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+	const hintTextStyle = {
+		color: theme.screen.text,
+		fontSize: 15,
+		marginBottom: 8,
+		...(isArabic ? { textAlign: 'right' as const, writingDirection: 'rtl' as const, alignSelf: 'flex-end' as const } : null),
+	};
+	const infoTextStyle = {
+		color: theme.screen.text + '99',
+		fontSize: 13,
+		marginTop: 8,
+		marginBottom: 16,
+		...(isArabic ? { textAlign: 'right' as const, writingDirection: 'rtl' as const, alignSelf: 'flex-end' as const } : null),
+	};
 	return (
 		<View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
 			{isWeb ? (
 				<>
-					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+					<Text style={hintTextStyle}>
 						{'🖱️ Linke Maustaste halten: Karte verschieben'}
 					</Text>
-					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+					<Text style={hintTextStyle}>
 						{'🖱️ Rechte Maustaste halten: Neigung ändern'}
 					</Text>
-					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+					<Text style={hintTextStyle}>
 						{'🖱️ Mausrad: Zoomen'}
 					</Text>
 				</>
 			) : (
 				<>
-					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+					<Text style={hintTextStyle}>
 						{'👌 Zwei Finger spreizen / zusammenführen: Zoomen'}
 					</Text>
-					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+					<Text style={hintTextStyle}>
 						{'☝️☝️ Zwei Finger hoch / runter: Neigung ändern'}
 					</Text>
-					<Text style={{ color: theme.screen.text, fontSize: 15, marginBottom: 8 }}>
+					<Text style={hintTextStyle}>
 						{'☝️ Ein Finger bewegen: Karte verschieben'}
 					</Text>
 				</>
 			)}
-			<Text style={{ color: theme.screen.text + '99', fontSize: 13, marginTop: 8, marginBottom: 16 }}>
+			<Text style={infoTextStyle}>
 				{'Dieser Hinweis kann über die Einstellungen jederzeit aufgerufen werden.'}
 			</Text>
 			<TouchableOpacity
@@ -491,27 +506,31 @@ type OsmConsentContentProps = {
 	theme: ReturnType<typeof useTheme>['theme'];
 };
 
-const OsmConsentContent: React.FC<OsmConsentContentProps> = ({ onConsent, theme }) => (
-	<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
-		<MaterialCommunityIcons name="map-marker-radius" size={56} color={theme.screen.icon} style={{ marginBottom: 16 }} />
-		<Text style={{ color: theme.screen.text, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 }}>
-			Kartenanzeige mit OpenStreetMap
-		</Text>
-		<Text style={{ color: theme.screen.text, fontSize: 14, textAlign: 'center', marginBottom: 8, lineHeight: 20 }}>
-			Diese Karte lädt Kartendaten von <Text style={{ fontWeight: 'bold' }}>OpenStreetMap</Text> (openstreetmap.org) und <Text style={{ fontWeight: 'bold' }}>OpenFreeMap</Text> (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.
-		</Text>
-		<Text style={{ color: theme.screen.text + 'aa', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
-			Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.
-		</Text>
-		<SettingsList
-			title="Kartendaten laden (Zustimmen)"
-			leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
-			rightIcon={<Entypo name="chevron-small-right" size={24} color={theme.screen.icon} />}
-			onPress={onConsent}
-			groupPosition="single"
-		/>
-	</View>
-);
+const OsmConsentContent: React.FC<OsmConsentContentProps> = ({ onConsent, theme }) => {
+	const isArabic = useAppSelector((state) => state.settings.language) === 'ar';
+
+	return (
+		<View style={{ paddingHorizontal: 16, paddingVertical: 24, alignItems: 'center' }}>
+			<MaterialCommunityIcons name="map-marker-radius" size={56} color={theme.screen.icon} style={{ marginBottom: 16 }} />
+			<Text style={{ color: theme.screen.text, fontSize: 17, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 }}>
+				Kartenanzeige mit OpenStreetMap
+			</Text>
+			<Text style={{ color: theme.screen.text, fontSize: 14, textAlign: 'center', marginBottom: 8, lineHeight: 20 }}>
+				Diese Karte lädt Kartendaten von <Text style={{ fontWeight: 'bold' }}>OpenStreetMap</Text> (openstreetmap.org) und <Text style={{ fontWeight: 'bold' }}>OpenFreeMap</Text> (openfreemap.org). Dabei werden Daten wie deine IP-Adresse an Server der OpenStreetMap Foundation und Protomaps LLC übertragen.
+			</Text>
+			<Text style={{ color: theme.screen.text + 'aa', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 18 }}>
+				Deine Zustimmung wird gespeichert und kann jederzeit in den Karten-Einstellungen widerrufen werden.
+			</Text>
+			<SettingsList
+				title="Kartendaten laden (Zustimmen)"
+				leftIcon={<MaterialCommunityIcons name="check-circle-outline" size={22} color={theme.screen.icon} />}
+				rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={24} color={theme.screen.icon} />}
+				onPress={onConsent}
+				groupPosition="single"
+			/>
+		</View>
+	);
+};
 
 type OsmFilterContentProps = {
 	organisations: DatabaseTypes.Organizations[];
@@ -732,6 +751,7 @@ const OsmVectorMapScreen: React.FC = () => {
 	const { openBuildingDetailsModal } = useBuildingDetailsModal();
 	const { show, close } = useMyScrollViewModal();
 	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 
 	const [logEntries, setLogEntries] = useState<string[]>([]);
 	const logScrollRef = useRef<ScrollView>(null);
@@ -1389,6 +1409,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const openControlsHintModal = useCallback(() => {
 		show({
 			title: 'Kartensteuerung',
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: (
 				<OsmControlsHintContent
 					onDontShowAgain={() => {
@@ -1399,7 +1421,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				/>
 			),
 		});
-	}, [show, close, dispatch, theme]);
+	}, [show, close, dispatch, isRtl, theme]);
 
 	const setGameModeDispatch = useCallback(
 		(value: boolean) => {
@@ -1453,6 +1475,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const openSettingsModal = useCallback(() => {
 		show({
 			title: 'Karten Einstellungen',
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: (
 				<OsmSettingsContent
 					initialSelectedStyleKey={selectedStyleKey}
@@ -1484,7 +1508,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				/>
 			),
 		});
-	}, [show, close, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, carMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, setCarModeDispatch, setConsentDispatch, handleToggleFullscreen, openControlsHintModal]);
+	}, [show, close, isRtl, selectedStyleKey, useFlyAnimation, clusterDistance, gameMode, autoRotateMode, peopleMode, intelligentMovement, peopleCount, carMode, isFullscreen, theme, setSelectedStyleKey, setUseFlyAnimationDispatch, setClusterDistanceDispatch, setGameModeDispatch, setAutoRotateModeDispatch, setPeopleModeDispatch, setIntelligentMovementDispatch, setPeopleCountDispatch, setCarModeDispatch, setConsentDispatch, handleToggleFullscreen, openControlsHintModal]);
 
 	// Compass: reset map bearing to north
 	const handleCompassPress = useCallback(() => {
@@ -1514,6 +1538,8 @@ const OsmVectorMapScreen: React.FC = () => {
 	const openFilterModal = useCallback(() => {
 		show({
 			title: translate(TranslationKeys.organisations),
+			titleTextAlign: isRtl ? 'right' : 'left',
+			titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 			children: (
 				<OsmFilterContent
 					organisations={organisations as DatabaseTypes.Organizations[]}
@@ -1523,7 +1549,7 @@ const OsmVectorMapScreen: React.FC = () => {
 				/>
 			),
 		});
-	}, [show, translate, organisations, organisationLikes, stableOnOrganisationLikeChange, stableOnResetAllFilters]);
+	}, [show, translate, isRtl, organisations, organisationLikes, stableOnOrganisationLikeChange, stableOnResetAllFilters]);
 
 	const isFilterActive = useMemo(() => Object.keys(organisationLikes).length > 0, [organisationLikes]);
 

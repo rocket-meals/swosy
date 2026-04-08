@@ -33,6 +33,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const [warning, setWarning] = useState(false);
 	const [showTooltip, setShowTooltip] = useState(false);
 	const language = useAppSelector(state => state.settings.language);
+	const isArabic = language === 'ar';
 	const user = useAppSelector(state => state.authReducer.user);
 	const profile = useAppSelector(state => state.authReducer.profile);
 	const markingsDict = useAppSelector(state => state.food.markingsDict);
@@ -159,7 +160,7 @@ const SettingsListMarkingLabel: React.FC<SettingsListMarkingLabelProps> = ({
 	const markingText = getTextFromTranslation(marking?.translations, language);
 
 	const leftIconComponent = (
-		<View style={styles.leftIconWrapper}>
+		<View style={[styles.leftIconWrapper, isArabic ? styles.leftIconWrapperReverse : undefined]}>
 			<CustomTooltip
 				placement="top"
 				trigger={triggerProps =>
@@ -222,6 +223,10 @@ export default SettingsListMarkingLabel;
 const styles = StyleSheet.create({
 	leftIconWrapper: {
 		marginRight: 10,
+	},
+	leftIconWrapperReverse: {
+		marginRight: 0,
+		marginLeft: 10,
 	},
 	rightRow: {
 		flexDirection: 'row',

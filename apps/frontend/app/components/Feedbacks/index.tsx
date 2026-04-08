@@ -29,10 +29,11 @@ const loadingState = {
 const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
 	const toast = useToast();
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const dispatch = useDispatch();
 	const foodOfferCanteenId = canteenId;
 	const { width: screenWidth } = useWindowDimensions();
+	const isRtl = language === 'ar';
 	
 	const user = useAppSelector((state) => state.authReducer.user, shallowEqual);
 	const profile = useAppSelector((state) => state.authReducer.profile, shallowEqual);
@@ -193,7 +194,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				style={[
 					styles.heading,
 					isWeb ? styles.headingWeb : styles.headingMobile,
-					{ color: theme.screen.text }
+					{
+						color: theme.screen.text,
+						textAlign: isRtl ? 'right' : 'left',
+						writingDirection: isRtl ? 'rtl' : 'ltr',
+					}
 				]}
 			>
 				{translate(TranslationKeys.feedback_labels)}
@@ -228,12 +233,16 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				<>
 					{previousFeedback && previousFeedback.comment && (
 						<View style={styles.commentsContainer}>
-							<View style={styles.commentsHeader}>
+							<View style={[styles.commentsHeader, { flexDirection: isRtl ? 'row-reverse' : 'row' }]}>
 								<Text
 									style={[
 										styles.heading,
 										styles.subHeading,
-										{ color: theme.screen.text }
+										{
+											color: theme.screen.text,
+											textAlign: isRtl ? 'right' : 'left',
+											writingDirection: isRtl ? 'rtl' : 'ltr',
+										}
 									]}
 								>
 									{translate(TranslationKeys.your_comment)}

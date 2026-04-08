@@ -41,6 +41,7 @@ const Index = () => {
 	const cachedFormCategories = useMemo(() => Object.values(cachedFormCategoriesDict || {}), [cachedFormCategoriesDict]);
 
 	const queueCount = useMemo(() => Object.keys(formQueueDict || {}).length, [formQueueDict]);
+	const isArabic = language === 'ar';
 
 	const getAllCategories = async () => {
 		setLoading(true);
@@ -200,7 +201,15 @@ const Index = () => {
 				}}
 			>
 				{/* Top action row: download button + queue button */}
-				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8, marginBottom: 6 }}>
+				<View
+					style={{
+						flexDirection: isArabic ? 'row-reverse' : 'row',
+						alignItems: 'center',
+						justifyContent: isArabic ? 'flex-start' : 'flex-end',
+						gap: 8,
+						marginBottom: 6,
+					}}
+				>
 					<AppButton
 						variant="ghost"
 						usePlainText
@@ -208,7 +217,7 @@ const Index = () => {
 						onPress={downloadAllData}
 						disabled={isDownloadingAll || loading}
 						style={{
-							flexDirection: 'row',
+							flexDirection: isArabic ? 'row-reverse' : 'row',
 							alignItems: 'center',
 							gap: 6,
 							paddingVertical: 8,
@@ -219,11 +228,7 @@ const Index = () => {
 						}}
 						textStyle={{ color: theme.screen.text, fontFamily: 'Poppins_400Regular', fontSize: 14 }}
 						iconLeft={
-							isDownloadingAll ? (
-								<ActivityIndicator size={18} color={theme.screen.icon} />
-							) : (
-								<FontAwesome name="cloud-download" size={20} color={theme.screen.icon} />
-							)
+							isDownloadingAll ? <ActivityIndicator size={18} color={theme.screen.icon} /> : <FontAwesome name="cloud-download" size={20} color={theme.screen.icon} />
 						}
 					/>
 
@@ -305,6 +310,7 @@ const Index = () => {
 										style={{
 											...styles.formCategory,
 											backgroundColor: theme.screen.iconBg,
+											flexDirection: isArabic ? 'row-reverse' : 'row',
 										}}
 										key={category?.id}
 										onPress={() => {
@@ -314,18 +320,27 @@ const Index = () => {
 											});
 										}}
 									>
-										<View style={styles.col}>
+										<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 											{IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
-											<Text style={{ ...styles.body, color: theme.screen.text }}>{category?.translations ? getFromCategoryTranslation(category?.translations, language) : category?.alias}</Text>
+											<Text
+												style={{
+													...styles.body,
+													color: theme.screen.text,
+													textAlign: isArabic ? 'right' : 'left',
+													writingDirection: isArabic ? 'rtl' : 'ltr',
+												}}
+											>
+												{category?.translations ? getFromCategoryTranslation(category?.translations, language) : category?.alias}
+											</Text>
 										</View>
-										<View style={styles.rowEnd}>
+										<View style={[styles.rowEnd, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 											{cached && (
 												<FontAwesome name="cloud-download" size={16} color={offlineMode ? 'green' : theme.screen.icon} />
 											)}
 											{isShowingCachedData && (
 												<MaterialCommunityIcons name="cached" size={18} color={theme.screen.icon} />
 											)}
-											<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+											<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />
 										</View>
 									</TouchableOpacity>
 								);

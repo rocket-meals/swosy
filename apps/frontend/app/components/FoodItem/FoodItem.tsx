@@ -289,6 +289,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
       showScrollViewModal(
         {
           title: translate(TranslationKeys.description),
+          titleTextAlign: language === 'ar' ? 'right' : 'left',
+          titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
           children: (
             <View style={{ gap: 20 }}>
               <MyMarkdown content={foodDescription} textColor={theme.screen.text} />
@@ -375,6 +377,8 @@ export const FoodItemBase: React.FC<FoodItemProps> = memo(
                         showScrollViewModal(
                           {
                             title: translate(TranslationKeys.ai_generated_image),
+                            titleTextAlign: language === 'ar' ? 'right' : 'left',
+                            titleWritingDirection: language === 'ar' ? 'rtl' : 'ltr',
                             children: <AIGeneratedHintSheet />,
                           },
                           {}

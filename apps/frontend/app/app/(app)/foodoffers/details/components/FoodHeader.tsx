@@ -10,6 +10,7 @@ import { isWeb } from '@/constants/Constants';
 import MyImage from '@/components/MyImage';
 import SettingsList from '@/components/SettingsList';
 import type { FoodDetailsSectionBaseProps } from './types';
+import { useAppSelector } from '@/redux/hooks';
 
 interface FoodHeaderProps extends FoodDetailsSectionBaseProps {
     foodDetails: any;
@@ -36,6 +37,8 @@ const FoodHeader = ({
 }: FoodHeaderProps) => {
     const isLargeScreen = screenWidth > 1000;
     const isMediumScreen = screenWidth > 800;
+    const language = useAppSelector((state) => state.settings.language);
+    const isArabic = language === 'ar';
 
     const dynamicImageStyle = useMemo(() => ({
         width: isLargeScreen ? 400 : screenWidth - 40,
@@ -175,7 +178,8 @@ const FoodHeader = ({
                             { color: theme.screen.text },
                             isLargeScreen ? styles.textLeft : styles.textCenter,
                             styles.flexColumn,
-                            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium
+                            isMediumScreen ? styles.fontSizeLarge : styles.fontSizeMedium,
+                            isArabic ? { lineHeight: isMediumScreen ? 34 : 30 } : undefined
                         ]}
                     >
                         {foodDetails?.name}
@@ -228,7 +232,8 @@ const FoodHeader = ({
             <Text
                 style={[
                     styles.mobileFoodHeading,
-                    { color: theme.screen.text }
+                    { color: theme.screen.text },
+                    isArabic ? { lineHeight: 50 } : undefined
                 ]}
             >
                 {foodDetails?.name}

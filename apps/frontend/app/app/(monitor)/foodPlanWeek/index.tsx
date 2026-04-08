@@ -18,7 +18,8 @@ const Index = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { primaryColor: projectColor, appSettings } = useAppSelector((state) => state.settings);
+	const { primaryColor: projectColor, appSettings, language } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 	const { weekPlan } = useAppSelector((state) => state.management);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : projectColor;
@@ -59,15 +60,29 @@ const Index = () => {
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
 					onPress={openSelectWeekPlanCanteenModal}
 				>
-					<View style={styles.col1}>
+					<View style={[styles.col1, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
-						{windowWidth < 600 && weekPlan?.selectedCanteen?.alias ? <Text style={{ ...styles.label, color: theme.screen.text }}>{weekPlan?.selectedCanteen?.alias}</Text> : <Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.canteen)}</Text>}
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							{isArabic
+								? weekPlan?.selectedCanteen?.alias || translate(TranslationKeys.canteen)
+								: windowWidth < 600 && weekPlan?.selectedCanteen?.alias
+									? weekPlan?.selectedCanteen?.alias
+									: translate(TranslationKeys.canteen)}
+						</Text>
 					</View>
 					<View style={styles.col2}>
-						{windowWidth > 600 && <Text style={{ ...styles.label, color: theme.screen.text }}>{weekPlan?.selectedCanteen?.alias}</Text>}
+						{!isArabic && windowWidth > 600 && <Text style={{ ...styles.label, color: theme.screen.text }}>{weekPlan?.selectedCanteen?.alias}</Text>}
 						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
 					</View>
 				</TouchableOpacity>
@@ -99,6 +114,7 @@ const Index = () => {
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 						opacity: weekPlan?.selectedCanteen?.alias ? 1 : 0.5,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
 					disabled={weekPlan?.selectedCanteen?.alias ? false : true}
 					onPress={() => {
@@ -111,7 +127,7 @@ const Index = () => {
 						<Text style={{ ...styles.label, color: theme.screen.text }}>BigScreen</Text>
 					</View>
 					<View style={styles.col2}>
-						<Entypo name="chevron-small-right" size={22} color={theme.screen.icon} />
+						<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={22} color={theme.screen.icon} />
 					</View>
 				</TouchableOpacity>
 			</ScrollView>

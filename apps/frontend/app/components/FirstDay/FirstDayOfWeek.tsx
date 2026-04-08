@@ -25,8 +25,16 @@ type FirstDayOfWeekProps = {
 const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({ position, isSelected, onPress }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { primaryColor, selectedTheme: mode } = useAppSelector(state => state.settings);
+	const { primaryColor, selectedTheme: mode, language } = useAppSelector(state => state.settings);
+	const isArabic = language === 'ar';
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+	const checkboxIcon = (
+		<MaterialCommunityIcons
+			name={isSelected ? 'checkbox-marked' : 'checkbox-blank'}
+			size={24}
+			color={isSelected ? contrastColor : theme.screen.icon}
+		/>
+	);
 	return (
 		<AppButton
 			variant="ghost"
@@ -42,8 +50,11 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({ position, isSelected, o
 			textStyle={{
 				...styles.text,
 				color: isSelected ? contrastColor : theme.header.text,
+				textAlign: isArabic ? 'right' : 'left',
+				writingDirection: isArabic ? 'rtl' : 'ltr',
 			}}
-			iconRight={<MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank'} size={24} color={isSelected ? contrastColor : theme.screen.icon} style={styles.radioButton} />}
+			iconLeft={isArabic ? checkboxIcon : undefined}
+			iconRight={!isArabic ? <MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank'} size={24} color={isSelected ? contrastColor : theme.screen.icon} style={styles.radioButton} /> : undefined}
 		/>
 	);
 };

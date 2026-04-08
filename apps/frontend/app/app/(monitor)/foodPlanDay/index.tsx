@@ -26,7 +26,8 @@ const Index = () => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
-	const { primaryColor: projectColor, appSettings } = useAppSelector((state) => state.settings);
+	const { primaryColor: projectColor, appSettings, language } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 	const { dayPlan } = useAppSelector((state) => state.management);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const { openSelectDayPlanCanteenModal } = useMyScrollviewModalSelectDayPlanCanteen();
@@ -191,7 +192,7 @@ const Index = () => {
 						iconBgColor={foods_area_color}
 						leftIcon={<MaterialCommunityIcons name="monitor" size={24} color={theme.screen.icon} />}
 						label="BigScreen"
-						rightIcon={<Entypo name="chevron-small-right" size={22} color={theme.screen.icon} />}
+						rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} size={22} color={theme.screen.icon} />}
 						handleFunction={
 							canOpenBigScreen
 								? () => {

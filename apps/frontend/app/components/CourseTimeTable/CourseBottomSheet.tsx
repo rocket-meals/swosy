@@ -31,7 +31,8 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 	const { profile } = useAppSelector((state) => state.authReducer);
 	const [loading, setLoading] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const { primaryColor, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const { primaryColor, appSettings, selectedTheme: mode, language } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 
 	const [selectedFirstDay, setSelectedFirstDay] = useState({
 		id: 'Monday',
@@ -62,6 +63,14 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : primaryColor;
 	const contrastColor = myContrastColor(course_timetable_area_color, theme, mode === 'dark');
+
+	const getRtlChevronName = (name: string | undefined) => {
+		if (!isArabic || !name) return name;
+		if (name === 'chevron-right') return 'chevron-left';
+		if (name === 'chevron-small-right') return 'chevron-small-left';
+		if (name === 'arrow-right') return 'arrow-left';
+		return name;
+	};
 	const SheetClose = () => {
 		closeSheet();
 		setSelectedItem(null);
@@ -356,10 +365,17 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 								style={{
 									...styles.list,
 									paddingHorizontal: isWeb ? 20 : 10,
+									flexDirection: isArabic ? 'row-reverse' : 'row',
 								}}
 								onPress={() => handleItemPress(item)}
 							>
-								<View style={{ ...styles.col, gap: isWeb ? 10 : 5 }}>
+								<View
+									style={{
+										...styles.col,
+										gap: isWeb ? 10 : 5,
+										flexDirection: isArabic ? 'row-reverse' : 'row',
+									}}
+								>
 									{React.cloneElement(item.leftIcon, {
 										color: theme.screen.text,
 									})}
@@ -369,6 +385,8 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 											color: theme.screen.text,
 											fontSize: windowWidth > 500 ? 16 : 13,
 											marginTop: isWeb ? 0 : 2,
+											textAlign: isArabic ? 'right' : 'left',
+											writingDirection: isArabic ? 'rtl' : 'ltr',
 										}}
 									>
 										{translate(item.label)}
@@ -379,24 +397,56 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 										...styles.col,
 										gap: isWeb ? 10 : 5,
 										alignItems: 'center',
-										justifyContent: 'flex-end',
+										justifyContent: isArabic ? 'flex-start' : 'flex-end',
+										flexDirection: isArabic ? 'row' : 'row',
 									}}
 								>
-									{item.value && (
-										<Text
-											style={{
-												...styles.value,
-												color: theme.screen.text,
-												fontSize: windowWidth > 500 ? 16 : 13,
-												marginTop: isWeb ? 0 : 2,
-											}}
-										>
-											{item.label === 'weekday' ? translate(item?.value?.name) : item.value}
-										</Text>
+									{isArabic ? (
+										<>
+											{React.isValidElement(item.rightIcon)
+												? React.cloneElement(item.rightIcon, {
+														color: theme.screen.text,
+														name: getRtlChevronName((item.rightIcon as any).props?.name),
+													})
+												: item.rightIcon}
+											{item.value && (
+												<Text
+													style={{
+														...styles.value,
+														color: theme.screen.text,
+														fontSize: windowWidth > 500 ? 16 : 13,
+														marginTop: isWeb ? 0 : 2,
+														textAlign: 'left',
+														writingDirection: 'ltr',
+													}}
+												>
+													{item.label === 'weekday' ? translate(item?.value?.name) : item.value}
+												</Text>
+											)}
+										</>
+									) : (
+										<>
+											{item.value && (
+												<Text
+													style={{
+														...styles.value,
+														color: theme.screen.text,
+														fontSize: windowWidth > 500 ? 16 : 13,
+														marginTop: isWeb ? 0 : 2,
+														textAlign: 'right',
+														writingDirection: 'ltr',
+													}}
+												>
+													{item.label === 'weekday' ? translate(item?.value?.name) : item.value}
+												</Text>
+											)}
+											{React.isValidElement(item.rightIcon)
+												? React.cloneElement(item.rightIcon, {
+														color: theme.screen.text,
+													})
+												: item.rightIcon}
+										</>
 									)}
-									{React.cloneElement(item.rightIcon, {
-										color: theme.screen.text,
-									})}
 								</View>
 							</TouchableOpacity>
 						))}
@@ -421,11 +471,18 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 												}
 									}
 									iconLeft={
-										isDeleting ? (
-											<ActivityIndicator size="small" color={theme.screen.text} />
-										) : (
-											<MaterialCommunityIcons name="delete" size={20} color={theme.activeText} />
-										)
+										isArabic
+											? undefined
+											: isDeleting
+												? <ActivityIndicator size="small" color={theme.screen.text} />
+												: <MaterialCommunityIcons name="delete" size={20} color={theme.activeText} />
+									}
+									iconRight={
+										isArabic
+											? isDeleting
+												? <ActivityIndicator size="small" color={theme.screen.text} />
+												: <MaterialCommunityIcons name="delete" size={20} color={theme.activeText} />
+											: undefined
 									}
 								/>
 							)}
@@ -448,11 +505,18 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({ timeTableData, cl
 											}
 								}
 								iconLeft={
-									loading ? (
-										<ActivityIndicator size="small" color={theme.screen.text} />
-									) : (
-										<FontAwesome5 name="save" size={20} color={contrastColor} />
-									)
+									isArabic
+										? undefined
+										: loading
+											? <ActivityIndicator size="small" color={theme.screen.text} />
+											: <FontAwesome5 name="save" size={20} color={contrastColor} />
+								}
+								iconRight={
+									isArabic
+										? loading
+											? <ActivityIndicator size="small" color={theme.screen.text} />
+											: <FontAwesome5 name="save" size={20} color={contrastColor} />
+										: undefined
 								}
 							/>
 						</View>

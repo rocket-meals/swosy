@@ -30,6 +30,10 @@ export const replaceLinebreaks = (sourceContent: string) => {
 	return sourceContent;
 };
 
+const normalizeMarkdownLinks = (sourceContent: string) => {
+	return sourceContent.replace(/\[([^\]]+)\]\s+\(((?:https?:\/\/|mailto:|tel:)[^)]+)\)/g, '[$1]($2)');
+};
+
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
 	const { primaryColor, selectedTheme, language } = useAppSelector((state) => state.settings);
 	const isArabic = language === 'ar';
@@ -45,6 +49,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 	if (option_find_linebreaks) {
 		sourceContent = replaceLinebreaks(sourceContent);
 	}
+	sourceContent = normalizeMarkdownLinks(sourceContent);
 
 	const result = md.render(sourceContent);
 	const source = { html: result || '' };

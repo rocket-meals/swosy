@@ -144,7 +144,7 @@ export default function MonitorLayout() {
 				name="labels/index"
 				options={{
 					title: 'Labels',
-					headerShown: false,
+					header: () => <CustomStackHeader label={translate(TranslationKeys.markings)} key={'labels'} />,
 				}}
 			/>
 		</Stack>

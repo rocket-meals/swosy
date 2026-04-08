@@ -78,6 +78,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
 	const smartReadableDate = useSmartReadableDateMethod();
 	const languageCode = language;
+	const isRtl = language === 'ar';
 
 	useEffect(() => {
 		const fetchLabels = async () => {
@@ -396,7 +397,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		return (
 			<View style={styles.dayContainer}>
 				<View style={styles.dateHeaderRow}>
-					<Text style={[styles.dateHeader, { color: theme.screen.text }]}>{smartReadableDate(parseDateOnly(item.date))}</Text>
+					<Text
+						style={[
+							styles.dateHeader,
+							{
+								color: theme.screen.text,
+								textAlign: isRtl ? 'right' : 'left',
+								writingDirection: isRtl ? 'rtl' : 'ltr',
+							},
+						]}
+					>
+						{smartReadableDate(parseDateOnly(item.date))}
+					</Text>
 				</View>
 				{beforeElement && (
 					<View style={styles.elementContainer}>
@@ -464,7 +476,15 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						return null;
 					})}
 					{item.offers.length === 0 && !hasInfoItems && (
-						<Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>
+						<Text
+							style={{
+								color: theme.screen.text,
+								textAlign: isRtl ? 'right' : 'left',
+								writingDirection: isRtl ? 'rtl' : 'ltr',
+							}}
+						>
+							{translate(TranslationKeys.no_foodoffers_found_for_selection)}
+						</Text>
 					)}
 				</View>
 				{afterElement && (
@@ -474,7 +494,16 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 				)}
 				{feedbacks && feedbacks.length > 0 && (
 					<View style={styles.feebackContainer}>
-						<Text style={[styles.feedbackLabelsTitle, { color: theme.screen.text }]}>
+						<Text
+							style={[
+								styles.feedbackLabelsTitle,
+								{
+									color: theme.screen.text,
+									textAlign: isRtl ? 'right' : 'left',
+									writingDirection: isRtl ? 'rtl' : 'ltr',
+								},
+							]}
+						>
 							{translate(TranslationKeys.feedback_labels)}
 						</Text>
 						{feedbacks}

@@ -141,9 +141,7 @@ const Index = () => {
 		[key: string]: { value: any; error: string; custom_type?: string };
 	}>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
-	const { language, drawerPosition, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
-	const resolvedDrawerPosition = drawerPosition === 'system' ? (language === 'ar' ? 'right' : 'left') : drawerPosition;
-	const isArabicRight = language === 'ar' && resolvedDrawerPosition === 'right';
+	const { language, primaryColor, offlineMode } = useAppSelector((state) => state.settings);
 	const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
 	const [imageFolderIdState, setImageFolderIdState] = useState<string | null>(null);
 	const [filesFolderIdState, setFilesFolderIdState] = useState<string | null>(null);
@@ -838,37 +836,25 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{
-							flexDirection: resolvedDrawerPosition === 'right' ? 'row-reverse' : 'row',
-						},
+						{ flexDirection: 'row' },
 					]}
 				>
-					<View
-						style={[
-							styles.col1,
-							screenWidth > 768
-								? {
-										gap: 20,
-									}
-								: {
-										gap: 10,
-									},
-							{
-								flexDirection: resolvedDrawerPosition === 'right' ? 'row-reverse' : 'row',
-							},
-						]}
-					>
-						<TouchableOpacity onPress={() => {
+					<TouchableOpacity
+						onPress={() => {
 							if (router.canGoBack()) {
 								router.back();
 							} else {
 								router.navigate('/form-categories');
 							}
-						}} style={{ padding: 10 }}>
-							<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
-						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text, ...(isArabicRight ? { textAlign: 'right' } : {}) }}>{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}</Text>
-					</View>
+						}}
+						style={{ padding: 10 }}
+					>
+						<Ionicons name="arrow-back" size={26} color={theme.header.text} />
+					</TouchableOpacity>
+
+					<Text style={{ ...styles.heading, color: theme.header.text, flex: 1, textAlign: 'left' }}>
+						{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}
+					</Text>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openEditSheet} style={{ padding: 10 }}>
 							<FontAwesome name="edit" size={24} color={theme.header.text} />

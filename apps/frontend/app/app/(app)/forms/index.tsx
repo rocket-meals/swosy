@@ -26,6 +26,7 @@ const [loading, setLoading] = useState(false);
 const [isShowingCachedData, setIsShowingCachedData] = useState(false);
     const { category_id } = useLocalSearchParams();
     const { language } = useAppSelector((state) => state.settings);
+    const isArabic = language === 'ar';
     const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);
 const formsHelper = new FormsHelper();
 const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -107,6 +108,7 @@ return (
 style={{
 ...styles.formCategory,
 backgroundColor: theme.screen.iconBg,
+flexDirection: isArabic ? 'row-reverse' : 'row',
 }}
 key={form?.id}
 onPress={() => {
@@ -116,15 +118,22 @@ params: { form_id: form?.id },
 });
 }}
 >
-<View style={styles.col}>
+<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 {IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
-<Text style={{ ...styles.body, color: theme.screen.text }}>{form?.translations ? getFromCategoryTranslation(form?.translations, language) : form?.alias}</Text>
+<Text
+	style={{
+		...styles.body,
+		color: theme.screen.text,
+		textAlign: isArabic ? 'right' : 'left',
+		writingDirection: isArabic ? 'rtl' : 'ltr',
+	}}
+>
+	{form?.translations ? getFromCategoryTranslation(form?.translations, language) : form?.alias}
+</Text>
 </View>
-<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-{isCached ? (
-<FontAwesome name="cloud-download" size={18} color={CACHED_COLOR} />
-) : null}
-<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+<View style={{ flexDirection: isArabic ? 'row-reverse' : 'row', alignItems: 'center', gap: 4 }}>
+	{isCached ? <FontAwesome name="cloud-download" size={18} color={CACHED_COLOR} /> : null}
+	<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />
 </View>
 </TouchableOpacity>
 );

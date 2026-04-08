@@ -19,6 +19,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
 	const toast = useToast();
 	const { translate } = useLanguage();
 	const { primaryColor, language, appSettings, selectedTheme: mode } = useAppSelector(state => state.settings);
+	const isArabic = language === 'ar';
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const { title, content } = getNewsTranslationByLanguageCode(news?.translations, language);
 	const news_area_color = appSettings?.news_area_color ? appSettings?.news_area_color : primaryColor;
@@ -96,6 +97,9 @@ const NewsItem: React.FC<any> = ({ news }) => {
 								...styles.newsHeading,
 								color: theme.screen.text,
 								width: screenWidth > 768 ? '80%' : '100%',
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+								marginBottom: isArabic ? 12 : undefined,
 							}}
 						>
 							{title}
@@ -111,7 +115,16 @@ const NewsItem: React.FC<any> = ({ news }) => {
 							{formattedDate}
 						</Text>
 					</View>
-					<Text style={{ ...styles.newsBody, color: theme.screen.text }}>{content}</Text>
+					<Text
+						style={{
+							...styles.newsBody,
+							color: theme.screen.text,
+							textAlign: isArabic ? 'right' : 'left',
+							writingDirection: isArabic ? 'rtl' : 'ltr',
+						}}
+					>
+						{content}
+					</Text>
 				</View>
 				<View
 					style={{

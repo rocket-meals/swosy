@@ -39,6 +39,7 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 	const { theme } = useTheme();
 	const { translate, language } = useLanguage();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const isRtl = language === 'ar';
 
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
 
@@ -105,7 +106,16 @@ const Labels: React.FC<LabelsProps> = ({ foodDetails, offerId, foodOfferDetails,
 
 	return (
 		<View style={styles.container}>
-			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.markings)}</Text>
+			<Text
+				style={{
+					...styles.heading,
+					color: theme.screen.text,
+					textAlign: isRtl ? 'right' : 'left',
+					writingDirection: isRtl ? 'rtl' : 'ltr',
+				}}
+			>
+				{translate(TranslationKeys.markings)}
+			</Text>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details_markings} />
 			<SettingsListMarkingLabels markingIds={foodMarkings.map((m: DatabaseTypes.Markings) => m.id)} handleMenuSheet={handleMenuSheet} />
 

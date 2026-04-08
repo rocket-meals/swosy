@@ -71,6 +71,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
 
 	const { sortBy, language: languageCode, drawerPosition, appSettings, primaryColor, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const isRtl = languageCode === 'ar';
 	const { ownFoodFeedbacksDict, selectedDate, foodCategoriesDict, foodOfferCategoriesDict } = useAppSelector((state) => state.food);
 	const ownFoodFeedbacks = useMemo(() => Object.values(ownFoodFeedbacksDict || {}), [ownFoodFeedbacksDict]);
 	const foodCategories = useMemo(() => Object.values(foodCategoriesDict || {}), [foodCategoriesDict]);
@@ -589,7 +590,17 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 									</TooltipContent>
 								</CustomTooltip>
 
-								<Text style={{ ...styles.heading, color: theme.header.text }}>{selectedDate ? getDayLabel(selectedDate) : ''}</Text>
+								<Text
+									style={{
+										...styles.heading,
+										color: theme.header.text,
+										textAlign: isRtl ? 'right' : 'left',
+										writingDirection: isRtl ? 'rtl' : 'ltr',
+										alignSelf: isRtl ? 'flex-end' : 'flex-start',
+									}}
+								>
+									{selectedDate ? getDayLabel(selectedDate) : ''}
+								</Text>
 							</View>
 							<View style={{ ...styles.col2, gap: 10 }}>
 								{/* ForeCast */}

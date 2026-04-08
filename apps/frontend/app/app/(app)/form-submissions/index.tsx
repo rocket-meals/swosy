@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { isWeb } from '@/constants/Constants';
+import type { ViewStyle } from 'react-native';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
@@ -378,11 +379,16 @@ const Index = () => {
 
 	const renderItem = useCallback(
 		({ item }: { item: FormSubmissionListRow }) => {
+			const isArabic = language === 'ar';
+			const indentation = 10 + currentPath.length * 8;
+			const flexDirection: ViewStyle['flexDirection'] = isArabic ? 'row-reverse' : 'row';
 			const baseStyle = {
 				...styles.formCategory,
 				backgroundColor: theme.screen.iconBg,
-				paddingLeft: 10 + currentPath.length * 8,
-			};
+				flexDirection,
+				paddingLeft: isArabic ? 10 : indentation,
+				paddingRight: isArabic ? indentation : 10,
+			} as ViewStyle;
 
 			if (item.type === 'folder') {
 				return (
@@ -392,14 +398,24 @@ const Index = () => {
 						onPress={() => {
 							setCurrentPath(item.path);
 						}}
-						style={{ ...baseStyle, marginVertical: 0 }}
+						style={[baseStyle, { marginVertical: 0 }]}
 						textStyle={{ width: 0, height: 0 }}
 						iconLeft={
 							<View style={{ flex: 1 }}>
-								<Text style={{ ...styles.body, color: theme.screen.text, maxWidth: '100%' }}>{item.title}</Text>
+								<Text
+									style={{
+										...styles.body,
+										color: theme.screen.text,
+										maxWidth: '100%',
+										textAlign: isArabic ? 'right' : 'left',
+										writingDirection: isArabic ? 'rtl' : 'ltr',
+									}}
+								>
+									{item.title}
+								</Text>
 							</View>
 						}
-						iconRight={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+						iconRight={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />}
 					/>
 				);
 			}
@@ -412,18 +428,28 @@ const Index = () => {
 							params: { form_submission_id: item?.submission?.id },
 						});
 					}}
-					style={{ ...baseStyle, marginVertical: 0 }}
+					style={[baseStyle, { marginVertical: 0 }]}
 					textStyle={{ width: 0, height: 0 }}
 					iconLeft={
 						<View style={{ flex: 1 }}>
-							<Text style={{ ...styles.body, color: theme.screen.text, maxWidth: '100%' }}>{item.title || item.submission?.alias}</Text>
+							<Text
+								style={{
+									...styles.body,
+									color: theme.screen.text,
+									maxWidth: '100%',
+									textAlign: isArabic ? 'right' : 'left',
+									writingDirection: isArabic ? 'rtl' : 'ltr',
+								}}
+							>
+								{item.title || item.submission?.alias}
+							</Text>
 						</View>
 					}
-					iconRight={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />}
+					iconRight={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />}
 				/>
 			);
 		},
-		[currentPath.length, router, theme.screen.icon, theme.screen.iconBg, theme.screen.text]
+		[currentPath.length, language, router, theme.screen.icon, theme.screen.iconBg, theme.screen.text]
 	);
 
 	return (
@@ -444,40 +470,33 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{
-							flexDirection: resolvedDrawerPosition === 'right' ? 'row-reverse' : 'row',
-						},
+						{ flexDirection: language === 'ar' ? 'row-reverse' : 'row' },
 					]}
 				>
-					<View
-						style={[
-							styles.col1,
-							screenWidth > 768
-								? {
-										gap: 20,
-									}
-								: {
-										gap: 10,
-									},
-							{
-								flexDirection: resolvedDrawerPosition === 'right' ? 'row-reverse' : 'row',
-							},
-						]}
+					<TouchableOpacity
+						onPress={() => {
+							if (!hasLoadError && currentPath.length > 0) {
+								setCurrentPath(prev => prev.slice(0, -1));
+							} else {
+								router.navigate('/form-categories');
+							}
+						}}
+						style={{ padding: 10 }}
 					>
-						<TouchableOpacity
-							onPress={() => {
-								if (!hasLoadError && currentPath.length > 0) {
-									setCurrentPath(prev => prev.slice(0, -1));
-								} else {
-									router.navigate('/form-categories');
-								}
-							}}
-							style={{ padding: 10 }}
-						>
-							<Ionicons name={isArabicRight ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
-						</TouchableOpacity>
-						<Text style={{ ...styles.heading, color: theme.header.text, ...(isArabicRight ? { textAlign: 'right' } : {}) }}>{excerpt(translate(TranslationKeys.select_a_form_submission), screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}</Text>
-					</View>
+						<Ionicons name={language === 'ar' ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
+					</TouchableOpacity>
+
+					<Text
+						style={{
+							...styles.heading,
+							color: theme.header.text,
+							flex: 1,
+							textAlign: language === 'ar' ? 'right' : 'left',
+						}}
+					>
+						{excerpt(translate(TranslationKeys.select_a_form_submission), screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22)}
+					</Text>
+
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
 						<TouchableOpacity onPress={openSortSheet} style={{ padding: 10 }}>
 							<FontAwesome5 name="sort-alpha-down" size={22} color={theme.header.text} />

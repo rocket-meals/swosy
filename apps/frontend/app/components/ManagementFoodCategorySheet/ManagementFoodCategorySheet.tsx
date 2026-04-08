@@ -130,7 +130,7 @@ export const ManagementFoodCategoryContent: React.FC<ManagementFoodCategorySheet
 						onChangeText={setValue}
 					/>
 
-					<View style={[styles.buttonContainer, { width: '30%' }]}>
+					<View style={[styles.buttonContainer, { width: '70%' }]}>
 						<AppButton
 							variant="ghost"
 							usePlainText

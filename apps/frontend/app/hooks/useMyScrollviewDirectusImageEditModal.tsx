@@ -121,6 +121,8 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { show: showScrollViewModal } = useMyScrollViewModal();
+	const language = useAppSelector((state) => state.settings.language);
+	const isArabic = language === 'ar';
 	const [loading, setLoading] = useState({ camera: false, image: false, delete: false });
 	const [isDelete, setIsDelete] = useState(false);
 	const storage = useCollectionFolder(collection);
@@ -355,7 +357,7 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 				{
 					key: 'delete-back',
 					label: translate(TranslationKeys.navigate_back),
-					icon: <MaterialCommunityIcons name="keyboard-backspace" size={24} />,
+					icon: <MaterialCommunityIcons name="keyboard-backspace" size={24} style={isArabic ? { transform: [{ scaleX: -1 }] } : undefined} />,
 					onPress: () => setIsDelete(false),
 				},
 			]);
@@ -384,12 +386,12 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 			key: 'delete',
 			label: translate(TranslationKeys.delete),
 			icon: <MaterialCommunityIcons name="delete" size={24} />,
-			rightIcon: <MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />,
+			rightIcon: <MaterialCommunityIcons name={isArabic ? 'arrow-left' : 'arrow-right'} size={24} color={theme.screen.icon} />,
 			onPress: () => setIsDelete(true),
 		});
 
 		return [...withGrouping(items), cancelItem];
-	}, [handleDeleteImage, handleImagePick, isDelete, loading, onClose, theme.screen.icon, translate]);
+	}, [handleDeleteImage, handleImagePick, isArabic, isDelete, loading, onClose, theme.screen.icon, translate]);
 
 	return (
 		<View style={{ width: '100%' }}>
@@ -414,7 +416,8 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 
 const useMyScrollviewDirectusImageEditModal = () => {
 	const { show, close } = useMyScrollViewModal();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isRtl = language === 'ar';
 
 	const closeModal = useCallback(() => {
 		close();
@@ -425,6 +428,8 @@ const useMyScrollviewDirectusImageEditModal = () => {
 			if (!itemId) return;
 			show({
 				title: title ?? `${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`,
+				titleTextAlign: isRtl ? 'right' : 'left',
+				titleWritingDirection: isRtl ? 'rtl' : 'ltr',
 				children: (
 					<DirectusImageEditModalContent
 						itemId={String(itemId)}
@@ -436,7 +441,7 @@ const useMyScrollviewDirectusImageEditModal = () => {
 				),
 			});
 		},
-		[closeModal, show, translate]
+		[closeModal, isRtl, show, translate]
 	);
 
 	return { openDirectusImageEditModal, closeDirectusImageEditModal: closeModal };

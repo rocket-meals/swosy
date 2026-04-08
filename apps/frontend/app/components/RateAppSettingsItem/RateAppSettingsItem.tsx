@@ -26,9 +26,10 @@ const STORE_ICON_BY_TARGET: Record<StoreTarget, keyof typeof Ionicons.glyphMap> 
 };
 
 export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupPosition = 'single', showSeparator = false, onLog }) => {
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { theme } = useTheme();
 	const { primaryColor, appSettings } = useSelector((state: RootState) => state.settings);
+	const isArabic = language === 'ar';
 
 	const iosStoreUrl = appSettings?.app_stores_url_to_apple;
 	const androidStoreUrl = appSettings?.app_stores_url_to_google;
@@ -69,7 +70,7 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 						<SettingsList
 							key={row.key}
 							label={row.label}
-							handleFunction={row.url ? () => openStore(row.url, row.store) : undefined}
+							handleFunction={row.url ? () => openStore(row.url!, row.store) : undefined}
 							groupPosition={computedGroupPosition}
 							showSeparator={!isLast}
 							iconBgColor={RATE_APP_ICON_BACKGROUND}
@@ -77,8 +78,17 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 							rightElement={
 								row.url ? (
 									<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-										<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
-										<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+										{isArabic ? (
+											<>
+												<Octicons name="chevron-left" size={20} color={theme.screen.icon} />
+												<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
+											</>
+										) : (
+											<>
+												<Ionicons name={row.icon} size={20} color={theme.screen.icon} />
+												<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+											</>
+										)}
 									</View>
 								) : undefined
 							}
@@ -107,8 +117,17 @@ export const RateAppSettingsItem: React.FC<RateAppSettingsItemProps> = ({ groupP
 			leftIcon={<MaterialIcons name="star" size={22} color={primaryColor} />}
 			rightElement={
 				<View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-					<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
-					<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+					{isArabic ? (
+						<>
+							<Octicons name="chevron-left" size={20} color={theme.screen.icon} />
+							<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+						</>
+					) : (
+						<>
+							<Ionicons name={nativeRow?.icon || STORE_ICON_BY_TARGET[nativeStore]} size={20} color={theme.screen.icon} />
+							<Octicons name="chevron-right" size={20} color={theme.screen.icon} />
+						</>
+					)}
 				</View>
 			}
 		/>

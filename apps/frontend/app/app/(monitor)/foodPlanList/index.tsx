@@ -39,6 +39,7 @@ const Index = () => {
 	const { foodAttributesDict: initialFoodAttributes } = useAppSelector((state) => state.foodAttributes);
 	const [foodAttributes, setFoodAttributes] = useState<FoodAttribute[]>();
 	const { primaryColor: projectColor, language, appSettings, selectedTheme: mode } = useAppSelector((state) => state.settings);
+	const isArabic = language === 'ar';
 	const { foodPlan } = useAppSelector((state) => state.management);
 	const [isActive, setIsActive] = useState(false);
 	const [value, setValue] = useState('');
@@ -165,15 +166,34 @@ const Index = () => {
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
 					onPress={() => openCanteenModal('canteen')}
 				>
-					<View style={styles.col1}>
+					<View style={[styles.col1, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
-						<Text style={{ ...styles.label, color: theme.screen.text }}>{translate(TranslationKeys.canteen)}</Text>
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							{translate(TranslationKeys.canteen)}
+						</Text>
 					</View>
-					<View style={styles.col2}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>{foodPlan?.selectedCanteen?.alias}</Text>
+					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							{foodPlan?.selectedCanteen?.alias}
+						</Text>
 						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
 					</View>
 				</TouchableOpacity>
@@ -183,15 +203,34 @@ const Index = () => {
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
 					onPress={() => openCanteenModal('additional')}
 				>
-					<View style={styles.col1}>
+					<View style={[styles.col1, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 						<Ionicons name="restaurant-sharp" size={24} color={theme.screen.icon} />
-						<Text style={{ ...styles.label, color: theme.screen.text }}>Optional: Zusätzliche Mensa/Cafeteria</Text>
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							Optional: Zusätzliche Mensa/Cafeteria
+						</Text>
 					</View>
-					<View style={styles.col2}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>{foodPlan?.additionalSelectedCanteen?.alias}</Text>
+					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							{foodPlan?.additionalSelectedCanteen?.alias}
+						</Text>
 						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
 					</View>
 				</TouchableOpacity>
@@ -201,13 +240,23 @@ const Index = () => {
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
 					onPress={() => openIntervalSheet('foodInterval', 'Next Food Interval')}
 				>
-					<View style={styles.col1}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>Next Food Interval</Text>
+					<View style={[styles.col1, isArabic ? { justifyContent: 'flex-end' } : undefined]}>
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							Next Food Interval
+						</Text>
 					</View>
-					<View style={styles.col2}>
+					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{foodPlan?.nextFoodInterval}</Text>
 						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
 					</View>
@@ -218,13 +267,23 @@ const Index = () => {
 						...styles.list,
 						backgroundColor: theme.screen.iconBg,
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
 					onPress={() => openIntervalSheet('refreshFoodInterval', 'Refresh Food Offers Interval')}
 				>
-					<View style={styles.col1}>
-						<Text style={{ ...styles.label, color: theme.screen.text }}>Refresh Data Interval (seconds)</Text>
+					<View style={[styles.col1, isArabic ? { justifyContent: 'flex-end' } : undefined]}>
+						<Text
+							style={{
+								...styles.label,
+								color: theme.screen.text,
+								textAlign: isArabic ? 'right' : 'left',
+								writingDirection: isArabic ? 'rtl' : 'ltr',
+							}}
+						>
+							Refresh Data Interval (seconds)
+						</Text>
 					</View>
-					<View style={styles.col2}>
+					<View style={[styles.col2, isArabic ? { flexDirection: 'row-reverse' } : undefined]}>
 						<Text style={{ ...styles.label, color: theme.screen.text }}>{foodPlan?.refreshInterval}</Text>
 						<MaterialCommunityIcons name="pencil" size={22} color={theme.screen.icon} />
 					</View>
@@ -262,14 +321,27 @@ const Index = () => {
 												textStyle={{
 													...styles.text,
 													color: attribute?.selected ? contrastColor : theme.header.text,
+													textAlign: isArabic ? 'right' : 'left',
+													writingDirection: isArabic ? 'rtl' : 'ltr',
 												}}
+												iconLeft={
+													isArabic ? (
+														<MaterialCommunityIcons
+															name={attribute?.selected ? 'checkbox-marked' : 'checkbox-blank'}
+															size={24}
+															color={attribute?.selected ? contrastColor : '#ffffff'}
+														/>
+													) : undefined
+												}
 												iconRight={
-													<MaterialCommunityIcons
-														name={attribute?.selected ? 'checkbox-marked' : 'checkbox-blank'}
-														size={24}
-														color={attribute?.selected ? contrastColor : '#ffffff'}
-														style={styles.radioButton}
-													/>
+													!isArabic ? (
+														<MaterialCommunityIcons
+															name={attribute?.selected ? 'checkbox-marked' : 'checkbox-blank'}
+															size={24}
+															color={attribute?.selected ? contrastColor : '#ffffff'}
+															style={styles.radioButton}
+														/>
+													) : undefined
 												}
 											/>
 										</View>
@@ -319,9 +391,19 @@ const Index = () => {
 						paddingHorizontal: windowWidth > 600 ? 20 : 10,
 						opacity: foodPlan?.selectedCanteen?.alias ? 1 : 0.5,
 						marginVertical: 0,
+						flexDirection: isArabic ? 'row-reverse' : 'row',
 					}}
-					textStyle={{ ...styles.label, color: theme.screen.text }}
-					iconRight={<Entypo name="chevron-small-right" size={22} color={theme.screen.icon} />}
+					textStyle={{
+						...styles.label,
+						color: theme.screen.text,
+						flex: isArabic ? 1 : undefined,
+						textAlign: isArabic ? 'right' : 'left',
+						writingDirection: isArabic ? 'rtl' : 'ltr',
+					}}
+					iconLeft={undefined}
+					iconRight={
+						isArabic ? <Entypo name="chevron-small-left" size={22} color={theme.screen.icon} /> : <Entypo name="chevron-small-right" size={22} color={theme.screen.icon} />
+					}
 				/>
 			</ScrollView>
 
@@ -350,6 +432,10 @@ const Index = () => {
 									...styles.modalHeading,
 									color: theme.modal.text,
 									fontSize: 28,
+									width: '70%',
+									position: 'absolute',
+									left: '15%',
+									marginTop: 20,
 								}}
 							>
 								{selectedInterval?.label}
