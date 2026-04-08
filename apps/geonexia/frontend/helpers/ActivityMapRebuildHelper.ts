@@ -44,6 +44,14 @@ const BBOX_PADDING_DEG = 0.001;
 const MAX_GRID_DISK_RADIUS = 30;
 
 /**
+ * Minimum number of walked hex tiles required to form a valid polygon for
+ * enclosed-tile detection.  Both `findEnclosedCellsFromHexTiles` and the
+ * guard checks in `rebuildMapFromActivities` / the activity-detail screen use
+ * this value.
+ */
+export const MIN_TILES_FOR_ENCLOSED_POLYGON = 3;
+
+/**
  * Billboard key for the treePineLarge sprite (index 50 in OBJECT_SPRITES).
  * Placed at CENTER on enclosed forest tiles.
  */
@@ -191,7 +199,7 @@ export function findEnclosedCellsFromHexTiles(
 	visitedHexIds: string[],
 	resolution: number,
 ): string[] {
-	if (!isH3Available() || visitedHexIds.length < 3) return [];
+	if (!isH3Available() || visitedHexIds.length < MIN_TILES_FOR_ENCLOSED_POLYGON) return [];
 
 	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
 
@@ -205,7 +213,7 @@ export function findEnclosedCellsFromHexTiles(
 			// skip invalid cells
 		}
 	}
-	if (polygon.length < 3) return [];
+	if (polygon.length < MIN_TILES_FOR_ENCLOSED_POLYGON) return [];
 
 	// Check loop closure: first and last hex tiles must be the same cell or adjacent neighbors.
 	const firstHex = visitedHexIds[0];
@@ -520,7 +528,7 @@ export function rebuildMapFromActivities(
 		// Include tiles derived from interpolated GPS points so that routes
 		// completed via route interpolation produce a properly closed polygon.
 		let enclosedHexTiles: string[];
-		if ((activity.hexTilesOrdered?.length ?? 0) >= 3) {
+		if ((activity.hexTilesOrdered?.length ?? 0) >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
 			const visitedIds = activity.hexTilesOrdered ?? [];
 			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 			const fullRouteIds = buildFullRouteTileIds(visitedIds, activity.routePoints, h3Res);

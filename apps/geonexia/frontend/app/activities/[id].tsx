@@ -28,7 +28,7 @@ import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
-import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -949,7 +949,21 @@ export default function ActivityDetailScreen() {
 		if (!isH3Available()) return;
 
 		const EMPTY_FC = { type: 'FeatureCollection' as const, features: [] };
-		const enclosedCells = activity.computed?.enclosedHexTiles ?? [];
+		// Always recompute enclosed cells from the route so that stale stored values
+		// (e.g. an activity whose computed.enclosedHexTiles contains tiles from a
+		// previously-detected closed loop that no longer applies) are not shown.
+		// Fall back to the stored value only when there are not enough walked tiles
+		// to form a polygon (legacy activities without hexTilesOrdered).
+		const enclosedCells = (() => {
+			if ((activity.hexTilesOrdered?.length ?? 0) >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
+				const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
+				return findEnclosedCellsFromHexTiles(
+					buildFullRouteTileIds(activity.hexTilesOrdered ?? [], activity.routePoints, h3Res),
+					h3Res,
+				);
+			}
+			return activity.computed?.enclosedHexTiles ?? [];
+		})();
 
 		if (enclosedCells.length === 0) {
 			mapRef.current.sendToMap({ hexEnclosedGeoJson: EMPTY_FC });
@@ -1103,17 +1117,22 @@ export default function ActivityDetailScreen() {
 							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
 							return;
 						}
-						let enclosedTiles: string[] =
-							activity.computed?.enclosedHexTiles ??
-							activity.enclosedHexTiles ??
-							activity.hexTilesEnclosed ??
-							[];
-						if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+						// Always recompute enclosed tiles from the route so that stale
+						// stored values are corrected. Fall back to the stored value only
+						// for legacy activities that lack a hexTilesOrdered list.
+						let enclosedTiles: string[];
+						if (activity.hexTilesOrdered?.length) {
 							const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 							enclosedTiles = findEnclosedCellsFromHexTiles(
 								buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
 								h3Res,
 							);
+						} else {
+							enclosedTiles =
+								activity.computed?.enclosedHexTiles ??
+								activity.enclosedHexTiles ??
+								activity.hexTilesEnclosed ??
+								[];
 						}
 						const newComputed = computeActivityData(activity, enclosedTiles);
 						const updated: SavedActivity = { ...activity, computed: newComputed };
