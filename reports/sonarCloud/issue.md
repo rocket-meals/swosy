@@ -129,20 +129,20 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListHexTile/index.tsx#L84
 
 - **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:119
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L119
+
+- **Prefer `Number.isNaN` over `isNaN`.**
   apps/geonexia/frontend/components/SpeechSettingsModal.tsx:120
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L120
 
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:121
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L121
-
 - **Prefer `Number.parseInt` over `parseInt`.**
+  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:158
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L158
+
+- **Prefer `Number.isNaN` over `isNaN`.**
   apps/geonexia/frontend/components/SpeechSettingsModal.tsx:159
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
-
-- **Prefer `Number.isNaN` over `isNaN`.**
-  apps/geonexia/frontend/components/SpeechSettingsModal.tsx:160
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L160
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:360
