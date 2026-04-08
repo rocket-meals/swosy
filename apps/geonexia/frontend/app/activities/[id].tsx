@@ -28,7 +28,7 @@ import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
-import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -955,7 +955,7 @@ export default function ActivityDetailScreen() {
 		// Fall back to the stored value only when there are not enough walked tiles
 		// to form a polygon (legacy activities without hexTilesOrdered).
 		const enclosedCells = (() => {
-			if ((activity.hexTilesOrdered?.length ?? 0) >= 3) {
+			if ((activity.hexTilesOrdered?.length ?? 0) >= MIN_TILES_FOR_ENCLOSED_POLYGON) {
 				const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 				return findEnclosedCellsFromHexTiles(
 					buildFullRouteTileIds(activity.hexTilesOrdered ?? [], activity.routePoints, h3Res),
