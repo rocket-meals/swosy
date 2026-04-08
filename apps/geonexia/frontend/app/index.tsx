@@ -4351,7 +4351,7 @@ export default function RecordScreen() {
 					? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
 					: accumulatedSecondsRef.current;
 				const currentPace =
-					point.speed != null && point.speed > 0
+					point.speed != null && point.speed > 0.5
 						? 1000 / (point.speed * 60) // instantaneous pace: min/km from m/s
 						: elapsedSec > 0 ? elapsedSec / 60 / d : null; // average fallback
 				if (currentPace != null) {
