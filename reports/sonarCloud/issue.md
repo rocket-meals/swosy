@@ -57,8 +57,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/frontend/app/helper/SystemActionHelper.ts#L6
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/activities/[id].tsx:185
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L185
+  apps/geonexia/frontend/app/activities/[id].tsx:186
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/activities/[id].tsx#L186
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/billboard-config/index.tsx:67
@@ -120,10 +120,6 @@
   apps/geonexia/frontend/app/index.tsx:907
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L907
 
-- **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/statistics/index.tsx:44
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/statistics/index.tsx#L44
-
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:72
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SettingsListBillboard/index.tsx#L72
@@ -151,6 +147,10 @@
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:360
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L360
+
+- **Prefer `Number.isFinite` over `isFinite`.**
+  apps/geonexia/frontend/helpers/ActivityStatsHelper.ts:24
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityStatsHelper.ts#L24
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/helpers/h3/h3core.js:242
