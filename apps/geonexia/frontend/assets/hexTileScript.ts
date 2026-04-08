@@ -40,7 +40,7 @@ export const HEX_TILE_SCRIPT = `
   var HEX_BORDER_COLOR = '#1e3a1e';
   var HEX_BORDER_WIDTH = 2.5;
   var HEX_BORDER_OPACITY = 0.85;
-  // Walk path: sandy brown/earth tone for tiles the user has physically walked on
+  // Walk path: red for tiles the user has physically walked on
   var WALK_PATH_COLOR = 'rgba(220, 38, 38, 0.85)';
   var WALK_PATH_WIDTH = 2.5;
 
@@ -474,7 +474,7 @@ export const HEX_TILE_SCRIPT = `
         'line-opacity': HEX_BORDER_OPACITY,
       },
     });
-    // Walk path: sandy brown lines connecting centres of adjacent visited tiles
+    // Walk path: red lines connecting centres of adjacent visited tiles
     map.addSource(HEX_WALK_PATH_SOURCE, { type: 'geojson', data: EMPTY_FC });
     map.addLayer({
       id: HEX_WALK_PATH_LAYER,
