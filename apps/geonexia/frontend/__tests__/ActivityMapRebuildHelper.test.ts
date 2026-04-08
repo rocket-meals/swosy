@@ -107,6 +107,7 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 		const walkedCount = Object.values(records).filter((r) => r.visitCount > 0).length;
 		// Each unique hexId in hexTilesOrdered contributes one walked record.
 		const uniqueWalked = new Set(hexTiles).size;
+		expect(uniqueWalked).toBe(25); // fixture has exactly 25 unique walked tiles
 		expect(walkedCount).toBe(uniqueWalked);
 	});
 
@@ -115,6 +116,25 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 			(r) => r.enclosedCount > 0 && r.visitCount === 0,
 		).length;
 		expect(enclosedCount).toBeGreaterThan(0);
+	});
+
+	it('enclosed tiles in records match those returned by findEnclosedCellsFromHexTiles', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const resolution = activityFixture.h3Resolution ?? 10;
+
+		const directlyComputed = new Set(findEnclosedCellsFromHexTiles(hexTiles, resolution));
+		const fromRecords = new Set(
+			Object.values(records)
+				.filter((r) => r.enclosedCount > 0 && r.visitCount === 0)
+				.map((r) => r.h3Index),
+		);
+
+		// Every tile returned by findEnclosedCellsFromHexTiles should appear as
+		// an enclosed-only record in the rebuild result.
+		for (const cell of directlyComputed) {
+			expect(fromRecords.has(cell)).toBe(true);
+		}
+		expect(fromRecords.size).toBe(directlyComputed.size);
 	});
 
 	it('enclosed tiles have lastEnclosedAt set and lastVisitedAt null', () => {
