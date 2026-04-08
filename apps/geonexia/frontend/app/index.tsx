@@ -3155,7 +3155,7 @@ export default function RecordScreen() {
 				if (!url) continue;
 
 				const iconKey = `billboard-${billboardKey}`;
-				const anchorOverride = textureAnchors[idx];
+				const anchorOverride = spriteAnchors[idx];
 				const anchorX = anchorOverride?.anchorX ?? sprite.anchorX;
 				const anchorY = anchorOverride?.anchorY ?? sprite.anchorY;
 				const [lng, lat] = resolveAnchorPosition(anchorColor);
