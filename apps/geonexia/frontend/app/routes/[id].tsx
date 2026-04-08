@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import { SavedRoute, loadRoute, saveRoute, deleteRoute } from '../../helpers/RouteStorage';
 import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 import SettingsListActivity from '../../components/SettingsListActivity';
+import ActivityAggregateStatsSection from '../../components/ActivityAggregateStatsSection';
 import SettingsListMapFeature from '../../components/SettingsListMapFeature';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
 import { isAvailable as isH3Available, computeRouteLengthKm, formatDistanceKm, gridDisk, cellToLatLng, cellToBoundary, getResolution, polygonToCells, areNeighborCells, type CoordPair } from '../../helpers/H3Helper';
@@ -870,6 +871,14 @@ export default function RouteDetailScreen() {
 						});
 					}}
 				/>
+
+				{/* ── Route Statistics ────────────────────────────────────── */}
+				{routeActivities.length > 0 && (
+					<>
+						<SettingsListGroupTitle title="Statistiken" />
+						<ActivityAggregateStatsSection activities={routeActivities} />
+					</>
+				)}
 
 				{/* ── Hex Tile Feature Map (debug only) ───────────────────── */}
 				{isDebugMode && featuresLoading && (
