@@ -15,9 +15,9 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, isAvailable as isH3Available } from './H3Helper';
+import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
-import { ComputedActivityData, ComputedHexTileEntry, SavedActivity } from './ActivityStorage';
+import { ComputedActivityData, ComputedHexTileEntry, RoutePoint, SavedActivity } from './ActivityStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
 import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } from './OpenMapTilesSchema';
@@ -42,17 +42,6 @@ const BBOX_PADDING_DEG = 0.001;
 
 /** Safety cap on the grid-disk radius used to enumerate candidate cells. */
 const MAX_GRID_DISK_RADIUS = 30;
-
-/**
- * Maximum grid-distance (in H3 grid steps) between the first and last hex tiles
- * for a route to be considered a closed loop for enclosed-tile calculation.
- *
- * Relaxed from 1 (immediate neighbours only) to allow routes where the runner
- * did not return exactly to the starting tile, but GPS interpolation bridges
- * the remaining gap.  At resolution 10 (edge ≈ 66 m) a distance of 10 allows
- * a gap of up to ~660 m between start and end without discarding the enclosed area.
- */
-const MAX_LOOP_CLOSURE_GRID_DISTANCE = 10;
 
 /**
  * Billboard key for the treePineLarge sprite (index 50 in OBJECT_SPRITES).
@@ -185,11 +174,18 @@ function pointInPolygon(lng: number, lat: number, polygon: Array<[number, number
  * visited hex tiles (in visit order). Visited tiles are excluded from the
  * result. Returns an empty array when:
  *  – fewer than 3 tiles were visited,
- *  – the first and last hex tiles are not adjacent (open route), or
+ *  – the first and last hex tiles are not the same cell or adjacent neighbours
+ *    (open route), or
  *  – the H3 library is unavailable.
  *
  * Using hex-tile centroids instead of raw GPS points is faster because the
  * polygon has far fewer vertices (one per unique visited tile).
+ *
+ * When a route was completed via GPS interpolation (the runner stopped short
+ * and the app added synthetic points to close the loop), callers should pass
+ * the output of `buildFullRouteTileIds` instead of the raw `hexTilesOrdered`
+ * list so that the closing segment is included in the polygon and the
+ * adjacency check succeeds.
  */
 export function findEnclosedCellsFromHexTiles(
 	visitedHexIds: string[],
@@ -211,22 +207,10 @@ export function findEnclosedCellsFromHexTiles(
 	}
 	if (polygon.length < 3) return [];
 
-	// Check loop closure: first and last hex tiles must be within MAX_LOOP_CLOSURE_GRID_DISTANCE
-	// grid steps of each other.  Immediate adjacency (distance = 1) is the ideal case, but
-	// routes where the runner stopped short and GPS interpolation fills the remaining gap may
-	// end with a tile that is a few cells away from the start – still close enough to treat
-	// the route as a closed loop.
+	// Check loop closure: first and last hex tiles must be the same cell or adjacent neighbors.
 	const firstHex = visitedHexIds[0];
 	const lastHex = visitedHexIds[visitedHexIds.length - 1];
-	if (firstHex !== lastHex) {
-		try {
-			const closureDistance = gridDistance(firstHex, lastHex);
-			if (closureDistance > MAX_LOOP_CLOSURE_GRID_DISTANCE) return [];
-		} catch {
-			// gridDistance can throw across icosahedron faces; treat as open route.
-			return [];
-		}
-	}
+	if (firstHex !== lastHex && !areNeighborCells(firstHex, lastHex)) return [];
 
 	// Bounding box with small padding.
 	const lngs = polygon.map(([lng]) => lng);
@@ -272,6 +256,52 @@ export function findEnclosedCellsFromHexTiles(
 		}
 	}
 	return enclosed;
+}
+
+/**
+ * Build an ordered, deduplicated list of H3 hex tile IDs from the full GPS
+ * route, including any tiles derived from interpolated GPS points.
+ *
+ * During a recording, `hexTilesOrdered` is populated only by the tiles the
+ * runner physically visited.  When the runner stopped short and the app added
+ * synthetic (interpolated) GPS points to close the loop back to the start,
+ * those closing tiles are present in `routePoints` (flagged with
+ * `interpolated: true`) but are NOT reflected in `hexTilesOrdered`.
+ *
+ * This function merges both sources so that the resulting list represents the
+ * complete route polygon – enabling `findEnclosedCellsFromHexTiles` to detect
+ * loop closure and correctly compute the enclosed area.
+ *
+ * @param hexTilesOrdered  Ordered H3 tile IDs of physically walked tiles.
+ * @param routePoints      All GPS route points, including interpolated ones.
+ * @param resolution       H3 resolution to use for cell lookup.
+ * @returns Combined ordered tile list: walked tiles first, then any additional
+ *          tiles from interpolated points (in GPS timestamp order).
+ */
+export function buildFullRouteTileIds(
+	hexTilesOrdered: string[],
+	routePoints: RoutePoint[],
+	resolution: number,
+): string[] {
+	if (!isH3Available()) return hexTilesOrdered;
+
+	const h3Res = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, Math.floor(resolution)));
+	const seen = new Set<string>(hexTilesOrdered);
+	const result = [...hexTilesOrdered];
+
+	for (const point of routePoints) {
+		if (!point.interpolated) continue;
+		try {
+			const cell = latLngToCell(point.lat, point.lng, h3Res);
+			if (!seen.has(cell)) {
+				seen.add(cell);
+				result.push(cell);
+			}
+		} catch {
+			// skip invalid GPS points
+		}
+	}
+	return result;
 }
 
 
@@ -494,10 +524,13 @@ export function rebuildMapFromActivities(
 		// skipped by the old same-cell loop-closure bug), try to recompute them
 		// from the ordered hex tiles so that existing activities benefit from the
 		// fix without requiring a new recording.
+		// Include tiles from interpolated GPS points so that routes completed via
+		// route interpolation also produce a closed loop for the polygon check.
 		if (enclosedHexTiles.length === 0 && (activity.hexTilesOrdered?.length ?? 0) >= 3) {
 			const visitedIds = activity.hexTilesOrdered ?? [];
 			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
-			enclosedHexTiles = findEnclosedCellsFromHexTiles(visitedIds, h3Res);
+			const fullRouteIds = buildFullRouteTileIds(visitedIds, activity.routePoints, h3Res);
+			enclosedHexTiles = findEnclosedCellsFromHexTiles(fullRouteIds, h3Res);
 		}
 
 		// ── Process visited (walked) tiles ────────────────────────────────────

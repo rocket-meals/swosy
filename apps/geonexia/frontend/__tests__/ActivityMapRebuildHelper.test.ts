@@ -7,13 +7,13 @@
  * remaining gap.  The key invariants are:
  *
  *  1. All tiles in `hexTilesOrdered` must be counted as *walked* tiles.
- *  2. The route forms a closed loop (first ↔ last tile within
- *     MAX_LOOP_CLOSURE_GRID_DISTANCE grid steps), so enclosed tiles inside
- *     the loop must be computed and counted, even though the runner did not
- *     physically return to the exact starting tile.
+ *  2. When `buildFullRouteTileIds` is used to include the interpolated GPS
+ *     tiles, the first and last tile of the complete route ARE immediate
+ *     neighbours, so `findEnclosedCellsFromHexTiles` detects the closed loop
+ *     and correctly counts enclosed tiles inside it.
  */
 
-import { findEnclosedCellsFromHexTiles, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
+import { findEnclosedCellsFromHexTiles, buildFullRouteTileIds, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
 import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { SavedActivity } from '../helpers/ActivityStorage';
 
@@ -44,33 +44,85 @@ describe('ActivityMapRebuildHelper – fixture sanity', () => {
 	});
 });
 
-// ─── findEnclosedCellsFromHexTiles ───────────────────────────────────────────
+// ─── buildFullRouteTileIds ────────────────────────────────────────────────────
 
-describe('ActivityMapRebuildHelper – findEnclosedCellsFromHexTiles with interpolated route', () => {
+describe('ActivityMapRebuildHelper – buildFullRouteTileIds', () => {
 	it('H3 library is available', () => {
 		expect(isH3Available()).toBe(true);
 	});
 
-	it('returns enclosed tiles for a loop route whose start and end are not immediately adjacent', () => {
+	it('result contains more tiles than hexTilesOrdered alone', () => {
 		const hexTiles = activityFixture.hexTilesOrdered ?? [];
 		const resolution = activityFixture.h3Resolution ?? 10;
 
-		const enclosed = findEnclosedCellsFromHexTiles(hexTiles, resolution);
+		const full = buildFullRouteTileIds(hexTiles, activityFixture.routePoints, resolution);
+
+		// Interpolated GPS points should add new tiles beyond the walked set.
+		expect(full.length).toBeGreaterThan(hexTiles.length);
+	});
+
+	it('result starts with all walked tiles in the same order', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const resolution = activityFixture.h3Resolution ?? 10;
+
+		const full = buildFullRouteTileIds(hexTiles, activityFixture.routePoints, resolution);
+
+		for (let i = 0; i < hexTiles.length; i++) {
+			expect(full[i]).toBe(hexTiles[i]);
+		}
+	});
+
+	it('first and last tiles of the full route are immediate neighbours', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const resolution = activityFixture.h3Resolution ?? 10;
+
+		const full = buildFullRouteTileIds(hexTiles, activityFixture.routePoints, resolution);
+		const first = full[0];
+		const last = full[full.length - 1];
+
+		// With interpolated tiles bridging the gap the route forms a closed loop.
+		expect(first).not.toBe(last);
+		// Import areNeighborCells via H3Helper
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const { areNeighborCells } = require('../helpers/H3Helper');
+		expect(areNeighborCells(first, last)).toBe(true);
+	});
+});
+
+// ─── findEnclosedCellsFromHexTiles ───────────────────────────────────────────
+
+describe('ActivityMapRebuildHelper – findEnclosedCellsFromHexTiles with full route (incl. interpolated)', () => {
+	it('returns enclosed tiles when the full route tile list is used', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const resolution = activityFixture.h3Resolution ?? 10;
+		const full = buildFullRouteTileIds(hexTiles, activityFixture.routePoints, resolution);
+
+		const enclosed = findEnclosedCellsFromHexTiles(full, resolution);
 
 		// The route forms a visual loop through the Osnabrück area; there should
 		// be at least one hex tile enclosed inside the loop.
 		expect(enclosed.length).toBeGreaterThan(0);
 	});
 
-	it('enclosed tiles do not overlap with walked tiles', () => {
+	it('returns empty when only hexTilesOrdered is used (open route – start ≠ end)', () => {
 		const hexTiles = activityFixture.hexTilesOrdered ?? [];
 		const resolution = activityFixture.h3Resolution ?? 10;
 
+		// Without the interpolated closing tiles, first and last are NOT neighbours.
 		const enclosed = findEnclosedCellsFromHexTiles(hexTiles, resolution);
-		const walkedSet = new Set(hexTiles);
+		expect(enclosed).toHaveLength(0);
+	});
+
+	it('enclosed tiles do not overlap with the full route tiles', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const resolution = activityFixture.h3Resolution ?? 10;
+		const full = buildFullRouteTileIds(hexTiles, activityFixture.routePoints, resolution);
+
+		const enclosed = findEnclosedCellsFromHexTiles(full, resolution);
+		const routeSet = new Set(full);
 
 		for (const cell of enclosed) {
-			expect(walkedSet.has(cell)).toBe(false);
+			expect(routeSet.has(cell)).toBe(false);
 		}
 	});
 });
@@ -82,7 +134,7 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 
 	beforeAll(() => {
 		// Strip pre-computed enclosed tiles so the rebuild recomputes them from
-		// hexTilesOrdered (exercising the fallback path in rebuildMapFromActivities).
+		// hexTilesOrdered + routePoints (exercising the fallback path in rebuildMapFromActivities).
 		const activityWithoutComputed: SavedActivity = {
 			...activityFixture,
 			computed: activityFixture.computed
@@ -118,11 +170,12 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 		expect(enclosedCount).toBeGreaterThan(0);
 	});
 
-	it('enclosed tiles in records match those returned by findEnclosedCellsFromHexTiles', () => {
+	it('enclosed tiles in records match those returned by findEnclosedCellsFromHexTiles(buildFullRouteTileIds(...))', () => {
 		const hexTiles = activityFixture.hexTilesOrdered ?? [];
 		const resolution = activityFixture.h3Resolution ?? 10;
+		const full = buildFullRouteTileIds(hexTiles, activityFixture.routePoints, resolution);
 
-		const directlyComputed = new Set(findEnclosedCellsFromHexTiles(hexTiles, resolution));
+		const directlyComputed = new Set(findEnclosedCellsFromHexTiles(full, resolution));
 		const fromRecords = new Set(
 			Object.values(records)
 				.filter((r) => r.enclosedCount > 0 && r.visitCount === 0)

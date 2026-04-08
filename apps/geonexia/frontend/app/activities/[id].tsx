@@ -28,7 +28,7 @@ import { computeEdgesFromRoutePoints } from '../../helpers/RouteDisplayHelper';
 import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
-import { computeActivityData, findEnclosedCellsFromHexTiles, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK } from '../../helpers/ActivityMapRebuildHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -1109,9 +1109,10 @@ export default function ActivityDetailScreen() {
 							activity.hexTilesEnclosed ??
 							[];
 						if (enclosedTiles.length === 0 && activity.hexTilesOrdered?.length) {
+							const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 							enclosedTiles = findEnclosedCellsFromHexTiles(
-								activity.hexTilesOrdered,
-								activity.h3Resolution ?? H3_RESOLUTION_FALLBACK,
+								buildFullRouteTileIds(activity.hexTilesOrdered, activity.routePoints, h3Res),
+								h3Res,
 							);
 						}
 						const newComputed = computeActivityData(activity, enclosedTiles);
