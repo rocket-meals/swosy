@@ -3268,7 +3268,26 @@ export default function RecordScreen() {
 			mapRef.current?.sendToMap({ hexLineOpacity: currentHexLineOpacity });
 			mapRef.current?.sendToMap({ hexLineWidth: currentHexLineWidth });
 			loadAndSendCustomizations();
-		}, [loadAndSendCustomizations]),
+			// Refresh hex tile data and route track so the map shows the latest state
+			// when returning from a drawer screen (e.g. Settings).  The WebView may not
+			// have processed messages while it was covered, so re-send everything.
+			const vp = debugViewportRef.current;
+			if (vp) {
+				refreshNormalTileDisplay(vp);
+			}
+			if (isRecordingRef.current && routePointsRef.current.length > 0) {
+				sendRouteToMap(routePointsRef.current);
+			}
+			// Center the map on the current player position so it snaps back after
+			// the user returns from another screen.
+			const pos = debugPlayerPositionRef.current
+				?? (routePointsRef.current.length > 0
+					? routePointsRef.current[routePointsRef.current.length - 1]
+					: null);
+			if (pos) {
+				centerMapOnPosition({ lat: pos.lat, lng: pos.lng });
+			}
+		}, [loadAndSendCustomizations, refreshNormalTileDisplay, sendRouteToMap, centerMapOnPosition]),
 	);
 
 	useLayoutEffect(() => {
