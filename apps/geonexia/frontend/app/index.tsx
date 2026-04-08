@@ -2723,7 +2723,6 @@ export default function RecordScreen() {
 	const selectedSportType = useSelector((state: RootState) => state.sportType.selectedType);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const isDebugMode = useDebugMode();
-	const isTTSEnabled = useSelector((state: RootState) => state.tts.ttsEnabled);
 	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
 	const speechSettings = useSelector((state: RootState) => state.speechSettings);
 	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
@@ -2765,8 +2764,6 @@ export default function RecordScreen() {
 	// TTS: track the last whole-km milestone announced to avoid repeating.
 	// Reset to 0 when recording starts.
 	const lastAnnouncedKmRef = useRef(0);
-	const isTTSEnabledRef = useRef(isTTSEnabled);
-	isTTSEnabledRef.current = isTTSEnabled;
 	const announceAppInBackgroundRef = useRef(announceAppInBackground);
 	announceAppInBackgroundRef.current = announceAppInBackground;
 	const speechSettingsRef = useRef(speechSettings);
@@ -3505,7 +3502,7 @@ export default function RecordScreen() {
 			if (
 				nextAppState === 'background' &&
 				isRecordingRef.current &&
-				isTTSEnabledRef.current &&
+				speechSettingsRef.current.enabled &&
 				announceAppInBackgroundRef.current
 			) {
 				const locale = getLocales()[0]?.languageTag ?? 'en-US';
@@ -4318,7 +4315,7 @@ export default function RecordScreen() {
 		setLiveDistanceKm(d);
 
 		// Announce each whole-km milestone via TTS when enabled.
-		if (isTTSEnabledRef.current) {
+		if (speechSettingsRef.current.enabled) {
 			const crossedKm = Math.floor(d);
 			if (crossedKm > 0 && crossedKm > lastAnnouncedKmRef.current) {
 				lastAnnouncedKmRef.current = crossedKm;
@@ -4344,7 +4341,7 @@ export default function RecordScreen() {
 		}
 
 		// ── Pace hint announcements with hysteresis threshold ────────────
-		if (isTTSEnabledRef.current && d > 0) {
+		if (speechSettingsRef.current.enabled && d > 0) {
 			const curSs = speechSettingsRef.current;
 			if (curSs.paceTargetEnabled) {
 				const elapsedSec = startTimeRef.current > 0
@@ -4524,9 +4521,8 @@ export default function RecordScreen() {
 		if (intervalSec <= 0) return;
 
 		periodicAnnouncementTimerRef.current = setInterval(() => {
-			if (!isRecordingRef.current || isPausedRef.current || !isTTSEnabledRef.current) return;
+			if (!isRecordingRef.current || isPausedRef.current || !speechSettingsRef.current.enabled) return;
 			const curSs = speechSettingsRef.current;
-			if (!curSs.enabled) return;
 
 			const elapsedSec = startTimeRef.current > 0
 				? (Date.now() - startTimeRef.current) / 1000 + accumulatedSecondsRef.current
