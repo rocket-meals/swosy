@@ -512,25 +512,27 @@ export function rebuildMapFromActivities(
 			(activity.computed as { orderedHexTiles?: ComputedHexTileEntry[] } | undefined)?.orderedHexTiles ??
 			(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
 
-		// Prefer computed.enclosedHexTiles (the canonical field); fall back to the
-		// legacy top-level fields for activities saved by older app versions.
-		let enclosedHexTiles: string[] =
-			activity.computed?.enclosedHexTiles ??
-			activity.enclosedHexTiles ??
-			activity.hexTilesEnclosed ??
-			[];
-
-		// If enclosed tiles are absent (either never computed, or incorrectly
-		// skipped by the old same-cell loop-closure bug), try to recompute them
-		// from the ordered hex tiles so that existing activities benefit from the
-		// fix without requiring a new recording.
-		// Include tiles from interpolated GPS points so that routes completed via
-		// route interpolation also produce a closed loop for the polygon check.
-		if (enclosedHexTiles.length === 0 && (activity.hexTilesOrdered?.length ?? 0) >= 3) {
+		// Always recompute enclosed tiles from the route when enough walked tiles
+		// are available.  This ensures that stale stored values (e.g. an activity
+		// that was recorded with a closed loop but later the route was found to be
+		// open) are corrected: if the route does not form a closed loop, the
+		// recomputation returns [] and overrides the stored (now-incorrect) data.
+		// Include tiles derived from interpolated GPS points so that routes
+		// completed via route interpolation produce a properly closed polygon.
+		let enclosedHexTiles: string[];
+		if ((activity.hexTilesOrdered?.length ?? 0) >= 3) {
 			const visitedIds = activity.hexTilesOrdered ?? [];
 			const h3Res = activity.h3Resolution ?? H3_RESOLUTION_FALLBACK;
 			const fullRouteIds = buildFullRouteTileIds(visitedIds, activity.routePoints, h3Res);
 			enclosedHexTiles = findEnclosedCellsFromHexTiles(fullRouteIds, h3Res);
+		} else {
+			// Not enough walked tiles to form a polygon; fall back to any stored
+			// value for legacy activities that pre-date hexTilesOrdered.
+			enclosedHexTiles =
+				activity.computed?.enclosedHexTiles ??
+				activity.enclosedHexTiles ??
+				activity.hexTilesEnclosed ??
+				[];
 		}
 
 		// ── Process visited (walked) tiles ────────────────────────────────────
