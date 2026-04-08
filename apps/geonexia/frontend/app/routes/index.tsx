@@ -29,7 +29,8 @@ export default function RoutesScreen() {
 				}
 			}
 			setActivityCountByRouteId(counts);
-		} catch {
+		} catch (err) {
+			console.error('[RoutesScreen] Failed to load routes or activities:', err);
 			setRoutes([]);
 			setActivityCountByRouteId({});
 		}
@@ -86,7 +87,7 @@ export default function RoutesScreen() {
 					<SettingsListRoute
 						key={route.id}
 						route={route}
-						activityCount={activityCountByRouteId[route.id] ?? 0}
+						activityCount={activityCountByRouteId[route.id]}
 						groupPosition={groupPosition}
 						showSeparator={idx < routes.length - 1}
 						onPress={() => handleSelectRoute(route)}
