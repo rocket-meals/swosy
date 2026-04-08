@@ -23,21 +23,19 @@ function processNext(): void {
 	if (item == null) return;
 	_isPlaying = true;
 
-	// Log intent before speaking.
-	void appendTTSLogEntry({
-		timestamp: Date.now(),
-		text: item.text,
-		languageCode: item.languageCode,
-		success: true,
-		source: item.source,
-	});
-
 	try {
 		Speech.speak(item.text, {
 			useApplicationAudioSession: true,
 			...item.options,
 			language: item.languageCode,
 			onDone: () => {
+				void appendTTSLogEntry({
+					timestamp: Date.now(),
+					text: item.text,
+					languageCode: item.languageCode,
+					success: true,
+					source: item.source,
+				});
 				_isPlaying = false;
 				processNext();
 			},

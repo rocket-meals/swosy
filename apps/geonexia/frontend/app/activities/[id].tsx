@@ -895,6 +895,14 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeStartPoint: [pts[0].lng, pts[0].lat] });
 		}
 
+		// Debug mode: render raw GPS measurement points as small black circles on
+		// top of the route line so the sampling density is visible.
+		if (isDebugMode && pts.length > 0) {
+			mapRef.current.sendToMap({ debugGpsPoints: pts.map((p) => [p.lng, p.lat]) });
+		} else {
+			mapRef.current.sendToMap({ debugGpsPoints: null });
+		}
+
 		// Send hex tile and walk path GeoJSON so the activity screen shows the
 		// same hexagon visualization as the main map, but only for the tiles
 		// that were visited during this specific activity.
@@ -959,7 +967,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, isDebugMode]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {

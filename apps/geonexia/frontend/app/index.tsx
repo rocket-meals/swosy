@@ -571,7 +571,7 @@ const FLUID_BASELINE_ML = 600;
 const SPEED_WARMUP_MS = 10_000;
 const SPEED_WINDOW_SIZE = 5;
 const GPS_TIME_INTERVAL_MS = 1000;
-const GPS_DISTANCE_INTERVAL_METERS = 5;
+const GPS_DISTANCE_INTERVAL_METERS = 0;
 /**
  * Maximum number of intermediate H3 cells to fill in when a GPS gap is detected
  * (i.e. the straight-line H3 path between two accepted GPS fixes is longer than 1
