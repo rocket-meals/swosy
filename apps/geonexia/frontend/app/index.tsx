@@ -2712,6 +2712,7 @@ export default function RecordScreen() {
 	const { show: showMagnifyModal, close: closeMagnifyModal } = useMyScrollViewModal();
 	const { show: showRecoveryModal, close: closeRecoveryModal } = useMyScrollViewModal();
 	const { show: showSearchModal, close: closeSearchModal } = useMyScrollViewModal();
+	const { show: showDebugReplayModal, close: closeDebugReplayModal } = useMyScrollViewModal();
 	const navigation = useNavigation();
 	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
@@ -2795,6 +2796,13 @@ export default function RecordScreen() {
 	const [selectedRoute, setSelectedRoute] = useState<SavedRoute | null>(null);
 	const selectedRouteRef = useRef<SavedRoute | null>(null);
 	selectedRouteRef.current = selectedRoute;
+
+	// Debug replay: selected activity to replay instead of using real GPS (debug mode only).
+	const [debugReplayActivity, setDebugReplayActivity] = useState<SavedActivity | null>(null);
+	const debugReplayActivityRef = useRef<SavedActivity | null>(null);
+	debugReplayActivityRef.current = debugReplayActivity;
+	// Timeout handles for the replay ticker – cleared when recording stops.
+	const debugReplayTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
 	// Coloring tool state:
 	// - coloringTileImage: the currently selected tile key; null means coloring mode is off.
@@ -4625,6 +4633,29 @@ export default function RecordScreen() {
 			// Start periodic (time-based) speech announcements if enabled
 			startPeriodicAnnouncementTimer();
 
+			// ── Debug replay: emit GPS points from a recorded activity instead of real GPS ──
+			if (isDebugMode && debugReplayActivityRef.current && debugReplayActivityRef.current.routePoints.length > 0) {
+				const activity = debugReplayActivityRef.current;
+				console.log('[RecordScreen] Debug replay mode: replaying activity', activity.id, 'with', activity.routePoints.length, 'points');
+				const replayStartWallTime = Date.now();
+				const activityStartTime = activity.routePoints[0].timestamp;
+				const timeouts = activity.routePoints.map((point) => {
+					const delay = Math.max(0, point.timestamp - activityStartTime);
+					return setTimeout(() => {
+						if (!isRecordingRef.current) return;
+						handleLocationUpdate({
+							lat: point.lat,
+							lng: point.lng,
+							altitude: point.altitude,
+							speed: point.speed,
+							timestamp: replayStartWallTime + delay,
+						});
+					}, delay);
+				});
+				debugReplayTimeoutsRef.current = timeouts;
+				return;
+			}
+
 			if (expoGo) {
 				console.log('[RecordScreen] Running in Expo Go – skipping background permission, using foreground-only tracking.');
 				showModal({
@@ -4723,7 +4754,7 @@ export default function RecordScreen() {
 			}
 			stopPeriodicAnnouncementTimer();
 		}
-	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer, refreshSearchHighlight]);
+	}, [handleLocationUpdate, setFollowMode, showModal, theme, startPeriodicAnnouncementTimer, stopPeriodicAnnouncementTimer, refreshSearchHighlight, isDebugMode]);
 
 	// Show a modal to select a saved route before starting a recording.
 	const showRouteSelectionModal = useCallback(async () => {
@@ -4775,12 +4806,65 @@ export default function RecordScreen() {
 		});
 	}, [showRouteModal, closeRouteModal, selectedRoute]);
 
+	// Show a modal to select a saved activity for debug replay.
+	const showDebugActivitySelectionModal = useCallback(async (onSelected: (activity: SavedActivity | null) => void) => {
+		let activities: SavedActivity[] = [];
+		try {
+			activities = await loadActivities();
+		} catch {
+			// ignore
+		}
+		showDebugReplayModal({
+			title: '🔄 Replay Activity (Debug)',
+			onClose: closeDebugReplayModal,
+			children: (
+				<View>
+					<SettingsListGroupTitle title="Select a recorded activity" />
+					<SettingsListSelectOptionSingle
+						key="__none__"
+						label="No Replay (Normal GPS)"
+						isSelected={debugReplayActivityRef.current === null}
+						selectionColor={PRIMARY_COLOR}
+						onPress={() => {
+							onSelected(null);
+							closeDebugReplayModal();
+						}}
+						groupPosition={activities.length === 0 ? 'single' : 'top'}
+					/>
+					{activities.map((activity, i) => {
+						const date = new Date(activity.startedAt);
+						const label = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${activity.stats.distanceKm.toFixed(2)} km · ${activity.routePoints.length} Points`;
+						const position = i === activities.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={activity.id}
+								label={label}
+								isSelected={debugReplayActivityRef.current?.id === activity.id}
+								selectionColor={PRIMARY_COLOR}
+								onPress={() => {
+									onSelected(activity);
+									closeDebugReplayModal();
+								}}
+								groupPosition={position}
+							/>
+						);
+					})}
+				</View>
+			),
+		});
+	}, [showDebugReplayModal, closeDebugReplayModal]);
 
 	const stopRecording = useCallback(async () => {
 		console.log('[RecordScreen] stopRecording called.');
 		_onLocationUpdate = null;
 		fgSubRef.current?.remove();
 		fgSubRef.current = null;
+
+		// Clear any scheduled debug replay timeouts.
+		for (const t of debugReplayTimeoutsRef.current) {
+			clearTimeout(t);
+		}
+		debugReplayTimeoutsRef.current = [];
 
 		// Clear the crash-recovery snapshot since this is a clean stop.
 		clearRecordingSnapshot();
@@ -4936,6 +5020,24 @@ export default function RecordScreen() {
 		isPausedRef.current = false;
 		setIsPaused(false);
 	}, [startPeriodicAnnouncementTimer]);
+
+	// Handle the record button press. In debug mode, show a replay selection modal first.
+	// Outside debug mode (or if already recording), delegate directly to startRecording.
+	const handleRecordButtonPress = useCallback(async () => {
+		if (!isDebugMode) {
+			startRecording();
+			return;
+		}
+		// In debug mode: ask the user whether to start normally or replay an activity.
+		await showDebugActivitySelectionModal((activity) => {
+			// Update both the ref (for immediate synchronous access in startRecording) and
+			// the state (for UI reactivity).
+			debugReplayActivityRef.current = activity;
+			setDebugReplayActivity(activity);
+			// Start recording after the modal closes (slight delay lets the modal animate out).
+			setTimeout(() => startRecording(), 50);
+		});
+	}, [isDebugMode, startRecording, showDebugActivitySelectionModal]);
 
 	/**
 	 * Compass / North button handler:
@@ -5193,6 +5295,20 @@ export default function RecordScreen() {
 							</View>
 						)}
 
+						{/* Debug replay indicator (shown in debug mode before recording starts) */}
+						{isDebugMode && !isRecording && debugReplayActivity && (
+							<View style={styles.selectedRouteRow}>
+								<MaterialIcons name="replay" size={14} color="#f97316" />
+								<Text style={[styles.selectedRouteText, { color: '#f97316' }]} numberOfLines={1}>
+									{'🔄 Replay: ' + new Date(debugReplayActivity.startedAt).toLocaleDateString() + ' ' + new Date(debugReplayActivity.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+								</Text>
+								<TouchableOpacity onPress={() => setDebugReplayActivity(null)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+									<MaterialIcons name="close" size={16} color={theme.screen.icon} />
+								</TouchableOpacity>
+							</View>
+						)}
+
+
 						{/* Controls row: [stop?] [record/pause – centred] [chevron-down] */}
 						<View style={styles.liveBarControlsRow}>
 							{/* Left side: stop button when recording, activity type picker otherwise */}
@@ -5242,7 +5358,7 @@ export default function RecordScreen() {
 								]}
 								onPress={
 									!isRecording
-										? startRecording
+										? handleRecordButtonPress
 										: isPaused
 										? resumeRecording
 										: pauseRecording
