@@ -1,6 +1,5 @@
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
-	Alert,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -26,6 +25,7 @@ import { startRun, markVisited, loadPersistedState, loadWalkedEdgesState, setBil
 import { BillboardAnchorPosition } from '../../helpers/HexTileStorage';
 import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { AppDispatch, store } from '../../store/store';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
 
@@ -83,6 +83,7 @@ export default function ActivitiesScreen() {
 	const navigation = useNavigation();
 	const dispatch = useDispatch<AppDispatch>();
 	const { show: showImportModal, close: closeImportModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const [activities, setActivities] = useState<SavedActivity[]>([]);
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -122,7 +123,7 @@ export default function ActivitiesScreen() {
 		try {
 			parsed = JSON.parse(code);
 		} catch {
-			Alert.alert('Import Failed', 'The code is not valid JSON.');
+			showAlert('Import Failed', 'The code is not valid JSON.');
 			return;
 		}
 
@@ -136,7 +137,7 @@ export default function ActivitiesScreen() {
 				typeof activity.startedAt !== 'number' ||
 				!Array.isArray(activity.routePoints)
 			) {
-				Alert.alert('Import Failed', 'One or more entries do not look like valid activities.');
+				showAlert('Import Failed', 'One or more entries do not look like valid activities.');
 				return;
 			}
 			validActivities.push(activity);
@@ -148,23 +149,23 @@ export default function ActivitiesScreen() {
 		closeImportModal();
 		loadData();
 		const count = validActivities.length;
-		Alert.alert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
+		showAlert('Imported', count === 1 ? 'The run has been imported successfully.' : `${count} runs have been imported successfully.`);
 	}, [applyImportedHexTiles, closeImportModal, loadData]);
 
 	const handleExportAll = useCallback(async () => {
 		const allActivities = await loadActivities();
 		if (allActivities.length === 0) {
-			Alert.alert('Nothing to Export', 'There are no activities to export.');
+			showAlert('Nothing to Export', 'There are no activities to export.');
 			return;
 		}
 		const json = JSON.stringify(allActivities, null, 2);
 		await Clipboard.setStringAsync(json);
 		const count = allActivities.length;
-		Alert.alert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
+		showAlert('Exported', `${count} ${count === 1 ? 'activity' : 'activities'} copied to clipboard as JSON.`);
 	}, []);
 
 	const handleRebuildMap = useCallback(() => {
-		Alert.alert(
+		showAlert(
 			'Rebuild Map from Activities',
 			'This will recalculate the explored map from all your saved activities. All tile customizations (including manually set tiles) will be reset. Continue?',
 			[
@@ -174,12 +175,12 @@ export default function ActivitiesScreen() {
 					style: 'destructive',
 					onPress: async () => {
 						if (!isH3Available()) {
-							Alert.alert('Not Available', 'H3 library is not available on this device.');
+							showAlert('Not Available', 'H3 library is not available on this device.');
 							return;
 						}
 						const allActivities = await loadActivities();
 						if (allActivities.length === 0) {
-							Alert.alert('No Activities', 'There are no activities to rebuild the map from.');
+							showAlert('No Activities', 'There are no activities to rebuild the map from.');
 							return;
 						}
 
@@ -277,7 +278,7 @@ export default function ActivitiesScreen() {
 						})();
 
 						const count = allActivities.length;
-						Alert.alert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
+						showAlert('Map Rebuilt', `Map rebuilt from ${count} ${count === 1 ? 'activity' : 'activities'}.`);
 					},
 				},
 			],

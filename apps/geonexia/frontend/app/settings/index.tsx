@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, Feather, MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -50,6 +50,7 @@ import {
 } from '../../helpers/HexTileStorage';
 import { getCompanyLogoLocalSaved } from '../../config';
 import { loadTTSLog, clearTTSLog, type TTSLogEntry } from '../../helpers/TTSLogStorage';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#2563eb';
 const NOTIFICATION_COLOR = '#16a34a';
@@ -269,6 +270,7 @@ export default function SettingsScreen() {
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
 	const { show: showSpeechModal } = useMyScrollViewModal();
 	const { show: showTTSLogModal, close: closeTTSLogModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
 
@@ -415,7 +417,7 @@ export default function SettingsScreen() {
 	}, [dispatch, hexLineWidth]);
 
 	const handleRecalculateAllComputedValues = useCallback(() => {
-		Alert.alert(
+		showAlert(
 			'Berechnete Werte neu berechnen',
 			'Die berechneten Werte aller Aktivitäten werden neu berechnet. Fortfahren?',
 			[
@@ -424,12 +426,12 @@ export default function SettingsScreen() {
 					text: 'Neu berechnen',
 					onPress: async () => {
 						if (!isH3Available()) {
-							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							showAlert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
 							return;
 						}
 						const allActivities = await loadActivities();
 						if (allActivities.length === 0) {
-							Alert.alert('Keine Aktivitäten', 'Es sind keine Aktivitäten vorhanden.');
+							showAlert('Keine Aktivitäten', 'Es sind keine Aktivitäten vorhanden.');
 							return;
 						}
 						let updatedCount = 0;
@@ -454,7 +456,7 @@ export default function SettingsScreen() {
 								console.warn('[Recalculate] Failed to save activity:', activity.id, err);
 							}
 						}
-						Alert.alert('Fertig', `${updatedCount} ${updatedCount === 1 ? 'Aktivität' : 'Aktivitäten'} neu berechnet.`);
+						showAlert('Fertig', `${updatedCount} ${updatedCount === 1 ? 'Aktivität' : 'Aktivitäten'} neu berechnet.`);
 					},
 				},
 			],
@@ -462,7 +464,7 @@ export default function SettingsScreen() {
 	}, []);
 
 	const handleRebuildWorld = useCallback(() => {
-		Alert.alert(
+		showAlert(
 			'Welt neu aufbauen',
 			'Die Karte wird aus allen gespeicherten Aktivitäten neu berechnet. Alle Karten-Anpassungen (einschließlich manuell gesetzter Felder) werden zurückgesetzt. Fortfahren?',
 			[
@@ -472,12 +474,12 @@ export default function SettingsScreen() {
 					style: 'destructive',
 					onPress: async () => {
 						if (!isH3Available()) {
-							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							showAlert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
 							return;
 						}
 						const allActivities = await loadActivities();
 						if (allActivities.length === 0) {
-							Alert.alert('Keine Aktivitäten', 'Es sind keine Aktivitäten vorhanden.');
+							showAlert('Keine Aktivitäten', 'Es sind keine Aktivitäten vorhanden.');
 							return;
 						}
 
@@ -556,7 +558,7 @@ export default function SettingsScreen() {
 						})();
 
 						const count = allActivities.length;
-						Alert.alert('Welt neu aufgebaut', `Karte aus ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'} neu aufgebaut.`);
+						showAlert('Welt neu aufgebaut', `Karte aus ${count} ${count === 1 ? 'Aktivität' : 'Aktivitäten'} neu aufgebaut.`);
 					},
 				},
 			],

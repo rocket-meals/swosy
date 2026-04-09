@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
 	SettingsList,
@@ -11,9 +11,11 @@ import { useFocusEffect } from 'expo-router';
 import { SavedRoute, loadRoutes, deleteAllRoutes } from '../../helpers/RouteStorage';
 import { loadActivities } from '../../helpers/ActivityStorage';
 import SettingsListRoute from '../../components/SettingsListRoute';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 export default function RoutesScreen() {
 	const { theme } = useTheme();
+	const { showAlert } = useGeonexiaAlert();
 	const router = useRouter();
 	const [routes, setRoutes] = useState<SavedRoute[]>([]);
 	const [activityCountByRouteId, setActivityCountByRouteId] = useState<Record<string, number>>({});
@@ -46,7 +48,7 @@ export default function RoutesScreen() {
 	);
 
 	const handleDeleteAll = useCallback(() => {
-		Alert.alert('Delete All Routes', 'Are you sure you want to delete all saved routes? This cannot be undone.', [
+		showAlert('Delete All Routes', 'Are you sure you want to delete all saved routes? This cannot be undone.', [
 			{ text: 'Cancel', style: 'cancel' },
 			{
 				text: 'Delete All',

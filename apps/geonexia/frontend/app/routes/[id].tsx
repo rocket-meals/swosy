@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -29,6 +29,7 @@ import { queryTileFeaturesForHexCell } from '../../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../../helpers/OpenMapTilesSchema';
 import type { RootState } from '../../store/store';
 import { useDebugMode } from '../../hooks/useDebugMode';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5;
 const PRIMARY_COLOR = '#2563eb';
@@ -89,6 +90,7 @@ export default function RouteDetailScreen() {
 	const [routeActivities, setRouteActivities] = useState<SavedActivity[]>([]);
 	const hexTileRecords = useSelector((state: RootState) => state.hexTiles.records);
 	const isDebugMode = useDebugMode();
+	const { showAlert } = useGeonexiaAlert();
 	const { show: showActivitiesModal, close: closeActivitiesModal } = useMyScrollViewModal();
 	const { show: showHexTileModal } = useMyScrollViewModal();
 	const { show: showAggregatedModal } = useMyScrollViewModal();
@@ -549,7 +551,7 @@ export default function RouteDetailScreen() {
 			}
 		};
 		if (hasUnsavedChanges) {
-			Alert.alert('Änderungen verwerfen?', 'Ungespeicherte Änderungen gehen verloren.', [
+			showAlert('Änderungen verwerfen?', 'Ungespeicherte Änderungen gehen verloren.', [
 				{ text: 'Weiter bearbeiten', style: 'cancel' },
 				{
 					text: 'Verwerfen',
@@ -585,7 +587,7 @@ export default function RouteDetailScreen() {
 				mapRef.current.sendToMap({ routeEditNeighbors: null });
 			}
 		} catch {
-			Alert.alert('Fehler', 'Die Änderungen konnten nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Änderungen konnten nicht gespeichert werden.');
 		}
 	}, [route, editedHexTiles, resetTileQueryState]);
 
@@ -648,7 +650,7 @@ export default function RouteDetailScreen() {
 
 	const handleDelete = useCallback(() => {
 		if (!route) return;
-		Alert.alert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
+		showAlert('Route löschen', 'Möchtest du diese Route wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.', [
 			{ text: 'Abbrechen', style: 'cancel' },
 			{
 				text: 'Löschen',
@@ -821,7 +823,7 @@ export default function RouteDetailScreen() {
 						try {
 							saveRoute(updated);
 						} catch {
-							Alert.alert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
+							showAlert('Fehler', 'Der Name der Route konnte nicht gespeichert werden.');
 							return;
 						}
 						setRoute(updated);

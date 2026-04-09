@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MyMap, MyMapHandle, SettingsListGroupTitle, SettingsListSelectOption, useMyScrollViewModal, useTheme } from 'repo-depkit-common-ui';
 import { Asset } from 'expo-asset';
@@ -17,6 +17,7 @@ import type { RootState, AppDispatch } from '../../store/store';
 import type { HexTileRecord } from '../../helpers/HexTileStorage';
 import SettingsListHexTile from '../../components/SettingsListHexTile';
 import { HEX_TILE_SCRIPT } from '../../assets/hexTileScript';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const PRIMARY_COLOR = '#7c3aed';
 const ANCHOR_STEP = 0.05;
@@ -311,6 +312,7 @@ const mapPreviewStyles = StyleSheet.create({
 export default function HexTextureConfigScreen() {
 	const { theme } = useTheme();
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const dispatch = useDispatch<AppDispatch>();
 	const records = useSelector((state: RootState) => state.hexTiles.records);
 	const spriteAnchors = useSelector((state: RootState) => state.hexTextureConfig.spriteAnchors);
@@ -397,7 +399,7 @@ export default function HexTextureConfigScreen() {
 	const handleCopyConfig = useCallback(async () => {
 		const json = JSON.stringify(spriteAnchors, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Copied', 'Hex texture config copied to clipboard.');
+		showAlert('Copied', 'Hex texture config copied to clipboard.');
 	}, [spriteAnchors]);
 
 	const selectionOptions = useMemo(() => {
