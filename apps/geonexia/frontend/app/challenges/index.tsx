@@ -75,6 +75,164 @@ function getBestPace(activities: SavedActivity[]): number {
 		.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
 }
 
+function roundToHalf(n: number): number {
+	return Math.round(n * 2) / 2;
+}
+
+/**
+ * Returns a continuous week index starting at 1 for ISO week 1 of 2024
+ * (epoch = Monday, 2024-01-01). This is used to determine the position
+ * within the repeating 8-week training cycle.
+ */
+function getContinuousWeekIndex(date: Date): number {
+	// Epoch: Monday Jan 1, 2024 (ISO week 1 of 2024)
+	const EPOCH_MS = Date.UTC(2024, 0, 1);
+	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+	const dayOfWeek = d.getUTCDay() || 7; // Mon=1 … Sun=7
+	const mondayMs = d.getTime() - (dayOfWeek - 1) * 86400000;
+	return Math.max(1, Math.floor((mondayMs - EPOCH_MS) / (7 * 86400000)) + 1);
+}
+
+type WeekType = 'volume' | 'longrun' | 'stabilization' | 'deload';
+
+/**
+ * Determines the week type within the repeating 4-week cycle.
+ *   weekIndex % 4 === 1 → volume week  (+8–10%)
+ *   weekIndex % 4 === 2 → long-run week (long run +10%)
+ *   weekIndex % 4 === 3 → stabilization week (+3–5%)
+ *   weekIndex % 4 === 0 → deload week  (×0.70–0.80)
+ */
+function getWeekType(weekIndex: number): WeekType {
+	const pos = weekIndex % 4;
+	if (pos === 0) return 'deload';
+	if (pos === 2) return 'longrun';
+	if (pos === 3) return 'stabilization';
+	return 'volume';
+}
+
+const WEEK_TYPE_LABELS: Record<WeekType, string> = {
+	volume: 'Volumen-Woche',
+	longrun: 'Long-Run-Woche',
+	stabilization: 'Stabilisierungs-Woche',
+	deload: 'Erholungs-Woche',
+};
+
+const WEEK_TYPE_COLORS: Record<WeekType, string> = {
+	volume: '#2563eb',
+	longrun: '#7c3aed',
+	stabilization: '#d97706',
+	deload: '#059669',
+};
+
+type RunChallengeTargets = {
+	weekType: WeekType;
+	totalWeeklyKm: number;
+	longRunKm: number;
+};
+
+/**
+ * Computes the dynamic running challenge targets for the current week based on:
+ *  - Last 5 running activities (baseline average run length)
+ *  - Previous week's activities (prev total distance + longest run)
+ *  - The week's position in the 8-week training cycle (3 build + 1 deload)
+ *
+ * Rules applied:
+ *  - Long run ≤ 40% of total weekly distance
+ *  - Weekly distance increase capped at +5 km (injury prevention)
+ *  - All values rounded to nearest 0.5 km
+ */
+function computeRunChallengeTargets(
+	allActivities: SavedActivity[],
+	now: Date,
+): RunChallengeTargets {
+	const weekIndex = getContinuousWeekIndex(now);
+	const weekType = getWeekType(weekIndex);
+
+	// Determine previous ISO week bounds (handles year boundary)
+	const currentWeekNum = getISOWeekNumber(now);
+	const currentYear = now.getFullYear();
+	let prevWeekNum = currentWeekNum - 1;
+	let prevWeekYear = currentYear;
+	if (prevWeekNum < 1) {
+		prevWeekYear = currentYear - 1;
+		const dec28 = new Date(Date.UTC(prevWeekYear, 11, 28));
+		prevWeekNum = getISOWeekNumber(dec28);
+	}
+	const prevBounds = getISOWeekBounds(prevWeekNum, prevWeekYear);
+
+	// Running activities only (backward-compat: no sportType means run)
+	const isRun = (a: SavedActivity) => !a.sportType || a.sportType === 'run';
+
+	const prevWeekRuns = allActivities.filter(
+		(a) => isRun(a) && a.startedAt >= prevBounds.start && a.startedAt <= prevBounds.end,
+	);
+
+	// Last 5 runs (most recent first) for baseline average
+	const recentRuns = allActivities
+		.filter(isRun)
+		.sort((a, b) => b.startedAt - a.startedAt)
+		.slice(0, 5);
+
+	const avgRunKm =
+		recentRuns.length > 0
+			? recentRuns.reduce((s, a) => s + a.stats.distanceKm, 0) / recentRuns.length
+			: 5;
+
+	const runsPerWeek = prevWeekRuns.length > 0 ? prevWeekRuns.length : 3;
+	const prevTotal =
+		prevWeekRuns.length > 0
+			? prevWeekRuns.reduce((s, a) => s + a.stats.distanceKm, 0)
+			: Math.max(avgRunKm * runsPerWeek, 5);
+	const prevLong =
+		prevWeekRuns.length > 0
+			? Math.max(...prevWeekRuns.map((a) => a.stats.distanceKm))
+			: avgRunKm;
+
+	// Second 4-week block within the 8-week cycle → slightly more aggressive
+	const posIn8 = ((weekIndex - 1) % 8) + 1;
+	const aggressiveBonus = posIn8 >= 5 ? 0.02 : 0;
+
+	let newTotal: number;
+	let newLong: number;
+
+	switch (weekType) {
+		case 'volume':
+			newTotal = prevTotal * (1 + 0.09 + aggressiveBonus);
+			newLong = Math.min(prevLong * 1.05, newTotal * 0.4);
+			break;
+		case 'longrun': {
+			const longIncrease = prevLong * (0.1 + aggressiveBonus);
+			newLong = prevLong + longIncrease;
+			newTotal = prevTotal + longIncrease;
+			break;
+		}
+		case 'stabilization':
+			newTotal = prevTotal * (1 + 0.04 + aggressiveBonus / 2);
+			newLong = prevLong;
+			break;
+		case 'deload':
+		default:
+			newTotal = prevTotal * 0.75;
+			newLong = prevLong * 0.8;
+			break;
+	}
+
+	// Constraint: long run ≤ 40% of total weekly distance
+	newLong = Math.min(newLong, newTotal * 0.4);
+
+	// Constraint: max +5 km increase per week (skip for deload)
+	if (weekType !== 'deload') {
+		newTotal = Math.min(newTotal, prevTotal + 5);
+		newLong = Math.min(newLong, newTotal * 0.4);
+	}
+
+	return {
+		weekType,
+		totalWeeklyKm: roundToHalf(Math.max(newTotal, 1)),
+		longRunKm: roundToHalf(Math.max(newLong, 0.5)),
+	};
+}
+
 function getEnclosedTileCount(activity: SavedActivity): number {
 	return activity.enclosedTileCount ?? (activity.enclosedHexTiles ?? activity.hexTilesEnclosed ?? []).length;
 }
@@ -818,6 +976,34 @@ export default function ChallengesScreen() {
 	const pastChallenges = WEEKLY_CHALLENGES.filter((c) => c.weekNumber < clampedWeek);
 	const upcomingChallenges = WEEKLY_CHALLENGES.filter((c) => c.weekNumber > clampedWeek);
 
+	// ── Dynamic training-plan challenges ──────────────────────────────────────
+	const runTargets = useMemo(
+		() => computeRunChallengeTargets(activities, now),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[activities],
+	);
+
+	const weekRunActivities = useMemo(
+		() =>
+			weeklyActivities.filter((a) => !a.sportType || a.sportType === 'run'),
+		[weeklyActivities],
+	);
+
+	const currentWeekTotalKm = weekRunActivities.reduce(
+		(s, a) => s + a.stats.distanceKm,
+		0,
+	);
+	const currentWeekLongRun =
+		weekRunActivities.length > 0
+			? Math.max(...weekRunActivities.map((a) => a.stats.distanceKm))
+			: 0;
+
+	const volumeProgress = Math.min(1, currentWeekTotalKm / runTargets.totalWeeklyKm);
+	const longRunProgress = Math.min(1, currentWeekLongRun / runTargets.longRunKm);
+	const volumeCompleted = currentWeekTotalKm >= runTargets.totalWeeklyKm;
+	const longRunCompleted = currentWeekLongRun >= runTargets.longRunKm;
+	const weekTypeColor = WEEK_TYPE_COLORS[runTargets.weekType];
+
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<ScrollView contentContainerStyle={styles.scrollContent}>
@@ -853,6 +1039,39 @@ export default function ChallengesScreen() {
 						</Text>
 					</View>
 				)}
+
+				{/* Dynamic training-plan challenges */}
+				<SettingsListGroupTitle title={`Trainingsplan · ${WEEK_TYPE_LABELS[runTargets.weekType]}`} />
+				<SettingsListProgress
+					title="Lauf-Volumen"
+					leftIconComponent={
+						<View style={[styles.cardIconWrapper, { backgroundColor: volumeCompleted ? weekTypeColor : PRIMARY_COLOR }]}>
+							<FontAwesome5 name="running" size={18} color={ICON_FOREGROUND_COLOR} />
+						</View>
+					}
+					noIconIndent
+					description={`Laufe diese Woche insgesamt ${runTargets.totalWeeklyKm} km`}
+					progress={volumeProgress}
+					progressText={volumeCompleted ? '✓' : `${currentWeekTotalKm.toFixed(1)} / ${runTargets.totalWeeklyKm} km`}
+					progressColor={volumeCompleted ? weekTypeColor : PRIMARY_COLOR}
+					groupPosition="top"
+					showSeparator
+				/>
+				<SettingsListProgress
+					title="Long Run"
+					leftIconComponent={
+						<View style={[styles.cardIconWrapper, { backgroundColor: longRunCompleted ? weekTypeColor : PRIMARY_COLOR }]}>
+							<MaterialCommunityIcons name="run-fast" size={20} color={ICON_FOREGROUND_COLOR} />
+						</View>
+					}
+					noIconIndent
+					description={`Längster Einzellauf: ${runTargets.longRunKm} km`}
+					progress={longRunProgress}
+					progressText={longRunCompleted ? '✓' : `${currentWeekLongRun.toFixed(1)} / ${runTargets.longRunKm} km`}
+					progressColor={longRunCompleted ? weekTypeColor : PRIMARY_COLOR}
+					groupPosition="bottom"
+					showSeparator={false}
+				/>
 
 				{/* Past challenges */}
 				{pastChallenges.length > 0 && (
