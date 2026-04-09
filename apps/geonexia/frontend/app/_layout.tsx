@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, AppDrawer, DrawerItem, ModalProvider, SettingsProvider, useTheme } from 'repo-depkit-common-ui';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
@@ -180,6 +180,15 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="challenges/index"
+				options={{
+					title: 'Challenges',
+					drawerIcon: ({ color, size }) => (
+						<MaterialCommunityIcons name="sword-cross" size={size} color={color} />
+					),
+				}}
+			/>
+			<Drawer.Screen
 				name="feature-wishes/index"
 				options={{
 					title: 'Feature Wishes',
@@ -314,6 +323,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 			label: 'Achievements',
 			renderIcon: (_, color) => <Ionicons name="trophy-outline" size={24} color={color} />,
 			onPress: () => props.navigation.navigate('achievements/index'),
+		},
+		{
+			key: 'challenges/index',
+			label: 'Challenges',
+			renderIcon: (_, color) => <MaterialCommunityIcons name="sword-cross" size={24} color={color} />,
+			onPress: () => props.navigation.navigate('challenges/index'),
 		},
 		{
 			key: 'feature-wishes/index',
