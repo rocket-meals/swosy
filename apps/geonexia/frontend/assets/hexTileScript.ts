@@ -550,12 +550,10 @@ export const HEX_TILE_SCRIPT = `
       },
     });
     // Raise any route track / segment layers above the hex tile layers so the
-    // GPS route is always rendered on top of the hex grid.  These layers are
-    // created lazily (only once the first routeCoordinates message arrives), so
-    // they may not exist yet – the guard keeps this a no-op in that case.
+    // Raise the speed-coloured route-segments layers (activity detail view)
+    // above the hex tile layers.  The live GPS route track is now drawn on an
+    // HTML canvas overlay and has no MapLibre layers to move.
     var ROUTE_LAYER_IDS = [
-      'route-track-layer-border',
-      'route-track-layer',
       'route-seg-border-layer',
       'route-seg-color-layer',
     ];
