@@ -7,7 +7,7 @@ Key,Message,Component,Line
 "AZ1z7uaGRNwNhxnjXrzN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",886
 "AZ1z7uaGRNwNhxnjXrzO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",916
 "AZ1z7uaGRNwNhxnjXrzP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",917
-"AZ1z7uWNRNwNhxnjXrzL","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/road-snap/index.tsx",151
+"AZ1z7uWNRNwNhxnjXrzL","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/road-snap/index.tsx",212
 "AZ1xhkwp2pcqjWfgcqdt","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",66
 "AZ1vRVi-_fTwIxHc1qm_","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4366
 "AZ1vRVeB_fTwIxHc1qm-","Remove this unused import of 'SPEECH_SETTINGS_DEFAULTS'.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",25
