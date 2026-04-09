@@ -948,6 +948,131 @@ export const HEX_TILE_SCRIPT = `
         stopReplayAnimation();
       }
     }
+    // ── Road Snap V2 ─────────────────────────────────────────────────────────
+    // Snaps GPS coordinates to actual road geometry from loaded vector tiles.
+    // 1. Finds the source that exposes the 'transportation' source layer.
+    // 2. Queries all road segments via querySourceFeatures.
+    // 3. For each GPS point, projects it onto the nearest road segment.
+    // 4. For consecutive snapped points on different segments, inserts the
+    //    shared intersection endpoint between them so the drawn line follows
+    //    the actual road network through junctions.
+    // Sends back: { tag: 'roadSnapV2Result', requestId, coords: [[lng,lat],...] }
+    if (data.roadSnapV2 !== undefined) {
+      var v2RequestId = data.roadSnapV2.requestId;
+      var v2RawCoords = data.roadSnapV2.coords;
+      if (!map || !v2RawCoords || v2RawCoords.length === 0) {
+        sendToRN({ tag: 'roadSnapV2Result', requestId: v2RequestId, coords: v2RawCoords || [] });
+        return;
+      }
+      // ── Find the vector source that has a 'transportation' source layer ──
+      var v2SourceName = null;
+      var v2Style = map.getStyle();
+      if (v2Style && v2Style.layers) {
+        for (var v2Li = 0; v2Li < v2Style.layers.length; v2Li++) {
+          var v2Sl = v2Style.layers[v2Li];
+          if (v2Sl['source-layer'] === 'transportation' && v2Sl.type === 'line') {
+            v2SourceName = v2Sl.source;
+            break;
+          }
+        }
+      }
+      // ── Collect road segments from loaded vector tiles ───────────────────
+      var v2Segments = []; // [{ p1:[lng,lat], p2:[lng,lat] }, ...]
+      if (v2SourceName) {
+        var v2Features = map.querySourceFeatures(v2SourceName, { sourceLayer: 'transportation' });
+        for (var v2Fi = 0; v2Fi < v2Features.length; v2Fi++) {
+          var v2Geom = v2Features[v2Fi].geometry;
+          if (!v2Geom) continue;
+          var v2Lines = v2Geom.type === 'LineString'      ? [v2Geom.coordinates]
+                      : v2Geom.type === 'MultiLineString' ? v2Geom.coordinates
+                      : [];
+          for (var v2Gi = 0; v2Gi < v2Lines.length; v2Gi++) {
+            var v2Line = v2Lines[v2Gi];
+            for (var v2Pi = 0; v2Pi < v2Line.length - 1; v2Pi++) {
+              v2Segments.push({ p1: v2Line[v2Pi], p2: v2Line[v2Pi + 1] });
+            }
+          }
+        }
+      }
+      // ── Helper: project point p onto segment [a,b], return nearest point ─
+      function v2Project(p, a, b) {
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var lenSq = dx * dx + dy * dy;
+        if (lenSq === 0) return [a[0], a[1]];
+        var t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lenSq));
+        return [a[0] + t * dx, a[1] + t * dy];
+      }
+      function v2DistSq(a, b) {
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        return dx * dx + dy * dy;
+      }
+      // ── Snap each GPS point to nearest road segment ──────────────────────
+      // Max snap radius: 0.0005 degrees ≈ 55 m at the equator (cos-scaled at
+      // higher latitudes, but sufficient for typical pedestrian/cycling routes).
+      var V2_MAX_DIST_SQ = 0.0005 * 0.0005;
+      // Intersection threshold: 0.0001 degrees ≈ 11 m.  Two segment endpoints
+      // are treated as a shared junction when they are closer than this.
+      var V2_INTERSECT_SQ = 0.0001 * 0.0001;
+      var v2Snapped    = [];
+      var v2SnapSegIdx = [];
+      if (v2Segments.length === 0) {
+        // No road data available – return GPS coords unchanged
+        sendToRN({ tag: 'roadSnapV2Result', requestId: v2RequestId, coords: v2RawCoords });
+        return;
+      }
+      for (var v2Ii = 0; v2Ii < v2RawCoords.length; v2Ii++) {
+        var v2Pt = v2RawCoords[v2Ii];
+        var v2BestDist = Infinity;
+        var v2BestPt   = v2Pt;
+        var v2BestIdx  = -1;
+        for (var v2Ji = 0; v2Ji < v2Segments.length; v2Ji++) {
+          var v2Proj = v2Project(v2Pt, v2Segments[v2Ji].p1, v2Segments[v2Ji].p2);
+          var v2D    = v2DistSq(v2Pt, v2Proj);
+          if (v2D < v2BestDist) {
+            v2BestDist = v2D;
+            v2BestPt   = v2Proj;
+            v2BestIdx  = v2Ji;
+          }
+        }
+        if (v2BestDist <= V2_MAX_DIST_SQ) {
+          v2Snapped.push(v2BestPt);
+          v2SnapSegIdx.push(v2BestIdx);
+        } else {
+          // Point too far from any road – keep original
+          v2Snapped.push(v2Pt);
+          v2SnapSegIdx.push(-1);
+        }
+      }
+      // ── Build result, routing through intersections between segments ─────
+      var v2Result = [v2Snapped[0]];
+      for (var v2Ki = 0; v2Ki < v2Snapped.length - 1; v2Ki++) {
+        var v2SA = v2SnapSegIdx[v2Ki];
+        var v2SB = v2SnapSegIdx[v2Ki + 1];
+        if (v2SA >= 0 && v2SB >= 0 && v2SA !== v2SB) {
+          // Find the closest pair of endpoints between the two segments.
+          // If they are close enough, treat it as an intersection and insert it.
+          var v2EndptsA = [v2Segments[v2SA].p1, v2Segments[v2SA].p2];
+          var v2EndptsB = [v2Segments[v2SB].p1, v2Segments[v2SB].p2];
+          var v2BestIntDist  = Infinity;
+          var v2Intersection = null;
+          for (var v2Ea = 0; v2Ea < 2; v2Ea++) {
+            for (var v2Eb = 0; v2Eb < 2; v2Eb++) {
+              var v2IntD = v2DistSq(v2EndptsA[v2Ea], v2EndptsB[v2Eb]);
+              if (v2IntD < v2BestIntDist) {
+                v2BestIntDist  = v2IntD;
+                v2Intersection = v2EndptsA[v2Ea];
+              }
+            }
+          }
+          if (v2Intersection && v2BestIntDist < V2_INTERSECT_SQ) {
+            v2Result.push(v2Intersection);
+          }
+        }
+        v2Result.push(v2Snapped[v2Ki + 1]);
+      }
+      sendToRN({ tag: 'roadSnapV2Result', requestId: v2RequestId, coords: v2Result });
+      return;
+    }
   };
 
   window._mapExtensions.onMapClick = function (e, m) {
