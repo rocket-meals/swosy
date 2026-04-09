@@ -32,16 +32,7 @@ export default function ExperimentalScreen() {
 					value="Voice announcements playground"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={() => router.push('/experimental/tts-test')}
-					groupPosition="top"
-				/>
-				<SettingsList
-					iconBgColor={EXPERIMENTAL_COLOR}
-					leftIcon={<Ionicons name="musical-notes" size={22} color="#ffffff" />}
-					label="TTS Generated Voices"
-					value="Pre-generated MP3 voice playback"
-					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
-					handleFunction={() => router.push('/experimental/tts-generated-voices')}
-					groupPosition="bottom"
+					groupPosition="single"
 				/>
 
 				<SettingsListGroupTitle title="Karten" />
