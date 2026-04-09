@@ -27,12 +27,11 @@ export const HEX_TILE_SCRIPT = `
   var hexTileColor = 'rgba(0, 0, 0, 0)';
   // Hex border: light gray, low opacity
   var hexTileStrokeColor = '#d1d5db';
-  // Level-based fill colours: level 1 = lightest green, level 10 = darkest green.
-  // Levels 1–10 are interpolated linearly between these two endpoints.
-  var HEX_COLOR_LEVEL_MIN = '#bbf7d0'; // level  1 – light mint green
-  var HEX_COLOR_LEVEL_MAX = '#15803d'; // level 10 – dark forest green
-  var HEX_OPACITY_LEVEL_MIN = 0.21;   // level  1  (default: 70 % of HEX_OPACITY_LEVEL_MAX)
-  var HEX_OPACITY_LEVEL_MAX = 0.30;   // level 10  (default: 0.30, user-adjustable)
+  // Level-based fill colours: transparent by default; hex textures replace the coloured fill.
+  var HEX_COLOR_LEVEL_MIN = 'rgba(0,0,0,0)';
+  var HEX_COLOR_LEVEL_MAX = 'rgba(0,0,0,0)';
+  var HEX_OPACITY_LEVEL_MIN = 0.0;
+  var HEX_OPACITY_LEVEL_MAX = 0.0;
   // Hex grid line appearance (user-adjustable via hexLineOpacity / hexLineWidth messages)
   var HEX_LINE_OPACITY_SCALE = 1.0;  // multiplier applied to the zoom-dependent base opacity
   var HEX_LINE_WIDTH_SCALE = 1.0;    // multiplier applied to the zoom-dependent base width
@@ -62,7 +61,7 @@ export const HEX_TILE_SCRIPT = `
   var HEX_ENCLOSED_SOURCE = 'hex-enclosed-source';
   var HEX_ENCLOSED_FILL_LAYER = 'hex-enclosed-fill';
   var HEX_ENCLOSED_STROKE_LAYER = 'hex-enclosed-stroke';
-  var HEX_ENCLOSED_FILL_COLOR = 'rgba(59, 130, 246, 0.18)'; // semi-transparent blue
+  var HEX_ENCLOSED_FILL_COLOR = 'rgba(0, 0, 0, 0)'; // transparent; hex textures replace the coloured fill
   var HEX_ENCLOSED_STROKE_COLOR = '#3b82f6'; // blue
   // Measure mode: draw tapped waypoints and the connecting polyline
   var MEASURE_ROUTE_SOURCE = 'measure-route-source';
@@ -767,25 +766,6 @@ export const HEX_TILE_SCRIPT = `
       } else {
         hexTileActive = false;
         removeHexTileLayer();
-      }
-      return;
-    }
-    if (data.hexTileOpacity !== undefined) {
-      var newMax = Math.min(1, Math.max(0, data.hexTileOpacity));
-      HEX_OPACITY_LEVEL_MAX = newMax;
-      HEX_OPACITY_LEVEL_MIN = newMax * 0.7;
-      if (map && map.getLayer(HEX_TILE_FILL_LAYER)) {
-        map.setPaintProperty(HEX_TILE_FILL_LAYER, 'fill-opacity', ['case',
-          ['has', 'colorIndex'],
-          0.75,
-          ['case',
-            ['==', ['get', 'level'], 0], 0,
-            ['interpolate', ['linear'], ['get', 'level'],
-              1, HEX_OPACITY_LEVEL_MIN,
-              10, HEX_OPACITY_LEVEL_MAX
-            ]
-          ]
-        ]);
       }
       return;
     }
