@@ -3135,7 +3135,10 @@ export default function RecordScreen() {
 				const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
 				const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
 				if (outerIdx >= 0) {
-					const geo = DEGREE_POSITION_GEO[outerIdx];
+					// H3's cellToBoundary places boundary[0] at the visual 300° position
+					// rather than 0° (top), so the mapping is offset by 2 steps (60°).
+					// Adding 2 mod 12 corrects the alignment.
+					const geo = DEGREE_POSITION_GEO[(outerIdx + 2) % 12];
 					if (geo.type === 'vertex' && geo.idx < n) {
 						[lng, lat] = boundary[geo.idx] as [number, number];
 					} else if (geo.type === 'edge' && geo.idx < n) {
@@ -3145,7 +3148,8 @@ export default function RecordScreen() {
 						lat = (lat1 + lat2) / 2;
 					}
 				} else if (middleIdx >= 0) {
-					const geo = DEGREE_POSITION_GEO[middleIdx];
+					// Same +2 offset correction as for the outer ring.
+					const geo = DEGREE_POSITION_GEO[(middleIdx + 2) % 12];
 					let outerLng = centerLng;
 					let outerLat = centerLat;
 					if (geo.type === 'vertex' && geo.idx < n) {

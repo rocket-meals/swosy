@@ -30,7 +30,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 6;
+export const WORLD_BUILDING_ID = 7;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -88,21 +88,23 @@ const TILE_IMAGE_STONE = 'Stone/stone';
  * Maps boundary edge index (0–5) to the corresponding MIDDLE BillboardAnchorPosition
  * for edge-midpoint positions (halfway between center and the hex boundary).
  *
- * Each edge sits between two consecutive vertices:
- *   edge[0]: vertex[0] → vertex[1]  →  MIDDLE_30_DEGREE  (30° = midway between 0° and 60°)
- *   edge[1]: vertex[1] → vertex[2]  →  MIDDLE_90_DEGREE
- *   edge[2]: vertex[2] → vertex[3]  →  MIDDLE_150_DEGREE
- *   edge[3]: vertex[3] → vertex[4]  →  MIDDLE_210_DEGREE
- *   edge[4]: vertex[4] → vertex[5]  →  MIDDLE_270_DEGREE
- *   edge[5]: vertex[5] → vertex[0]  →  MIDDLE_330_DEGREE
+ * H3's cellToBoundary places boundary[0] at the visual 300° position (upper-left),
+ * NOT at visual 0° (top). Each edge therefore resolves to the midpoint between its
+ * two adjacent boundary vertices:
+ *   edge[0]: vertex[0](300°) → vertex[1](0°)   → visual midpoint 330° → MIDDLE_330_DEGREE
+ *   edge[1]: vertex[1](0°)   → vertex[2](60°)  → visual midpoint  30° → MIDDLE_30_DEGREE
+ *   edge[2]: vertex[2](60°)  → vertex[3](120°) → visual midpoint  90° → MIDDLE_90_DEGREE
+ *   edge[3]: vertex[3](120°) → vertex[4](180°) → visual midpoint 150° → MIDDLE_150_DEGREE
+ *   edge[4]: vertex[4](180°) → vertex[5](240°) → visual midpoint 210° → MIDDLE_210_DEGREE
+ *   edge[5]: vertex[5](240°) → vertex[0](300°) → visual midpoint 270° → MIDDLE_270_DEGREE
  */
 const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
-	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 0: vertex[0]→vertex[1]
-	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 1: vertex[1]→vertex[2]
-	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 2: vertex[2]→vertex[3]
-	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 3: vertex[3]→vertex[4]
-	BillboardAnchorPosition.MIDDLE_270_DEGREE, // edge 4: vertex[4]→vertex[5]
-	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 5: vertex[5]→vertex[0]
+	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 0: vertex[0](300°)→vertex[1](0°)
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 1: vertex[1](0°)→vertex[2](60°)
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 2: vertex[2](60°)→vertex[3](120°)
+	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 3: vertex[3](120°)→vertex[4](180°)
+	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 4: vertex[4](180°)→vertex[5](240°)
+	BillboardAnchorPosition.MIDDLE_270_DEGREE, // edge 5: vertex[5](240°)→vertex[0](300°)
 ];
 
 /**
