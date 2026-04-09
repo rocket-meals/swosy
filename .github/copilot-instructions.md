@@ -12,6 +12,10 @@
 - Expo plugins contain native code. A changed native layer requires a new binary build, so the build number stored in `getBuildNumber()` in `config.ts` must be bumped by at least 1.
 - Example: if `getBuildNumber()` currently returns `7`, change it to `8`.
 
+## Geonexia: Dialogs and alerts
+
+- **Never use React Native's `Alert` in Geonexia.** Use `useMyScrollviewModal` instead for all user-facing dialogs, confirmations, and notifications.
+
 ## String replacement
 
 - **Never use `String.prototype.replaceAll()` or `String.prototype.replace()` for simple substitutions.** Use `StringHelper` from `repo-depkit-common` instead:
