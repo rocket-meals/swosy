@@ -57,8 +57,8 @@ describe('ParseSchedule.computeFoodofferSyncDiff', () => {
     const foodoffer1 = createFoodofferInformationForParser();
     const foodoffer2 = createFoodofferInformationForParser({food_id: 'food-02'});
 
-    const hash1 = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodoffer1);
-    const hash2 = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodoffer2);
+    const hash1 = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodoffer1);
+    const hash2 = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodoffer2);
 
     const reportDict: Record<string, FoodoffersTypeForParser> = {
       [hash1]: foodoffer1,
@@ -98,7 +98,7 @@ describe('ParseSchedule.computeFoodofferSyncDiff', () => {
 
   it('marks matching foodoffers as toSkip', () => {
     const foodoffer1 = createFoodofferInformationForParser();
-    const hash1 = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodoffer1);
+    const hash1 = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodoffer1);
     const existing1 = createExistingFoodoffer(hash1);
 
     const reportDict: Record<string, FoodoffersTypeForParser> = {
@@ -121,8 +121,8 @@ describe('ParseSchedule.computeFoodofferSyncDiff', () => {
     // Report has foodoffer A (unchanged) and foodoffer B (new)
     const foodofferA = createFoodofferInformationForParser({food_id: 'food-A'});
     const foodofferB = createFoodofferInformationForParser({food_id: 'food-B'});
-    const hashA = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodofferA);
-    const hashB = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodofferB);
+    const hashA = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferA);
+    const hashB = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferB);
 
     // Existing has foodoffer A (unchanged) and foodoffer C (removed from report)
     const existingA = createExistingFoodoffer(hashA);
@@ -155,7 +155,7 @@ describe('ParseSchedule.computeFoodofferSyncDiff', () => {
 
   it('deletes existing foodoffers without result_hash (legacy data)', () => {
     const foodoffer1 = createFoodofferInformationForParser();
-    const hash1 = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodoffer1);
+    const hash1 = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodoffer1);
 
     const legacyFoodoffer = createExistingFoodoffer(null);
 
@@ -195,8 +195,8 @@ describe('ParseSchedule.computeFoodofferSyncDiff', () => {
     const foodoffer1 = createFoodofferInformationForParser();
     const foodoffer2 = createFoodofferInformationForParser();
 
-    const hash1 = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodoffer1);
-    const hash2 = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodoffer2);
+    const hash1 = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodoffer1);
+    const hash2 = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodoffer2);
 
     expect(hash1).toBe(hash2);
 

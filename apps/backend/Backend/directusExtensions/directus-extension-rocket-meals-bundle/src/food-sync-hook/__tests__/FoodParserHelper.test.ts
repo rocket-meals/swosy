@@ -43,21 +43,21 @@ function createFoodofferInformationForParser(overrides?: PartialFoodofferForPars
   };
 }
 
-describe('FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser', () => {
-  it('creates identical ids for equivalent foodoffers regardless of date instances or marking order', () => {
+describe('FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser', () => {
+  it('creates identical hashes for equivalent foodoffers regardless of date instances or marking order', () => {
     const baseFoodoffer = createFoodofferInformationForParser();
     const reorderedMarkingsFoodoffer = createFoodofferInformationForParser({
       marking_external_identifiers: ['c', 'b', 'a'],
       date: {...baseFoodoffer.date},
     });
 
-    const idOne = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(baseFoodoffer);
-    const idTwo = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(reorderedMarkingsFoodoffer);
+    const hashOne = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(baseFoodoffer);
+    const hashTwo = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(reorderedMarkingsFoodoffer);
 
-    expect(idOne).toBe(idTwo);
+    expect(hashOne).toBe(hashTwo);
   });
 
-  it('creates different ids when critical fields change', () => {
+  it('creates different hashes when critical fields change', () => {
     const baseFoodoffer = createFoodofferInformationForParser();
     const differentDateFoodoffer = createFoodofferInformationForParser({
       date: {
@@ -67,9 +67,9 @@ describe('FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser', () 
       },
     });
 
-    const idOne = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(baseFoodoffer);
-    const idTwo = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(differentDateFoodoffer);
+    const hashOne = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(baseFoodoffer);
+    const hashTwo = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(differentDateFoodoffer);
 
-    expect(idOne).not.toBe(idTwo);
+    expect(hashOne).not.toBe(hashTwo);
   });
 });
