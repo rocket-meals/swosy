@@ -979,8 +979,7 @@ export default function ChallengesScreen() {
 	// ── Dynamic training-plan challenges ──────────────────────────────────────
 	const runTargets = useMemo(
 		() => computeRunChallengeTargets(activities, now),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[activities],
+		[activities, currentWeek, currentYear], // currentWeek/currentYear are the stable proxy for `now`
 	);
 
 	const weekRunActivities = useMemo(
