@@ -149,8 +149,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:360
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L360
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:362
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L362
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/helpers/ActivityStatsHelper.ts:24
