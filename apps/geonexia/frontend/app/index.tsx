@@ -4615,7 +4615,9 @@ export default function RecordScreen() {
 			setLiveSpeedKmh(null);
 			lastAnnouncedKmRef.current = 0;
 			paceHintStateRef.current = 'on_target';
-			lastPaceHintTimeRef.current = 0;
+			// Initialise to now so the first pace-hint announcement is delayed by
+			// PACE_HINT_COOLDOWN_MS (same warm-up concept as SPEED_WARMUP_MS).
+			lastPaceHintTimeRef.current = Date.now();
 			isRecordingRef.current = true;
 			setIsRecording(true);
 			setFollowMode(true);
