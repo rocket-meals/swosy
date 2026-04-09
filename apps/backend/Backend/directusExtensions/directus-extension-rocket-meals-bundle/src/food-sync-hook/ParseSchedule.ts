@@ -424,7 +424,6 @@ export class ParseSchedule {
    *  5. Deletes outdated, creates new (with result_hash set), skips unchanged
    */
   async syncFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], helperObject: FoodCreationHelperObject) {
-    const amountOfRawMealOffers = foodofferListForParser.length;
     await this.context.logger.appendLog('Sync Food Offers via result_hash');
 
     // Step 1: Group report foodoffers by canteen
@@ -437,38 +436,30 @@ export class ParseSchedule {
       foodoffersForParserGroupedByCanteen[key].push(foodofferForParser);
     }
 
-    // Step 2: Build report dict with result_hash as key (for all foodoffers)
-    const reportDictByResultHash: Record<string, FoodoffersTypeForParser> = {};
-    for (const foodofferForParser of foodofferListForParser) {
-      const resultHash = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodofferForParser);
-      reportDictByResultHash[resultHash] = foodofferForParser;
-    }
-
-    // Step 3: For each canteen, fetch existing foodoffers and build existing dict
-    const existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers> = {};
-    const existingWithoutResultHash: DatabaseTypes.Foodoffers[] = [];
-
+    // Step 2: Process each canteen independently
     const canteenExternalIdentifiers = Object.keys(foodoffersForParserGroupedByCanteen);
     for (const canteenExternalIdentifier of canteenExternalIdentifiers) {
       await this.context.logger.appendLog('Sync: processing canteen: ' + canteenExternalIdentifier);
       const canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
       if (!canteen) continue;
 
-      // Handle without-dates deletion if configured
-      if (canteen.foodoffers_import_delete_all_without_dates) {
-        await this.deleteAllFoodoffersForCanteenWithoutDates(canteen);
-      }
-
-      // Get existing foodoffers for this canteen, respecting the import-without-date setting
       const canteenFoodoffers = foodoffersForParserGroupedByCanteen[canteenExternalIdentifier] || [];
       const foodoffersHelper = await this.context.myDatabaseHelper.getFoodoffersHelper();
-      let existingFoodoffersForCanteen: DatabaseTypes.Foodoffers[] = [];
 
       if (canteen.foodoffers_import_without_date) {
-        // Canteen stores all offers without a date → fetch ALL offers for this canteen.
-        // Filtering by canteen ID already excludes components (components have canteen = null).
-        await this.context.logger.appendLog('Sync: fetching all existing foodoffers for canteen (import without date): ' + canteen.id);
-        existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+        // Import-without-date canteen: all offers have date=null, process as a single group
+        // Component foodoffers are created with canteen=null, so filtering by canteen ID excludes them.
+        await this.context.logger.appendLog('Sync: fetching all existing non-component foodoffers for canteen (import without date): ' + canteen.id);
+
+        // Build report dict for this canteen
+        const reportDictByResultHash: Record<string, FoodoffersTypeForParser> = {};
+        for (const foodofferForParser of canteenFoodoffers) {
+          const resultHash = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodofferForParser);
+          reportDictByResultHash[resultHash] = foodofferForParser;
+        }
+
+        // Fetch ALL existing foodoffers for this canteen (canteen filter excludes components since they have canteen=null)
+        const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
           filter: {
             canteen: {
               _eq: canteen.id,
@@ -477,8 +468,43 @@ export class ParseSchedule {
           fields: ['id', 'result_hash'],
           limit: -1,
         });
+
+        const existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers> = {};
+        const existingWithoutResultHash: DatabaseTypes.Foodoffers[] = [];
+        for (const existing of existingFoodoffersForCanteen) {
+          if (existing.result_hash && typeof existing.result_hash === 'string') {
+            existingDictByResultHash[existing.result_hash] = existing;
+          } else {
+            existingWithoutResultHash.push(existing);
+          }
+        }
+
+        // Compute diff, delete, then create
+        const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
+        await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} (without date): toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
+
+        await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} (without date)`);
+
+        const foodoffersForParserToCreate = diffResult.toCreateResultHashes
+          .map(hash => reportDictByResultHash[hash])
+          .filter((f): f is FoodoffersTypeForParser => !!f);
+        await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
       } else {
-        // Regular canteen: only fetch foodoffers whose date is >= the oldest date present in the report.
+        // Regular canteen: process diffs per date
+        // Group report foodoffers for this canteen by date string
+        const reportByDate: Record<string, FoodoffersTypeForParser[]> = {};
+        for (const foodofferForParser of canteenFoodoffers) {
+          const dateKey = DateHelper.foodofferDateTypeToString(foodofferForParser.date);
+          if (!reportByDate[dateKey]) {
+            reportByDate[dateKey] = [];
+          }
+          reportByDate[dateKey].push(foodofferForParser);
+        }
+
+        // Collect all dates: from report + from existing future foodoffers in DB
+        const allDateKeys = new Set<string>(Object.keys(reportByDate));
+
+        // Find the oldest date from the report to scope existing-foodoffer queries
         const foodofferDates = this.getFoodofferDatesFromRawFoodofferJSONList(canteenFoodoffers);
         let oldestFoodofferDate: FoodofferDateType | null = null;
         for (const foodofferDate of foodofferDates) {
@@ -488,55 +514,83 @@ export class ParseSchedule {
           }
         }
 
-        if (oldestFoodofferDate) {
-          const directusDateOnlyString = DateHelper.foodofferDateTypeToString(oldestFoodofferDate);
-          await this.context.logger.appendLog('Sync: fetching existing foodoffers >= ' + directusDateOnlyString + ' for canteen: ' + canteen.id);
-          existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
-            filter: {
-              _and: [
-                {
-                  date: {
-                    _gte: directusDateOnlyString,
-                  },
-                },
-                {
-                  canteen: {
-                    _eq: canteen.id,
-                  },
-                },
-              ],
-            },
-            fields: ['id', 'result_hash'],
-            limit: -1,
-          });
+        if (!oldestFoodofferDate) {
+          await this.context.logger.appendLog('Sync: no dates in report for canteen ' + canteenExternalIdentifier + ', skipping');
+          continue;
         }
-      }
 
-      for (const existing of existingFoodoffersForCanteen) {
-        if (existing.result_hash && typeof existing.result_hash === 'string') {
-          existingDictByResultHash[existing.result_hash] = existing;
-        } else {
-          existingWithoutResultHash.push(existing);
+        const oldestDateString = DateHelper.foodofferDateTypeToString(oldestFoodofferDate);
+        await this.context.logger.appendLog('Sync: fetching existing non-component foodoffers >= ' + oldestDateString + ' for canteen: ' + canteen.id);
+
+        // Fetch all existing foodoffers for this canteen >= oldest date
+        // Component foodoffers are excluded because they have canteen=null (filtered out by canteen._eq)
+        const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+          filter: {
+            _and: [
+              {
+                date: {
+                  _gte: oldestDateString,
+                },
+              },
+              {
+                canteen: {
+                  _eq: canteen.id,
+                },
+              },
+            ],
+          },
+          fields: ['id', 'result_hash', 'date'],
+          limit: -1,
+        });
+
+        // Group existing foodoffers by date
+        const existingByDate: Record<string, DatabaseTypes.Foodoffers[]> = {};
+        for (const existing of existingFoodoffersForCanteen) {
+          const dateKey = existing.date || '__no_date__';
+          if (!existingByDate[dateKey]) {
+            existingByDate[dateKey] = [];
+          }
+          existingByDate[dateKey].push(existing);
+          allDateKeys.add(dateKey);
+        }
+
+        // Process each date independently
+        for (const dateKey of allDateKeys) {
+          const reportFoodoffersForDate = reportByDate[dateKey] || [];
+          const existingFoodoffersForDate = existingByDate[dateKey] || [];
+
+          // Build report dict for this date
+          const reportDictByResultHash: Record<string, FoodoffersTypeForParser> = {};
+          for (const foodofferForParser of reportFoodoffersForDate) {
+            const resultHash = FoodParserHelper.getFoodofferIdFromFoodofferInformationForParser(foodofferForParser);
+            reportDictByResultHash[resultHash] = foodofferForParser;
+          }
+
+          // Build existing dict for this date
+          const existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers> = {};
+          const existingWithoutResultHash: DatabaseTypes.Foodoffers[] = [];
+          for (const existing of existingFoodoffersForDate) {
+            if (existing.result_hash && typeof existing.result_hash === 'string') {
+              existingDictByResultHash[existing.result_hash] = existing;
+            } else {
+              existingWithoutResultHash.push(existing);
+            }
+          }
+
+          // Compute diff per date
+          const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
+          await this.context.logger.appendLog(`Sync result for canteen ${canteenExternalIdentifier} date ${dateKey}: toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
+
+          // Delete first, then create for this date
+          await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report for canteen ${canteenExternalIdentifier} date ${dateKey}`);
+
+          const foodoffersForParserToCreate = diffResult.toCreateResultHashes
+            .map(hash => reportDictByResultHash[hash])
+            .filter((f): f is FoodoffersTypeForParser => !!f);
+          await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
         }
       }
     }
-
-    // Step 4: Compute diffs
-    const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
-
-    await this.context.logger.appendLog(`Sync result: toDelete=${diffResult.toDeleteFoodoffers.length}, toSkip=${diffResult.toSkipResultHashes.length}, toCreate=${diffResult.toCreateResultHashes.length}`);
-
-    // Step 5: Delete foodoffers not in report
-    await this.deleteFoodOffers(diffResult.toDeleteFoodoffers, `Delete foodoffers not in report (by result_hash)`);
-
-    // Step 6: Log skipped
-    await this.context.logger.appendLog(`Skipped ${diffResult.toSkipResultHashes.length} foodoffers (unchanged by result_hash)`);
-
-    // Step 7: Create new foodoffers
-    const foodoffersForParserToCreate = diffResult.toCreateResultHashes
-      .map(hash => reportDictByResultHash[hash])
-      .filter((f): f is FoodoffersTypeForParser => !!f);
-    await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
   }
 
   /**
