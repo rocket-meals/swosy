@@ -53,7 +53,17 @@ export default function ExperimentalScreen() {
 					value="F1-Style Route-Karussell"
 					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
 					handleFunction={() => router.push('/experimental/route-switcher')}
-					groupPosition="single"
+					groupPosition="top"
+				/>
+
+				<SettingsList
+					iconBgColor={EXPERIMENTAL_COLOR}
+					leftIcon={<Ionicons name="git-merge-outline" size={22} color="#ffffff" />}
+					label="Road Snap"
+					value="GPS-Punkte auf Straße einrasten"
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={() => router.push('/experimental/road-snap')}
+					groupPosition="bottom"
 				/>
 
 				<SettingsListGroupTitle title="UI" />
