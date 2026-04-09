@@ -459,48 +459,64 @@ export class ParseSchedule {
         await this.deleteAllFoodoffersForCanteenWithoutDates(canteen);
       }
 
-      // Get oldest date from report foodoffers for this canteen
+      // Get existing foodoffers for this canteen, respecting the import-without-date setting
       const canteenFoodoffers = foodoffersForParserGroupedByCanteen[canteenExternalIdentifier] || [];
-      const foodofferDates = this.getFoodofferDatesFromRawFoodofferJSONList(canteenFoodoffers);
-      let oldestFoodofferDate: FoodofferDateType | null = null;
-      for (const foodofferDate of foodofferDates) {
-        const dateAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDate));
-        if (!oldestFoodofferDate || dateAsDate < new Date(DateHelper.foodofferDateTypeToString(oldestFoodofferDate))) {
-          oldestFoodofferDate = foodofferDate;
-        }
-      }
+      const foodoffersHelper = await this.context.myDatabaseHelper.getFoodoffersHelper();
+      let existingFoodoffersForCanteen: DatabaseTypes.Foodoffers[] = [];
 
-      if (oldestFoodofferDate) {
-        const directusDateOnlyString = DateHelper.foodofferDateTypeToString(oldestFoodofferDate);
-        await this.context.logger.appendLog('Sync: fetching existing foodoffers >= ' + directusDateOnlyString + ' for canteen: ' + canteen.id);
-
-        // Fetch existing foodoffers for this canteen with date >= oldest date
-        const foodoffersHelper = await this.context.myDatabaseHelper.getFoodoffersHelper();
-        const existingFoodoffers = await foodoffersHelper.readByQuery({
+      if (canteen.foodoffers_import_without_date) {
+        // Canteen stores all offers without a date → fetch ALL offers for this canteen.
+        // Filtering by canteen ID already excludes components (components have canteen = null).
+        await this.context.logger.appendLog('Sync: fetching all existing foodoffers for canteen (import without date): ' + canteen.id);
+        existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
           filter: {
-            _and: [
-              {
-                date: {
-                  _gte: directusDateOnlyString,
-                },
-              },
-              {
-                canteen: {
-                  _eq: canteen.id,
-                },
-              },
-            ],
+            canteen: {
+              _eq: canteen.id,
+            },
           },
           fields: ['id', 'result_hash'],
           limit: -1,
         });
-
-        for (const existing of existingFoodoffers) {
-          if (existing.result_hash && typeof existing.result_hash === 'string') {
-            existingDictByResultHash[existing.result_hash] = existing;
-          } else {
-            existingWithoutResultHash.push(existing);
+      } else {
+        // Regular canteen: only fetch foodoffers whose date is >= the oldest date present in the report.
+        const foodofferDates = this.getFoodofferDatesFromRawFoodofferJSONList(canteenFoodoffers);
+        let oldestFoodofferDate: FoodofferDateType | null = null;
+        for (const foodofferDate of foodofferDates) {
+          const dateAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDate));
+          if (!oldestFoodofferDate || dateAsDate < new Date(DateHelper.foodofferDateTypeToString(oldestFoodofferDate))) {
+            oldestFoodofferDate = foodofferDate;
           }
+        }
+
+        if (oldestFoodofferDate) {
+          const directusDateOnlyString = DateHelper.foodofferDateTypeToString(oldestFoodofferDate);
+          await this.context.logger.appendLog('Sync: fetching existing foodoffers >= ' + directusDateOnlyString + ' for canteen: ' + canteen.id);
+          existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+            filter: {
+              _and: [
+                {
+                  date: {
+                    _gte: directusDateOnlyString,
+                  },
+                },
+                {
+                  canteen: {
+                    _eq: canteen.id,
+                  },
+                },
+              ],
+            },
+            fields: ['id', 'result_hash'],
+            limit: -1,
+          });
+        }
+      }
+
+      for (const existing of existingFoodoffersForCanteen) {
+        if (existing.result_hash && typeof existing.result_hash === 'string') {
+          existingDictByResultHash[existing.result_hash] = existing;
+        } else {
+          existingWithoutResultHash.push(existing);
         }
       }
     }
