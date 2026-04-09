@@ -4,11 +4,11 @@ Key,Message,Component,Line
 "AZ1z-mrY2E8zkBOOjZI-","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",110
 "AZ1z-mrY2E8zkBOOjZI_","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",111
 "AZ1z7uagRNwNhxnjXrzR","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",238
-"AZ1z7uaGRNwNhxnjXrzM","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",79
-"AZ1z7uaGRNwNhxnjXrzQ","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",803
-"AZ1z7uaGRNwNhxnjXrzN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",728
-"AZ1z7uaGRNwNhxnjXrzO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",758
-"AZ1z7uaGRNwNhxnjXrzP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",759
+"AZ1z7uaGRNwNhxnjXrzM","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",237
+"AZ1z7uaGRNwNhxnjXrzQ","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",961
+"AZ1z7uaGRNwNhxnjXrzN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",886
+"AZ1z7uaGRNwNhxnjXrzO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",916
+"AZ1z7uaGRNwNhxnjXrzP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",917
 "AZ1z7uWNRNwNhxnjXrzL","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/road-snap/index.tsx",158
 "AZ1xhkwp2pcqjWfgcqdt","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",66
 "AZ1vRVi-_fTwIxHc1qm_","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4366
