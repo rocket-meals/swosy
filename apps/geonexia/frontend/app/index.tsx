@@ -3250,7 +3250,9 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexLineWidth });
 	}, [hexLineWidth]);
 
-	// Re-send customizations when any of the three layer opacities change.
+	// Re-send customizations when any of the three layer opacities change:
+	// hexTextureOpacity (terrain image overlays), hexTextureAdaptionOpacity (flat sprites),
+	// or hexObjectOpacity (face-camera sprites).
 	useEffect(() => {
 		loadAndSendCustomizations();
 	}, [hexTextureOpacity, hexTextureAdaptionOpacity, hexObjectOpacity, loadAndSendCustomizations]);
