@@ -43,7 +43,8 @@ export type FoodComponentForParser = {
 
 export type FoodoffersTypeForParser = FoodClassificationData & {
   basicFoodofferData: FoodofferTypeWithBasicData;
-  date: FoodofferDateType;
+  /** null for canteens with foodoffers_import_without_date */
+  date: FoodofferDateType | null;
   canteen_external_identifier: string;
   food_id: string;
   components: FoodComponentForParser[];
@@ -178,7 +179,9 @@ export class FoodParserHelper {
 
   static getFoodofferHashFromFoodofferInformationForParser(foodofferInformationForParser: FoodoffersTypeForParser): string {
     const normalizedMarkings = [...foodofferInformationForParser.marking_external_identifiers].sort((a, b) => a.localeCompare(b));
-    const normalizedDate = DateHelper.foodofferDateTypeToString(foodofferInformationForParser.date);
+    const normalizedDate = foodofferInformationForParser.date
+      ? DateHelper.foodofferDateTypeToString(foodofferInformationForParser.date)
+      : null;
 
     const normalizedFoodofferInformationForParser = {
       ...foodofferInformationForParser,

@@ -277,6 +277,7 @@ export class ParseSchedule {
   getFoodofferDatesFromRawFoodofferJSONList(foodoffersForParser: FoodoffersTypeForParser[]): FoodofferDateType[] {
     let isoDatesStringDict: { [key: string]: FoodofferDateType } = {};
     for (let foodofferForParser of foodoffersForParser) {
+      if (!foodofferForParser.date) continue;
       const directusDateOnlyFormat = DateHelper.foodofferDateTypeToString(foodofferForParser.date);
       isoDatesStringDict[directusDateOnlyFormat] = foodofferForParser.date;
     }
@@ -344,9 +345,13 @@ export class ParseSchedule {
         // Component foodoffers have canteen=null, so canteen._eq already excludes them.
         await this.context.logger.appendLog('Sync: fetching existing date=null non-component foodoffers for canteen (import without date): ' + canteen.id);
 
+        // Normalize date to null so the hash is consistent across parser runs regardless of
+        // what date the parser originally assigned to the foodoffer.
+        const canteenFoodoffersWithNullDate = canteenFoodoffers.map(f => ({...f, date: null as null}));
+
         // Build report dict for this canteen
         const reportDictByResultHash: Record<string, FoodoffersTypeForParser> = {};
-        for (const foodofferForParser of canteenFoodoffers) {
+        for (const foodofferForParser of canteenFoodoffersWithNullDate) {
           const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
           reportDictByResultHash[resultHash] = foodofferForParser;
         }
@@ -865,7 +870,7 @@ export class ParseSchedule {
       basicFoodofferData.alias = food.alias; // Add alias to meal offer from meal
     }
     const foodoffers_import_without_date = !!canteen.foodoffers_import_without_date;
-    const date = foodoffers_import_without_date ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
+    const date = (foodoffers_import_without_date || !foodofferForParser.date) ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
 
     const markingsCreate: any[] = markings.map(marking => {
       return {

@@ -35,7 +35,7 @@ function createFoodofferInformationForParser(overrides?: PartialFoodofferForPars
       overrides?.marking_external_identifiers ?? [...baseFoodofferInformationForParser.marking_external_identifiers],
     category_external_identifier:
       overrides?.category_external_identifier ?? baseFoodofferInformationForParser.category_external_identifier,
-    date: overrides?.date ?? {...baseFoodofferInformationForParser.date},
+    date: 'date' in (overrides ?? {}) ? (overrides?.date ?? null) : {...baseFoodofferInformationForParser.date},
     canteen_external_identifier:
       overrides?.canteen_external_identifier ?? baseFoodofferInformationForParser.canteen_external_identifier,
     food_id: overrides?.food_id ?? baseFoodofferInformationForParser.food_id,
@@ -59,11 +59,12 @@ describe('FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser', (
 
   it('creates different hashes when critical fields change', () => {
     const baseFoodoffer = createFoodofferInformationForParser();
+    const baseDate = baseFoodoffer.date!;
     const differentDateFoodoffer = createFoodofferInformationForParser({
       date: {
-        year: baseFoodoffer.date.year,
-        month: baseFoodoffer.date.month,
-        day: baseFoodoffer.date.day + 1,
+        year: baseDate.year,
+        month: baseDate.month,
+        day: baseDate.day + 1,
       },
     });
 
@@ -71,5 +72,27 @@ describe('FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser', (
     const hashTwo = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(differentDateFoodoffer);
 
     expect(hashOne).not.toBe(hashTwo);
+  });
+
+  it('creates identical hashes for foodoffers with null date regardless of original date', () => {
+    const foodofferWithNullDate = createFoodofferInformationForParser({date: null});
+    const foodofferWithDifferentNullDate = createFoodofferInformationForParser({
+      date: null,
+      marking_external_identifiers: ['c', 'b', 'a'],
+    });
+    // A foodoffer that originally had a real date but was nulled out (simulates import-without-date normalization)
+    const foodofferOriginallyWithDateThenNulled = createFoodofferInformationForParser({date: null});
+
+    const hashNullOne = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferWithNullDate);
+    const hashNullTwo = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferOriginallyWithDateThenNulled);
+    const hashNullDifferentMarkings = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferWithDifferentNullDate);
+    const hashWithRealDate = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(createFoodofferInformationForParser());
+
+    // Same content with null date → same hash
+    expect(hashNullOne).toBe(hashNullTwo);
+    // null date and real date → different hash
+    expect(hashNullOne).not.toBe(hashWithRealDate);
+    // null date with same markings reordered → same hash (normalization still applies)
+    expect(hashNullOne).toBe(hashNullDifferentMarkings);
   });
 });
