@@ -45,6 +45,9 @@ apps/geonexia/frontend/assets/icons_hash.json
 apps/geonexia/frontend/assets/generated/*
 !apps/geonexia/frontend/assets/generated/.keep
 
+# TTS generated voice assets (MP3 files committed by generate-tts-voices workflow)
+!apps/geonexia/frontend/assets/tts-generated-voices/
+
 apps/screenshotGenerator/dist/
 apps/screenshotGenerator/.yarn/
 apps/screenshotGenerator/.yarnrc.yml

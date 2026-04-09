@@ -239,6 +239,13 @@ function ThemedDrawerNavigator() {
 				}}
 			/>
 			<Drawer.Screen
+				name="experimental/tts-generated-voices/index"
+				options={{
+					title: 'TTS Generated Voices',
+					drawerItemStyle: { display: 'none' },
+				}}
+			/>
+			<Drawer.Screen
 				name="experimental/hex-tile-info/index"
 				options={{
 					title: 'Hex Tile Info',

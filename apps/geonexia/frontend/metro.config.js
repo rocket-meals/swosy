@@ -22,7 +22,8 @@ module.exports = (() => {
 
 	// Register .glb (GLTF binary) as a bundled asset so Metro copies the
 	// hex-kit 3D model files and expo-asset can resolve them at runtime.
-	config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'glb', 'svg'];
+	// Register .mp3 so generated TTS voice files are bundled as assets.
+	config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'glb', 'svg', 'mp3'];
 
 	return config;
 })();
