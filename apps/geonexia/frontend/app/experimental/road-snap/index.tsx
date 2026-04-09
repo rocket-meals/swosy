@@ -464,7 +464,7 @@ export default function RoadSnapScreen() {
 				<SettingsListBoolean
 					leftIcon={<MaterialIcons name="map" size={20} color="#ffffff" />}
 					iconBgColor={ACCENT_COLOR}
-					label="Road Snap V2 (Karten-Geometrie)"
+					label="Road Snap V2"
 					valueActive="Eingeschaltet"
 					valueInactive="Ausgeschaltet"
 					isEnabled={snapV2Enabled}

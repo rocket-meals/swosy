@@ -1007,9 +1007,11 @@ export const HEX_TILE_SCRIPT = `
         return dx * dx + dy * dy;
       }
       // ── Snap each GPS point to nearest road segment ──────────────────────
-      // Max snap radius: ~50 m in degrees (approx. at mid-latitudes)
+      // Max snap radius: 0.0005 degrees ≈ 55 m at the equator (cos-scaled at
+      // higher latitudes, but sufficient for typical pedestrian/cycling routes).
       var V2_MAX_DIST_SQ = 0.0005 * 0.0005;
-      // Threshold for recognising a shared endpoint (intersection): ~10 m
+      // Intersection threshold: 0.0001 degrees ≈ 11 m.  Two segment endpoints
+      // are treated as a shared junction when they are closer than this.
       var V2_INTERSECT_SQ = 0.0001 * 0.0001;
       var v2Snapped    = [];
       var v2SnapSegIdx = [];
