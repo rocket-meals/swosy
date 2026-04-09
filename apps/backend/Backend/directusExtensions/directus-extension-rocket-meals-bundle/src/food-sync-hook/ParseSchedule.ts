@@ -526,6 +526,10 @@ export class ParseSchedule {
   /**
    * Pure function that computes the diff between report foodoffers and existing DB foodoffers
    * based on result_hash. Returns lists of foodoffers to delete, skip, and create.
+   *
+   * @param reportDictByResultHash - Maps result_hash strings to FoodoffersTypeForParser objects from the parsed report
+   * @param existingDictByResultHash - Maps result_hash strings to Foodoffers database records currently in the DB
+   * @param existingWithoutResultHash - Existing Foodoffers database records that have no result_hash (legacy data, will be deleted)
    */
   static computeFoodofferSyncDiff(
     reportDictByResultHash: Record<string, FoodoffersTypeForParser>,
