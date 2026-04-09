@@ -67,6 +67,18 @@ type ChallengeDefinition = {
 	formatProgress?: (current: number, goal: number) => string;
 };
 
+// ─── Helper functions ──────────────────────────────────────────────────────────
+
+function getBestPace(activities: SavedActivity[]): number {
+	return activities
+		.filter((a) => a.stats.paceMinPerKm > 0)
+		.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+}
+
+function getEnclosedTileCount(activity: SavedActivity): number {
+	return activity.enclosedTileCount ?? (activity.enclosedHexTiles ?? activity.hexTilesEnclosed ?? []).length;
+}
+
 // ─── 52 weekly challenge definitions ─────────────────────────────────────────
 
 const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
@@ -168,9 +180,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="speedometer" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 6.5 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 6:30 min/km'),
@@ -217,9 +227,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="lightning-bolt" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 6 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 6:00 min/km'),
@@ -280,7 +288,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		renderIcon: (c) => <MaterialCommunityIcons name="vector-polygon" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => ({
 			current: weeklyActivities.reduce(
-				(s, a) => s + (a.enclosedTileCount ?? (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []).length),
+				(s, a) => s + (getEnclosedTileCount(a)),
 				0,
 			),
 			goal: 5,
@@ -307,9 +315,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="speedometer" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 5.5 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 5:30 min/km'),
@@ -403,9 +409,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="speedometer-slow" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 5 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 5:00 min/km'),
@@ -491,9 +495,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="lightning-bolt" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 4.5 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 4:30 min/km'),
@@ -545,7 +547,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		renderIcon: (c) => <MaterialCommunityIcons name="hexagon-multiple" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => ({
 			current: weeklyActivities.reduce(
-				(s, a) => s + (a.enclosedTileCount ?? (a.enclosedHexTiles ?? a.hexTilesEnclosed ?? []).length),
+				(s, a) => s + (getEnclosedTileCount(a)),
 				0,
 			),
 			goal: 10,
@@ -559,9 +561,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="lightning-bolt-outline" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 4 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 4:00 min/km'),
@@ -634,9 +634,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="speedometer" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 5 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 5:00 min/km'),
@@ -696,9 +694,7 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		iconBgColor: '#dc2626',
 		renderIcon: (c) => <MaterialCommunityIcons name="lightning-bolt" size={22} color={c} />,
 		getProgress: ({ weeklyActivities }) => {
-			const best = weeklyActivities
-				.filter((a) => a.stats.paceMinPerKm > 0)
-				.reduce((min, a) => Math.min(min, a.stats.paceMinPerKm), Infinity);
+			const best = getBestPace(weeklyActivities);
 			return { current: best <= 5.5 ? 1 : 0, goal: 1 };
 		},
 		formatProgress: (cur) => (cur >= 1 ? 'Geschafft ✓' : 'Pace < 5:30 min/km'),
@@ -713,8 +709,6 @@ const WEEKLY_CHALLENGES: ChallengeDefinition[] = [
 		getProgress: ({ weeklyActivities }) => ({ current: weeklyActivities.length, goal: 2 }),
 	},
 ];
-
-// ─── Helper functions ──────────────────────────────────────────────────────────
 
 function isChallengeCompleted(def: ChallengeDefinition, data: ChallengeData): boolean {
 	const { current, goal } = def.getProgress(data);
@@ -804,7 +798,9 @@ export default function ChallengesScreen() {
 		[activities, weeklyActivities, hexTileRecords],
 	);
 
-	const currentChallenge = WEEKLY_CHALLENGES.find((c) => c.weekNumber === currentWeek) ?? WEEKLY_CHALLENGES[0];
+	// In ISO years with 53 weeks, clamp to week 52 so the last defined challenge is shown.
+	const clampedWeek = Math.min(currentWeek, 52);
+	const currentChallenge = WEEKLY_CHALLENGES.find((c) => c.weekNumber === clampedWeek) ?? WEEKLY_CHALLENGES[WEEKLY_CHALLENGES.length - 1];
 	const currentCompleted = isChallengeCompleted(currentChallenge, data);
 
 	const completedCount = useMemo(
@@ -819,8 +815,8 @@ export default function ChallengesScreen() {
 		[activities, hexTileRecords, currentYear],
 	);
 
-	const pastChallenges = WEEKLY_CHALLENGES.filter((c) => c.weekNumber < currentWeek);
-	const upcomingChallenges = WEEKLY_CHALLENGES.filter((c) => c.weekNumber > currentWeek);
+	const pastChallenges = WEEKLY_CHALLENGES.filter((c) => c.weekNumber < clampedWeek);
+	const upcomingChallenges = WEEKLY_CHALLENGES.filter((c) => c.weekNumber > clampedWeek);
 
 	return (
 		<View style={[styles.container, { backgroundColor: theme.screen.background }]}>
@@ -840,7 +836,7 @@ export default function ChallengesScreen() {
 				</View>
 
 				{/* Current week challenge */}
-				<SettingsListGroupTitle title={`Aktuelle Woche (KW ${currentWeek})`} />
+				<SettingsListGroupTitle title={`Aktuelle Woche (KW ${clampedWeek})`} />
 				<ChallengeCard
 					definition={currentChallenge}
 					data={data}
