@@ -68,12 +68,15 @@ export default function TTSGeneratedVoicesScreen() {
 	const player = useAudioPlayer(null);
 	const status = useAudioPlayerStatus(player);
 
-	// Detect when playback finishes
+	// Detect when playback finishes and reset state
 	const isPlaying = status.playing;
-	if (!isPlaying && playingKey !== null && status.currentTime > 0 && status.currentTime >= status.duration - 0.1) {
-		// Playback finished – reset state (will be applied on next render)
-		setTimeout(() => setPlayingKey(null), 0);
-	}
+	const currentTime = status.currentTime;
+	const duration = status.duration;
+	React.useEffect(() => {
+		if (!isPlaying && playingKey !== null && currentTime > 0 && currentTime >= duration - 0.1) {
+			setPlayingKey(null);
+		}
+	}, [isPlaying, playingKey, currentTime, duration]);
 
 	const handlePlay = useCallback(
 		(key: string, entry: GeneratedVoiceEntry) => {
