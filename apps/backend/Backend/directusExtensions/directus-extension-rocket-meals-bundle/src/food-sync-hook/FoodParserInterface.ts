@@ -32,7 +32,7 @@ export type CanteensTypeForParser = CanteenTypeOmitedFields & {
   external_identifier: string;
 }; // make external_identifier required
 
-export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values'>;
+export type FoodofferTypeWithBasicData = Omit<DatabaseTypes.Foodoffers, 'id' | 'user_created' | 'user_updated' | 'canteen' | 'food' | 'markings' | 'date' | 'environmental_impact' | 'nutrition' | 'prices' | 'foodoffer_category' | 'category' | 'attribute_values' | 'result_hash'>;
 
 export type FoodComponentForParser = {
   alias: string;
@@ -112,7 +112,7 @@ export class FoodParserHelper {
         ? foodoffer.foodoffer_category?.external_identifier || null
         : null;
 
-    const {id, user_created, user_updated, canteen, food, markings, date: _, foodoffer_category, category, ...rest} = foodoffer;
+    const {id, user_created, user_updated, canteen, food, markings, date: _, foodoffer_category, category, result_hash, ...rest} = foodoffer;
 
     const basicFoodofferData: FoodofferTypeWithBasicData = {
       ...rest,

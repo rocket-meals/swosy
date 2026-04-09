@@ -1062,6 +1062,7 @@ export type Foodoffers = {
   price_student?: number | null;
   prices: string;
   redirect_url?: string | null;
+  result_hash?: string | null;
   sort?: number | null;
   status?: string | null;
   user_created?: string | DirectusUsers | null;
