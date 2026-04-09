@@ -35,7 +35,7 @@ function createFoodofferInformationForParser(overrides?: PartialFoodofferForPars
       overrides?.marking_external_identifiers ?? [...baseFoodofferInformationForParser.marking_external_identifiers],
     category_external_identifier:
       overrides?.category_external_identifier ?? baseFoodofferInformationForParser.category_external_identifier,
-    date: 'date' in (overrides ?? {}) ? (overrides?.date ?? null) : {...baseFoodofferInformationForParser.date},
+    date: overrides?.date !== undefined ? overrides.date : {...baseFoodofferInformationForParser.date},
     canteen_external_identifier:
       overrides?.canteen_external_identifier ?? baseFoodofferInformationForParser.canteen_external_identifier,
     food_id: overrides?.food_id ?? baseFoodofferInformationForParser.food_id,
@@ -81,7 +81,8 @@ describe('FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser', (
       marking_external_identifiers: ['c', 'b', 'a'],
     });
     // A foodoffer that originally had a real date but was nulled out (simulates import-without-date normalization)
-    const foodofferOriginallyWithDateThenNulled = createFoodofferInformationForParser({date: null});
+    const temp = createFoodofferInformationForParser();
+    const foodofferOriginallyWithDateThenNulled = {...temp, date: null as null};
 
     const hashNullOne = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferWithNullDate);
     const hashNullTwo = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferOriginallyWithDateThenNulled);
