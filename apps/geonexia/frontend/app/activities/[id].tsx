@@ -929,8 +929,10 @@ export default function ActivityDetailScreen() {
 			routeCenterRef.current = { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
 			// Expand the bounding box to 1.5× the route span so the route is
 			// not clipped at the edges (adds 25 % padding on every side).
-			const latPad = (maxLat - minLat) * 0.25;
-			const lngPad = (maxLng - minLng) * 0.25;
+			// Use at least 0.001 deg (~100 m) so very short routes don't get
+			// a degenerate zero-size bounding box that fitBounds ignores.
+			const latPad = Math.max((maxLat - minLat) * 0.25, 0.001);
+			const lngPad = Math.max((maxLng - minLng) * 0.25, 0.001);
 			mapRef.current.sendToMap({
 				fitBounds: [[minLng - lngPad, minLat - latPad], [maxLng + lngPad, maxLat + latPad]],
 				fitBoundsPadding: 20,

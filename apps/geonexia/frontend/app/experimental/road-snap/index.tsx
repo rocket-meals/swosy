@@ -39,6 +39,13 @@ const GREEDY_STEP_DEG = 0.00003; // ~3 m
 // Maximum intermediate steps per segment to avoid infinite loops
 const GREEDY_MAX_STEPS_PER_SEGMENT = 2000;
 
+// Number of Chaikin smoothing iterations
+const CHAIKIN_ITERATIONS = 3;
+
+// Maximum number of input points passed to Chaikin to avoid memory bloat
+// (each iteration ~doubles the points; 3 iterations = ~8× expansion)
+const CHAIKIN_MAX_INPUT_POINTS = 2000;
+
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function formatActivityLabel(activity: SavedActivity): string {
@@ -181,6 +188,34 @@ function connectAlongRoad(coords: [number, number][]): [number, number][] {
 	return result;
 }
 
+// ─── Chaikin line smoothing ───────────────────────────────────────────────────
+//
+// Each iteration replaces every segment AB with two new points:
+//   Q = A + 0.25 * (B - A)  (quarter point)
+//   R = A + 0.75 * (B - A)  (three-quarter point)
+// The first and last points are kept to preserve the route start/end.
+// Running this 3 times produces a visibly smooth curve without an API.
+
+function chaikinSmooth(coords: [number, number][], iterations: number): [number, number][] {
+	if (coords.length < 3) return coords;
+	// Down-sample to avoid the ~2× per-iteration point explosion on dense tracks
+	let pts = coords.length > CHAIKIN_MAX_INPUT_POINTS
+		? coords.filter((_, i) => i % Math.ceil(coords.length / CHAIKIN_MAX_INPUT_POINTS) === 0 || i === coords.length - 1)
+		: coords;
+	for (let it = 0; it < iterations; it++) {
+		const next: [number, number][] = [pts[0]];
+		for (let i = 0; i < pts.length - 1; i++) {
+			const ax = pts[i][0], ay = pts[i][1];
+			const bx = pts[i + 1][0], by = pts[i + 1][1];
+			next.push([ax + 0.25 * (bx - ax), ay + 0.25 * (by - ay)]);
+			next.push([ax + 0.75 * (bx - ax), ay + 0.75 * (by - ay)]);
+		}
+		next.push(pts[pts.length - 1]);
+		pts = next;
+	}
+	return pts;
+}
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function RoadSnapScreen() {
@@ -195,6 +230,7 @@ export default function RoadSnapScreen() {
 	const [selectedActivity, setSelectedActivity] = useState<SavedActivity | null>(null);
 	const [snapEnabled, setSnapEnabled] = useState(false);
 	const [greedyEnabled, setGreedyEnabled] = useState(false);
+	const [smoothEnabled, setSmoothEnabled] = useState(false);
 	const [activityPickerOpen, setActivityPickerOpen] = useState(false);
 
 	// Load activities on mount
@@ -227,7 +263,7 @@ export default function RoadSnapScreen() {
 
 	// Build and send processed coordinates to the map
 	const sendRouteToMap = useCallback(
-		(activity: SavedActivity | null, snap: boolean, greedy: boolean) => {
+		(activity: SavedActivity | null, snap: boolean, greedy: boolean, smooth: boolean) => {
 			if (!mapRef.current || !activity) return;
 
 			const rawCoords: [number, number][] = activity.routePoints.map(
@@ -244,6 +280,10 @@ export default function RoadSnapScreen() {
 
 			if (greedy) {
 				coords = connectAlongRoad(coords);
+			}
+
+			if (smooth) {
+				coords = chaikinSmooth(coords, CHAIKIN_ITERATIONS);
 			}
 
 			mapRef.current.sendToMap({ routeCoordinates: coords });
@@ -287,8 +327,8 @@ export default function RoadSnapScreen() {
 	// Re-send route whenever map is ready or settings change
 	useEffect(() => {
 		if (!mapMounted) return;
-		sendRouteToMap(selectedActivity, snapEnabled, greedyEnabled);
-	}, [mapMounted, selectedActivity, snapEnabled, greedyEnabled, sendRouteToMap]);
+		sendRouteToMap(selectedActivity, snapEnabled, greedyEnabled, smoothEnabled);
+	}, [mapMounted, selectedActivity, snapEnabled, greedyEnabled, smoothEnabled, sendRouteToMap]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
@@ -441,6 +481,16 @@ export default function RoadSnapScreen() {
 					valueInactive="Ausgeschaltet"
 					isEnabled={greedyEnabled}
 					onToggle={() => setGreedyEnabled((v) => !v)}
+					groupPosition="middle"
+				/>
+				<SettingsListBoolean
+					leftIcon={<MaterialIcons name="gesture" size={20} color="#ffffff" />}
+					iconBgColor={ACCENT_COLOR}
+					label="Linien glätten"
+					valueActive="Eingeschaltet"
+					valueInactive="Ausgeschaltet"
+					isEnabled={smoothEnabled}
+					onToggle={() => setSmoothEnabled((v) => !v)}
 					groupPosition="bottom"
 				/>
 			</ScrollView>
