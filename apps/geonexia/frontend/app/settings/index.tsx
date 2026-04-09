@@ -63,7 +63,7 @@ const MAP_COLOR = '#0891b2';
 const REBUILD_COLOR = '#7c3aed';
 
 const OPACITY_STEP = 0.05;
-const OPACITY_MIN = 0.05;
+const OPACITY_MIN = 0.0;
 const OPACITY_MAX = 1.0;
 
 const LINE_WIDTH_STEP = 0.25;
@@ -258,8 +258,9 @@ export default function SettingsScreen() {
 	const speechEnabled = useSelector((state: RootState) => state.speechSettings.enabled);
 	const isDebugMode = useSelector((state: RootState) => state.hexTiles.isDebugMode);
 	const isDevMode = useSelector((state: RootState) => state.hexTiles.isDevMode);
-	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
-	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
+	const hexTextureOpacity = useSelector((state: RootState) => state.displaySettings.hexTextureOpacity);
+	const hexTextureAdaptionOpacity = useSelector((state: RootState) => state.displaySettings.hexTextureAdaptionOpacity);
+	const hexObjectOpacity = useSelector((state: RootState) => state.displaySettings.hexObjectOpacity);
 	const selectedMapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
 	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
@@ -363,25 +364,35 @@ export default function SettingsScreen() {
 		}
 	}, [dispatch]);
 
-	const handleHexTileOpacityDown = useCallback(() => {
-		const next = Math.max(OPACITY_MIN, Math.round((hexTileOpacity - OPACITY_STEP) * 100) / 100);
-		dispatch(updateDisplaySettings({ hexTileOpacity: next }));
-	}, [dispatch, hexTileOpacity]);
+	const handleHexTextureOpacityDown = useCallback(() => {
+		const next = Math.max(OPACITY_MIN, Math.round((hexTextureOpacity - OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexTextureOpacity: next }));
+	}, [dispatch, hexTextureOpacity]);
 
-	const handleHexTileOpacityUp = useCallback(() => {
-		const next = Math.min(OPACITY_MAX, Math.round((hexTileOpacity + OPACITY_STEP) * 100) / 100);
-		dispatch(updateDisplaySettings({ hexTileOpacity: next }));
-	}, [dispatch, hexTileOpacity]);
+	const handleHexTextureOpacityUp = useCallback(() => {
+		const next = Math.min(OPACITY_MAX, Math.round((hexTextureOpacity + OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexTextureOpacity: next }));
+	}, [dispatch, hexTextureOpacity]);
 
-	const handleObjectOpacityDown = useCallback(() => {
-		const next = Math.max(OPACITY_MIN, Math.round((objectOpacity - OPACITY_STEP) * 100) / 100);
-		dispatch(updateDisplaySettings({ objectOpacity: next }));
-	}, [dispatch, objectOpacity]);
+	const handleHexTextureAdaptionOpacityDown = useCallback(() => {
+		const next = Math.max(OPACITY_MIN, Math.round((hexTextureAdaptionOpacity - OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexTextureAdaptionOpacity: next }));
+	}, [dispatch, hexTextureAdaptionOpacity]);
 
-	const handleObjectOpacityUp = useCallback(() => {
-		const next = Math.min(OPACITY_MAX, Math.round((objectOpacity + OPACITY_STEP) * 100) / 100);
-		dispatch(updateDisplaySettings({ objectOpacity: next }));
-	}, [dispatch, objectOpacity]);
+	const handleHexTextureAdaptionOpacityUp = useCallback(() => {
+		const next = Math.min(OPACITY_MAX, Math.round((hexTextureAdaptionOpacity + OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexTextureAdaptionOpacity: next }));
+	}, [dispatch, hexTextureAdaptionOpacity]);
+
+	const handleHexObjectOpacityDown = useCallback(() => {
+		const next = Math.max(OPACITY_MIN, Math.round((hexObjectOpacity - OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexObjectOpacity: next }));
+	}, [dispatch, hexObjectOpacity]);
+
+	const handleHexObjectOpacityUp = useCallback(() => {
+		const next = Math.min(OPACITY_MAX, Math.round((hexObjectOpacity + OPACITY_STEP) * 100) / 100);
+		dispatch(updateDisplaySettings({ hexObjectOpacity: next }));
+	}, [dispatch, hexObjectOpacity]);
 
 	const handleHexLineOpacityDown = useCallback(() => {
 		const next = Math.max(OPACITY_MIN, Math.round((hexLineOpacity - OPACITY_STEP) * 100) / 100);
@@ -614,15 +625,15 @@ export default function SettingsScreen() {
 				<SettingsListGroupTitle title="Karten-Darstellung" />
 				<SettingsList
 					iconBgColor={MAP_COLOR}
-					leftIcon={<MaterialCommunityIcons name="hexagon-outline" size={22} color="#ffffff" />}
-					label="Hex-Feld Deckkraft"
-					value={`${Math.round(hexTileOpacity * 100)}%`}
+					leftIcon={<MaterialCommunityIcons name="image-filter-hdr" size={22} color="#ffffff" />}
+					label="Hex Texture Deckkraft"
+					value={`${Math.round(hexTextureOpacity * 100)}%`}
 					rightElement={
 						<View style={styles.stepper}>
-							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTileOpacityDown} activeOpacity={0.7}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTextureOpacityDown} activeOpacity={0.7}>
 								<Ionicons name="remove" size={18} color={MAP_COLOR} />
 							</TouchableOpacity>
-							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTileOpacityUp} activeOpacity={0.7}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTextureOpacityUp} activeOpacity={0.7}>
 								<Ionicons name="add" size={18} color={MAP_COLOR} />
 							</TouchableOpacity>
 						</View>
@@ -631,15 +642,32 @@ export default function SettingsScreen() {
 				/>
 				<SettingsList
 					iconBgColor={MAP_COLOR}
-					leftIcon={<MaterialCommunityIcons name="image-outline" size={22} color="#ffffff" />}
-					label="Objekte Deckkraft"
-					value={`${Math.round(objectOpacity * 100)}%`}
+					leftIcon={<MaterialCommunityIcons name="image-multiple-outline" size={22} color="#ffffff" />}
+					label="Hex Texture Adaption Deckkraft"
+					value={`${Math.round(hexTextureAdaptionOpacity * 100)}%`}
 					rightElement={
 						<View style={styles.stepper}>
-							<TouchableOpacity style={styles.stepBtn} onPress={handleObjectOpacityDown} activeOpacity={0.7}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTextureAdaptionOpacityDown} activeOpacity={0.7}>
 								<Ionicons name="remove" size={18} color={MAP_COLOR} />
 							</TouchableOpacity>
-							<TouchableOpacity style={styles.stepBtn} onPress={handleObjectOpacityUp} activeOpacity={0.7}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexTextureAdaptionOpacityUp} activeOpacity={0.7}>
+								<Ionicons name="add" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+						</View>
+					}
+					groupPosition="middle"
+				/>
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialCommunityIcons name="cube-outline" size={22} color="#ffffff" />}
+					label="Hex Object Deckkraft"
+					value={`${Math.round(hexObjectOpacity * 100)}%`}
+					rightElement={
+						<View style={styles.stepper}>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexObjectOpacityDown} activeOpacity={0.7}>
+								<Ionicons name="remove" size={18} color={MAP_COLOR} />
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.stepBtn} onPress={handleHexObjectOpacityUp} activeOpacity={0.7}>
 								<Ionicons name="add" size={18} color={MAP_COLOR} />
 							</TouchableOpacity>
 						</View>

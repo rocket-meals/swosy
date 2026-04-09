@@ -2725,8 +2725,9 @@ export default function RecordScreen() {
 	const isDebugMode = useDebugMode();
 	const announceAppInBackground = useSelector((state: RootState) => state.speechSettings.announceAppInBackground);
 	const speechSettings = useSelector((state: RootState) => state.speechSettings);
-	const hexTileOpacity = useSelector((state: RootState) => state.displaySettings.hexTileOpacity);
-	const objectOpacity = useSelector((state: RootState) => state.displaySettings.objectOpacity);
+	const hexTextureOpacity = useSelector((state: RootState) => state.displaySettings.hexTextureOpacity);
+	const hexTextureAdaptionOpacity = useSelector((state: RootState) => state.displaySettings.hexTextureAdaptionOpacity);
+	const hexObjectOpacity = useSelector((state: RootState) => state.displaySettings.hexObjectOpacity);
 	const mapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
 	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
@@ -2909,7 +2910,9 @@ export default function RecordScreen() {
 		const records = store.getState().hexTiles.records;
 		const spriteAnchors = store.getState().billboardConfig.spriteAnchors;
 		const textureAnchors = store.getState().hexTextureConfig.spriteAnchors;
-		const currentObjectOpacity = store.getState().displaySettings.objectOpacity;
+		const currentHexTextureOpacity = store.getState().displaySettings.hexTextureOpacity;
+		const currentHexTextureAdaptionOpacity = store.getState().displaySettings.hexTextureAdaptionOpacity;
+		const currentHexObjectOpacity = store.getState().displaySettings.hexObjectOpacity;
 
 		// Flat lookup: terrain asset key → { moduleId, mimeType }
 		const terrainLookup = new Map<string, { moduleId: number; mimeType: string }>();
@@ -2993,7 +2996,7 @@ export default function RecordScreen() {
 									[adjMaxLng, adjMinLat],
 									[adjMinLng, adjMinLat],
 								],
-								opacity: currentObjectOpacity,
+								opacity: currentHexTextureOpacity,
 								// Actual hex vertices in [lng, lat] for canvas polygon clipping.
 								polygonCoords: boundary.map(([lat, lng]) => [lng, lat] as [number, number]),
 								rotation,
@@ -3177,7 +3180,7 @@ export default function RecordScreen() {
 				billboardFeatures.push({
 					type: 'Feature',
 					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity },
 				});
 			}
 
@@ -3210,7 +3213,7 @@ export default function RecordScreen() {
 				billboardFeatures.push({
 					type: 'Feature',
 					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat, opacity: currentHexObjectOpacity },
 				});
 			}
 		}
@@ -3235,12 +3238,6 @@ export default function RecordScreen() {
 		loadAndSendCustomizations();
 	}, [hexTileCustomizationsKey, billboardConfigKey, loadAndSendCustomizations]);
 
-	// Send updated hex tile fill opacity to the map whenever the setting changes.
-	useEffect(() => {
-		if (!mapWebViewReadyRef.current) return;
-		mapRef.current?.sendToMap({ hexTileOpacity });
-	}, [hexTileOpacity]);
-
 	// Send updated hex grid line opacity to the map whenever the setting changes.
 	useEffect(() => {
 		if (!mapWebViewReadyRef.current) return;
@@ -3253,23 +3250,20 @@ export default function RecordScreen() {
 		mapRef.current?.sendToMap({ hexLineWidth });
 	}, [hexLineWidth]);
 
-	// Re-send object customizations (terrain images) when object opacity changes.
+	// Re-send customizations when any of the three layer opacities change.
 	useEffect(() => {
 		loadAndSendCustomizations();
-	}, [objectOpacity, loadAndSendCustomizations]);
+	}, [hexTextureOpacity, hexTextureAdaptionOpacity, hexObjectOpacity, loadAndSendCustomizations]);
 
 	// Re-apply display settings when the screen comes back into focus.
 	// While the recording screen is hidden behind a drawer screen (e.g. Settings),
 	// the WebView does not process injected JavaScript messages, so any opacity
 	// changes dispatched from the settings screen are silently dropped.
 	// Re-sending them on focus ensures the map is always in sync with the current settings.
-	// hexTileOpacity is sent directly (updates the fill layer paint property in hexTileScript).
-	// objectOpacity is applied via loadAndSendCustomizations (which rebuilds all image overlays).
 	useFocusEffect(
 		useCallback(() => {
 			if (!mapWebViewReadyRef.current) return;
-			const { hexTileOpacity: currentHexTileOpacity, hexLineOpacity: currentHexLineOpacity, hexLineWidth: currentHexLineWidth } = store.getState().displaySettings;
-			mapRef.current?.sendToMap({ hexTileOpacity: currentHexTileOpacity });
+			const { hexLineOpacity: currentHexLineOpacity, hexLineWidth: currentHexLineWidth } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({ hexLineOpacity: currentHexLineOpacity });
 			mapRef.current?.sendToMap({ hexLineWidth: currentHexLineWidth });
 			loadAndSendCustomizations();
@@ -3964,9 +3958,9 @@ export default function RecordScreen() {
 			mapWebViewReadyRef.current = true;
 			// Activate hex tile layer. strokeColor is intentionally omitted so that
 			// the default gray value defined in hexTileScript.ts is preserved.
-			const { hexTileOpacity: initHexTileOpacity, hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
+			const { hexLineOpacity: initHexLineOpacity, hexLineWidth: initHexLineWidth } = store.getState().displaySettings;
 			mapRef.current?.sendToMap({
-				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: initHexTileOpacity, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
+				hexTileLayer: { color: 'rgba(0, 0, 0, 0)', opacityMax: 0, lineOpacity: initHexLineOpacity, lineWidth: initHexLineWidth },
 			});
 			if (routePointsRef.current.length > 0) {
 				sendRouteToMap(routePointsRef.current);
