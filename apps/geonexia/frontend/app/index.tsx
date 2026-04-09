@@ -102,6 +102,15 @@ function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<stri
 	return result as Record<BillboardAnchorPosition, string>;
 }
 
+/**
+ * Parse the rotation angle (in degrees) from a BillboardAnchorPosition value.
+ * Values like 'outer_30', 'middle_120' yield their numeric suffix; 'center' yields 0.
+ */
+function getAnchorAngleDeg(anchorPosition: string): number {
+	const match = anchorPosition.match(/_(\d+)$/);
+	return match ? parseInt(match[1], 10) : 0;
+}
+
 const PRIMARY_COLOR = '#2563eb';
 
 /** Billboard key for the castle2 sprite. Used to mark the player's home tile. */
@@ -3176,11 +3185,12 @@ export default function RecordScreen() {
 				if (!billboardImages[iconKey]) {
 					billboardImages[iconKey] = { url };
 				}
-				// Hex Texture Adaptions are always flat.
+				// Hex Texture Adaptions are always flat and rotated by the position angle.
+				const textureRotation = getAnchorAngleDeg(anchorColor);
 				billboardFeatures.push({
 					type: 'Feature',
 					geometry: { type: 'Point', coordinates: [lng, lat] },
-					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity },
+					properties: { iconKey, iconSizeAtRefZoom, anchorX, anchorY, flat: true, opacity: currentHexTextureAdaptionOpacity, textureRotation },
 				});
 			}
 
