@@ -69,7 +69,7 @@ describe('dev', () => {
         const foodsOfferList = await foodParser.getFoodoffersForParser();
         let datesFoundDict: {[key: string]: boolean} = {};
         for (const foodOffer of foodsOfferList) {
-            const dateStr = foodOffer.date.year+"-"+String(foodOffer.date.month).padStart(2,'0')+"-"+String(foodOffer.date.day).padStart(2,'0');
+            const dateStr = foodOffer.date!.year+"-"+String(foodOffer.date!.month).padStart(2,'0')+"-"+String(foodOffer.date!.day).padStart(2,'0');
             datesFoundDict[dateStr] = true;
         }
         const datesFound = Object.keys(datesFoundDict);
