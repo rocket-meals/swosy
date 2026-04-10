@@ -285,20 +285,25 @@ export class ParseSchedule {
     return foodofferDates;
   }
 
+  static readonly DELETE_BATCH_SIZE = 250;
+
   async deleteFoodOffers(foodoffers: DatabaseTypes.Foodoffers[], notice: string) {
     let itemService = await this.context.myDatabaseHelper.getFoodoffersHelper();
     let idsToDelete = foodoffers.map(item => item.id);
 
-    // Step 2: Delete the items using their IDs
     if (idsToDelete.length > 0) {
-      await itemService
-        .deleteMany(idsToDelete)
-        .then(async () => {
-          await this.context.logger.appendLog(`Foodoffers deleted: ${idsToDelete.length} - ${notice}`);
-        })
-        .catch(async error => {
-          await this.context.logger.appendLog(`Foodoffers delete error: ${notice}: ${error}`);
-        });
+      // Batch deletions to avoid issues with large payloads
+      for (let i = 0; i < idsToDelete.length; i += ParseSchedule.DELETE_BATCH_SIZE) {
+        const batch = idsToDelete.slice(i, i + ParseSchedule.DELETE_BATCH_SIZE);
+        await itemService
+          .deleteMany(batch)
+          .then(async () => {
+            await this.context.logger.appendLog(`Foodoffers deleted batch: ${batch.length} (${i + batch.length}/${idsToDelete.length}) - ${notice}`);
+          })
+          .catch(async error => {
+            await this.context.logger.appendLog(`Foodoffers delete error: ${notice}: ${error}`);
+          });
+      }
     } else {
       await this.context.logger.appendLog(`No foodoffers given to delete - ${notice}`);
     }
