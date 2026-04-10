@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
-	Alert,
 	Animated,
 	AppState,
 	PanResponder,
@@ -53,6 +52,7 @@ import { OBJECT_SPRITES } from '../assets/objects/objectSprites';
 import SettingsListBillboard from '../components/SettingsListBillboard';
 import SettingsListHexTile from '../components/SettingsListHexTile';
 import { useDebugMode } from '../hooks/useDebugMode';
+import useGeonexiaAlert from '../hooks/useGeonexiaAlert';
 
 /** Parse a billboard key of the form "objects:N" into the corresponding sprite and index. */
 function parseBillboardKey(billboard: string): { sprite: (typeof OBJECT_SPRITES)[number]; idx: number } | null {
@@ -1419,10 +1419,11 @@ function RunShareContent({ shareData, theme }: { shareData: RunShareData; theme:
 	const compact = JSON.stringify(shareData);
 	const pretty = JSON.stringify(shareData, null, 2);
 	const showQr = compact.length <= QR_MAX_BYTES;
+	const { showAlert } = useGeonexiaAlert();
 
 	const handleCopy = useCallback(async () => {
 		await Clipboard.setStringAsync(compact);
-		Alert.alert('Copied', 'Run data copied to clipboard.');
+		showAlert('Copied', 'Run data copied to clipboard.');
 	}, [compact]);
 
 	return (
@@ -2146,6 +2147,7 @@ const MAGNIFY_COLOR = '#3b82f6';
 
 function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 	const { theme } = useTheme();
+	const { showAlert } = useGeonexiaAlert();
 	const [features, setFeatures] = useState<MapFeatureInfo[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -2212,7 +2214,7 @@ function MagnifyModalContent({ h3Index }: { h3Index: string }) {
 		if (!features) return;
 		const json = JSON.stringify(features, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Kopiert', 'JSON in Zwischenablage kopiert.');
+		showAlert('Kopiert', 'JSON in Zwischenablage kopiert.');
 	}, [features]);
 
 	return (
@@ -2722,6 +2724,7 @@ export default function RecordScreen() {
 	const { show: showRecoveryModal, close: closeRecoveryModal } = useMyScrollViewModal();
 	const { show: showSearchModal, close: closeSearchModal } = useMyScrollViewModal();
 	const { show: showDebugReplayModal, close: closeDebugReplayModal } = useMyScrollViewModal();
+	const { showAlert } = useGeonexiaAlert();
 	const navigation = useNavigation();
 	const router = useRouter();
 	const [osmConsent, setOsmConsent] = useState(false);
@@ -3825,12 +3828,12 @@ export default function RecordScreen() {
 		activity.computed = computeActivityData(activity, enclosedCells);
 		try {
 			saveActivity(activity);
-			Alert.alert(
+			showAlert(
 				'Activity Saved',
 				`Route saved: ${routeCells.length} hex tiles, ${enclosedCells.length} enclosed.`,
 			);
 		} catch {
-			Alert.alert('Error', 'Failed to save activity.');
+			showAlert('Error', 'Failed to save activity.');
 		}
 		// Fire-and-forget: fetch and cache map features for enclosed cells so that
 		// the next map rebuild can apply the pine tree billboard on forest tiles.
@@ -3867,16 +3870,16 @@ export default function RecordScreen() {
 		};
 		try {
 			saveRoute(route);
-			Alert.alert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
+			showAlert('Route gespeichert', `"${route.name}" wurde als Route gespeichert.`);
 		} catch {
-			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Route konnte nicht gespeichert werden.');
 		}
 	}, []);
 
 	const finishMeasurement = useCallback(async () => {
 		const waypoints = measureWaypointsRef.current;
 		if (waypoints.length < 2) {
-			Alert.alert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
+			showAlert('Not enough points', 'Tap at least 2 points on the map to measure a route.');
 			return;
 		}
 
@@ -4063,7 +4066,7 @@ export default function RecordScreen() {
 		}
 		const json = JSON.stringify({ version: 1, hexTiles: exportData }, null, 2);
 		await Clipboard.setStringAsync(json);
-		Alert.alert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
+		showAlert('Map Settings Exported', `${Object.keys(exportData).length} tile customization(s) copied to clipboard.`);
 	}, [hexTileRecords]);
 
 	const handleImportMapSettings = useCallback((json: string) => {
@@ -4071,16 +4074,16 @@ export default function RecordScreen() {
 		try {
 			parsed = JSON.parse(json);
 		} catch {
-			Alert.alert('Import Failed', 'The text is not valid JSON.');
+			showAlert('Import Failed', 'The text is not valid JSON.');
 			return;
 		}
 		const data = parsed as { version?: number; hexTiles?: Record<string, HexTileCustomizationPayload> };
 		if (!data.hexTiles || typeof data.hexTiles !== 'object') {
-			Alert.alert('Import Failed', 'No "hexTiles" object found in the data.');
+			showAlert('Import Failed', 'No "hexTiles" object found in the data.');
 			return;
 		}
 		dispatch(applyMapCustomizations(data.hexTiles));
-		Alert.alert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
+		showAlert('Map Settings Imported', `Applied customizations for ${Object.keys(data.hexTiles).length} tile(s).`);
 	}, [dispatch]);
 
 	const showDebugModal = useCallback(() => {
@@ -4601,7 +4604,7 @@ export default function RecordScreen() {
 			const { status: fgStatus } = await Location.requestForegroundPermissionsAsync();
 			console.log('[RecordScreen] Foreground permission status:', fgStatus);
 			if (fgStatus !== 'granted') {
-				Alert.alert('GPS', 'Location permission is required for run recording.');
+				showAlert('GPS', 'Location permission is required for run recording.');
 				return;
 			}
 
@@ -4759,7 +4762,7 @@ export default function RecordScreen() {
 			if (err instanceof Error) {
 				console.error('[RecordScreen] Error name:', err.name, '| message:', err.message);
 			}
-			Alert.alert('Error', 'Run recording could not be started.');
+			showAlert('Error', 'Run recording could not be started.');
 			isRecordingRef.current = false;
 			setIsRecording(false);
 			if (timerRef.current) {
@@ -4779,7 +4782,7 @@ export default function RecordScreen() {
 			// ignore
 		}
 		if (routes.length === 0) {
-			Alert.alert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
+			showAlert('🗺️ No Routes', 'You don\'t have any saved routes yet. Complete a run to save one.');
 			return;
 		}
 		showRouteModal({
@@ -4918,7 +4921,7 @@ export default function RecordScreen() {
 		const points = routePointsRef.current;
 		console.log('[RecordScreen] Recorded points count:', points.length);
 		if (points.length < 2) {
-			Alert.alert('Run finished', 'Too few GPS points were recorded.');
+			showAlert('Run finished', 'Too few GPS points were recorded.');
 			return;
 		}
 

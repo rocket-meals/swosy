@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
-	Alert,
 	Keyboard,
 	ScrollView,
 	StyleSheet,
@@ -30,6 +29,7 @@ import type { RootState, AppDispatch } from '../../store/store';
 import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
+import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -201,10 +201,11 @@ function ShareContent({ activity, theme }: { activity: SavedActivity; theme: Ret
 	const compact = JSON.stringify(activity);
 	const pretty = JSON.stringify(activity, null, 2);
 	const showQr = compact.length <= QR_MAX_BYTES;
+	const { showAlert } = useGeonexiaAlert();
 
 	const handleCopy = useCallback(async () => {
 		await Clipboard.setStringAsync(compact);
-		Alert.alert('Copied', 'Activity data copied to clipboard.');
+		showAlert('Copied', 'Activity data copied to clipboard.');
 	}, [compact]);
 
 	return (
@@ -401,6 +402,7 @@ type RouteAssignmentProps = {
 function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone, theme }: RouteAssignmentProps) {
 	const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
 	const [routeName, setRouteName] = useState('');
+	const { showAlert } = useGeonexiaAlert();
 
 	const assignRoute = useCallback(async (routeId: string | null) => {
 		// Remove activity from old route (if any)
@@ -431,7 +433,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 		try {
 			saveActivity(updated);
 		} catch {
-			Alert.alert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Aktivität konnte nicht gespeichert werden.');
 			return;
 		}
 		onDone(updated);
@@ -453,7 +455,7 @@ function RouteAssignmentModalContent({ activity, savedRoutes, bestMatch, onDone,
 		try {
 			saveRoute(newRoute);
 		} catch {
-			Alert.alert('Fehler', 'Die Route konnte nicht gespeichert werden.');
+			showAlert('Fehler', 'Die Route konnte nicht gespeichert werden.');
 			return;
 		}
 		await assignRoute(newRoute.id);
@@ -722,6 +724,7 @@ export default function ActivityDetailScreen() {
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
 	const isDebugMode = useDebugMode();
+	const { showAlert } = useGeonexiaAlert();
 	const { show: showDebugModal } = useMyScrollViewModal();
 	const [routeSiblingActivities, setRouteSiblingActivities] = useState<SavedActivity[]>([]);
 
@@ -1105,7 +1108,7 @@ export default function ActivityDetailScreen() {
 		const sportDef = SPORT_TYPES.find((s) => s.type === activity.sportType);
 		const maxSpeed = sportDef?.maxSpeedKmh ?? 90;
 		const sportLabel = sportDef?.label ?? 'Default';
-		Alert.alert(
+		showAlert(
 			'Filter unrealistic Points',
 			`Remove GPS points that imply a speed above ${maxSpeed} km/h (${sportLabel} limit)?\n\nThis will permanently update the saved activity.`,
 			[
@@ -1119,7 +1122,7 @@ export default function ActivityDetailScreen() {
 						const updated: SavedActivity = { ...activity, routePoints: filtered, stats: newStats };
 						saveActivity(updated);
 						setActivity(updated);
-						Alert.alert(
+						showAlert(
 							'Done',
 							removedCount > 0
 								? `Removed ${removedCount} unrealistic point${removedCount !== 1 ? 's' : ''}.`
@@ -1133,7 +1136,7 @@ export default function ActivityDetailScreen() {
 
 	const handleRecalculateComputedValues = useCallback(() => {
 		if (!activity) return;
-		Alert.alert(
+		showAlert(
 			'Berechnete Werte neu berechnen',
 			'Die berechneten Werte dieser Aktivität werden neu berechnet. Fortfahren?',
 			[
@@ -1142,7 +1145,7 @@ export default function ActivityDetailScreen() {
 					text: 'Neu berechnen',
 					onPress: () => {
 						if (!isH3Available()) {
-							Alert.alert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
+							showAlert('Nicht verfügbar', 'H3 Bibliothek ist auf diesem Gerät nicht verfügbar.');
 							return;
 						}
 						// Always recompute enclosed tiles from the route so that stale
@@ -1166,7 +1169,7 @@ export default function ActivityDetailScreen() {
 						const updated: SavedActivity = { ...activity, computed: newComputed };
 						saveActivity(updated);
 						setActivity(updated);
-						Alert.alert('Fertig', 'Berechnete Werte wurden neu berechnet.');
+						showAlert('Fertig', 'Berechnete Werte wurden neu berechnet.');
 					},
 				},
 			],
