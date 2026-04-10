@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 10;
+export const WORLD_BUILDING_ID = 11;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -120,7 +120,7 @@ const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
  * All 12 MIDDLE ring anchor positions in clockwise degree order (0°, 30°, …, 330°).
  * Used to deterministically pick a tree placement position from the hex ID.
  */
-const MIDDLE_RING_BY_DEGREE: BillboardAnchorPosition[] = [
+export const MIDDLE_RING_BY_DEGREE: BillboardAnchorPosition[] = [
 	BillboardAnchorPosition.MIDDLE_0_DEGREE,
 	BillboardAnchorPosition.MIDDLE_30_DEGREE,
 	BillboardAnchorPosition.MIDDLE_60_DEGREE,

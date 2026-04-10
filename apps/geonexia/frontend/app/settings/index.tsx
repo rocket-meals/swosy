@@ -26,6 +26,8 @@ import {
 	applyRouteBenches,
 	hasForestFeature,
 	BILLBOARD_PINE_TREE_LARGE,
+	BILLBOARD_PINE_TREE_SMALL,
+	MIDDLE_RING_BY_DEGREE,
 } from '../../helpers/ActivityMapRebuildHelper';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, HexTileFeatureCache } from '../../helpers/HexTileFeatureStorage';
 import { loadPersistedState, setDebugMode, setDevMode, loadWalkedEdgesState, setBillboardAtAnchor } from '../../store/hexTileSlice';
@@ -545,12 +547,16 @@ export default function SettingsScreen() {
 
 						void (async () => {
 							try {
-								const enclosedWithoutCache = Object.entries(records)
-									.filter(([hexId, rec]) => rec.enclosedCount > 0 && !rec.walkedOn && !hexTileFeatureCache[hexId])
+								const tilesWithoutCache = Object.entries(records)
+									.filter(([hexId, rec]) =>
+										(rec.enclosedCount > 0 || rec.adjacentWalkedCount > 0) &&
+										!rec.walkedOn &&
+										!hexTileFeatureCache[hexId],
+									)
 									.map(([hexId]) => hexId);
-								if (enclosedWithoutCache.length === 0) return;
+								if (tilesWithoutCache.length === 0) return;
 								const newEntries: HexTileFeatureCache = {};
-								for (const hexId of enclosedWithoutCache) {
+								for (const hexId of tilesWithoutCache) {
 									try {
 										const features = await queryTileFeaturesForHexCell(hexId);
 										newEntries[hexId] = features;
@@ -559,6 +565,18 @@ export default function SettingsScreen() {
 												h3Index: hexId,
 												anchorColor: BillboardAnchorPosition.CENTER,
 												billboard: BILLBOARD_PINE_TREE_LARGE,
+											}));
+											// Also place the small tree at a MIDDLE ring position,
+											// matching the full checkAndApplyForest behaviour.
+											let hash = 0;
+											for (let i = 0; i < hexId.length; i++) {
+												hash = (hash * 31 + hexId.charCodeAt(i)) >>> 0;
+											}
+											const positionIndex = hash % MIDDLE_RING_BY_DEGREE.length;
+											dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: MIDDLE_RING_BY_DEGREE[positionIndex],
+												billboard: BILLBOARD_PINE_TREE_SMALL,
 											}));
 										}
 									} catch {
