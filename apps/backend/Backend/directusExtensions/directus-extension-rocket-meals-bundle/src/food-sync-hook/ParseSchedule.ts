@@ -928,6 +928,7 @@ export class ParseSchedule {
           date: null,
           food: null,
           foodoffer_components: [],
+          is_component: true,
           status: 'published',
           markings: {
             create: componentMarkingsCreate,
