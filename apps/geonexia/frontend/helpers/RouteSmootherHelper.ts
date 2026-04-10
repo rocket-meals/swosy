@@ -9,7 +9,7 @@
 export const SNAP_SMOOTH_WINDOW = 9;
 
 /** Squared Euclidean distance in degrees (good enough for small distances). */
-export function deg2(a: [number, number], b: [number, number]): number {
+export function squaredDistDeg(a: [number, number], b: [number, number]): number {
 	const dx = b[0] - a[0];
 	const dy = b[1] - a[1];
 	return dx * dx + dy * dy;
@@ -76,7 +76,7 @@ export function snapToRoad(
 		let bestPt: [number, number] = pt;
 		for (let j = 0; j < smoothed.length - 1; j++) {
 			const proj = projectOntoSegment(pt, smoothed[j], smoothed[j + 1]);
-			const d = deg2(pt, proj);
+			const d = squaredDistDeg(pt, proj);
 			if (d < bestDistSq) {
 				bestDistSq = d;
 				bestPt = proj;
