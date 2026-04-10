@@ -30,6 +30,7 @@ import { updateReplaySettings } from '../../store/replaySettingsSlice';
 import { useDebugMode } from '../../hooks/useDebugMode';
 import { computeActivityData, findEnclosedCellsFromHexTiles, buildFullRouteTileIds, H3_RESOLUTION_FALLBACK, MIN_TILES_FOR_ENCLOSED_POLYGON } from '../../helpers/ActivityMapRebuildHelper';
 import useGeonexiaAlert from '../../hooks/useGeonexiaAlert';
+import { snapToRoad } from '../../helpers/RouteSmootherHelper';
 
 const AUTO_ROTATE_SPEED_DEG_PER_S = 5; // slow rotation for activity view
 
@@ -720,6 +721,7 @@ export default function ActivityDetailScreen() {
 	const walkedEdges = useSelector((state: RootState) => state.hexTiles.walkedEdges);
 	const replayIsDisabled = useSelector((state: RootState) => state.replaySettings.isDisabled);
 	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
+	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
@@ -883,19 +885,33 @@ export default function ActivityDetailScreen() {
 	// Once both activity and map are ready, send the route with speed segments
 	useEffect(() => {
 		if (!mapMounted || !activity || !mapRef.current) return;
+
+		// Apply centre-line projection when route smoothing is enabled.
+		// We compute smoothed [lng, lat] coordinates and use those for display
+		// while keeping the original speed values from the raw route points.
+		const rawCoords: [number, number][] = activity.routePoints.map((p) => [p.lng, p.lat]);
+		const displayCoords: [number, number][] = routeSmoothingEnabled
+			? snapToRoad(rawCoords, activity.routePoints.map((p) => !!p.interpolated))
+			: rawCoords;
+
 		const result = buildRouteSegments(activity.routePoints, activity.stats);
 		if (result && result.segments.length > 0) {
-			mapRef.current.sendToMap({ routeSegments: result.segments, routeSpeedRange: result.speedRange });
+			// Rebuild segments using the (possibly smoothed) display coordinates
+			// while preserving the speed value from each original segment.
+			const smoothedSegments = result.segments.map((seg, i) => ({
+				...seg,
+				coords: [displayCoords[i], displayCoords[i + 1]] as [[number, number], [number, number]],
+			}));
+			mapRef.current.sendToMap({ routeSegments: smoothedSegments, routeSpeedRange: result.speedRange });
 		} else {
 			// Fallback: plain route without speed coloring
-			const coords = activity.routePoints.map((p) => [p.lng, p.lat]);
-			mapRef.current.sendToMap({ routeCoordinates: coords });
+			mapRef.current.sendToMap({ routeCoordinates: displayCoords });
 		}
 
 		// Send start point circle (green, on top of the route lines)
 		const pts = activity.routePoints;
 		if (pts.length >= 1) {
-			mapRef.current.sendToMap({ routeStartPoint: [pts[0].lng, pts[0].lat] });
+			mapRef.current.sendToMap({ routeStartPoint: displayCoords[0] });
 		}
 
 		// Debug mode: render raw GPS measurement points as small black circles on
@@ -972,7 +988,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, isDebugMode]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, isDebugMode, routeSmoothingEnabled]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {
