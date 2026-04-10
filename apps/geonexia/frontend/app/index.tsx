@@ -1859,6 +1859,21 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 	const currentTextureAnchorBillboard = effectiveBillboardsTexture[selectedTextureAdaptionAnchor] ?? null;
 	const parsedCurrentTextureBillboard = currentTextureAnchorBillboard ? parseBillboardKey(currentTextureAnchorBillboard) : null;
 
+	const parentInfo = useMemo(() => {
+		if (!isH3Available() || !isValidCell(h3Index)) return null;
+		const res = getResolution(h3Index);
+		if (res <= 0) return null;
+		const parentIndex = cellToParent(h3Index, res - 1);
+		if (!parentIndex) return null;
+		const siblings = cellToChildren(parentIndex, res).sort();
+		const childNumber = siblings.indexOf(h3Index);
+		return {
+			parentIndex,
+			childNumber: childNumber >= 0 ? childNumber + 1 : null,
+			totalChildren: siblings.length,
+		};
+	}, [h3Index]);
+
 	const infoRows: { label: string; value: string }[] = [
 		{ label: 'H3 Index', value: h3Index },
 		{ label: 'Level', value: record ? String(record.level) : '0' },
@@ -1867,6 +1882,10 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
+		...(parentInfo ? [
+			{ label: 'Parent H3', value: parentInfo.parentIndex },
+			{ label: 'Nr. im Parent', value: parentInfo.childNumber !== null ? `${parentInfo.childNumber} / ${parentInfo.totalChildren}` : '—' },
+		] : []),
 	];
 
 	const openTileSelection = useCallback(() => {
