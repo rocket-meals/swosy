@@ -96,29 +96,29 @@
   apps/geonexia/frontend/app/hex-texture-config/index.tsx:519
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/hex-texture-config/index.tsx#L519
 
-- **Prefer `Number.parseFloat` over `parseFloat`.**
-  apps/geonexia/frontend/app/index.tsx:1169
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1169
-
 - **Prefer `Number.parseInt` over `parseInt`.**
-  apps/geonexia/frontend/app/index.tsx:110
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L110
+  apps/geonexia/frontend/app/index.tsx:111
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L111
+
+- **Prefer `Number.parseFloat` over `parseFloat`.**
+  apps/geonexia/frontend/app/index.tsx:1170
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L1170
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:765
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L765
+  apps/geonexia/frontend/app/index.tsx:766
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L766
 
 - **Prefer `Number.parseInt` over `parseInt`.**
   apps/geonexia/frontend/app/index.tsx:60
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L60
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2814
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2814
+  apps/geonexia/frontend/app/index.tsx:2816
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2816
 
 - **Prefer `Number.isFinite` over `isFinite`.**
-  apps/geonexia/frontend/app/index.tsx:915
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L915
+  apps/geonexia/frontend/app/index.tsx:916
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L916
 
 - **Prefer `String#replaceAll()` over `String#replace()`.**
   apps/geonexia/frontend/components/SettingsListBillboard/index.tsx:72
@@ -145,8 +145,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:362
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L362
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:363
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L363
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/helpers/ActivityStatsHelper.ts:24
