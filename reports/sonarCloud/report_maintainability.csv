@@ -1,18 +1,18 @@
 Key,Message,Component,Line
+"AZ120C5Xu61jthfYMY0B","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",220
 "AZ12vOj-UMVYmqxuhWiX","Refactor this function to reduce its Cognitive Complexity from 38 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",708
 "AZ12vOj-UMVYmqxuhWiY","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",719
 "AZ12vOj-UMVYmqxuhWiZ","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",748
 "AZ12vOj-UMVYmqxuhWia","Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts",774
-"AZ12eg0jus-xC6EIJUtY","Refactor this function to reduce its Cognitive Complexity from 22 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",51
-"AZ12eg0jus-xC6EIJUtZ","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",69
-"AZ12eg0jus-xC6EIJUta","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",73
-"AZ12eg0jus-xC6EIJUtb","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",81
-"AZ12eg0jus-xC6EIJUtc","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",85
-"AZ12eg0jus-xC6EIJUtd","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",86
-"AZ12eg0jus-xC6EIJUte","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",107
-"AZ12eg0jus-xC6EIJUtf","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",116
-"AZ12eg0jus-xC6EIJUtg","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",117
-"AZ12eg0jus-xC6EIJUth","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",173
+"AZ12eg0jus-xC6EIJUtY","Refactor this function to reduce its Cognitive Complexity from 23 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",57
+"AZ12eg0jus-xC6EIJUtZ","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",77
+"AZ12eg0jus-xC6EIJUta","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",81
+"AZ12eg0jus-xC6EIJUtb","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",90
+"AZ12eg0jus-xC6EIJUtc","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",94
+"AZ12eg0jus-xC6EIJUtd","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",95
+"AZ12eg0jus-xC6EIJUte","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",118
+"AZ12eg0jus-xC6EIJUtf","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",128
+"AZ12eg0jus-xC6EIJUtg","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",129
 "AZ12eg3sus-xC6EIJUti","Prefer `Number.parseInt` over `parseInt`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",111
 "AZ12ZwpBu61jthfYG4oN","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/helpers/RouteSmootherHelper.ts",73
 "AZ12NX8jY0q7Lw4Vi3Dn","Remove this unused import of 'cellToChildren'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",30
