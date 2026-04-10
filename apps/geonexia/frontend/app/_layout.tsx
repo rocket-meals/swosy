@@ -33,7 +33,7 @@ import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
 import { loadReplaySettings } from '../helpers/ReplaySettingsStorage';
 import { loadPlayerInformation } from '../helpers/PlayerInformationStorage';
-import { WORLD_BUILDING_ID, rebuildMapFromActivities, applyRouteBenches, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, MIDDLE_RING_BY_DEGREE } from '../helpers/ActivityMapRebuildHelper';
+import { WORLD_BUILDING_ID, rebuildMapFromActivities, applyRouteBenches, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId } from '../helpers/ActivityMapRebuildHelper';
 import { loadActivities } from '../helpers/ActivityStorage';
 import { loadRoutes } from '../helpers/RouteStorage';
 import { loadHexTileFeatureCache, mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
@@ -433,14 +433,11 @@ export default function Layout() {
 												anchorColor: BillboardAnchorPosition.CENTER,
 												billboard: BILLBOARD_PINE_TREE_LARGE,
 											}));
-											let hash = 0;
-											for (let i = 0; i < hexId.length; i++) {
-												hash = (hash * 31 + hexId.charCodeAt(i)) >>> 0;
-											}
-											const positionIndex = hash % MIDDLE_RING_BY_DEGREE.length;
+											// Also place the small tree at a MIDDLE ring position,
+											// matching the full checkAndApplyForest behaviour.
 											store.dispatch(setBillboardAtAnchor({
 												h3Index: hexId,
-												anchorColor: MIDDLE_RING_BY_DEGREE[positionIndex],
+												anchorColor: getSmallTreeAnchorForHexId(hexId),
 												billboard: BILLBOARD_PINE_TREE_SMALL,
 											}));
 										}
