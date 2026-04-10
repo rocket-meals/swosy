@@ -8,7 +8,6 @@ import {
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
-	Switch,
 	Text,
 	TextInput,
 	TouchableOpacity,
@@ -23,12 +22,12 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, MapStyleKey } from 'repo-depkit-common-ui';
+import { MapLocationButton, MyMap, MyMapHandle, QrCode, useTheme, useMyScrollViewModal, SettingsListSelectOptionSingle, SettingsListGroupTitle, SettingsList, SettingsListTextInput, SettingsListBoolean, SettingsListNumberInput, MapStyleKey } from 'repo-depkit-common-ui';
 
 import { HEX_TILE_SCRIPT } from '../assets/hexTileScript';
 import { TERRAIN_ASSETS, TERRAIN_CATEGORIES } from '../assets/terrainAssets';
 import { MapLoadingOverlay } from '../components/MapLoadingOverlay';
-import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gridDistance, areNeighborCells, cellToBoundary, gridPathCells, cellToChildren, cellToCenterChild, cellToParent, gridRingUnsafe, getResolution, isValidCell, computeRouteLengthKm, formatDistanceKm, isPentagon, getPentagons } from '../helpers/H3Helper';
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
@@ -974,10 +973,8 @@ type DebugInfoContentProps = {
 	onShowDebugPointsChange: (val: boolean) => void;
 	onExportMapSettings: () => void;
 	onImportMapSettings: (json: string) => void;
+	onFlyToCell: (lat: number, lng: number) => void;
 };
-
-// Precision factor for rounding fractional H3 resolution values (1 decimal place).
-const H3_RESOLUTION_DECIMAL_PRECISION = 10;
 
 function DebugInfoContent({
 	info,
@@ -1001,6 +998,7 @@ function DebugInfoContent({
 	onShowDebugPointsChange,
 	onExportMapSettings,
 	onImportMapSettings,
+	onFlyToCell,
 }: DebugInfoContentProps) {
 	const h3Available = isH3Available();
 	const [showGridAlways, setShowGridAlways] = useState(initialShowGridAlways);
@@ -1019,39 +1017,6 @@ function DebugInfoContent({
 		onShowGridAlwaysChange(val);
 	}, [onShowGridAlwaysChange]);
 
-	const adjustResolution = useCallback((delta: number) => {
-		setH3Resolution((prev) => {
-			const next = Math.round((prev + delta) * H3_RESOLUTION_DECIMAL_PRECISION) / H3_RESOLUTION_DECIMAL_PRECISION;
-			const clamped = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, next));
-			onH3ResolutionChange(clamped);
-			return clamped;
-		});
-	}, [onH3ResolutionChange]);
-
-	const adjustMinZoom = useCallback((delta: number) => {
-		setMinZoom((prev) => {
-			const next = Math.max(0, Math.min(22, prev + delta));
-			onMinZoomChange(next);
-			return next;
-		});
-	}, [onMinZoomChange]);
-
-	const handleSpeedTextChange = useCallback((text: string) => {
-		setSpeedText(text);
-		const parsed = parseFloat(text);
-		if (!isNaN(parsed) && parsed > 0) {
-			onSpeedChange(Math.min(parsed, DEBUG_MOVE_SPEED_MAX_KMH));
-		}
-	}, [onSpeedChange]);
-
-	const adjustBillboardScale = useCallback((delta: number) => {
-		setBillboardScale((prev) => {
-			const next = Math.max(0.1, Math.round((prev + delta) * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
-			onBillboardScaleChange(next);
-			return next;
-		});
-	}, [onBillboardScaleChange]);
-
 	const handleBillboardFaceCameraChange = useCallback((val: boolean) => {
 		setBillboardFaceCamera(val);
 		onBillboardFaceCameraChange(val);
@@ -1066,6 +1031,12 @@ function DebugInfoContent({
 		setShowDebugPoints(val);
 		onShowDebugPointsChange(val);
 	}, [onShowDebugPointsChange]);
+
+	const pentagons = useMemo(() => {
+		const res = Math.round(h3Resolution);
+		if (!isH3Available() || res < H3_RESOLUTION_MIN || res > H3_RESOLUTION_MAX) return [];
+		return getPentagons(res);
+	}, [h3Resolution]);
 
 	const tilesExpected = info != null && (showGridAlways || info.zoom >= minZoom);
 
@@ -1113,74 +1084,63 @@ function DebugInfoContent({
 				</Text>
 			</View>
 
-			{/* Show Grid Always toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Grid Always</Text>
-				<Switch
-					value={showGridAlways}
-					onValueChange={handleShowGridAlwaysChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
+			{/* Show Grid Always */}
+			<SettingsListBoolean
+				label="Show Grid Always"
+				isEnabled={showGridAlways}
+				onToggle={() => handleShowGridAlwaysChange(!showGridAlways)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
+
+			{/* H3 Grid Resolution */}
+			<SettingsListNumberInput
+				label="H3 Grid Resolution"
+				value={Number.isInteger(h3Resolution) ? String(h3Resolution) : h3Resolution.toFixed(1)}
+				initialValue={h3Resolution}
+				min={H3_RESOLUTION_MIN}
+				max={H3_RESOLUTION_MAX}
+				step={1}
+				allowDecimal
+				groupPosition="single"
+				modalTitle="H3 Grid Resolution"
+				saveLabel="Apply"
+				primaryColor={PRIMARY_COLOR}
+				onSave={(val) => {
+					const clamped = Math.max(H3_RESOLUTION_MIN, Math.min(H3_RESOLUTION_MAX, val));
+					setH3Resolution(clamped);
+					onH3ResolutionChange(clamped);
+				}}
+			/>
+
+			{/* Min Zoom for Tiles */}
+			{!showGridAlways && (
+				<SettingsListNumberInput
+					label="Min Zoom for Tiles"
+					value={String(minZoom)}
+					initialValue={minZoom}
+					min={0}
+					max={22}
+					step={1}
+					groupPosition="single"
+					modalTitle="Min Zoom for Tiles"
+					saveLabel="Apply"
+					primaryColor={PRIMARY_COLOR}
+					onSave={(val) => {
+						const clamped = Math.max(0, Math.min(22, val));
+						setMinZoom(clamped);
+						onMinZoomChange(clamped);
+					}}
 				/>
-			</View>
-
-			{/* H3 Grid Resolution picker */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>H3 Grid Resolution</Text>
-				<View style={styles.resolutionPickerMultiRow}>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(-1)}
-							disabled={h3Resolution <= H3_RESOLUTION_MIN}
-						>
-							<Text style={styles.resolutionButtonText}>−</Text>
-						</TouchableOpacity>
-						<Text style={[styles.resolutionValue, { color: theme.screen.text }]}>
-							{Number.isInteger(h3Resolution) ? h3Resolution : h3Resolution.toFixed(1)}
-						</Text>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(1)}
-							disabled={h3Resolution >= H3_RESOLUTION_MAX}
-						>
-							<Text style={styles.resolutionButtonText}>+</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(-0.5)}
-							disabled={h3Resolution <= H3_RESOLUTION_MIN}
-						>
-							<Text style={styles.resolutionFineButtonText}>−0.5</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution <= H3_RESOLUTION_MIN ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(-0.1)}
-							disabled={h3Resolution <= H3_RESOLUTION_MIN}
-						>
-							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(0.1)}
-							disabled={h3Resolution >= H3_RESOLUTION_MAX}
-						>
-							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: h3Resolution >= H3_RESOLUTION_MAX ? 0.4 : 1 }]}
-							onPress={() => adjustResolution(0.5)}
-							disabled={h3Resolution >= H3_RESOLUTION_MAX}
-						>
-							<Text style={styles.resolutionFineButtonText}>+0.5</Text>
-						</TouchableOpacity>
-					</View>
+			)}
+			{showGridAlways && (
+				<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
+					<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
+					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
 				</View>
-			</View>
+			)}
 
-			{/* Zoom Level row with ±0.1 buttons */}
+			{/* Zoom Level */}
 			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
 				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Zoom Level</Text>
 				<View style={styles.resolutionPicker}>
@@ -1202,119 +1162,71 @@ function DebugInfoContent({
 				</View>
 			</View>
 
-			{/* Joystick Speed row */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Joystick Speed (km/h)</Text>
-				<TextInput
-					style={[styles.debugSpeedInput, { color: theme.screen.text, borderColor: theme.screen.text + '44' }]}
-					value={speedText}
-					onChangeText={handleSpeedTextChange}
-					keyboardType="decimal-pad"
-					returnKeyType="done"
-					selectTextOnFocus
-				/>
-			</View>
+			{/* Joystick Speed */}
+			<SettingsListNumberInput
+				label="Joystick Speed (km/h)"
+				value={speedText}
+				initialValue={parseFloat(speedText) || initialSpeed}
+				min={0.1}
+				max={DEBUG_MOVE_SPEED_MAX_KMH}
+				allowDecimal
+				groupPosition="single"
+				modalTitle="Joystick Speed (km/h)"
+				saveLabel="Apply"
+				primaryColor={PRIMARY_COLOR}
+				onSave={(val) => {
+					const clamped = Math.min(val, DEBUG_MOVE_SPEED_MAX_KMH);
+					setSpeedText(String(clamped));
+					onSpeedChange(clamped);
+				}}
+			/>
 
-			{/* Billboard Scale row */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Scale</Text>
-				<View style={styles.resolutionPickerMultiRow}>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
-							onPress={() => adjustBillboardScale(-0.5)}
-							disabled={billboardScale <= 0.1}
-						>
-							<Text style={styles.resolutionButtonText}>−</Text>
-						</TouchableOpacity>
-						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
-							{billboardScale.toFixed(1)}×
-						</Text>
-						<TouchableOpacity
-							style={styles.resolutionButton}
-							onPress={() => adjustBillboardScale(0.5)}
-						>
-							<Text style={styles.resolutionButtonText}>+</Text>
-						</TouchableOpacity>
-					</View>
-					<View style={styles.resolutionPickerRow}>
-						<TouchableOpacity
-							style={[styles.resolutionFineButton, { opacity: billboardScale <= 0.1 ? 0.4 : 1 }]}
-							onPress={() => adjustBillboardScale(-0.1)}
-							disabled={billboardScale <= 0.1}
-						>
-							<Text style={styles.resolutionFineButtonText}>−0.1</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={styles.resolutionFineButton}
-							onPress={() => adjustBillboardScale(0.1)}
-						>
-							<Text style={styles.resolutionFineButtonText}>+0.1</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</View>
+			{/* Billboard Scale */}
+			<SettingsListNumberInput
+				label="Billboard Scale"
+				value={`${billboardScale.toFixed(1)}×`}
+				initialValue={billboardScale}
+				min={0.1}
+				step={0.1}
+				allowDecimal
+				groupPosition="single"
+				modalTitle="Billboard Scale"
+				saveLabel="Apply"
+				suffix="×"
+				primaryColor={PRIMARY_COLOR}
+				onSave={(val) => {
+					const next = Math.max(0.1, Math.round(val * BILLBOARD_SCALE_DECIMAL_PRECISION) / BILLBOARD_SCALE_DECIMAL_PRECISION);
+					setBillboardScale(next);
+					onBillboardScaleChange(next);
+				}}
+			/>
 
-			{/* Billboard Face Camera toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Billboard Face Camera</Text>
-				<Switch
-					value={billboardFaceCamera}
-					onValueChange={handleBillboardFaceCameraChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
+			{/* Billboard Face Camera */}
+			<SettingsListBoolean
+				label="Billboard Face Camera"
+				isEnabled={billboardFaceCamera}
+				onToggle={() => handleBillboardFaceCameraChange(!billboardFaceCamera)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
 
-			{/* Show Billboard Anchor Points toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Anchor Points</Text>
-				<Switch
-					value={showBillboardAnchors}
-					onValueChange={handleShowBillboardAnchorsChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
+			{/* Show Billboard Anchor Points */}
+			<SettingsListBoolean
+				label="Show Anchor Points"
+				isEnabled={showBillboardAnchors}
+				onToggle={() => handleShowBillboardAnchorsChange(!showBillboardAnchors)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
 
-			{/* Show Debug Points toggle */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Show Debug Points</Text>
-				<Switch
-					value={showDebugPoints}
-					onValueChange={handleShowDebugPointsChange}
-					trackColor={{ true: PRIMARY_COLOR }}
-					thumbColor="#ffffff"
-				/>
-			</View>
-
-			{/* Min Zoom for Tiles row with ±1 buttons */}
-			<View style={[styles.debugRow, { borderBottomColor: theme.screen.text + '22' }]}>
-				<Text selectable style={[styles.debugRowLabel, { color: theme.screen.text }]}>Min Zoom for Tiles</Text>
-				{showGridAlways ? (
-					<Text selectable style={[styles.debugRowValue, { color: theme.screen.text }]}>disabled (always on)</Text>
-				) : (
-					<View style={styles.resolutionPicker}>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: minZoom <= 0 ? 0.4 : 1 }]}
-							onPress={() => adjustMinZoom(-1)}
-							disabled={minZoom <= 0}
-						>
-							<Text style={styles.resolutionButtonText}>−</Text>
-						</TouchableOpacity>
-						<Text selectable style={[styles.resolutionValue, { color: theme.screen.text }]}>
-							{minZoom}
-						</Text>
-						<TouchableOpacity
-							style={[styles.resolutionButton, { opacity: minZoom >= 22 ? 0.4 : 1 }]}
-							onPress={() => adjustMinZoom(1)}
-							disabled={minZoom >= 22}
-						>
-							<Text style={styles.resolutionButtonText}>+</Text>
-						</TouchableOpacity>
-					</View>
-				)}
-			</View>
+			{/* Show Debug Points */}
+			<SettingsListBoolean
+				label="Show Debug Points"
+				isEnabled={showDebugPoints}
+				onToggle={() => handleShowDebugPointsChange(!showDebugPoints)}
+				groupPosition="single"
+				primaryColor={PRIMARY_COLOR}
+			/>
 
 			{/* Viewport rows */}
 			{viewportRows.map((row) => (
@@ -1381,6 +1293,30 @@ function DebugInfoContent({
 					</View>
 				)}
 			</View>
+
+			{/* Pentagon tiles fly-to */}
+			{pentagons.length > 0 && (
+				<>
+					<SettingsListGroupTitle title={`⬠ Pentagon Tiles (Res ${Math.round(h3Resolution)})`} />
+					{pentagons.map((cell, i) => {
+						const [lat, lng] = cellToLatLng(cell);
+						const position: 'top' | 'middle' | 'bottom' | 'single' =
+							pentagons.length === 1 ? 'single' : i === 0 ? 'top' : i === pentagons.length - 1 ? 'bottom' : 'middle';
+						return (
+							<SettingsListSelectOptionSingle
+								key={cell}
+								label={`Fly to ${cell}`}
+								leftIcon={<MaterialIcons name="navigation" size={20} color="#ffffff" />}
+								iconBgColor={PRIMARY_COLOR}
+								isSelected={false}
+								selectionColor={PRIMARY_COLOR}
+								groupPosition={position}
+								onPress={() => onFlyToCell(lat, lng)}
+							/>
+						);
+					})}
+				</>
+			)}
 		</View>
 	);
 }
@@ -4114,10 +4050,11 @@ export default function RecordScreen() {
 					onShowDebugPointsChange={handleShowDebugPointsChange}
 					onExportMapSettings={handleExportMapSettings}
 					onImportMapSettings={handleImportMapSettings}
+					onFlyToCell={(lat, lng) => centerMapOnPosition({ lat, lng })}
 				/>
 			),
 		});
-	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleH3MinZoomChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings]);
+	}, [showModal, closeModal, theme, handleShowGridAlwaysChange, handleH3ResolutionChange, handleH3MinZoomChange, handleZoomAdjust, handleSpeedChange, handleBillboardScaleChange, handleBillboardFaceCameraChange, handleShowBillboardAnchorsChange, handleShowDebugPointsChange, handleExportMapSettings, handleImportMapSettings, centerMapOnPosition]);
 
 	const showActivityTypeModal = useCallback(() => {
 		showModal({
