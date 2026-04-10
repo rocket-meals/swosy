@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 11;
+export const WORLD_BUILDING_ID = 12;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -739,8 +739,11 @@ export function rebuildMapFromActivities(
 		}
 	}
 
-	// ── Second pass: compute counts, levels, and tile images ─────────────────
-	for (const [hexId, rec] of Object.entries(records)) {
+	// ── Second pass (2a): compute counts and levels for ALL tiles first ───────
+	// This must be a separate loop so that every tile's adjacentWalkedCount,
+	// enclosedCount and visitCount are fully populated before the terrain/tree
+	// assignment pass (2b) reads those values on neighbour tiles.
+	for (const rec of Object.values(records)) {
 		const refs: ActivityReference[] = rec.activityReferences ?? [];
 
 		// Count distinct activities that visited / enclosed / adjacently-walked this tile.
@@ -759,7 +762,12 @@ export function rebuildMapFromActivities(
 		rec.adjacentWalkedCount = adjacentWalkedActivities.size;
 		rec.walkedOn = rec.visitCount > 0;
 		rec.level = computeHexTileLevel(rec);
+	}
 
+	// ── Second pass (2b): apply tile-image and billboard assignments ──────────
+	// All counts are now fully computed, so it is safe to query neighbour
+	// tiles' adjacentWalkedCount when deciding whether to place trees.
+	for (const [hexId, rec] of Object.entries(records)) {
 		// Apply automatic tile-image and billboard assignments.
 		if (rec.visitCount > 0) {
 			// Visited tile → dirt terrain
@@ -782,6 +790,8 @@ export function rebuildMapFromActivities(
 		} else if (rec.enclosedCount > 0 || rec.adjacentWalkedCount > 0) {
 			// Enclosed or adjacent-walked but not visited → grass terrain; forest
 			// trees only when the feature cache confirms a forest / wooded area.
+			// Adjacent-walked tiles are treated identically to enclosed tiles:
+			// adjacentWalkedCount > 0 is sufficient to trigger tree placement.
 			rec.tileImage = TILE_IMAGE_GRASS;
 			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
 			// Override tileImage to stone when the feature cache confirms rocky
