@@ -473,22 +473,29 @@ export default function Layout() {
 					const hexTileFeatureCache = await loadHexTileFeatureCache();
 					const newEntries: HexTileFeatureCache = {};
 					for (const [hexId, rec] of Object.entries(records)) {
-						if (rec.walkedOn || (rec.enclosedCount === 0 && rec.adjacentWalkedCount === 0)) continue;
+						const needsTrees = !rec.walkedOn && (rec.enclosedCount > 0 || rec.adjacentWalkedCount > 0);
+						if (!needsTrees) continue;
+						const smallTreeAnchor = getSmallTreeAnchorForHexId(hexId);
 						const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
-						if (hasCenterTree) continue;
+						const hasSmallTree = rec.billboards?.[smallTreeAnchor] === BILLBOARD_PINE_TREE_SMALL;
+						if (hasCenterTree && hasSmallTree) continue;
 						const cached = hexTileFeatureCache[hexId];
 						if (cached) {
 							if (hasForestFeature(cached)) {
-								store.dispatch(setBillboardAtAnchor({
-									h3Index: hexId,
-									anchorColor: BillboardAnchorPosition.CENTER,
-									billboard: BILLBOARD_PINE_TREE_LARGE,
-								}));
-								store.dispatch(setBillboardAtAnchor({
-									h3Index: hexId,
-									anchorColor: getSmallTreeAnchorForHexId(hexId),
-									billboard: BILLBOARD_PINE_TREE_SMALL,
-								}));
+								if (!hasCenterTree) {
+									store.dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: BillboardAnchorPosition.CENTER,
+										billboard: BILLBOARD_PINE_TREE_LARGE,
+									}));
+								}
+								if (!hasSmallTree) {
+									store.dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: smallTreeAnchor,
+										billboard: BILLBOARD_PINE_TREE_SMALL,
+									}));
+								}
 							}
 						} else {
 							try {
@@ -502,7 +509,7 @@ export default function Layout() {
 									}));
 									store.dispatch(setBillboardAtAnchor({
 										h3Index: hexId,
-										anchorColor: getSmallTreeAnchorForHexId(hexId),
+										anchorColor: smallTreeAnchor,
 										billboard: BILLBOARD_PINE_TREE_SMALL,
 									}));
 								}
