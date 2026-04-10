@@ -623,7 +623,7 @@ Woche {posIn8} / 8 · {blockLabel}
 
 {/* Toggle button for past weeks */}
 <SettingsList
-title={showPastWeeks ? 'Vorherige Wochen ausblenden' : 'Vorherige Kalender Wochen anzeigen'}
+title={showPastWeeks ? 'Vorherige Wochen ausblenden' : 'Vorherige Kalenderwochen anzeigen'}
 leftIcon={
 <Ionicons
 name={showPastWeeks ? 'chevron-up' : 'chevron-down'}
