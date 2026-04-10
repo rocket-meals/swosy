@@ -733,11 +733,14 @@ export function applyRouteBenches(
 		const hexActivityCount: Record<string, number> = {};
 
 		for (const activity of routeActivities) {
-			const hexTilesVisited: ComputedHexTileEntry[] =
-				activity.computed?.hexTilesVisited ??
-				(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
+			// Skip activities without speed data – a zero-speed fallback would
+			// artificially rank tiles from legacy activities as the slowest.
+			if (!activity.computed?.hexTilesVisited) continue;
+			const hexTilesVisited = activity.computed.hexTilesVisited;
 
-			if (hexTilesVisited.length === 0) continue;
+			// Need at least 3 tiles so there is at least one tile remaining after
+			// excluding the first and last.
+			if (hexTilesVisited.length < 3) continue;
 
 			// Exclude first and last tiles of this activity's visited sequence.
 			const activityExcluded = new Set<string>([
