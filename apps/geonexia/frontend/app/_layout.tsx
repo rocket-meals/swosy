@@ -33,8 +33,9 @@ import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
 import { loadReplaySettings } from '../helpers/ReplaySettingsStorage';
 import { loadPlayerInformation } from '../helpers/PlayerInformationStorage';
-import { WORLD_BUILDING_ID, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
+import { WORLD_BUILDING_ID, rebuildMapFromActivities, applyRouteBenches } from '../helpers/ActivityMapRebuildHelper';
 import { loadActivities } from '../helpers/ActivityStorage';
+import { loadRoutes } from '../helpers/RouteStorage';
 import { loadHexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { RootState } from '../store/store';
@@ -396,6 +397,8 @@ export default function Layout() {
 						const sorted = [...allActivities].sort((a, b) => a.startedAt - b.startedAt);
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
 						const { records: rebuiltRecords, walkedEdges: rebuiltEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, playerInfo.homeHexTile);
+						const routes = await loadRoutes();
+						applyRouteBenches(rebuiltRecords, sorted, routes);
 						if (isDevMode) {
 							saveDevHexTileState(rebuiltRecords);
 							saveDevWalkedEdges(rebuiltEdges);
