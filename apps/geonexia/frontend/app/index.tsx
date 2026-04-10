@@ -31,7 +31,7 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gri
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, findAdjacentWalkedCells } from '../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId, findAdjacentWalkedCells } from '../helpers/ActivityMapRebuildHelper';
 import { mergeHexTileFeatureCache, loadHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
@@ -4932,6 +4932,11 @@ export default function RecordScreen() {
 										anchorColor: BillboardAnchorPosition.CENTER,
 										billboard: BILLBOARD_PINE_TREE_LARGE,
 									}));
+									dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: getSmallTreeAnchorForHexId(hexId),
+										billboard: BILLBOARD_PINE_TREE_SMALL,
+									}));
 								}
 							} catch {
 								// ignore per-cell errors
@@ -4968,6 +4973,11 @@ export default function RecordScreen() {
 										h3Index: hexId,
 										anchorColor: BillboardAnchorPosition.CENTER,
 										billboard: BILLBOARD_PINE_TREE_LARGE,
+									}));
+									dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: getSmallTreeAnchorForHexId(hexId),
+										billboard: BILLBOARD_PINE_TREE_SMALL,
 									}));
 								}
 							} catch {

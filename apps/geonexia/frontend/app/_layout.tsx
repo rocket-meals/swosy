@@ -465,6 +465,59 @@ export default function Layout() {
 			}
 
 			store.dispatch(setDevMode({ isDevMode, records, walkedEdges }));
+			// Fire-and-forget: apply forest trees to enclosed/adjacent tiles that are
+			// missing them. This covers cases where a recording ended before the
+			// in-session tree dispatch completed (e.g. app was killed mid-run).
+			void (async () => {
+				try {
+					const hexTileFeatureCache = await loadHexTileFeatureCache();
+					const newEntries: HexTileFeatureCache = {};
+					for (const [hexId, rec] of Object.entries(records)) {
+						if (rec.walkedOn || (rec.enclosedCount === 0 && rec.adjacentWalkedCount === 0)) continue;
+						const hasCenterTree = rec.billboards?.[BillboardAnchorPosition.CENTER] === BILLBOARD_PINE_TREE_LARGE;
+						if (hasCenterTree) continue;
+						const cached = hexTileFeatureCache[hexId];
+						if (cached) {
+							if (hasForestFeature(cached)) {
+								store.dispatch(setBillboardAtAnchor({
+									h3Index: hexId,
+									anchorColor: BillboardAnchorPosition.CENTER,
+									billboard: BILLBOARD_PINE_TREE_LARGE,
+								}));
+								store.dispatch(setBillboardAtAnchor({
+									h3Index: hexId,
+									anchorColor: getSmallTreeAnchorForHexId(hexId),
+									billboard: BILLBOARD_PINE_TREE_SMALL,
+								}));
+							}
+						} else {
+							try {
+								const features = await queryTileFeaturesForHexCell(hexId);
+								newEntries[hexId] = features;
+								if (hasForestFeature(features)) {
+									store.dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: BillboardAnchorPosition.CENTER,
+										billboard: BILLBOARD_PINE_TREE_LARGE,
+									}));
+									store.dispatch(setBillboardAtAnchor({
+										h3Index: hexId,
+										anchorColor: getSmallTreeAnchorForHexId(hexId),
+										billboard: BILLBOARD_PINE_TREE_SMALL,
+									}));
+								}
+							} catch {
+								// ignore per-cell errors
+							}
+						}
+					}
+					if (Object.keys(newEntries).length > 0) {
+						await mergeHexTileFeatureCache(newEntries);
+					}
+				} catch (err) {
+					console.warn('[Layout] Feature cache update on startup failed:', err);
+				}
+			})();
 		})().catch((err) => {
 			console.warn('[Layout] Failed to load persisted hex tile state:', err);
 		});
