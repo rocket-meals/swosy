@@ -171,6 +171,21 @@ export type HexTileRecord = {
 	 * Optional for backward-compat with older saves.
 	 */
 	activityReferences?: ActivityReference[];
+	/**
+	 * H3 index of the parent cell (one resolution level coarser, i.e. resolution - 1).
+	 * Null for resolution-0 cells (no parent exists) or when the H3 library is unavailable.
+	 * Populated automatically during map rebuild.
+	 */
+	parentH3Index?: string | null;
+	/**
+	 * Position of this cell among its parent's 7 children (0–6).
+	 * Children are sorted by H3 index string ascending; the center child (via
+	 * `cellToCenterChild`) receives index 0 and the remaining 6 surrounding
+	 * children receive indices 1–6 in ascending H3-string order.
+	 * Null for resolution-0 cells or when the H3 library is unavailable.
+	 * Populated automatically during map rebuild.
+	 */
+	parentChildIndex?: number | null;
 };
 
 // ─── Level computation ────────────────────────────────────────────────────────
