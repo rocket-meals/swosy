@@ -588,9 +588,7 @@ export function computeActivityData(
  *         hex-tile feature cache confirms a forest / wooded area on that tile
  *  - **Adjacent-walked tiles** (adjacentWalkedCount > 0, visitCount = 0)
  *      → tileImage = "Grass/grass"
- *      → same forest/stone treatment as enclosed tiles, but trees are only
- *         placed when at least one H3 neighbour also has adjacentWalkedCount > 0
- *         (ensures trees appear in clusters, not on isolated boundary tiles)
+ *      → same forest/stone treatment as enclosed tiles
  *
  * @param activities         All saved activities to process.
  * @param hexTileFeatureCache  Optional per-hex feature cache.  When provided,
@@ -792,25 +790,10 @@ export function rebuildMapFromActivities(
 		} else if (rec.enclosedCount > 0 || rec.adjacentWalkedCount > 0) {
 			// Enclosed or adjacent-walked but not visited → grass terrain; forest
 			// trees only when the feature cache confirms a forest / wooded area.
+			// Adjacent-walked tiles are treated identically to enclosed tiles:
+			// adjacentWalkedCount > 0 is sufficient to trigger tree placement.
 			rec.tileImage = TILE_IMAGE_GRASS;
-
-			// For adjacent-walked tiles (not enclosed), only place trees when at
-			// least one H3 neighbour also has adjacentWalkedCount > 0 (across all
-			// activities).  This mirrors the enclosedCount > 0 check used for
-			// enclosed tiles and prevents isolated boundary cells from receiving
-			// trees.  Enclosed tiles bypass this extra check because they are
-			// already confirmed to be inside the walked polygon.
-			const shouldPlaceTree =
-				rec.enclosedCount > 0 ||
-				(isH3Available() &&
-					gridDisk(hexId, 1).some(
-						(n) => n !== hexId && (records[n]?.adjacentWalkedCount ?? 0) > 0,
-					));
-
-			if (shouldPlaceTree) {
-				checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
-			}
-
+			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
 			// Override tileImage to stone when the feature cache confirms rocky
 			// ground (pebble-stone terrain).  This is a tileImage-level change only –
 			// not a billboard (hex object) and not a texture adaption (hex texture).
