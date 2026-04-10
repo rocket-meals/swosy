@@ -502,16 +502,20 @@ export default function Layout() {
 								const features = await queryTileFeaturesForHexCell(hexId);
 								newEntries[hexId] = features;
 								if (hasForestFeature(features)) {
-									store.dispatch(setBillboardAtAnchor({
-										h3Index: hexId,
-										anchorColor: BillboardAnchorPosition.CENTER,
-										billboard: BILLBOARD_PINE_TREE_LARGE,
-									}));
-									store.dispatch(setBillboardAtAnchor({
-										h3Index: hexId,
-										anchorColor: smallTreeAnchor,
-										billboard: BILLBOARD_PINE_TREE_SMALL,
-									}));
+									if (!hasCenterTree) {
+										store.dispatch(setBillboardAtAnchor({
+											h3Index: hexId,
+											anchorColor: BillboardAnchorPosition.CENTER,
+											billboard: BILLBOARD_PINE_TREE_LARGE,
+										}));
+									}
+									if (!hasSmallTree) {
+										store.dispatch(setBillboardAtAnchor({
+											h3Index: hexId,
+											anchorColor: smallTreeAnchor,
+											billboard: BILLBOARD_PINE_TREE_SMALL,
+										}));
+									}
 								}
 							} catch {
 								// ignore per-cell errors
