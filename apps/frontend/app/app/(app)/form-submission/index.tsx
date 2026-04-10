@@ -836,7 +836,7 @@ const Index = () => {
 				<View
 					style={[
 						styles.row,
-						{ flexDirection: 'row' },
+						{ flexDirection: language === 'ar' ? 'row-reverse' : 'row' },
 					]}
 				>
 					<TouchableOpacity
@@ -849,10 +849,10 @@ const Index = () => {
 						}}
 						style={{ padding: 10 }}
 					>
-						<Ionicons name="arrow-back" size={26} color={theme.header.text} />
+						<Ionicons name={language === 'ar' ? 'arrow-forward' : 'arrow-back'} size={26} color={theme.header.text} />
 					</TouchableOpacity>
 
-					<Text style={{ ...styles.heading, color: theme.header.text, flex: 1, textAlign: 'left' }}>
+					<Text style={{ ...styles.heading, color: theme.header.text, flex: 1, textAlign: language === 'ar' ? 'right' : 'left' }}>
 						{formSubmission ? excerpt(formSubmission?.alias as string, screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22) : ''}
 					</Text>
 					<View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
@@ -948,23 +948,33 @@ const Index = () => {
 											key={answer?.id + index}
 										>
 											<View
-												style={{
-													...styles.formNameContainer,
-													backgroundColor: theme.screen.iconBg,
-												}}
+												style={[
+													{
+														...styles.formNameContainer,
+														backgroundColor: theme.screen.iconBg,
+													},
+													language === 'ar' ? { justifyContent: 'flex-start' } : null,
+												]}
 											>
 												{IconComponent && <IconComponent name={iconName} size={20} color={theme.screen.icon} />}
-
+												{language === 'ar' && (answer?.form_field as DatabaseTypes.FormFields)?.is_required && (
+													<FontAwesome6 name="star-of-life" size={12} color={'red'} />
+												)}
 												<Text
 													style={{
 														...styles.body,
 														color: theme.screen.text,
+														...(language === 'ar' ? { flex: 1, textAlign: 'right', writingDirection: 'rtl' } : null),
 													}}
 												>
 													{`${index + 1}. `}
-													{(answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0 ? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language) : (answer?.form_field as DatabaseTypes.FormFields)?.alias}
+													{(answer?.form_field as DatabaseTypes.FormFields)?.translations?.length > 0
+														? getFromCategoryTranslation((answer?.form_field as DatabaseTypes.FormFields)?.translations, language)
+														: (answer?.form_field as DatabaseTypes.FormFields)?.alias}
 												</Text>
-												{(answer?.form_field as DatabaseTypes.FormFields)?.is_required && <FontAwesome6 name="star-of-life" size={12} color={'red'} />}
+												{language !== 'ar' && (answer?.form_field as DatabaseTypes.FormFields)?.is_required && (
+													<FontAwesome6 name="star-of-life" size={12} color={'red'} />
+												)}
 											</View>
 											{Boolean(description) && (
 												<View
@@ -977,6 +987,7 @@ const Index = () => {
 														style={{
 															...styles.body,
 															color: theme.screen.text,
+															...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
 														}}
 													>
 														{description}
@@ -1026,7 +1037,14 @@ const Index = () => {
 			>
 			<View style={styles.pickerContainer}>
 				{/* Aktueller Zustand und Auswahl des nächsten Zustands */}
-				<Text style={{ ...styles.body, marginBottom: 6, color: theme.screen.text }}>
+				<Text
+					style={{
+						...styles.body,
+						marginBottom: 6,
+						color: theme.screen.text,
+						...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
+					}}
+				>
 					{`${translate(TranslationKeys.state_current)}: ${translate(currentState || formSubmission?.state || 'draft')}`}
 				</Text>
 				<AppButton
@@ -1042,14 +1060,22 @@ const Index = () => {
 					iconLeft={
 						<View
 							style={{
-								marginLeft: -34,
 								flexDirection: 'row',
 								alignItems: 'center',
 								gap: 10,
+								width: '100%',
 							}}
 						>
 							<MaterialIcons name="edit" size={20} color={theme.screen.text} />
-							<Text style={{ ...styles.state, color: theme.screen.text }}>{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}</Text>
+							<Text
+								style={{
+									...styles.state,
+									color: theme.screen.text,
+									...(language === 'ar' ? { textAlign: 'right', writingDirection: 'rtl' } : null),
+								}}
+							>
+								{`${translate(TranslationKeys.state_next)}: ${translate(selectedState)}`}
+							</Text>
 						</View>
 					}
 				/>

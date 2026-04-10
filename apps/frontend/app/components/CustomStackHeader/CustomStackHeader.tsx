@@ -84,7 +84,13 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label, rightEleme
 				paddingHorizontal: isWeb ? 20 : 10,
 			}}
 		>
-                        <View style={[styles.row, isArabicRight && !rightElement ? { justifyContent: 'flex-end' } : undefined]}>
+                        <View
+                                style={[
+                                        styles.row,
+                                        isArabicRight && rightElement ? { flexDirection: 'row-reverse' } : undefined,
+                                        isArabicRight && !rightElement ? { justifyContent: 'flex-end' } : undefined,
+                                ]}
+                        >
                                 <View style={[styles.col1, isArabicRight ? { flexDirection: 'row-reverse' } : undefined]}>
 					<CustomTooltip
 						placement="top"

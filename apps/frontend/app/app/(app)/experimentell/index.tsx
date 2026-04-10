@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSelector } from '@/redux/hooks';
-import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -13,11 +13,12 @@ import SettingsList from '@/components/SettingsList';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.experimentell);
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
     const { theme } = useTheme();
     const { buildingsDict } = useAppSelector((state) => state.canteenReducer);
     const { primaryColor } = useAppSelector((state) => state.settings);
 	const selectedCanteen = useSelectedCanteen();
+	const isArabic = language === 'ar';
 
 	const buildingPosition = useMemo(() => {
 		if (selectedCanteen?.building) {
@@ -34,7 +35,7 @@ const Index = () => {
 		{
 			key: 'edge-speech',
 			label: translate(TranslationKeys.edge_speech_test),
-			leftIcon: <MaterialCommunityIcons name="text-to-speech" size={24} color={theme.screen.icon} />,
+			leftIcon: <MaterialIcons name="record-voice-over" size={24} color={theme.screen.icon} />,
 			onPress: () => router.push('/experimentell/edge-speech'),
 		},
 		{
@@ -163,9 +164,9 @@ const Index = () => {
 			}}
 		>
 			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.experimentell)}</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.experimentell)}</Text>
 				{buildingPosition && (
-					<Text style={{ ...styles.body, color: theme.screen.text }}>
+					<Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 						{translate(TranslationKeys.coordinates)}: {buildingPosition.lat}, {buildingPosition.lng}
 					</Text>
 				)}
@@ -173,7 +174,17 @@ const Index = () => {
 					const totalItems = listItems.length;
 					const groupPosition = totalItems === 1 ? 'single' : index === 0 ? 'top' : index === totalItems - 1 ? 'bottom' : 'middle';
 
-					return <SettingsList key={item.key} iconBgColor={primaryColor} leftIcon={item.leftIcon} label={item.label} rightIcon={<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />} handleFunction={item.onPress} groupPosition={groupPosition} />;
+					return (
+						<SettingsList
+							key={item.key}
+							iconBgColor={primaryColor}
+							leftIcon={item.leftIcon}
+							label={item.label}
+							rightIcon={<Entypo name={isArabic ? 'chevron-small-left' : 'chevron-small-right'} color={theme.screen.icon} size={24} />}
+							handleFunction={item.onPress}
+							groupPosition={groupPosition}
+						/>
+					);
 				})}
 			</View>
 		</ScrollView>

@@ -14,6 +14,7 @@ const RssFeedConfig = () => {
 	const { translate, language } = useLanguage();
 	const [urls, setUrls] = useState<string[]>(['']);
 	const [interval, setInterval] = useState('10');
+	const isArabic = language === 'ar';
 
 	const addUrlField = () => {
 		setUrls(prev => [...prev, '']);
@@ -26,7 +27,18 @@ const RssFeedConfig = () => {
 	return (
 		<ScrollView style={[styles.container, { backgroundColor: theme.screen.background }]}>
 			<View style={styles.field}>
-				<Text style={[styles.label, { color: theme.screen.text }]}>RSS Feed URLs</Text>
+				<Text
+					style={[
+						styles.label,
+						{
+							color: theme.screen.text,
+							textAlign: isArabic ? 'right' : 'left',
+							writingDirection: isArabic ? 'rtl' : 'ltr',
+						},
+					]}
+				>
+					RSS Feed URLs
+				</Text>
 				{urls.map((url, index) => (
 					<TextInput
 						key={index}
@@ -45,7 +57,18 @@ const RssFeedConfig = () => {
 						placeholderTextColor={theme.screen.icon}
 					/>
 				))}
-				<Text style={[styles.example, { color: theme.screen.text }]}>Beispiel: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml</Text>
+				<Text
+					style={[
+						styles.example,
+						{
+							color: theme.screen.text,
+							textAlign: isArabic ? 'right' : 'left',
+							writingDirection: isArabic ? 'rtl' : 'ltr',
+						},
+					]}
+				>
+					Beispiel: https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml
+				</Text>
 				<AppButton
 					variant="ghost"
 					usePlainText
@@ -56,7 +79,18 @@ const RssFeedConfig = () => {
 				/>
 			</View>
 			<View style={styles.field}>
-				<Text style={[styles.label, { color: theme.screen.text }]}>Switch Interval (seconds)</Text>
+				<Text
+					style={[
+						styles.label,
+						{
+							color: theme.screen.text,
+							textAlign: isArabic ? 'right' : 'left',
+							writingDirection: isArabic ? 'rtl' : 'ltr',
+						},
+					]}
+				>
+					Switch Interval (seconds)
+				</Text>
 				<TextInput style={[styles.input, { color: theme.screen.text, borderColor: theme.screen.icon }, { textAlign: language === 'ar' ? 'right' : 'left' }]} value={interval} onChangeText={setInterval} keyboardType="number-pad" placeholder="10" placeholderTextColor={theme.screen.icon} />
 			</View>
 			<AppButton

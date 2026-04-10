@@ -147,6 +147,13 @@ export default function MonitorLayout() {
 					header: () => <CustomStackHeader label={translate(TranslationKeys.markings)} key={'labels'} />,
 				}}
 			/>
+			<Stack.Screen
+				name="rss-feed-config/index"
+				options={{
+					title: 'RSS Feed Config',
+					header: () => <CustomStackHeader label={`${translate(TranslationKeys.rss_feed)} Config`} key={'rss-feed-config'} />,
+				}}
+			/>
 		</Stack>
 	);
 }
