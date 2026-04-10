@@ -339,10 +339,12 @@ export class ParseSchedule {
     // This is used later to scope deletion for canteens not present in the report.
     const allReportDates = this.getFoodofferDatesFromRawFoodofferJSONList(foodofferListForParser);
     let globalOldestDate: FoodofferDateType | null = null;
+    let globalOldestDateMs: number | null = null;
     for (const foodofferDate of allReportDates) {
-      const dateAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDate));
-      if (!globalOldestDate || dateAsDate < new Date(DateHelper.foodofferDateTypeToString(globalOldestDate))) {
+      const dateMs = new Date(DateHelper.foodofferDateTypeToString(foodofferDate)).getTime();
+      if (globalOldestDateMs === null || dateMs < globalOldestDateMs) {
         globalOldestDate = foodofferDate;
+        globalOldestDateMs = dateMs;
       }
     }
     const globalOldestDateString = globalOldestDate ? DateHelper.foodofferDateTypeToString(globalOldestDate) : null;
