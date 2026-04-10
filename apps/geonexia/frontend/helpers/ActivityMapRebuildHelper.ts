@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 11;
+export const WORLD_BUILDING_ID = 12;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -588,7 +588,9 @@ export function computeActivityData(
  *         hex-tile feature cache confirms a forest / wooded area on that tile
  *  - **Adjacent-walked tiles** (adjacentWalkedCount > 0, visitCount = 0)
  *      → tileImage = "Grass/grass"
- *      → same forest/stone treatment as enclosed tiles
+ *      → same forest/stone treatment as enclosed tiles, but trees are only
+ *         placed when at least one H3 neighbour also has adjacentWalkedCount > 0
+ *         (ensures trees appear in clusters, not on isolated boundary tiles)
  *
  * @param activities         All saved activities to process.
  * @param hexTileFeatureCache  Optional per-hex feature cache.  When provided,
@@ -739,8 +741,11 @@ export function rebuildMapFromActivities(
 		}
 	}
 
-	// ── Second pass: compute counts, levels, and tile images ─────────────────
-	for (const [hexId, rec] of Object.entries(records)) {
+	// ── Second pass (2a): compute counts and levels for ALL tiles first ───────
+	// This must be a separate loop so that every tile's adjacentWalkedCount,
+	// enclosedCount and visitCount are fully populated before the terrain/tree
+	// assignment pass (2b) reads those values on neighbour tiles.
+	for (const rec of Object.values(records)) {
 		const refs: ActivityReference[] = rec.activityReferences ?? [];
 
 		// Count distinct activities that visited / enclosed / adjacently-walked this tile.
@@ -759,7 +764,12 @@ export function rebuildMapFromActivities(
 		rec.adjacentWalkedCount = adjacentWalkedActivities.size;
 		rec.walkedOn = rec.visitCount > 0;
 		rec.level = computeHexTileLevel(rec);
+	}
 
+	// ── Second pass (2b): apply tile-image and billboard assignments ──────────
+	// All counts are now fully computed, so it is safe to query neighbour
+	// tiles' adjacentWalkedCount when deciding whether to place trees.
+	for (const [hexId, rec] of Object.entries(records)) {
 		// Apply automatic tile-image and billboard assignments.
 		if (rec.visitCount > 0) {
 			// Visited tile → dirt terrain
@@ -783,7 +793,24 @@ export function rebuildMapFromActivities(
 			// Enclosed or adjacent-walked but not visited → grass terrain; forest
 			// trees only when the feature cache confirms a forest / wooded area.
 			rec.tileImage = TILE_IMAGE_GRASS;
-			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
+
+			// For adjacent-walked tiles (not enclosed), only place trees when at
+			// least one H3 neighbour also has adjacentWalkedCount > 0 (across all
+			// activities).  This mirrors the enclosedCount > 0 check used for
+			// enclosed tiles and prevents isolated boundary cells from receiving
+			// trees.  Enclosed tiles bypass this extra check because they are
+			// already confirmed to be inside the walked polygon.
+			const shouldPlaceTree =
+				rec.enclosedCount > 0 ||
+				(isH3Available() &&
+					gridDisk(hexId, 1).some(
+						(n) => n !== hexId && (records[n]?.adjacentWalkedCount ?? 0) > 0,
+					));
+
+			if (shouldPlaceTree) {
+				checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
+			}
+
 			// Override tileImage to stone when the feature cache confirms rocky
 			// ground (pebble-stone terrain).  This is a tileImage-level change only –
 			// not a billboard (hex object) and not a texture adaption (hex texture).
