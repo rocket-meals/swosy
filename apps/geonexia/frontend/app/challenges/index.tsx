@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, SettingsList, SettingsListGroupTitle } from 'repo-depkit-common-ui';
+import { useFocusEffect } from 'expo-router';
 import { useDebugMode } from '../../hooks/useDebugMode';
+import { loadActivities, SavedActivity } from '../../helpers/ActivityStorage';
 
 // ─── Colors ────────────────────────────────────────────────────────────────────
 
@@ -10,6 +12,7 @@ const COLOR_VOLUME = '#2563eb';
 const COLOR_LONG_RUN = '#ea580c';
 const COLOR_STABILIZATION = '#16a34a';
 const COLOR_DELOAD = '#6b7280';
+const COLOR_PAST = '#9ca3af';
 
 // ─── Challenge algorithm ────────────────────────────────────────────────────────
 
@@ -27,8 +30,8 @@ interface WeekChallenge {
   debugInfo: string;
 }
 
-/** Baseline state for the week before KW 1 (seeds the algorithm). */
-const BASELINE: PrevState = { totalKm: 20, longestKm: 8 };
+/** Fallback baseline when no previous-week activity data is available. */
+const FALLBACK_BASELINE: PrevState = { totalKm: 5, longestKm: 2 };
 
 /** Round to the nearest 0.5 km increment. */
 function roundToHalf(km: number): number {
@@ -47,6 +50,9 @@ function roundToHalf(km: number): number {
  *
  * The second 4-week block inside each 8-week cycle uses slightly higher
  * factors to reflect improved adaptation.
+ *
+ * Deload weeks carry the PRE-deload state forward so that the progression
+ * doesn't trend downward over successive cycles.
  */
 function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: WeekChallenge; next: PrevState } {
   const mod = weekIndex % 4;
@@ -60,6 +66,8 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
   else if (mod === 3) type = 'stabilization';
   else type = 'volume';
 
+  const inputDebug = `Eingabe: Gesamt ${prev.totalKm} km | LR ${prev.longestKm} km | KW-Index ${weekIndex}`;
+
   let newTotal: number;
   let newLongest: number;
   let debugInfo: string;
@@ -72,6 +80,7 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
       const longestIncrease = isSecondBlock ? 0.03 : 0.02;
       newLongest = roundToHalf(Math.min(prev.longestKm * (1 + longestIncrease), newTotal * 0.40));
       debugInfo =
+        `${inputDebug}\n` +
         `Block ${isSecondBlock ? '2' : '1'} | ` +
         `Gesamt: ${prev.totalKm} + ${increase.toFixed(1)} km (+${(pct * 100).toFixed(0)}%) = ${newTotal} km | ` +
         `Langer Lauf: ${prev.longestKm} × ${(1 + longestIncrease).toFixed(2)} = ${newLongest} km (max 40% von ${newTotal} km)`;
@@ -86,6 +95,7 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
         newTotal = roundToHalf(newLongest / 0.40);
       }
       debugInfo =
+        `${inputDebug}\n` +
         `Block ${isSecondBlock ? '2' : '1'} | ` +
         `Langer Lauf: ${prev.longestKm} × ${(1 + pct).toFixed(2)} = ${newLongest} km (+${diff.toFixed(1)} km) | ` +
         `Gesamt: ${newTotal} km (Diff + Total, max +5 km, LR ≤ 40%)`;
@@ -97,6 +107,7 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
       newTotal = roundToHalf(prev.totalKm + increase);
       newLongest = prev.longestKm;
       debugInfo =
+        `${inputDebug}\n` +
         `Block ${isSecondBlock ? '2' : '1'} | ` +
         `Gesamt: ${prev.totalKm} + ${increase.toFixed(1)} km (+${(pct * 100).toFixed(0)}%) = ${newTotal} km | ` +
         `Langer Lauf: ${newLongest} km (unverändert)`;
@@ -106,6 +117,7 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
       newTotal = roundToHalf(prev.totalKm * 0.75);
       newLongest = roundToHalf(prev.longestKm * 0.80);
       debugInfo =
+        `${inputDebug}\n` +
         `Gesamt: ${prev.totalKm} × 0.75 = ${newTotal} km | ` +
         `Langer Lauf: ${prev.longestKm} × 0.80 = ${newLongest} km`;
       break;
@@ -118,8 +130,42 @@ function computeWeekChallenge(prev: PrevState, weekIndex: number): { challenge: 
   }
 
   const challenge: WeekChallenge = { type, totalKm: newTotal, longestKm: newLongest, debugInfo };
-  const next: PrevState = { totalKm: newTotal, longestKm: newLongest };
+  // Deload weeks carry forward the PRE-deload state so the next volume week
+  // continues the upward progression rather than building from reduced values.
+  const next: PrevState = type === 'deload'
+    ? { totalKm: prev.totalKm, longestKm: prev.longestKm }
+    : { totalKm: newTotal, longestKm: newLongest };
   return { challenge, next };
+}
+
+// ─── Activity helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Derive a baseline (totalKm, longestKm) from running activities that fall
+ * within the given ISO year+week.  Only 'run' activities (or activities with
+ * no sport type recorded, for backward-compat) are counted.
+ * Returns null when there are no matching activities.
+ */
+function computeWeekBaseline(
+  activities: SavedActivity[],
+  isoYear: number,
+  isoWeek: number,
+): PrevState | null {
+  const matching = activities.filter((a) => {
+    const d = new Date(a.startedAt);
+    if (getISOWeekYear(d) !== isoYear) return false;
+    if (getISOWeekNumber(d) !== isoWeek) return false;
+    // Only count run activities (or untyped older activities)
+    const t = a.sportType;
+    return t === undefined || t === 'run';
+  });
+  if (matching.length === 0) return null;
+  const totalKm = matching.reduce((sum, a) => sum + (a.stats?.distanceKm ?? 0), 0);
+  const longestKm = matching.reduce((max, a) => Math.max(max, a.stats?.distanceKm ?? 0), 0);
+  return {
+    totalKm: Math.max(roundToHalf(totalKm), 0.5),
+    longestKm: Math.max(roundToHalf(longestKm), 0.5),
+  };
 }
 
 // ─── ISO week helpers ──────────────────────────────────────────────────────────
@@ -168,18 +214,20 @@ interface WeekRowProps {
   groupPosition: 'top' | 'middle' | 'bottom' | 'single';
   showSeparator: boolean;
   isDebug: boolean;
+  isPast?: boolean;
 }
 
-function WeekRow({ weekNum, challenge, groupPosition, showSeparator, isDebug }: WeekRowProps) {
+function WeekRow({ weekNum, challenge, groupPosition, showSeparator, isDebug, isPast }: WeekRowProps) {
   const { label, iconName, color } = challengeConfig(challenge.type);
+  const iconColor = isPast ? COLOR_PAST : color;
   const titleText = isDebug
     ? `KW ${weekNum} · ${label}\n${challenge.debugInfo}`
     : `KW ${weekNum} · ${label}`;
   return (
     <SettingsList
       title={titleText}
-      value={`${challenge.totalKm} km · LR ${challenge.longestKm} km`}
-      iconBgColor={color}
+      value={`Gesamtstrecke ${challenge.totalKm} km | Langer Lauf: ${challenge.longestKm} km`}
+      iconBgColor={iconColor}
       leftIcon={<Ionicons name={iconName} size={20} color="#ffffff" />}
       groupPosition={groupPosition}
       showSeparator={showSeparator}
@@ -200,23 +248,55 @@ export default function ChallengesScreen() {
   const { theme } = useTheme();
   const isDebug = useDebugMode();
   const [showPastWeeks, setShowPastWeeks] = useState(false);
+  const [activities, setActivities] = useState<SavedActivity[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadActivities()
+        .then(setActivities)
+        .catch((err) => console.warn('[ChallengesScreen] Failed to load activities:', err));
+    }, []),
+  );
 
   const now = new Date();
   const currentWeek = getISOWeekNumber(now);
   const currentYear = getISOWeekYear(now);
   const totalWeeks = getISOWeeksInYear(currentYear);
 
+  // Determine baseline from previous ISO week's actual run data (if available)
+  const baseline = useMemo<PrevState>(() => {
+    // Previous ISO week (handle year rollback)
+    let prevWeek = currentWeek - 1;
+    let prevYear = currentYear;
+    if (prevWeek < 1) {
+      prevYear = currentYear - 1;
+      prevWeek = getISOWeeksInYear(prevYear);
+    }
+    const real = computeWeekBaseline(activities, prevYear, prevWeek);
+    if (real) return real;
+    // No data for last week – try the week before that as well (one more look-back)
+    let prevWeek2 = prevWeek - 1;
+    let prevYear2 = prevYear;
+    if (prevWeek2 < 1) {
+      prevYear2 = prevYear - 1;
+      prevWeek2 = getISOWeeksInYear(prevYear2);
+    }
+    const real2 = computeWeekBaseline(activities, prevYear2, prevWeek2);
+    if (real2) return real2;
+    return FALLBACK_BASELINE;
+  }, [activities, currentWeek, currentYear]);
+
   // Build challenge for every ISO week of the year (week indices 1 … totalWeeks)
   const weekChallenges = useMemo<WeekChallenge[]>(() => {
     const result: WeekChallenge[] = [];
-    let state = BASELINE;
+    let state = baseline;
     for (let w = 1; w <= totalWeeks; w++) {
       const { challenge, next } = computeWeekChallenge(state, w);
       result.push(challenge);
       state = next;
     }
     return result;
-  }, [totalWeeks]);
+  }, [totalWeeks, baseline]);
 
   // Split into past / current / future (week indices are 1-based, array is 0-based)
   const pastWeekNums = Array.from({ length: currentWeek - 1 }, (_, i) => i + 1);
@@ -256,6 +336,7 @@ export default function ChallengesScreen() {
                 groupPosition={listGroupPosition(idx, pastWeekNums.length)}
                 showSeparator={idx < pastWeekNums.length - 1}
                 isDebug={isDebug}
+                isPast
               />
             ))}
           </>
@@ -269,7 +350,7 @@ export default function ChallengesScreen() {
               ? `KW ${currentWeek} · ${currentConfig.label}\n${currentChallenge.debugInfo}`
               : `KW ${currentWeek} · ${currentConfig.label}`
           }
-          value={`${currentChallenge.totalKm} km · LR ${currentChallenge.longestKm} km`}
+          value={`Gesamtstrecke ${currentChallenge.totalKm} km | Langer Lauf: ${currentChallenge.longestKm} km`}
           iconBgColor={currentConfig.color}
           leftIcon={<Ionicons name={currentConfig.iconName} size={20} color="#ffffff" />}
           groupPosition="single"
@@ -306,7 +387,5 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingVertical: 16,
-    paddingHorizontal: 16,
-    gap: 8,
   },
 });
