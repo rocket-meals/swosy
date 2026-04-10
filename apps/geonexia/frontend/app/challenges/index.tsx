@@ -68,7 +68,7 @@ export default function ChallengesScreen() {
 
         {/* Load previous weeks */}
         <SettingsList
-          title={showPastWeeks ? 'Vorherige Wochen ausblenden' : 'Vorherige Kalenderwochen laden'}
+          title={showPastWeeks ? 'Vorherige Kalenderwochen ausblenden' : 'Vorherige Kalenderwochen laden'}
           leftIcon={
             <Ionicons
               name={showPastWeeks ? 'chevron-up' : 'chevron-down'}
