@@ -18,6 +18,8 @@ export type DisplaySettingsState = {
 	hexObjectOpacity: number;
 	/** Whether to apply centre-line projection (road-snap smoothing) when displaying activity routes. */
 	routeSmoothingEnabled: boolean;
+	/** Whether to render raw GPS measurement points on the activity map. */
+	showGpsPoints: boolean;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
@@ -28,6 +30,7 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexTextureAdaptionOpacity: 0.9,
 	hexObjectOpacity: 0.9,
 	routeSmoothingEnabled: true,
+	showGpsPoints: false,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };
