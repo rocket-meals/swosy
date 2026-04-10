@@ -680,6 +680,90 @@ export default function Layout() {
 					}}
 				/>
 				<Drawer.Screen
+					name="experimentell/edge-speech/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.edge_speech_test)} key={'edge_speech_test'} />,
+						title: translate(TranslationKeys.edge_speech_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/map-with-custom-images-and-buildings/index"
+					options={{
+						header: () => <CustomStackHeader label={'Map – Custom Images & Buildings'} key={'map_with_custom_images_and_buildings'} />,
+						title: 'Map – Custom Images & Buildings',
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/expo-update-test/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.EXPO_UPDATE_TEST)} key={'expo_update_test'} />,
+						title: translate(TranslationKeys.EXPO_UPDATE_TEST),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/date-helper/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.date_helper_preview)} key={'date_helper_preview'} />,
+						title: translate(TranslationKeys.date_helper_preview),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/haptics/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.haptics_test)} key={'haptics_test'} />,
+						title: translate(TranslationKeys.haptics_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/debug-logout/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.debug_logout)} key={'debug_logout'} />,
+						title: translate(TranslationKeys.debug_logout),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/rate-app/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.rate_app)} key={'rate_app'} />,
+						title: translate(TranslationKeys.rate_app),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/app-download/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.app_download)} key={'app_download'} />,
+						title: translate(TranslationKeys.app_download),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/react-native-qrcode-svg/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.react_native_qrcode_svg)} key={'react_native_qrcode_svg'} />,
+						title: translate(TranslationKeys.react_native_qrcode_svg),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/markdown-test/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.markdown_test)} key={'markdown_test'} />,
+						title: translate(TranslationKeys.markdown_test),
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/settings-list-components/index"
+					options={{
+						header: () => <CustomStackHeader label={'SettingsList Komponenten'} key={'settings_list_components'} />,
+						title: 'SettingsList Komponenten',
+					}}
+				/>
+				<Drawer.Screen
+					name="experimentell/test-use-modal/index"
+					options={{
+						header: () => <CustomStackHeader label={translate(TranslationKeys.test_use_modal)} key={'test_use_modal'} />,
+						title: translate(TranslationKeys.test_use_modal),
+					}}
+				/>
+				<Drawer.Screen
 					name="map/index"
 					options={{
 						headerShown: false,

@@ -131,7 +131,15 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorPr
 				iconLeft = <Ionicons name="navigate" size={24} color={contrastColor} />;
 			}
 
-			return <AppButton text={text} onPress={handlePress} iconLeft={iconLeft} />;
+			return (
+				<AppButton
+					text={text}
+					onPress={handlePress}
+					iconLeft={iconLeft}
+					style={isArabic ? { flexDirection: 'row-reverse' } : undefined}
+					textStyle={isArabic ? { textAlign: 'right', writingDirection: 'rtl' } : undefined}
+				/>
+			);
 		},
 		sub: (props: any) => {
 			const { data } = props.tnode;

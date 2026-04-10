@@ -15,8 +15,9 @@ import { useAppSelector } from '../../../../redux/hooks';
 const HapticsScreen = () => {
 	useSetPageTitle(TranslationKeys.haptics_test);
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
 	const { primaryColor } = useAppSelector((state: RootState) => state.settings);
+	const isArabic = language === 'ar';
 	const [lastEvent, setLastEvent] = useState<string | null>(null);
 
 	const handleHaptic = useCallback(async (label: string, action: () => Promise<void>) => {
@@ -71,9 +72,11 @@ const HapticsScreen = () => {
 			}}
 		>
 			<View style={styles.content}>
-				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.haptics_test)}</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
+					{translate(TranslationKeys.haptics_test)}
+				</Text>
 				<View style={styles.section}>
-					<Text style={{ ...styles.body, color: theme.screen.text }}>
+					<Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 						{translate(TranslationKeys.haptics_test_description)}
 					</Text>
 				</View>
@@ -83,21 +86,21 @@ const HapticsScreen = () => {
 							<TouchableOpacity
 								key={option.key}
 								onPress={() => handleHaptic(option.label, option.action)}
-								style={{ ...styles.listItem, backgroundColor: theme.card.background }}
+								style={{ ...styles.listItem, backgroundColor: theme.card.background, flexDirection: isArabic ? 'row-reverse' : 'row' }}
 							>
-								<View style={styles.col}>
+								<View style={[styles.col, isArabic ? { flexDirection: 'row-reverse' } : null]}>
 									<View style={{ backgroundColor: primaryColor, borderRadius: 8, padding: 6 }}>
 										<MaterialCommunityIcons name="vibrate" size={20} color={theme.screen.icon} />
 									</View>
-									<Text style={{ ...styles.body, color: theme.screen.text }}>{option.label}</Text>
+									<Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{option.label}</Text>
 								</View>
 							</TouchableOpacity>
 						);
 					})}
 				</View>
 				<View style={[styles.logsContainer, { backgroundColor: theme.card.background }]}>
-					<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.last_haptic_event)}</Text>
-					<Text style={{ ...styles.logEntry, color: theme.screen.text }}>
+					<Text style={{ ...styles.body, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>{translate(TranslationKeys.last_haptic_event)}</Text>
+					<Text style={{ ...styles.logEntry, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
 						{lastEvent ?? translate(TranslationKeys.haptics_test_empty)}
 					</Text>
 				</View>

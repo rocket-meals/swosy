@@ -14,7 +14,8 @@ import AppButton from '@/components/AppButton';
 const DebugLogout = () => {
 	const dispatch = useDispatch();
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isArabic = language === 'ar';
 
 	const steps = [
 		{
@@ -109,7 +110,9 @@ const DebugLogout = () => {
 			}}
 		>
 			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.debug_logout)}</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
+					{translate(TranslationKeys.debug_logout)}
+				</Text>
 				{steps.map((step, index) => (
 					<AppButton
 						key={index}

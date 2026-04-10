@@ -20,11 +20,12 @@ import AppButton from '@/components/AppButton';
 const ChatsScreen = () => {
         useSetPageTitle(TranslationKeys.chats);
         const { theme } = useTheme();
-        const { translate } = useLanguage();
+        const { translate, language } = useLanguage();
         const dispatch = useDispatch();
 
         const { chats, readStatus, hasUnreadChats, isChatUnread } = useChatUnreadStatus();
         const { primaryColor, selectedTheme } = useAppSelector((state) => state.settings);
+        const isArabic = language === 'ar';
 
         const sortedChats = useMemo(() => {
                 return [...chats].sort((a, b) => {
@@ -91,7 +92,7 @@ const ChatsScreen = () => {
                 const buttonTextColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 
                 return (
-                        <View style={styles.headerActions}>
+                        <View style={[styles.headerActions, isArabic ? { flexDirection: 'row-reverse', justifyContent: 'flex-start' } : null]}>
                                 <AppButton
                                         text={translate(TranslationKeys.mark_all_chats_as_read)}
                                         onPress={() => {
@@ -103,8 +104,17 @@ const ChatsScreen = () => {
                                                 { backgroundColor: primaryColor },
                                                 !hasUnreadChats && styles.actionButtonDisabled,
                                                 { marginVertical: 0 },
+                                                isArabic ? { alignSelf: 'flex-end' } : null,
                                         ]}
-                                        textStyle={[styles.actionButtonText, { color: buttonTextColor }]}
+                                        textStyle={[
+                                                styles.actionButtonText,
+                                                {
+                                                        color: buttonTextColor,
+                                                        textAlign: isArabic ? 'right' : 'left',
+                                                        writingDirection: isArabic ? 'rtl' : 'ltr',
+                                                        lineHeight: isArabic ? 30 : undefined,
+                                                },
+                                        ]}
                                         usePlainText
                                 />
                                 <AppButton
@@ -113,8 +123,22 @@ const ChatsScreen = () => {
                                                 void markAllAsUnread();
                                         }}
                                         variant="outline"
-                                        style={[styles.actionButton, styles.secondaryActionButton, { borderColor: theme.screen.icon }, { marginVertical: 0 }]}
-                                        textStyle={[styles.actionButtonText, { color: theme.screen.text }]}
+                                        style={[
+                                                styles.actionButton,
+                                                styles.secondaryActionButton,
+                                                { borderColor: theme.screen.icon },
+                                                { marginVertical: 0 },
+                                                isArabic ? { alignSelf: 'flex-end' } : null,
+                                        ]}
+                                        textStyle={[
+                                                styles.actionButtonText,
+                                                {
+                                                        color: theme.screen.text,
+                                                        textAlign: isArabic ? 'right' : 'left',
+                                                        writingDirection: isArabic ? 'rtl' : 'ltr',
+                                                        lineHeight: isArabic ? 28 : undefined,
+                                                },
+                                        ]}
                                         usePlainText
                                 />
                         </View>
@@ -129,11 +153,12 @@ const ChatsScreen = () => {
 
                 const rightElement = (
                         <View style={styles.rightIconWrapper}>
-                                <MaterialCommunityIcons name="chevron-right" size={24} color={theme.screen.icon} />
+                                <MaterialCommunityIcons name={isArabic ? 'chevron-left' : 'chevron-right'} size={24} color={theme.screen.icon} />
                                 {isUnread ? (
                                         <View
                                                 style={[
                                                         styles.itemNotificationDot,
+                                                        isArabic ? { left: -2 } : { right: -2 },
                                                         {
                                                                 backgroundColor: theme.accent,
                                                                 borderColor: theme.screen.background,

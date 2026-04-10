@@ -114,12 +114,17 @@ const SettingsList: React.FC<SettingsListProps> = ({
 					</Text>
 				</View>
 				{value ? (
-					<View style={[styles.valueContainer, reverseLayout ? styles.valueContainerReverse : null]}>
+					<View
+						style={[
+							styles.valueContainer,
+							reverseLayout && titleTextAlign !== 'right' ? styles.valueContainerReverse : null,
+						]}
+					>
 						<Text
 							selectable
 							style={[
 								styles.value,
-								reverseLayout ? styles.valueReverse : null,
+								reverseLayout && titleTextAlign !== 'right' ? styles.valueReverse : null,
 								{ color: theme.screen.text } as TextStyle,
 							]}
 							numberOfLines={0}

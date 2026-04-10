@@ -14,7 +14,8 @@ import styles from './styles';
 const TestUseModalScreen = () => {
         useSetPageTitle(TranslationKeys.test_use_modal);
         const { theme } = useTheme();
-        const { translate } = useLanguage();
+        const { translate, language } = useLanguage();
+        const isArabic = language === 'ar';
         const { show, close, debug } = useMyScrollViewModal();
         const { openTextInputModal } = useMyScrollviewTextInputModal();
         const [modalTextValue, setModalTextValue] = useState('');
@@ -23,6 +24,8 @@ const TestUseModalScreen = () => {
                 show(
                         {
                                 title: translate(TranslationKeys.test_use_modal),
+                                titleTextAlign: isArabic ? 'right' : 'left',
+                                titleWritingDirection: isArabic ? 'rtl' : 'ltr',
                                 showsVerticalScrollIndicator: false,
                                 children: (
                                         <View
@@ -34,10 +37,10 @@ const TestUseModalScreen = () => {
                                                         },
                                                 ]}
                                         >
-                                                <Text style={[styles.modalTitle, { color: theme.screen.text }]}>
+                                                <Text style={[styles.modalTitle, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>
                                                         {translate(TranslationKeys.test_use_modal)}
                                                 </Text>
-                                                <Text style={[styles.modalBody, { color: theme.screen.text }]}>
+                                                <Text style={[styles.modalBody, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>
                                                         {translate(TranslationKeys.modal_example_body)}
                                                 </Text>
                                                 <AppButton
@@ -80,10 +83,10 @@ const TestUseModalScreen = () => {
                         contentContainerStyle={{ ...styles.contentContainer, backgroundColor: theme.screen.background }}
                 >
                         <View style={styles.content}>
-                                <Text style={[styles.heading, { color: theme.screen.text }]}>
+                                <Text style={[styles.heading, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>
                                         {translate(TranslationKeys.test_use_modal)}
                                 </Text>
-                                <Text style={[styles.description, { color: theme.screen.text }]}>
+                                <Text style={[styles.description, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>
                                         {translate(TranslationKeys.modal_example_body)}
                                 </Text>
                                 <AppButton
@@ -101,7 +104,7 @@ const TestUseModalScreen = () => {
                                         textStyle={[styles.buttonText, { color: theme.button?.text || theme.screen.text }]}
                                 />
                                 <View style={styles.section}>
-                                        <Text style={[styles.sectionTitle, { color: theme.screen.text }]}>
+                                        <Text style={[styles.sectionTitle, { color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }]}>
                                                 {translate(TranslationKeys.modal_text_input_label)}
                                         </Text>
                                         <SettingsList

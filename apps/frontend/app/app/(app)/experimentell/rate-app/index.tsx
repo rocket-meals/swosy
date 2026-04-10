@@ -10,7 +10,8 @@ import { RateAppSettingsItem } from '@/components/RateAppSettingsItem/RateAppSet
 const RateApp = () => {
 	useSetPageTitle(TranslationKeys.rate_app);
 	const { theme } = useTheme();
-	const { translate } = useLanguage();
+	const { translate, language } = useLanguage();
+	const isArabic = language === 'ar';
 	const [debugLogs, setDebugLogs] = useState<string[]>([]);
 
 	const addLog = (msg: string) => setDebugLogs(logs => [...logs, msg]);
@@ -24,7 +25,9 @@ const RateApp = () => {
 			}}
 		>
 			<View style={{ ...styles.content }}>
-				<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.rate_app)}</Text>
+				<Text style={{ ...styles.heading, color: theme.screen.text, textAlign: isArabic ? 'right' : 'left', writingDirection: isArabic ? 'rtl' : 'ltr' }}>
+					{translate(TranslationKeys.rate_app)}
+				</Text>
 				<RateAppSettingsItem onLog={addLog} />
 				{debugLogs.length > 0 && (
 					<View style={styles.debugLogContainer}>
