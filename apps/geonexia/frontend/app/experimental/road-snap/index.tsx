@@ -121,7 +121,8 @@ function snapToRoad(
 	// Project each raw point onto the nearest smoothed segment.
 	// Interpolated points are left unchanged.
 	return coords.map((pt, i) => {
-		if (interpolatedMask && interpolatedMask[i]) return pt;
+		if (interpolatedMask && interpolatedMask.length === coords.length && interpolatedMask[i])
+			return pt;
 		let bestDistSq = Infinity;
 		let bestPt: [number, number] = pt;
 		for (let j = 0; j < smoothed.length - 1; j++) {
@@ -387,7 +388,7 @@ export default function RoadSnapScreen() {
 					valueInactive="Ausgeschaltet"
 					isEnabled={snapEnabled}
 					onToggle={() => setSnapEnabled((v) => !v)}
-					groupPosition="alone"
+					groupPosition="single"
 				/>
 			</ScrollView>
 		</View>
