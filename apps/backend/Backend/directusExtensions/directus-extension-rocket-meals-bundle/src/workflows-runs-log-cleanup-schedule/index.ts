@@ -52,7 +52,8 @@ export default MyDefineHook.defineHookWithAllTablesExisting(SCHEDULE_NAME, async
         apiContext.logger.info(SCHEDULE_NAME + ': cleared logs for ' + oldRunsWithLog.length + ' workflow_runs');
       }
     } catch (e) {
-      apiContext.logger.error(SCHEDULE_NAME + ': error during log cleanup: ' + e);
+      apiContext.logger.error(SCHEDULE_NAME + ': error during log cleanup: ' + (e instanceof Error ? e.message : String(e)));
+      apiContext.logger.error(e);
     }
   });
 });
