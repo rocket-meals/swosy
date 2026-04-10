@@ -374,18 +374,6 @@ export function hasForestFeature(features: MapFeatureInfo[]): boolean {
 }
 
 /**
- * Check whether the cached features for a tile indicate a forest, and if so
- * apply forest tree billboards to the record.
- *
- * Called for tiles that are already confirmed to be enclosed and not visited.
- * Places:
- *  - a `treePineLarge` billboard at CENTER (hex centroid).
- *  - a `treePineLarge` billboard at a MIDDLE ring position that is deterministically
- *    chosen from the last hex character of `hexId` (parsed as a hex digit modulo 12).
- *
- * Does nothing when `features` is undefined or contains no forest indicator.
- */
-/**
  * Deterministically compute the MIDDLE ring anchor position for the small pine
  * tree billboard on a given hex tile.  Uses the same FNV-style hash as
  * `checkAndApplyForest` so callers that need to dispatch the billboard
@@ -401,6 +389,19 @@ export function getSmallTreeAnchorForHexId(hexId: string): BillboardAnchorPositi
 	}
 	return MIDDLE_RING_BY_DEGREE[hash % MIDDLE_RING_BY_DEGREE.length];
 }
+
+/**
+ * Check whether the cached features for a tile indicate a forest, and if so
+ * apply forest tree billboards to the record.
+ *
+ * Called for tiles that are already confirmed to be enclosed and not visited.
+ * Places:
+ *  - a `treePineLarge` billboard at CENTER (hex centroid).
+ *  - a `treePineLarge` billboard at a MIDDLE ring position that is deterministically
+ *    chosen from the last hex character of `hexId` (parsed as a hex digit modulo 12).
+ *
+ * Does nothing when `features` is undefined or contains no forest indicator.
+ */
 
 export function checkAndApplyForest(
 	hexId: string,
