@@ -375,11 +375,7 @@ export class ParseSchedule {
         const canteenFoodoffersWithNullDate = canteenFoodoffers.map(f => ({...f, date: null as null}));
 
         // Build report dict for this canteen
-        const reportDictByResultHash: Record<string, FoodoffersTypeForParser> = {};
-        for (const foodofferForParser of canteenFoodoffersWithNullDate) {
-          const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
-          reportDictByResultHash[resultHash] = foodofferForParser;
-        }
+        const reportDictByResultHash = ParseSchedule.buildReportDictByResultHash(canteenFoodoffersWithNullDate);
 
         // Fetch existing date=null foodoffers for this canteen.
         // canteen._eq excludes component foodoffers (which have canteen=null).
@@ -403,15 +399,7 @@ export class ParseSchedule {
           limit: -1,
         });
 
-        const existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers> = {};
-        const existingWithoutResultHash: DatabaseTypes.Foodoffers[] = [];
-        for (const existing of existingFoodoffersForCanteen) {
-          if (existing.result_hash && typeof existing.result_hash === 'string') {
-            existingDictByResultHash[existing.result_hash] = existing;
-          } else {
-            existingWithoutResultHash.push(existing);
-          }
-        }
+        const { existingDictByResultHash, existingWithoutResultHash } = ParseSchedule.buildExistingDictByResultHash(existingFoodoffersForCanteen);
 
         // Compute diff, delete, then create
         const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
@@ -495,22 +483,10 @@ export class ParseSchedule {
           const existingFoodoffersForDate = existingByDate[dateKey] || [];
 
           // Build report dict for this date
-          const reportDictByResultHash: Record<string, FoodoffersTypeForParser> = {};
-          for (const foodofferForParser of reportFoodoffersForDate) {
-            const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
-            reportDictByResultHash[resultHash] = foodofferForParser;
-          }
+          const reportDictByResultHash = ParseSchedule.buildReportDictByResultHash(reportFoodoffersForDate);
 
           // Build existing dict for this date
-          const existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers> = {};
-          const existingWithoutResultHash: DatabaseTypes.Foodoffers[] = [];
-          for (const existing of existingFoodoffersForDate) {
-            if (existing.result_hash && typeof existing.result_hash === 'string') {
-              existingDictByResultHash[existing.result_hash] = existing;
-            } else {
-              existingWithoutResultHash.push(existing);
-            }
-          }
+          const { existingDictByResultHash, existingWithoutResultHash } = ParseSchedule.buildExistingDictByResultHash(existingFoodoffersForDate);
 
           // Compute diff per date
           const diffResult = ParseSchedule.computeFoodofferSyncDiff(reportDictByResultHash, existingDictByResultHash, existingWithoutResultHash);
@@ -582,6 +558,37 @@ export class ParseSchedule {
     } else {
       await this.context.logger.appendLog('Sync: no dates in report at all, skipping canteen-not-in-report cleanup');
     }
+  }
+
+  /**
+   * Builds a dictionary mapping result_hash to FoodoffersTypeForParser from a list of parsed foodoffers.
+   */
+  static buildReportDictByResultHash(foodoffers: FoodoffersTypeForParser[]): Record<string, FoodoffersTypeForParser> {
+    const dict: Record<string, FoodoffersTypeForParser> = {};
+    for (const foodofferForParser of foodoffers) {
+      const resultHash = FoodParserHelper.getFoodofferHashFromFoodofferInformationForParser(foodofferForParser);
+      dict[resultHash] = foodofferForParser;
+    }
+    return dict;
+  }
+
+  /**
+   * Splits existing DB foodoffers into a dict keyed by result_hash and a list of those without a result_hash.
+   */
+  static buildExistingDictByResultHash(existingFoodoffers: DatabaseTypes.Foodoffers[]): {
+    existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers>;
+    existingWithoutResultHash: DatabaseTypes.Foodoffers[];
+  } {
+    const existingDictByResultHash: Record<string, DatabaseTypes.Foodoffers> = {};
+    const existingWithoutResultHash: DatabaseTypes.Foodoffers[] = [];
+    for (const existing of existingFoodoffers) {
+      if (existing.result_hash && typeof existing.result_hash === 'string') {
+        existingDictByResultHash[existing.result_hash] = existing;
+      } else {
+        existingWithoutResultHash.push(existing);
+      }
+    }
+    return { existingDictByResultHash, existingWithoutResultHash };
   }
 
   /**
