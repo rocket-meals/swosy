@@ -722,6 +722,7 @@ export default function ActivityDetailScreen() {
 	const replayIsDisabled = useSelector((state: RootState) => state.replaySettings.isDisabled);
 	const replaySpeed = useSelector((state: RootState) => state.replaySettings.speed);
 	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
+	const showGpsPoints = useSelector((state: RootState) => state.displaySettings.showGpsPoints);
 	const dispatch = useDispatch<AppDispatch>();
 	const routeModalShownRef = useRef(false);
 	const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
@@ -914,9 +915,9 @@ export default function ActivityDetailScreen() {
 			mapRef.current.sendToMap({ routeStartPoint: displayCoords[0] });
 		}
 
-		// Debug mode: render raw GPS measurement points as small black circles on
-		// top of the route line so the sampling density is visible.
-		if (isDebugMode && pts.length > 0) {
+		// Render raw GPS measurement points as small black circles on top of the
+		// route line when the "GPS-Punkte anzeigen" setting is enabled.
+		if (showGpsPoints && pts.length > 0) {
 			mapRef.current.sendToMap({ debugGpsPoints: pts.map((p) => [p.lng, p.lat]) });
 		} else {
 			mapRef.current.sendToMap({ debugGpsPoints: null });
@@ -988,7 +989,7 @@ export default function ActivityDetailScreen() {
 				mapRef.current.sendToMap({ autoRotate: false });
 			}
 		};
-	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, isDebugMode, routeSmoothingEnabled]);
+	}, [mapMounted, activity, buildRouteSegments, computeRouteBounds, hexTileRecords, showGpsPoints, routeSmoothingEnabled]);
 
 	// Send enclosed tiles GeoJSON to the map (light blue fill), mirroring routes/[id].tsx
 	useEffect(() => {
