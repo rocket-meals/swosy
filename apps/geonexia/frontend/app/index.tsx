@@ -3816,12 +3816,12 @@ export default function RecordScreen() {
 		}
 		// Fire-and-forget: fetch and cache map features for adjacent cells so that
 		// the next map rebuild can apply the pine tree billboard on forest tiles.
-		const adjacentCellsForMeasure = findAdjacentWalkedCells(routeCells, new Set([...routeCells, ...enclosedCells]));
-		if (adjacentCellsForMeasure.length > 0) {
+		const adjacentCells = findAdjacentWalkedCells(routeCells, new Set([...routeCells, ...enclosedCells]));
+		if (adjacentCells.length > 0) {
 			void (async () => {
 				try {
 					const newEntries: HexTileFeatureCache = {};
-					for (const hexId of adjacentCellsForMeasure) {
+					for (const hexId of adjacentCells) {
 						try {
 							newEntries[hexId] = await queryTileFeaturesForHexCell(hexId);
 						} catch {
