@@ -1,15 +1,15 @@
 {
   "report_version": "^0.1.103",
-  "report_timestamp": "2026-04-10T07:02:36.708Z",
+  "report_timestamp": "2026-04-10T07:13:15.483Z",
   "target_language": "typescript",
   "report_summary": {
     "additional": {
       "invertedIndexSoftwareProjectStatistics": {
         "invertedFieldToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.6154471544715447,
-          "amountSavedValuesForKeys": 3974,
+          "average": 1.611855460820138,
+          "amountSavedValuesForKeys": 3970,
           "amountKeys": 25
         },
         "invertedParameterToMethods": {
@@ -20,52 +20,52 @@
           "amountKeys": 20
         },
         "invertedParameterToClasses": {
-          "median": 1.5,
+          "median": 1,
           "maximum": 94,
-          "average": 1.6300246103363412,
-          "amountSavedValuesForKeys": 3974,
+          "average": 1.6263826300696436,
+          "amountSavedValuesForKeys": 3970,
           "amountKeys": 26
         }
       },
       "timer_information": {
-        "ast_generation_time_ms": 4219,
-        "detection_time_ms": 84,
+        "ast_generation_time_ms": 4134,
+        "detection_time_ms": 86,
         "machine_information": {
           "os": "Linux",
           "os_release": "6.17.0-1010-azure",
           "os_platform": "linux",
           "os_arch": "x64",
-          "os_uptime": 226.74,
-          "os_memory_free": 14969008128,
-          "os_memory_total": 16770764800,
+          "os_uptime": 120.16,
+          "os_memory_free": 14884315136,
+          "os_memory_total": 16766431232,
           "os_cpu_cores": 4,
           "os_cpu_model": "AMD EPYC 7763 64-Core Processor",
           "os_cpu_speed": 0
         }
       }
     },
-    "amount_classes_or_interfaces_with_data_clumps": 53,
-    "amount_files_with_data_clumps": 43,
+    "amount_classes_or_interfaces_with_data_clumps": 51,
+    "amount_files_with_data_clumps": 41,
     "amount_methods_with_data_clumps": 5,
-    "fields_to_fields_data_clump": 74,
+    "fields_to_fields_data_clump": 72,
     "parameters_to_fields_data_clump": 0,
     "parameters_to_parameters_data_clump": 8,
-    "amount_data_clumps": 82
+    "amount_data_clumps": 80
   },
   "project_info": {
     "project_url": "https://github.com/rocket-meals/rocket-meals",
     "project_name": "rocket-meals",
-    "project_version": "30f8a47829a775acc2b6af31614eff0271faa407",
-    "project_commit_hash": "30f8a47829a775acc2b6af31614eff0271faa407",
+    "project_version": "a45ab2cffdb92dbef1813395af8fd2dc1d84edd8",
+    "project_commit_hash": "a45ab2cffdb92dbef1813395af8fd2dc1d84edd8",
     "project_tag": null,
-    "project_commit_date": "1775804462",
+    "project_commit_date": "1775805093",
     "additional": {
       "relative_path_to_source_folder_in_project": ""
     },
     "number_of_files": 496,
-    "number_of_classes_or_interfaces": 1007,
+    "number_of_classes_or_interfaces": 1005,
     "number_of_methods": 1328,
-    "number_of_data_fields": 3974,
+    "number_of_data_fields": 3970,
     "number_of_method_parameters": 1467
   },
   "detector": {
@@ -2462,300 +2462,6 @@
         "cluster_type": 3
       }
     },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/app/achievements/index.tsx-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition-titledescriptioniconBgColorrenderIconformatProgress": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/achievements/index.tsx-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition-titledescriptioniconBgColorrenderIconformatProgress",
-      "probability": 1,
-      "from_file_path": "apps/geonexia/frontend/app/achievements/index.tsx",
-      "from_class_or_interface_key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition",
-      "from_class_or_interface_name": "AchievementDefinition",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/geonexia/frontend/app/challenges/index.tsx",
-      "to_class_or_interface_key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition",
-      "to_class_or_interface_name": "ChallengeDefinition",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/title": {
-          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 62,
-              "startColumn": 2,
-              "endLine": 62,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 39,
-            "startColumn": 2,
-            "endLine": 39,
-            "endColumn": 16
-          }
-        },
-        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/description": {
-          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/description",
-          "name": "description",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/description",
-            "name": "description",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 63,
-              "startColumn": 2,
-              "endLine": 63,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 40,
-            "startColumn": 2,
-            "endLine": 40,
-            "endColumn": 22
-          }
-        },
-        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/iconBgColor": {
-          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/iconBgColor",
-          "name": "iconBgColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/iconBgColor",
-            "name": "iconBgColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 64,
-              "startColumn": 2,
-              "endLine": 64,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 41,
-            "startColumn": 2,
-            "endLine": 41,
-            "endColumn": 22
-          }
-        },
-        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/renderIcon": {
-          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/renderIcon",
-          "name": "renderIcon",
-          "type": "(color: string) => React.ReactElement",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/renderIcon",
-            "name": "renderIcon",
-            "type": "(color: string) => React.ReactElement",
-            "modifiers": [],
-            "position": {
-              "startLine": 65,
-              "startColumn": 2,
-              "endLine": 65,
-              "endColumn": 52
-            }
-          },
-          "position": {
-            "startLine": 43,
-            "startColumn": 2,
-            "endLine": 43,
-            "endColumn": 52
-          }
-        },
-        "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/formatProgress": {
-          "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/formatProgress",
-          "name": "formatProgress",
-          "type": "(current: number, goal: number) => string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/formatProgress",
-            "name": "formatProgress",
-            "type": "(current: number, goal: number) => string",
-            "modifiers": [],
-            "position": {
-              "startLine": 67,
-              "startColumn": 2,
-              "endLine": 67,
-              "endColumn": 61
-            }
-          },
-          "position": {
-            "startLine": 45,
-            "startColumn": 2,
-            "endLine": 45,
-            "endColumn": 61
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 10,
-        "cluster_type": 2
-      }
-    },
-    "fields_to_fields_data_clump-apps/geonexia/frontend/app/challenges/index.tsx-apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-titledescriptioniconBgColorrenderIconformatProgress": {
-      "type": "data_clump",
-      "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/challenges/index.tsx-apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition-apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition-titledescriptioniconBgColorrenderIconformatProgress",
-      "probability": 1,
-      "from_file_path": "apps/geonexia/frontend/app/challenges/index.tsx",
-      "from_class_or_interface_key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition",
-      "from_class_or_interface_name": "ChallengeDefinition",
-      "from_method_name": null,
-      "from_method_key": null,
-      "to_file_path": "apps/geonexia/frontend/app/achievements/index.tsx",
-      "to_class_or_interface_key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition",
-      "to_class_or_interface_name": "AchievementDefinition",
-      "to_method_key": null,
-      "to_method_name": null,
-      "data_clump_type": "fields_to_fields_data_clump",
-      "data_clump_data": {
-        "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/title": {
-          "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/title",
-          "name": "title",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/title",
-            "name": "title",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 39,
-              "startColumn": 2,
-              "endLine": 39,
-              "endColumn": 16
-            }
-          },
-          "position": {
-            "startLine": 62,
-            "startColumn": 2,
-            "endLine": 62,
-            "endColumn": 16
-          }
-        },
-        "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/description": {
-          "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/description",
-          "name": "description",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/description",
-            "name": "description",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 40,
-              "startColumn": 2,
-              "endLine": 40,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 63,
-            "startColumn": 2,
-            "endLine": 63,
-            "endColumn": 22
-          }
-        },
-        "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/iconBgColor": {
-          "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/iconBgColor",
-          "name": "iconBgColor",
-          "type": "string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/iconBgColor",
-            "name": "iconBgColor",
-            "type": "string",
-            "modifiers": [],
-            "position": {
-              "startLine": 41,
-              "startColumn": 2,
-              "endLine": 41,
-              "endColumn": 22
-            }
-          },
-          "position": {
-            "startLine": 64,
-            "startColumn": 2,
-            "endLine": 64,
-            "endColumn": 22
-          }
-        },
-        "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/renderIcon": {
-          "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/renderIcon",
-          "name": "renderIcon",
-          "type": "(color: string) => React.ReactElement",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/renderIcon",
-            "name": "renderIcon",
-            "type": "(color: string) => React.ReactElement",
-            "modifiers": [],
-            "position": {
-              "startLine": 43,
-              "startColumn": 2,
-              "endLine": 43,
-              "endColumn": 52
-            }
-          },
-          "position": {
-            "startLine": 65,
-            "startColumn": 2,
-            "endLine": 65,
-            "endColumn": 52
-          }
-        },
-        "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/formatProgress": {
-          "key": "apps/geonexia/frontend/app/challenges/index.tsx/interface/ChallengeDefinition/memberField/formatProgress",
-          "name": "formatProgress",
-          "type": "(current: number, goal: number) => string",
-          "probability": 1,
-          "modifiers": [],
-          "to_variable": {
-            "key": "apps/geonexia/frontend/app/achievements/index.tsx/interface/AchievementDefinition/memberField/formatProgress",
-            "name": "formatProgress",
-            "type": "(current: number, goal: number) => string",
-            "modifiers": [],
-            "position": {
-              "startLine": 45,
-              "startColumn": 2,
-              "endLine": 45,
-              "endColumn": 61
-            }
-          },
-          "position": {
-            "startLine": 67,
-            "startColumn": 2,
-            "endLine": 67,
-            "endColumn": 61
-          }
-        }
-      },
-      "data_clump_type_additional": {
-        "cluster_id": 10,
-        "cluster_type": 2
-      }
-    },
     "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount": {
       "type": "data_clump",
       "key": "fields_to_fields_data_clump-apps/geonexia/frontend/app/index.tsx-apps/geonexia/frontend/app/index.tsx/interface/MapFeatureInfo-apps/geonexia/frontend/helpers/RouteNameSuggestionHelper.ts/interface/MapFeatureInfo-layerIdnameclasssubclasshighwaywaterwaybuildingnaturallanduseamenitycount",
@@ -3049,7 +2755,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -3321,7 +3027,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -3418,7 +3124,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -3515,7 +3221,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -3662,7 +3368,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 12,
         "cluster_type": 2
       }
     },
@@ -3809,7 +3515,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 13,
+        "cluster_id": 12,
         "cluster_type": 2
       }
     },
@@ -3906,7 +3612,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -4003,7 +3709,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -4100,7 +3806,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -4197,7 +3903,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 12,
+        "cluster_id": 11,
         "cluster_type": 3
       }
     },
@@ -4319,7 +4025,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -4416,7 +4122,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -4513,7 +4219,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -4610,7 +4316,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -5442,7 +5148,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -5614,7 +5320,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -5711,7 +5417,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -5808,7 +5514,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -5905,7 +5611,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 17,
+        "cluster_id": 16,
         "cluster_type": 2
       }
     },
@@ -6077,7 +5783,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -6249,7 +5955,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -6521,7 +6227,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -6793,7 +6499,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -7090,7 +6796,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -7362,7 +7068,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 11,
+        "cluster_id": 10,
         "cluster_type": 3
       }
     },
@@ -7459,7 +7165,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 15,
+        "cluster_id": 14,
         "cluster_type": 3
       }
     },
@@ -7681,7 +7387,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -7778,7 +7484,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 16,
+        "cluster_id": 15,
         "cluster_type": 2
       }
     },
@@ -7900,7 +7606,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -8072,7 +7778,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -8194,7 +7900,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -8316,7 +8022,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -8488,7 +8194,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -8610,7 +8316,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 20,
+        "cluster_id": 19,
         "cluster_type": 3
       }
     },
@@ -8782,7 +8488,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 18,
+        "cluster_id": 17,
         "cluster_type": 2
       }
     },
@@ -9004,7 +8710,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 19,
+        "cluster_id": 18,
         "cluster_type": 2
       }
     },
@@ -9198,7 +8904,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -9295,7 +9001,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 21,
+        "cluster_id": 20,
         "cluster_type": 2
       }
     },
@@ -10615,7 +10321,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -10712,7 +10418,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -11344,7 +11050,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     },
@@ -11441,7 +11147,7 @@
         }
       },
       "data_clump_type_additional": {
-        "cluster_id": 14,
+        "cluster_id": 13,
         "cluster_type": 3
       }
     }
