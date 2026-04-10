@@ -1151,6 +1151,7 @@ export type Foods = {
   rating_average_legacy?: number | null;
   rating_legacy_settings: string;
   rating_settings: string;
+  result_hash?: string | null;
   show_description_icon_on_card?: boolean | null;
   sort?: number | null;
   status?: string | null;
