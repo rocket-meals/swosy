@@ -8963,7 +8963,7 @@ Key,Message,Component,Line
 "AZ0Tpk9_ufp2jxPAhSzO","Remove this unused import of 'IconButton'.","rocket-meals_rocket-meals:apps/frontend/app/components/CustomStackHeader/CustomStackHeader.tsx",16
 "AZ0TplZTufp2jxPAhS40","Member '_client' is never reassigned; mark it as `readonly`.","rocket-meals_rocket-meals:apps/frontend/app/helper/collectionHelper.ts",31
 "AZ0TplGSufp2jxPAhS0i","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/components/FoodItem/FoodItem.tsx",140
-"AZ0TplFTufp2jxPAhS0b","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListTextInput.tsx",97
+"AZ0TplFTufp2jxPAhS0b","The empty object is useless.","rocket-meals_rocket-meals:apps/frontend/app/components/SettingsListTextInput.tsx",98
 "AZ0Tpk3aufp2jxPAhSxV","Remove this useless assignment to variable ""popupEvents"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",85
 "AZ0Tpk3aufp2jxPAhSxW","Remove this useless assignment to variable ""canteens"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/_layout.tsx",90
 "AZ0Tpk0wufp2jxPAhSwi","Remove this useless assignment to variable ""isDevMode"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",50
@@ -9160,12 +9160,12 @@ Key,Message,Component,Line
 "AZ0Tpk0wufp2jxPAhSwm","This assertion is unnecessary since it does not change the type of the expression.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",119
 "AZ0Tpk0wufp2jxPAhSwn","Remove this commented out code.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/account-balance/index.tsx",122
 "AZ0TplBrufp2jxPAhSzw","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/components/CalendarSheet/CalendarSheet.tsx",159
-"AZ0TplMEufp2jxPAhS1z","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",96
-"AZ0TplMEufp2jxPAhS10","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",109
-"AZ0TplMEufp2jxPAhS11","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",115
-"AZ0TplMEufp2jxPAhS12","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",211
-"AZ0TplMEufp2jxPAhS13","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",225
-"AZ0TplMEufp2jxPAhS14","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",239
+"AZ0TplMEufp2jxPAhS1z","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",97
+"AZ0TplMEufp2jxPAhS10","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",110
+"AZ0TplMEufp2jxPAhS11","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",116
+"AZ0TplMEufp2jxPAhS12","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",210
+"AZ0TplMEufp2jxPAhS13","Handle this exception or don't catch it at all.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",224
+"AZ0TplMEufp2jxPAhS14","Unexpected negated condition.","rocket-meals_rocket-meals:apps/frontend/app/components/DateTimeInputs/index.tsx",238
 "AZ0TplmNufp2jxPAhS6h","Remove this unused import of 'CronObject'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/index.ts",12
 "AZ0TplmNufp2jxPAhS6i","'repo-depkit-common' imported multiple times.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/housing-sync-hook/index.ts",12
 "AZ0Tplrwufp2jxPAhTKi","Remove this unused import of 'CronObject'.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/news-sync-hook/index.ts",14
