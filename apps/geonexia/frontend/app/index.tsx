@@ -1305,7 +1305,7 @@ function DebugInfoContent({
 						return (
 							<SettingsListSelectOptionSingle
 								key={cell}
-								label={`Fly to ${cell}`}
+								label={`Pentagon #${i + 1} (${lat.toFixed(2)}, ${lng.toFixed(2)})`}
 								leftIcon={<MaterialIcons name="navigation" size={20} color="#ffffff" />}
 								iconBgColor={PRIMARY_COLOR}
 								isSelected={false}
