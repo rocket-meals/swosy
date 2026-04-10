@@ -1,16 +1,8 @@
 Key,Message,Component,Line
-"AZ12P0wj_TZDx_O-fg6c","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",343
-"AZ12P0wj_TZDx_O-fg6d","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",344
-"AZ12P0wj_TZDx_O-fg6e","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",346
-"AZ12P0wj_TZDx_O-fg6f","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",347
-"AZ12P0wj_TZDx_O-fg6g","Refactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",381
-"AZ12P0wj_TZDx_O-fg6h","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",381
-"AZ12P0wj_TZDx_O-fg6i","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",453
-"AZ12P0wj_TZDx_O-fg6j","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",473
-"AZ12P0wj_TZDx_O-fg6k","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",653
-"AZ12P0wj_TZDx_O-fg6l","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",655
-"AZ12P0wj_TZDx_O-fg6m","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",690
-"AZ12P0wj_TZDx_O-fg6n","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",692
+"AZ12WxBD0GpFjC_qym84","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",100
+"AZ12WxBD0GpFjC_qym85","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",135
+"AZ12P0wj_TZDx_O-fg6m","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",98
+"AZ12P0wj_TZDx_O-fg6k","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",133
 "AZ12NX8jY0q7Lw4Vi3Dn","Remove this unused import of 'cellToChildren'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",30
 "AZ12NX8jY0q7Lw4Vi3Do","Remove this unused import of 'isPentagon'.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",30
 "AZ12NX8jY0q7Lw4Vi3Dp","Prefer `Number.parseFloat` over `parseFloat`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1169
@@ -9999,3 +9991,11 @@ Key,Message,Component,Line
 "AZkUSvN8S4VhJojFFAZ9","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",460
 "AZkUSvN8S4VhJojFFAZ6","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",474
 "AZlyj_Yk0YdgFOBafBLm","Prefer `node:buffer` over `buffer`.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",43
+"AZkUSvNxS4VhJojFFAZX","Move this array ""sort"" operation to a separate statement or replace it with ""toSorted"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",350
+"AZ0Tpk2Eufp2jxPAhSwv","Remove this useless assignment to variable ""idParts"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",366
+"AZkUSvNxS4VhJojFFAZa","Unnecessary use of conditional expression for default assignment.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",371
+"AZkUSvNxS4VhJojFFAZb","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",375
+"AZkUSvNxS4VhJojFFAZc","This always evaluates to truthy. Consider refactoring this code.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",426
+"AZkUSvNxS4VhJojFFAZd","Unexpected lexical declaration in case block.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",468
+"AZkUSvNxS4VhJojFFAZg","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/form-submission/index.tsx",660
+"AZkUSvOmS4VhJojFFAbP","Move this component definition out of the parent component and pass data as props.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/housing/_layout.tsx",26
