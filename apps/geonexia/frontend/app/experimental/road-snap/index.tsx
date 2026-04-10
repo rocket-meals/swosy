@@ -23,13 +23,11 @@ import {
 	SavedActivity,
 } from '../../../helpers/ActivityStorage';
 import { HEX_TILE_SCRIPT } from '../../../assets/hexTileScript';
+import { snapToRoad } from '../../../helpers/RouteSmootherHelper';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ACCENT_COLOR = '#0d9488'; // teal
-
-// Smoothing window for the snap-to-road projection algorithm (number of neighbours)
-const SNAP_SMOOTH_WINDOW = 9;
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
@@ -44,13 +42,6 @@ function formatActivityLabel(activity: SavedActivity): string {
 	const km = activity.stats.distanceKm;
 	const distStr = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(2)} km`;
 	return `${date} ${time}  ·  ${distStr}`;
-}
-
-// Euclidean distance in degrees (good enough for small distances)
-function deg2(a: [number, number], b: [number, number]): number {
-	const dx = b[0] - a[0];
-	const dy = b[1] - a[1];
-	return dx * dx + dy * dy;
 }
 
 // ─── Route bounds ─────────────────────────────────────────────────────────────
@@ -68,73 +59,6 @@ function computeRouteBounds(points: RoutePoint[]) {
 		if (p.lng > maxLng) maxLng = p.lng;
 	}
 	return { minLat, maxLat, minLng, maxLng };
-}
-
-// ─── Moving-average smoothing ─────────────────────────────────────────────────
-
-function movingAverage(coords: [number, number][], window: number): [number, number][] {
-	const half = Math.floor(window / 2);
-	return coords.map((_, i) => {
-		const lo = Math.max(0, i - half);
-		const hi = Math.min(coords.length - 1, i + half);
-		let sumLng = 0;
-		let sumLat = 0;
-		let n = 0;
-		for (let j = lo; j <= hi; j++) {
-			sumLng += coords[j][0];
-			sumLat += coords[j][1];
-			n++;
-		}
-		return [sumLng / n, sumLat / n];
-	});
-}
-
-// ─── Road-snap algorithm ──────────────────────────────────────────────────────
-//
-// Approximates "road snapping" by:
-//   1. Building a smoothed centre-line of the GPS track (moving average).
-//   2. Projecting each raw GPS point onto the nearest segment of that
-//      smoothed track.
-
-function projectOntoSegment(
-	p: [number, number],
-	a: [number, number],
-	b: [number, number],
-): [number, number] {
-	const dx = b[0] - a[0];
-	const dy = b[1] - a[1];
-	const lenSq = dx * dx + dy * dy;
-	if (lenSq === 0) return a;
-	const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lenSq));
-	return [a[0] + t * dx, a[1] + t * dy];
-}
-
-function snapToRoad(
-	coords: [number, number][],
-	interpolatedMask?: boolean[],
-): [number, number][] {
-	if (coords.length < 2) return coords;
-
-	// Build smoothed centre-line from all points
-	const smoothed = movingAverage(coords, SNAP_SMOOTH_WINDOW);
-
-	// Project each raw point onto the nearest smoothed segment.
-	// Interpolated points are left unchanged.
-	return coords.map((pt, i) => {
-		if (interpolatedMask && interpolatedMask.length === coords.length && interpolatedMask[i])
-			return pt;
-		let bestDistSq = Infinity;
-		let bestPt: [number, number] = pt;
-		for (let j = 0; j < smoothed.length - 1; j++) {
-			const proj = projectOntoSegment(pt, smoothed[j], smoothed[j + 1]);
-			const d = deg2(pt, proj);
-			if (d < bestDistSq) {
-				bestDistSq = d;
-				bestPt = proj;
-			}
-		}
-		return bestPt;
-	});
 }
 
 // ─── Screen ───────────────────────────────────────────────────────────────────

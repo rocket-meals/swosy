@@ -265,11 +265,13 @@ export default function SettingsScreen() {
 	const selectedMapTheme = useSelector((state: RootState) => state.displaySettings.mapTheme);
 	const hexLineOpacity = useSelector((state: RootState) => state.displaySettings.hexLineOpacity);
 	const hexLineWidth = useSelector((state: RootState) => state.displaySettings.hexLineWidth);
+	const routeSmoothingEnabled = useSelector((state: RootState) => state.displaySettings.routeSmoothingEnabled);
 	const { show: showModal, close: closeModal } = useMyScrollViewModal();
 	const { show: showResetModal, close: closeResetModal } = useMyScrollViewModal();
 	const { show: showGpsModal, close: closeGpsModal } = useMyScrollViewModal();
 	const { show: showSpeechModal } = useMyScrollViewModal();
 	const { show: showTTSLogModal, close: closeTTSLogModal } = useMyScrollViewModal();
+	const { show: showAdvancedModal } = useMyScrollViewModal();
 	const { showAlert } = useGeonexiaAlert();
 
 	const appVersion = Constants.expoConfig?.version ?? '1.0.0';
@@ -348,6 +350,24 @@ export default function SettingsScreen() {
 			children: <TTSLogContent theme={theme} onClear={closeTTSLogModal} />,
 		});
 	}, [showTTSLogModal, closeTTSLogModal, theme]);
+
+	const handleOpenAdvancedSettings = useCallback(() => {
+		showAdvancedModal({
+			title: '⚙️ Erweiterte Einstellungen',
+			children: (
+				<SettingsListBoolean
+					leftIcon={<MaterialIcons name="my-location" size={22} color="#ffffff" />}
+					iconBgColor={MAP_COLOR}
+					label="GPS-Projektion auf Mittellinie"
+					valueActive="Eingeschaltet"
+					valueInactive="Ausgeschaltet"
+					isEnabled={routeSmoothingEnabled}
+					onToggle={() => dispatch(updateDisplaySettings({ routeSmoothingEnabled: !routeSmoothingEnabled }))}
+					groupPosition="single"
+				/>
+			),
+		});
+	}, [showAdvancedModal, dispatch, routeSmoothingEnabled]);
 
 	const handleToggleDevMode = useCallback(async () => {
 		const { records: currentRecords, isDevMode: currentIsDevMode, walkedEdges: currentEdges } = store.getState().hexTiles;
@@ -720,6 +740,17 @@ export default function SettingsScreen() {
 					leftIcon={<MaterialCommunityIcons name="map-outline" size={22} color="#ffffff" />}
 					label="Karten Material"
 					modalTitle="🗺️ Karten Material"
+					groupPosition="single"
+				/>
+
+				<SettingsListGroupTitle title="Erweiterte Einstellungen" />
+				<SettingsList
+					iconBgColor={MAP_COLOR}
+					leftIcon={<MaterialIcons name="tune" size={22} color="#ffffff" />}
+					label="Erweiterte Einstellungen"
+					value={routeSmoothingEnabled ? 'Glättung aktiv' : 'Standard'}
+					rightIcon={<Ionicons name="chevron-forward" size={20} color="#9ca3af" />}
+					handleFunction={handleOpenAdvancedSettings}
 					groupPosition="single"
 				/>
 

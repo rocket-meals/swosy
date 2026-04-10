@@ -16,6 +16,8 @@ export type DisplaySettingsState = {
 	hexTextureAdaptionOpacity: number;
 	/** Opacity for face-camera hex object sprites at anchor positions (0.0 – 1.0). */
 	hexObjectOpacity: number;
+	/** Whether to apply centre-line projection (road-snap smoothing) when displaying activity routes. */
+	routeSmoothingEnabled: boolean;
 };
 
 export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
@@ -25,6 +27,7 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexTextureOpacity: 0.9,
 	hexTextureAdaptionOpacity: 0.9,
 	hexObjectOpacity: 0.9,
+	routeSmoothingEnabled: false,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };
