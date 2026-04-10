@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ12HmsjlvW5v9mPCX9k","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/road-snap/index.tsx",124
 "AZ117CxJ0GpFjC_quwRY","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/hooks/useGeonexiaAlert.tsx",30
 "AZ117CxJ0GpFjC_quwRZ","Do not use Array index in keys","rocket-meals_rocket-meals:apps/geonexia/frontend/hooks/useGeonexiaAlert.tsx",33
 "AZ1z-mrY2E8zkBOOjZI-","Use the ""RegExp.exec()"" method instead.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",110
@@ -9,7 +10,6 @@ Key,Message,Component,Line
 "AZ1z7uaGRNwNhxnjXrzN","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",886
 "AZ1z7uaGRNwNhxnjXrzO","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",916
 "AZ1z7uaGRNwNhxnjXrzP","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/challenges/index.tsx",917
-"AZ1z7uWNRNwNhxnjXrzL","Prefer `.at(…)` over `[….length - index]`.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/experimental/road-snap/index.tsx",212
 "AZ1xhkwp2pcqjWfgcqdt","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",67
 "AZ1vRVi-_fTwIxHc1qm_","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",4369
 "AZ1vRVeB_fTwIxHc1qm-","Remove this unused import of 'SPEECH_SETTINGS_DEFAULTS'.","rocket-meals_rocket-meals:apps/geonexia/frontend/components/SpeechSettingsModal.tsx",25
