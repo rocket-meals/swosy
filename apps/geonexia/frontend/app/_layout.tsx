@@ -11,7 +11,7 @@ import { Modal, ScrollView, TouchableOpacity, View, Text, StyleSheet, KeyboardAv
 import * as Clipboard from 'expo-clipboard';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '../store/store';
-import { setDevMode, setDebugMode, loadWalkedEdgesState } from '../store/hexTileSlice';
+import { setDevMode, setDebugMode, loadWalkedEdgesState, setBillboardAtAnchor } from '../store/hexTileSlice';
 import { loadSportType as loadSportTypeAction } from '../store/sportTypeSlice';
 import { loadThemeMode as loadThemeModeAction } from '../store/themeSlice';
 import { loadPersistedBillboardConfig } from '../store/billboardConfigSlice';
@@ -22,7 +22,7 @@ import { loadSpeechSettings as loadSpeechSettingsAction } from '../store/speechS
 import { loadDisplaySettings as loadDisplaySettingsAction } from '../store/displaySettingsSlice';
 import { loadReplaySettings as loadReplaySettingsAction } from '../store/replaySettingsSlice';
 import { loadPersistedPlayerInformation } from '../store/playerInformationSlice';
-import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges } from '../helpers/HexTileStorage';
+import { loadHexTileState, loadDevHexTileState, loadDevModeFlag, loadDebugModeFlag, loadWalkedEdges, loadDevWalkedEdges, loadWorldBuildingId, loadDevWorldBuildingId, saveWorldBuildingId, saveDevWorldBuildingId, saveHexTileState, saveDevHexTileState, saveWalkedEdges, saveDevWalkedEdges, BillboardAnchorPosition } from '../helpers/HexTileStorage';
 import { loadSportType } from '../helpers/SportTypeStorage';
 import { loadThemeMode } from '../helpers/ThemeStorage';
 import { loadBillboardConfig } from '../helpers/BillboardConfigStorage';
@@ -33,10 +33,11 @@ import { loadSpeechSettings } from '../helpers/SpeechSettingsStorage';
 import { loadDisplaySettings } from '../helpers/DisplaySettingsStorage';
 import { loadReplaySettings } from '../helpers/ReplaySettingsStorage';
 import { loadPlayerInformation } from '../helpers/PlayerInformationStorage';
-import { WORLD_BUILDING_ID, rebuildMapFromActivities, applyRouteBenches } from '../helpers/ActivityMapRebuildHelper';
+import { WORLD_BUILDING_ID, rebuildMapFromActivities, applyRouteBenches, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, BILLBOARD_PINE_TREE_SMALL, getSmallTreeAnchorForHexId } from '../helpers/ActivityMapRebuildHelper';
 import { loadActivities } from '../helpers/ActivityStorage';
 import { loadRoutes } from '../helpers/RouteStorage';
-import { loadHexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
+import { loadHexTileFeatureCache, mergeHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
+import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { isAvailable as isH3Available } from '../helpers/H3Helper';
 import type { RootState } from '../store/store';
 import { getAppIconInsideExpoLocalSaved } from '../config';
@@ -409,6 +410,46 @@ export default function Layout() {
 							saveWorldBuildingId(WORLD_BUILDING_ID);
 						}
 						store.dispatch(setDevMode({ isDevMode, records: rebuiltRecords, walkedEdges: rebuiltEdges }));
+						// Fire-and-forget: fetch features for enclosed and adjacent-walked tiles
+						// that are not yet in the feature cache, then apply forest trees.
+						void (async () => {
+							try {
+								const tilesWithoutCache = Object.entries(rebuiltRecords)
+									.filter(([hexId, rec]) =>
+										(rec.enclosedCount > 0 || rec.adjacentWalkedCount > 0) &&
+										!rec.walkedOn &&
+										!hexTileFeatureCache[hexId],
+									)
+									.map(([hexId]) => hexId);
+								if (tilesWithoutCache.length === 0) return;
+								const newEntries: HexTileFeatureCache = {};
+								for (const hexId of tilesWithoutCache) {
+									try {
+										const features = await queryTileFeaturesForHexCell(hexId);
+										newEntries[hexId] = features;
+										if (hasForestFeature(features)) {
+											store.dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: BillboardAnchorPosition.CENTER,
+												billboard: BILLBOARD_PINE_TREE_LARGE,
+											}));
+											// Also place the small tree at a MIDDLE ring position,
+											// matching the full checkAndApplyForest behaviour.
+											store.dispatch(setBillboardAtAnchor({
+												h3Index: hexId,
+												anchorColor: getSmallTreeAnchorForHexId(hexId),
+												billboard: BILLBOARD_PINE_TREE_SMALL,
+											}));
+										}
+									} catch {
+										// ignore per-cell errors
+									}
+								}
+								await mergeHexTileFeatureCache(newEntries);
+							} catch (err) {
+								console.warn('[Layout] Feature cache update after rebuild failed:', err);
+							}
+						})();
 						return;
 					}
 				} catch (err) {

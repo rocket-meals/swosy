@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 10;
+export const WORLD_BUILDING_ID = 11;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -120,7 +120,7 @@ const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
  * All 12 MIDDLE ring anchor positions in clockwise degree order (0°, 30°, …, 330°).
  * Used to deterministically pick a tree placement position from the hex ID.
  */
-const MIDDLE_RING_BY_DEGREE: BillboardAnchorPosition[] = [
+export const MIDDLE_RING_BY_DEGREE: BillboardAnchorPosition[] = [
 	BillboardAnchorPosition.MIDDLE_0_DEGREE,
 	BillboardAnchorPosition.MIDDLE_30_DEGREE,
 	BillboardAnchorPosition.MIDDLE_60_DEGREE,
@@ -374,6 +374,23 @@ export function hasForestFeature(features: MapFeatureInfo[]): boolean {
 }
 
 /**
+ * Deterministically compute the MIDDLE ring anchor position for the small pine
+ * tree billboard on a given hex tile.  Uses the same FNV-style hash as
+ * `checkAndApplyForest` so callers that need to dispatch the billboard
+ * individually (outside a full record mutation) produce identical results.
+ *
+ * @param hexId H3 cell index string.
+ * @returns The `BillboardAnchorPosition` for the small tree.
+ */
+export function getSmallTreeAnchorForHexId(hexId: string): BillboardAnchorPosition {
+	let hash = 0;
+	for (let i = 0; i < hexId.length; i++) {
+		hash = (hash * 31 + hexId.charCodeAt(i)) >>> 0;
+	}
+	return MIDDLE_RING_BY_DEGREE[hash % MIDDLE_RING_BY_DEGREE.length];
+}
+
+/**
  * Check whether the cached features for a tile indicate a forest, and if so
  * apply forest tree billboards to the record.
  *
@@ -385,6 +402,7 @@ export function hasForestFeature(features: MapFeatureInfo[]): boolean {
  *
  * Does nothing when `features` is undefined or contains no forest indicator.
  */
+
 export function checkAndApplyForest(
 	hexId: string,
 	rec: HexTileRecord,
@@ -397,15 +415,7 @@ export function checkAndApplyForest(
 	rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_PINE_TREE_LARGE;
 
 	// Additional tree at a MIDDLE ring position derived from the hex ID.
-	// Hash all characters of the hex ID into a 32-bit unsigned integer, then
-	// map to one of the 12 MIDDLE positions via modulo 12. Using the full ID
-	// avoids the uneven distribution caused by only reading the last character.
-	let hash = 0;
-	for (let i = 0; i < hexId.length; i++) {
-		hash = (hash * 31 + hexId.charCodeAt(i)) >>> 0;
-	}
-	const positionIndex = hash % MIDDLE_RING_BY_DEGREE.length;
-	rec.billboards[MIDDLE_RING_BY_DEGREE[positionIndex]] = BILLBOARD_PINE_TREE_SMALL;
+	rec.billboards[getSmallTreeAnchorForHexId(hexId)] = BILLBOARD_PINE_TREE_SMALL;
 }
 
 /**
