@@ -147,7 +147,7 @@ function getISOWeeksInYear(year: number): number {
 
 // ─── Challenge config per type ─────────────────────────────────────────────────
 
-function challengeConfig(type: ChallengeType): { label: string; iconName: string; color: string } {
+function challengeConfig(type: ChallengeType): { label: string; iconName: React.ComponentProps<typeof Ionicons>['name']; color: string } {
   switch (type) {
     case 'volume':
       return { label: 'Volumen-Woche', iconName: 'trending-up-outline', color: COLOR_VOLUME };
@@ -180,7 +180,7 @@ function WeekRow({ weekNum, challenge, groupPosition, showSeparator, isDebug }: 
       title={titleText}
       value={`${challenge.totalKm} km · LR ${challenge.longestKm} km`}
       iconBgColor={color}
-      leftIcon={<Ionicons name={iconName as any} size={20} color="#ffffff" />}
+      leftIcon={<Ionicons name={iconName} size={20} color="#ffffff" />}
       groupPosition={groupPosition}
       showSeparator={showSeparator}
     />
@@ -271,7 +271,7 @@ export default function ChallengesScreen() {
           }
           value={`${currentChallenge.totalKm} km · LR ${currentChallenge.longestKm} km`}
           iconBgColor={currentConfig.color}
-          leftIcon={<Ionicons name={currentConfig.iconName as any} size={20} color="#ffffff" />}
+          leftIcon={<Ionicons name={currentConfig.iconName} size={20} color="#ffffff" />}
           groupPosition="single"
           showSeparator={false}
         />
