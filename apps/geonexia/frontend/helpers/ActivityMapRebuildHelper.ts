@@ -89,14 +89,15 @@ const TILE_IMAGE_STONE = 'Stone/stone';
  * for edge-midpoint positions (halfway between center and the hex boundary).
  *
  * H3's cellToBoundary places boundary[0] at the visual 300° position (upper-left),
- * NOT at visual 0° (top). Each edge therefore resolves to the midpoint between its
- * two adjacent boundary vertices:
- *   edge[0]: vertex[0](300°) → vertex[1](0°)   → visual midpoint 330° → MIDDLE_330_DEGREE
- *   edge[1]: vertex[1](0°)   → vertex[2](60°)  → visual midpoint  30° → MIDDLE_210_DEGREE (mirrored)
- *   edge[2]: vertex[2](60°)  → vertex[3](120°) → visual midpoint  90° → MIDDLE_150_DEGREE (mirrored)
- *   edge[3]: vertex[3](120°) → vertex[4](180°) → visual midpoint 150° → MIDDLE_90_DEGREE  (mirrored)
- *   edge[4]: vertex[4](180°) → vertex[5](240°) → visual midpoint 210° → MIDDLE_30_DEGREE  (mirrored)
- *   edge[5]: vertex[5](240°) → vertex[0](300°) → visual midpoint 270° → MIDDLE_270_DEGREE
+ * NOT at visual 0° (top). Each edge resolves to the midpoint between its two adjacent
+ * boundary vertices. The anchor names for edges 1–4 are intentionally swapped
+ * (30°↔210°, 90°↔150°) to match the mirrored visual representation in the hex picker:
+ *   edge[0]: geometric 330° → MIDDLE_330_DEGREE
+ *   edge[1]: geometric  30° → MIDDLE_210_DEGREE (mirrored 30°↔210°)
+ *   edge[2]: geometric  90° → MIDDLE_150_DEGREE (mirrored 90°↔150°)
+ *   edge[3]: geometric 150° → MIDDLE_90_DEGREE  (mirrored 90°↔150°)
+ *   edge[4]: geometric 210° → MIDDLE_30_DEGREE  (mirrored 30°↔210°)
+ *   edge[5]: geometric 270° → MIDDLE_270_DEGREE
  */
 const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
 	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 0: vertex[0](300°)→vertex[1](0°)

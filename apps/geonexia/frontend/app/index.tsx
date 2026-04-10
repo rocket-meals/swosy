@@ -1745,11 +1745,11 @@ const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
 	[BillboardAnchorPosition.MIDDLE_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // toward vertex[4]
 	[BillboardAnchorPosition.MIDDLE_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // toward vertex[5]
 
-	// ── Middle ring: toward edge midpoints (30°, 90°, 150°, 210°, 270°, 330°) ───
-	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // mirrored: toward edge[3]
-	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // mirrored: toward edge[2]
-	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // mirrored: toward edge[1]
-	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // mirrored: toward edge[0]
+	// ── Middle ring: toward edge midpoints (mirrored: 30°↔210°, 90°↔150°) ────────
+	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // displayed at 210° visual position (mirrored)
+	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // displayed at 150° visual position (mirrored)
+	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // displayed at  90° visual position (mirrored)
+	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // displayed at  30° visual position (mirrored)
 	[BillboardAnchorPosition.MIDDLE_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[4]
 	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[5]
 };
