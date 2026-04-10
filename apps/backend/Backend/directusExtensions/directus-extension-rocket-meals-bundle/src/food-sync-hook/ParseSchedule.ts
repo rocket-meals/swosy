@@ -315,6 +315,12 @@ export class ParseSchedule {
    *  2. Builds dicts by result_hash for existing DB foodoffers and report foodoffers
    *  3. Determines: toDelete (in DB not in report), toSkip (in both), toCreate (in report not in DB)
    *  4. Per date: deletes outdated, then creates new (with result_hash set)
+   *
+   * Additionally, canteens NOT present in the report are also handled:
+   *  - Regular canteens: future foodoffers (>= oldest report date) are deleted since the
+   *    report had no offers for them.
+   *  - Import-without-date canteens: skipped, as their offers are long-term and not
+   *    expected in every report.
    */
   async syncFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], helperObject: FoodCreationHelperObject) {
     await this.context.logger.appendLog('Sync Food Offers via result_hash');
@@ -329,9 +335,21 @@ export class ParseSchedule {
       foodoffersForParserGroupedByCanteen[key].push(foodofferForParser);
     }
 
-    // Step 2: Process each canteen independently
-    const canteenExternalIdentifiers = Object.keys(foodoffersForParserGroupedByCanteen);
-    for (const canteenExternalIdentifier of canteenExternalIdentifiers) {
+    // Compute the global oldest date from the entire report (across all canteens).
+    // This is used later to scope deletion for canteens not present in the report.
+    const allReportDates = this.getFoodofferDatesFromRawFoodofferJSONList(foodofferListForParser);
+    let globalOldestDate: FoodofferDateType | null = null;
+    for (const foodofferDate of allReportDates) {
+      const dateAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDate));
+      if (!globalOldestDate || dateAsDate < new Date(DateHelper.foodofferDateTypeToString(globalOldestDate))) {
+        globalOldestDate = foodofferDate;
+      }
+    }
+    const globalOldestDateString = globalOldestDate ? DateHelper.foodofferDateTypeToString(globalOldestDate) : null;
+
+    // Step 2: Process each canteen that IS in the report
+    const canteenExternalIdentifiersInReport = new Set(Object.keys(foodoffersForParserGroupedByCanteen));
+    for (const canteenExternalIdentifier of canteenExternalIdentifiersInReport) {
       await this.context.logger.appendLog('Sync: processing canteen: ' + canteenExternalIdentifier);
       const canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
       if (!canteen) continue;
@@ -500,6 +518,62 @@ export class ParseSchedule {
           await this.createFoodOffers(foodoffersForParserToCreate, helperObject);
         }
       }
+    }
+
+    // Step 3: Handle canteens NOT in the report.
+    // For regular canteens (not import-without-date), delete future foodoffers since
+    // the report had no offers for them. Import-without-date canteens are excluded
+    // because their offers are long-term and not expected in every report.
+    if (globalOldestDateString) {
+      await this.context.logger.appendLog('Sync: checking all canteens for missing report data (oldest report date: ' + globalOldestDateString + ')');
+      const canteensHelper = this.context.myDatabaseHelper.getCanteensHelper();
+      const allCanteens = await canteensHelper.readAllItems();
+      const foodoffersHelper = await this.context.myDatabaseHelper.getFoodoffersHelper();
+
+      for (const canteen of allCanteens) {
+        const externalIdentifier = canteen.external_identifier;
+        if (!externalIdentifier) continue;
+
+        // Skip canteens already processed from the report
+        if (canteenExternalIdentifiersInReport.has(externalIdentifier)) continue;
+
+        // Skip import-without-date canteens: their offers are long-term and not in every report
+        if (canteen.foodoffers_import_without_date) {
+          await this.context.logger.appendLog('Sync: skipping canteen not in report (import without date): ' + externalIdentifier);
+          continue;
+        }
+
+        await this.context.logger.appendLog('Sync: canteen not in report, deleting future foodoffers >= ' + globalOldestDateString + ' for canteen: ' + canteen.id + ' (' + externalIdentifier + ')');
+
+        // Fetch all existing foodoffers for this canteen >= oldest report date.
+        // canteen._eq excludes component foodoffers (which have canteen=null).
+        const existingFoodoffersForCanteen = await foodoffersHelper.readByQuery({
+          filter: {
+            _and: [
+              {
+                date: {
+                  _gte: globalOldestDateString,
+                },
+              },
+              {
+                canteen: {
+                  _eq: canteen.id,
+                },
+              },
+            ],
+          },
+          fields: ['id'],
+          limit: -1,
+        });
+
+        if (existingFoodoffersForCanteen.length > 0) {
+          await this.deleteFoodOffers(existingFoodoffersForCanteen as DatabaseTypes.Foodoffers[], `Delete future foodoffers for canteen not in report: ${externalIdentifier}`);
+        } else {
+          await this.context.logger.appendLog('Sync: no future foodoffers to delete for canteen: ' + externalIdentifier);
+        }
+      }
+    } else {
+      await this.context.logger.appendLog('Sync: no dates in report at all, skipping canteen-not-in-report cleanup');
     }
   }
 
