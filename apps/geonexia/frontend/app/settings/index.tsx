@@ -15,6 +15,7 @@ import Constants from 'expo-constants';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteAllActivities, loadActivities, saveActivity } from '../../helpers/ActivityStorage';
+import { loadRoutes } from '../../helpers/RouteStorage';
 import { isAvailable as isH3Available } from '../../helpers/H3Helper';
 import {
 	computeActivityData,
@@ -22,6 +23,7 @@ import {
 	buildFullRouteTileIds,
 	H3_RESOLUTION_FALLBACK,
 	rebuildMapFromActivities,
+	applyRouteBenches,
 	hasForestFeature,
 	BILLBOARD_PINE_TREE_LARGE,
 } from '../../helpers/ActivityMapRebuildHelper';
@@ -536,6 +538,8 @@ export default function SettingsScreen() {
 						const hexTileFeatureCache = await loadHexTileFeatureCache();
 						const homeHexTile = store.getState().playerInformation.homeHexTile;
 						const { records, walkedEdges } = rebuildMapFromActivities(sorted, hexTileFeatureCache, homeHexTile);
+						const routes = await loadRoutes();
+						applyRouteBenches(records, sorted, routes);
 						dispatch(loadPersistedState(records));
 						dispatch(loadWalkedEdgesState(walkedEdges));
 

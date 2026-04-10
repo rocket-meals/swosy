@@ -18,6 +18,7 @@
 import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, RoutePoint, SavedActivity } from './ActivityStorage';
+import type { SavedRoute } from './RouteStorage';
 import type { HexTileFeatureCache } from './HexTileFeatureStorage';
 import type { MapFeatureInfo } from './RouteNameSuggestionHelper';
 import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } from './OpenMapTilesSchema';
@@ -30,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 7;
+export const WORLD_BUILDING_ID = 8;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -75,6 +76,13 @@ const BILLBOARD_PATH_ROUNDED = 'objects:58';
  */
 const BILLBOARD_CASTLE2 = 'objects:12';
 const TILE_IMAGE_DIRT = 'Dirt/dirt';
+
+/**
+ * Billboard key for the bench sprite (index 8 in OBJECT_SPRITES).
+ * Placed at CENTER on the dirt tile where the player was most often slowest
+ * along a route (computed from the last 5 activities on that route).
+ */
+export const BILLBOARD_BENCH = 'objects:8';
 
 /** Terrain image key applied to tiles that are enclosed but not walked on. */
 const TILE_IMAGE_GRASS = 'Grass/grass';
@@ -668,4 +676,101 @@ export function rebuildMapFromActivities(
 	}
 
 	return { records, walkedEdges: Array.from(edgeSet) };
+}
+
+/**
+ * Maximum number of recent activities per route to consider when computing
+ * the slowest-tile heuristic.
+ */
+const BENCH_MAX_ACTIVITIES_PER_ROUTE = 5;
+
+/**
+ * For each saved route, find the dirt hex tile where the player was most often
+ * slowest (lowest average speed across the last `BENCH_MAX_ACTIVITIES_PER_ROUTE`
+ * activities on that route) and place a bench billboard at its CENTER anchor –
+ * but only when the tile has no CENTER billboard yet.
+ *
+ * Exclusions (never receive a bench):
+ *  - The first and last hex tile of the route itself.
+ *  - The first and last hex tile of each activity's visited sequence.
+ *
+ * Per-tile speed is the mean of `computed.hexTilesVisited[i].avgSpeedKmh`
+ * across all qualifying activities that visited the tile.  Tiles are sorted by
+ * this mean speed ascending, and the first tile that (a) is a dirt tile in the
+ * map and (b) has no existing CENTER billboard receives the bench.
+ *
+ * Mutates `records` in place; no return value.
+ *
+ * @param records    The rebuilt hex-tile map (from `rebuildMapFromActivities`).
+ * @param activities All saved activities (used to look up route membership).
+ * @param routes     All saved routes.
+ */
+export function applyRouteBenches(
+	records: Record<string, HexTileRecord>,
+	activities: SavedActivity[],
+	routes: SavedRoute[],
+): void {
+	for (const route of routes) {
+		if (route.hexTiles.length < 2) continue;
+
+		// Tiles to exclude: first and last of the route.
+		const routeExcluded = new Set<string>([
+			route.hexTiles[0],
+			route.hexTiles[route.hexTiles.length - 1],
+		]);
+
+		// Last BENCH_MAX_ACTIVITIES_PER_ROUTE activities assigned to this route,
+		// sorted by endedAt descending (most recent first).
+		const routeActivities = activities
+			.filter((a) => a.routeId === route.id)
+			.sort((a, b) => b.endedAt - a.endedAt)
+			.slice(0, BENCH_MAX_ACTIVITIES_PER_ROUTE);
+
+		if (routeActivities.length === 0) continue;
+
+		// Accumulate average speed per hex tile across activities.
+		const hexSpeedSum: Record<string, number> = {};
+		const hexActivityCount: Record<string, number> = {};
+
+		for (const activity of routeActivities) {
+			const hexTilesVisited: ComputedHexTileEntry[] =
+				activity.computed?.hexTilesVisited ??
+				(activity.hexTilesOrdered ?? []).map((hexId) => ({ hexId, avgSpeedKmh: 0 }));
+
+			if (hexTilesVisited.length === 0) continue;
+
+			// Exclude first and last tiles of this activity's visited sequence.
+			const activityExcluded = new Set<string>([
+				hexTilesVisited[0].hexId,
+				hexTilesVisited[hexTilesVisited.length - 1].hexId,
+			]);
+
+			for (const { hexId, avgSpeedKmh } of hexTilesVisited) {
+				if (activityExcluded.has(hexId)) continue;
+				if (routeExcluded.has(hexId)) continue;
+				hexSpeedSum[hexId] = (hexSpeedSum[hexId] ?? 0) + avgSpeedKmh;
+				hexActivityCount[hexId] = (hexActivityCount[hexId] ?? 0) + 1;
+			}
+		}
+
+		// Sort eligible tiles by mean speed ascending (slowest first).
+		const candidates = Object.keys(hexSpeedSum)
+			.map((hexId) => ({
+				hexId,
+				meanSpeed: hexSpeedSum[hexId] / hexActivityCount[hexId],
+			}))
+			.sort((a, b) => a.meanSpeed - b.meanSpeed);
+
+		// Place bench on the first dirt tile that has no CENTER billboard yet.
+		for (const { hexId } of candidates) {
+			const rec = records[hexId];
+			if (!rec) continue;
+			if (rec.tileImage !== TILE_IMAGE_DIRT) continue;
+			if (rec.billboards?.[BillboardAnchorPosition.CENTER]) continue;
+
+			if (!rec.billboards) rec.billboards = {};
+			rec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_BENCH;
+			break;
+		}
+	}
 }
