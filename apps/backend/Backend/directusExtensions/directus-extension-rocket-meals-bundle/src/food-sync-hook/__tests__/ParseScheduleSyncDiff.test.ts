@@ -1,5 +1,5 @@
 import {describe, expect, it} from '@jest/globals';
-import {FoodParserHelper, FoodoffersTypeForParser} from '../FoodParserInterface';
+import {FoodofferDateType, FoodParserHelper, FoodoffersTypeForParser} from '../FoodParserInterface';
 import {ParseSchedule} from '../ParseSchedule';
 import {DatabaseTypes} from 'repo-depkit-common';
 
@@ -37,7 +37,7 @@ function createFoodofferInformationForParser(overrides?: PartialFoodofferForPars
       overrides?.marking_external_identifiers ?? [...baseFoodofferInformationForParser.marking_external_identifiers],
     category_external_identifier:
       overrides?.category_external_identifier ?? baseFoodofferInformationForParser.category_external_identifier,
-    date: overrides?.date ?? {...baseFoodofferInformationForParser.date},
+    date: overrides?.date ?? {...baseFoodofferInformationForParser.date} as FoodofferDateType,
     canteen_external_identifier:
       overrides?.canteen_external_identifier ?? baseFoodofferInformationForParser.canteen_external_identifier,
     food_id: overrides?.food_id ?? baseFoodofferInformationForParser.food_id,

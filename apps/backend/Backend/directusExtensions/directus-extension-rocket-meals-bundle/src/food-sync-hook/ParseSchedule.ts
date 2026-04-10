@@ -416,6 +416,7 @@ export class ParseSchedule {
         // Group report foodoffers for this canteen by date string
         const reportByDate: Record<string, FoodoffersTypeForParser[]> = {};
         for (const foodofferForParser of canteenFoodoffers) {
+          if (!foodofferForParser.date) continue;
           const dateKey = DateHelper.foodofferDateTypeToString(foodofferForParser.date);
           if (!reportByDate[dateKey]) {
             reportByDate[dateKey] = [];
