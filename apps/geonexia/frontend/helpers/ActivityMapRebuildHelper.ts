@@ -15,7 +15,7 @@
  * easy to test and call from any context.
  */
 
-import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available } from './H3Helper';
+import { latLngToCell, cellToLatLng, cellToBoundary, gridDisk, gridDistance, areNeighborCells, isAvailable as isH3Available, cellToParent, cellToChildren, cellToCenterChild, getResolution } from './H3Helper';
 import { BillboardAnchorPosition, ActivityReference, HexTileRecord, computeHexTileLevel } from './HexTileStorage';
 import { ComputedActivityData, ComputedHexTileEntry, RoutePoint, SavedActivity } from './ActivityStorage';
 import type { SavedRoute } from './RouteStorage';
@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 8;
+export const WORLD_BUILDING_ID = 9;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -423,6 +423,47 @@ function getOrCreateRecord(
 	return records[h3Index];
 }
 
+/**
+ * Compute the parent H3 index and the child's position (0–6) among its
+ * siblings at the parent's resolution.
+ *
+ * The center child (returned by `cellToCenterChild`) receives index 0.
+ * The remaining 6 children are sorted by their H3 index string ascending
+ * and receive indices 1–6.
+ *
+ * Returns `null` for resolution-0 cells (no parent exists) or when the H3
+ * library is unavailable.
+ */
+function computeParentInfo(
+	h3Index: string,
+): { parentH3Index: string; parentChildIndex: number } | null {
+	if (!isH3Available()) return null;
+	try {
+		const res = getResolution(h3Index);
+		if (res <= 0) return null;
+		const parentRes = res - 1;
+		const parentH3Index = cellToParent(h3Index, parentRes);
+		if (!parentH3Index) return null;
+
+		const centerChild = cellToCenterChild(parentH3Index, res);
+		if (centerChild === h3Index) {
+			return { parentH3Index, parentChildIndex: 0 };
+		}
+
+		const allChildren = cellToChildren(parentH3Index, res);
+		const nonCenterChildren = allChildren
+			.filter((c) => c !== centerChild)
+			.sort();
+		const idx = nonCenterChildren.indexOf(h3Index);
+		// idx is 0–5 for the non-center children → add 1 to reserve 0 for center
+		const parentChildIndex = idx >= 0 ? idx + 1 : -1;
+		if (parentChildIndex < 0) return null;
+		return { parentH3Index, parentChildIndex };
+	} catch {
+		return null;
+	}
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -673,6 +714,39 @@ export function rebuildMapFromActivities(
 		const homeRec = getOrCreateRecord(records, homeHexTile);
 		if (!homeRec.billboards) homeRec.billboards = {};
 		homeRec.billboards[BillboardAnchorPosition.CENTER] = BILLBOARD_CASTLE2;
+	}
+
+	// ── Fourth pass: populate parent chain for all tiles ─────────────────────
+	// For every tile in `records`, set `parentH3Index` and `parentChildIndex`,
+	// and ensure ancestor records (up to resolution 0) also exist in `records`
+	// with their own parent info.  Ancestor records added here have level 0 and
+	// no visit/enclosure data; they serve purely as hierarchy metadata.
+	if (isH3Available()) {
+		// Snapshot the keys so that newly created ancestor records are also
+		// processed (we iterate until no new keys are added).
+		let keysToProcess = Object.keys(records);
+		while (keysToProcess.length > 0) {
+			const nextKeys: string[] = [];
+			for (const h3Index of keysToProcess) {
+				const rec = records[h3Index];
+				// Skip tiles whose parent info is already set.
+				if (rec.parentH3Index !== undefined) continue;
+				const info = computeParentInfo(h3Index);
+				if (!info) {
+					rec.parentH3Index = null;
+					rec.parentChildIndex = null;
+					continue;
+				}
+				rec.parentH3Index = info.parentH3Index;
+				rec.parentChildIndex = info.parentChildIndex;
+				// Create the parent record if it does not yet exist.
+				if (!records[info.parentH3Index]) {
+					getOrCreateRecord(records, info.parentH3Index);
+					nextKeys.push(info.parentH3Index);
+				}
+			}
+			keysToProcess = nextKeys;
+		}
 	}
 
 	return { records, walkedEdges: Array.from(edgeSet) };
