@@ -92,18 +92,18 @@ const TILE_IMAGE_STONE = 'Stone/stone';
  * NOT at visual 0° (top). Each edge therefore resolves to the midpoint between its
  * two adjacent boundary vertices:
  *   edge[0]: vertex[0](300°) → vertex[1](0°)   → visual midpoint 330° → MIDDLE_330_DEGREE
- *   edge[1]: vertex[1](0°)   → vertex[2](60°)  → visual midpoint  30° → MIDDLE_30_DEGREE
- *   edge[2]: vertex[2](60°)  → vertex[3](120°) → visual midpoint  90° → MIDDLE_90_DEGREE
- *   edge[3]: vertex[3](120°) → vertex[4](180°) → visual midpoint 150° → MIDDLE_150_DEGREE
- *   edge[4]: vertex[4](180°) → vertex[5](240°) → visual midpoint 210° → MIDDLE_210_DEGREE
+ *   edge[1]: vertex[1](0°)   → vertex[2](60°)  → visual midpoint  30° → MIDDLE_210_DEGREE (mirrored)
+ *   edge[2]: vertex[2](60°)  → vertex[3](120°) → visual midpoint  90° → MIDDLE_150_DEGREE (mirrored)
+ *   edge[3]: vertex[3](120°) → vertex[4](180°) → visual midpoint 150° → MIDDLE_90_DEGREE  (mirrored)
+ *   edge[4]: vertex[4](180°) → vertex[5](240°) → visual midpoint 210° → MIDDLE_30_DEGREE  (mirrored)
  *   edge[5]: vertex[5](240°) → vertex[0](300°) → visual midpoint 270° → MIDDLE_270_DEGREE
  */
 const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
 	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 0: vertex[0](300°)→vertex[1](0°)
-	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 1: vertex[1](0°)→vertex[2](60°)
-	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 2: vertex[2](60°)→vertex[3](120°)
-	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 3: vertex[3](120°)→vertex[4](180°)
-	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 4: vertex[4](180°)→vertex[5](240°)
+	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 1: vertex[1](0°)→vertex[2](60°)   mirrored
+	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 2: vertex[2](60°)→vertex[3](120°)  mirrored
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 3: vertex[3](120°)→vertex[4](180°) mirrored
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 4: vertex[4](180°)→vertex[5](240°) mirrored
 	BillboardAnchorPosition.MIDDLE_270_DEGREE, // edge 5: vertex[5](240°)→vertex[0](300°)
 ];
 
@@ -113,13 +113,13 @@ const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
  */
 const MIDDLE_RING_BY_DEGREE: BillboardAnchorPosition[] = [
 	BillboardAnchorPosition.MIDDLE_0_DEGREE,
-	BillboardAnchorPosition.MIDDLE_30_DEGREE,
+	BillboardAnchorPosition.MIDDLE_210_DEGREE, // mirrored: was MIDDLE_30_DEGREE
 	BillboardAnchorPosition.MIDDLE_60_DEGREE,
-	BillboardAnchorPosition.MIDDLE_90_DEGREE,
+	BillboardAnchorPosition.MIDDLE_150_DEGREE, // mirrored: was MIDDLE_90_DEGREE
 	BillboardAnchorPosition.MIDDLE_120_DEGREE,
-	BillboardAnchorPosition.MIDDLE_150_DEGREE,
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // mirrored: was MIDDLE_150_DEGREE
 	BillboardAnchorPosition.MIDDLE_180_DEGREE,
-	BillboardAnchorPosition.MIDDLE_210_DEGREE,
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // mirrored: was MIDDLE_210_DEGREE
 	BillboardAnchorPosition.MIDDLE_240_DEGREE,
 	BillboardAnchorPosition.MIDDLE_270_DEGREE,
 	BillboardAnchorPosition.MIDDLE_300_DEGREE,
