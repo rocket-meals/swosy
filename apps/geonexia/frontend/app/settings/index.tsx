@@ -33,6 +33,7 @@ import type { ThemeMode } from '../../store/themeSlice';
 import { setGpsIntervalSeconds } from '../../store/gpsIntervalSlice';
 import { setTTSEnabled } from '../../store/ttsSlice';
 import SpeechSettingsContent from '../../components/SpeechSettingsModal';
+import AdvancedSettingsContent from '../../components/AdvancedSettingsContent';
 import { AppDispatch, RootState, store } from '../../store/store';
 import { updateDisplaySettings } from '../../store/displaySettingsSlice';
 import {
@@ -354,20 +355,9 @@ export default function SettingsScreen() {
 	const handleOpenAdvancedSettings = useCallback(() => {
 		showAdvancedModal({
 			title: '⚙️ Erweiterte Einstellungen',
-			children: (
-				<SettingsListBoolean
-					leftIcon={<MaterialIcons name="my-location" size={22} color="#ffffff" />}
-					iconBgColor={MAP_COLOR}
-					label="GPS-Projektion auf Mittellinie"
-					valueActive="Eingeschaltet"
-					valueInactive="Ausgeschaltet"
-					isEnabled={routeSmoothingEnabled}
-					onToggle={() => dispatch(updateDisplaySettings({ routeSmoothingEnabled: !routeSmoothingEnabled }))}
-					groupPosition="single"
-				/>
-			),
+			children: <AdvancedSettingsContent />,
 		});
-	}, [showAdvancedModal, dispatch, routeSmoothingEnabled]);
+	}, [showAdvancedModal]);
 
 	const handleToggleDevMode = useCallback(async () => {
 		const { records: currentRecords, isDevMode: currentIsDevMode, walkedEdges: currentEdges } = store.getState().hexTiles;

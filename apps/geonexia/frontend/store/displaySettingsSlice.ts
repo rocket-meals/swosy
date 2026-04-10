@@ -27,7 +27,7 @@ export const DISPLAY_SETTINGS_DEFAULTS: DisplaySettingsState = {
 	hexTextureOpacity: 0.9,
 	hexTextureAdaptionOpacity: 0.9,
 	hexObjectOpacity: 0.9,
-	routeSmoothingEnabled: false,
+	routeSmoothingEnabled: true,
 };
 
 const initialState: DisplaySettingsState = { ...DISPLAY_SETTINGS_DEFAULTS };
