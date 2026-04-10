@@ -31,12 +31,12 @@ import { isAvailable as isH3Available, latLngToCell, cellToLatLng, gridDisk, gri
 import { queryTileFeaturesForHexCell } from '../helpers/TileFeatureHelper';
 import { ROUTE_NAME_LANDMARK_NAME_NULL_ALLOW } from '../helpers/OpenMapTilesSchema';
 import { RoutePoint, RunStats, SavedActivity, saveActivity, loadActivities, saveOsmConsent, loadOsmConsent } from '../helpers/ActivityStorage';
-import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE } from '../helpers/ActivityMapRebuildHelper';
+import { computeActivityData, hasForestFeature, BILLBOARD_PINE_TREE_LARGE, findAdjacentWalkedCells } from '../helpers/ActivityMapRebuildHelper';
 import { mergeHexTileFeatureCache, loadHexTileFeatureCache, type HexTileFeatureCache } from '../helpers/HexTileFeatureStorage';
 import { SavedRoute, loadRoutes, saveRoute } from '../helpers/RouteStorage';
 import { buildRouteDisplayData, computeEdgesFromHexTiles, computeHexBounds } from '../helpers/RouteDisplayHelper';
 import { HexTileRecord, BillboardAnchorPosition } from '../helpers/HexTileStorage';
-import { startRun, markVisited, markEnclosed, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, HexTileCustomizationPayload } from '../store/hexTileSlice';
+import { startRun, markVisited, markEnclosed, markAdjacentWalked, setHexTileCustomization, setBillboardAtAnchor, setTextureAdaptionAtAnchor, applyMapCustomizations, addWalkedEdges, HexTileCustomizationPayload } from '../store/hexTileSlice';
 import { setSportType, SPORT_TYPES, SportType } from '../store/sportTypeSlice';
 import { store, RootState } from '../store/store';
 import { setHomeHexTile } from '../store/playerInformationSlice';
@@ -4923,6 +4923,18 @@ export default function RecordScreen() {
 			}
 		} catch (err) {
 			console.warn('[RecordScreen] Enclosed tile detection failed:', err);
+		}
+
+		// Detect and mark tiles adjacent to the walked path (but not walked or enclosed).
+		try {
+			const walkedIds = orderedHexTilesRef.current.slice();
+			const excludedFromAdjacent = new Set([...visitedHexIdsRef.current, ...enclosedCells]);
+			const adjacentCells = findAdjacentWalkedCells(walkedIds, excludedFromAdjacent);
+			if (adjacentCells.length > 0) {
+				dispatch(markAdjacentWalked({ h3Indices: adjacentCells, timestamp: endedAt }));
+			}
+		} catch (err) {
+			console.warn('[RecordScreen] Adjacent walked tile detection failed:', err);
 		}
 
 		// Refresh the map to show newly enclosed tiles and updated walk path.

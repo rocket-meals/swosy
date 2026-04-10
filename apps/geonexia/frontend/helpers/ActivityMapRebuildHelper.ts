@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 9;
+export const WORLD_BUILDING_ID = 10;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -323,9 +323,43 @@ export function buildFullRouteTileIds(
 	return result;
 }
 
+/**
+ * Find all H3 cells that are directly adjacent (grid-distance 1) to any of
+ * the walked tiles, excluding tiles that are already walked or enclosed.
+ *
+ * These "adjacent walked" tiles represent the immediate neighbourhood of the
+ * player's path and are treated like enclosed tiles during world rebuild
+ * (grass terrain, forest trees where applicable).
+ *
+ * @param walkedHexIds   Ordered H3 tile IDs of physically walked tiles.
+ * @param excludedHexIds Set of tile IDs to exclude (walked + enclosed tiles).
+ * @returns Unique adjacent-walked tile IDs (order is not guaranteed).
+ */
+export function findAdjacentWalkedCells(
+	walkedHexIds: string[],
+	excludedHexIds: Set<string>,
+): string[] {
+	if (!isH3Available() || walkedHexIds.length === 0) return [];
+
+	const adjacent = new Set<string>();
+	for (const hexId of walkedHexIds) {
+		try {
+			const neighbors = gridDisk(hexId, 1);
+			for (const neighbor of neighbors) {
+				if (neighbor === hexId) continue;
+				if (excludedHexIds.has(neighbor)) continue;
+				if (adjacent.has(neighbor)) continue;
+				adjacent.add(neighbor);
+			}
+		} catch {
+			// skip invalid cells
+		}
+	}
+	return Array.from(adjacent);
+}
+
 
 /**
- * Returns `true` when the given feature list contains at least one feature that
  * indicates a forest / wooded area.  Checks:
  *  - `landcover` layer with `class = 'wood'` or `subclass = 'forest'`
  *  - `park` layer with `class = 'forest'`
@@ -414,8 +448,10 @@ function getOrCreateRecord(
 			h3Index,
 			lastVisitedAt: null,
 			lastEnclosedAt: null,
+			lastAdjacentWalkedAt: null,
 			visitCount: 0,
 			enclosedCount: 0,
+			adjacentWalkedCount: 0,
 			level: 0,
 			walkedOn: false,
 		};
@@ -518,6 +554,10 @@ export function computeActivityData(
 		avgSpeedKmh: activity.stats.avgSpeedKmh,
 		hexTilesVisited,
 		enclosedHexTiles,
+		adjacentWalkedHexTiles: findAdjacentWalkedCells(
+			hexTilesOrdered,
+			new Set([...hexTilesOrdered, ...enclosedHexTiles]),
+		),
 	};
 }
 
@@ -536,6 +576,9 @@ export function computeActivityData(
  *      → tileImage = "Grass/grass"
  *      → pineTreeLarge billboard at purple anchor (hex centroid), only when the
  *         hex-tile feature cache confirms a forest / wooded area on that tile
+ *  - **Adjacent-walked tiles** (adjacentWalkedCount > 0, visitCount = 0)
+ *      → tileImage = "Grass/grass"
+ *      → same forest/stone treatment as enclosed tiles
  *
  * @param activities         All saved activities to process.
  * @param hexTileFeatureCache  Optional per-hex feature cache.  When provided,
@@ -655,22 +698,55 @@ export function rebuildMapFromActivities(
 				refByHexId.set(hexId, newRef);
 			}
 		}
+
+		// ── Process adjacent-walked tiles ─────────────────────────────────────
+		// Adjacent-walked tiles are cells that are direct neighbours of walked
+		// tiles but were not walked themselves and are not enclosed. They are
+		// treated like enclosed tiles in the world rebuild (grass terrain etc.).
+		const walkedIds = orderedHexTiles.map((e) => e.hexId);
+		const excludedFromAdjacent = new Set([...walkedIds, ...enclosedHexTiles]);
+		const adjacentWalkedHexTiles = findAdjacentWalkedCells(walkedIds, excludedFromAdjacent);
+
+		for (let i = 0; i < adjacentWalkedHexTiles.length; i++) {
+			const hexId = adjacentWalkedHexTiles[i];
+			const rec = getOrCreateRecord(records, hexId);
+
+			// Update timestamps
+			if (rec.lastAdjacentWalkedAt === null || endedAt > rec.lastAdjacentWalkedAt) {
+				rec.lastAdjacentWalkedAt = endedAt;
+			}
+
+			// Add or merge the activity reference
+			if (!rec.activityReferences) rec.activityReferences = [];
+			const existingRef = refByHexId.get(hexId);
+			if (existingRef) {
+				existingRef.adjacentWalkedIndex = i;
+			} else {
+				const newRef: ActivityReference = { activityId, adjacentWalkedIndex: i };
+				rec.activityReferences.push(newRef);
+				refByHexId.set(hexId, newRef);
+			}
+		}
 	}
 
 	// ── Second pass: compute counts, levels, and tile images ─────────────────
 	for (const [hexId, rec] of Object.entries(records)) {
 		const refs: ActivityReference[] = rec.activityReferences ?? [];
 
-		// Count distinct activities that visited / enclosed this tile.
+		// Count distinct activities that visited / enclosed / adjacently-walked this tile.
 		const visitedActivities = new Set(
 			refs.filter((r) => r.walkedIndex !== undefined).map((r) => r.activityId),
 		);
 		const enclosedActivities = new Set(
 			refs.filter((r) => r.enclosedIndex !== undefined).map((r) => r.activityId),
 		);
+		const adjacentWalkedActivities = new Set(
+			refs.filter((r) => r.adjacentWalkedIndex !== undefined).map((r) => r.activityId),
+		);
 
 		rec.visitCount = visitedActivities.size;
 		rec.enclosedCount = enclosedActivities.size;
+		rec.adjacentWalkedCount = adjacentWalkedActivities.size;
 		rec.walkedOn = rec.visitCount > 0;
 		rec.level = computeHexTileLevel(rec);
 
@@ -693,9 +769,9 @@ export function rebuildMapFromActivities(
 					rec.billboardsTexture[anchorPosition] = BILLBOARD_PATH_ROUNDED;
 				}
 			}
-		} else if (rec.enclosedCount > 0) {
-			// Enclosed but not visited → grass terrain; forest trees only when
-			// the feature cache confirms a forest / wooded area on this tile.
+		} else if (rec.enclosedCount > 0 || rec.adjacentWalkedCount > 0) {
+			// Enclosed or adjacent-walked but not visited → grass terrain; forest
+			// trees only when the feature cache confirms a forest / wooded area.
 			rec.tileImage = TILE_IMAGE_GRASS;
 			checkAndApplyForest(hexId, rec, hexTileFeatureCache[hexId]);
 			// Override tileImage to stone when the feature cache confirms rocky

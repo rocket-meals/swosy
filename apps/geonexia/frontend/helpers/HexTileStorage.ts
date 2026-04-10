@@ -78,11 +78,12 @@ export enum BillboardAnchorPosition {
  * A back-reference linking a hex tile to a specific activity that visited or
  * enclosed it.  At most one entry per activity is stored per tile.
  *
- * - `walkedIndex`   – index of this tile in the activity's `computed.hexTilesVisited` list
- * - `enclosedIndex` – index of this tile in the activity's `computed.enclosedHexTiles` list
+ * - `walkedIndex`         – index of this tile in the activity's `computed.hexTilesVisited` list
+ * - `enclosedIndex`       – index of this tile in the activity's `computed.enclosedHexTiles` list
+ * - `adjacentWalkedIndex` – index of this tile in the activity's `computed.adjacentWalkedHexTiles` list
  *
- * One reference object can carry both indices when the tile was both walked and
- * enclosed in the same activity (rare, but possible with self-crossing routes).
+ * One reference object can carry multiple indices when the tile was walked,
+ * enclosed, or adjacent-walked in the same activity.
  */
 export type ActivityReference = {
 	activityId: string;
@@ -90,6 +91,8 @@ export type ActivityReference = {
 	walkedIndex?: number;
 	/** Position in the activity's enclosed hex tile list, if the tile was enclosed. */
 	enclosedIndex?: number;
+	/** Position in the activity's adjacent-walked hex tile list, if the tile was adjacent to a walked tile. */
+	adjacentWalkedIndex?: number;
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -102,7 +105,7 @@ export type ActivityReference = {
  *   1  = lightest green (e.g. enclosed once)
  *   10 = darkest green  (e.g. visited 5+ times)
  *
- * Formula: level = min(10, visitCount * 2 + enclosedCount)
+ * Formula: level = min(10, visitCount * 2 + enclosedCount + adjacentWalkedCount)
  */
 export type HexTileRecord = {
 	/** H3 cell index (e.g. "89283082813ffff") */
@@ -111,10 +114,14 @@ export type HexTileRecord = {
 	lastVisitedAt: number | null;
 	/** Unix timestamp (ms) of the last time this tile was enclosed by a run loop */
 	lastEnclosedAt: number | null;
+	/** Unix timestamp (ms) of the last time this tile was adjacent to a walked tile */
+	lastAdjacentWalkedAt: number | null;
 	/** Total number of runs where the user visited this tile */
 	visitCount: number;
 	/** Total number of times this tile was enclosed by a completed run loop */
 	enclosedCount: number;
+	/** Total number of times this tile was adjacent to a walked tile (but not walked or enclosed) */
+	adjacentWalkedCount: number;
 	/** Colour level 0–10, recomputed after each update */
 	level: number;
 	/**
@@ -194,17 +201,17 @@ export type HexTileRecord = {
  * Compute the colour level (0–10) for a hex tile based on its visit and
  * enclosure counts.
  *
- * Formula: level = min(10, visitCount * 2 + enclosedCount)
+ * Formula: level = min(10, visitCount * 2 + enclosedCount + adjacentWalkedCount)
  *
  *   0  = unvisited / never enclosed (transparent)
  *   1  = lightest green (e.g. enclosed once, never walked)
  *   10 = darkest green  (e.g. visited 5 times)
  *
- * Visiting a tile contributes twice as much as being enclosed, so active
- * running has more visual impact than passive territory capture.
+ * Visiting a tile contributes twice as much as being enclosed or adjacent-walked,
+ * so active running has more visual impact than passive territory capture.
  */
-export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | 'enclosedCount'>): number {
-	const score = record.visitCount * 2 + record.enclosedCount;
+export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | 'enclosedCount' | 'adjacentWalkedCount'>): number {
+	const score = record.visitCount * 2 + record.enclosedCount + (record.adjacentWalkedCount ?? 0);
 	if (score <= 0) return 0;
 	return Math.min(10, score);
 }
