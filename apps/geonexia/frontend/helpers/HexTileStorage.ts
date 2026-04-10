@@ -211,7 +211,7 @@ export type HexTileRecord = {
  * so active running has more visual impact than passive territory capture.
  */
 export function computeHexTileLevel(record: Pick<HexTileRecord, 'visitCount' | 'enclosedCount' | 'adjacentWalkedCount'>): number {
-	const score = record.visitCount * 2 + record.enclosedCount + (record.adjacentWalkedCount ?? 0);
+	const score = record.visitCount * 2 + record.enclosedCount + record.adjacentWalkedCount;
 	if (score <= 0) return 0;
 	return Math.min(10, score);
 }

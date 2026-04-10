@@ -342,62 +342,58 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities (stale enclosed 
 // ═══════════════════════════════════════════════════════════════════════════════
 
 describe('findAdjacentWalkedCells – basic behaviour', () => {
-it('H3 library is available', () => {
-expect(isH3Available()).toBe(true);
-});
+	it('returns empty array for empty input', () => {
+		const result = findAdjacentWalkedCells([], new Set());
+		expect(result).toHaveLength(0);
+	});
 
-it('returns empty array for empty input', () => {
-const result = findAdjacentWalkedCells([], new Set());
-expect(result).toHaveLength(0);
-});
+	it('result does not contain any walked tile', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const walkedSet = new Set(hexTiles);
+		const adjacent = findAdjacentWalkedCells(hexTiles, walkedSet);
 
-it('result does not contain any walked tile', () => {
-const hexTiles = activityFixture.hexTilesOrdered ?? [];
-const walkedSet = new Set(hexTiles);
-const adjacent = findAdjacentWalkedCells(hexTiles, walkedSet);
+		for (const cell of adjacent) {
+			expect(walkedSet.has(cell)).toBe(false);
+		}
+	});
 
-for (const cell of adjacent) {
-expect(walkedSet.has(cell)).toBe(false);
-}
-});
+	it('every result cell is a direct neighbour of at least one walked tile', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const walkedSet = new Set(hexTiles);
+		const adjacent = findAdjacentWalkedCells(hexTiles, walkedSet);
 
-it('every result cell is a direct neighbour of at least one walked tile', () => {
-const hexTiles = activityFixture.hexTilesOrdered ?? [];
-const walkedSet = new Set(hexTiles);
-const adjacent = findAdjacentWalkedCells(hexTiles, walkedSet);
+		for (const cell of adjacent) {
+			const neighborOfWalked = hexTiles.some((w) => areNeighborCells(w, cell));
+			expect(neighborOfWalked).toBe(true);
+		}
+	});
 
-for (const cell of adjacent) {
-const neighborOfWalked = hexTiles.some((w) => areNeighborCells(w, cell));
-expect(neighborOfWalked).toBe(true);
-}
-});
+	it('result contains at least one cell when hexTilesOrdered is non-empty', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const walkedSet = new Set(hexTiles);
+		const adjacent = findAdjacentWalkedCells(hexTiles, walkedSet);
 
-it('result contains at least one cell when hexTilesOrdered is non-empty', () => {
-const hexTiles = activityFixture.hexTilesOrdered ?? [];
-const walkedSet = new Set(hexTiles);
-const adjacent = findAdjacentWalkedCells(hexTiles, walkedSet);
+		// A non-empty walk always has at least one neighbouring hex.
+		expect(adjacent.length).toBeGreaterThan(0);
+	});
 
-// A non-empty walk always has at least one neighbouring hex.
-expect(adjacent.length).toBeGreaterThan(0);
-});
+	it('excludedHexIds properly filters cells from the result', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		// Collect all neighbours of all walked tiles.
+		const allNeighbors = new Set<string>();
+		for (const hexId of hexTiles) {
+			for (const n of gridDisk(hexId, 1)) {
+				if (n !== hexId) allNeighbors.add(n);
+			}
+		}
+		const walkedSet = new Set(hexTiles);
+		const candidateNeighbors = [...allNeighbors].filter((n) => !walkedSet.has(n));
 
-it('excludedHexIds properly filters cells from the result', () => {
-const hexTiles = activityFixture.hexTilesOrdered ?? [];
-// Collect all neighbours of all walked tiles.
-const allNeighbors = new Set<string>();
-for (const hexId of hexTiles) {
-for (const n of gridDisk(hexId, 1)) {
-if (n !== hexId) allNeighbors.add(n);
-}
-}
-const walkedSet = new Set(hexTiles);
-const candidateNeighbors = [...allNeighbors].filter((n) => !walkedSet.has(n));
-
-// If we exclude ALL candidate neighbours, the result must be empty.
-const excludedAll = new Set([...walkedSet, ...candidateNeighbors]);
-const result = findAdjacentWalkedCells(hexTiles, excludedAll);
-expect(result).toHaveLength(0);
-});
+		// If we exclude ALL candidate neighbours, the result must be empty.
+		const excludedAll = new Set([...walkedSet, ...candidateNeighbors]);
+		const result = findAdjacentWalkedCells(hexTiles, excludedAll);
+		expect(result).toHaveLength(0);
+	});
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -405,70 +401,70 @@ expect(result).toHaveLength(0);
 // ═══════════════════════════════════════════════════════════════════════════════
 
 describe('ActivityMapRebuildHelper – rebuildMapFromActivities: adjacent walked tiles', () => {
-let records: ReturnType<typeof rebuildMapFromActivities>['records'];
+	let records: ReturnType<typeof rebuildMapFromActivities>['records'];
 
-beforeAll(() => {
-const activityWithoutComputed: SavedActivity = {
-...activityFixture,
-computed: activityFixture.computed
-? { ...activityFixture.computed, enclosedHexTiles: [], adjacentWalkedHexTiles: [] }
-: undefined,
-enclosedHexTiles: [],
-};
-({ records } = rebuildMapFromActivities([activityWithoutComputed]));
-});
+	beforeAll(() => {
+		const activityWithoutComputed: SavedActivity = {
+			...activityFixture,
+			computed: activityFixture.computed
+				? { ...activityFixture.computed, enclosedHexTiles: [], adjacentWalkedHexTiles: [] }
+				: undefined,
+			enclosedHexTiles: [],
+		};
+		({ records } = rebuildMapFromActivities([activityWithoutComputed]));
+	});
 
-it('at least one adjacent walked tile is present in the records', () => {
-const adjacentCount = Object.values(records).filter(
-(r) => r.adjacentWalkedCount > 0,
-).length;
-expect(adjacentCount).toBeGreaterThan(0);
-});
+	it('at least one adjacent walked tile is present in the records', () => {
+		const adjacentCount = Object.values(records).filter(
+			(r) => r.adjacentWalkedCount > 0,
+		).length;
+		expect(adjacentCount).toBeGreaterThan(0);
+	});
 
-it('adjacent walked tiles are not walked tiles', () => {
-const hexTiles = activityFixture.hexTilesOrdered ?? [];
-const walkedSet = new Set(hexTiles);
-const adjacentRecords = Object.values(records).filter((r) => r.adjacentWalkedCount > 0);
+	it('adjacent walked tiles are not walked tiles', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const walkedSet = new Set(hexTiles);
+		const adjacentRecords = Object.values(records).filter((r) => r.adjacentWalkedCount > 0);
 
-for (const rec of adjacentRecords) {
-expect(walkedSet.has(rec.h3Index)).toBe(false);
-}
-});
+		for (const rec of adjacentRecords) {
+			expect(walkedSet.has(rec.h3Index)).toBe(false);
+		}
+	});
 
-it('adjacent walked tiles have walkedOn = false', () => {
-const adjacentRecords = Object.values(records).filter((r) => r.adjacentWalkedCount > 0);
-for (const rec of adjacentRecords) {
-expect(rec.walkedOn).toBe(false);
-}
-});
+	it('adjacent walked tiles have walkedOn = false', () => {
+		const adjacentRecords = Object.values(records).filter((r) => r.adjacentWalkedCount > 0);
+		for (const rec of adjacentRecords) {
+			expect(rec.walkedOn).toBe(false);
+		}
+	});
 
-it('adjacent walked tiles have lastAdjacentWalkedAt set', () => {
-const adjacentRecords = Object.values(records).filter((r) => r.adjacentWalkedCount > 0);
-expect(adjacentRecords.length).toBeGreaterThan(0);
-for (const rec of adjacentRecords) {
-expect(rec.lastAdjacentWalkedAt).not.toBeNull();
-}
-});
+	it('adjacent walked tiles have lastAdjacentWalkedAt set', () => {
+		const adjacentRecords = Object.values(records).filter((r) => r.adjacentWalkedCount > 0);
+		expect(adjacentRecords.length).toBeGreaterThan(0);
+		for (const rec of adjacentRecords) {
+			expect(rec.lastAdjacentWalkedAt).not.toBeNull();
+		}
+	});
 
-it('every adjacent walked tile is a direct neighbour of at least one walked tile', () => {
-const hexTiles = activityFixture.hexTilesOrdered ?? [];
-const adjacentRecords = Object.values(records).filter(
-(r) => r.adjacentWalkedCount > 0 && r.visitCount === 0,
-);
+	it('every adjacent walked tile is a direct neighbour of at least one walked tile', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const adjacentRecords = Object.values(records).filter(
+			(r) => r.adjacentWalkedCount > 0 && r.visitCount === 0,
+		);
 
-for (const rec of adjacentRecords) {
-const neighborOfWalked = hexTiles.some((w) => areNeighborCells(w, rec.h3Index));
-expect(neighborOfWalked).toBe(true);
-}
-});
+		for (const rec of adjacentRecords) {
+			const neighborOfWalked = hexTiles.some((w) => areNeighborCells(w, rec.h3Index));
+			expect(neighborOfWalked).toBe(true);
+		}
+	});
 
-it('walked tiles do not appear as adjacent walked tiles', () => {
-const walkedRecords = Object.values(records).filter((r) => r.visitCount > 0);
-for (const rec of walkedRecords) {
-// A visited tile may also have adjacentWalkedCount > 0 in multi-activity
-// scenarios, but in a single-activity rebuild the walked tiles should
-// not have adjacentWalkedCount > 0 (they are excluded by the walked set).
-expect(rec.adjacentWalkedCount).toBe(0);
-}
-});
+	it('walked tiles do not appear as adjacent walked tiles', () => {
+		const walkedRecords = Object.values(records).filter((r) => r.visitCount > 0);
+		for (const rec of walkedRecords) {
+			// A visited tile may also have adjacentWalkedCount > 0 in multi-activity
+			// scenarios, but in a single-activity rebuild the walked tiles should
+			// not have adjacentWalkedCount > 0 (they are excluded by the walked set).
+			expect(rec.adjacentWalkedCount).toBe(0);
+		}
+	});
 });
