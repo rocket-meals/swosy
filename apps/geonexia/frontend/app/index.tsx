@@ -102,12 +102,13 @@ function getEffectiveBillboardsTexture(record: { billboardsTexture?: Record<stri
 }
 
 /**
- * Parse the rotation angle (in degrees) from a BillboardAnchorPosition value.
- * Values like 'outer_30', 'middle_120' yield their numeric suffix; 'center' yields 0.
+ * Parse the rotation angle (in degrees) from a BillboardAnchorPosition value,
+ * after reflecting across the 300°–120° axis (new = (240 - original + 360) % 360).
+ * Values like 'outer_30', 'middle_120' yield their reflected angle; 'center' yields 0.
  */
 function getAnchorAngleDeg(anchorPosition: string): number {
 	const match = anchorPosition.match(/_(\d+)$/);
-	return match ? parseInt(match[1], 10) : 0;
+	return match ? (240 - parseInt(match[1], 10) + 360) % 360 : 0;
 }
 
 const PRIMARY_COLOR = '#2563eb';
@@ -1652,42 +1653,43 @@ const SQRT3_2 = Math.sqrt(3) / 2;
 // Positions for each BillboardAnchorPosition entry keyed by the enum string value.
 // All coordinates are in the local HEX_PICKER coordinate system.
 // Outer positions use full radius R; middle positions use R/2.
+// All positions are reflected across the 300°–120° axis: new° = (240 − original° + 360) % 360.
 // √3/2 ≈ 0.866,  √3/4 ≈ 0.433,  √3/8 ≈ 0.217
 const HEX_ANCHOR_POSITIONS: Record<string, { x: number; y: number }> = {
 	// ── Center ──────────────────────────────────────────────────────────────────
 	[BillboardAnchorPosition.CENTER]: { x: HEX_PICKER_CX, y: HEX_PICKER_CY },
 
-	// ── Outer ring: vertices (0°, 60°, 120°, 180°, 240°, 300°) ─────────────────
-	[BillboardAnchorPosition.OUTER_0_DEGREE]:   { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R },                // vertex[0] top
-	[BillboardAnchorPosition.OUTER_60_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // vertex[1] upper-right
-	[BillboardAnchorPosition.OUTER_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // vertex[2] lower-right
-	[BillboardAnchorPosition.OUTER_180_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R },                // vertex[3] bottom
-	[BillboardAnchorPosition.OUTER_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // vertex[4] lower-left
-	[BillboardAnchorPosition.OUTER_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // vertex[5] upper-left
+	// ── Outer ring: vertices (0°→240°, 60°→180°, 120°→120°, 180°→60°, 240°→0°, 300°→300°) ──
+	[BillboardAnchorPosition.OUTER_0_DEGREE]:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // reflected to 240°: vertex[4] lower-left
+	[BillboardAnchorPosition.OUTER_60_DEGREE]:  { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R },                // reflected to 180°: vertex[3] bottom
+	[BillboardAnchorPosition.OUTER_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // on axis (120°): vertex[2] lower-right
+	[BillboardAnchorPosition.OUTER_180_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // reflected to 60°: vertex[1] upper-right
+	[BillboardAnchorPosition.OUTER_240_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R },                // reflected to 0°: vertex[0] top
+	[BillboardAnchorPosition.OUTER_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // on axis (300°): vertex[5] upper-left
 
-	// ── Outer ring: edge midpoints (30°, 90°, 150°, 210°, 270°, 330°) ───────────
-	[BillboardAnchorPosition.OUTER_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // edge[0] midpoint
-	[BillboardAnchorPosition.OUTER_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // edge[1] midpoint
-	[BillboardAnchorPosition.OUTER_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // edge[2] midpoint
-	[BillboardAnchorPosition.OUTER_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // edge[3] midpoint
-	[BillboardAnchorPosition.OUTER_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // edge[4] midpoint
-	[BillboardAnchorPosition.OUTER_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // edge[5] midpoint
+	// ── Outer ring: edge midpoints (30°→210°, 90°→150°, 150°→90°, 210°→30°, 270°→330°, 330°→270°) ──
+	[BillboardAnchorPosition.OUTER_30_DEGREE]:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // reflected to 210°: edge[3] midpoint
+	[BillboardAnchorPosition.OUTER_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 4 },       // reflected to 150°: edge[2] midpoint
+	[BillboardAnchorPosition.OUTER_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // reflected to 90°: edge[1] midpoint
+	[BillboardAnchorPosition.OUTER_210_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // reflected to 30°: edge[0] midpoint
+	[BillboardAnchorPosition.OUTER_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 4 },       // reflected to 330°: edge[5] midpoint
+	[BillboardAnchorPosition.OUTER_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_2,      y: HEX_PICKER_CY },                               // reflected to 270°: edge[4] midpoint
 
-	// ── Middle ring: toward vertices (0°, 60°, 120°, 180°, 240°, 300°) ──────────
-	[BillboardAnchorPosition.MIDDLE_0_DEGREE]:   { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // toward vertex[0]
-	[BillboardAnchorPosition.MIDDLE_60_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // toward vertex[1]
-	[BillboardAnchorPosition.MIDDLE_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // toward vertex[2]
-	[BillboardAnchorPosition.MIDDLE_180_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // toward vertex[3]
-	[BillboardAnchorPosition.MIDDLE_240_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // toward vertex[4]
-	[BillboardAnchorPosition.MIDDLE_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // toward vertex[5]
+	// ── Middle ring: toward vertices (0°→240°, 60°→180°, 120°→120°, 180°→60°, 240°→0°, 300°→300°) ──
+	[BillboardAnchorPosition.MIDDLE_0_DEGREE]:   { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // reflected to 240°: toward vertex[4]
+	[BillboardAnchorPosition.MIDDLE_60_DEGREE]:  { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY + HEX_PICKER_R / 2 },            // reflected to 180°: toward vertex[3]
+	[BillboardAnchorPosition.MIDDLE_120_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY + HEX_PICKER_R / 4 },            // on axis (120°): toward vertex[2]
+	[BillboardAnchorPosition.MIDDLE_180_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // reflected to 60°: toward vertex[1]
+	[BillboardAnchorPosition.MIDDLE_240_DEGREE]: { x: HEX_PICKER_CX,                               y: HEX_PICKER_CY - HEX_PICKER_R / 2 },            // reflected to 0°: toward vertex[0]
+	[BillboardAnchorPosition.MIDDLE_300_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY - HEX_PICKER_R / 4 },            // on axis (300°): toward vertex[5]
 
-	// ── Middle ring: toward edge midpoints (30°, 90°, 150°, 210°, 270°, 330°) ──
-	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[0]
-	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[1]
-	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[2]
-	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // toward edge[3]
-	[BillboardAnchorPosition.MIDDLE_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // toward edge[4]
-	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // toward edge[5]
+	// ── Middle ring: toward edge midpoints (30°→210°, 90°→150°, 150°→90°, 210°→30°, 270°→330°, 330°→270°) ──
+	[BillboardAnchorPosition.MIDDLE_30_DEGREE]:  { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // reflected to 210°: toward edge[3]
+	[BillboardAnchorPosition.MIDDLE_90_DEGREE]:  { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY + HEX_PICKER_R * 3 / 8 },       // reflected to 150°: toward edge[2]
+	[BillboardAnchorPosition.MIDDLE_150_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // reflected to 90°: toward edge[1]
+	[BillboardAnchorPosition.MIDDLE_210_DEGREE]: { x: HEX_PICKER_CX + HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // reflected to 30°: toward edge[0]
+	[BillboardAnchorPosition.MIDDLE_270_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_8,      y: HEX_PICKER_CY - HEX_PICKER_R * 3 / 8 },       // reflected to 330°: toward edge[5]
+	[BillboardAnchorPosition.MIDDLE_330_DEGREE]: { x: HEX_PICKER_CX - HEX_PICKER_R * SQRT3_4,      y: HEX_PICKER_CY },                               // reflected to 270°: toward edge[4]
 };
 
 // Hexagon outline polygon points (pointy-top, 6 vertices).
@@ -3074,10 +3076,11 @@ export default function RecordScreen() {
 				const outerIdx = OUTER_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
 				const middleIdx = MIDDLE_ANCHOR_BY_DEGREE.indexOf(anchorColor as BillboardAnchorPosition);
 				if (outerIdx >= 0) {
-					// H3's cellToBoundary places boundary[0] at the visual 300° position
-					// rather than 0° (top), so the mapping is offset by 2 steps (60°).
-					// Adding 2 mod 12 corrects the alignment.
-					const geo = DEGREE_POSITION_GEO[(outerIdx + 2) % 12];
+					// H3's cellToBoundary places boundary[0] at the visual 300° position.
+					// Positions are reflected across the 300°–120° axis: the formula
+					// (10 - idx + 12) % 12 applies both the boundary[0] offset and the
+					// axis reflection in one step.
+					const geo = DEGREE_POSITION_GEO[(10 - outerIdx + 12) % 12];
 					if (geo.type === 'vertex' && geo.idx < n) {
 						[lng, lat] = boundary[geo.idx] as [number, number];
 					} else if (geo.type === 'edge' && geo.idx < n) {
@@ -3087,8 +3090,8 @@ export default function RecordScreen() {
 						lat = (lat1 + lat2) / 2;
 					}
 				} else if (middleIdx >= 0) {
-					// Same +2 offset correction as for the outer ring.
-					const geo = DEGREE_POSITION_GEO[(middleIdx + 2) % 12];
+					// Same reflection formula as for the outer ring.
+					const geo = DEGREE_POSITION_GEO[(10 - middleIdx + 12) % 12];
 					let outerLng = centerLng;
 					let outerLat = centerLat;
 					if (geo.type === 'vertex' && geo.idx < n) {
