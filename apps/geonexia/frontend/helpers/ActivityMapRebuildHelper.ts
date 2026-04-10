@@ -88,23 +88,24 @@ const TILE_IMAGE_STONE = 'Stone/stone';
  * Maps boundary edge index (0–5) to the corresponding MIDDLE BillboardAnchorPosition
  * for edge-midpoint positions (halfway between center and the hex boundary).
  *
- * H3's cellToBoundary places boundary[0] at the visual 300° position (upper-left),
- * NOT at visual 0° (top). Each edge resolves to the midpoint between its two adjacent
- * boundary vertices:
- *   edge[0]: geometric 330° → MIDDLE_330_DEGREE
- *   edge[1]: geometric  30° → MIDDLE_30_DEGREE
- *   edge[2]: geometric  90° → MIDDLE_90_DEGREE
- *   edge[3]: geometric 150° → MIDDLE_150_DEGREE
- *   edge[4]: geometric 210° → MIDDLE_210_DEGREE
- *   edge[5]: geometric 270° → MIDDLE_270_DEGREE
+ * After reflecting all anchor positions across the 300°–120° axis
+ * (new° = (240 − original° + 360) % 360), the edge-to-anchor mapping updates so
+ * that each edge still resolves to the correct halfway point toward its geometric
+ * direction:
+ *   edge[0]: geometric 330° → MIDDLE_270_DEGREE
+ *   edge[1]: geometric  30° → MIDDLE_210_DEGREE
+ *   edge[2]: geometric  90° → MIDDLE_150_DEGREE
+ *   edge[3]: geometric 150° → MIDDLE_90_DEGREE
+ *   edge[4]: geometric 210° → MIDDLE_30_DEGREE
+ *   edge[5]: geometric 270° → MIDDLE_330_DEGREE
  */
 const EDGE_INDEX_TO_ANCHOR: BillboardAnchorPosition[] = [
-	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 0: vertex[0](300°)→vertex[1](0°)
-	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 1: vertex[1](0°)→vertex[2](60°)
-	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 2: vertex[2](60°)→vertex[3](120°)
-	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 3: vertex[3](120°)→vertex[4](180°)
-	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 4: vertex[4](180°)→vertex[5](240°)
-	BillboardAnchorPosition.MIDDLE_270_DEGREE, // edge 5: vertex[5](240°)→vertex[0](300°)
+	BillboardAnchorPosition.MIDDLE_270_DEGREE, // edge 0: vertex[0](300°)→vertex[1](0°)
+	BillboardAnchorPosition.MIDDLE_210_DEGREE, // edge 1: vertex[1](0°)→vertex[2](60°)
+	BillboardAnchorPosition.MIDDLE_150_DEGREE, // edge 2: vertex[2](60°)→vertex[3](120°)
+	BillboardAnchorPosition.MIDDLE_90_DEGREE,  // edge 3: vertex[3](120°)→vertex[4](180°)
+	BillboardAnchorPosition.MIDDLE_30_DEGREE,  // edge 4: vertex[4](180°)→vertex[5](240°)
+	BillboardAnchorPosition.MIDDLE_330_DEGREE, // edge 5: vertex[5](240°)→vertex[0](300°)
 ];
 
 /**
