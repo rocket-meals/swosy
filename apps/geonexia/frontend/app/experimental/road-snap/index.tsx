@@ -31,19 +31,6 @@ const ACCENT_COLOR = '#0d9488'; // teal
 // Smoothing window for the snap-to-road projection algorithm (number of neighbours)
 const SNAP_SMOOTH_WINDOW = 9;
 
-// Step size in degrees used by the greedy road-connect algorithm
-const GREEDY_STEP_DEG = 0.00003; // ~3 m
-
-// Maximum intermediate steps per segment to avoid infinite loops
-const GREEDY_MAX_STEPS_PER_SEGMENT = 2000;
-
-// Maximum plausible speed (km/h) for the GPS outlier filter
-const GPS_FILTER_MAX_SPEED_KMH = 50;
-
-// Moving-average window sizes for the light / heavy smoothing toggles
-const SMOOTH_LIGHT_WINDOW = 3;
-const SMOOTH_HEAVY_WINDOW = 15;
-
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function formatActivityLabel(activity: SavedActivity): string {
@@ -66,17 +53,6 @@ function deg2(a: [number, number], b: [number, number]): number {
 	return dx * dx + dy * dy;
 }
 
-// Haversine distance in km between two lat/lng points
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-	const R = 6371;
-	const dLat = ((lat2 - lat1) * Math.PI) / 180;
-	const dLng = ((lng2 - lng1) * Math.PI) / 180;
-	const a =
-		Math.sin(dLat / 2) ** 2 +
-		Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
-	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
 // ─── Route bounds ─────────────────────────────────────────────────────────────
 
 function computeRouteBounds(points: RoutePoint[]) {
@@ -92,32 +68,6 @@ function computeRouteBounds(points: RoutePoint[]) {
 		if (p.lng > maxLng) maxLng = p.lng;
 	}
 	return { minLat, maxLat, minLng, maxLng };
-}
-
-// ─── GPS outlier filter ───────────────────────────────────────────────────────
-//
-// Removes GPS points that imply an unrealistic travel speed relative to the
-// previously accepted point.  Points with a GPS-sensor-reported speed above
-// the threshold are also discarded.
-
-function filterGpsOutliers(points: RoutePoint[], maxSpeedKmh: number): RoutePoint[] {
-	if (points.length < 2) return [...points];
-	const result: RoutePoint[] = [points[0]];
-	let lastAccepted = points[0];
-	for (let i = 1; i < points.length; i++) {
-		const candidate = points[i];
-		const gpsSpeedKmh =
-			candidate.speed != null && candidate.speed >= 0 ? candidate.speed * 3.6 : 0;
-		if (gpsSpeedKmh > maxSpeedKmh) continue;
-		const distKm = haversineKm(lastAccepted.lat, lastAccepted.lng, candidate.lat, candidate.lng);
-		const dtHours = (candidate.timestamp - lastAccepted.timestamp) / 3_600_000;
-		const speedKmh = dtHours > 0 ? distKm / dtHours : 0;
-		if (speedKmh <= maxSpeedKmh) {
-			result.push(candidate);
-			lastAccepted = candidate;
-		}
-	}
-	return result;
 }
 
 // ─── Moving-average smoothing ─────────────────────────────────────────────────
@@ -159,14 +109,19 @@ function projectOntoSegment(
 	return [a[0] + t * dx, a[1] + t * dy];
 }
 
-function snapToRoad(coords: [number, number][]): [number, number][] {
+function snapToRoad(
+	coords: [number, number][],
+	interpolatedMask?: boolean[],
+): [number, number][] {
 	if (coords.length < 2) return coords;
 
-	// Build smoothed centre-line
+	// Build smoothed centre-line from all points
 	const smoothed = movingAverage(coords, SNAP_SMOOTH_WINDOW);
 
-	// Project each raw point onto the nearest smoothed segment
-	return coords.map((pt) => {
+	// Project each raw point onto the nearest smoothed segment.
+	// Interpolated points are left unchanged.
+	return coords.map((pt, i) => {
+		if (interpolatedMask && interpolatedMask[i]) return pt;
 		let bestDistSq = Infinity;
 		let bestPt: [number, number] = pt;
 		for (let j = 0; j < smoothed.length - 1; j++) {
@@ -179,67 +134,6 @@ function snapToRoad(coords: [number, number][]): [number, number][] {
 		}
 		return bestPt;
 	});
-}
-
-// ─── Greedy road-connect algorithm ───────────────────────────────────────────
-//
-// Instead of straight lines between consecutive GPS points we insert
-// intermediate waypoints that can only move in one of 8 compass directions
-// (N / NE / E / SE / S / SW / W / NW).  At every step the direction that
-// minimises the remaining distance to the target is chosen (greedy).
-//
-// This produces grid-like / axis-aligned paths that resemble street networks
-// without requiring any external routing service.
-
-const EIGHT_DIRS: [number, number][] = [
-	[0, 1],
-	[1, 1],
-	[1, 0],
-	[1, -1],
-	[0, -1],
-	[-1, -1],
-	[-1, 0],
-	[-1, 1],
-];
-
-function connectAlongRoad(coords: [number, number][]): [number, number][] {
-	if (coords.length < 2) return coords;
-
-	const result: [number, number][] = [coords[0]];
-
-	for (let i = 0; i < coords.length - 1; i++) {
-		const target = coords[i + 1];
-		let pos: [number, number] = [...result[result.length - 1]] as [number, number];
-		let steps = GREEDY_MAX_STEPS_PER_SEGMENT;
-
-		while (deg2(pos, target) > GREEDY_STEP_DEG * GREEDY_STEP_DEG * 4 && steps-- > 0) {
-			let bestDirIdx = -1;
-			let bestDist = deg2(pos, target);
-
-			for (let d = 0; d < EIGHT_DIRS.length; d++) {
-				const next: [number, number] = [
-					pos[0] + EIGHT_DIRS[d][0] * GREEDY_STEP_DEG,
-					pos[1] + EIGHT_DIRS[d][1] * GREEDY_STEP_DEG,
-				];
-				const dist = deg2(next, target);
-				if (dist < bestDist) {
-					bestDist = dist;
-					bestDirIdx = d;
-				}
-			}
-
-			if (bestDirIdx === -1) break;
-			pos = [
-				pos[0] + EIGHT_DIRS[bestDirIdx][0] * GREEDY_STEP_DEG,
-				pos[1] + EIGHT_DIRS[bestDirIdx][1] * GREEDY_STEP_DEG,
-			];
-			result.push(pos);
-		}
-
-		result.push(target);
-	}
-
-	return result;
 }
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -255,12 +149,8 @@ export default function RoadSnapScreen() {
 	const [selectedActivity, setSelectedActivity] = useState<SavedActivity | null>(null);
 	const [activityPickerOpen, setActivityPickerOpen] = useState(false);
 
-	// ── 5 processing toggles ───────────────────────────────────────────────────
-	const [filterEnabled, setFilterEnabled] = useState(false);
-	const [smoothLightEnabled, setSmoothLightEnabled] = useState(false);
-	const [smoothHeavyEnabled, setSmoothHeavyEnabled] = useState(false);
+	// ── Processing toggle ─────────────────────────────────────────────────────
 	const [snapEnabled, setSnapEnabled] = useState(false);
-	const [connectEnabled, setConnectEnabled] = useState(false);
 
 	// Initial map centre derived from the selected activity's bounding box
 	const routeInitialCenter = useMemo(() => {
@@ -301,22 +191,13 @@ export default function RoadSnapScreen() {
 
 	// Build and send processed coordinates to the map
 	const sendRouteToMap = useCallback(
-		(
-			activity: SavedActivity | null,
-			filter: boolean,
-			smoothLight: boolean,
-			smoothHeavy: boolean,
-			snap: boolean,
-			connect: boolean,
-		) => {
+		(activity: SavedActivity | null, snap: boolean) => {
 			if (!mapRef.current || !activity) return;
 
-			// Step 1: optional GPS outlier filter (works on RoutePoints)
-			const sourcePoints: RoutePoint[] = filter
-				? filterGpsOutliers(activity.routePoints, GPS_FILTER_MAX_SPEED_KMH)
-				: activity.routePoints;
-
-			let coords: [number, number][] = sourcePoints.map((p: RoutePoint) => [p.lng, p.lat]);
+			const coords: [number, number][] = activity.routePoints.map((p: RoutePoint) => [
+				p.lng,
+				p.lat,
+			]);
 			if (coords.length === 0) return;
 
 			// Show raw GPS points as small markers for comparison
@@ -346,13 +227,14 @@ export default function RoadSnapScreen() {
 				bearing: 0,
 			});
 
-			// Step 2–5: apply selected processing pipeline in sequence
-			if (smoothLight) coords = movingAverage(coords, SMOOTH_LIGHT_WINDOW);
-			if (smoothHeavy) coords = movingAverage(coords, SMOOTH_HEAVY_WINDOW);
-			if (snap) coords = snapToRoad(coords);
-			if (connect) coords = connectAlongRoad(coords);
+			// Apply projection onto centre-line, skipping interpolated points
+			let processedCoords = coords;
+			if (snap) {
+				const interpolatedMask = activity.routePoints.map((p: RoutePoint) => !!p.interpolated);
+				processedCoords = snapToRoad(coords, interpolatedMask);
+			}
 
-			mapRef.current.sendToMap({ routeCoordinates: coords });
+			mapRef.current.sendToMap({ routeCoordinates: processedCoords });
 		},
 		[],
 	);
@@ -360,24 +242,8 @@ export default function RoadSnapScreen() {
 	// Re-send route whenever map is ready or settings change
 	useEffect(() => {
 		if (!mapMounted) return;
-		sendRouteToMap(
-			selectedActivity,
-			filterEnabled,
-			smoothLightEnabled,
-			smoothHeavyEnabled,
-			snapEnabled,
-			connectEnabled,
-		);
-	}, [
-		mapMounted,
-		selectedActivity,
-		filterEnabled,
-		smoothLightEnabled,
-		smoothHeavyEnabled,
-		snapEnabled,
-		connectEnabled,
-		sendRouteToMap,
-	]);
+		sendRouteToMap(selectedActivity, snapEnabled);
+	}, [mapMounted, selectedActivity, snapEnabled, sendRouteToMap]);
 
 	const handleMapMessage = useCallback((data: object) => {
 		const msg = data as { tag?: string };
@@ -514,36 +380,6 @@ export default function RoadSnapScreen() {
 				<SettingsListGroupTitle title="GPS-Verarbeitung" />
 
 				<SettingsListBoolean
-					leftIcon={<MaterialIcons name="filter-alt" size={20} color="#ffffff" />}
-					iconBgColor={ACCENT_COLOR}
-					label="GPS-Ausreißer-Filter"
-					valueActive="Eingeschaltet"
-					valueInactive="Ausgeschaltet"
-					isEnabled={filterEnabled}
-					onToggle={() => setFilterEnabled((v) => !v)}
-					groupPosition="top"
-				/>
-				<SettingsListBoolean
-					leftIcon={<MaterialIcons name="blur-on" size={20} color="#ffffff" />}
-					iconBgColor={ACCENT_COLOR}
-					label={`Glättung (leicht, Fenster ${SMOOTH_LIGHT_WINDOW})`}
-					valueActive="Eingeschaltet"
-					valueInactive="Ausgeschaltet"
-					isEnabled={smoothLightEnabled}
-					onToggle={() => setSmoothLightEnabled((v) => !v)}
-					groupPosition="middle"
-				/>
-				<SettingsListBoolean
-					leftIcon={<MaterialIcons name="blur-circular" size={20} color="#ffffff" />}
-					iconBgColor={ACCENT_COLOR}
-					label={`Glättung (stark, Fenster ${SMOOTH_HEAVY_WINDOW})`}
-					valueActive="Eingeschaltet"
-					valueInactive="Ausgeschaltet"
-					isEnabled={smoothHeavyEnabled}
-					onToggle={() => setSmoothHeavyEnabled((v) => !v)}
-					groupPosition="middle"
-				/>
-				<SettingsListBoolean
 					leftIcon={<MaterialIcons name="my-location" size={20} color="#ffffff" />}
 					iconBgColor={ACCENT_COLOR}
 					label="Projektion auf Mittellinie"
@@ -551,17 +387,7 @@ export default function RoadSnapScreen() {
 					valueInactive="Ausgeschaltet"
 					isEnabled={snapEnabled}
 					onToggle={() => setSnapEnabled((v) => !v)}
-					groupPosition="middle"
-				/>
-				<SettingsListBoolean
-					leftIcon={<MaterialIcons name="route" size={20} color="#ffffff" />}
-					iconBgColor={ACCENT_COLOR}
-					label="Straße verbinden (8-Richtungen)"
-					valueActive="Eingeschaltet"
-					valueInactive="Ausgeschaltet"
-					isEnabled={connectEnabled}
-					onToggle={() => setConnectEnabled((v) => !v)}
-					groupPosition="bottom"
+					groupPosition="alone"
 				/>
 			</ScrollView>
 		</View>
