@@ -149,8 +149,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:465
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L465
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:466
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L466
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
   apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:353
