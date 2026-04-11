@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 14;
+export const WORLD_BUILDING_ID = 15;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -690,19 +690,21 @@ export function rebuildMapFromActivities(
 	}
 
 	// ── Second pass (2a.5): compute avenueCount ───────────────────────────────
-	// avenueCount for a tile = number of distinct activities that visited at
-	// least one immediately neighbouring tile (ring-1 H3 disk, excl. self).
-	// This is computed after visitCount values are fully populated so that the
-	// per-tile activity-ID sets are already available via activityReferences.
+	// avenueCount for a tile = number of distinct activities that visited (i.e.
+	// walked on or enclosed) at least one immediately neighbouring tile
+	// (ring-1 H3 disk, excl. self).
+	// This is computed after visitCount/enclosedCount are fully populated so
+	// that the per-tile activity-ID sets are already available via
+	// activityReferences.
 	if (isH3Available()) {
-		// Build a map from hexId → set of activity IDs that walked on it.
+		// Build a map from hexId → set of activity IDs that walked on OR enclosed it.
 		const visitedActsMap = new Map<string, Set<string>>();
 		for (const [hexId, rec] of Object.entries(records)) {
-			if (rec.visitCount > 0) {
+			if (rec.visitCount > 0 || rec.enclosedCount > 0) {
 				const refs: ActivityReference[] = rec.activityReferences ?? [];
 				visitedActsMap.set(
 					hexId,
-					new Set(refs.filter((r) => r.walkedIndex !== undefined).map((r) => r.activityId)),
+					new Set(refs.map((r) => r.activityId)),
 				);
 			}
 		}
