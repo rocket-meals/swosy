@@ -63,6 +63,7 @@ function getOrCreate(records: Record<string, HexTileRecord>, h3Index: string): H
 			lastEnclosedAt: null,
 			visitCount: 0,
 			enclosedCount: 0,
+			avenueCount: 0,
 			level: 0,
 			walkedOn: false,
 		};

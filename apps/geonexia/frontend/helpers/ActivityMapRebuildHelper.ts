@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 13;
+export const WORLD_BUILDING_ID = 14;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -425,6 +425,7 @@ function getOrCreateRecord(
 			lastEnclosedAt: null,
 			visitCount: 0,
 			enclosedCount: 0,
+			avenueCount: 0,
 			level: 0,
 			walkedOn: false,
 		};
@@ -686,6 +687,40 @@ export function rebuildMapFromActivities(
 		rec.enclosedCount = enclosedActivities.size;
 		rec.walkedOn = rec.visitCount > 0;
 		rec.level = computeHexTileLevel(rec);
+	}
+
+	// ── Second pass (2a.5): compute avenueCount ───────────────────────────────
+	// avenueCount for a tile = number of distinct activities that visited at
+	// least one immediately neighbouring tile (ring-1 H3 disk, excl. self).
+	// This is computed after visitCount values are fully populated so that the
+	// per-tile activity-ID sets are already available via activityReferences.
+	if (isH3Available()) {
+		// Build a map from hexId → set of activity IDs that walked on it.
+		const visitedActsMap = new Map<string, Set<string>>();
+		for (const [hexId, rec] of Object.entries(records)) {
+			if (rec.visitCount > 0) {
+				const refs: ActivityReference[] = rec.activityReferences ?? [];
+				visitedActsMap.set(
+					hexId,
+					new Set(refs.filter((r) => r.walkedIndex !== undefined).map((r) => r.activityId)),
+				);
+			}
+		}
+
+		// For every tile, union the activity sets of its walked neighbours.
+		for (const [hexId, rec] of Object.entries(records)) {
+			const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+			const avenueActivities = new Set<string>();
+			for (const neighbor of neighbors) {
+				const neighborActs = visitedActsMap.get(neighbor);
+				if (neighborActs) {
+					for (const actId of neighborActs) {
+						avenueActivities.add(actId);
+					}
+				}
+			}
+			rec.avenueCount = avenueActivities.size;
+		}
 	}
 
 	// ── Second pass (2b): apply tile-image and billboard assignments ──────────

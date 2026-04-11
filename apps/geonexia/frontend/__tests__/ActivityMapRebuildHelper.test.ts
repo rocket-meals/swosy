@@ -20,7 +20,7 @@
  */
 
 import { findEnclosedCellsFromHexTiles, buildFullRouteTileIds, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
-import { isAvailable as isH3Available, areNeighborCells } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, areNeighborCells, gridDisk } from '../helpers/H3Helper';
 import type { SavedActivity } from '../helpers/ActivityStorage';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -210,6 +210,40 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 		const walkedRecords = Object.values(records).filter((r) => r.visitCount > 0);
 		for (const rec of walkedRecords) {
 			expect(rec.lastVisitedAt).not.toBeNull();
+		}
+	});
+
+	it('avenueCount is set for all records and is a non-negative number', () => {
+		for (const rec of Object.values(records)) {
+			expect(typeof rec.avenueCount).toBe('number');
+			expect(rec.avenueCount).toBeGreaterThanOrEqual(0);
+		}
+	});
+
+	it('avenueCount is > 0 for tiles neighbouring a walked tile', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		// Tiles that are not walked but neighbour a walked tile must have avenueCount > 0.
+		const walkedSet = new Set(hexTiles);
+		const neighborCandidates = Object.values(records).filter(
+			(r) => !walkedSet.has(r.h3Index) && r.avenueCount > 0,
+		);
+		expect(neighborCandidates.length).toBeGreaterThan(0);
+	});
+
+	it('avenueCount is 0 for tiles with no walked neighbours', () => {
+		// Any tile with avenueCount === 0 must have no walked neighbour in records.
+		const walkedSet = new Set(
+			Object.values(records)
+				.filter((r) => r.visitCount > 0)
+				.map((r) => r.h3Index),
+		);
+		for (const rec of Object.values(records)) {
+			if (rec.avenueCount === 0) {
+				// Verify: none of its ring-1 H3 neighbours (that exist in records) are walked.
+				const neighbors = gridDisk(rec.h3Index, 1).filter((n) => n !== rec.h3Index);
+				const hasWalkedNeighbour = neighbors.some((n) => walkedSet.has(n));
+				expect(hasWalkedNeighbour).toBe(false);
+			}
 		}
 	});
 });
