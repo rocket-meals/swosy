@@ -117,8 +117,8 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L60
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/app/index.tsx:2837
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2837
+  apps/geonexia/frontend/app/index.tsx:2835
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/app/index.tsx#L2835
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/app/index.tsx:916
@@ -149,12 +149,12 @@
   https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/components/SpeechSettingsModal.tsx#L159
 
 - **Provide a compare function that depends on "String.localeCompare", to reliably sort elements alphabetically.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:502
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L502
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:465
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L465
 
 - **Prefer `String#codePointAt()` over `String#charCodeAt()`.**
-  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:388
-  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L388
+  apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts:353
+  https://github.com/rocket-meals/rocket-meals/blob/master/apps/geonexia/frontend/helpers/ActivityMapRebuildHelper.ts#L353
 
 - **Prefer `Number.isFinite` over `isFinite`.**
   apps/geonexia/frontend/helpers/ActivityStatsHelper.ts:24
