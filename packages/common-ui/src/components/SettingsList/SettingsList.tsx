@@ -30,6 +30,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 	groupPosition,
 	noIconIndent = false,
 	italic = false,
+	titleNumberOfLines = 0,
 	isAccountRequired = false,
 	onAccountRequired,
 }) => {
@@ -100,7 +101,7 @@ const SettingsList: React.FC<SettingsListProps> = ({
 			{shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
 			<View style={styles.textWrapper}>
 				<View style={styles.titleContainer}>
-					<Text selectable style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={0}>
+					<Text selectable style={[styles.title, { color: theme.screen.text, fontStyle: italic ? 'italic' : 'normal' } as TextStyle]} numberOfLines={titleNumberOfLines} ellipsizeMode="tail">
 						{title || label}
 					</Text>
 				</View>

@@ -92,4 +92,14 @@ export default StyleSheet.create({
                 shadowRadius: 4,
                 elevation: 4,
         },
+        linkedMoreInfoWrapper: {
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+        },
+        linkedMoreInfoText: {
+                fontSize: 12,
+                fontFamily: 'Poppins_400Regular',
+                flexShrink: 1,
+        },
 });
