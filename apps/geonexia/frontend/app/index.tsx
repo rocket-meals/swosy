@@ -1880,6 +1880,7 @@ function HexTileInfoContent({ h3Index }: { h3Index: string }) {
 		{ label: 'Walked On', value: record ? (record.walkedOn ? '✅ Yes' : '⬜ No (enclosed only)') : '⬜ No' },
 		{ label: 'Visit Count', value: record ? String(record.visitCount) : '0' },
 		{ label: 'Enclosed Count', value: record ? String(record.enclosedCount) : '0' },
+		{ label: 'Avenue Count', value: record ? String(record.avenueCount) : '0' },
 		{ label: 'Last Visited', value: record ? formatTimestamp(record.lastVisitedAt) : '—' },
 		{ label: 'Last Enclosed', value: record ? formatTimestamp(record.lastEnclosedAt) : '—' },
 		...(parentInfo ? [
