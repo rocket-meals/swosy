@@ -249,6 +249,70 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 	});
 });
 
+// ─── avenueCount – specific hex-tile assertions ───────────────────────────────
+// These tests verify the concrete avenueCount behaviour for the two H3 cells
+// that are referenced in the feature description:
+//
+//   8a1f10d50617fff  – a tile that IS present in hexTilesOrdered (visited)
+//   8a1f10d50607fff  – an immediate ring-1 neighbor of the tile above that is
+//                      NOT itself walked.  Because its neighbor was visited by
+//                      the activity it must receive avenueCount > 0.
+
+describe('ActivityMapRebuildHelper – avenueCount for specific hex tiles', () => {
+	let records: ReturnType<typeof rebuildMapFromActivities>['records'];
+
+	const VISITED_TILE = '8a1f10d50617fff';
+	const NEIGHBOR_TILE = '8a1f10d50607fff';
+
+	beforeAll(() => {
+		({ records } = rebuildMapFromActivities([activityFixture]));
+	});
+
+	it('VISITED_TILE is present in hexTilesOrdered of the fixture', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		expect(hexTiles).toContain(VISITED_TILE);
+	});
+
+	it('NEIGHBOR_TILE is NOT present in hexTilesOrdered (not directly walked)', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		expect(hexTiles).not.toContain(NEIGHBOR_TILE);
+	});
+
+	it('NEIGHBOR_TILE is an immediate ring-1 neighbor of VISITED_TILE', () => {
+		expect(areNeighborCells(VISITED_TILE, NEIGHBOR_TILE)).toBe(true);
+	});
+
+	it('VISITED_TILE has visitCount > 0 in the rebuilt map', () => {
+		expect(records[VISITED_TILE]).toBeDefined();
+		expect(records[VISITED_TILE].visitCount).toBeGreaterThan(0);
+	});
+
+	it('NEIGHBOR_TILE has avenueCount > 0 because VISITED_TILE is its neighbor', () => {
+		// NEIGHBOR_TILE was never walked, but VISITED_TILE (its immediate
+		// neighbor) was visited by the activity.  The rebuild must propagate
+		// that visit into NEIGHBOR_TILE's avenueCount.
+		expect(records[NEIGHBOR_TILE]).toBeDefined();
+		expect(records[NEIGHBOR_TILE].avenueCount).toBeGreaterThan(0);
+	});
+
+	it('NEIGHBOR_TILE has visitCount === 0 (it was not walked)', () => {
+		expect(records[NEIGHBOR_TILE].visitCount).toBe(0);
+	});
+
+	it('all ring-1 neighbors of VISITED_TILE that are not themselves walked have avenueCount > 0', () => {
+		const hexTiles = activityFixture.hexTilesOrdered ?? [];
+		const walkedSet = new Set(hexTiles);
+		const neighbors = gridDisk(VISITED_TILE, 1).filter((n) => n !== VISITED_TILE);
+
+		for (const neighbor of neighbors) {
+			if (!walkedSet.has(neighbor)) {
+				expect(records[neighbor]).toBeDefined();
+				expect(records[neighbor].avenueCount).toBeGreaterThan(0);
+			}
+		}
+	});
+});
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // Suite B – activityWithoutEnclosedTiles.json
 // An open-route activity: no interpolated GPS points, first and last tiles are
