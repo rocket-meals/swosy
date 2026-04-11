@@ -31,7 +31,7 @@ import { OpenMapTilesLayerId, LandcoverClass, LandcoverSubclass, ParkClass } fro
  * in a way that should force all users' worlds to be recalculated from their
  * activity history on the next app start.
  */
-export const WORLD_BUILDING_ID = 15;
+export const WORLD_BUILDING_ID = 16;
 
 /** Fallback H3 resolution used for activities that pre-date the stored field. */
 export const H3_RESOLUTION_FALLBACK = 10;
@@ -706,6 +706,16 @@ export function rebuildMapFromActivities(
 					hexId,
 					new Set(refs.map((r) => r.activityId)),
 				);
+			}
+		}
+
+		// Ensure that every ring-1 neighbour of a visited tile has a record so
+		// that its avenueCount is computed and stored even when the tile itself
+		// was never walked or enclosed.
+		for (const hexId of visitedActsMap.keys()) {
+			const neighbors = gridDisk(hexId, 1).filter((n) => n !== hexId);
+			for (const neighbor of neighbors) {
+				getOrCreateRecord(records, neighbor);
 			}
 		}
 
