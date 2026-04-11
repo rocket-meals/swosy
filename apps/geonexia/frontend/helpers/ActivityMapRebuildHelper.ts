@@ -709,7 +709,7 @@ export function rebuildMapFromActivities(
 			}
 		}
 
-		// Ensure that every ring-1 neighbour of a visited tile has a record so
+		// Ensure that every ring-1 neighbor of a visited tile has a record so
 		// that its avenueCount is computed and stored even when the tile itself
 		// was never walked or enclosed.
 		for (const hexId of visitedActsMap.keys()) {
