@@ -20,7 +20,7 @@
  */
 
 import { findEnclosedCellsFromHexTiles, buildFullRouteTileIds, rebuildMapFromActivities } from '../helpers/ActivityMapRebuildHelper';
-import { isAvailable as isH3Available, areNeighborCells } from '../helpers/H3Helper';
+import { isAvailable as isH3Available, areNeighborCells, gridDisk } from '../helpers/H3Helper';
 import type { SavedActivity } from '../helpers/ActivityStorage';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -222,39 +222,27 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 
 	it('avenueCount is > 0 for tiles neighbouring a walked tile', () => {
 		const hexTiles = activityFixture.hexTilesOrdered ?? [];
-		// Pick the first walked tile and check that at least one of its neighbours
-		// has avenueCount > 0 (the walked tile contributed to their count).
+		// Tiles that are not walked but neighbour a walked tile must have avenueCount > 0.
 		const walkedSet = new Set(hexTiles);
 		const neighborCandidates = Object.values(records).filter(
-			(r) => !walkedSet.has(r.h3Index) && (r.avenueCount ?? 0) > 0,
+			(r) => !walkedSet.has(r.h3Index) && r.avenueCount > 0,
 		);
 		expect(neighborCandidates.length).toBeGreaterThan(0);
 	});
 
 	it('avenueCount is 0 for tiles with no walked neighbours', () => {
 		// Any tile with avenueCount === 0 must have no walked neighbour in records.
-		// (We only check tiles that are in the records map, not arbitrary tiles.)
 		const walkedSet = new Set(
 			Object.values(records)
 				.filter((r) => r.visitCount > 0)
 				.map((r) => r.h3Index),
 		);
 		for (const rec of Object.values(records)) {
-			if ((rec.avenueCount ?? 0) === 0) {
-				// No neighbour in records should be walked.
-				// We cannot enumerate all H3 neighbours here without H3 available,
-				// so we check that the walked set does not intersect known neighbours
-				// by verifying that no walked record lists this tile as a neighbour
-				// (indirect check via the records map only).
-				const inWalkedNeighbourhood = Array.from(walkedSet).some((walkedId) => {
-					// A rough check: if this tile IS walked, skip.
-					if (walkedId === rec.h3Index) return false;
-					// We rely on the symmetric property: if tile A is a neighbour of B,
-					// then B's avenueCount > 0. So if rec.avenueCount === 0 then
-					// no walked tile is adjacent – which is what we are verifying.
-					return false; // Cannot verify without H3 here; just document the invariant.
-				});
-				expect(inWalkedNeighbourhood).toBe(false);
+			if (rec.avenueCount === 0) {
+				// Verify: none of its ring-1 H3 neighbours (that exist in records) are walked.
+				const neighbors = gridDisk(rec.h3Index, 1).filter((n) => n !== rec.h3Index);
+				const hasWalkedNeighbour = neighbors.some((n) => walkedSet.has(n));
+				expect(hasWalkedNeighbour).toBe(false);
 			}
 		}
 	});

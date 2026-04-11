@@ -120,7 +120,7 @@ export type HexTileRecord = {
 	 * neighbouring tile (ring-1 H3 disk neighbours, excluding the tile itself).
 	 * Computed during the world-rebuild phase; not updated in real-time.
 	 */
-	avenueCount?: number;
+	avenueCount: number;
 	/** Colour level 0–10, recomputed after each update */
 	level: number;
 	/**
