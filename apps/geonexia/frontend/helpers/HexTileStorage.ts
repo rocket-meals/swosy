@@ -116,8 +116,9 @@ export type HexTileRecord = {
 	/** Total number of times this tile was enclosed by a completed run loop */
 	enclosedCount: number;
 	/**
-	 * Number of distinct activities that visited at least one immediately
-	 * neighbouring tile (ring-1 H3 disk neighbours, excluding the tile itself).
+	 * Number of distinct activities that visited (walked on or enclosed) at
+	 * least one immediately neighbouring tile (ring-1 H3 disk neighbours,
+	 * excluding the tile itself).
 	 * Computed during the world-rebuild phase; not updated in real-time.
 	 */
 	avenueCount: number;

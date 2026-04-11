@@ -230,19 +230,20 @@ describe('ActivityMapRebuildHelper – rebuildMapFromActivities with interpolate
 		expect(neighborCandidates.length).toBeGreaterThan(0);
 	});
 
-	it('avenueCount is 0 for tiles with no walked neighbours', () => {
-		// Any tile with avenueCount === 0 must have no walked neighbour in records.
-		const walkedSet = new Set(
+	it('avenueCount is 0 for tiles with no visited neighbours', () => {
+		// Any tile with avenueCount === 0 must have no visited (walked or enclosed)
+		// neighbour in records.
+		const visitedSet = new Set(
 			Object.values(records)
-				.filter((r) => r.visitCount > 0)
+				.filter((r) => r.visitCount > 0 || r.enclosedCount > 0)
 				.map((r) => r.h3Index),
 		);
 		for (const rec of Object.values(records)) {
 			if (rec.avenueCount === 0) {
-				// Verify: none of its ring-1 H3 neighbours (that exist in records) are walked.
+				// Verify: none of its ring-1 H3 neighbours (that exist in records) are visited.
 				const neighbors = gridDisk(rec.h3Index, 1).filter((n) => n !== rec.h3Index);
-				const hasWalkedNeighbour = neighbors.some((n) => walkedSet.has(n));
-				expect(hasWalkedNeighbour).toBe(false);
+				const hasVisitedNeighbour = neighbors.some((n) => visitedSet.has(n));
+				expect(hasVisitedNeighbour).toBe(false);
 			}
 		}
 	});
