@@ -1,4 +1,5 @@
 Key,Message,Component,Line
+"AZ2BHs-As0Fbzs2jkByN","`FILE_FIELD_SPECIALS` should be a `Set`, and use `FILE_FIELD_SPECIALS.has()` to check existence or non-existence.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/index.ts",15
 "AZ18sLYoyfA2bFfvidgb","Refactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/index.tsx",1828
 "AZ17K3SPSTzC4JOH8LEH","Refactor this function to reduce its Cognitive Complexity from 37 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",471
 "AZ15JP5gO-njQfcvMTDJ","Refactor this code to not nest functions more than 4 levels deep.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/_layout.tsx",418
@@ -46,7 +47,7 @@ Key,Message,Component,Line
 "AZ1pznx60E5B-yCUJx-h","Unexpected negated condition.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",129
 "AZ1pdFupZHhn5MAtN-7O","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",135
 "AZ1pKIv7Ao3DRkjyumY6","Don't use a zero fraction in the number.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",76
-"AZ1o-PxGQGBs4swOohxo","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/Base64FileUploadHelper.ts",37
+"AZ1o-PxGQGBs4swOohxo","Prefer using an optional chain expression instead, as it's more concise and easier to read.","rocket-meals_rocket-meals:apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/base64-file-upload-hook/Base64FileUploadHelper.ts",36
 "AZ1naL8FjzYpj6l1m2hj","Refactor this function to reduce its Cognitive Complexity from 17 to the 15 allowed.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",141
 "AZ1naL8FjzYpj6l1m2hk","Mark the props of the component as read-only.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/hex-texture-config/index.tsx",197
 "AZ1kvhY4tUR0f1ZqLdjk","'hexTilesEnclosed' is deprecated.","rocket-meals_rocket-meals:apps/geonexia/frontend/app/settings/index.tsx",456
@@ -9998,4 +9999,3 @@ Key,Message,Component,Line
 "AZkUSvL-S4VhJojFFAW1","Do not use Array index in keys","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/course-timetable/index.tsx",129
 "AZkUSvQJS4VhJojFFAdN","Extract this nested ternary operation into an independent statement.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/eating-habits/index.tsx",128
 "AZkUSvN8S4VhJojFFAZv","'any' overrides all other types in this union type.","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",38
-"AZkUSvN8S4VhJojFFAZw","Remove this useless assignment to variable ""isSimulator"".","rocket-meals_rocket-meals:apps/frontend/app/app/(app)/feedback-support/index.tsx",95
